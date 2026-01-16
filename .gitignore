@@ -9,8 +9,30 @@ Desktop.ini
 # Env
 .env
 .env.*
+.env.local
+.env.*.local
 
 # Archives
 *.zip
 *.7z
 *.rar
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# Prisma
+*.db
+*.db-journal
+
+# TypeScript cache
+*.tsbuildinfo

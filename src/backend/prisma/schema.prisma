@@ -1,0 +1,844 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============== ORGANIZATION & USERS ==============
+
+model Organization {
+  id            String   @id @default(uuid())
+  name          String
+  type          OrgType
+  address       String?
+  city          String?
+  state         String?
+  postalCode    String?
+  country       String   @default("USA")
+  phone         String?
+  email         String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  users         User[]
+  heats         Heat[]
+  coils         Coil[]
+  locations     Location[]
+  ordersAsBuyer Order[]  @relation("BuyerOrders")
+  ordersAsSeller Order[] @relation("SellerOrders")
+  documents     Document[]
+}
+
+enum OrgType {
+  MILL
+  SERVICE_CENTER
+  DISTRIBUTOR
+  BROKER
+  FABRICATOR
+  OEM
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  role           UserRole
+  organizationId String
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdHeats   Heat[]       @relation("HeatCreator")
+  createdCoils   Coil[]       @relation("CoilCreator")
+  testResults    TestResult[] @relation("TestedBy")
+  approvedTests  TestResult[] @relation("ApprovedBy")
+  qcHolds        QCHold[]     @relation("HoldBy")
+  resolvedHolds  QCHold[]     @relation("ResolvedBy")
+  orders         Order[]      @relation("OrderCreator")
+  movements      MaterialMovement[]
+}
+
+enum UserRole {
+  ADMIN
+  MILL_OPERATOR
+  SERVICE_CENTER
+  SALES
+  QUALITY
+  LOGISTICS
+  FINANCE
+  VIEWER
+}
+
+// ============== PRODUCT CATALOG ==============
+
+model Grade {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  name          String
+  family        GradeFamily
+  specStandard  String?
+  chemistryMin  Json?
+  chemistryMax  Json?
+  tensileMin    Decimal?
+  tensileMax    Decimal?
+  yieldMin      Decimal?
+  yieldMax      Decimal?
+  elongationMin Decimal?
+  hardnessMin   Decimal?
+  hardnessMax   Decimal?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  heats         Heat[]
+  coils         Coil[]
+  products      Product[]
+  orderLines    OrderLine[]
+}
+
+enum GradeFamily {
+  CARBON
+  ALLOY
+  STAINLESS
+  TOOL
+  HSLA
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  sku           String      @unique
+  name          String
+  description   String?
+  category      String?
+  productType   ProductType
+  form          ProductForm
+  gradeId       String?
+  specStandard  String?
+  thicknessMin  Decimal?
+  thicknessMax  Decimal?
+  widthMin      Decimal?
+  widthMax      Decimal?
+  basePriceCwt  Decimal?
+  priceUnit     PriceUnit   @default(CWT)
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  grade         Grade?      @relation(fields: [gradeId], references: [id])
+  coils         Coil[]
+  orderLines    OrderLine[]
+}
+
+enum ProductType {
+  FLAT
+  LONG
+  TUBE
+  STRUCTURAL
+}
+
+enum ProductForm {
+  COIL
+  SHEET
+  PLATE
+  BAR
+  TUBE
+  BEAM
+  REBAR
+  WIRE
+}
+
+enum PriceUnit {
+  CWT
+  LB
+  TON
+  EACH
+  LF
+}
+
+// ============== MATERIAL TRACKING ==============
+
+model Heat {
+  id            String    @id @default(uuid())
+  heatNumber    String    @unique
+  millId        String
+  gradeId       String
+  castDate      DateTime
+  meltType      MeltType?
+  castType      CastType?
+  chemistry     Json?
+  mechanicalProps Json?
+  totalWeightLb Decimal?
+  status        HeatStatus @default(ACTIVE)
+  mtrDocumentId String?
+  createdAt     DateTime  @default(now())
+  createdById   String
+  updatedAt     DateTime  @updatedAt
+
+  mill          Organization @relation(fields: [millId], references: [id])
+  grade         Grade        @relation(fields: [gradeId], references: [id])
+  createdBy     User         @relation("HeatCreator", fields: [createdById], references: [id])
+  mtrDocument   Document?    @relation(fields: [mtrDocumentId], references: [id])
+  coils         Coil[]
+  testResults   TestResult[]
+}
+
+enum MeltType {
+  BOF
+  EAF
+  AOD
+}
+
+enum CastType {
+  CONTINUOUS
+  INGOT
+}
+
+enum HeatStatus {
+  ACTIVE
+  CONSUMED
+  ARCHIVED
+}
+
+model Coil {
+  id              String      @id @default(uuid())
+  coilNumber      String      @unique
+  heatId          String
+  parentCoilId    String?
+  productId       String?
+  gradeId         String
+  ownerId         String
+  form            ProductForm
+  thicknessIn     Decimal?
+  widthIn         Decimal?
+  lengthIn        Decimal?
+  odIn            Decimal?
+  idIn            Decimal?
+  gauge           Int?
+  grossWeightLb   Decimal
+  netWeightLb     Decimal
+  temper          String?
+  finish          String?
+  coating         String?
+  coatingWeight   String?
+  edgeCondition   EdgeCondition?
+  status          CoilStatus  @default(AVAILABLE)
+  qcStatus        QCStatus    @default(PENDING)
+  holdCode        String?
+  locationId      String?
+  binLocation     String?
+  unitCost        Decimal?
+  landedCost      Decimal?
+  originOrderId   String?
+  createdAt       DateTime    @default(now())
+  createdById     String
+  updatedAt       DateTime    @updatedAt
+
+  heat            Heat        @relation(fields: [heatId], references: [id])
+  parentCoil      Coil?       @relation("CoilParent", fields: [parentCoilId], references: [id])
+  childCoils      Coil[]      @relation("CoilParent")
+  product         Product?    @relation(fields: [productId], references: [id])
+  grade           Grade       @relation(fields: [gradeId], references: [id])
+  owner           Organization @relation(fields: [ownerId], references: [id])
+  location        Location?   @relation(fields: [locationId], references: [id])
+  createdBy       User        @relation("CoilCreator", fields: [createdById], references: [id])
+  originOrder     Order?      @relation("OriginOrder", fields: [originOrderId], references: [id])
+  
+  inventory       Inventory?
+  testResults     TestResult[]
+  qcHolds         QCHold[]
+  movements       MaterialMovement[]
+  workOrderInputs WorkOrder[] @relation("WorkOrderInput")
+  workOrderOutputs WorkOrderOutput[]
+  allocations     OrderLineAllocation[]
+  documentLinks   DocumentLink[]
+}
+
+enum EdgeCondition {
+  MILL
+  SLIT
+  TRIMMED
+}
+
+enum CoilStatus {
+  AVAILABLE
+  ALLOCATED
+  IN_PROCESS
+  HOLD
+  SHIPPED
+  CONSUMED
+}
+
+enum QCStatus {
+  PENDING
+  PASSED
+  FAILED
+  HOLD
+}
+
+// ============== INVENTORY ==============
+
+model Location {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  name          String
+  type          LocationType
+  parentId      String?
+  ownerId       String
+  addressLine1  String?
+  city          String?
+  state         String?
+  postalCode    String?
+  country       String?
+  lat           Decimal?
+  lng           Decimal?
+  maxWeightLb   Decimal?
+  isOutdoor     Boolean      @default(false)
+  hasCrane      Boolean      @default(false)
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  parent        Location?    @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children      Location[]   @relation("LocationHierarchy")
+  owner         Organization @relation(fields: [ownerId], references: [id])
+  coils         Coil[]
+  inventories   Inventory[]
+  movementsFrom MaterialMovement[] @relation("MovementFrom")
+  movementsTo   MaterialMovement[] @relation("MovementTo")
+  shipments     Shipment[]
+}
+
+enum LocationType {
+  WAREHOUSE
+  YARD
+  RACK
+  BIN
+  FLOOR
+}
+
+model Inventory {
+  id            String   @id @default(uuid())
+  coilId        String   @unique
+  locationId    String
+  qtyOnHand     Decimal
+  qtyAvailable  Decimal
+  qtyAllocated  Decimal  @default(0)
+  qtyOnHold     Decimal  @default(0)
+  unit          String   @default("LB")
+  unitCost      Decimal?
+  landedCost    Decimal?
+  avgCost       Decimal?
+  lastCountDate DateTime?
+  lastMovement  DateTime?
+  status        String   @default("ACTIVE")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  coil          Coil     @relation(fields: [coilId], references: [id])
+  location      Location @relation(fields: [locationId], references: [id])
+}
+
+model MaterialMovement {
+  id            String       @id @default(uuid())
+  coilId        String
+  movementType  MovementType
+  fromLocationId String?
+  toLocationId  String?
+  qtyMoved      Decimal
+  unit          String       @default("LB")
+  orderId       String?
+  workOrderId   String?
+  shipmentId    String?
+  reasonCode    String?
+  notes         String?
+  createdAt     DateTime     @default(now())
+  createdById   String
+
+  coil          Coil         @relation(fields: [coilId], references: [id])
+  fromLocation  Location?    @relation("MovementFrom", fields: [fromLocationId], references: [id])
+  toLocation    Location?    @relation("MovementTo", fields: [toLocationId], references: [id])
+  order         Order?       @relation(fields: [orderId], references: [id])
+  workOrder     WorkOrder?   @relation(fields: [workOrderId], references: [id])
+  shipment      Shipment?    @relation(fields: [shipmentId], references: [id])
+  createdBy     User         @relation(fields: [createdById], references: [id])
+}
+
+enum MovementType {
+  RECEIVE
+  SHIP
+  TRANSFER
+  ADJUST
+  PROCESS
+  CONSUME
+  SCRAP
+  COUNT
+}
+
+// ============== QUALITY ==============
+
+model TestResult {
+  id            String    @id @default(uuid())
+  coilId        String?
+  heatId        String
+  testType      TestType
+  testDate      DateTime
+  results       Json
+  specLimits    Json?
+  passFail      PassFail
+  equipmentId   String?
+  labId         String?
+  testedById    String
+  approvedById  String?
+  certNumber    String?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  coil          Coil?     @relation(fields: [coilId], references: [id])
+  heat          Heat      @relation(fields: [heatId], references: [id])
+  testedBy      User      @relation("TestedBy", fields: [testedById], references: [id])
+  approvedBy    User?     @relation("ApprovedBy", fields: [approvedById], references: [id])
+}
+
+enum TestType {
+  CHEMISTRY
+  MECHANICAL
+  DIMENSIONAL
+  SURFACE
+  COATING
+  OTHER
+}
+
+enum PassFail {
+  PASS
+  FAIL
+  CONDITIONAL
+}
+
+model QCHold {
+  id            String      @id @default(uuid())
+  coilId        String
+  holdType      HoldType
+  holdReason    String
+  holdDate      DateTime    @default(now())
+  holdById      String
+  status        HoldStatus  @default(ACTIVE)
+  disposition   Disposition?
+  resolvedDate  DateTime?
+  resolvedById  String?
+  resolutionNotes String?
+  ncrId         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  coil          Coil        @relation(fields: [coilId], references: [id])
+  holdBy        User        @relation("HoldBy", fields: [holdById], references: [id])
+  resolvedBy    User?       @relation("ResolvedBy", fields: [resolvedById], references: [id])
+}
+
+enum HoldType {
+  QUALITY
+  CUSTOMER
+  PENDING_TEST
+  DAMAGE
+  DISPUTE
+  OTHER
+}
+
+enum HoldStatus {
+  ACTIVE
+  RELEASED
+  SCRAPPED
+  RETURNED
+}
+
+enum Disposition {
+  USE_AS_IS
+  REWORK
+  SCRAP
+  RETURN
+  SELL_SECONDARY
+  PENDING
+}
+
+// ============== ORDERS ==============
+
+model Order {
+  id            String      @id @default(uuid())
+  orderNumber   String      @unique
+  orderType     OrderType
+  buyerId       String?
+  sellerId      String?
+  shipToAddress String?
+  shipToCity    String?
+  shipToState   String?
+  shipToZip     String?
+  orderDate     DateTime    @default(now())
+  requiredDate  DateTime?
+  promisedDate  DateTime?
+  expireDate    DateTime?
+  status        OrderStatus @default(DRAFT)
+  subtotal      Decimal?
+  taxAmount     Decimal?
+  freightAmount Decimal?
+  totalAmount   Decimal?
+  currency      String      @default("USD")
+  paymentTerms  String?
+  freightTerms  FreightTerms?
+  poReference   String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  createdById   String
+  updatedAt     DateTime    @updatedAt
+
+  buyer         Organization? @relation("BuyerOrders", fields: [buyerId], references: [id])
+  seller        Organization? @relation("SellerOrders", fields: [sellerId], references: [id])
+  createdBy     User          @relation("OrderCreator", fields: [createdById], references: [id])
+  lines         OrderLine[]
+  originCoils   Coil[]        @relation("OriginOrder")
+  movements     MaterialMovement[]
+  shipments     Shipment[]
+  invoices      Invoice[]
+}
+
+enum OrderType {
+  RFQ
+  QUOTE
+  SO
+  PO
+  RETURN
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING
+  CONFIRMED
+  PARTIAL
+  COMPLETE
+  CANCELLED
+  HOLD
+}
+
+enum FreightTerms {
+  PREPAID
+  COLLECT
+  THIRD_PARTY
+}
+
+model OrderLine {
+  id            String    @id @default(uuid())
+  orderId       String
+  lineNumber    Int
+  productId     String?
+  gradeId       String?
+  description   String?
+  thicknessIn   Decimal?
+  widthIn       Decimal?
+  lengthIn      Decimal?
+  finish        String?
+  coating       String?
+  qtyOrdered    Decimal
+  qtyShipped    Decimal   @default(0)
+  qtyReceived   Decimal   @default(0)
+  unit          String    @default("LB")
+  unitPrice     Decimal?
+  priceUnit     PriceUnit @default(CWT)
+  discountPct   Decimal?
+  extendedPrice Decimal?
+  lineStatus    LineStatus @default(OPEN)
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product?  @relation(fields: [productId], references: [id])
+  grade         Grade?    @relation(fields: [gradeId], references: [id])
+  allocations   OrderLineAllocation[]
+  shipmentItems ShipmentItem[]
+}
+
+enum LineStatus {
+  OPEN
+  PARTIAL
+  COMPLETE
+  CANCELLED
+}
+
+model OrderLineAllocation {
+  id          String    @id @default(uuid())
+  orderLineId String
+  coilId      String
+  qtyAllocated Decimal
+  allocatedAt DateTime  @default(now())
+
+  orderLine   OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
+  coil        Coil      @relation(fields: [coilId], references: [id])
+}
+
+// ============== SHOP FLOOR ==============
+
+model WorkOrder {
+  id            String      @id @default(uuid())
+  woNumber      String      @unique
+  woType        WOType
+  status        WOStatus    @default(DRAFT)
+  sourceCoilId  String
+  lineId        String?
+  salesOrderId  String?
+  priority      Int         @default(3)
+  scheduledDate DateTime?
+  startedAt     DateTime?
+  completedAt   DateTime?
+  slitPattern   Json?
+  inputWeightLb Decimal?
+  outputWeightLb Decimal?
+  scrapWeightLb Decimal?
+  yieldPct      Decimal?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  sourceCoil    Coil        @relation("WorkOrderInput", fields: [sourceCoilId], references: [id])
+  outputs       WorkOrderOutput[]
+  movements     MaterialMovement[]
+}
+
+enum WOType {
+  SLIT
+  CTL
+  BLANK
+  LEVELCUT
+  MULTIBLANKING
+  SHEAR
+}
+
+enum WOStatus {
+  DRAFT
+  READY
+  IN_PROGRESS
+  QC_HOLD
+  COMPLETE
+  CANCELLED
+}
+
+model WorkOrderOutput {
+  id            String   @id @default(uuid())
+  workOrderId   String
+  outputCoilId  String
+  sequence      Int
+  targetWidth   Decimal?
+  actualWidth   Decimal?
+  actualWeight  Decimal?
+  destination   String?
+  createdAt     DateTime @default(now())
+
+  workOrder     WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  outputCoil    Coil      @relation(fields: [outputCoilId], references: [id])
+}
+
+// ============== LOGISTICS ==============
+
+model Shipment {
+  id            String         @id @default(uuid())
+  shipmentNumber String        @unique
+  orderId       String
+  fromLocationId String
+  carrierId     String?
+  carrierName   String?
+  truckNumber   String?
+  driverName    String?
+  driverPhone   String?
+  status        ShipmentStatus @default(PENDING)
+  scheduledDate DateTime?
+  shippedAt     DateTime?
+  deliveredAt   DateTime?
+  totalWeightLb Decimal?
+  bolNumber     String?
+  podCaptured   Boolean        @default(false)
+  podImageUrl   String?
+  podSignature  String?
+  notes         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  order         Order          @relation(fields: [orderId], references: [id])
+  fromLocation  Location       @relation(fields: [fromLocationId], references: [id])
+  items         ShipmentItem[]
+  movements     MaterialMovement[]
+  stops         ShipmentStop[]
+}
+
+enum ShipmentStatus {
+  PENDING
+  LOADING
+  IN_TRANSIT
+  DELIVERED
+  EXCEPTION
+  CANCELLED
+}
+
+model ShipmentItem {
+  id            String   @id @default(uuid())
+  shipmentId    String
+  orderLineId   String
+  qtyShipped    Decimal
+  weightLb      Decimal?
+  createdAt     DateTime @default(now())
+
+  shipment      Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  orderLine     OrderLine @relation(fields: [orderLineId], references: [id])
+}
+
+model ShipmentStop {
+  id            String   @id @default(uuid())
+  shipmentId    String
+  stopNumber    Int
+  address       String
+  city          String?
+  state         String?
+  zipCode       String?
+  scheduledTime DateTime?
+  arrivedAt     DateTime?
+  departedAt    DateTime?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  shipment      Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+// ============== BILLING ==============
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  orderId       String
+  invoiceDate   DateTime      @default(now())
+  dueDate       DateTime?
+  subtotal      Decimal
+  taxAmount     Decimal       @default(0)
+  freightAmount Decimal       @default(0)
+  totalAmount   Decimal
+  paidAmount    Decimal       @default(0)
+  status        InvoiceStatus @default(DRAFT)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  order         Order         @relation(fields: [orderId], references: [id])
+  payments      Payment[]
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Payment {
+  id            String      @id @default(uuid())
+  invoiceId     String
+  amount        Decimal
+  paymentDate   DateTime    @default(now())
+  paymentMethod String?
+  referenceNumber String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+
+  invoice       Invoice     @relation(fields: [invoiceId], references: [id])
+}
+
+// ============== DOCUMENTS ==============
+
+model Document {
+  id            String       @id @default(uuid())
+  documentType  DocumentType
+  documentNumber String?
+  title         String?
+  fileName      String
+  fileType      String?
+  fileSizeBytes Int?
+  storagePath   String
+  checksum      String?
+  extractedData Json?
+  isVerified    Boolean      @default(false)
+  verifiedById  String?
+  verifiedAt    DateTime?
+  issueDate     DateTime?
+  expiryDate    DateTime?
+  ownerId       String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  owner         Organization? @relation(fields: [ownerId], references: [id])
+  heats         Heat[]
+  links         DocumentLink[]
+}
+
+enum DocumentType {
+  MTR
+  CERT
+  BOL
+  POD
+  INVOICE
+  SPEC
+  COA
+  MSDS
+  DRAWING
+  OTHER
+}
+
+model DocumentLink {
+  id            String   @id @default(uuid())
+  documentId    String
+  entityType    String
+  entityId      String
+  linkType      String   @default("PRIMARY")
+  createdAt     DateTime @default(now())
+
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  coil          Coil?    @relation(fields: [entityId], references: [id], map: "document_coil_link")
+}
+
+// ============== COMMODITY PRICING ==============
+
+model CommodityPrice {
+  id            String   @id @default(uuid())
+  indexCode     String
+  indexName     String
+  price         Decimal
+  unit          String
+  effectiveDate DateTime
+  source        String?
+  createdAt     DateTime @default(now())
+
+  @@index([indexCode, effectiveDate])
+}
+
+// ============== AUDIT ==============
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  entityType  String
+  entityId    String
+  action      String
+  oldValues   Json?
+  newValues   Json?
+  userId      String?
+  ipAddress   String?
+  sessionId   String?
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}

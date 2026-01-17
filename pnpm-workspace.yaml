@@ -1,0 +1,5 @@
+packages:
+  - 'src/packages/*'
+  - 'src/gateway'
+  - 'src/services/*'
+  - 'src/frontend'

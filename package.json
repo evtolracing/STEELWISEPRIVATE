@@ -1,0 +1,27 @@
+{
+  "name": "steelwise-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SteelWise Steel Manufacturing & Distribution Platform",
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "dev:gateway": "pnpm --filter @steelwise/gateway dev",
+    "dev:identity": "pnpm --filter @steelwise/identity-svc dev",
+    "dev:master-data": "pnpm --filter @steelwise/master-data-svc dev",
+    "dev:frontend": "pnpm --filter @steelwise/frontend dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test",
+    "docker:up": "docker-compose -f infrastructure/docker/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f infrastructure/docker/docker-compose.yml down",
+    "prisma:generate": "pnpm -r run prisma:generate",
+    "prisma:migrate": "pnpm -r run prisma:migrate"
+  },
+  "keywords": ["steel", "erp", "manufacturing", "microservices"],
+  "author": "SteelWise",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

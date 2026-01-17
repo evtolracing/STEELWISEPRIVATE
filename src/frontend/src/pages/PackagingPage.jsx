@@ -1,0 +1,637 @@
+import React, { useState, useEffect, useCallback } from 'react'
+import {
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Grid,
+  Paper,
+  TextField,
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
+  Snackbar,
+  Card,
+  CardContent,
+  CardActions,
+  InputAdornment,
+  Divider,
+  LinearProgress,
+  Checkbox,
+  FormControlLabel,
+} from '@mui/material'
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  QrCodeScanner as ScanIcon,
+  Inventory as PackageIcon,
+  LocalShipping as ShipIcon,
+  Print as PrintIcon,
+  CheckCircle as CompleteIcon,
+  Schedule as PendingIcon,
+  Scale as WeightIcon,
+  Close as CloseIcon,
+  ViewInAr as BundleIcon,
+} from '@mui/icons-material'
+import { JOB_STATUSES, JOB_STATUS_CONFIG } from '../constants/jobStatuses'
+import { PRIORITY_LEVELS_CONFIG } from '../constants/materials'
+
+// Mock jobs ready for packaging
+const generateMockPackagingQueue = () => [
+  {
+    id: 'JOB-1005',
+    jobNumber: 'JOB-1005',
+    customerName: 'ABC Steel Corp',
+    status: JOB_STATUSES.PACKAGING,
+    priority: 'HOT',
+    material: 'HR Coil 0.125" x 48" - Slit to 6"',
+    pieces: 150,
+    totalWeight: 28500,
+    packaged: 0,
+    packages: [],
+    dueDate: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+    packagingSpec: 'Bundle max 5000 lbs, wood skid, steel straps',
+  },
+  {
+    id: 'JOB-1006',
+    jobNumber: 'JOB-1006',
+    customerName: 'Metro Manufacturing',
+    status: JOB_STATUSES.PACKAGING,
+    priority: 'NORMAL',
+    material: 'CR Sheet 16ga x 60" - CTL 120"',
+    pieces: 200,
+    totalWeight: 18000,
+    packaged: 80,
+    packages: [
+      { id: 'PKG-001', pieces: 40, weight: 3600, skidNumber: 'SKD-001' },
+      { id: 'PKG-002', pieces: 40, weight: 3600, skidNumber: 'SKD-002' },
+    ],
+    dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    packagingSpec: 'Skid max 50 sheets, paper interleave, plastic wrap',
+  },
+  {
+    id: 'JOB-1007',
+    jobNumber: 'JOB-1007',
+    customerName: 'Industrial Corp',
+    status: JOB_STATUSES.WAITING_QC,
+    priority: 'NORMAL',
+    material: 'Galv Coil 0.060" x 36" - Slit to 12"',
+    pieces: 75,
+    totalWeight: 12000,
+    packaged: 0,
+    packages: [],
+    dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+    packagingSpec: 'Eye to sky, wood crate',
+  },
+]
+
+// Mock recently packaged
+const generateRecentPackaged = () => [
+  {
+    id: 'PKG-100',
+    jobNumber: 'JOB-1004',
+    skidNumber: 'SKD-100',
+    pieces: 45,
+    weight: 4200,
+    packagedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    status: 'READY',
+  },
+  {
+    id: 'PKG-099',
+    jobNumber: 'JOB-1004',
+    skidNumber: 'SKD-099',
+    pieces: 45,
+    weight: 4200,
+    packagedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+    status: 'READY',
+  },
+]
+
+const PackagingPage = () => {
+  const [packagingQueue, setPackagingQueue] = useState([])
+  const [recentPackaged, setRecentPackaged] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [packageDialogOpen, setPackageDialogOpen] = useState(false)
+  const [selectedJob, setSelectedJob] = useState(null)
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
+
+  // Package form state
+  const [packageForm, setPackageForm] = useState({
+    pieces: '',
+    weight: '',
+    skidNumber: '',
+    bundleType: 'SKID',
+    wrapType: 'PLASTIC',
+    printLabel: true,
+    notes: '',
+  })
+
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    try {
+      await new Promise((r) => setTimeout(r, 400))
+      setPackagingQueue(generateMockPackagingQueue())
+      setRecentPackaged(generateRecentPackaged())
+    } catch (error) {
+      console.error('Failed to load data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  const handleOpenPackageDialog = (job) => {
+    setSelectedJob(job)
+    setPackageForm({
+      pieces: '',
+      weight: '',
+      skidNumber: `SKD-${Date.now().toString().slice(-3)}`,
+      bundleType: 'SKID',
+      wrapType: 'PLASTIC',
+      printLabel: true,
+      notes: '',
+    })
+    setPackageDialogOpen(true)
+  }
+
+  const handleCreatePackage = () => {
+    if (!selectedJob) return
+
+    const newPackage = {
+      id: `PKG-${Date.now()}`,
+      jobNumber: selectedJob.jobNumber,
+      skidNumber: packageForm.skidNumber,
+      pieces: parseInt(packageForm.pieces) || 0,
+      weight: parseInt(packageForm.weight) || 0,
+      packagedAt: new Date().toISOString(),
+      status: 'READY',
+    }
+
+    // Update job
+    setPackagingQueue((prev) =>
+      prev.map((job) =>
+        job.id === selectedJob.id
+          ? {
+              ...job,
+              packaged: job.packaged + newPackage.pieces,
+              packages: [...job.packages, newPackage],
+            }
+          : job
+      )
+    )
+
+    // Add to recent
+    setRecentPackaged((prev) => [newPackage, ...prev])
+
+    setPackageDialogOpen(false)
+    setSnackbar({
+      open: true,
+      message: `Package ${packageForm.skidNumber} created - ${newPackage.pieces} pieces`,
+      severity: 'success',
+    })
+  }
+
+  const handleMarkReady = (job) => {
+    setPackagingQueue((prev) =>
+      prev.map((j) =>
+        j.id === job.id ? { ...j, status: JOB_STATUSES.READY_TO_SHIP } : j
+      )
+    )
+    setSnackbar({
+      open: true,
+      message: `${job.jobNumber} marked ready to ship`,
+      severity: 'success',
+    })
+  }
+
+  const formatDate = (date) => {
+    if (!date) return '—'
+    return new Date(date).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  }
+
+  const formatWeight = (lbs) => {
+    if (!lbs) return '—'
+    return lbs >= 1000 ? `${(lbs / 1000).toFixed(1)}k lbs` : `${lbs} lbs`
+  }
+
+  const getProgress = (job) => {
+    if (!job.pieces) return 0
+    return Math.min((job.packaged / job.pieces) * 100, 100)
+  }
+
+  // Stats
+  const stats = {
+    inQueue: packagingQueue.filter((j) => j.status === JOB_STATUSES.PACKAGING).length,
+    waitingQC: packagingQueue.filter((j) => j.status === JOB_STATUSES.WAITING_QC).length,
+    ready: packagingQueue.filter((j) => j.status === JOB_STATUSES.READY_TO_SHIP).length,
+    hotJobs: packagingQueue.filter((j) => j.priority === 'HOT').length,
+    packagesToday: recentPackaged.length,
+  }
+
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
+      {/* Header */}
+      <Paper sx={{ p: 2, borderRadius: 0 }} elevation={1}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h5" fontWeight={600}>
+              Packaging
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Bundle and prepare orders for shipping
+            </Typography>
+          </Box>
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" startIcon={<ScanIcon />}>
+              Scan
+            </Button>
+            <Button variant="outlined" startIcon={<PrintIcon />}>
+              Print Labels
+            </Button>
+          </Stack>
+        </Box>
+      </Paper>
+
+      {/* Stats Bar */}
+      <Paper sx={{ mx: 3, mt: 2, p: 2 }} variant="outlined">
+        <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />}>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              In Packaging
+            </Typography>
+            <Typography variant="h6" fontWeight={600}>
+              {stats.inQueue}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Waiting QC
+            </Typography>
+            <Typography variant="h6" fontWeight={600} color="info.main">
+              {stats.waitingQC}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Ready to Ship
+            </Typography>
+            <Typography variant="h6" fontWeight={600} color="success.main">
+              {stats.ready}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Hot Jobs
+            </Typography>
+            <Typography variant="h6" fontWeight={600} color="error.main">
+              {stats.hotJobs}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Packages Today
+            </Typography>
+            <Typography variant="h6" fontWeight={600}>
+              {stats.packagesToday}
+            </Typography>
+          </Box>
+        </Stack>
+      </Paper>
+
+      {/* Content */}
+      <Box sx={{ p: 3 }}>
+        {/* Search */}
+        <TextField
+          size="small"
+          placeholder="Search jobs..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ mb: 2, minWidth: 300 }}
+        />
+
+        <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+          Packaging Queue
+        </Typography>
+
+        <Grid container spacing={2}>
+          {packagingQueue
+            .filter((job) =>
+              job.jobNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              job.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((job) => {
+              const priorityConfig = PRIORITY_LEVELS_CONFIG?.[job.priority] || {}
+              const progress = getProgress(job)
+              const isHot = job.priority === 'HOT'
+
+              return (
+                <Grid item xs={12} md={6} lg={4} key={job.id}>
+                  <Card
+                    sx={{
+                      border: '2px solid',
+                      borderColor: isHot ? 'error.main' : 'divider',
+                      animation: isHot ? 'pulse 2s infinite' : 'none',
+                      '@keyframes pulse': {
+                        '0%, 100%': { boxShadow: '0 0 0 0 rgba(211, 47, 47, 0.3)' },
+                        '50%': { boxShadow: '0 0 0 8px rgba(211, 47, 47, 0)' },
+                      },
+                    }}
+                  >
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="h6" fontWeight={600}>
+                          {job.jobNumber}
+                        </Typography>
+                        <Stack direction="row" spacing={0.5}>
+                          <Chip
+                            label={job.priority}
+                            size="small"
+                            sx={{
+                              backgroundColor: priorityConfig.bgColor,
+                              color: priorityConfig.color,
+                              fontWeight: 600,
+                            }}
+                          />
+                          <Chip
+                            label={JOB_STATUS_CONFIG[job.status]?.label || job.status}
+                            size="small"
+                            sx={{
+                              backgroundColor: JOB_STATUS_CONFIG[job.status]?.bgColor,
+                              color: JOB_STATUS_CONFIG[job.status]?.color,
+                            }}
+                          />
+                        </Stack>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        {job.customerName}
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 2 }}>
+                        {job.material}
+                      </Typography>
+
+                      {/* Progress */}
+                      <Box sx={{ mb: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Packaged
+                          </Typography>
+                          <Typography variant="caption" fontWeight={600}>
+                            {job.packaged}/{job.pieces} pcs ({progress.toFixed(0)}%)
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={progress}
+                          sx={{ height: 8, borderRadius: 4 }}
+                        />
+                      </Box>
+
+                      {/* Weight & Due */}
+                      <Stack direction="row" spacing={2}>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary">
+                            Weight
+                          </Typography>
+                          <Typography variant="body2" fontWeight={500}>
+                            {formatWeight(job.totalWeight)}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary">
+                            Due
+                          </Typography>
+                          <Typography variant="body2" fontWeight={500}>
+                            {formatDate(job.dueDate)}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary">
+                            Packages
+                          </Typography>
+                          <Typography variant="body2" fontWeight={500}>
+                            {job.packages.length}
+                          </Typography>
+                        </Box>
+                      </Stack>
+
+                      {/* Spec */}
+                      <Alert severity="info" sx={{ mt: 2, py: 0.5 }} icon={<PackageIcon fontSize="small" />}>
+                        <Typography variant="caption">{job.packagingSpec}</Typography>
+                      </Alert>
+                    </CardContent>
+                    <CardActions sx={{ p: 2, pt: 0 }}>
+                      <Button
+                        variant="contained"
+                        startIcon={<BundleIcon />}
+                        onClick={() => handleOpenPackageDialog(job)}
+                        disabled={job.status === JOB_STATUSES.WAITING_QC}
+                      >
+                        Create Package
+                      </Button>
+                      {progress >= 100 && (
+                        <Button
+                          variant="outlined"
+                          color="success"
+                          startIcon={<ShipIcon />}
+                          onClick={() => handleMarkReady(job)}
+                        >
+                          Ready to Ship
+                        </Button>
+                      )}
+                    </CardActions>
+                  </Card>
+                </Grid>
+              )
+            })}
+        </Grid>
+
+        {/* Recent Packages */}
+        <Typography variant="h6" fontWeight={600} sx={{ mt: 4, mb: 2 }}>
+          Recent Packages
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Package ID</TableCell>
+                <TableCell>Job</TableCell>
+                <TableCell>Skid #</TableCell>
+                <TableCell>Pieces</TableCell>
+                <TableCell>Weight</TableCell>
+                <TableCell>Packaged</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {recentPackaged.map((pkg) => (
+                <TableRow key={pkg.id} hover>
+                  <TableCell>
+                    <Typography fontWeight={600}>{pkg.id}</Typography>
+                  </TableCell>
+                  <TableCell>{pkg.jobNumber}</TableCell>
+                  <TableCell>{pkg.skidNumber}</TableCell>
+                  <TableCell>{pkg.pieces}</TableCell>
+                  <TableCell>{formatWeight(pkg.weight)}</TableCell>
+                  <TableCell>{formatDate(pkg.packagedAt)}</TableCell>
+                  <TableCell>
+                    <Chip label={pkg.status} size="small" color="success" variant="outlined" />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton size="small">
+                      <PrintIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+
+      {/* Package Dialog */}
+      <Dialog open={packageDialogOpen} onClose={() => setPackageDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Create Package
+          <IconButton onClick={() => setPackageDialogOpen(false)} sx={{ position: 'absolute', right: 8, top: 8 }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            {selectedJob && (
+              <Alert severity="info">
+                Job: {selectedJob.jobNumber} | Remaining: {selectedJob.pieces - selectedJob.packaged} pcs
+              </Alert>
+            )}
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  label="Pieces"
+                  type="number"
+                  value={packageForm.pieces}
+                  onChange={(e) => setPackageForm({ ...packageForm, pieces: e.target.value })}
+                  fullWidth
+                  inputProps={{ max: selectedJob?.pieces - selectedJob?.packaged }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Weight (lbs)"
+                  type="number"
+                  value={packageForm.weight}
+                  onChange={(e) => setPackageForm({ ...packageForm, weight: e.target.value })}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+            <TextField
+              label="Skid/Bundle Number"
+              value={packageForm.skidNumber}
+              onChange={(e) => setPackageForm({ ...packageForm, skidNumber: e.target.value })}
+              fullWidth
+            />
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  select
+                  label="Bundle Type"
+                  value={packageForm.bundleType}
+                  onChange={(e) => setPackageForm({ ...packageForm, bundleType: e.target.value })}
+                  fullWidth
+                >
+                  <MenuItem value="SKID">Skid</MenuItem>
+                  <MenuItem value="BUNDLE">Bundle (strapped)</MenuItem>
+                  <MenuItem value="CRATE">Crate</MenuItem>
+                  <MenuItem value="COIL">Single Coil</MenuItem>
+                </TextField>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  select
+                  label="Wrapping"
+                  value={packageForm.wrapType}
+                  onChange={(e) => setPackageForm({ ...packageForm, wrapType: e.target.value })}
+                  fullWidth
+                >
+                  <MenuItem value="NONE">None</MenuItem>
+                  <MenuItem value="PLASTIC">Plastic Wrap</MenuItem>
+                  <MenuItem value="PAPER">Paper</MenuItem>
+                  <MenuItem value="VCI">VCI Paper</MenuItem>
+                </TextField>
+              </Grid>
+            </Grid>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={packageForm.printLabel}
+                  onChange={(e) => setPackageForm({ ...packageForm, printLabel: e.target.checked })}
+                />
+              }
+              label="Print label after creation"
+            />
+            <TextField
+              label="Notes"
+              value={packageForm.notes}
+              onChange={(e) => setPackageForm({ ...packageForm, notes: e.target.value })}
+              fullWidth
+              multiline
+              rows={2}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setPackageDialogOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={handleCreatePackage}
+            disabled={!packageForm.pieces || !packageForm.weight}
+          >
+            Create Package
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert severity={snackbar.severity} variant="filled">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  )
+}
+
+export default PackagingPage

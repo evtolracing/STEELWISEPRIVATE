@@ -126,10 +126,10 @@ export default function WorkOrderListPage() {
 
   // Mock data for demo
   const mockWorkOrders = [
-    { id: 1, workOrderNumber: 'WO-2024-001', type: 'Slitting', product: '48" × 0.075" A36', quantity: 25000, unit: 'lbs', scheduledDate: new Date(), progress: 45, status: 'RUNNING' },
-    { id: 2, workOrderNumber: 'WO-2024-002', type: 'Cut-to-Length', product: '60" × 0.105" A572', quantity: 15000, unit: 'lbs', scheduledDate: new Date(Date.now() + 24 * 60 * 60 * 1000), progress: 0, status: 'SCHEDULED' },
-    { id: 3, workOrderNumber: 'WO-2024-003', type: 'Blanking', product: '36" × 0.048" 304SS', quantity: 500, unit: 'pcs', scheduledDate: new Date(Date.now() - 24 * 60 * 60 * 1000), progress: 100, status: 'COMPLETED' },
-    { id: 4, workOrderNumber: 'WO-2024-004', type: 'Slitting', product: '72" × 0.135" HR', quantity: 40000, unit: 'lbs', scheduledDate: new Date(), progress: 0, status: 'PAUSED' },
+    { id: 1, workOrderNumber: 'WO-2024-001', type: 'Slitting', product: '48" x 0.075" A36', quantity: 25000, unit: 'lbs', scheduledDate: new Date(), progress: 45, status: 'RUNNING' },
+    { id: 2, workOrderNumber: 'WO-2024-002', type: 'Cut-to-Length', product: '60" x 0.105" A572', quantity: 15000, unit: 'lbs', scheduledDate: new Date(Date.now() + 24 * 60 * 60 * 1000), progress: 0, status: 'SCHEDULED' },
+    { id: 3, workOrderNumber: 'WO-2024-003', type: 'Blanking', product: '36" x 0.048" 304SS', quantity: 500, unit: 'pcs', scheduledDate: new Date(Date.now() - 24 * 60 * 60 * 1000), progress: 100, status: 'COMPLETED' },
+    { id: 4, workOrderNumber: 'WO-2024-004', type: 'Slitting', product: '72" x 0.135" HR', quantity: 40000, unit: 'lbs', scheduledDate: new Date(), progress: 0, status: 'PAUSED' },
   ]
 
   const displayData = data?.workOrders || mockWorkOrders

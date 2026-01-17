@@ -20,6 +20,13 @@ export const getMovements = (params) => client.get('/inventory/movements', { par
 
 export const getStockByLocation = (locationId) => client.get(`/inventory/locations/${locationId}/stock`).then(r => r.data)
 
+// Inventory by Location (aggregated view)
+export const getInventoryByLocation = (locationId, params) => 
+  client.get('/inventory', { params: { locationId, ...params } }).then(r => r.data)
+
+// Inventory Aggregation
+export const getInventoryAggregation = (params) => client.get('/inventory/aggregate', { params }).then(r => r.data)
+
 export default {
   getInventory,
   getInventorySummary,
@@ -31,4 +38,6 @@ export default {
   adjustInventory,
   getMovements,
   getStockByLocation,
+  getInventoryByLocation,
+  getInventoryAggregation,
 }

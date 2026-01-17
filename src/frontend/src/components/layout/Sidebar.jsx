@@ -25,6 +25,12 @@ import {
   Category as BOMIcon,
   Settings as SettingsIcon,
   ShoppingCart as OrdersIcon,
+  ViewKanban as KanbanIcon,
+  Schedule as ScheduleIcon,
+  PrecisionManufacturing as ShopFloorIcon,
+  MoveToInbox as ReceivingIcon,
+  Inventory as PackagingIcon,
+  LocalShipping as ShippingIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -32,6 +38,16 @@ const navSections = [
     title: 'Overview',
     items: [
       { path: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
+    ],
+  },
+  {
+    title: 'Service Center',
+    items: [
+      { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
+      { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
+      { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
+      { path: '/packaging', label: 'Packaging', icon: PackagingIcon },
+      { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
     ],
   },
   {

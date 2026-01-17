@@ -1,16 +1,33 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { apiClient } from '../api/client'
+
+// ============================================
+// DEMO MODE - Set to false when database is ready
+// ============================================
+const DEMO_MODE = true
+
+const DEMO_USER = {
+  id: 1,
+  email: 'admin@steelwise.com',
+  name: 'Admin User',
+  role: 'ADMIN',
+}
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [token, setToken] = useState(() => localStorage.getItem('token'))
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(DEMO_MODE ? DEMO_USER : null)
+  const [token, setToken] = useState(() => DEMO_MODE ? 'demo-token' : localStorage.getItem('token'))
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Load user on mount if token exists
+  // Load user on mount if token exists (skip in demo mode)
   useEffect(() => {
+    if (DEMO_MODE) {
+      setUser(DEMO_USER)
+      setLoading(false)
+      return
+    }
+    
     if (token) {
       fetchCurrentUser()
     } else {
@@ -19,8 +36,15 @@ export function AuthProvider({ children }) {
   }, [])
 
   const fetchCurrentUser = async () => {
+    if (DEMO_MODE) {
+      setUser(DEMO_USER)
+      setLoading(false)
+      return
+    }
+    
     try {
       setLoading(true)
+      const { apiClient } = await import('../api/client')
       const response = await apiClient.get('/auth/me')
       setUser(response.data.user)
       setError(null)
@@ -37,10 +61,18 @@ export function AuthProvider({ children }) {
   }
 
   const login = useCallback(async (email, password) => {
+    if (DEMO_MODE) {
+      setUser(DEMO_USER)
+      setToken('demo-token')
+      localStorage.setItem('token', 'demo-token')
+      return { success: true }
+    }
+    
     try {
       setLoading(true)
       setError(null)
       
+      const { apiClient } = await import('../api/client')
       const response = await apiClient.post('/auth/login', { email, password })
       const { token: newToken, user: userData } = response.data
       
@@ -59,10 +91,17 @@ export function AuthProvider({ children }) {
   }, [])
 
   const register = useCallback(async (userData) => {
+    if (DEMO_MODE) {
+      setUser(DEMO_USER)
+      setToken('demo-token')
+      return { success: true }
+    }
+    
     try {
       setLoading(true)
       setError(null)
       
+      const { apiClient } = await import('../api/client')
       const response = await apiClient.post('/auth/register', userData)
       const { token: newToken, user: newUser } = response.data
       
@@ -83,12 +122,18 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => {
     localStorage.removeItem('token')
     setToken(null)
-    setUser(null)
+    setUser(DEMO_MODE ? DEMO_USER : null)
     setError(null)
   }, [])
 
   const updateProfile = useCallback(async (profileData) => {
+    if (DEMO_MODE) {
+      setUser({ ...DEMO_USER, ...profileData })
+      return { success: true }
+    }
+    
     try {
+      const { apiClient } = await import('../api/client')
       const response = await apiClient.put('/auth/profile', profileData)
       setUser(response.data.user)
       return { success: true }
@@ -99,7 +144,12 @@ export function AuthProvider({ children }) {
   }, [])
 
   const changePassword = useCallback(async (currentPassword, newPassword) => {
+    if (DEMO_MODE) {
+      return { success: true }
+    }
+    
     try {
+      const { apiClient } = await import('../api/client')
       await apiClient.put('/auth/password', { currentPassword, newPassword })
       return { success: true }
     } catch (err) {
@@ -113,7 +163,7 @@ export function AuthProvider({ children }) {
     token,
     loading,
     error,
-    isAuthenticated: !!user,
+    isAuthenticated: DEMO_MODE ? true : !!user,
     login,
     register,
     logout,

@@ -60,7 +60,7 @@ export default function WorkOrderDetailPage() {
     id: 1,
     workOrderNumber: 'WO-2024-001',
     type: 'Slitting',
-    product: '48" × 0.075" A36 Coils to 12" Slit Coils',
+    product: '48" x 0.075" A36 Coils to 12" Slit Coils',
     status: 'RUNNING',
     priority: 'HIGH',
     scheduledDate: new Date().toISOString(),
@@ -81,15 +81,15 @@ export default function WorkOrderDetailPage() {
       { id: 2, unitNumber: 'U-2024-0002', grade: 'A36', weight: 12500, status: 'QUEUED' },
     ],
     outputProducts: [
-      { id: 1, product: '12" × 0.075" A36', quantity: 4500, status: 'COMPLETED' },
-      { id: 2, product: '12" × 0.075" A36', quantity: 3500, status: 'IN_PROGRESS' },
+      { id: 1, product: '12" x 0.075" A36', quantity: 4500, status: 'COMPLETED' },
+      { id: 2, product: '12" x 0.075" A36', quantity: 3500, status: 'IN_PROGRESS' },
     ],
     scrap: {
       weight: 125,
       percentage: 0.5,
     },
     bom: [
-      { id: 1, item: 'A36 Master Coil', specification: '48" × 0.075"', quantity: 25000, unit: 'lbs', source: 'Inventory' },
+      { id: 1, item: 'A36 Master Coil', specification: '48" x 0.075"', quantity: 25000, unit: 'lbs', source: 'Inventory' },
     ],
     events: [
       { id: 1, type: 'CREATED', title: 'Work Order Created', timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), actor: 'Jane Doe' },

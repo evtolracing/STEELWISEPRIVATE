@@ -33,7 +33,7 @@ export default function QuoteBuilderPage() {
   const navigate = useNavigate()
   const [customer, setCustomer] = useState(null)
   const [lineItems, setLineItems] = useState([
-    { id: 1, product: 'A36 Hot Rolled Coil', specification: '48" × 0.075"', quantity: 25000, unit: 'lbs', unitPrice: 0.45, total: 11250 },
+    { id: 1, product: 'A36 Hot Rolled Coil', specification: '48" x 0.075"', quantity: 25000, unit: 'lbs', unitPrice: 0.45, total: 11250 },
   ])
   const [notes, setNotes] = useState('')
 
@@ -195,7 +195,7 @@ export default function QuoteBuilderPage() {
                         size="small"
                         value={item.specification}
                         onChange={(e) => handleLineItemChange(item.id, 'specification', e.target.value)}
-                        placeholder="48\" × 0.075\""
+                        placeholder='48" x 0.075"'
                       />
                     </TableCell>
                     <TableCell align="right">

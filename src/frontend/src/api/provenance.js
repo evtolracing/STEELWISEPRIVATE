@@ -18,6 +18,12 @@ export const getCertificates = (params) => client.get('/provenance/certificates'
 
 export const verifyCertificate = (certId) => client.get(`/provenance/certificates/${certId}/verify`).then(r => r.data)
 
+// Unit Provenance (full blockchain status)
+export const getUnitProvenance = (unitId) => client.get(`/provenance/units/${unitId}`).then(r => r.data)
+
+// Certification Provenance
+export const getCertificationProvenance = (certId) => client.get(`/provenance/certifications/${certId}`).then(r => r.data)
+
 export default {
   lookupProvenance,
   getProvenanceChain,
@@ -28,4 +34,6 @@ export default {
   generateCertificate,
   getCertificates,
   verifyCertificate,
+  getUnitProvenance,
+  getCertificationProvenance,
 }

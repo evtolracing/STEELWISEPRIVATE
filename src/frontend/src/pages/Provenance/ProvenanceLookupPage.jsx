@@ -17,6 +17,7 @@ import {
   ListItemIcon,
   ListItemText,
   Alert,
+  CircularProgress,
 } from '@mui/material'
 import {
   Search as SearchIcon,
@@ -29,26 +30,39 @@ import {
   Timeline as TimelineIcon,
   Description as CertIcon,
   CheckCircle as CheckIcon,
+  Error as ErrorIcon,
 } from '@mui/icons-material'
 import { TraceTimeline, UnitCard } from '../../components/traceability'
 import { StatusChip } from '../../components/common'
+import { lookupProvenance } from '../../api'
+
+// Demo mode flag - set to false when backend is ready
+const DEMO_MODE = true
 
 export default function ProvenanceLookupPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResult, setSearchResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   // Mock data for demonstration
   const mockProvenanceData = {
     unit: {
       id: 1,
       unitNumber: 'U-2024-0001',
+      unitTag: 'U-2024-0001',
       heatNumber: 'HT-2024-001',
       grade: 'A36',
+      form: 'Coil',
+      dimensions: '48" x 0.075"',
       weight: 12500,
       status: 'DELIVERED',
       qualityStatus: 'PASS',
+      ownerName: 'Acme Steel Co',
+      currentOwner: 'Acme Steel Co',
       certifications: ['MTC', 'ISO 9001', 'CE Marking'],
+      blockchainStatus: 'VERIFIED',
+      lastChainTxId: '0x7f83b...2d48c',
     },
     blockchain: {
       verified: true,
@@ -73,13 +87,29 @@ export default function ProvenanceLookupPage() {
     ],
   }
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return
+    
     setLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setSearchResult(mockProvenanceData)
-      setLoading(false)
-    }, 500)
+    setError(null)
+    
+    if (DEMO_MODE) {
+      // Simulate API call with mock data
+      setTimeout(() => {
+        setSearchResult(mockProvenanceData)
+        setLoading(false)
+      }, 500)
+    } else {
+      try {
+        const data = await lookupProvenance(searchQuery.trim())
+        setSearchResult(data)
+      } catch (err) {
+        setError(err.message || 'Failed to lookup provenance')
+        setSearchResult(null)
+      } finally {
+        setLoading(false)
+      }
+    }
   }
 
   const handleScan = () => {
@@ -126,8 +156,22 @@ export default function ProvenanceLookupPage() {
         </Stack>
       </Paper>
 
+      {/* Error Display */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
       {/* Results */}
-      {searchResult && (
+      {searchResult && !loading && (
         <Grid container spacing={3}>
           {/* Unit Info & Verification */}
           <Grid item xs={12} md={4}>

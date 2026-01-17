@@ -12,6 +12,8 @@ export const updateHeat = (id, data) => client.put(`/heats/${id}`, data).then(r 
 
 export const traceHeat = (heatNumber) => client.get(`/heats/${heatNumber}/trace`).then(r => r.data)
 
+export const getHeatTrace = (id) => client.get(`/heats/${id}/trace`).then(r => r.data)
+
 export const getHeatChemistry = (id) => client.get(`/heats/${id}/chemistry`).then(r => r.data)
 
 export const getHeatTestResults = (id) => client.get(`/heats/${id}/tests`).then(r => r.data)

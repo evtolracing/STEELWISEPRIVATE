@@ -620,3 +620,4 @@ Defines sellable products with specifications.
 ---
 
 *Next: [04-MODULE-PRODUCT-CATALOG.md](04-MODULE-PRODUCT-CATALOG.md) - Product catalog and materials specifications*
+

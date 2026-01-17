@@ -62,7 +62,7 @@ export default function UnitListPage() {
       label: 'Dimensions', 
       minWidth: 120,
       render: (row) => row.dimensions 
-        ? `${row.dimensions.width}" × ${row.dimensions.gauge}"`
+        ? `${row.dimensions.width}" x ${row.dimensions.gauge}"`
         : '-',
     },
     { 

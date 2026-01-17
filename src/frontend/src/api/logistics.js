@@ -26,6 +26,18 @@ export const calculateRoute = (data) => client.post('/logistics/routes/calculate
 
 export const getShipmentTracking = (id) => client.get(`/shipments/${id}/tracking`).then(r => r.data)
 
+// Route Optimization
+export const optimizeRoute = (id, stops) => client.post(`/shipments/${id}/optimize-route`, { stops }).then(r => r.data)
+
+// Loading Plan
+export const planLoading = (id, data) => client.post(`/shipments/${id}/plan-loading`, data).then(r => r.data)
+
+export const getLoadingPlan = (id) => client.get(`/shipments/${id}/loading-plan`).then(r => r.data)
+
+// Shipment Status
+export const updateShipmentStatus = (id, status, data = {}) => 
+  client.patch(`/shipments/${id}/status`, { status, ...data }).then(r => r.data)
+
 export default {
   getShipments,
   getShipment,
@@ -40,4 +52,8 @@ export default {
   getRoutes,
   calculateRoute,
   getShipmentTracking,
+  optimizeRoute,
+  planLoading,
+  getLoadingPlan,
+  updateShipmentStatus,
 }

@@ -173,7 +173,7 @@ export default function UnitDetailPage() {
             <CardContent>
               <Typography variant="body2" color="text.secondary">Dimensions</Typography>
               <Typography variant="h5">
-                {displayUnit.dimensions?.width}" × {displayUnit.dimensions?.gauge}"
+                {displayUnit.dimensions?.width}" x {displayUnit.dimensions?.gauge}"
               </Typography>
             </CardContent>
           </Card>

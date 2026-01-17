@@ -96,7 +96,7 @@ export default function UnitCard({
                     Dimensions
                   </Typography>
                   <Typography variant="body2">
-                    {dimensions.width}" × {dimensions.gauge}"
+                    {dimensions.width}" x {dimensions.gauge}"
                   </Typography>
                 </Box>
               )}

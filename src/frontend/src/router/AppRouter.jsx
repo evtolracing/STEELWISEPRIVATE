@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
 import { AppLayout } from '../components/layout'
+import { RouteErrorPage } from '../components/common'
 import { useAuth } from '../hooks/useAuth'
 
 // Lazy load pages for code splitting
@@ -20,6 +21,15 @@ const QualityDashboardPage = lazy(() => import('../pages/QAQC/QualityDashboardPa
 const TestEntryPage = lazy(() => import('../pages/QAQC/TestEntryPage'))
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
+
+// Phase 1 - Service Center Pages
+const OrderBoardPage = lazy(() => import('../pages/OrderBoardPage'))
+const SchedulePage = lazy(() => import('../pages/SchedulePage'))
+const ShopFloorPage = lazy(() => import('../pages/ShopFloorPage'))
+const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
+const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
+const PackagingPage = lazy(() => import('../pages/PackagingPage'))
+const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 
 // Loading fallback
 function PageLoader() {
@@ -62,6 +72,20 @@ const router = createBrowserRouter([
         <LoginPage />
       </Suspense>
     ),
+    errorElement: <RouteErrorPage />,
+  },
+
+  // Shop Floor - Standalone (no app layout for touch-friendly full screen)
+  {
+    path: '/shop-floor',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <ShopFloorPage />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorPage />,
   },
 
   // Protected routes with layout
@@ -72,6 +96,7 @@ const router = createBrowserRouter([
         <AppLayout />
       </ProtectedRoute>
     ),
+    errorElement: <RouteErrorPage />,
     children: [
       // Dashboard
       {
@@ -81,6 +106,7 @@ const router = createBrowserRouter([
             <DashboardPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
 
       // Heats
@@ -91,6 +117,7 @@ const router = createBrowserRouter([
             <HeatListPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
       {
         path: 'heats/:id',
@@ -99,6 +126,7 @@ const router = createBrowserRouter([
             <HeatDetailPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
 
       // Units
@@ -109,6 +137,7 @@ const router = createBrowserRouter([
             <UnitListPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
       {
         path: 'units/:id',
@@ -117,6 +146,7 @@ const router = createBrowserRouter([
             <UnitDetailPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
 
       // Work Orders
@@ -127,6 +157,7 @@ const router = createBrowserRouter([
             <WorkOrderListPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
       {
         path: 'work-orders/:id',
@@ -135,6 +166,7 @@ const router = createBrowserRouter([
             <WorkOrderDetailPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
 
       // Logistics
@@ -145,6 +177,7 @@ const router = createBrowserRouter([
             <ShipmentListPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
       {
         path: 'logistics/shipments/:id',
@@ -153,6 +186,7 @@ const router = createBrowserRouter([
             <ShipmentDetailPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
 
       // Pricing
@@ -163,6 +197,7 @@ const router = createBrowserRouter([
             <PricingDashboardPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
       {
         path: 'pricing/quotes/new',
@@ -171,6 +206,7 @@ const router = createBrowserRouter([
             <QuoteBuilderPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
 
       // QA/QC
@@ -181,6 +217,7 @@ const router = createBrowserRouter([
             <QualityDashboardPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
       {
         path: 'qaqc/test-entry',
@@ -189,6 +226,7 @@ const router = createBrowserRouter([
             <TestEntryPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
       },
 
       // Provenance
@@ -199,6 +237,77 @@ const router = createBrowserRouter([
             <ProvenanceLookupPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // ============================================
+      // Phase 1 - Service Center Operations Routes
+      // ============================================
+
+      // Order Board (Kanban)
+      {
+        path: 'order-board',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderBoardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Work Center Schedule
+      {
+        path: 'schedule',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SchedulePage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Job Detail
+      {
+        path: 'jobs/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <JobDetailPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Receiving
+      {
+        path: 'receiving',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ReceivingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Packaging
+      {
+        path: 'packaging',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PackagingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Shipping Desk
+      {
+        path: 'shipping',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShippingDeskPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
       },
 
       // Catch-all redirect
@@ -208,8 +317,13 @@ const router = createBrowserRouter([
       },
     ],
   },
-])
+], {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true,
+  },
+})
 
 export default function AppRouter() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} future={{ v7_startTransition: true }} />
 }

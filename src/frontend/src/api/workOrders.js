@@ -18,6 +18,24 @@ export const getWorkOrderOutputs = (id) => client.get(`/work-orders/${id}/output
 
 export const addWorkOrderOutput = (id, data) => client.post(`/work-orders/${id}/outputs`, data).then(r => r.data)
 
+// Work Order Status
+export const updateWorkOrderStatus = (id, status, mesStage) => 
+  client.patch(`/work-orders/${id}/status`, { status, mesStage }).then(r => r.data)
+
+export const pauseWorkOrder = (id, reason) => 
+  client.patch(`/work-orders/${id}/status`, { status: 'PAUSED', reason }).then(r => r.data)
+
+// Work Order Steps
+export const getWorkOrderSteps = (id) => client.get(`/work-orders/${id}/steps`).then(r => r.data)
+
+export const addWorkOrderStep = (id, data) => client.post(`/work-orders/${id}/steps`, data).then(r => r.data)
+
+export const updateWorkOrderStep = (id, stepId, data) => 
+  client.put(`/work-orders/${id}/steps/${stepId}`, data).then(r => r.data)
+
+export const updateWorkOrderStepStatus = (id, stepId, data) => 
+  client.patch(`/work-orders/${id}/steps/${stepId}/status`, data).then(r => r.data)
+
 export default {
   getWorkOrders,
   getWorkOrder,

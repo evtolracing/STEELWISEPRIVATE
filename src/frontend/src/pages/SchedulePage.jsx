@@ -1,0 +1,268 @@
+import React, { useState, useEffect, useCallback } from 'react'
+import {
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Alert,
+  Snackbar,
+  Tabs,
+  Tab,
+  Paper,
+} from '@mui/material'
+import {
+  Add as AddIcon,
+  CalendarMonth as CalendarIcon,
+  ViewList as ListIcon,
+} from '@mui/icons-material'
+import { WorkCenterSchedule } from '../components/jobs'
+import { DEFAULT_WORK_CENTERS, WORK_CENTER_STATUS, PROCESSING_TYPES } from '../constants/processingTypes'
+import { JOB_STATUSES } from '../constants/jobStatuses'
+import { PRIORITY_LEVELS } from '../constants/materials'
+
+// Mock data generator for work centers
+const generateMockWorkCenters = () => {
+  return DEFAULT_WORK_CENTERS.map((wc, idx) => ({
+    ...wc,
+    status: idx === 2 ? WORK_CENTER_STATUS.MAINTENANCE : WORK_CENTER_STATUS.ACTIVE,
+    utilization: Math.floor(Math.random() * 40 + 50),
+    currentOperator: idx % 2 === 0 ? 'John D.' : null,
+    activeJob: idx % 3 === 0 ? `JOB-100${idx}` : null,
+  }))
+}
+
+// Mock scheduled jobs
+const generateMockScheduledJobs = (date) => {
+  const baseHour = 6
+  const jobs = []
+  const customers = ['ABC Steel', 'Metro Mfg', 'Industrial Corp', 'Steel Solutions']
+  const materials = ['HR Coil 0.125"', 'CR Sheet 16ga', 'Galv Coil 0.060"', 'SS 304 0.048"']
+
+  for (let i = 0; i < 15; i++) {
+    const startHour = baseHour + (i % 8)
+    const duration = Math.floor(Math.random() * 3) + 1
+    jobs.push({
+      id: `JOB-${1000 + i}`,
+      jobNumber: `JOB-${1000 + i}`,
+      customerName: customers[i % customers.length],
+      material: materials[i % materials.length],
+      status: i < 3 ? JOB_STATUSES.IN_PROCESS : JOB_STATUSES.SCHEDULED,
+      priority: Object.values(PRIORITY_LEVELS)[i % 4],
+      processingType: Object.keys(PROCESSING_TYPES)[i % Object.keys(PROCESSING_TYPES).length],
+      workCenterId: DEFAULT_WORK_CENTERS[i % DEFAULT_WORK_CENTERS.length].id,
+      scheduledStart: new Date(date.setHours(startHour, 0, 0, 0)).toISOString(),
+      scheduledEnd: new Date(date.setHours(startHour + duration, 0, 0, 0)).toISOString(),
+      estimatedDuration: duration * 60, // minutes
+      targetPieces: Math.floor(Math.random() * 200 + 50),
+    })
+  }
+
+  return jobs
+}
+
+const SchedulePage = () => {
+  const [date, setDate] = useState(new Date())
+  const [workCenters, setWorkCenters] = useState([])
+  const [scheduledJobs, setScheduledJobs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState(0)
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
+
+  const loadScheduleData = useCallback(async () => {
+    setLoading(true)
+    try {
+      // In production: const [wcs, jobs] = await Promise.all([getWorkCenters(), getAllSchedules(date)])
+      await new Promise((r) => setTimeout(r, 400))
+      setWorkCenters(generateMockWorkCenters())
+      setScheduledJobs(generateMockScheduledJobs(new Date(date)))
+    } catch (error) {
+      console.error('Failed to load schedule:', error)
+      setSnackbar({ open: true, message: 'Failed to load schedule', severity: 'error' })
+    } finally {
+      setLoading(false)
+    }
+  }, [date])
+
+  useEffect(() => {
+    loadScheduleData()
+  }, [loadScheduleData])
+
+  const handleDateChange = (newDate) => {
+    setDate(newDate)
+  }
+
+  const handleJobClick = (job) => {
+    console.log('Selected job:', job)
+    // Navigate to job detail or open modal
+  }
+
+  // Calculate summary stats
+  const stats = {
+    totalJobs: scheduledJobs.length,
+    inProcess: scheduledJobs.filter((j) => j.status === JOB_STATUSES.IN_PROCESS).length,
+    scheduled: scheduledJobs.filter((j) => j.status === JOB_STATUSES.SCHEDULED).length,
+    hotJobs: scheduledJobs.filter((j) => j.priority === PRIORITY_LEVELS.HOT).length,
+    activeWorkCenters: workCenters.filter((wc) => wc.status === WORK_CENTER_STATUS.ACTIVE).length,
+    avgUtilization: workCenters.length
+      ? Math.round(workCenters.reduce((acc, wc) => acc + (wc.utilization || 0), 0) / workCenters.length)
+      : 0,
+  }
+
+  return (
+    <Box sx={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <Box sx={{ px: 3, py: 2, borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h5" fontWeight={600}>
+              Work Center Schedule
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              View and manage machine schedules
+            </Typography>
+          </Box>
+          <Stack direction="row" spacing={2}>
+            <Button variant="outlined" startIcon={<AddIcon />}>
+              Schedule Job
+            </Button>
+          </Stack>
+        </Box>
+      </Box>
+
+      {/* Stats Bar */}
+      <Paper sx={{ mx: 3, mt: 2, p: 2 }} variant="outlined">
+        <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />}>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Total Jobs
+            </Typography>
+            <Typography variant="h6" fontWeight={600}>
+              {stats.totalJobs}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              In Process
+            </Typography>
+            <Typography variant="h6" fontWeight={600} color="success.main">
+              {stats.inProcess}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Scheduled
+            </Typography>
+            <Typography variant="h6" fontWeight={600} color="info.main">
+              {stats.scheduled}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Hot Jobs
+            </Typography>
+            <Typography variant="h6" fontWeight={600} color="error.main">
+              {stats.hotJobs}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Active Work Centers
+            </Typography>
+            <Typography variant="h6" fontWeight={600}>
+              {stats.activeWorkCenters}/{workCenters.length}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              Avg Utilization
+            </Typography>
+            <Typography variant="h6" fontWeight={600}>
+              {stats.avgUtilization}%
+            </Typography>
+          </Box>
+        </Stack>
+      </Paper>
+
+      {/* Tabs */}
+      <Box sx={{ px: 3, pt: 2 }}>
+        <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
+          <Tab icon={<CalendarIcon />} label="Schedule View" iconPosition="start" />
+          <Tab icon={<ListIcon />} label="Queue View" iconPosition="start" />
+        </Tabs>
+      </Box>
+
+      {/* Content */}
+      <Box sx={{ flex: 1, p: 3, overflow: 'hidden' }}>
+        {activeTab === 0 && (
+          <WorkCenterSchedule
+            workCenters={workCenters}
+            jobs={scheduledJobs}
+            date={date}
+            onDateChange={handleDateChange}
+            onJobClick={handleJobClick}
+            onRefresh={loadScheduleData}
+            loading={loading}
+          />
+        )}
+        {activeTab === 1 && (
+          <Box>
+            {/* Queue view - simplified list */}
+            <Stack spacing={2}>
+              {workCenters.map((wc) => (
+                <Paper key={wc.id} sx={{ p: 2 }} variant="outlined">
+                  <Typography variant="subtitle1" fontWeight={600}>
+                    {wc.name} - {wc.type}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Status: {wc.status} | Utilization: {wc.utilization}%
+                  </Typography>
+                  <Box sx={{ mt: 1 }}>
+                    {scheduledJobs
+                      .filter((j) => j.workCenterId === wc.id)
+                      .slice(0, 5)
+                      .map((job) => (
+                        <Box
+                          key={job.id}
+                          sx={{
+                            display: 'inline-block',
+                            px: 1,
+                            py: 0.5,
+                            mr: 1,
+                            mb: 0.5,
+                            borderRadius: 1,
+                            bgcolor: job.status === JOB_STATUSES.IN_PROCESS ? 'success.light' : 'grey.100',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => handleJobClick(job)}
+                        >
+                          <Typography variant="caption">{job.jobNumber}</Typography>
+                        </Box>
+                      ))}
+                  </Box>
+                </Paper>
+              ))}
+            </Stack>
+          </Box>
+        )}
+      </Box>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          variant="filled"
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  )
+}
+
+export default SchedulePage

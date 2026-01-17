@@ -26,6 +26,17 @@ export const calculatePrice = (data) => client.post('/pricing/calculate', data).
 
 export const getContracts = (params) => client.get('/pricing/contracts', { params }).then(r => r.data)
 
+// Pricing Records (market data)
+export const getPricingRecords = (params) => client.get('/pricing-records', { params }).then(r => r.data)
+
+export const createPricingRecord = (data) => client.post('/pricing-records', data).then(r => r.data)
+
+export const updatePricingRecord = (id, data) => client.put(`/pricing-records/${id}`, data).then(r => r.data)
+
+export const deletePricingRecord = (id) => client.delete(`/pricing-records/${id}`).then(r => r.data)
+
+export const getCurrentPricing = (params) => client.get('/pricing', { params }).then(r => r.data)
+
 export default {
   getPriceList,
   getPrice,
@@ -40,4 +51,9 @@ export default {
   updateQuote,
   calculatePrice,
   getContracts,
+  getPricingRecords,
+  createPricingRecord,
+  updatePricingRecord,
+  deletePricingRecord,
+  getCurrentPricing,
 }

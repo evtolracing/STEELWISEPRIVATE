@@ -132,45 +132,52 @@ router.post('/', async (req, res) => {
 router.post('/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, note, notes } = req.body;
+    const { status, scrapWeight, note } = req.body;
     
-    const validStatuses = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'ON_HOLD'];
-    
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    // Find job first
+    const job = await prisma.job.findUnique({ where: { id } });
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
     }
     
+    // Prepare update data
     const updateData = { status };
     
+    // Handle scrapWeight accumulation
+    if (typeof scrapWeight === 'number') {
+      updateData.scrapWeightLb = (job.scrapWeightLb || 0) + scrapWeight;
+    }
+    
+    // Handle note
+    if (note) {
+      updateData.notes = note;
+    }
+    
     // Set timestamps based on status
-    if (status === 'IN_PROCESS') {
+    if (status === 'IN_PROCESS' && !job.actualStart) {
       updateData.actualStart = new Date();
-    } else if (status === 'COMPLETED' || status === 'READY_TO_SHIP' || status === 'SHIPPED') {
+    } else if (['COMPLETED', 'READY_TO_SHIP', 'SHIPPED'].includes(status) && !job.actualEnd) {
       updateData.actualEnd = new Date();
     }
     
-    // Accept both 'note' and 'notes' for flexibility
-    if (note || notes) {
-      updateData.notes = note || notes;
-    }
-    
-    const job = await prisma.job.update({
+    // Update job
+    const updatedJob = await prisma.job.update({
       where: { id },
       data: updateData,
       include: {
         order: {
-          select: { id: true, orderNumber: true },
+          select: { id: true, orderNumber: true, buyerId: true },
         },
         workCenter: {
-          select: { id: true, code: true, name: true },
+          select: { id: true, code: true, name: true, locationId: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
         },
       },
     });
     
-    res.json({
-      message: `Job status updated to ${status}`,
-      job,
-    });
+    res.json(updatedJob);
   } catch (error) {
     console.error('Error updating job status:', error);
     res.status(500).json({ error: 'Failed to update job status' });

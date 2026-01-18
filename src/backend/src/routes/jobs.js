@@ -7,60 +7,34 @@ const prisma = new PrismaClient();
 // GET /jobs - List jobs with optional filters
 router.get('/', async (req, res) => {
   try {
-    const { status, workCenterId, locationId, orderId, limit = '50', offset = '0' } = req.query;
+    const { status, locationId, workCenterId, orderId } = req.query;
     
     const where = {};
+    if (status) where.status = status;
+    if (locationId) where.locationId = locationId;
+    if (workCenterId) where.workCenterId = workCenterId;
+    if (orderId) where.orderId = orderId;
     
-    if (status) {
-      where.status = status;
-    }
-    
-    if (workCenterId) {
-      where.workCenterId = workCenterId;
-    }
-    
-    if (locationId) {
-      where.workCenter = {
-        locationId: locationId
-      };
-    }
-    
-    if (orderId) {
-      where.orderId = orderId;
-    }
-    
-    const [jobs, total] = await Promise.all([
-      prisma.job.findMany({
-        where,
-        take: parseInt(limit),
-        skip: parseInt(offset),
-        orderBy: [
-          { priority: 'desc' },
-          { scheduledStart: 'asc' },
-        ],
-        include: {
-          order: {
-            select: { id: true, orderNumber: true, buyerId: true },
-          },
-          workCenter: {
-            select: { id: true, code: true, name: true },
-          },
-          assignedTo: {
-            select: { id: true, firstName: true, lastName: true },
-          },
+    const jobs = await prisma.job.findMany({
+      where,
+      orderBy: [
+        { priority: 'desc' },
+        { scheduledStart: 'asc' },
+      ],
+      include: {
+        order: {
+          select: { id: true, orderNumber: true, buyerId: true },
         },
-      }),
-      prisma.job.count({ where }),
-    ]);
-    
-    res.json({
-      data: jobs,
-      meta: {
-        total,
-        limit: parseInt(limit),
-        offset: parseInt(offset),
+        workCenter: {
+          select: { id: true, code: true, name: true, locationId: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
+        },
       },
     });
+    
+    res.json(jobs);
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'Failed to fetch jobs' });

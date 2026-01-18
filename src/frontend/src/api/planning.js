@@ -3,7 +3,7 @@ import client from './client';
 // Get all jobs with optional filters
 export const getJobs = async (params = {}) => {
   const response = await client.get('/jobs', { params });
-  return response.data?.data || response.data || [];
+  return response.data; // Now returns array directly
 };
 
 // Get job by ID

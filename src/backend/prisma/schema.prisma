@@ -64,6 +64,8 @@ model User {
   resolvedHolds  QCHold[]     @relation("ResolvedBy")
   orders         Order[]      @relation("OrderCreator")
   movements      MaterialMovement[]
+  assignedJobs   Job[]        @relation("JobAssignee")
+  createdJobs    Job[]        @relation("JobCreator")
 }
 
 enum UserRole {
@@ -605,7 +607,10 @@ model Job {
   orderLineId     String?
   workCenterId    String?
   workOrderId     String?
+  assignedToId    String?
+  createdById     String?
   status          JobStatus @default(SCHEDULED)
+  operationType   String?
   priority        Int       @default(3)
   scheduledStart  DateTime?
   scheduledEnd    DateTime?
@@ -615,19 +620,25 @@ model Job {
   outputWeightLb  Decimal?
   scrapWeightLb   Decimal?
   operatorId      String?
+  instructions    String?
   notes           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  order           Order?     @relation(fields: [orderId], references: [id])
+  order           Order?      @relation(fields: [orderId], references: [id])
   workCenter      WorkCenter? @relation(fields: [workCenterId], references: [id])
+  assignedTo      User?       @relation("JobAssignee", fields: [assignedToId], references: [id])
+  createdBy       User?       @relation("JobCreator", fields: [createdById], references: [id])
 }
 
 enum JobStatus {
+  ORDERED
   SCHEDULED
   IN_PROCESS
+  WAITING_QC
   PACKAGING
   READY_TO_SHIP
+  SHIPPED
   COMPLETED
   CANCELLED
   ON_HOLD

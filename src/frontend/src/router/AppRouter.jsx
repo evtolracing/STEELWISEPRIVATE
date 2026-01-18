@@ -31,6 +31,9 @@ const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
 const PackagingPage = lazy(() => import('../pages/PackagingPage'))
 const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 
+// Planning App
+const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -305,6 +308,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <ShippingDeskPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Planning & Scheduling App
+      {
+        path: 'planning/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PlanningSchedulingApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

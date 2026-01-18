@@ -31,6 +31,7 @@ import {
   MoveToInbox as ReceivingIcon,
   Inventory as PackagingIcon,
   LocalShipping as ShippingIcon,
+  TableChart as PlanningIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -44,6 +45,7 @@ const navSections = [
     title: 'Service Center',
     items: [
       { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
+      { path: '/planning', label: 'Planning', icon: PlanningIcon },
       { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
       { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
       { path: '/packaging', label: 'Packaging', icon: PackagingIcon },

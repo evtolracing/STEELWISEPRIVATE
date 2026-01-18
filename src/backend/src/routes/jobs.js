@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 // GET /jobs - List jobs with optional filters
 router.get('/', async (req, res) => {
   try {
-    const { status, workCenterId, orderId, limit = '50', offset = '0' } = req.query;
+    const { status, workCenterId, locationId, orderId, limit = '50', offset = '0' } = req.query;
     
     const where = {};
     
@@ -17,6 +17,12 @@ router.get('/', async (req, res) => {
     
     if (workCenterId) {
       where.workCenterId = workCenterId;
+    }
+    
+    if (locationId) {
+      where.workCenter = {
+        locationId: locationId
+      };
     }
     
     if (orderId) {
@@ -152,9 +158,9 @@ router.post('/', async (req, res) => {
 router.post('/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, notes } = req.body;
+    const { status, note, notes } = req.body;
     
-    const validStatuses = ['SCHEDULED', 'IN_PROCESS', 'PACKAGING', 'READY_TO_SHIP', 'COMPLETED', 'CANCELLED', 'ON_HOLD'];
+    const validStatuses = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'ON_HOLD'];
     
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
@@ -165,12 +171,13 @@ router.post('/:id/status', async (req, res) => {
     // Set timestamps based on status
     if (status === 'IN_PROCESS') {
       updateData.actualStart = new Date();
-    } else if (status === 'COMPLETED' || status === 'READY_TO_SHIP') {
+    } else if (status === 'COMPLETED' || status === 'READY_TO_SHIP' || status === 'SHIPPED') {
       updateData.actualEnd = new Date();
     }
     
-    if (notes) {
-      updateData.notes = notes;
+    // Accept both 'note' and 'notes' for flexibility
+    if (note || notes) {
+      updateData.notes = note || notes;
     }
     
     const job = await prisma.job.update({

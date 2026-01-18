@@ -11,6 +11,7 @@ import {
   Alert,
 } from '@mui/material';
 import { getJobs } from '../../api/planning';
+import { mockJobs } from '../../mocks/planningData';
 
 const STAGES = [
   { id: 'ORDERED', label: 'Ordered', color: '#9e9e9e' },
@@ -35,8 +36,19 @@ function ProductionWorkflowBoardPage() {
   const loadJobs = async () => {
     try {
       setLoading(true);
-      const data = await getJobs();
-      setJobs(data);
+      
+      // Use mock data for development (no database required)
+      const USE_MOCK_DATA = true;
+      
+      if (USE_MOCK_DATA) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setJobs(mockJobs);
+      } else {
+        const data = await getJobs();
+        setJobs(data);
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Failed to load jobs:', err);

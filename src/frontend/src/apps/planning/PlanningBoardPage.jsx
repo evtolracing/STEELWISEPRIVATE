@@ -21,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { getJobs, getWorkCenters } from '../../api/planning';
+import { mockJobs, getWorkCenterStats } from '../../mocks/planningData';
 
 function PlanningBoardPage() {
   const navigate = useNavigate();
@@ -36,12 +37,24 @@ function PlanningBoardPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [jobsData, wcData] = await Promise.all([
-        getJobs(),
-        getWorkCenters(),
-      ]);
-      setJobs(jobsData);
-      setWorkCenters(wcData);
+      
+      // Use mock data for development (no database required)
+      const USE_MOCK_DATA = true;
+      
+      if (USE_MOCK_DATA) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setJobs(mockJobs);
+        setWorkCenters(getWorkCenterStats());
+      } else {
+        const [jobsData, wcData] = await Promise.all([
+          getJobs(),
+          getWorkCenters(),
+        ]);
+        setJobs(jobsData);
+        setWorkCenters(wcData);
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Failed to load data:', err);

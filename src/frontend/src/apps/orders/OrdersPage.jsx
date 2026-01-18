@@ -28,7 +28,7 @@ import {
   Email as EmailIcon,
   Print as PrintIcon,
 } from '@mui/icons-material';
-import { mockOrders } from '../mocks/ordersData';
+import { mockOrders } from '../../mocks/ordersData';
 
 const USE_MOCK_DATA = true;
 

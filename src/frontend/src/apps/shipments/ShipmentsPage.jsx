@@ -21,7 +21,7 @@ import {
   Refresh as RefreshIcon,
   Phone as PhoneIcon,
 } from '@mui/icons-material';
-import { mockShipments } from '../mocks/shipmentsData';
+import { mockShipments } from '../../mocks/shipmentsData';
 
 const USE_MOCK_DATA = true;
 

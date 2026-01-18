@@ -28,7 +28,7 @@ import {
   Inventory as MaterialIcon,
   AccessTime as TimeIcon,
 } from '@mui/icons-material';
-import { mockBOMs } from '../mocks/bomsData';
+import { mockBOMs } from '../../mocks/bomsData';
 
 const USE_MOCK_DATA = true;
 

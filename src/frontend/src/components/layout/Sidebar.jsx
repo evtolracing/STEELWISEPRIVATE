@@ -32,6 +32,7 @@ import {
   Inventory as PackagingIcon,
   LocalShipping as ShippingIcon,
   TableChart as PlanningIcon,
+  Assignment as ProductionIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -39,6 +40,13 @@ const navSections = [
     title: 'Overview',
     items: [
       { path: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
+    ],
+  },
+  {
+    title: 'Production',
+    items: [
+      { path: '/production', label: 'Workflow Board', icon: ProductionIcon },
+      { path: '/shop-floor', label: 'Shop Floor', icon: ShopFloorIcon },
     ],
   },
   {

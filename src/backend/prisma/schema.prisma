@@ -622,6 +622,9 @@ model Job {
   operatorId      String?
   instructions    String?
   notes           String?
+  shippingCarrier String?
+  trackingNumber  String?
+  shippedAt       DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

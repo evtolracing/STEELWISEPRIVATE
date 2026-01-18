@@ -34,6 +34,11 @@ const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 // Planning App
 const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
 
+// New App Pages
+const ShipmentsPage = lazy(() => import('../apps/shipments/ShipmentsPage'))
+const OrdersPage = lazy(() => import('../apps/orders/OrdersPage'))
+const BOMsPage = lazy(() => import('../apps/boms/BOMsPage'))
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -302,12 +307,34 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Shipping Desk
+      // Shipping/Shipments
       {
         path: 'shipping',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ShippingDeskPage />
+            <ShipmentsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Orders (new detailed view)
+      {
+        path: 'orders',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrdersPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // BOMs / Recipes
+      {
+        path: 'boms',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <BOMsPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

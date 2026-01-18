@@ -31,6 +31,9 @@ const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
 const PackagingPage = lazy(() => import('../pages/PackagingPage'))
 const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 
+// POS - Point of Sale
+const POSPage = lazy(() => import('../pages/POSPage'))
+
 // Planning App
 const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
 
@@ -90,6 +93,19 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Suspense fallback={<PageLoader />}>
           <ShopFloorPage />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorPage />,
+  },
+
+  // POS - Point of Sale (standalone full-screen for counter operations)
+  {
+    path: '/pos',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <POSPage />
         </Suspense>
       </ProtectedRoute>
     ),

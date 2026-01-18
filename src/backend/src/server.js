@@ -20,6 +20,7 @@ import quoteRoutes from './routes/quotes.js';
 import workCenterRoutes from './routes/workCenters.js';
 import jobRoutes from './routes/jobs.js';
 import documentRoutes from './routes/documents.js';
+import posRoutes from './routes/pos.js';
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use('/api/quotes', quoteRoutes);
 app.use('/api/work-centers', workCenterRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/pos', posRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

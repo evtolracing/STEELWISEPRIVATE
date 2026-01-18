@@ -7,41 +7,23 @@ const prisma = new PrismaClient();
 // GET /work-centers - List work centers with optional location filter
 router.get('/', async (req, res) => {
   try {
-    const { locationId, isActive, limit = '50', offset = '0' } = req.query;
+    const { locationId, isActive } = req.query;
     
     const where = {};
+    if (locationId) where.locationId = locationId;
+    if (isActive !== undefined) where.isActive = isActive === 'true';
     
-    if (locationId) {
-      where.locationId = locationId;
-    }
-    
-    if (isActive !== undefined) {
-      where.isActive = isActive === 'true';
-    }
-    
-    const [workCenters, total] = await Promise.all([
-      prisma.workCenter.findMany({
-        where,
-        take: parseInt(limit),
-        skip: parseInt(offset),
-        orderBy: { name: 'asc' },
-        include: {
-          location: {
-            select: { id: true, code: true, name: true },
-          },
+    const workCenters = await prisma.workCenter.findMany({
+      where,
+      orderBy: { name: 'asc' },
+      include: {
+        location: {
+          select: { id: true, code: true, name: true },
         },
-      }),
-      prisma.workCenter.count({ where }),
-    ]);
-    
-    res.json({
-      data: workCenters,
-      meta: {
-        total,
-        limit: parseInt(limit),
-        offset: parseInt(offset),
       },
     });
+    
+    res.json(workCenters);
   } catch (error) {
     console.error('Error fetching work centers:', error);
     res.status(500).json({ error: 'Failed to fetch work centers' });

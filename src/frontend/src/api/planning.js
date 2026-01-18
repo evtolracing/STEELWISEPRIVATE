@@ -1,54 +1,110 @@
-import client from './client';
+const API_BASE = '/api';
 
 // Get all jobs with optional filters
-export const getJobs = async (params = {}) => {
-  const response = await client.get('/jobs', { params });
-  return response.data; // Now returns array directly
-};
+export async function getJobs(params) {
+  const searchParams = new URLSearchParams();
+  if (params) {
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+        searchParams.append(key, params[key]);
+      }
+    });
+  }
+
+  const res = await fetch(`${API_BASE}/jobs?${searchParams.toString()}`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to load jobs');
+  return res.json();
+}
 
 // Get job by ID
-export const getJob = async (jobId) => {
-  const response = await client.get(`/jobs/${jobId}`);
-  return response.data;
-};
+export async function getJob(jobId) {
+  const res = await fetch(`${API_BASE}/jobs/${jobId}`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to load job');
+  return res.json();
+}
 
 // Create a new job
-export const createJob = async (jobData) => {
-  const response = await client.post('/jobs', jobData);
-  return response.data;
-};
+export async function createJob(jobData) {
+  const res = await fetch(`${API_BASE}/jobs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(jobData),
+  });
+  if (!res.ok) throw new Error('Failed to create job');
+  return res.json();
+}
 
 // Update job status
-export const updateJobStatus = async (jobId, status, note = null) => {
-  const response = await client.post(`/jobs/${jobId}/status`, { status, note });
-  return response.data;
-};
+export async function updateJobStatus(jobId, payload) {
+  const res = await fetch(`${API_BASE}/jobs/${jobId}/status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error('Failed to update job status');
+  return res.json();
+}
 
 // Update job details
-export const updateJob = async (jobId, updateData) => {
-  const response = await client.patch(`/jobs/${jobId}`, updateData);
-  return response.data;
-};
+export async function updateJob(jobId, updateData) {
+  const res = await fetch(`${API_BASE}/jobs/${jobId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(updateData),
+  });
+  if (!res.ok) throw new Error('Failed to update job');
+  return res.json();
+}
 
 // Assign job to operator
-export const assignJob = async (jobId, userId) => {
-  const response = await client.post(`/jobs/${jobId}/assign`, { userId });
-  return response.data;
-};
+export async function assignJob(jobId, userId) {
+  const res = await fetch(`${API_BASE}/jobs/${jobId}/assign`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ userId }),
+  });
+  if (!res.ok) throw new Error('Failed to assign job');
+  return res.json();
+}
 
 // Get work centers
-export const getWorkCenters = async (params = {}) => {
-  const response = await client.get('/work-centers', { params });
-  return response.data?.data || response.data || [];
-};
+export async function getWorkCenters(params) {
+  const searchParams = new URLSearchParams();
+  if (params) {
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+        searchParams.append(key, params[key]);
+      }
+    });
+  }
+
+  const res = await fetch(`${API_BASE}/work-centers?${searchParams.toString()}`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to load work centers');
+  return res.json();
+}
 
 // Get work center schedule
-export const getWorkCenterSchedule = async (workCenterId, startDate, endDate) => {
-  const response = await client.get(`/work-centers/${workCenterId}/schedule`, {
-    params: { startDate, endDate }
+export async function getWorkCenterSchedule(workCenterId, startDate, endDate) {
+  const searchParams = new URLSearchParams();
+  if (startDate) searchParams.append('startDate', startDate);
+  if (endDate) searchParams.append('endDate', endDate);
+
+  const res = await fetch(`${API_BASE}/work-centers/${workCenterId}/schedule?${searchParams.toString()}`, {
+    credentials: 'include',
   });
-  return response.data;
-};
+  if (!res.ok) throw new Error('Failed to load work center schedule');
+  return res.json();
+}
 
 export default {
   getJobs,

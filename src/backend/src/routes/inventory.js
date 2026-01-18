@@ -9,8 +9,8 @@ router.get('/', async (req, res) => {
     const { locationId, status } = req.query;
     const inventory = await prisma.inventory.findMany({
       where: {
-        ...(locationId && { locationId: locationId as string }),
-        ...(status && { status: status as string })
+        ...(locationId && { locationId }),
+        ...(status && { status })
       },
       include: {
         coil: { include: { grade: true, product: true, heat: true } },

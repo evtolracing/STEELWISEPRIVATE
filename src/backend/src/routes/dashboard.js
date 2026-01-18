@@ -49,14 +49,14 @@ router.get('/', async (req, res) => {
         onHold: inventorySummary._sum.qtyOnHold || 0
       },
       orders: {
-        byStatus: orderCounts.reduce((acc: any, item) => {
+        byStatus: orderCounts.reduce((acc, item) => {
           acc[item.status] = item._count;
           return acc;
         }, {})
       },
       recentOrders,
       qcHolds,
-      coilsByStatus: coilsByStatus.reduce((acc: any, item) => {
+      coilsByStatus: coilsByStatus.reduce((acc, item) => {
         acc[item.status] = item._count;
         return acc;
       }, {})

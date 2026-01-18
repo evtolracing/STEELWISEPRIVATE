@@ -31,6 +31,7 @@ model Organization {
   ordersAsBuyer Order[]  @relation("BuyerOrders")
   ordersAsSeller Order[] @relation("SellerOrders")
   documents     Document[]
+  rfqs          RFQ[]    @relation("CustomerRFQs")
 }
 
 enum OrgType {
@@ -313,6 +314,7 @@ model Location {
   movementsFrom MaterialMovement[] @relation("MovementFrom")
   movementsTo   MaterialMovement[] @relation("MovementTo")
   shipments     Shipment[]
+  workCenters   WorkCenter[]
 }
 
 enum LocationType {
@@ -468,6 +470,169 @@ enum Disposition {
   PENDING
 }
 
+// ============== RFQ & QUOTES ==============
+
+model RFQ {
+  id              String    @id @default(uuid())
+  rfqNumber       String    @unique
+  customerId      String
+  status          RFQStatus @default(DRAFT)
+  contactName     String?
+  contactEmail    String?
+  contactPhone    String?
+  requestedDate   DateTime?
+  notes           String?
+  submittedAt     DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  customer        Organization @relation("CustomerRFQs", fields: [customerId], references: [id])
+  lines           RFQLine[]
+  quotes          Quote[]
+}
+
+enum RFQStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  QUOTED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  WITHDRAWN
+}
+
+model RFQLine {
+  id            String   @id @default(uuid())
+  rfqId         String
+  lineNumber    Int
+  materialCode  String?
+  division      String?
+  productId     String?
+  description   String?
+  requestedQty  Decimal
+  unit          String   @default("LB")
+  specifications Json?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  rfq           RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  quoteLines    QuoteLine[]
+}
+
+model Quote {
+  id            String      @id @default(uuid())
+  quoteNumber   String      @unique
+  rfqId         String
+  version       Int         @default(1)
+  status        QuoteStatus @default(DRAFT)
+  subtotal      Decimal?
+  taxAmount     Decimal?
+  freightAmount Decimal?
+  totalAmount   Decimal?
+  currency      String      @default("USD")
+  validFrom     DateTime    @default(now())
+  validUntil    DateTime?
+  paymentTerms  String?
+  freightTerms  String?
+  notes         String?
+  internalNotes String?
+  createdById   String?
+  sentAt        DateTime?
+  acceptedAt    DateTime?
+  convertedOrderId String?  @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  rfq           RFQ         @relation(fields: [rfqId], references: [id])
+  lines         QuoteLine[]
+  convertedOrder Order?     @relation("QuoteToOrder", fields: [convertedOrderId], references: [id])
+}
+
+enum QuoteStatus {
+  DRAFT
+  PENDING_APPROVAL
+  SENT
+  COUNTERED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+model QuoteLine {
+  id            String   @id @default(uuid())
+  quoteId       String
+  rfqLineId     String?
+  lineNumber    Int
+  productId     String?
+  description   String?
+  quantity      Decimal
+  unit          String   @default("LB")
+  unitPrice     Decimal?
+  priceUnit     String   @default("CWT")
+  extendedPrice Decimal?
+  leadTimeDays  Int?
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  quote         Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  rfqLine       RFQLine? @relation(fields: [rfqLineId], references: [id])
+}
+
+// ============== WORK CENTERS ==============
+
+model WorkCenter {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  name          String
+  locationId    String
+  type          String?
+  capabilities  String[]
+  capacity      Json?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  location      Location @relation(fields: [locationId], references: [id])
+  jobs          Job[]
+}
+
+model Job {
+  id              String    @id @default(uuid())
+  jobNumber       String    @unique
+  orderId         String?
+  orderLineId     String?
+  workCenterId    String?
+  workOrderId     String?
+  status          JobStatus @default(SCHEDULED)
+  priority        Int       @default(3)
+  scheduledStart  DateTime?
+  scheduledEnd    DateTime?
+  actualStart     DateTime?
+  actualEnd       DateTime?
+  inputWeightLb   Decimal?
+  outputWeightLb  Decimal?
+  scrapWeightLb   Decimal?
+  operatorId      String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  order           Order?     @relation(fields: [orderId], references: [id])
+  workCenter      WorkCenter? @relation(fields: [workCenterId], references: [id])
+}
+
+enum JobStatus {
+  SCHEDULED
+  IN_PROCESS
+  PACKAGING
+  READY_TO_SHIP
+  COMPLETED
+  CANCELLED
+  ON_HOLD
+}
+
 // ============== ORDERS ==============
 
 model Order {
@@ -506,6 +671,8 @@ model Order {
   movements     MaterialMovement[]
   shipments     Shipment[]
   invoices      Invoice[]
+  jobs          Job[]
+  fromQuote     Quote?        @relation("QuoteToOrder")
 }
 
 enum OrderType {

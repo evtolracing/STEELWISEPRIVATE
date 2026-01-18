@@ -1,0 +1,262 @@
+import { Router } from 'express';
+import { PrismaClient } from '@prisma/client';
+
+const router = Router();
+const prisma = new PrismaClient();
+
+// GET /jobs - List jobs with optional filters
+router.get('/', async (req, res) => {
+  try {
+    const { status, workCenterId, orderId, limit = '50', offset = '0' } = req.query;
+    
+    const where = {};
+    
+    if (status) {
+      where.status = status;
+    }
+    
+    if (workCenterId) {
+      where.workCenterId = workCenterId;
+    }
+    
+    if (orderId) {
+      where.orderId = orderId;
+    }
+    
+    const [jobs, total] = await Promise.all([
+      prisma.job.findMany({
+        where,
+        take: parseInt(limit),
+        skip: parseInt(offset),
+        orderBy: [
+          { priority: 'desc' },
+          { scheduledStart: 'asc' },
+        ],
+        include: {
+          order: {
+            select: { id: true, orderNumber: true, buyerId: true },
+          },
+          workCenter: {
+            select: { id: true, code: true, name: true },
+          },
+          assignedTo: {
+            select: { id: true, firstName: true, lastName: true },
+          },
+        },
+      }),
+      prisma.job.count({ where }),
+    ]);
+    
+    res.json({
+      data: jobs,
+      meta: {
+        total,
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+// GET /jobs/:id - Get job details
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const job = await prisma.job.findUnique({
+      where: { id },
+      include: {
+        order: {
+          include: {
+            buyer: true,
+            lines: true,
+          },
+        },
+        workCenter: true,
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+        createdBy: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+    
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+    
+    res.json(job);
+  } catch (error) {
+    console.error('Error fetching job:', error);
+    res.status(500).json({ error: 'Failed to fetch job' });
+  }
+});
+
+// POST /jobs - Create a new job
+router.post('/', async (req, res) => {
+  try {
+    const {
+      orderId,
+      workCenterId,
+      operationType,
+      scheduledStart,
+      scheduledEnd,
+      priority,
+      instructions,
+      assignedToId,
+      createdById,
+    } = req.body;
+    
+    // Generate job number
+    const jobCount = await prisma.job.count();
+    const jobNumber = `JOB-${String(jobCount + 1).padStart(6, '0')}`;
+    
+    const job = await prisma.job.create({
+      data: {
+        jobNumber,
+        orderId,
+        workCenterId,
+        operationType,
+        scheduledStart: scheduledStart ? new Date(scheduledStart) : null,
+        scheduledEnd: scheduledEnd ? new Date(scheduledEnd) : null,
+        priority: priority || 5,
+        instructions,
+        assignedToId,
+        createdById,
+      },
+      include: {
+        order: {
+          select: { id: true, orderNumber: true },
+        },
+        workCenter: {
+          select: { id: true, code: true, name: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+    
+    res.status(201).json(job);
+  } catch (error) {
+    console.error('Error creating job:', error);
+    res.status(500).json({ error: 'Failed to create job' });
+  }
+});
+
+// POST /jobs/:id/status - Update job status
+router.post('/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, notes } = req.body;
+    
+    const validStatuses = ['SCHEDULED', 'IN_PROCESS', 'PACKAGING', 'READY_TO_SHIP', 'COMPLETED', 'CANCELLED', 'ON_HOLD'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+    
+    const updateData = { status };
+    
+    // Set timestamps based on status
+    if (status === 'IN_PROCESS') {
+      updateData.actualStart = new Date();
+    } else if (status === 'COMPLETED' || status === 'READY_TO_SHIP') {
+      updateData.actualEnd = new Date();
+    }
+    
+    if (notes) {
+      updateData.notes = notes;
+    }
+    
+    const job = await prisma.job.update({
+      where: { id },
+      data: updateData,
+      include: {
+        order: {
+          select: { id: true, orderNumber: true },
+        },
+        workCenter: {
+          select: { id: true, code: true, name: true },
+        },
+      },
+    });
+    
+    res.json({
+      message: `Job status updated to ${status}`,
+      job,
+    });
+  } catch (error) {
+    console.error('Error updating job status:', error);
+    res.status(500).json({ error: 'Failed to update job status' });
+  }
+});
+
+// PATCH /jobs/:id - Update job details
+router.patch('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body };
+    
+    // Handle date conversions
+    if (updateData.scheduledStart) {
+      updateData.scheduledStart = new Date(updateData.scheduledStart);
+    }
+    if (updateData.scheduledEnd) {
+      updateData.scheduledEnd = new Date(updateData.scheduledEnd);
+    }
+    
+    const job = await prisma.job.update({
+      where: { id },
+      data: updateData,
+      include: {
+        order: {
+          select: { id: true, orderNumber: true },
+        },
+        workCenter: {
+          select: { id: true, code: true, name: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+    
+    res.json(job);
+  } catch (error) {
+    console.error('Error updating job:', error);
+    res.status(500).json({ error: 'Failed to update job' });
+  }
+});
+
+// POST /jobs/:id/assign - Assign job to operator
+router.post('/:id/assign', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+    
+    const job = await prisma.job.update({
+      where: { id },
+      data: { assignedToId: userId },
+      include: {
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+      },
+    });
+    
+    res.json({
+      message: 'Job assigned successfully',
+      job,
+    });
+  } catch (error) {
+    console.error('Error assigning job:', error);
+    res.status(500).json({ error: 'Failed to assign job' });
+  }
+});
+
+export default router;

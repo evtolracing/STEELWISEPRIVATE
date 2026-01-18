@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     const { family, isActive } = req.query;
     const grades = await prisma.grade.findMany({
       where: {
-        ...(family && { family: family as any }),
+        ...(family && { family }),
         ...(isActive !== undefined && { isActive: isActive === 'true' })
       },
       orderBy: { code: 'asc' }

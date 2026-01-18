@@ -9,10 +9,10 @@ router.get('/', async (req, res) => {
     const { gradeId, status, qcStatus, locationId } = req.query;
     const coils = await prisma.coil.findMany({
       where: {
-        ...(gradeId && { gradeId: gradeId as string }),
-        ...(status && { status: status as any }),
-        ...(qcStatus && { qcStatus: qcStatus as any }),
-        ...(locationId && { locationId: locationId as string })
+        ...(gradeId && { gradeId }),
+        ...(status && { status }),
+        ...(qcStatus && { qcStatus }),
+        ...(locationId && { locationId })
       },
       include: { heat: true, grade: true, location: true, product: true },
       orderBy: { createdAt: 'desc' },

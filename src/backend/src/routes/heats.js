@@ -9,9 +9,9 @@ router.get('/', async (req, res) => {
     const { gradeId, millId, status } = req.query;
     const heats = await prisma.heat.findMany({
       where: {
-        ...(gradeId && { gradeId: gradeId as string }),
-        ...(millId && { millId: millId as string }),
-        ...(status && { status: status as any })
+        ...(gradeId && { gradeId }),
+        ...(millId && { millId }),
+        ...(status && { status })
       },
       include: { grade: true, mill: true },
       orderBy: { castDate: 'desc' },

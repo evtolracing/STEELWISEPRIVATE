@@ -9,9 +9,9 @@ router.get('/', async (req, res) => {
     const { orderType, status, buyerId } = req.query;
     const orders = await prisma.order.findMany({
       where: {
-        ...(orderType && { orderType: orderType as any }),
-        ...(status && { status: status as any }),
-        ...(buyerId && { buyerId: buyerId as string })
+        ...(orderType && { orderType }),
+        ...(status && { status }),
+        ...(buyerId && { buyerId })
       },
       include: { buyer: true, seller: true, lines: true },
       orderBy: { createdAt: 'desc' },
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
       data: {
         ...orderData,
         orderNumber,
-        lines: { create: lines?.map((line: any, idx: number) => ({ ...line, lineNumber: idx + 1 })) }
+        lines: { create: lines?.map((line, idx) => ({ ...line, lineNumber: idx + 1 })) }
       },
       include: { lines: true, buyer: true }
     });

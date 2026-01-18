@@ -14,11 +14,17 @@ import orderRoutes from './routes/orders.js';
 import workOrderRoutes from './routes/workOrders.js';
 import shipmentRoutes from './routes/shipments.js';
 import dashboardRoutes from './routes/dashboard.js';
+import customerRoutes from './routes/customers.js';
+import rfqRoutes from './routes/rfqs.js';
+import quoteRoutes from './routes/quotes.js';
+import workCenterRoutes from './routes/workCenters.js';
+import jobRoutes from './routes/jobs.js';
+import documentRoutes from './routes/documents.js';
 
 dotenv.config();
 
 const app = express();
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 // Middleware
 app.use(cors());
@@ -40,9 +46,15 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/work-orders', workOrderRoutes);
 app.use('/api/shipments', shipmentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/rfqs', rfqRoutes);
+app.use('/api/quotes', quoteRoutes);
+app.use('/api/work-centers', workCenterRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/documents', documentRoutes);
 
 // Error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
@@ -52,5 +64,3 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 SteelWise API running on port ${PORT}`);
 });
-
-export { prisma };

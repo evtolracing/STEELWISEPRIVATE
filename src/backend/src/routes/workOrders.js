@@ -9,8 +9,8 @@ router.get('/', async (req, res) => {
     const { status, woType } = req.query;
     const workOrders = await prisma.workOrder.findMany({
       where: {
-        ...(status && { status: status as any }),
-        ...(woType && { woType: woType as any })
+        ...(status && { status }),
+        ...(woType && { woType })
       },
       include: { sourceCoil: { include: { grade: true } }, outputs: true },
       orderBy: { createdAt: 'desc' },

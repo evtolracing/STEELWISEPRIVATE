@@ -72,7 +72,7 @@ router.get('/me', async (req, res) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) return res.status(401).json({ error: 'No token' });
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       include: { organization: true }

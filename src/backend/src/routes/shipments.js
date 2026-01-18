@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
   try {
     const { status } = req.query;
     const shipments = await prisma.shipment.findMany({
-      where: { ...(status && { status: status as any }) },
+      where: { ...(status && { status }) },
       include: { order: { include: { buyer: true } }, fromLocation: true, items: true },
       orderBy: { createdAt: 'desc' },
       take: 50

@@ -28,7 +28,7 @@ import {
   LocalShipping as ShipIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material';
-import { fetchJobs, updateJobStatus } from '../services/jobsService';
+import { fetchJobs, updateJobStatus } from '../../services/jobsService';
 
 const STATUS_COLUMNS = [
   { key: 'ORDERED', label: 'Ordered', color: '#9e9e9e' },

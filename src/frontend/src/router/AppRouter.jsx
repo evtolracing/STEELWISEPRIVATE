@@ -48,10 +48,16 @@ const ShipmentsPage = lazy(() => import('../apps/shipments/ShipmentsPage'))
 const OrdersPage = lazy(() => import('../apps/orders/OrdersPage'))
 const BOMsPage = lazy(() => import('../apps/boms/BOMsPage'))
 
+// Inventory App
+const InventoryApp = lazy(() => import('../apps/inventory/InventoryApp'))
+
 // Logistics & Optimization
 const RouteOptimizationScreen = lazy(() => import('../screens/RouteOptimizationScreen'))
 const ShipmentTrackingScreen = lazy(() => import('../screens/ShipmentTrackingScreen'))
 const DispatchPlanningScreen = lazy(() => import('../screens/DispatchPlanningScreen'))
+
+// Ops Cockpit
+const OpsCockpitPage = lazy(() => import('../pages/OpsCockpit/OpsCockpitPage'))
 
 // Loading fallback
 function PageLoader() {
@@ -123,45 +129,6 @@ const router = createBrowserRouter([
     errorElement: <RouteErrorPage />,
   },
 
-  // Production Workflow (standalone with tabs)
-  {
-    path: '/production',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <ProductionLayout />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-    errorElement: <RouteErrorPage />,
-    children: [
-      {
-        index: true,
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ProductionWorkflowBoard />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'shop-floor',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ShopFloorScreen />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'shipping',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ShippingScreen />
-          </Suspense>
-        ),
-      },
-    ],
-  },
-
   // Protected routes with layout
   {
     path: '/',
@@ -178,6 +145,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <DashboardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Ops Cockpit - Command Center
+      {
+        path: 'ops-cockpit',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OpsCockpitPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -318,6 +296,39 @@ const router = createBrowserRouter([
       // Phase 1 - Service Center Operations Routes
       // ============================================
 
+      // Production Workflow Board
+      {
+        path: 'production',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ProductionWorkflowBoard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Production Shop Floor Screen
+      {
+        path: 'production/shop-floor',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShopFloorScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Production Shipping Screen
+      {
+        path: 'production/shipping',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShippingScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
       // Order Board (Kanban)
       {
         path: 'order-board',
@@ -434,6 +445,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <BOMsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Inventory App (with AI Assistant)
+      {
+        path: 'inventory/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <InventoryApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

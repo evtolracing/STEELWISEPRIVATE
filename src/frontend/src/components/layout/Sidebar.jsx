@@ -35,12 +35,14 @@ import {
   Assignment as ProductionIcon,
   Map as MapIcon,
   Route as RouteIcon,
+  Speed as CockpitIcon,
 } from '@mui/icons-material'
 
 const navSections = [
   {
-    title: 'Overview',
+    title: 'Command Center',
     items: [
+      { path: '/ops-cockpit', label: 'Ops Cockpit', icon: CockpitIcon, highlight: true },
       { path: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
     ],
   },
@@ -48,7 +50,8 @@ const navSections = [
     title: 'Production',
     items: [
       { path: '/production', label: 'Workflow Board', icon: ProductionIcon },
-      { path: '/shop-floor', label: 'Shop Floor', icon: ShopFloorIcon },
+      { path: '/production/shop-floor', label: 'Shop Floor', icon: ShopFloorIcon },
+      { path: '/production/shipping', label: 'Prod Shipping', icon: ShippingIcon },
     ],
   },
   {
@@ -150,6 +153,7 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
               {section.items.map((item) => {
                 const Icon = item.icon
                 const isActive = location.pathname.startsWith(item.path)
+                const isHighlight = item.highlight
                 return (
                   <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
                     <ListItemButton
@@ -158,8 +162,14 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
                       onClick={onMobileClose}
                       sx={{
                         borderRadius: 1,
-                        bgcolor: isActive ? 'primary.main' : 'transparent',
+                        bgcolor: isActive 
+                          ? 'primary.main' 
+                          : isHighlight 
+                            ? 'warning.light' 
+                            : 'transparent',
                         color: isActive ? 'white' : 'text.primary',
+                        border: isHighlight && !isActive ? '2px solid' : 'none',
+                        borderColor: isHighlight && !isActive ? 'warning.main' : 'transparent',
                         '&:hover': {
                           bgcolor: isActive ? 'primary.dark' : 'action.hover',
                         },
@@ -167,13 +177,16 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
                       }}
                     >
                       <ListItemIcon
-                        sx={{ color: isActive ? 'white' : 'text.secondary', minWidth: 36 }}
+                        sx={{ color: isActive ? 'white' : isHighlight ? 'warning.dark' : 'text.secondary', minWidth: 36 }}
                       >
                         <Icon fontSize="small" />
                       </ListItemIcon>
                       <ListItemText 
                         primary={item.label} 
-                        primaryTypographyProps={{ fontSize: '0.875rem' }}
+                        primaryTypographyProps={{ 
+                          fontSize: '0.875rem',
+                          fontWeight: isHighlight ? 600 : 400,
+                        }}
                       />
                     </ListItemButton>
                   </ListItem>

@@ -22,6 +22,7 @@ import jobRoutes from './routes/jobs.js';
 import documentRoutes from './routes/documents.js';
 import posRoutes from './routes/pos.js';
 import aiRoutes from './routes/ai.js';
+import inventoryV1Routes from './routes/inventoryV1.js';
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/pos', posRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/v1/inventory', inventoryV1Routes);
 
 // Error handler
 app.use((err, req, res, next) => {

@@ -29,7 +29,7 @@ import {
   LocalShipping as ShipIcon,
   CheckCircle as CheckIcon
 } from '@mui/icons-material';
-import { fetchJobs, shipJob } from '../services/jobsService';
+import { fetchJobs, shipJob } from '../../services/jobsService';
 
 const CARRIERS = [
   'FedEx',

@@ -30,7 +30,7 @@ import {
   CheckCircle as CompleteIcon,
   Timer as TimerIcon
 } from '@mui/icons-material';
-import { fetchJobs, startJob, completeJob } from '../services/jobsService';
+import { fetchJobs, startJob, completeJob } from '../../services/jobsService';
 
 export default function ShopFloorScreen() {
   const [jobs, setJobs] = useState([]);

@@ -23,6 +23,7 @@ import documentRoutes from './routes/documents.js';
 import posRoutes from './routes/pos.js';
 import aiRoutes from './routes/ai.js';
 import inventoryV1Routes from './routes/inventoryV1.js';
+import bomV1Routes from './routes/bomV1.js';
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/pos', posRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/v1/inventory', inventoryV1Routes);
+app.use('/api/v1/bom', bomV1Routes);
 
 // Error handler
 app.use((err, req, res, next) => {

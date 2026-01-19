@@ -42,7 +42,7 @@ const navSections = [
   {
     title: 'Command Center',
     items: [
-      { path: '/ops-cockpit', label: 'Ops Cockpit', icon: CockpitIcon, highlight: true },
+      { path: '/ops-cockpit', label: 'Ops Cockpit', icon: CockpitIcon },
       { path: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
     ],
   },
@@ -226,7 +226,10 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
         variant="temporary"
         open={mobileOpen}
         onClose={onMobileClose}
-        ModalProps={{ keepMounted: true }}
+        ModalProps={{ 
+          keepMounted: true,
+          disableRestoreFocus: true,
+        }}
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },

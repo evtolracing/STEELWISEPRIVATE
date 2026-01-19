@@ -275,9 +275,11 @@ const WorkCenterSchedule = ({
 
         {onRefresh && (
           <Tooltip title="Refresh">
-            <IconButton onClick={onRefresh} disabled={loading}>
-              <RefreshIcon />
-            </IconButton>
+            <span>
+              <IconButton onClick={onRefresh} disabled={loading}>
+                <RefreshIcon />
+              </IconButton>
+            </span>
           </Tooltip>
         )}
       </Box>

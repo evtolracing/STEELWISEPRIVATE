@@ -271,14 +271,18 @@ const RouteOptimizationScreen = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Export Route">
-            <IconButton onClick={handleExportRoute} disabled={!routeStats}>
-              <Download />
-            </IconButton>
+            <span>
+              <IconButton onClick={handleExportRoute} disabled={!routeStats}>
+                <DownloadIcon />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Print">
-            <IconButton onClick={() => window.print()} disabled={!routeStats}>
-              <Print />
-            </IconButton>
+            <span>
+              <IconButton onClick={() => window.print()} disabled={!routeStats}>
+                <PrintIcon />
+              </IconButton>
+            </span>
           </Tooltip>
         </Box>
       </Box>

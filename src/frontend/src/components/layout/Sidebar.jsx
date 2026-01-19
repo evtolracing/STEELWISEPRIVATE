@@ -33,6 +33,8 @@ import {
   LocalShipping as ShippingIcon,
   TableChart as PlanningIcon,
   Assignment as ProductionIcon,
+  Map as MapIcon,
+  Route as RouteIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -79,7 +81,10 @@ const navSections = [
   {
     title: 'Logistics',
     items: [
-      { path: '/shipments', label: 'Shipments', icon: LogisticsIcon },
+      { path: '/logistics/shipments', label: 'Shipments', icon: LogisticsIcon },
+      { path: '/logistics/tracking', label: 'Tracking', icon: MapIcon },
+      { path: '/logistics/dispatch', label: 'Dispatch Planning', icon: LogisticsIcon },
+      { path: '/logistics/route-optimization', label: 'Route Optimization', icon: RouteIcon },
     ],
   },
   {

@@ -27,6 +27,8 @@ import {
   InputAdornment,
   Badge,
   Divider,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -41,8 +43,12 @@ import {
   Refresh as RefreshIcon,
   Edit as EditIcon,
   Close as CloseIcon,
+  Map as MapIcon,
+  ViewList,
+  ViewModule,
 } from '@mui/icons-material'
 import { MATERIAL_OWNERSHIP, MATERIAL_FORMS, COMMON_GRADES } from '../constants/materials'
+import InboundShipmentTracker from '../components/logistics/InboundShipmentTracker'
 
 // Mock incoming shipments
 const generateMockIncoming = () => [
@@ -129,6 +135,7 @@ const ReceivingPage = () => {
   const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
   const [selectedShipment, setSelectedShipment] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
+  const [viewMode, setViewMode] = useState('list') // 'list' or 'map'
 
   // Receive form state
   const [receiveForm, setReceiveForm] = useState({
@@ -245,7 +252,20 @@ const ReceivingPage = () => {
               Manage incoming shipments and inventory
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(e, v) => v && setViewMode(v)}
+              size="small"
+            >
+              <ToggleButton value="list">
+                <ViewList />
+              </ToggleButton>
+              <ToggleButton value="map">
+                <MapIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
             <Button variant="outlined" startIcon={<ScanIcon />}>
               Scan
             </Button>
@@ -310,6 +330,30 @@ const ReceivingPage = () => {
 
       {/* Content */}
       <Box sx={{ p: 3 }}>
+        {/* Map View */}
+        {viewMode === 'map' && activeTab === 0 && (
+          <Box sx={{ mb: 3 }}>
+            <InboundShipmentTracker
+              shipments={incomingShipments.map(s => ({
+                ...s,
+                currentLocation: s.status === 'ARRIVED' ? {
+                  coordinates: [-87.6298, 41.8781],
+                } : {
+                  coordinates: [-85.5 + Math.random(), 41.5 + Math.random()],
+                },
+                origin: {
+                  coordinates: [-84.5, 39.1],
+                },
+                eta: s.expectedDate,
+                driverPhone: '(555) 123-4567',
+              }))}
+              warehouseLocation={[-87.6298, 41.8781]}
+              warehouseName="Main Warehouse"
+              height="450px"
+            />
+          </Box>
+        )}
+
         {/* Search */}
         <TextField
           size="small"

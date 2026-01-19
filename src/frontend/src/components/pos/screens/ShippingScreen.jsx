@@ -1,7 +1,7 @@
 /**
  * Shipping Screen
  * 
- * Configure shipping method and delivery details.
+ * Configure shipping method and delivery details with Mapbox integration.
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -26,7 +26,11 @@ import {
   Divider,
   Chip,
   Alert,
-  Autocomplete
+  Autocomplete,
+  CircularProgress,
+  Stack,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   LocalShipping as ShipIcon,
@@ -36,9 +40,20 @@ import {
   LocationOn as LocationIcon,
   ArrowBack as BackIcon,
   ArrowForward as NextIcon,
-  Today as TodayIcon
+  Today as TodayIcon,
+  Map as MapIcon,
+  CheckCircle,
+  Speed,
+  AttachMoney,
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { 
+  searchPlaces, 
+  geocodeAddress, 
+  getTrafficRoute, 
+  calculateDeliveryCost,
+  estimateDeliveryTime,
+} from '../../../services/mapService';
 
 // Shipping methods
 const SHIPPING_METHODS = [
@@ -236,6 +251,14 @@ export function ShippingScreen({ screen, onNext, onBack }) {
   const [instructions, setInstructions] = useState(shipping.instructions || '');
   const [error, setError] = useState(null);
   
+  // Map integration state
+  const [addressSearch, setAddressSearch] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [deliveryEstimate, setDeliveryEstimate] = useState(null);
+  const [estimatingDelivery, setEstimatingDelivery] = useState(false);
+  const [addressValidated, setAddressValidated] = useState(false);
+  
   // Get addresses from customer/division
   const addresses = division?.addresses || customer?.addresses || [];
   
@@ -249,6 +272,75 @@ export function ShippingScreen({ screen, onNext, onBack }) {
   
   // Get method config
   const methodConfig = SHIPPING_METHODS.find(m => m.id === method);
+  
+  // Search for addresses using Mapbox
+  const handleAddressSearch = async (query) => {
+    if (!query || query.length < 3) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setSearching(true);
+    try {
+      const results = await searchPlaces(query, {
+        types: 'address,place',
+        limit: 5,
+      });
+      setSearchResults(results);
+    } catch (err) {
+      console.error('Address search error:', err);
+    } finally {
+      setSearching(false);
+    }
+  };
+  
+  // Select address from search results
+  const handleSelectSearchResult = async (result) => {
+    if (!result) return;
+    
+    const newAddress = {
+      id: `new-${Date.now()}`,
+      street1: result.name,
+      city: result.place_name?.split(',')[1]?.trim() || '',
+      state: result.place_name?.split(',')[2]?.trim()?.split(' ')[0] || '',
+      zipCode: result.place_name?.split(',')[2]?.trim()?.split(' ')[1] || '',
+      coordinates: result.coordinates,
+      isPrimary: false,
+    };
+    
+    setAddress(newAddress);
+    setAddressValidated(true);
+    setAddressSearch('');
+    setSearchResults([]);
+    
+    // Calculate delivery estimate
+    await calculateDeliveryEstimate(result.coordinates);
+  };
+  
+  // Calculate delivery estimate based on address
+  const calculateDeliveryEstimate = async (destCoords) => {
+    if (!destCoords) return;
+    
+    setEstimatingDelivery(true);
+    try {
+      const warehouseCoords = [-87.6298, 41.8781]; // Chicago warehouse
+      const route = await getTrafficRoute([warehouseCoords, destCoords]);
+      
+      const cost = calculateDeliveryCost(route.distance, 10000); // Assume 10k lbs
+      const time = estimateDeliveryTime(route.duration);
+      
+      setDeliveryEstimate({
+        distance: route.distance,
+        duration: route.duration,
+        cost,
+        eta: time,
+      });
+    } catch (err) {
+      console.error('Delivery estimate error:', err);
+    } finally {
+      setEstimatingDelivery(false);
+    }
+  };
   
   // Validate and continue
   const handleContinue = useCallback(async () => {
@@ -334,11 +426,108 @@ export function ShippingScreen({ screen, onNext, onBack }) {
             Delivery Address
           </Typography>
           
+          {/* Address Search with Mapbox */}
+          <Autocomplete
+            freeSolo
+            options={searchResults}
+            getOptionLabel={(option) => 
+              typeof option === 'string' ? option : option.place_name || ''
+            }
+            inputValue={addressSearch}
+            onInputChange={(e, value) => {
+              setAddressSearch(value);
+              handleAddressSearch(value);
+            }}
+            onChange={(e, value) => handleSelectSearchResult(value)}
+            loading={searching}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Search for a new address..."
+                size="small"
+                sx={{ mb: 2 }}
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: <MapIcon sx={{ mr: 1, color: 'action.active' }} />,
+                  endAdornment: (
+                    <>
+                      {searching && <CircularProgress size={16} />}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+            renderOption={(props, option) => (
+              <Box component="li" {...props}>
+                <LocationIcon sx={{ mr: 1, color: 'action.active' }} fontSize="small" />
+                <Box>
+                  <Typography variant="body2">{option.name}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {option.place_name}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+          />
+          
+          {/* Saved Addresses */}
           <AddressSelection
             addresses={addresses}
             selected={address}
-            onChange={setAddress}
+            onChange={(addr) => {
+              setAddress(addr);
+              setAddressValidated(false);
+              // Try to get coordinates and calculate estimate
+              if (addr?.street1) {
+                const fullAddr = `${addr.street1}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
+                geocodeAddress(fullAddr).then(result => {
+                  setAddressValidated(true);
+                  calculateDeliveryEstimate(result.coordinates);
+                }).catch(() => {});
+              }
+            }}
           />
+          
+          {/* Delivery Estimate */}
+          {deliveryEstimate && (
+            <Paper sx={{ mt: 2, p: 2, bgcolor: 'success.50', border: 1, borderColor: 'success.200' }}>
+              <Typography variant="subtitle2" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CheckCircle color="success" fontSize="small" />
+                Delivery Estimate
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Speed color="primary" fontSize="small" />
+                    <Typography variant="h6">{deliveryEstimate.distance.toFixed(1)}</Typography>
+                    <Typography variant="caption" color="text.secondary">miles</Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <ScheduleIcon color="primary" fontSize="small" />
+                    <Typography variant="h6">{Math.round(deliveryEstimate.duration)}</Typography>
+                    <Typography variant="caption" color="text.secondary">min drive</Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <AttachMoney color="primary" fontSize="small" />
+                    <Typography variant="h6">${deliveryEstimate.cost.toFixed(0)}</Typography>
+                    <Typography variant="caption" color="text.secondary">est. cost</Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          )}
+          
+          {estimatingDelivery && (
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <CircularProgress size={20} />
+              <Typography variant="caption" sx={{ ml: 1 }}>Calculating delivery estimate...</Typography>
+            </Box>
+          )}
         </Paper>
       )}
       

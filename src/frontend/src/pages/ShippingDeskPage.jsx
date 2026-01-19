@@ -35,6 +35,8 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Tooltip,
+  LinearProgress,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -50,9 +52,22 @@ import {
   Inventory as PackageIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
+  Map as MapIcon,
+  Route as RouteIcon,
+  Speed as SpeedIcon,
+  AttachMoney,
+  LocalGasStation,
 } from '@mui/icons-material'
 import { JOB_STATUSES, JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 import { PRIORITY_LEVELS_CONFIG } from '../constants/materials'
+import DeliveryMapDialog from '../components/logistics/DeliveryMapDialog'
+import { 
+  geocodeAddress, 
+  getTrafficRoute, 
+  calculateFuelCost, 
+  calculateDeliveryCost,
+  estimateDeliveryTime,
+} from '../services/mapService'
 
 // Mock shipments ready to ship
 const generateMockShipments = () => [
@@ -153,6 +168,11 @@ const ShippingDeskPage = () => {
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false)
   const [selectedShipment, setSelectedShipment] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
+  
+  // Map dialog state
+  const [mapDialogOpen, setMapDialogOpen] = useState(false)
+  const [routeInfo, setRouteInfo] = useState(null)
+  const [calculatingRoute, setCalculatingRoute] = useState(false)
 
   // Ship form state
   const [shipForm, setShipForm] = useState({
@@ -245,6 +265,7 @@ const ShippingDeskPage = () => {
       carrier: shipForm.carrier,
       bolNumber: shipForm.bolNumber,
       shippedAt: new Date().toISOString(),
+      routeInfo: routeInfo, // Store route info with shipment
     }
     setRecentShipped((prev) => [shipped, ...prev])
 
@@ -252,11 +273,54 @@ const ShippingDeskPage = () => {
     setShipments((prev) => prev.filter((s) => s.id !== selectedShipment.id))
 
     setShipDialogOpen(false)
+    setRouteInfo(null)
     setSnackbar({
       open: true,
       message: `Shipped ${selectedShipment.orderNumber} - BOL: ${shipForm.bolNumber}`,
       severity: 'success',
     })
+  }
+
+  // Open map dialog for route preview
+  const handleViewRoute = (shipment) => {
+    setSelectedShipment(shipment)
+    setMapDialogOpen(true)
+  }
+
+  // Handle route confirmation from map dialog
+  const handleRouteConfirmed = (routeData) => {
+    setRouteInfo(routeData)
+    setSnackbar({
+      open: true,
+      message: `Route validated: ${routeData.distance?.toFixed(1)} mi, ETA ${routeData.timeEstimate?.duration} min`,
+      severity: 'success',
+    })
+  }
+
+  // Calculate quick route estimate
+  const calculateQuickRoute = async (shipment) => {
+    setCalculatingRoute(true)
+    try {
+      const destCoords = await geocodeAddress(shipment.deliveryAddress)
+      const route = await getTrafficRoute([
+        [-87.6298, 41.8781], // Warehouse (Chicago)
+        destCoords.coordinates,
+      ])
+      const fuelCost = calculateFuelCost(route.distance)
+      const deliveryCost = calculateDeliveryCost(route.distance, shipment.totalWeight)
+      
+      return {
+        distance: route.distance,
+        duration: route.duration,
+        fuelCost,
+        deliveryCost,
+      }
+    } catch (err) {
+      console.error('Route calculation error:', err)
+      return null
+    } finally {
+      setCalculatingRoute(false)
+    }
   }
 
   const formatDate = (date) => {
@@ -524,12 +588,22 @@ const ShippingDeskPage = () => {
                       <CardActions sx={{ p: 2, pt: 0, flexWrap: 'wrap', gap: 1 }}>
                         {shipment.status === 'READY' && (
                           <>
+                            <Tooltip title="Preview route and calculate ETA">
+                              <Button
+                                variant="outlined"
+                                startIcon={<MapIcon />}
+                                onClick={() => handleViewRoute(shipment)}
+                                size="small"
+                              >
+                                Route
+                              </Button>
+                            </Tooltip>
                             <Button
                               variant="outlined"
                               startIcon={<TruckIcon />}
                               onClick={() => handleOpenScheduleDialog(shipment)}
                             >
-                              Schedule Pickup
+                              Schedule
                             </Button>
                             <Button
                               variant="contained"
@@ -541,14 +615,24 @@ const ShippingDeskPage = () => {
                           </>
                         )}
                         {shipment.status === 'SCHEDULED' && (
-                          <Button
-                            variant="contained"
-                            color="success"
-                            startIcon={<ShipIcon />}
-                            onClick={() => handleOpenShipDialog(shipment)}
-                          >
-                            Confirm Shipment
-                          </Button>
+                          <>
+                            <Button
+                              variant="outlined"
+                              startIcon={<MapIcon />}
+                              onClick={() => handleViewRoute(shipment)}
+                              size="small"
+                            >
+                              Track
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              startIcon={<ShipIcon />}
+                              onClick={() => handleOpenShipDialog(shipment)}
+                            >
+                              Confirm Shipment
+                            </Button>
+                          </>
                         )}
                         <Button variant="outlined" startIcon={<PrintIcon />} size="small">
                           Print BOL
@@ -790,6 +874,19 @@ const ShippingDeskPage = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Delivery Map Dialog */}
+      <DeliveryMapDialog
+        open={mapDialogOpen}
+        onClose={() => setMapDialogOpen(false)}
+        onConfirm={handleRouteConfirmed}
+        destinationAddress={selectedShipment?.deliveryAddress}
+        weight={selectedShipment?.totalWeight}
+        title={`Delivery Route - ${selectedShipment?.orderNumber}`}
+        showCostEstimate={true}
+        showTimeEstimate={true}
+        editable={true}
+      />
     </Box>
   )
 }

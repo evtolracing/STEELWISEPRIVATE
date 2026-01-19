@@ -48,6 +48,11 @@ const ShipmentsPage = lazy(() => import('../apps/shipments/ShipmentsPage'))
 const OrdersPage = lazy(() => import('../apps/orders/OrdersPage'))
 const BOMsPage = lazy(() => import('../apps/boms/BOMsPage'))
 
+// Logistics & Optimization
+const RouteOptimizationScreen = lazy(() => import('../screens/RouteOptimizationScreen'))
+const ShipmentTrackingScreen = lazy(() => import('../screens/ShipmentTrackingScreen'))
+const DispatchPlanningScreen = lazy(() => import('../screens/DispatchPlanningScreen'))
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -374,6 +379,39 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <ShipmentsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Route Optimization
+      {
+        path: 'logistics/route-optimization',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RouteOptimizationScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Shipment Tracking
+      {
+        path: 'logistics/tracking',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShipmentTrackingScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Dispatch Planning
+      {
+        path: 'logistics/dispatch',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DispatchPlanningScreen />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

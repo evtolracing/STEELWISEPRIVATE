@@ -99,23 +99,6 @@ export async function adjustInventory(payload) {
 }
 
 /**
- * Get all transfers
- */
-export async function getTransfers(params = {}) {
-  const queryParams = new URLSearchParams();
-  if (params.status) queryParams.append('status', params.status);
-  
-  const url = `${V1_BASE}/transfers?${queryParams.toString()}`;
-  const response = await fetch(url);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch transfers');
-  }
-  
-  return response.json();
-}
-
-/**
  * Create a new transfer request
  */
 export async function createTransfer(payload) {
@@ -197,3 +180,60 @@ export async function getByEtched(etchedId) {
   
   return response.json();
 }
+
+/**
+ * Get inventory risk analysis
+ */
+export async function getInventoryRisk(params = {}) {
+  const queryParams = new URLSearchParams();
+  if (params.locationId) queryParams.append('locationId', params.locationId);
+  if (params.division) queryParams.append('division', params.division);
+  
+  try {
+    const response = await fetch(`${API_BASE}/analytics/inventory/risk?${queryParams.toString()}`);
+    if (!response.ok) return getMockInventoryRisk(params);
+    return response.json();
+  } catch (error) {
+    return getMockInventoryRisk(params);
+  }
+}
+
+/**
+ * Get inventory transfers
+ */
+export async function getTransfers(params = {}) {
+  const queryParams = new URLSearchParams();
+  if (params.locationId) queryParams.append('locationId', params.locationId);
+  if (params.direction) queryParams.append('direction', params.direction);
+  
+  try {
+    const response = await fetch(`${V1_BASE}/transfers?${queryParams.toString()}`);
+    if (!response.ok) return getMockTransfers(params);
+    return response.json();
+  } catch (error) {
+    return getMockTransfers(params);
+  }
+}
+
+// Mock data fallbacks
+function getMockInventoryRisk(params) {
+  const loc = params.locationId || 'FWA';
+  return {
+    summary: { critical: 2, low: 3, ok: 15 },
+    items: [
+      { id: 'INV-002', materialCode: 'HR-A36-0250', description: 'Hot Rolled A36 0.25"', locationId: loc, status: 'LOW', availableQty: 180, reorderPoint: 300 },
+      { id: 'INV-003', materialCode: 'SS-304-0125', description: 'Stainless 304 0.125"', locationId: loc, status: 'CRITICAL', availableQty: 45, reorderPoint: 200 },
+      { id: 'INV-005', materialCode: 'BRASS-360-0500', description: 'Brass 360 0.5"', locationId: loc, status: 'LOW', availableQty: 95, reorderPoint: 150 },
+    ],
+  };
+}
+
+function getMockTransfers(params) {
+  const loc = params.locationId || 'FWA';
+  return [
+    { id: 'TRF-001', fromLocationId: 'DET-WH', toLocationId: loc, status: 'IN_TRANSIT', eta: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), items: 12, carrier: 'Internal' },
+    { id: 'TRF-002', fromLocationId: loc, toLocationId: 'JAX', status: 'PENDING', eta: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), items: 5, carrier: 'FedEx' },
+    { id: 'TRF-003', fromLocationId: 'CHI-WH', toLocationId: loc, status: 'DELIVERED', eta: null, items: 8, carrier: 'Internal' },
+  ];
+}
+

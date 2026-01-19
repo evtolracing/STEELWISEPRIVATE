@@ -137,6 +137,8 @@ function OrdersPage() {
                           </Typography>
                         </Stack>
                       }
+                      primaryTypographyProps={{ component: 'div' }}
+                      secondaryTypographyProps={{ component: 'div' }}
                     />
                   </ListItemButton>
                 </React.Fragment>

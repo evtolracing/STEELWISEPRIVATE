@@ -244,9 +244,9 @@ export class AIConfig {
       }
     }
 
-    // Return first available
+    // Return first available (prefer DeepSeek)
     if (availableProviders.length > 0) {
-      const provider = availableProviders[0];
+      const provider = availableProviders.includes('deepseek') ? 'deepseek' : availableProviders[0];
       return {
         provider,
         model: this.getModelForTask(provider, task),

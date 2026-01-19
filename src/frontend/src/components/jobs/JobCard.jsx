@@ -186,7 +186,7 @@ const JobCard = ({
               <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <AvatarGroup max={3} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: '0.75rem' } }}>
                   {job.operators.map((op, idx) => (
-                    <Avatar key={idx} sx={{ bgcolor: 'primary.main' }}>
+                    <Avatar key={op.id || op.name || `op-${idx}`} sx={{ bgcolor: 'primary.main' }}>
                       {op.initials || op.name?.charAt(0) || 'O'}
                     </Avatar>
                   ))}

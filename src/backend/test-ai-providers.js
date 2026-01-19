@@ -20,10 +20,10 @@ async function testProviders() {
 
   if (available.length === 0) {
     console.log('\n⚠️  No providers configured!');
-    console.log('Add API keys to .env file:');
-    console.log('  OPENAI_API_KEY="sk-..."');
-    console.log('  DEEPSEEK_API_KEY="sk-..."');
-    console.log('  ANTHROPIC_API_KEY="sk-..."');
+    console.log('Add API keys to .env file (DeepSeek recommended as primary):');
+    console.log('  DEEPSEEK_API_KEY="sk-..."  (PRIMARY - 10x cost savings)');
+    console.log('  OPENAI_API_KEY="sk-..."   (Optional fallback)');
+    console.log('  ANTHROPIC_API_KEY="sk-..." (Optional fallback)');
     return;
   }
 

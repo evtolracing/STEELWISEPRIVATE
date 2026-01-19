@@ -311,7 +311,7 @@ export default function BomRecipeEditorPage() {
   }
   
   return (
-    <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+    <Box sx={{ height: '100%', overflow: 'auto', p: 3, maxWidth: 1400, mx: 'auto' }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
         <IconButton onClick={() => navigate('/bom')}>

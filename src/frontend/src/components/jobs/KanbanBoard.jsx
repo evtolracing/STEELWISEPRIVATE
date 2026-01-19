@@ -303,7 +303,7 @@ const KanbanBoard = ({
       >
         {columns.map((column) => (
           <KanbanColumn
-            key={column.status}
+            key={column.id || column.status}
             column={column}
             jobs={filteredJobs}
             onJobClick={onJobClick}

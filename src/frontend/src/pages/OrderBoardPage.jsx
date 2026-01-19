@@ -26,6 +26,7 @@ import { KanbanBoard } from '../components/jobs'
 import { KANBAN_COLUMNS, JOB_STATUSES, canTransitionTo } from '../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../constants/processingTypes'
 import { PRIORITY_LEVELS } from '../constants/materials'
+import { getJobs, createJob, updateJobStatus } from '../services/jobsApi'
 
 // Mock data for demo mode
 const generateMockJobs = () => {
@@ -81,14 +82,14 @@ const OrderBoardPage = () => {
   const loadJobs = useCallback(async () => {
     setLoading(true)
     try {
-      // In demo mode, use mock data
-      // In production: const data = await getJobs()
-      await new Promise((r) => setTimeout(r, 500)) // Simulate API delay
-      const mockJobs = generateMockJobs()
-      setJobs(mockJobs)
+      const data = await getJobs()
+      setJobs(data)
     } catch (error) {
       console.error('Failed to load jobs:', error)
-      setSnackbar({ open: true, message: 'Failed to load jobs', severity: 'error' })
+      // Fallback to mock data if API fails
+      const mockJobs = generateMockJobs()
+      setJobs(mockJobs)
+      setSnackbar({ open: true, message: 'Using demo data (API unavailable)', severity: 'warning' })
     } finally {
       setLoading(false)
     }
@@ -119,7 +120,7 @@ const OrderBoardPage = () => {
     }
 
     try {
-      // In production: await updateJobStatus(jobId, newStatus)
+      await updateJobStatus(jobId, { status: newStatus })
       setJobs((prev) =>
         prev.map((j) =>
           j.id === jobId ? { ...j, status: newStatus } : j
@@ -127,12 +128,12 @@ const OrderBoardPage = () => {
       )
       setSnackbar({
         open: true,
-        message: `Job ${jobId} moved to ${newStatus}`,
+        message: `Job ${job.jobNumber} moved to ${newStatus}`,
         severity: 'success',
       })
     } catch (error) {
       console.error('Failed to update status:', error)
-      setSnackbar({ open: true, message: 'Failed to update status', severity: 'error' })
+      setSnackbar({ open: true, message: `Failed to update status: ${error.message}`, severity: 'error' })
     }
   }
 
@@ -150,17 +151,20 @@ const OrderBoardPage = () => {
 
   const handleCreateJob = async () => {
     try {
-      // In production: const created = await createJob(newJob)
-      const newJobData = {
-        id: `JOB-${String(1000 + jobs.length).padStart(4, '0')}`,
-        jobNumber: `JOB-${String(1000 + jobs.length).padStart(4, '0')}`,
-        ...newJob,
+      // Map frontend fields to backend Job schema
+      const jobData = {
+        operationType: newJob.processingType,
+        priority: Object.keys(PRIORITY_LEVELS).indexOf(newJob.priority) + 1 || 3,
+        instructions: `${newJob.customerName} - ${newJob.material || 'No material specified'}`,
+        notes: newJob.notes,
         status: JOB_STATUSES.ORDERED,
-        targetPieces: parseInt(newJob.targetPieces) || 0,
-        completedPieces: 0,
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       }
-      setJobs((prev) => [...prev, newJobData])
+      
+      const created = await createJob(jobData)
+      
+      // Add the created job to the board immediately
+      setJobs((prev) => [...prev, created])
+      
       setCreateDialogOpen(false)
       setNewJob({
         customerName: '',
@@ -170,10 +174,10 @@ const OrderBoardPage = () => {
         targetPieces: '',
         notes: '',
       })
-      setSnackbar({ open: true, message: 'Job created successfully', severity: 'success' })
+      setSnackbar({ open: true, message: `Job ${created.jobNumber} created successfully`, severity: 'success' })
     } catch (error) {
       console.error('Failed to create job:', error)
-      setSnackbar({ open: true, message: 'Failed to create job', severity: 'error' })
+      setSnackbar({ open: true, message: `Failed to create job: ${error.message}`, severity: 'error' })
     }
   }
 

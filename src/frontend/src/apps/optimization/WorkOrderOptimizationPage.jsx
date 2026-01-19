@@ -112,7 +112,7 @@ export default function WorkOrderOptimizationPage() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ height: '100%', overflow: 'auto', p: 3 }}>
       {/* Header */}
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
         <Box display="flex" alignItems="center" gap={1}>

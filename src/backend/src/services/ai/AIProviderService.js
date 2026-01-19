@@ -1,7 +1,15 @@
 /**
  * Unified AI Provider Service
- * Abstract interface for multiple LLM providers (OpenAI, DeepSeek, Anthropic, etc.)
+ * Abstract interface for multiple LLM providers (DeepSeek, OpenAI, Anthropic)
  * Handles provider selection, fallback, rate limiting, and cost tracking
+ * 
+ * DEFAULT PROVIDER: DeepSeek (10x cost savings, excellent performance)
+ * FALLBACK CHAIN: DeepSeek → OpenAI → Anthropic
+ * 
+ * Setup:
+ * 1. Add DEEPSEEK_API_KEY to .env (primary/default)
+ * 2. Optionally add OPENAI_API_KEY and/or ANTHROPIC_API_KEY for fallback
+ * 3. Set AI_DEFAULT_PROVIDER="deepseek" in .env (already configured)
  */
 
 import { OpenAIProvider } from './providers/OpenAIProvider.js';
@@ -19,26 +27,27 @@ export class AIProviderService {
 
   /**
    * Initialize all configured AI providers
+   * Priority order: DeepSeek (primary/default) → OpenAI → Anthropic
    */
   initializeProviders() {
-    // Register available providers
-    if (process.env.OPENAI_API_KEY) {
-      this.providers.set('openai', new OpenAIProvider(process.env.OPENAI_API_KEY));
-      console.log('✅ OpenAI provider initialized');
-    }
-
+    // Register available providers (DeepSeek first as primary)
     if (process.env.DEEPSEEK_API_KEY) {
       this.providers.set('deepseek', new DeepSeekProvider(process.env.DEEPSEEK_API_KEY));
-      console.log('✅ DeepSeek provider initialized');
+      console.log('✅ DeepSeek provider initialized (PRIMARY)');
+    }
+
+    if (process.env.OPENAI_API_KEY) {
+      this.providers.set('openai', new OpenAIProvider(process.env.OPENAI_API_KEY));
+      console.log('✅ OpenAI provider initialized (fallback)');
     }
 
     if (process.env.ANTHROPIC_API_KEY) {
       this.providers.set('anthropic', new AnthropicProvider(process.env.ANTHROPIC_API_KEY));
-      console.log('✅ Anthropic provider initialized');
+      console.log('✅ Anthropic provider initialized (fallback)');
     }
 
     if (this.providers.size === 0) {
-      console.warn('⚠️  No AI providers configured. Add API keys to .env');
+      console.warn('⚠️  No AI providers configured. Add DEEPSEEK_API_KEY (primary) or other API keys to .env');
     }
   }
 
@@ -235,9 +244,9 @@ export class AIProviderService {
       return provider;
     }
 
-    // Prefer OpenAI for embeddings (best support)
-    if (this.providers.has('openai')) return 'openai';
+    // Prefer DeepSeek as primary, fallback to OpenAI for specialized embeddings
     if (this.providers.has('deepseek')) return 'deepseek';
+    if (this.providers.has('openai')) return 'openai';
 
     return null;
   }
@@ -254,11 +263,14 @@ export class AIProviderService {
       throw new Error('No fallback provider available');
     }
 
-    console.log(`🔄 Falling back to alternative provider...`);
+    // Prefer DeepSeek as fallback if available and not the failed provider
+    const fallbackProvider = availableProviders.includes('deepseek') ? 'deepseek' : availableProviders[0];
+
+    console.log(`🔄 Falling back from ${failedProvider} to ${fallbackProvider}...`);
 
     return this.getChatCompletion({
       ...options,
-      provider: availableProviders[0],
+      provider: fallbackProvider,
     });
   }
 

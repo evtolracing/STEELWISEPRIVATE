@@ -65,6 +65,9 @@ const DispatchPlanningScreen = lazy(() => import('../screens/DispatchPlanningScr
 // Ops Cockpit
 const OpsCockpitPage = lazy(() => import('../pages/OpsCockpit/OpsCockpitPage'))
 
+// Role-Based Dashboard App
+const DashboardApp = lazy(() => import('../apps/dashboard/DashboardApp.jsx'))
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -162,6 +165,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <OpsCockpitPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Role-Based Dashboard
+      {
+        path: 'role-dashboard/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DashboardApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

@@ -44,7 +44,7 @@ const navSections = [
     title: 'Command Center',
     items: [
       { path: '/ops-cockpit', label: 'Ops Cockpit', icon: CockpitIcon },
-      { path: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
+      { path: '/role-dashboard', label: 'My Dashboard', icon: DashboardIcon },
     ],
   },
   {
@@ -231,6 +231,7 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
         ModalProps={{ 
           keepMounted: true,
           disableRestoreFocus: true,
+          disableEnforceFocus: true,
         }}
         sx={{
           display: { xs: 'block', md: 'none' },

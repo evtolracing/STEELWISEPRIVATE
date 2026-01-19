@@ -10,8 +10,18 @@ router.get('/', async (req, res) => {
     const { status, locationId, workCenterId, orderId } = req.query;
     
     const where = {};
-    if (status) where.status = status;
-    if (locationId) where.locationId = locationId;
+    // Handle comma-separated status values
+    if (status) {
+      if (status.includes(',')) {
+        where.status = { in: status.split(',') };
+      } else {
+        where.status = status;
+      }
+    }
+    // Filter by work center location
+    if (locationId) {
+      where.workCenter = { locationId };
+    }
     if (workCenterId) where.workCenterId = workCenterId;
     if (orderId) where.orderId = orderId;
     
@@ -38,6 +48,84 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+// GET /jobs/sla-risk - Get jobs at risk of missing SLA
+router.get('/sla-risk', async (req, res) => {
+  try {
+    const { locationId, hoursAhead = 24 } = req.query;
+
+    const where = {
+      status: { in: ['SCHEDULED', 'IN_PROCESS'] },
+      scheduledEnd: { not: null },
+    };
+    // Filter by work center location
+    if (locationId) {
+      where.workCenter = { locationId };
+    }
+
+    const jobs = await prisma.job.findMany({
+      where,
+      orderBy: { scheduledEnd: 'asc' },
+      include: {
+        order: {
+          include: { buyer: { select: { name: true } } },
+        },
+        workCenter: true,
+      },
+    });
+
+    // Calculate SLA risk based on scheduledEnd
+    const now = new Date();
+    const riskThreshold = new Date(now.getTime() + parseInt(hoursAhead) * 60 * 60 * 1000);
+
+    const atRiskJobs = jobs.filter(job => {
+      if (!job.scheduledEnd) return false;
+      const due = new Date(job.scheduledEnd);
+      return due <= riskThreshold;
+    }).map(job => {
+      const due = new Date(job.scheduledEnd);
+      const hoursRemaining = Math.round((due - now) / (1000 * 60 * 60));
+      
+      let riskLevel = 'LOW';
+      if (hoursRemaining < 0) riskLevel = 'OVERDUE';
+      else if (hoursRemaining < 4) riskLevel = 'CRITICAL';
+      else if (hoursRemaining < 12) riskLevel = 'HIGH';
+      else if (hoursRemaining < 24) riskLevel = 'MEDIUM';
+
+      return {
+        id: job.id,
+        jobNumber: job.jobNumber,
+        operationType: job.operationType,
+        status: job.status,
+        priority: job.priority,
+        dueDate: job.scheduledEnd,
+        hoursRemaining,
+        riskLevel,
+        customerName: job.order?.buyer?.name || 'Unknown',
+        orderNumber: job.order?.orderNumber || 'N/A',
+        workCenter: job.workCenter?.name || 'Unassigned',
+      };
+    });
+
+    // Sort by risk (overdue first, then by hours remaining)
+    atRiskJobs.sort((a, b) => {
+      const riskOrder = { OVERDUE: 0, CRITICAL: 1, HIGH: 2, MEDIUM: 3, LOW: 4 };
+      return (riskOrder[a.riskLevel] || 5) - (riskOrder[b.riskLevel] || 5);
+    });
+
+    res.json({
+      total: atRiskJobs.length,
+      overdue: atRiskJobs.filter(j => j.riskLevel === 'OVERDUE').length,
+      critical: atRiskJobs.filter(j => j.riskLevel === 'CRITICAL').length,
+      high: atRiskJobs.filter(j => j.riskLevel === 'HIGH').length,
+      medium: atRiskJobs.filter(j => j.riskLevel === 'MEDIUM').length,
+      jobs: atRiskJobs,
+    });
+  } catch (error) {
+    console.error('Error fetching SLA risk jobs:', error);
+    res.status(500).json({ error: 'Failed to fetch SLA risk jobs' });
   }
 });
 
@@ -89,42 +177,56 @@ router.post('/', async (req, res) => {
       instructions,
       assignedToId,
       createdById,
+      status,
     } = req.body;
     
     // Generate job number
     const jobCount = await prisma.job.count();
     const jobNumber = `JOB-${String(jobCount + 1).padStart(6, '0')}`;
     
+    // Build data object with only defined fields
+    const data = {
+      jobNumber,
+      priority: priority || 3,
+      status: status || 'SCHEDULED',
+    };
+    
+    // Add optional fields only if provided
+    if (orderId) data.orderId = orderId;
+    if (workCenterId) data.workCenterId = workCenterId;
+    if (operationType) data.operationType = operationType;
+    if (instructions) data.instructions = instructions;
+    if (assignedToId) data.assignedToId = assignedToId;
+    if (createdById) data.createdById = createdById;
+    if (scheduledStart) data.scheduledStart = new Date(scheduledStart);
+    if (scheduledEnd) data.scheduledEnd = new Date(scheduledEnd);
+    
     const job = await prisma.job.create({
-      data: {
-        jobNumber,
-        orderId,
-        workCenterId,
-        operationType,
-        scheduledStart: scheduledStart ? new Date(scheduledStart) : null,
-        scheduledEnd: scheduledEnd ? new Date(scheduledEnd) : null,
-        priority: priority || 5,
-        instructions,
-        assignedToId,
-        createdById,
-      },
+      data,
+    });
+    
+    // Fetch with includes only if relations exist
+    const jobWithRelations = await prisma.job.findUnique({
+      where: { id: job.id },
       include: {
-        order: {
+        order: orderId ? {
           select: { id: true, orderNumber: true },
-        },
-        workCenter: {
+        } : false,
+        workCenter: workCenterId ? {
           select: { id: true, code: true, name: true },
-        },
-        assignedTo: {
+        } : false,
+        assignedTo: assignedToId ? {
           select: { id: true, firstName: true, lastName: true },
-        },
+        } : false,
       },
     });
     
-    res.status(201).json(job);
+    res.status(201).json(jobWithRelations || job);
   } catch (error) {
     console.error('Error creating job:', error);
-    res.status(500).json({ error: 'Failed to create job' });
+    console.error('Request body:', req.body);
+    console.error('Error details:', error.message, error.stack);
+    res.status(500).json({ error: 'Failed to create job', details: error.message });
   }
 });
 

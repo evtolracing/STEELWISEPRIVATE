@@ -25,6 +25,9 @@ import aiRoutes from './routes/ai.js';
 import inventoryV1Routes from './routes/inventoryV1.js';
 import bomV1Routes from './routes/bomV1.js';
 import optimizationV1Routes from './routes/optimizationV1.js';
+import analyticsV1Routes from './routes/analyticsV1.js';
+import shippingV1Routes from './routes/shippingV1.js';
+import eventsV1Routes from './routes/eventsV1.js';
 
 dotenv.config();
 
@@ -62,6 +65,12 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/v1/inventory', inventoryV1Routes);
 app.use('/api/v1/bom', bomV1Routes);
 app.use('/api/v1/ai/work-order-optimize', optimizationV1Routes);
+app.use('/api/v1/analytics', analyticsV1Routes);
+app.use('/api/v1/shipping', shippingV1Routes);
+app.use('/api/v1/shipments', shippingV1Routes);
+app.use('/api/v1/events', eventsV1Routes);
+app.use('/api/v1/jobs', jobRoutes);
+app.use('/api/v1/work-centers', workCenterRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

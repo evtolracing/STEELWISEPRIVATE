@@ -54,6 +54,9 @@ const InventoryApp = lazy(() => import('../apps/inventory/InventoryApp'))
 // BOM Recipes App
 const BomRecipesApp = lazy(() => import('../apps/bom/BomRecipesApp'))
 
+// Work Order Optimization App
+const OptimizationApp = lazy(() => import('../apps/optimization/OptimizationApp'))
+
 // Logistics & Optimization
 const RouteOptimizationScreen = lazy(() => import('../screens/RouteOptimizationScreen'))
 const ShipmentTrackingScreen = lazy(() => import('../screens/ShipmentTrackingScreen'))
@@ -470,6 +473,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <BomRecipesApp />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Work Order Optimization App
+      {
+        path: 'optimization/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OptimizationApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

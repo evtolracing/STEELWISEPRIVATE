@@ -28,6 +28,7 @@ import {
   ViewKanban as KanbanIcon,
   Schedule as ScheduleIcon,
   PrecisionManufacturing as ShopFloorIcon,
+  AutoAwesome as OptimizationIcon,
   MoveToInbox as ReceivingIcon,
   Inventory as PackagingIcon,
   LocalShipping as ShippingIcon,
@@ -79,6 +80,7 @@ const navSections = [
       { path: '/work-orders', label: 'Work Orders', icon: WorkOrdersIcon },
       { path: '/bom', label: 'BOM / Recipes', icon: BOMIcon },
       { path: '/orders', label: 'Orders', icon: OrdersIcon },
+      { path: '/optimization', label: 'AI Optimization', icon: OptimizationIcon },
     ],
   },
   {

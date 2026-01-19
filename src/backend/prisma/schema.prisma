@@ -625,6 +625,9 @@ model Job {
   shippingCarrier String?
   trackingNumber  String?
   shippedAt       DateTime?
+  recipeId        String?   // BOM Recipe used to generate this job
+  recipeVersion   Int?      // Version at time of job creation
+  hasCustomRouting Boolean  @default(false) // True if manually modified after recipe application
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -632,6 +635,9 @@ model Job {
   workCenter      WorkCenter? @relation(fields: [workCenterId], references: [id])
   assignedTo      User?       @relation("JobAssignee", fields: [assignedToId], references: [id])
   createdBy       User?       @relation("JobCreator", fields: [createdById], references: [id])
+  recipe          BomRecipe?  @relation("JobRecipe", fields: [recipeId], references: [id])
+
+  @@index([recipeId])
 }
 
 enum JobStatus {
@@ -1022,4 +1028,56 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([userId])
   @@index([createdAt])
+}
+// ============== BOM / RECIPES ==============
+
+model BomRecipe {
+  id            String   @id @default(uuid())
+  name          String
+  code          String   // Used for version grouping
+  materialCode  String?
+  commodity     String?  // METALS, PLASTICS
+  form          String?  // PLATE, SHEET, BAR, TUBE, etc.
+  grade         String?
+  thicknessMin  Decimal?
+  thicknessMax  Decimal?
+  division      String?  // METALS, PLASTICS
+  version       Int      @default(1)
+  status        BomRecipeStatus @default(DRAFT)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  operations    BomOperation[]
+  jobs          Job[]    @relation("JobRecipe")
+
+  @@index([code, version])
+  @@index([status])
+  @@index([materialCode])
+  @@index([commodity, form, grade])
+}
+
+enum BomRecipeStatus {
+  DRAFT
+  REVIEW
+  ACTIVE
+  DEPRECATED
+  ARCHIVED
+}
+
+model BomOperation {
+  id                      String   @id @default(uuid())
+  recipeId                String
+  sequence                Int
+  name                    String
+  workCenterType          String
+  estimatedMachineMinutes Int      @default(0)
+  estimatedLaborMinutes   Int      @default(0)
+  setupMinutes            Int      @default(0)
+  parameters              Json?    // Array of {key, label, value}
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  recipe                  BomRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId, sequence])
 }

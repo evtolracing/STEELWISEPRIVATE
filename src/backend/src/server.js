@@ -28,6 +28,8 @@ import optimizationV1Routes from './routes/optimizationV1.js';
 import analyticsV1Routes from './routes/analyticsV1.js';
 import shippingV1Routes from './routes/shippingV1.js';
 import eventsV1Routes from './routes/eventsV1.js';
+import dispatchRoutes from './routes/dispatchRoutes.js';
+import operationsRoutes from './routes/operationsRoutes.js';
 
 dotenv.config();
 
@@ -71,6 +73,8 @@ app.use('/api/v1/shipments', shippingV1Routes);
 app.use('/api/v1/events', eventsV1Routes);
 app.use('/api/v1/jobs', jobRoutes);
 app.use('/api/v1/work-centers', workCenterRoutes);
+app.use('/api/v1/dispatch', dispatchRoutes);
+app.use('/api/v1/operations', operationsRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

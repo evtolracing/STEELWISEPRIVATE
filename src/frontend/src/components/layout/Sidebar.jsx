@@ -37,6 +37,8 @@ import {
   Map as MapIcon,
   Route as RouteIcon,
   Speed as CockpitIcon,
+  Factory as WorkCenterIcon,
+  Timer as TimeTrackingIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -59,11 +61,13 @@ const navSections = [
     title: 'Service Center',
     items: [
       { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
+      { path: '/shopfloor', label: 'Shop Floor Queue', icon: WorkCenterIcon, highlight: true },
       { path: '/planning', label: 'Planning', icon: PlanningIcon },
       { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
       { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
       { path: '/packaging', label: 'Packaging', icon: PackagingIcon },
       { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
+      { path: '/time-tracking', label: 'Time Tracking', icon: TimeTrackingIcon },
     ],
   },
   {

@@ -30,6 +30,7 @@ import {
   Alert,
   Snackbar,
   LinearProgress,
+  alpha,
 } from '@mui/material'
 import {
   ArrowBack as BackIcon,
@@ -49,6 +50,7 @@ import {
   ContentCut as ProcessIcon,
   Inventory as InventoryIcon,
   Scale as WeightIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot } from '@mui/lab'
 import { JOB_STATUS_CONFIG, getNextStatuses } from '../constants/jobStatuses'
@@ -185,41 +187,80 @@ const JobDetailPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
-      {/* Header */}
-      <Paper sx={{ p: 2, borderRadius: 0 }} elevation={1}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)',
+      mx: -3,
+      mt: -3,
+    }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 3, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton onClick={() => navigate(-1)}>
+          <IconButton 
+            onClick={() => navigate(-1)}
+            sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+          >
             <BackIcon />
           </IconButton>
+          <Avatar sx={{ 
+            width: 56, 
+            height: 56, 
+            background: 'rgba(255,255,255,0.15)',
+            backdropFilter: 'blur(10px)',
+          }}>
+            <ProcessIcon sx={{ fontSize: 30 }} />
+          </Avatar>
           <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h5" fontWeight={700}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 {job.jobNumber}
               </Typography>
-              <StatusChip status={job.status} />
+              <Chip
+                label={statusConfig.label || job.status}
+                size="small"
+                sx={{
+                  bgcolor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  fontWeight: 600,
+                  backdropFilter: 'blur(10px)',
+                }}
+              />
               <Chip
                 label={job.priority}
                 size="small"
                 sx={{
-                  backgroundColor: priorityConfig.bgColor,
-                  color: priorityConfig.color,
+                  bgcolor: alpha(priorityConfig.color || '#666', 0.3),
+                  color: 'white',
                   fontWeight: 600,
                 }}
               />
             </Box>
-            <Typography variant="body2" color="text.secondary">
-              {job.customerName} | {processingType}
-            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+              <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                {job.customerName} • {processingType}
+              </Typography>
+            </Stack>
           </Box>
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<PrintIcon />}>
+            <Button 
+              variant="outlined" 
+              startIcon={<PrintIcon />}
+              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+            >
               Print
             </Button>
             <Button
               variant="contained"
               endIcon={<MoreIcon />}
               onClick={(e) => setMenuAnchor(e.currentTarget)}
+              sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
             >
               Actions
             </Button>
@@ -237,7 +278,7 @@ const JobDetailPage = () => {
           <MenuItem onClick={() => setMenuAnchor(null)}>Assign Operator</MenuItem>
           <MenuItem onClick={() => setMenuAnchor(null)}>Split Job</MenuItem>
         </Menu>
-      </Paper>
+      </Box>
 
       {/* Content */}
       <Box sx={{ p: 3 }}>
@@ -245,24 +286,31 @@ const JobDetailPage = () => {
           {/* Left Column - Details */}
           <Grid item xs={12} md={8}>
             {/* Progress Card */}
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+            <Paper sx={{ 
+              p: 3, 
+              mb: 3,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
                 Progress
               </Typography>
               <Grid container spacing={3}>
                 <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'primary.50', borderRadius: 2 }}>
+                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#1976d2', 0.08), borderRadius: 3, border: `1px solid ${alpha('#1976d2', 0.15)}` }}>
                     <Typography variant="caption" color="text.secondary">
                       Target
                     </Typography>
-                    <Typography variant="h4" fontWeight={700}>
+                    <Typography variant="h4" fontWeight={700} color="primary.main">
                       {job.targetPieces}
                     </Typography>
                     <Typography variant="caption">pieces</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'success.50', borderRadius: 2 }}>
+                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#2e7d32', 0.08), borderRadius: 3, border: `1px solid ${alpha('#2e7d32', 0.15)}` }}>
                     <Typography variant="caption" color="text.secondary">
                       Complete
                     </Typography>
@@ -273,7 +321,7 @@ const JobDetailPage = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'error.50', borderRadius: 2 }}>
+                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#d32f2f', 0.08), borderRadius: 3, border: `1px solid ${alpha('#d32f2f', 0.15)}` }}>
                     <Typography variant="caption" color="text.secondary">
                       Scrap
                     </Typography>
@@ -286,22 +334,42 @@ const JobDetailPage = () => {
               </Grid>
               <Box sx={{ mt: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2">Completion</Typography>
-                  <Typography variant="body2" fontWeight={600}>
+                  <Typography variant="body2" fontWeight={500}>Completion</Typography>
+                  <Typography variant="body2" fontWeight={700}>
                     {progress}%
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
                   value={parseFloat(progress)}
-                  sx={{ height: 12, borderRadius: 6 }}
+                  sx={{ 
+                    height: 12, 
+                    borderRadius: 6,
+                    bgcolor: alpha('#1976d2', 0.15),
+                    '& .MuiLinearProgress-bar': {
+                      borderRadius: 6,
+                    }
+                  }}
                 />
               </Box>
             </Paper>
 
             {/* Tabs */}
-            <Paper sx={{ mb: 3 }}>
-              <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
+            <Paper sx={{ 
+              mb: 3,
+              borderRadius: 3,
+              overflow: 'hidden',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}>
+              <Tabs 
+                value={activeTab} 
+                onChange={(_, v) => setActiveTab(v)}
+                sx={{ 
+                  bgcolor: alpha('#1976d2', 0.03),
+                  '& .MuiTab-root': { fontWeight: 600, textTransform: 'none' } 
+                }}
+              >
                 <Tab icon={<InventoryIcon />} label="Details" iconPosition="start" />
                 <Tab icon={<HistoryIcon />} label="Timeline" iconPosition="start" />
                 <Tab icon={<AttachIcon />} label="Documents" iconPosition="start" />

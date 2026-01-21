@@ -16,6 +16,15 @@ import {
   Menu,
   MenuItem,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
 } from '@mui/material'
 import {
   PlayArrow as PlayIcon,
@@ -31,6 +40,10 @@ import {
   Edit as EditIcon,
   Save as SaveIcon,
   Close as CloseIcon,
+  Scale as ScaleIcon,
+  Straighten as DimensionsIcon,
+  Description as NotesIcon,
+  Assignment as JobIcon,
 } from '@mui/icons-material'
 import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
@@ -48,6 +61,7 @@ const JobCard = ({
   showActions = true,
 }) => {
   const [editing, setEditing] = useState(false)
+  const [materialDialogOpen, setMaterialDialogOpen] = useState(false)
   const [editedJob, setEditedJob] = useState({ ...job })
   const [priorityMenu, setPriorityMenu] = useState(null)
   const statusConfig = JOB_STATUS_CONFIG[job.status] || {}
@@ -219,10 +233,21 @@ const JobCard = ({
             <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
               <Chip
                 icon={<InventoryIcon />}
-                label={job.materialDescription || job.material}
+                label={job.materialDescription || job.material || job.instructions?.split('-')[1]?.trim() || 'View Details'}
                 size="small"
                 variant="outlined"
-                sx={{ maxWidth: '100%' }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setMaterialDialogOpen(true)
+                }}
+                sx={{ 
+                  maxWidth: '100%', 
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: 'action.hover',
+                    borderColor: 'primary.main',
+                  }
+                }}
               />
             </Box>
 
@@ -355,6 +380,146 @@ const JobCard = ({
           )}
         </CardActions>
       )}
+
+      {/* Job Details Dialog */}
+      <Dialog
+        open={materialDialogOpen}
+        onClose={(e) => { e.stopPropagation(); setMaterialDialogOpen(false); }}
+        onClick={(e) => e.stopPropagation()}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <JobIcon color="primary" />
+            <Typography variant="h6">{job.jobNumber || job.id}</Typography>
+          </Box>
+          <Chip
+            label={statusConfig.label || job.status}
+            size="small"
+            sx={{
+              backgroundColor: statusConfig.bgColor || 'grey.200',
+              color: statusConfig.color || 'text.primary',
+              fontWeight: 600,
+            }}
+          />
+        </DialogTitle>
+        <DialogContent dividers>
+          <List dense>
+            <ListItem>
+              <ListItemIcon><PersonIcon /></ListItemIcon>
+              <ListItemText 
+                primary="Customer" 
+                secondary={job.customerName || job.instructions?.split('-')[0]?.trim() || 'Not specified'} 
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon><ProcessIcon /></ListItemIcon>
+              <ListItemText 
+                primary="Operation Type" 
+                secondary={processingType || 'Not specified'} 
+              />
+            </ListItem>
+            <Divider component="li" />
+            <ListItem>
+              <ListItemIcon><InventoryIcon /></ListItemIcon>
+              <ListItemText 
+                primary="Material" 
+                secondary={job.materialDescription || job.material || job.instructions?.split('-')[1]?.trim() || 'Not specified'} 
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon><DimensionsIcon /></ListItemIcon>
+              <ListItemText 
+                primary="Dimensions" 
+                secondary={job.dimensions || 'Not specified'} 
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon><ScaleIcon /></ListItemIcon>
+              <ListItemText 
+                primary="Weight" 
+                secondary={formatWeight(job.weight)} 
+              />
+            </ListItem>
+            <Divider component="li" />
+            <ListItem>
+              <ListItemIcon><ScheduleIcon /></ListItemIcon>
+              <ListItemText 
+                primary="Due Date" 
+                secondary={formatDate(job.dueDate) || 'Not set'} 
+              />
+            </ListItem>
+            {job.workCenterName && (
+              <ListItem>
+                <ListItemIcon><ProcessIcon /></ListItemIcon>
+                <ListItemText 
+                  primary="Work Center" 
+                  secondary={job.workCenterName} 
+                />
+              </ListItem>
+            )}
+            {job.notes && (
+              <>
+                <Divider component="li" />
+                <ListItem>
+                  <ListItemIcon><NotesIcon /></ListItemIcon>
+                  <ListItemText 
+                    primary="Notes" 
+                    secondary={job.notes} 
+                  />
+                </ListItem>
+              </>
+            )}
+            {job.instructions && (
+              <ListItem>
+                <ListItemIcon><NotesIcon /></ListItemIcon>
+                <ListItemText 
+                  primary="Instructions" 
+                  secondary={job.instructions} 
+                />
+              </ListItem>
+            )}
+          </List>
+          
+          {/* Progress section for in-process jobs */}
+          {job.status === 'IN_PROCESS' && job.targetPieces > 0 && (
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+              <Typography variant="subtitle2" gutterBottom>Progress</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {job.completedPieces || 0} of {job.targetPieces} pieces completed
+                </Typography>
+                <Typography variant="body2" fontWeight={600}>
+                  {Math.round(getProgressValue())}%
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={getProgressValue()}
+                sx={{ height: 8, borderRadius: 4 }}
+              />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={(e) => { e.stopPropagation(); setMaterialDialogOpen(false); }}>
+            Close
+          </Button>
+          {onUpdate && (
+            <Button 
+              variant="contained" 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setMaterialDialogOpen(false); 
+                setEditing(true); 
+              }}
+            >
+              Edit Job
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
     </Card>
   )
 }

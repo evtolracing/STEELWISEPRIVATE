@@ -30,6 +30,8 @@ import {
   LinearProgress,
   Checkbox,
   FormControlLabel,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -43,6 +45,8 @@ import {
   Scale as WeightIcon,
   Close as CloseIcon,
   ViewInAr as BundleIcon,
+  AutoAwesome as AIIcon,
+  LocalFireDepartment as FireIcon,
 } from '@mui/icons-material'
 import { JOB_STATUSES, JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 import { PRIORITY_LEVELS_CONFIG } from '../constants/materials'
@@ -249,74 +253,119 @@ const PackagingPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
-      {/* Header */}
-      <Paper sx={{ p: 2, borderRadius: 0 }} elevation={1}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)',
+      mx: -3,
+      mt: -3,
+    }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 3, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box>
-            <Typography variant="h5" fontWeight={600}>
-              Packaging
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Bundle and prepare orders for shipping
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <BundleIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Packaging
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Bundle and prepare orders for shipping
+                </Typography>
+              </Stack>
+            </Box>
           </Box>
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<ScanIcon />}>
+            <Button 
+              variant="outlined" 
+              startIcon={<ScanIcon />}
+              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+            >
               Scan
             </Button>
-            <Button variant="outlined" startIcon={<PrintIcon />}>
+            <Button 
+              variant="contained" 
+              startIcon={<PrintIcon />}
+              sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
+            >
               Print Labels
             </Button>
           </Stack>
         </Box>
-      </Paper>
+      </Box>
 
       {/* Stats Bar */}
-      <Paper sx={{ mx: 3, mt: 2, p: 2 }} variant="outlined">
-        <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />}>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              In Packaging
-            </Typography>
-            <Typography variant="h6" fontWeight={600}>
-              {stats.inQueue}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Waiting QC
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="info.main">
-              {stats.waitingQC}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Ready to Ship
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="success.main">
-              {stats.ready}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Hot Jobs
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="error.main">
-              {stats.hotJobs}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Packages Today
-            </Typography>
-            <Typography variant="h6" fontWeight={600}>
-              {stats.packagesToday}
-            </Typography>
-          </Box>
-        </Stack>
-      </Paper>
+      <Box sx={{ mx: 3, mt: 3 }}>
+        <Paper sx={{ 
+          p: 2.5,
+          borderRadius: 3,
+          background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)',
+          border: '1px solid',
+          borderColor: 'divider',
+        }}>
+          <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />} flexWrap="wrap">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#1976d2', 0.1) }}>
+                <PackageIcon sx={{ color: 'primary.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">In Packaging</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.inQueue}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#0288d1', 0.1) }}>
+                <PendingIcon sx={{ color: 'info.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Waiting QC</Typography>
+                <Typography variant="h5" fontWeight={700} color="info.main">{stats.waitingQC}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#2e7d32', 0.1) }}>
+                <CompleteIcon sx={{ color: 'success.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Ready to Ship</Typography>
+                <Typography variant="h5" fontWeight={700} color="success.main">{stats.ready}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#d32f2f', 0.1) }}>
+                <FireIcon sx={{ color: 'error.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Hot Jobs</Typography>
+                <Typography variant="h5" fontWeight={700} color="error.main">{stats.hotJobs}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#7b1fa2', 0.1) }}>
+                <BundleIcon sx={{ color: '#7b1fa2' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Packages Today</Typography>
+                <Typography variant="h5" fontWeight={700} sx={{ color: '#7b1fa2' }}>{stats.packagesToday}</Typography>
+              </Box>
+            </Box>
+          </Stack>
+        </Paper>
+      </Box>
 
       {/* Content */}
       <Box sx={{ p: 3 }}>
@@ -336,7 +385,7 @@ const PackagingPage = () => {
           sx={{ mb: 2, minWidth: 300 }}
         />
 
-        <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+        <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
           Packaging Queue
         </Typography>
 

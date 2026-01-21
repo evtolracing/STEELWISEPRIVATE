@@ -23,13 +23,15 @@ const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLo
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
 // Phase 1 - Service Center Pages
-const OrderBoardPage = lazy(() => import('../pages/OrderBoardPage'))
+const OrderBoardPage = lazy(() => import('../pages/ModernOrderBoardPage'))
+const OrderBoardPageLegacy = lazy(() => import('../pages/OrderBoardPage'))
 const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const ShopFloorPage = lazy(() => import('../pages/ShopFloorPage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
 const PackagingPage = lazy(() => import('../pages/PackagingPage'))
 const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
+const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
 // POS - Point of Sale
 const POSPage = lazy(() => import('../pages/POSPage'))
@@ -67,6 +69,9 @@ const OpsCockpitPage = lazy(() => import('../pages/OpsCockpit/OpsCockpitPage'))
 
 // Role-Based Dashboard App
 const DashboardApp = lazy(() => import('../apps/dashboard/DashboardApp.jsx'))
+
+// Shop Floor Queue App (Dispatch Engine)
+const ShopFloorApp = lazy(() => import('../apps/shopfloor/ShopFloorApp'))
 
 // Loading fallback
 function PageLoader() {
@@ -132,6 +137,19 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Suspense fallback={<PageLoader />}>
           <POSPage />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorPage />,
+  },
+
+  // Shop Floor Queue App - Dispatch Engine (standalone full-screen for work center operators)
+  {
+    path: '/shopfloor/*',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <ShopFloorApp />
         </Suspense>
       </ProtectedRoute>
     ),
@@ -349,12 +367,23 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Order Board (Kanban)
+      // Order Board (Kanban) - Modern AI-Ready Version
       {
         path: 'order-board',
         element: (
           <Suspense fallback={<PageLoader />}>
             <OrderBoardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Order Board - Legacy Version
+      {
+        path: 'order-board-legacy',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderBoardPageLegacy />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -410,6 +439,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <ShipmentsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Time Tracking Report
+      {
+        path: 'time-tracking',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TimeTrackingPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

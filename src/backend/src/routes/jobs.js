@@ -236,9 +236,12 @@ router.post('/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status, scrapWeight, note } = req.body;
     
+    console.log('Updating job status:', { id, status, scrapWeight, note });
+    
     // Find job first
     const job = await prisma.job.findUnique({ where: { id } });
     if (!job) {
+      console.log('Job not found:', id);
       return res.status(404).json({ error: 'Job not found' });
     }
     
@@ -262,6 +265,8 @@ router.post('/:id/status', async (req, res) => {
       updateData.actualEnd = new Date();
     }
     
+    console.log('Update data:', updateData);
+    
     // Update job
     const updatedJob = await prisma.job.update({
       where: { id },
@@ -279,10 +284,12 @@ router.post('/:id/status', async (req, res) => {
       },
     });
     
+    console.log('Job updated successfully');
     res.json(updatedJob);
   } catch (error) {
     console.error('Error updating job status:', error);
-    res.status(500).json({ error: 'Failed to update job status' });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ error: 'Failed to update job status', details: error.message });
   }
 });
 

@@ -18,6 +18,8 @@ import {
   ListItemText,
   Alert,
   CircularProgress,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Search as SearchIcon,
@@ -31,6 +33,7 @@ import {
   Description as CertIcon,
   CheckCircle as CheckIcon,
   Error as ErrorIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { TraceTimeline, UnitCard } from '../../components/traceability'
 import { StatusChip } from '../../components/common'
@@ -118,16 +121,40 @@ export default function ProvenanceLookupPage() {
   }
 
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight={600}>
-          Provenance Lookup
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Verify and trace the complete history of any steel unit
-        </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Avatar sx={{ 
+            width: 56, 
+            height: 56, 
+            background: 'rgba(255,255,255,0.15)',
+            backdropFilter: 'blur(10px)',
+          }}>
+            <VerifiedIcon sx={{ fontSize: 30 }} />
+          </Avatar>
+          <Box>
+            <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              Provenance Lookup
+            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+              <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                Verify and trace the complete history of any steel unit • Blockchain verified
+              </Typography>
+            </Stack>
+          </Box>
+        </Box>
       </Box>
+
+      <Box sx={{ px: 3, pb: 3 }}>
 
       {/* Search Section */}
       <Paper sx={{ p: 3, mb: 3 }}>
@@ -272,6 +299,7 @@ export default function ProvenanceLookupPage() {
           </Typography>
         </Paper>
       )}
+      </Box>
     </Box>
   )
 }

@@ -26,6 +26,7 @@ import {
   CardContent,
   Avatar,
   useTheme,
+  alpha,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -751,38 +752,77 @@ export default function OpsCockpitPage() {
   }, []);
 
   return (
-    <Box sx={{ p: 3, height: '100%', overflowY: 'auto' }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={700}>
-            Ops Cockpit
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Alro Service Center Command Center
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Chip
-            icon={<ScheduleIcon />}
-            label={`Updated: ${lastUpdated.toLocaleTimeString()}`}
-            size="small"
-            variant="outlined"
-          />
-          <ToggleButtonGroup
-            value={autoRefresh ? 'auto' : 'manual'}
-            exclusive
-            size="small"
-            onChange={(e, val) => setAutoRefresh(val === 'auto')}
-          >
-            <ToggleButton value="auto">Auto</ToggleButton>
-            <ToggleButton value="manual">Manual</ToggleButton>
-          </ToggleButtonGroup>
-          <IconButton onClick={handleRefresh} color="primary">
-            <RefreshIcon />
-          </IconButton>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <SpeedIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Ops Cockpit
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AutoIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Alro Service Center Command Center • AI-Powered Operations
+                </Typography>
+              </Stack>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Chip
+              icon={<ScheduleIcon sx={{ color: 'inherit !important' }} />}
+              label={`Updated: ${lastUpdated.toLocaleTimeString()}`}
+              size="small"
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.15)',
+                color: 'white',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+              }}
+            />
+            <ToggleButtonGroup
+              value={autoRefresh ? 'auto' : 'manual'}
+              exclusive
+              size="small"
+              onChange={(e, val) => setAutoRefresh(val === 'auto')}
+              sx={{
+                '& .MuiToggleButton-root': {
+                  color: 'rgba(255,255,255,0.7)',
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  '&.Mui-selected': {
+                    color: 'white',
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="auto">Auto</ToggleButton>
+              <ToggleButton value="manual">Manual</ToggleButton>
+            </ToggleButtonGroup>
+            <IconButton onClick={handleRefresh} sx={{ color: 'white' }}>
+              <RefreshIcon />
+            </IconButton>
+          </Box>
         </Box>
       </Box>
+
+      <Box sx={{ px: 3, pb: 3 }}>
 
       {/* Flow State - Full Width */}
       <Box sx={{ mb: 3 }}>
@@ -822,6 +862,7 @@ export default function OpsCockpitPage() {
           <MaterialAvailabilityPanel />
         </Grid>
       </Grid>
+      </Box>
     </Box>
   );
 }

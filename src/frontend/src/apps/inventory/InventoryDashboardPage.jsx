@@ -35,6 +35,8 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Divider,
+  Avatar,
+  alpha,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -48,6 +50,7 @@ import {
   Block as HoldIcon,
   Assignment as AllocatedIcon,
   Clear as ClearIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material';
 import { getInventory, getInventorySummary, getLocations } from '../../services/inventoryApi';
 import InventoryAiAssistantPanel from '../../components/InventoryAiAssistantPanel';
@@ -152,32 +155,62 @@ export default function InventoryDashboardPage() {
   const paginatedInventory = inventory.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <Box sx={{ display: 'flex', height: 'calc(100vh - 120px)', gap: 2 }}>
-      {/* Main Content Area */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        {/* Header */}
-        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box>
-            <Typography variant="h4" fontWeight={700}>
-              Inventory
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage inventory across all locations
-            </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <InventoryIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Inventory
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Manage inventory across all locations • AI-powered insights
+                </Typography>
+              </Stack>
+            </Box>
           </Box>
           <Stack direction="row" spacing={1}>
             <Button
               variant="outlined"
               startIcon={<TransferIcon />}
               onClick={() => navigate('/inventory/transfers')}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
             >
               Transfers
             </Button>
-            <IconButton onClick={loadData} disabled={loading}>
+            <IconButton onClick={loadData} disabled={loading} sx={{ color: 'white' }}>
               <RefreshIcon />
             </IconButton>
           </Stack>
         </Box>
+      </Box>
+
+    <Box sx={{ px: 3, pb: 3 }}>
+    <Box sx={{ display: 'flex', height: 'calc(100vh - 200px)', gap: 2 }}>
+      {/* Main Content Area */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
         {/* Summary Cards */}
         {summary && (
@@ -450,6 +483,8 @@ export default function InventoryDashboardPage() {
           onActionClick={handleAiAction}
         />
       </Box>
+    </Box>
+    </Box>
     </Box>
   );
 }

@@ -37,6 +37,8 @@ import {
   StepLabel,
   Tooltip,
   LinearProgress,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -57,6 +59,8 @@ import {
   Speed as SpeedIcon,
   AttachMoney,
   LocalGasStation,
+  AutoAwesome as AIIcon,
+  LocalFireDepartment as FireIcon,
 } from '@mui/icons-material'
 import { JOB_STATUSES, JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 import { PRIORITY_LEVELS_CONFIG } from '../constants/materials'
@@ -359,78 +363,127 @@ const ShippingDeskPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
-      {/* Header */}
-      <Paper sx={{ p: 2, borderRadius: 0 }} elevation={1}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)',
+      mx: -3,
+      mt: -3,
+    }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 3, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box>
-            <Typography variant="h5" fontWeight={600}>
-              Shipping Desk
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage outbound shipments and BOLs
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <TruckIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Shipping Desk
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Manage outbound shipments and BOLs
+                </Typography>
+              </Stack>
+            </Box>
           </Box>
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<ScanIcon />}>
+            <Button 
+              variant="outlined" 
+              startIcon={<ScanIcon />}
+              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+            >
               Scan
             </Button>
-            <Button variant="outlined" startIcon={<PrintIcon />}>
+            <Button 
+              variant="contained" 
+              startIcon={<PrintIcon />}
+              sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
+            >
               Print BOLs
             </Button>
           </Stack>
         </Box>
-      </Paper>
+      </Box>
 
       {/* Stats Bar */}
-      <Paper sx={{ mx: 3, mt: 2, p: 2 }} variant="outlined">
-        <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />}>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Ready to Ship
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="warning.main">
-              {stats.readyToShip}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Scheduled
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="info.main">
-              {stats.scheduled}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Hot Orders
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="error.main">
-              {stats.hotOrders}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Shipped Today
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="success.main">
-              {stats.shippedToday}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Pending Weight
-            </Typography>
-            <Typography variant="h6" fontWeight={600}>
-              {formatWeight(stats.totalWeight)}
-            </Typography>
-          </Box>
-        </Stack>
-      </Paper>
+      <Box sx={{ mx: 3, mt: 3 }}>
+        <Paper sx={{ 
+          p: 2.5,
+          borderRadius: 3,
+          background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)',
+          border: '1px solid',
+          borderColor: 'divider',
+        }}>
+          <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />} flexWrap="wrap">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#ed6c02', 0.1) }}>
+                <PackageIcon sx={{ color: 'warning.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Ready to Ship</Typography>
+                <Typography variant="h5" fontWeight={700} color="warning.main">{stats.readyToShip}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#0288d1', 0.1) }}>
+                <PendingIcon sx={{ color: 'info.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Scheduled</Typography>
+                <Typography variant="h5" fontWeight={700} color="info.main">{stats.scheduled}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#d32f2f', 0.1) }}>
+                <FireIcon sx={{ color: 'error.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Hot Orders</Typography>
+                <Typography variant="h5" fontWeight={700} color="error.main">{stats.hotOrders}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#2e7d32', 0.1) }}>
+                <CompleteIcon sx={{ color: 'success.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Shipped Today</Typography>
+                <Typography variant="h5" fontWeight={700} color="success.main">{stats.shippedToday}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#7b1fa2', 0.1) }}>
+                <SpeedIcon sx={{ color: '#7b1fa2' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Pending Weight</Typography>
+                <Typography variant="h5" fontWeight={700} sx={{ color: '#7b1fa2' }}>{formatWeight(stats.totalWeight)}</Typography>
+              </Box>
+            </Box>
+          </Stack>
+        </Paper>
+      </Box>
 
       {/* Tabs */}
-      <Box sx={{ px: 3, pt: 2 }}>
-        <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
+      <Box sx={{ px: 3, pt: 3 }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={(_, v) => setActiveTab(v)}
+          sx={{ '& .MuiTab-root': { fontWeight: 600, textTransform: 'none' } }}
+        >
           <Tab
             label={
               <Badge badgeContent={stats.readyToShip + stats.scheduled} color="primary">
@@ -477,6 +530,12 @@ const ShippingDeskPage = () => {
                       sx={{
                         border: '2px solid',
                         borderColor: isHot ? 'error.main' : 'divider',
+                        borderRadius: 3,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: isHot ? '0 8px 25px rgba(211, 47, 47, 0.25)' : '0 8px 25px rgba(0,0,0,0.1)',
+                        },
                         animation: isHot ? 'pulse 2s infinite' : 'none',
                         '@keyframes pulse': {
                           '0%, 100%': { boxShadow: '0 0 0 0 rgba(211, 47, 47, 0.3)' },
@@ -484,9 +543,9 @@ const ShippingDeskPage = () => {
                         },
                       }}
                     >
-                      <CardContent>
+                      <CardContent sx={{ p: 2.5 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="h6" fontWeight={600}>
+                          <Typography variant="h6" fontWeight={700}>
                             {shipment.orderNumber}
                           </Typography>
                           <Stack direction="row" spacing={0.5}>

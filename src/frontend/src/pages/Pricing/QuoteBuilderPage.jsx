@@ -20,6 +20,8 @@ import {
   Divider,
   Autocomplete,
   InputAdornment,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -27,6 +29,8 @@ import {
   Save as SaveIcon,
   Send as SendIcon,
   Calculate as CalculateIcon,
+  RequestQuote as QuoteIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 
 export default function QuoteBuilderPage() {
@@ -84,27 +88,66 @@ export default function QuoteBuilderPage() {
   const total = subtotal + surcharges
 
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={600}>
-            Quote Builder
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Create a new customer quote
-          </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <QuoteIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Quote Builder
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Create a new customer quote • AI-assisted pricing
+                </Typography>
+              </Stack>
+            </Box>
+          </Box>
+          <Stack direction="row" spacing={1}>
+            <Button 
+              variant="outlined" 
+              startIcon={<SaveIcon />}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              Save Draft
+            </Button>
+            <Button 
+              variant="contained" 
+              startIcon={<SendIcon />}
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+              }}
+            >
+              Send Quote
+            </Button>
+          </Stack>
         </Box>
-        <Stack direction="row" spacing={1}>
-          <Button variant="outlined" startIcon={<SaveIcon />}>
-            Save Draft
-          </Button>
-          <Button variant="contained" startIcon={<SendIcon />}>
-            Send Quote
-          </Button>
-        </Stack>
       </Box>
 
+      <Box sx={{ px: 3, pb: 3 }}>
       <Grid container spacing={3}>
         {/* Customer Selection */}
         <Grid item xs={12} md={8}>
@@ -291,6 +334,7 @@ export default function QuoteBuilderPage() {
           </Paper>
         </Grid>
       </Grid>
+      </Box>
     </Box>
   )
 }

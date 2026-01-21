@@ -36,27 +36,17 @@ function ProductionWorkflowBoardPage() {
     try {
       setLoading(true);
       
-      // Use mock data for development (no database required)
-      const USE_MOCK_DATA = true;
-      
-      if (USE_MOCK_DATA) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const filtered = filterLocation 
-          ? mockJobs.filter(j => j.locationId === filterLocation)
-          : mockJobs;
-        setJobs(filtered);
-      } else {
-        const data = await getJobs(
-          filterLocation ? { locationId: filterLocation } : {}
-        );
-        setJobs(data);
-      }
+      const data = await getJobs(
+        filterLocation ? { locationId: filterLocation } : {}
+      );
+      setJobs(data);
+      console.log('Loaded jobs from database:', data.length);
       
       setError(null);
     } catch (err) {
-      console.error(err);
-      setError('Failed to load jobs');
+      console.error('Failed to load jobs:', err);
+      setError('Failed to load jobs: ' + err.message);
+      setJobs([]);
     } finally {
       setLoading(false);
     }

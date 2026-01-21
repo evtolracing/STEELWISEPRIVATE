@@ -1,7 +1,6 @@
 // Job Status Constants and Configuration
 export const JOB_STATUSES = {
   ORDERED: 'ORDERED',
-  RECEIVED: 'RECEIVED',
   SCHEDULED: 'SCHEDULED',
   IN_PROCESS: 'IN_PROCESS',
   WAITING_QC: 'WAITING_QC',
@@ -9,7 +8,8 @@ export const JOB_STATUSES = {
   READY_TO_SHIP: 'READY_TO_SHIP',
   SHIPPED: 'SHIPPED',
   COMPLETED: 'COMPLETED',
-  BILLED: 'BILLED',
+  CANCELLED: 'CANCELLED',
+  ON_HOLD: 'ON_HOLD',
 }
 
 export const JOB_STATUS_CONFIG = {
@@ -18,32 +18,24 @@ export const JOB_STATUS_CONFIG = {
     color: '#9E9E9E',
     bgColor: '#F5F5F5',
     icon: 'Receipt',
-    next: [JOB_STATUSES.RECEIVED, JOB_STATUSES.SCHEDULED],
-    kanbanColumn: 0,
-  },
-  [JOB_STATUSES.RECEIVED]: {
-    label: 'Received',
-    color: '#2196F3',
-    bgColor: '#E3F2FD',
-    icon: 'Inventory',
     next: [JOB_STATUSES.SCHEDULED],
-    kanbanColumn: 1,
+    kanbanColumn: 0,
   },
   [JOB_STATUSES.SCHEDULED]: {
     label: 'Scheduled',
     color: '#FF9800',
     bgColor: '#FFF3E0',
     icon: 'Schedule',
-    next: [JOB_STATUSES.IN_PROCESS],
-    kanbanColumn: 2,
+    next: [JOB_STATUSES.IN_PROCESS, JOB_STATUSES.ON_HOLD],
+    kanbanColumn: 1,
   },
   [JOB_STATUSES.IN_PROCESS]: {
     label: 'In Process',
     color: '#4CAF50',
     bgColor: '#E8F5E9',
     icon: 'PrecisionManufacturing',
-    next: [JOB_STATUSES.WAITING_QC, JOB_STATUSES.PACKAGING],
-    kanbanColumn: 3,
+    next: [JOB_STATUSES.WAITING_QC, JOB_STATUSES.PACKAGING, JOB_STATUSES.ON_HOLD],
+    kanbanColumn: 2,
   },
   [JOB_STATUSES.WAITING_QC]: {
     label: 'Waiting QC',
@@ -51,7 +43,7 @@ export const JOB_STATUS_CONFIG = {
     bgColor: '#F3E5F5',
     icon: 'FactCheck',
     next: [JOB_STATUSES.PACKAGING, JOB_STATUSES.IN_PROCESS],
-    kanbanColumn: 3,
+    kanbanColumn: 2,
   },
   [JOB_STATUSES.PACKAGING]: {
     label: 'Packaging',
@@ -59,7 +51,7 @@ export const JOB_STATUS_CONFIG = {
     bgColor: '#E0F7FA',
     icon: 'Inventory2',
     next: [JOB_STATUSES.READY_TO_SHIP],
-    kanbanColumn: 4,
+    kanbanColumn: 3,
   },
   [JOB_STATUSES.READY_TO_SHIP]: {
     label: 'Ready to Ship',
@@ -67,7 +59,7 @@ export const JOB_STATUS_CONFIG = {
     bgColor: '#E8EAF6',
     icon: 'LocalShipping',
     next: [JOB_STATUSES.SHIPPED],
-    kanbanColumn: 5,
+    kanbanColumn: 4,
   },
   [JOB_STATUSES.SHIPPED]: {
     label: 'Shipped',
@@ -75,22 +67,30 @@ export const JOB_STATUS_CONFIG = {
     bgColor: '#E0F2F1',
     icon: 'LocalShipping',
     next: [JOB_STATUSES.COMPLETED],
-    kanbanColumn: 6,
+    kanbanColumn: 5,
   },
   [JOB_STATUSES.COMPLETED]: {
     label: 'Completed',
     color: '#4CAF50',
     bgColor: '#E8F5E9',
     icon: 'CheckCircle',
-    next: [JOB_STATUSES.BILLED],
+    next: [],
+    kanbanColumn: 6,
+  },
+  [JOB_STATUSES.CANCELLED]: {
+    label: 'Cancelled',
+    color: '#F44336',
+    bgColor: '#FFEBEE',
+    icon: 'Cancel',
+    next: [],
     kanbanColumn: 7,
   },
-  [JOB_STATUSES.BILLED]: {
-    label: 'Billed',
-    color: '#607D8B',
-    bgColor: '#ECEFF1',
-    icon: 'Paid',
-    next: [],
+  [JOB_STATUSES.ON_HOLD]: {
+    label: 'On Hold',
+    color: '#FF9800',
+    bgColor: '#FFF3E0',
+    icon: 'Pause',
+    next: [JOB_STATUSES.SCHEDULED, JOB_STATUSES.IN_PROCESS],
     kanbanColumn: 7,
   },
 }
@@ -98,12 +98,12 @@ export const JOB_STATUS_CONFIG = {
 // Kanban board columns for Order Board view
 export const KANBAN_COLUMNS = [
   { id: 'new', title: 'New Orders', statuses: [JOB_STATUSES.ORDERED] },
-  { id: 'received', title: 'Received', statuses: [JOB_STATUSES.RECEIVED] },
   { id: 'scheduled', title: 'Scheduled', statuses: [JOB_STATUSES.SCHEDULED] },
   { id: 'processing', title: 'In Process', statuses: [JOB_STATUSES.IN_PROCESS, JOB_STATUSES.WAITING_QC] },
   { id: 'packaging', title: 'Packaging', statuses: [JOB_STATUSES.PACKAGING] },
   { id: 'shipping', title: 'Ready to Ship', statuses: [JOB_STATUSES.READY_TO_SHIP] },
-  { id: 'completed', title: 'Completed', statuses: [JOB_STATUSES.SHIPPED, JOB_STATUSES.COMPLETED, JOB_STATUSES.BILLED] },
+  { id: 'completed', title: 'Completed', statuses: [JOB_STATUSES.SHIPPED, JOB_STATUSES.COMPLETED] },
+  { id: 'other', title: 'Other', statuses: [JOB_STATUSES.ON_HOLD, JOB_STATUSES.CANCELLED] },
 ]
 
 // Status transition validation

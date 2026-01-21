@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -12,6 +12,10 @@ import {
   Avatar,
   AvatarGroup,
   Stack,
+  TextField,
+  Menu,
+  MenuItem,
+  Button,
 } from '@mui/material'
 import {
   PlayArrow as PlayIcon,
@@ -24,6 +28,9 @@ import {
   Person as PersonIcon,
   ContentCut as ProcessIcon,
   Inventory as InventoryIcon,
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material'
 import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
@@ -35,10 +42,14 @@ const JobCard = ({
   onPause,
   onComplete,
   onClick,
-  draggable = false,
+  onUpdate,
+  draggable = true,
   compact = false,
   showActions = true,
 }) => {
+  const [editing, setEditing] = useState(false)
+  const [editedJob, setEditedJob] = useState({ ...job })
+  const [priorityMenu, setPriorityMenu] = useState(null)
   const statusConfig = JOB_STATUS_CONFIG[job.status] || {}
   const priorityConfig = PRIORITY_LEVELS_CONFIG?.[job.priority] || {}
   const processingType = PROCESSING_TYPES[job.processingType] || job.processingType
@@ -64,11 +75,32 @@ const JobCard = ({
   const isHotJob = job.priority === 'HOT'
   const isUrgent = job.priority === 'URGENT'
 
+  const handleDragStart = (e) => {
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('jobId', job.id)
+  }
+
+  const handleSave = async () => {
+    if (onUpdate) {
+      await onUpdate(job.id, editedJob)
+    }
+    setEditing(false)
+  }
+
+  const handleCancel = () => {
+    setEditedJob({ ...job })
+    setEditing(false)
+  }
+
   return (
     <Card
-      onClick={onClick}
+      draggable={draggable && !editing}
+      onDragStart={handleDragStart}
+      onClick={(e) => {
+        if (!editing && onClick) onClick(e)
+      }}
       sx={{
-        cursor: onClick ? 'pointer' : 'default',
+        cursor: draggable && !editing ? 'grab' : onClick && !editing ? 'pointer' : 'default',
         border: '1px solid',
         borderColor: isHotJob ? 'error.main' : isUrgent ? 'warning.main' : 'divider',
         borderLeft: '4px solid',
@@ -83,6 +115,9 @@ const JobCard = ({
           borderColor: statusConfig.color || 'primary.main',
           boxShadow: 2,
         },
+        '&:active': {
+          cursor: draggable && !editing ? 'grabbing' : 'default',
+        },
         ...(compact && { minHeight: 80 }),
       }}
     >
@@ -96,30 +131,79 @@ const JobCard = ({
             />
           )}
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              variant={compact ? 'body2' : 'subtitle1'}
-              fontWeight={600}
-              noWrap
-              sx={{ color: 'text.primary' }}
-            >
-              {job.jobNumber || job.id}
-            </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
-              {job.customerName || 'Customer'}
-            </Typography>
+            {editing ? (
+              <TextField
+                size="small"
+                value={editedJob.instructions || ''}
+                onChange={(e) => setEditedJob({ ...editedJob, instructions: e.target.value })}
+                placeholder="Job instructions"
+                fullWidth
+                multiline
+                sx={{ mb: 0.5 }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <>
+                <Typography
+                  variant={compact ? 'body2' : 'subtitle1'}
+                  fontWeight={600}
+                  noWrap
+                  sx={{ color: 'text.primary' }}
+                >
+                  {job.jobNumber || job.id}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" noWrap>
+                  {job.customerName || job.instructions || 'Customer'}
+                </Typography>
+              </>
+            )}
           </Box>
+          {onUpdate && !editing && (
+            <IconButton
+              size="small"
+              onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+              sx={{ p: 0.5 }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          )}
           <Chip
-            label={job.priority}
+            label={editedJob.priority || job.priority}
             size="small"
+            onClick={(e) => {
+              if (editing && onUpdate) {
+                e.stopPropagation()
+                setPriorityMenu(e.currentTarget)
+              }
+            }}
             sx={{
               backgroundColor: priorityConfig.bgColor || 'grey.100',
               color: priorityConfig.color || 'text.primary',
               fontWeight: 600,
               fontSize: '0.65rem',
               height: 20,
+              cursor: editing && onUpdate ? 'pointer' : 'default',
             }}
           />
         </Box>
+        <Menu
+          anchorEl={priorityMenu}
+          open={Boolean(priorityMenu)}
+          onClose={() => setPriorityMenu(null)}
+        >
+          {['HOT', 'URGENT', 'NORMAL', 'LOW'].map((priority) => (
+            <MenuItem
+              key={priority}
+              selected={editedJob.priority === priority}
+              onClick={() => {
+                setEditedJob({ ...editedJob, priority })
+                setPriorityMenu(null)
+              }}
+            >
+              {priority}
+            </MenuItem>
+          ))}
+        </Menu>
 
         {/* Processing Type & Material */}
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
@@ -213,39 +297,61 @@ const JobCard = ({
 
       {/* Actions */}
       {showActions && !compact && (
-        <CardActions sx={{ pt: 0, px: 2, pb: 1.5, justifyContent: 'flex-end' }}>
-          {job.status === 'SCHEDULED' && onStart && (
-            <Tooltip title="Start Job">
-              <IconButton
+        <CardActions sx={{ pt: 0, px: 2, pb: 1.5, justifyContent: editing ? 'space-between' : 'flex-end' }}>
+          {editing ? (
+            <>
+              <Button
                 size="small"
-                color="success"
-                onClick={(e) => { e.stopPropagation(); onStart(job); }}
+                startIcon={<CloseIcon />}
+                onClick={(e) => { e.stopPropagation(); handleCancel(); }}
               >
-                <PlayIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-          {job.status === 'IN_PROCESS' && onPause && (
-            <Tooltip title="Pause Job">
-              <IconButton
+                Cancel
+              </Button>
+              <Button
                 size="small"
-                color="warning"
-                onClick={(e) => { e.stopPropagation(); onPause(job); }}
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={(e) => { e.stopPropagation(); handleSave(); }}
               >
-                <PauseIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-          {(job.status === 'IN_PROCESS' || job.status === 'WAITING_QC') && onComplete && (
-            <Tooltip title="Complete Job">
-              <IconButton
-                size="small"
-                color="primary"
-                onClick={(e) => { e.stopPropagation(); onComplete(job); }}
-              >
-                <CompleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+                Save
+              </Button>
+            </>
+          ) : (
+            <>
+              {job.status === 'SCHEDULED' && onStart && (
+                <Tooltip title="Start Job">
+                  <IconButton
+                    size="small"
+                    color="success"
+                    onClick={(e) => { e.stopPropagation(); onStart(job); }}
+                  >
+                    <PlayIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {job.status === 'IN_PROCESS' && onPause && (
+                <Tooltip title="Pause Job">
+                  <IconButton
+                    size="small"
+                    color="warning"
+                    onClick={(e) => { e.stopPropagation(); onPause(job); }}
+                  >
+                    <PauseIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {(job.status === 'IN_PROCESS' || job.status === 'WAITING_QC') && onComplete && (
+                <Tooltip title="Complete Job">
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={(e) => { e.stopPropagation(); onComplete(job); }}
+                  >
+                    <CompleteIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </>
           )}
         </CardActions>
       )}

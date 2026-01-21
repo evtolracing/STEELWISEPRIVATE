@@ -31,10 +31,14 @@ const KanbanColumn = ({
   onStartJob,
   onPauseJob,
   onCompleteJob,
+  onUpdateJob,
   onDrop,
 }) => {
   const config = JOB_STATUS_CONFIG[column.status] || {}
-  const columnJobs = jobs.filter(job => job.status === column.status)
+  // Filter jobs by column's statuses array
+  const columnJobs = jobs.filter(job => 
+    column.statuses ? column.statuses.includes(job.status) : job.status === column.status
+  )
 
   const handleDragOver = (e) => {
     e.preventDefault()
@@ -50,7 +54,9 @@ const KanbanColumn = ({
     e.currentTarget.style.backgroundColor = 'transparent'
     const jobId = e.dataTransfer.getData('jobId')
     if (jobId && onDrop) {
-      onDrop(jobId, column.status)
+      // Use the first status in the column's statuses array, or column.status if not array
+      const targetStatus = column.statuses ? column.statuses[0] : column.status
+      onDrop(jobId, targetStatus)
     }
   }
 
@@ -126,22 +132,16 @@ const KanbanColumn = ({
           </Box>
         ) : (
           columnJobs.map((job) => (
-            <Box
+            <JobCard
               key={job.id}
+              job={job}
+              onClick={() => onJobClick?.(job)}
+              onStart={onStartJob}
+              onPause={onPauseJob}
+              onComplete={onCompleteJob}
+              onUpdate={onUpdateJob}
               draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData('jobId', job.id)
-              }}
-            >
-              <JobCard
-                job={job}
-                onClick={() => onJobClick?.(job)}
-                onStart={onStartJob}
-                onPause={onPauseJob}
-                onComplete={onCompleteJob}
-                draggable
-              />
-            </Box>
+            />
           ))
         )}
       </Box>
@@ -157,6 +157,7 @@ const KanbanBoard = ({
   onPauseJob,
   onCompleteJob,
   onStatusChange,
+  onUpdateJob,
   onRefresh,
   loading = false,
 }) => {
@@ -310,6 +311,7 @@ const KanbanBoard = ({
             onStartJob={onStartJob}
             onPauseJob={onPauseJob}
             onCompleteJob={onCompleteJob}
+            onUpdateJob={onUpdateJob}
             onDrop={handleDrop}
           />
         ))}

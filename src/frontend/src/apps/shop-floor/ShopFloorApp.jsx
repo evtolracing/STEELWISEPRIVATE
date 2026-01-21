@@ -24,9 +24,6 @@ import { mockJobs, mockWorkCenters } from '../../mocks/planningData';
 
 const ACTIVE_STATUSES = ['SCHEDULED', 'IN_PROCESS'];
 
-// Use mock data for development
-const USE_MOCK_DATA = true;
-
 function ShopFloorApp() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,18 +35,13 @@ function ShopFloorApp() {
       setLoading(true);
       setError(null);
       
-      let data;
-      if (USE_MOCK_DATA) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        data = mockJobs.filter(j => j.workCenterId === workCenterId);
-      } else {
-        data = await getJobs({ workCenterId });
-      }
-      
+      const data = await getJobs({ workCenterId });
       setJobs(data.filter(j => ACTIVE_STATUSES.includes(j.status)));
+      console.log('Loaded shop floor jobs from database:', data.length);
     } catch (err) {
+      console.error('Failed to load shop floor jobs:', err);
       setError(err.message);
+      setJobs([]);
     } finally {
       setLoading(false);
     }
@@ -61,31 +53,21 @@ function ShopFloorApp() {
 
   async function handleStart(job) {
     try {
-      if (USE_MOCK_DATA) {
-        // Update mock data locally
-        setJobs(prev => prev.map(j => 
-          j.id === job.id ? { ...j, status: 'IN_PROCESS', actualStart: new Date().toISOString() } : j
-        ));
-      } else {
-        await updateJobStatus(job.id, { status: 'IN_PROCESS' });
-        await load();
-      }
+      await updateJobStatus(job.id, { status: 'IN_PROCESS' });
+      await load();
     } catch (err) {
+      console.error('Failed to start job:', err);
       setError(err.message);
     }
   }
 
   async function handleComplete(job) {
     try {
-      if (USE_MOCK_DATA) {
-        // Update mock data locally - move to next stage
-        setJobs(prev => prev.filter(j => j.id !== job.id));
-      } else {
-        // Next stage depends on workflow - could be PACKAGING or WAITING_QC
-        await updateJobStatus(job.id, { status: 'PACKAGING' });
-        await load();
-      }
+      // Next stage depends on workflow - could be PACKAGING or WAITING_QC
+      await updateJobStatus(job.id, { status: 'PACKAGING' });
+      await load();
     } catch (err) {
+      console.error('Failed to complete job:', err);
       setError(err.message);
     }
   }

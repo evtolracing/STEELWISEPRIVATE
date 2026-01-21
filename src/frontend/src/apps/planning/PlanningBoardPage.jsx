@@ -38,27 +38,20 @@ function PlanningBoardPage() {
     try {
       setLoading(true);
       
-      // Use mock data for development (no database required)
-      const USE_MOCK_DATA = true;
-      
-      if (USE_MOCK_DATA) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setJobs(mockJobs);
-        setWorkCenters(getWorkCenterStats());
-      } else {
-        const [jobsData, wcData] = await Promise.all([
-          getJobs(),
-          getWorkCenters(),
-        ]);
-        setJobs(jobsData);
-        setWorkCenters(wcData);
-      }
+      const [jobsData, wcData] = await Promise.all([
+        getJobs(),
+        getWorkCenters(),
+      ]);
+      setJobs(jobsData);
+      setWorkCenters(wcData);
+      console.log('Loaded planning data from database:', jobsData.length, 'jobs');
       
       setError(null);
     } catch (err) {
       console.error('Failed to load data:', err);
       setError('Failed to load planning data');
+      setJobs([]);
+      setWorkCenters([]);
     } finally {
       setLoading(false);
     }

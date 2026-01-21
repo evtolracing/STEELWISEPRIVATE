@@ -7,7 +7,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -16,8 +15,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  AppBar,
-  Toolbar,
   Avatar,
   Chip,
   Stack,
@@ -276,36 +273,34 @@ function WorkCenterQueuePage() {
   const isOperationActive = (op) => op.status === 'IN_PROCESS'
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* Header */}
-      <AppBar position="static" sx={{ bgcolor: 'primary.main' }}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate('/shopfloor')} sx={{ mr: 2 }}>
+    <Box>
+      {/* Page Header */}
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton onClick={() => navigate('/shopfloor')} sx={{ bgcolor: 'grey.100' }}>
             <BackIcon />
           </IconButton>
-          <FactoryIcon sx={{ mr: 1 }} />
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h6" fontWeight={700}>
+          <Avatar sx={{ width: 48, height: 48, bgcolor: 'primary.main' }}>
+            <FactoryIcon />
+          </Avatar>
+          <Box>
+            <Typography variant="h4" fontWeight={700}>
               {queueData?.workCenterName || workCenterId}
             </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.8 }}>
+            <Typography variant="body2" color="text.secondary">
               {locationId} • {queueData?.operationCount || 0} operations
             </Typography>
           </Box>
-          
+        </Box>
+        
+        <Stack direction="row" spacing={2} alignItems="center">
           {/* Operator Select */}
-          <FormControl size="small" sx={{ minWidth: 180, mr: 2 }}>
-            <InputLabel sx={{ color: 'white' }}>Operator</InputLabel>
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel>Operator</InputLabel>
             <Select
               value={selectedOperator}
               label="Operator"
               onChange={(e) => setSelectedOperator(e.target.value)}
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.15)',
-                color: 'white',
-                '& .MuiSelect-icon': { color: 'white' },
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-              }}
             >
               {operators.map((op) => (
                 <MenuItem key={op.id} value={op.id}>
@@ -323,17 +318,16 @@ function WorkCenterQueuePage() {
             startIcon={<RefreshIcon />}
             onClick={loadQueue}
             disabled={loading}
-            sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
           >
             Refresh
           </Button>
-        </Toolbar>
-      </AppBar>
+        </Stack>
+      </Box>
 
       {/* Loading bar */}
-      {(loading || actionLoading) && <LinearProgress />}
+      {(loading || actionLoading) && <LinearProgress sx={{ mb: 2 }} />}
 
-      <Container maxWidth="xl" sx={{ py: 2 }}>
+      <Box>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
@@ -675,7 +669,7 @@ function WorkCenterQueuePage() {
             )}
           </Grid>
         </Grid>
-      </Container>
+      </Box>
 
       {/* Pause Reason Dialog */}
       <Dialog open={pauseDialogOpen} onClose={() => setPauseDialogOpen(false)}>

@@ -13,6 +13,7 @@ const UnitListPage = lazy(() => import('../pages/Units/UnitListPage'))
 const UnitDetailPage = lazy(() => import('../pages/Units/UnitDetailPage'))
 const WorkOrderListPage = lazy(() => import('../pages/WorkOrders/WorkOrderListPage'))
 const WorkOrderDetailPage = lazy(() => import('../pages/WorkOrders/WorkOrderDetailPage'))
+const WorkOrderCreatePage = lazy(() => import('../pages/WorkOrders/WorkOrderCreatePage'))
 const ShipmentListPage = lazy(() => import('../pages/Logistics/ShipmentListPage'))
 const ShipmentDetailPage = lazy(() => import('../pages/Logistics/ShipmentDetailPage'))
 const PricingDashboardPage = lazy(() => import('../pages/Pricing/PricingDashboardPage'))
@@ -70,8 +71,12 @@ const OpsCockpitPage = lazy(() => import('../pages/OpsCockpit/OpsCockpitPage'))
 // Role-Based Dashboard App
 const DashboardApp = lazy(() => import('../apps/dashboard/DashboardApp.jsx'))
 
-// Shop Floor Queue App (Dispatch Engine)
-const ShopFloorApp = lazy(() => import('../apps/shopfloor/ShopFloorApp'))
+// Shop Floor Queue Pages (Dispatch Engine)
+const WorkCenterSelectPage = lazy(() => import('../apps/shopfloor/WorkCenterSelectPage'))
+const WorkCenterQueuePage = lazy(() => import('../apps/shopfloor/WorkCenterQueuePage'))
+
+// OrderHub App
+const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 
 // Loading fallback
 function PageLoader() {
@@ -143,19 +148,6 @@ const router = createBrowserRouter([
     errorElement: <RouteErrorPage />,
   },
 
-  // Shop Floor Queue App - Dispatch Engine (standalone full-screen for work center operators)
-  {
-    path: '/shopfloor/*',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <ShopFloorApp />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-    errorElement: <RouteErrorPage />,
-  },
-
   // Protected routes with layout
   {
     path: '/',
@@ -194,6 +186,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <DashboardApp />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // OrderHub - RFQ/Quote/Order Console
+      {
+        path: 'orderhub/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderHubApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -245,6 +248,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <WorkOrderListPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'work-orders/new',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <WorkOrderCreatePage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -450,6 +462,28 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <TimeTrackingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Shop Floor Queue - Work Center Selection
+      {
+        path: 'shopfloor',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <WorkCenterSelectPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Shop Floor Queue - Work Center Queue View
+      {
+        path: 'shopfloor/:workCenterId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <WorkCenterQueuePage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

@@ -128,15 +128,21 @@ export default function WorkOrderListPage() {
     navigate(`/work-orders/${row.id}`)
   }
 
-  // Mock data for demo
-  const mockWorkOrders = [
-    { id: 1, workOrderNumber: 'WO-2024-001', type: 'Slitting', product: '48" x 0.075" A36', quantity: 25000, unit: 'lbs', scheduledDate: new Date(), progress: 45, status: 'RUNNING' },
-    { id: 2, workOrderNumber: 'WO-2024-002', type: 'Cut-to-Length', product: '60" x 0.105" A572', quantity: 15000, unit: 'lbs', scheduledDate: new Date(Date.now() + 24 * 60 * 60 * 1000), progress: 0, status: 'SCHEDULED' },
-    { id: 3, workOrderNumber: 'WO-2024-003', type: 'Blanking', product: '36" x 0.048" 304SS', quantity: 500, unit: 'pcs', scheduledDate: new Date(Date.now() - 24 * 60 * 60 * 1000), progress: 100, status: 'COMPLETED' },
-    { id: 4, workOrderNumber: 'WO-2024-004', type: 'Slitting', product: '72" x 0.135" HR', quantity: 40000, unit: 'lbs', scheduledDate: new Date(), progress: 0, status: 'PAUSED' },
-  ]
-
-  const displayData = data?.workOrders || mockWorkOrders
+  // Use real data from database
+  const workOrders = data?.workOrders || data || []
+  
+  // Transform data to match table format
+  const displayData = workOrders.map(wo => ({
+    id: wo.id,
+    workOrderNumber: wo.woNumber,
+    type: wo.woType,
+    product: wo.sourceCoil?.coilNumber || 'Unknown',
+    quantity: wo.inputWeightLb || wo.sourceCoil?.weightLb || 0,
+    unit: 'lbs',
+    scheduledDate: wo.scheduledDate,
+    progress: wo.status === 'COMPLETE' ? 100 : wo.status === 'IN_PROGRESS' ? 50 : 0,
+    status: wo.status,
+  }))
 
   return (
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>

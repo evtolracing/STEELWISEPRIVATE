@@ -7,7 +7,6 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -17,8 +16,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  AppBar,
-  Toolbar,
   Avatar,
   Chip,
   Stack,
@@ -164,78 +161,56 @@ function WorkCenterSelectPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
-      {/* Modern Header */}
-      <Box sx={{ 
-        px: 3, 
-        py: 2.5, 
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
-        color: 'white',
-        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ 
-              width: 56, 
-              height: 56, 
-              background: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(10px)',
-            }}>
-              <FactoryIcon sx={{ fontSize: 30 }} />
-            </Avatar>
-            <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
-                Shop Floor Control
-              </Typography>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                  Select work center to view queue • AI-optimized dispatch
-                </Typography>
-              </Stack>
-            </Box>
+    <Box>
+      {/* Page Header */}
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Avatar sx={{ 
+            width: 48, 
+            height: 48, 
+            bgcolor: 'primary.main',
+          }}>
+            <FactoryIcon />
+          </Avatar>
+          <Box>
+            <Typography variant="h4" fontWeight={700}>
+              Shop Floor Control
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Select work center to view queue • AI-optimized dispatch
+            </Typography>
           </Box>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <Select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.15)',
-                  color: 'white',
-                  '& .MuiSelect-icon': { color: 'white' },
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.25)' },
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                }}
-              >
-                {locations.map((loc) => (
-                  <MenuItem key={loc.id} value={loc.id}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <LocationIcon fontSize="small" />
-                      <span>{loc.name}</span>
-                    </Stack>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Button
-              variant="contained"
-              startIcon={dispatching ? <CircularProgress size={20} color="inherit" /> : <StartIcon />}
-              onClick={handleRunDispatch}
-              disabled={dispatching}
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(10px)',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
-              }}
-            >
-              Run Dispatch
-            </Button>
-          </Stack>
         </Box>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Location</InputLabel>
+            <Select
+              value={selectedLocation}
+              label="Location"
+              onChange={(e) => setSelectedLocation(e.target.value)}
+            >
+              {locations.map((loc) => (
+                <MenuItem key={loc.id} value={loc.id}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <LocationIcon fontSize="small" />
+                    <span>{loc.name}</span>
+                  </Stack>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            startIcon={dispatching ? <CircularProgress size={20} color="inherit" /> : <StartIcon />}
+            onClick={handleRunDispatch}
+            disabled={dispatching}
+          >
+            Run Dispatch
+          </Button>
+        </Stack>
       </Box>
 
-      <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Box>
         {/* Stats Summary */}
         {stats && (
           <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)', color: 'white' }}>
@@ -442,7 +417,7 @@ function WorkCenterSelectPage() {
             ))}
           </Stack>
         </Box>
-      </Container>
+      </Box>
     </Box>
   )
 }

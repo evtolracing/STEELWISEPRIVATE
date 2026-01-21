@@ -36,7 +36,8 @@ export default function AppLayout() {
           width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
           mt: 8,
           bgcolor: 'background.default',
-          minHeight: '100vh',
+          height: 'calc(100vh - 64px)',
+          overflow: 'auto',
         }}
       >
         <Outlet />

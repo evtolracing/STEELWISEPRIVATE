@@ -78,8 +78,8 @@ function BOMsPage() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3} sx={{ flexShrink: 0 }}>
         <Box>
           <Typography variant="h5">BOMs / Recipes</Typography>
           <Typography variant="body2" color="text.secondary">
@@ -92,12 +92,13 @@ function BOMsPage() {
       </Stack>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+        <Alert severity="error" sx={{ mb: 2, flexShrink: 0 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
-      <Stack spacing={2}>
+      <Box sx={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+        <Stack spacing={2} sx={{ pb: 2 }}>
         {boms.map(bom => (
           <Accordion 
             key={bom.id}
@@ -246,6 +247,7 @@ function BOMsPage() {
           </Accordion>
         ))}
       </Stack>
+      </Box>
     </Box>
   );
 }

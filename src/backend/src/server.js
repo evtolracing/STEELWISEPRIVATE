@@ -30,6 +30,10 @@ import shippingV1Routes from './routes/shippingV1.js';
 import eventsV1Routes from './routes/eventsV1.js';
 import dispatchRoutes from './routes/dispatchRoutes.js';
 import operationsRoutes from './routes/operationsRoutes.js';
+import orderHubRoutes from './routes/orderHubRoutes.js';
+import aiOrderHubRoutes from './routes/aiOrderHubRoutes.js';
+import ingestRoutes from './routes/ingestRoutes.js';
+import { initOrderHubData } from './routes/initOrderHubData.js';
 
 dotenv.config();
 
@@ -76,6 +80,16 @@ app.use('/api/v1/work-centers', workCenterRoutes);
 app.use('/api/v1/dispatch', dispatchRoutes);
 app.use('/api/v1/operations', operationsRoutes);
 
+// OrderHub - Unified Order Pipeline
+app.use('/api/v1', orderHubRoutes);        // /api/v1/contacts, /api/v1/rfq, /api/v1/quotes, /api/v1/orders
+app.use('/api/v1/ai', aiOrderHubRoutes);   // /api/v1/ai/parse-email-rfq, /api/v1/ai/quote-assistant
+app.use('/api/v1/ingest', ingestRoutes);   // /api/v1/ingest/email-rfq
+
+// Initialize OrderHub seed data
+console.log('🌱 About to initialize seed data...');
+initOrderHubData();
+console.log('✅ Seed data initialized');
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -84,6 +98,33 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 SteelWise API running on port ${PORT}`);
+  console.log(`📡 Server object created:`, !!server);
+  console.log(`🔌 Server listening:`, server.listening);
 });
+
+console.log('🔧 After app.listen() call...');
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('⚠️ Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit - keep server running
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  // Don't exit - keep server running
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, closing server gracefully');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+console.log('✅ All listeners attached, entering event loop...');

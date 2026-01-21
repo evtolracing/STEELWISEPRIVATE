@@ -39,6 +39,7 @@ import {
   Speed as CockpitIcon,
   Factory as WorkCenterIcon,
   Timer as TimeTrackingIcon,
+  RequestQuote as OrderHubIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -99,6 +100,7 @@ const navSections = [
   {
     title: 'Commercial',
     items: [
+      { path: '/orderhub', label: 'OrderHub', icon: OrderHubIcon },
       { path: '/pricing', label: 'Pricing', icon: PricingIcon },
     ],
   },

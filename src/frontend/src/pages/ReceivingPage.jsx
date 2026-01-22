@@ -27,6 +27,10 @@ import {
   InputAdornment,
   Badge,
   Divider,
+  ToggleButtonGroup,
+  ToggleButton,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -41,8 +45,15 @@ import {
   Refresh as RefreshIcon,
   Edit as EditIcon,
   Close as CloseIcon,
+  Map as MapIcon,
+  ViewList,
+  ViewModule,
+  MoveToInbox as ReceivingIcon,
+  AutoAwesome as AIIcon,
+  Scale as WeightIcon,
 } from '@mui/icons-material'
 import { MATERIAL_OWNERSHIP, MATERIAL_FORMS, COMMON_GRADES } from '../constants/materials'
+import InboundShipmentTracker from '../components/logistics/InboundShipmentTracker'
 
 // Mock incoming shipments
 const generateMockIncoming = () => [
@@ -129,6 +140,7 @@ const ReceivingPage = () => {
   const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
   const [selectedShipment, setSelectedShipment] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
+  const [viewMode, setViewMode] = useState('list') // 'list' or 'map'
 
   // Receive form state
   const [receiveForm, setReceiveForm] = useState({
@@ -233,70 +245,137 @@ const ReceivingPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
-      {/* Header */}
-      <Paper sx={{ p: 2, borderRadius: 0 }} elevation={1}>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)',
+      mx: -3,
+      mt: -3,
+    }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 3, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box>
-            <Typography variant="h5" fontWeight={600}>
-              Receiving
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Manage incoming shipments and inventory
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <ReceivingIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Receiving
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Manage incoming shipments and inventory
+                </Typography>
+              </Stack>
+            </Box>
           </Box>
-          <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<ScanIcon />}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(e, v) => v && setViewMode(v)}
+              size="small"
+              sx={{ 
+                bgcolor: 'rgba(255,255,255,0.1)',
+                '& .MuiToggleButton-root': { color: 'white', borderColor: 'rgba(255,255,255,0.3)' },
+                '& .Mui-selected': { bgcolor: 'rgba(255,255,255,0.2) !important' },
+              }}
+            >
+              <ToggleButton value="list">
+                <ViewList />
+              </ToggleButton>
+              <ToggleButton value="map">
+                <MapIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <Button 
+              variant="outlined" 
+              startIcon={<ScanIcon />}
+              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+            >
               Scan
             </Button>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenReceiveDialog(null)}>
+            <Button 
+              variant="contained" 
+              startIcon={<AddIcon />} 
+              onClick={() => handleOpenReceiveDialog(null)}
+              sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
+            >
               Quick Receive
             </Button>
           </Stack>
         </Box>
-      </Paper>
+      </Box>
 
       {/* Stats Bar */}
-      <Paper sx={{ mx: 3, mt: 2, p: 2 }} variant="outlined">
-        <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />}>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Scheduled Today
-            </Typography>
-            <Typography variant="h6" fontWeight={600}>
-              {stats.scheduled}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Arrived / Waiting
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="warning.main">
-              {stats.arrived}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Received Today
-            </Typography>
-            <Typography variant="h6" fontWeight={600} color="success.main">
-              {stats.todayReceived}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Total Weight
-            </Typography>
-            <Typography variant="h6" fontWeight={600}>
-              {formatWeight(stats.totalWeight)}
-            </Typography>
-          </Box>
-        </Stack>
-      </Paper>
+      <Box sx={{ mx: 3, mt: 3 }}>
+        <Paper sx={{ 
+          p: 2.5,
+          borderRadius: 3,
+          background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)',
+          border: '1px solid',
+          borderColor: 'divider',
+        }}>
+          <Stack direction="row" spacing={4} divider={<Box sx={{ borderRight: 1, borderColor: 'divider' }} />} flexWrap="wrap">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#1976d2', 0.1) }}>
+                <PendingIcon sx={{ color: 'primary.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Scheduled Today</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.scheduled}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#ed6c02', 0.1) }}>
+                <TruckIcon sx={{ color: 'warning.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Arrived / Waiting</Typography>
+                <Typography variant="h5" fontWeight={700} color="warning.main">{stats.arrived}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#2e7d32', 0.1) }}>
+                <CheckIcon sx={{ color: 'success.main' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Received Today</Typography>
+                <Typography variant="h5" fontWeight={700} color="success.main">{stats.todayReceived}</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar sx={{ width: 40, height: 40, bgcolor: alpha('#7b1fa2', 0.1) }}>
+                <WeightIcon sx={{ color: '#7b1fa2' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Total Weight</Typography>
+                <Typography variant="h5" fontWeight={700} sx={{ color: '#7b1fa2' }}>{formatWeight(stats.totalWeight)}</Typography>
+              </Box>
+            </Box>
+          </Stack>
+        </Paper>
+      </Box>
 
       {/* Tabs */}
-      <Box sx={{ px: 3, pt: 2 }}>
-        <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
+      <Box sx={{ px: 3, pt: 3 }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={(_, v) => setActiveTab(v)}
+          sx={{ '& .MuiTab-root': { fontWeight: 600, textTransform: 'none' } }}
+        >
           <Tab
             label={
               <Badge badgeContent={stats.arrived} color="warning">
@@ -310,6 +389,30 @@ const ReceivingPage = () => {
 
       {/* Content */}
       <Box sx={{ p: 3 }}>
+        {/* Map View */}
+        {viewMode === 'map' && activeTab === 0 && (
+          <Box sx={{ mb: 3 }}>
+            <InboundShipmentTracker
+              shipments={incomingShipments.map(s => ({
+                ...s,
+                currentLocation: s.status === 'ARRIVED' ? {
+                  coordinates: [-87.6298, 41.8781],
+                } : {
+                  coordinates: [-85.5 + Math.random(), 41.5 + Math.random()],
+                },
+                origin: {
+                  coordinates: [-84.5, 39.1],
+                },
+                eta: s.expectedDate,
+                driverPhone: '(555) 123-4567',
+              }))}
+              warehouseLocation={[-87.6298, 41.8781]}
+              warehouseName="Main Warehouse"
+              height="450px"
+            />
+          </Box>
+        )}
+
         {/* Search */}
         <TextField
           size="small"
@@ -332,9 +435,19 @@ const ReceivingPage = () => {
               .filter((s) => s.status !== 'RECEIVED')
               .map((shipment) => (
                 <Grid item xs={12} md={6} lg={4} key={shipment.id}>
-                  <Paper sx={{ p: 2 }}>
+                  <Paper sx={{ 
+                    p: 2.5,
+                    borderRadius: 3,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+                    }
+                  }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="subtitle1" fontWeight={600}>
+                      <Typography variant="subtitle1" fontWeight={700}>
                         {shipment.bolNumber}
                       </Typography>
                       {getStatusChip(shipment.status)}
@@ -345,12 +458,12 @@ const ReceivingPage = () => {
                     <Typography variant="caption" color="text.secondary">
                       Expected: {formatDate(shipment.expectedDate)}
                     </Typography>
-                    <Divider sx={{ my: 1 }} />
+                    <Divider sx={{ my: 1.5 }} />
                     <Stack spacing={0.5}>
                       {shipment.items.map((item, idx) => (
                         <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                           <Typography variant="body2">{item.material}</Typography>
-                          <Typography variant="body2" fontWeight={500}>
+                          <Typography variant="body2" fontWeight={600}>
                             {formatWeight(item.weight)}
                           </Typography>
                         </Box>

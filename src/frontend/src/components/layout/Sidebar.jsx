@@ -28,26 +28,47 @@ import {
   ViewKanban as KanbanIcon,
   Schedule as ScheduleIcon,
   PrecisionManufacturing as ShopFloorIcon,
+  AutoAwesome as OptimizationIcon,
   MoveToInbox as ReceivingIcon,
   Inventory as PackagingIcon,
   LocalShipping as ShippingIcon,
+  TableChart as PlanningIcon,
+  Assignment as ProductionIcon,
+  Map as MapIcon,
+  Route as RouteIcon,
+  Speed as CockpitIcon,
+  Factory as WorkCenterIcon,
+  Timer as TimeTrackingIcon,
+  RequestQuote as OrderHubIcon,
 } from '@mui/icons-material'
 
 const navSections = [
   {
-    title: 'Overview',
+    title: 'Command Center',
     items: [
-      { path: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
+      { path: '/ops-cockpit', label: 'Ops Cockpit', icon: CockpitIcon },
+      { path: '/role-dashboard', label: 'My Dashboard', icon: DashboardIcon },
+    ],
+  },
+  {
+    title: 'Production',
+    items: [
+      { path: '/production', label: 'Workflow Board', icon: ProductionIcon },
+      { path: '/production/shop-floor', label: 'Shop Floor', icon: ShopFloorIcon },
+      { path: '/production/shipping', label: 'Prod Shipping', icon: ShippingIcon },
     ],
   },
   {
     title: 'Service Center',
     items: [
       { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
+      { path: '/shopfloor', label: 'Shop Floor Queue', icon: WorkCenterIcon, highlight: true },
+      { path: '/planning', label: 'Planning', icon: PlanningIcon },
       { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
       { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
       { path: '/packaging', label: 'Packaging', icon: PackagingIcon },
       { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
+      { path: '/time-tracking', label: 'Time Tracking', icon: TimeTrackingIcon },
     ],
   },
   {
@@ -64,17 +85,22 @@ const navSections = [
       { path: '/work-orders', label: 'Work Orders', icon: WorkOrdersIcon },
       { path: '/bom', label: 'BOM / Recipes', icon: BOMIcon },
       { path: '/orders', label: 'Orders', icon: OrdersIcon },
+      { path: '/optimization', label: 'AI Optimization', icon: OptimizationIcon },
     ],
   },
   {
     title: 'Logistics',
     items: [
-      { path: '/shipments', label: 'Shipments', icon: LogisticsIcon },
+      { path: '/logistics/shipments', label: 'Shipments', icon: LogisticsIcon },
+      { path: '/logistics/tracking', label: 'Tracking', icon: MapIcon },
+      { path: '/logistics/dispatch', label: 'Dispatch Planning', icon: LogisticsIcon },
+      { path: '/logistics/route-optimization', label: 'Route Optimization', icon: RouteIcon },
     ],
   },
   {
     title: 'Commercial',
     items: [
+      { path: '/orderhub', label: 'OrderHub', icon: OrderHubIcon },
       { path: '/pricing', label: 'Pricing', icon: PricingIcon },
     ],
   },
@@ -135,6 +161,7 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
               {section.items.map((item) => {
                 const Icon = item.icon
                 const isActive = location.pathname.startsWith(item.path)
+                const isHighlight = item.highlight
                 return (
                   <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
                     <ListItemButton
@@ -143,8 +170,14 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
                       onClick={onMobileClose}
                       sx={{
                         borderRadius: 1,
-                        bgcolor: isActive ? 'primary.main' : 'transparent',
+                        bgcolor: isActive 
+                          ? 'primary.main' 
+                          : isHighlight 
+                            ? 'warning.light' 
+                            : 'transparent',
                         color: isActive ? 'white' : 'text.primary',
+                        border: isHighlight && !isActive ? '2px solid' : 'none',
+                        borderColor: isHighlight && !isActive ? 'warning.main' : 'transparent',
                         '&:hover': {
                           bgcolor: isActive ? 'primary.dark' : 'action.hover',
                         },
@@ -152,13 +185,16 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
                       }}
                     >
                       <ListItemIcon
-                        sx={{ color: isActive ? 'white' : 'text.secondary', minWidth: 36 }}
+                        sx={{ color: isActive ? 'white' : isHighlight ? 'warning.dark' : 'text.secondary', minWidth: 36 }}
                       >
                         <Icon fontSize="small" />
                       </ListItemIcon>
                       <ListItemText 
                         primary={item.label} 
-                        primaryTypographyProps={{ fontSize: '0.875rem' }}
+                        primaryTypographyProps={{ 
+                          fontSize: '0.875rem',
+                          fontWeight: isHighlight ? 600 : 400,
+                        }}
                       />
                     </ListItemButton>
                   </ListItem>
@@ -198,7 +234,11 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
         variant="temporary"
         open={mobileOpen}
         onClose={onMobileClose}
-        ModalProps={{ keepMounted: true }}
+        ModalProps={{ 
+          keepMounted: true,
+          disableRestoreFocus: true,
+          disableEnforceFocus: true,
+        }}
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },

@@ -12,6 +12,8 @@ import {
   MenuItem,
   TextField,
   InputAdornment,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -19,6 +21,8 @@ import {
   Download as DownloadIcon,
   MoreVert as MoreIcon,
   Search as SearchIcon,
+  LocalFireDepartment as HeatIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { useApiQuery } from '../../hooks/useApiQuery'
 import { getHeats } from '../../api'
@@ -128,35 +132,68 @@ export default function HeatListPage() {
   const displayData = data?.heats || mockHeats
 
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={600}>
-            Heats
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage mill heats and their associated units
-          </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <HeatIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Heats
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Manage mill heats and their associated units
+                </Typography>
+              </Stack>
+            </Box>
+          </Box>
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={handleExport}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              Export
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/heats/new')}
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+              }}
+            >
+              Add Heat
+            </Button>
+          </Stack>
         </Box>
-        <Stack direction="row" spacing={1}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={handleExport}
-          >
-            Export
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/heats/new')}
-          >
-            Add Heat
-          </Button>
-        </Stack>
       </Box>
 
+      <Box sx={{ px: 3, pb: 3 }}>
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
@@ -237,6 +274,7 @@ export default function HeatListPage() {
           Place on Hold
         </MenuItem>
       </Menu>
+      </Box>
     </Box>
   )
 }

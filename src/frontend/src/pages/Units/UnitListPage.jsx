@@ -14,6 +14,8 @@ import {
   InputAdornment,
   ToggleButton,
   ToggleButtonGroup,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -23,6 +25,8 @@ import {
   Search as SearchIcon,
   ViewList as ListIcon,
   ViewModule as GridIcon,
+  Inventory as UnitIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { useApiQuery } from '../../hooks/useApiQuery'
 import { getUnits } from '../../api'
@@ -115,49 +119,92 @@ export default function UnitListPage() {
   const displayData = data?.units || mockUnits
 
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={600}>
-            Units / Coils
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage individual steel units and coils
-          </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <UnitIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Units / Coils
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Manage individual steel units and coils • Full traceability
+                </Typography>
+              </Stack>
+            </Box>
+          </Box>
+          <Stack direction="row" spacing={1}>
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(e, v) => v && setViewMode(v)}
+              size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  color: 'rgba(255,255,255,0.7)',
+                  borderColor: 'rgba(255,255,255,0.3)',
+                  '&.Mui-selected': {
+                    color: 'white',
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="list">
+                <ListIcon />
+              </ToggleButton>
+              <ToggleButton value="grid">
+                <GridIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              Export
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate('/units/new')}
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+              }}
+            >
+              Add Unit
+            </Button>
+          </Stack>
         </Box>
-        <Stack direction="row" spacing={1}>
-          <ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={(e, v) => v && setViewMode(v)}
-            size="small"
-          >
-            <ToggleButton value="list">
-              <ListIcon />
-            </ToggleButton>
-            <ToggleButton value="grid">
-              <GridIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-          >
-            Export
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/units/new')}
-          >
-            Add Unit
-          </Button>
-        </Stack>
       </Box>
 
+      <Box sx={{ px: 3, pb: 3 }}>
       {/* Filters */}
-      <Paper sx={{ p: 2, mb: 3 }}>
+      <Paper sx={{ p: 2, mb: 3, borderRadius: 3 }}>
         <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
           <TextField
             placeholder="Search units..."
@@ -264,6 +311,7 @@ export default function UnitListPage() {
           Place on Hold
         </MenuItem>
       </Menu>
+      </Box>
     </Box>
   )
 }

@@ -17,6 +17,8 @@ import {
   TableRow,
   IconButton,
   Chip,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -24,6 +26,7 @@ import {
   Delete as DeleteIcon,
   TrendingUp as TrendingUpIcon,
   AttachMoney as MoneyIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { DataTable, StatusChip } from '../../components/common'
 
@@ -74,28 +77,64 @@ export default function PricingDashboardPage() {
   ]
 
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={600}>
-            Pricing Management
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage base prices, surcharges, and quotes
-          </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <MoneyIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Pricing Management
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Manage base prices, surcharges, and quotes • AI-optimized pricing
+                </Typography>
+              </Stack>
+            </Box>
+          </Box>
+          <Stack direction="row" spacing={1}>
+            <Button 
+              variant="contained" 
+              startIcon={<AddIcon />}
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+              }}
+            >
+              New Quote
+            </Button>
+          </Stack>
         </Box>
-        <Stack direction="row" spacing={1}>
-          <Button variant="contained" startIcon={<AddIcon />}>
-            New Quote
-          </Button>
-        </Stack>
       </Box>
 
+      <Box sx={{ px: 3, pb: 3 }}>
       {/* KPI Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ 
+            background: `linear-gradient(135deg, ${alpha('#4caf50', 0.05)} 0%, ${alpha('#4caf50', 0.02)} 100%)`,
+            border: `1px solid ${alpha('#4caf50', 0.2)}`,
+            transition: 'all 0.3s ease',
+            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#4caf50', 0.2)}` },
+          }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Box>
@@ -106,13 +145,20 @@ export default function PricingDashboardPage() {
                     <Typography variant="body2" color="success.main">+2.3%</Typography>
                   </Box>
                 </Box>
-                <MoneyIcon sx={{ fontSize: 40, color: 'primary.light' }} />
+                <Avatar sx={{ bgcolor: alpha('#4caf50', 0.1) }}>
+                  <MoneyIcon sx={{ color: 'success.main' }} />
+                </Avatar>
               </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ 
+            background: `linear-gradient(135deg, ${alpha('#2196f3', 0.05)} 0%, ${alpha('#2196f3', 0.02)} 100%)`,
+            border: `1px solid ${alpha('#2196f3', 0.2)}`,
+            transition: 'all 0.3s ease',
+            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#2196f3', 0.2)}` },
+          }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Box>
@@ -123,13 +169,20 @@ export default function PricingDashboardPage() {
                     <Typography variant="body2" color="success.main">+5.1%</Typography>
                   </Box>
                 </Box>
-                <MoneyIcon sx={{ fontSize: 40, color: 'info.light' }} />
+                <Avatar sx={{ bgcolor: alpha('#2196f3', 0.1) }}>
+                  <MoneyIcon sx={{ color: 'info.main' }} />
+                </Avatar>
               </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ 
+            background: `linear-gradient(135deg, ${alpha('#ff9800', 0.05)} 0%, ${alpha('#ff9800', 0.02)} 100%)`,
+            border: `1px solid ${alpha('#ff9800', 0.2)}`,
+            transition: 'all 0.3s ease',
+            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#ff9800', 0.2)}` },
+          }}>
             <CardContent>
               <Typography variant="body2" color="text.secondary">Open Quotes</Typography>
               <Typography variant="h4" fontWeight={600}>12</Typography>
@@ -138,7 +191,12 @@ export default function PricingDashboardPage() {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ 
+            background: `linear-gradient(135deg, ${alpha('#9c27b0', 0.05)} 0%, ${alpha('#9c27b0', 0.02)} 100%)`,
+            border: `1px solid ${alpha('#9c27b0', 0.2)}`,
+            transition: 'all 0.3s ease',
+            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#9c27b0', 0.2)}` },
+          }}>
             <CardContent>
               <Typography variant="body2" color="text.secondary">Quote Win Rate</Typography>
               <Typography variant="h4" fontWeight={600}>68%</Typography>
@@ -210,6 +268,7 @@ export default function PricingDashboardPage() {
           </Paper>
         </Grid>
       </Grid>
+      </Box>
     </Box>
   )
 }

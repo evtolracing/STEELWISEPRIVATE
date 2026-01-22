@@ -16,6 +16,8 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   CheckCircle as PassIcon,
@@ -24,6 +26,7 @@ import {
   Science as TestIcon,
   Refresh as RefreshIcon,
   Assignment as ReportIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { DataTable, StatusChip } from '../../components/common'
 
@@ -106,27 +109,66 @@ export default function QualityDashboardPage() {
   ]
 
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" fontWeight={600}>
-            Quality Dashboard
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Monitor quality control and testing status
-          </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ 
+              width: 56, 
+              height: 56, 
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+            }}>
+              <TestIcon sx={{ fontSize: 30 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Quality Dashboard
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Monitor quality control and testing status
+                </Typography>
+              </Stack>
+            </Box>
+          </Box>
+          <Stack direction="row" spacing={1}>
+            <Button 
+              variant="outlined" 
+              startIcon={<ReportIcon />}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              QC Reports
+            </Button>
+            <Button 
+              variant="contained" 
+              startIcon={<TestIcon />}
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+              }}
+            >
+              New Test
+            </Button>
+          </Stack>
         </Box>
-        <Stack direction="row" spacing={1}>
-          <Button variant="outlined" startIcon={<ReportIcon />}>
-            QC Reports
-          </Button>
-          <Button variant="contained" startIcon={<TestIcon />}>
-            New Test
-          </Button>
-        </Stack>
       </Box>
 
+      <Box sx={{ px: 3, pb: 3 }}>
       {/* KPI Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
@@ -224,6 +266,7 @@ export default function QualityDashboardPage() {
           </Paper>
         </Grid>
       </Grid>
+      </Box>
     </Box>
   )
 }

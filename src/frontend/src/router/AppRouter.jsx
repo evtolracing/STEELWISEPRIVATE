@@ -13,6 +13,7 @@ const UnitListPage = lazy(() => import('../pages/Units/UnitListPage'))
 const UnitDetailPage = lazy(() => import('../pages/Units/UnitDetailPage'))
 const WorkOrderListPage = lazy(() => import('../pages/WorkOrders/WorkOrderListPage'))
 const WorkOrderDetailPage = lazy(() => import('../pages/WorkOrders/WorkOrderDetailPage'))
+const WorkOrderCreatePage = lazy(() => import('../pages/WorkOrders/WorkOrderCreatePage'))
 const ShipmentListPage = lazy(() => import('../pages/Logistics/ShipmentListPage'))
 const ShipmentDetailPage = lazy(() => import('../pages/Logistics/ShipmentDetailPage'))
 const PricingDashboardPage = lazy(() => import('../pages/Pricing/PricingDashboardPage'))
@@ -23,13 +24,59 @@ const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLo
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
 // Phase 1 - Service Center Pages
-const OrderBoardPage = lazy(() => import('../pages/OrderBoardPage'))
+const OrderBoardPage = lazy(() => import('../pages/ModernOrderBoardPage'))
+const OrderBoardPageLegacy = lazy(() => import('../pages/OrderBoardPage'))
 const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const ShopFloorPage = lazy(() => import('../pages/ShopFloorPage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
 const PackagingPage = lazy(() => import('../pages/PackagingPage'))
 const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
+const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
+
+// POS - Point of Sale
+const POSPage = lazy(() => import('../pages/POSPage'))
+
+// Planning App
+const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
+
+// Production Workflow
+const ProductionLayout = lazy(() => import('../components/production/ProductionLayout'))
+const ProductionWorkflowBoard = lazy(() => import('../components/production/ProductionWorkflowBoard'))
+const ShopFloorScreen = lazy(() => import('../components/production/ShopFloorScreen'))
+const ShippingScreen = lazy(() => import('../components/production/ShippingScreen'))
+
+// New App Pages
+const ShipmentsPage = lazy(() => import('../apps/shipments/ShipmentsPage'))
+const OrdersPage = lazy(() => import('../apps/orders/OrdersPage'))
+const BOMsPage = lazy(() => import('../apps/boms/BOMsPage'))
+
+// Inventory App
+const InventoryApp = lazy(() => import('../apps/inventory/InventoryApp'))
+
+// BOM Recipes App
+const BomRecipesApp = lazy(() => import('../apps/bom/BomRecipesApp'))
+
+// Work Order Optimization App
+const OptimizationApp = lazy(() => import('../apps/optimization/OptimizationApp'))
+
+// Logistics & Optimization
+const RouteOptimizationScreen = lazy(() => import('../screens/RouteOptimizationScreen'))
+const ShipmentTrackingScreen = lazy(() => import('../screens/ShipmentTrackingScreen'))
+const DispatchPlanningScreen = lazy(() => import('../screens/DispatchPlanningScreen'))
+
+// Ops Cockpit
+const OpsCockpitPage = lazy(() => import('../pages/OpsCockpit/OpsCockpitPage'))
+
+// Role-Based Dashboard App
+const DashboardApp = lazy(() => import('../apps/dashboard/DashboardApp.jsx'))
+
+// Shop Floor Queue Pages (Dispatch Engine)
+const WorkCenterSelectPage = lazy(() => import('../apps/shopfloor/WorkCenterSelectPage'))
+const WorkCenterQueuePage = lazy(() => import('../apps/shopfloor/WorkCenterQueuePage'))
+
+// OrderHub App
+const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 
 // Loading fallback
 function PageLoader() {
@@ -88,6 +135,19 @@ const router = createBrowserRouter([
     errorElement: <RouteErrorPage />,
   },
 
+  // POS - Point of Sale (standalone full-screen for counter operations)
+  {
+    path: '/pos',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <POSPage />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorPage />,
+  },
+
   // Protected routes with layout
   {
     path: '/',
@@ -104,6 +164,39 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <DashboardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Ops Cockpit - Command Center
+      {
+        path: 'ops-cockpit',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OpsCockpitPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Role-Based Dashboard
+      {
+        path: 'role-dashboard/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DashboardApp />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // OrderHub - RFQ/Quote/Order Console
+      {
+        path: 'orderhub/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderHubApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -155,6 +248,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <WorkOrderListPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'work-orders/new',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <WorkOrderCreatePage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -244,12 +346,56 @@ const router = createBrowserRouter([
       // Phase 1 - Service Center Operations Routes
       // ============================================
 
-      // Order Board (Kanban)
+      // Production Workflow Board
+      {
+        path: 'production',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ProductionWorkflowBoard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Production Shop Floor Screen
+      {
+        path: 'production/shop-floor',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShopFloorScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Production Shipping Screen
+      {
+        path: 'production/shipping',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShippingScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Order Board (Kanban) - Modern AI-Ready Version
       {
         path: 'order-board',
         element: (
           <Suspense fallback={<PageLoader />}>
             <OrderBoardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Order Board - Legacy Version
+      {
+        path: 'order-board-legacy',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderBoardPageLegacy />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -299,12 +445,144 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Shipping Desk
+      // Shipping/Shipments
       {
         path: 'shipping',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ShippingDeskPage />
+            <ShipmentsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Time Tracking Report
+      {
+        path: 'time-tracking',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TimeTrackingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Shop Floor Queue - Work Center Selection
+      {
+        path: 'shopfloor',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <WorkCenterSelectPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Shop Floor Queue - Work Center Queue View
+      {
+        path: 'shopfloor/:workCenterId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <WorkCenterQueuePage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Route Optimization
+      {
+        path: 'logistics/route-optimization',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RouteOptimizationScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Shipment Tracking
+      {
+        path: 'logistics/tracking',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShipmentTrackingScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Dispatch Planning
+      {
+        path: 'logistics/dispatch',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DispatchPlanningScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Orders (new detailed view)
+      {
+        path: 'orders',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrdersPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // BOMs / Recipes
+      {
+        path: 'boms',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <BOMsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Inventory App (with AI Assistant)
+      {
+        path: 'inventory/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <InventoryApp />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // BOM Recipes App
+      {
+        path: 'bom/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <BomRecipesApp />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Work Order Optimization App
+      {
+        path: 'optimization/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OptimizationApp />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Planning & Scheduling App
+      {
+        path: 'planning/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PlanningSchedulingApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

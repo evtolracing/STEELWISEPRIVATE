@@ -17,6 +17,8 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  Avatar,
+  alpha,
 } from '@mui/material'
 import {
   ArrowBack as BackIcon,
@@ -27,6 +29,7 @@ import {
   Description as DocIcon,
   Timeline as TimelineIcon,
   LocalShipping as ShipIcon,
+  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { useApiQuery } from '../../hooks/useApiQuery'
 import { getUnit, getUnitTrace } from '../../api'
@@ -127,41 +130,86 @@ export default function UnitDetailPage() {
   ]
 
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <IconButton onClick={() => navigate('/units')}>
-          <BackIcon />
-        </IconButton>
-        <Box sx={{ flex: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" fontWeight={600}>
-              {displayUnit.unitNumber}
-            </Typography>
-            <StatusChip status={displayUnit.status} />
-            <StatusChip status={displayUnit.qualityStatus} />
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
+      {/* Modern Header */}
+      <Box sx={{ 
+        px: 3, 
+        py: 2.5, 
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
+        mb: 3,
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton onClick={() => navigate('/units')} sx={{ color: 'white' }}>
+            <BackIcon />
+          </IconButton>
+          <Avatar sx={{ 
+            width: 56, 
+            height: 56, 
+            background: 'rgba(255,255,255,0.15)',
+            backdropFilter: 'blur(10px)',
+          }}>
+            <InventoryIcon sx={{ fontSize: 30 }} />
+          </Avatar>
+          <Box sx={{ flex: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                {displayUnit.unitNumber}
+              </Typography>
+              <StatusChip status={displayUnit.status} />
+              <StatusChip status={displayUnit.qualityStatus} />
+            </Box>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
+              <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                Heat: {displayUnit.heatNumber} | Grade: {displayUnit.grade}
+              </Typography>
+            </Stack>
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            Heat: {displayUnit.heatNumber} | Grade: {displayUnit.grade}
-          </Typography>
+          <Stack direction="row" spacing={1}>
+            <Button 
+              startIcon={<QrCodeIcon />} 
+              variant="outlined"
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              QR Code
+            </Button>
+            <Button 
+              startIcon={<PrintIcon />} 
+              variant="outlined"
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              Print Label
+            </Button>
+            <Button 
+              startIcon={<EditIcon />} 
+              variant="contained"
+              sx={{
+                bgcolor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+              }}
+            >
+              Edit
+            </Button>
+          </Stack>
         </Box>
-        <Stack direction="row" spacing={1}>
-          <Button startIcon={<QrCodeIcon />} variant="outlined">
-            QR Code
-          </Button>
-          <Button startIcon={<PrintIcon />} variant="outlined">
-            Print Label
-          </Button>
-          <Button startIcon={<EditIcon />} variant="contained">
-            Edit
-          </Button>
-        </Stack>
       </Box>
 
+      <Box sx={{ px: 3, pb: 3 }}>
       {/* Summary Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
+          <Card variant="outlined" sx={{ borderRadius: 3 }}>
             <CardContent>
               <Typography variant="body2" color="text.secondary">Weight</Typography>
               <Typography variant="h5">{displayUnit.weight?.toLocaleString()} {displayUnit.weightUnit}</Typography>
@@ -284,6 +332,7 @@ export default function UnitDetailPage() {
           <TraceTimeline events={displayTrace} />
         </Paper>
       </TabPanel>
+      </Box>
     </Box>
   )
 }

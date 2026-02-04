@@ -54,6 +54,9 @@ import {
 } from '@mui/icons-material'
 import { MATERIAL_OWNERSHIP, MATERIAL_FORMS, COMMON_GRADES } from '../constants/materials'
 import InboundShipmentTracker from '../components/logistics/InboundShipmentTracker'
+import { InventoryUpload } from '../components/inventory'
+import { bulkUploadInventory } from '../api/inventory'
+import { Upload as UploadIcon } from '@mui/icons-material'
 
 // Mock incoming shipments
 const generateMockIncoming = () => [
@@ -141,6 +144,7 @@ const ReceivingPage = () => {
   const [selectedShipment, setSelectedShipment] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
   const [viewMode, setViewMode] = useState('list') // 'list' or 'map'
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
 
   // Receive form state
   const [receiveForm, setReceiveForm] = useState({
@@ -167,6 +171,24 @@ const ReceivingPage = () => {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  const handleBulkUpload = async (data) => {
+    try {
+      const result = await bulkUploadInventory(data)
+      setSnackbar({
+        open: true,
+        message: `Successfully uploaded ${result.created || data.items.length} items`,
+        severity: 'success',
+      })
+      loadData() // Refresh data
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Upload failed: ${error.message}`,
+        severity: 'error',
+      })
+    }
+  }
 
   const getStatusChip = (status) => {
     const configs = {
@@ -306,6 +328,14 @@ const ReceivingPage = () => {
               sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
             >
               Scan
+            </Button>
+            <Button 
+              variant="outlined" 
+              startIcon={<UploadIcon />}
+              onClick={() => setUploadDialogOpen(true)}
+              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+            >
+              Upload
             </Button>
             <Button 
               variant="contained" 
@@ -624,6 +654,14 @@ const ReceivingPage = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Inventory Upload Dialog */}
+      <InventoryUpload
+        open={uploadDialogOpen}
+        onClose={() => setUploadDialogOpen(false)}
+        onUpload={handleBulkUpload}
+        defaultTemplate="coils"
+      />
     </Box>
   )
 }

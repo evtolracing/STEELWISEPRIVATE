@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 
 // Routes
 import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
 import gradeRoutes from './routes/grades.js';
 import productRoutes from './routes/products.js';
 import heatRoutes from './routes/heats.js';
@@ -52,6 +53,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/grades', gradeRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/heats', heatRoutes);

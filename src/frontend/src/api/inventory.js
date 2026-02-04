@@ -27,6 +27,12 @@ export const getInventoryByLocation = (locationId, params) =>
 // Inventory Aggregation
 export const getInventoryAggregation = (params) => client.get('/inventory/aggregate', { params }).then(r => r.data)
 
+// Bulk Upload
+export const bulkUploadInventory = (data) => client.post('/inventory/bulk-upload', data).then(r => r.data)
+
+// Get template URL
+export const getTemplateUrl = (type) => `/api/inventory/templates/${type}`
+
 export default {
   getInventory,
   getInventorySummary,
@@ -40,4 +46,6 @@ export default {
   getStockByLocation,
   getInventoryByLocation,
   getInventoryAggregation,
+  bulkUploadInventory,
+  getTemplateUrl,
 }

@@ -40,6 +40,8 @@ import {
   Factory as WorkCenterIcon,
   Timer as TimeTrackingIcon,
   RequestQuote as OrderHubIcon,
+  Group as UsersIcon,
+  AdminPanelSettings as AdminIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -109,6 +111,12 @@ const navSections = [
     items: [
       { path: '/qaqc', label: 'QA/QC', icon: QualityIcon },
       { path: '/provenance', label: 'Provenance', icon: ProvenanceIcon },
+    ],
+  },
+  {
+    title: 'Administration',
+    items: [
+      { path: '/admin/users', label: 'User Management', icon: UsersIcon },
     ],
   },
 ]

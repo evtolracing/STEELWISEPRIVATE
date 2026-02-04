@@ -9,6 +9,7 @@ datasource db {
 
 model Organization {
   id             String     @id @default(uuid())
+  code           String     @unique
   name           String
   type           OrgType
   address        String?
@@ -32,27 +33,192 @@ model Organization {
 }
 
 model User {
-  id             String             @id @default(uuid())
-  email          String             @unique
-  passwordHash   String
-  firstName      String
-  lastName       String
-  role           UserRole
+  id               String             @id @default(uuid())
+  email            String             @unique
+  passwordHash     String
+  firstName        String
+  lastName         String
+  role             UserRole
+  organizationId   String
+  homeLocationId   String?
+  title            String?
+  phone            String?
+  avatarUrl        String?
+  lastLoginAt      DateTime?
+  mfaEnabled       Boolean            @default(false)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  createdCoils     Coil[]             @relation("CoilCreator")
+  createdHeats     Heat[]             @relation("HeatCreator")
+  assignedJobs     Job[]              @relation("JobAssignee")
+  createdJobs      Job[]              @relation("JobCreator")
+  movements        MaterialMovement[]
+  orders           Order[]            @relation("OrderCreator")
+  qcHolds          QCHold[]           @relation("HoldBy")
+  resolvedHolds    QCHold[]           @relation("ResolvedBy")
+  approvedTests    TestResult[]       @relation("ApprovedBy")
+  testResults      TestResult[]       @relation("TestedBy")
+  organization     Organization       @relation(fields: [organizationId], references: [id])
+  homeLocation     Location?          @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
+  userRoles        UserRoleAssignment[]
+  userLocations    UserLocation[]
+  userDivisions    UserDivision[]
+  auditLogs        AuditLog[]         @relation("AuditActor")
+  approvalRequests ApprovalRequest[]  @relation("ApprovalRequester")
+  approvalsMade    ApprovalDecision[] @relation("ApprovalDecider")
+}
+
+// Role definition with permissions
+model Role {
+  id          String               @id @default(uuid())
+  name        String               @unique
+  displayName String
+  description String?
+  permissions Json                 // Array of permission strings
+  isSystem    Boolean              @default(false)
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  userRoles   UserRoleAssignment[]
+}
+
+// Many-to-many: User <-> Role
+model UserRoleAssignment {
+  id        String   @id @default(uuid())
+  userId    String
+  roleId    String
+  grantedAt DateTime @default(now())
+  grantedBy String?
+  expiresAt DateTime?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+// User location assignments for ABAC scoping
+model UserLocation {
+  id         String   @id @default(uuid())
+  userId     String
+  locationId String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, locationId])
+  @@index([userId])
+  @@index([locationId])
+}
+
+// User division assignments for ABAC scoping
+model UserDivision {
+  id         String   @id @default(uuid())
+  userId     String
+  divisionId String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  division   Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, divisionId])
+  @@index([userId])
+  @@index([divisionId])
+}
+
+// Division model for organizational structure
+model Division {
+  id             String         @id @default(uuid())
+  code           String         @unique
+  name           String
   organizationId String
-  isActive       Boolean            @default(true)
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  createdCoils   Coil[]             @relation("CoilCreator")
-  createdHeats   Heat[]             @relation("HeatCreator")
-  assignedJobs   Job[]              @relation("JobAssignee")
-  createdJobs    Job[]              @relation("JobCreator")
-  movements      MaterialMovement[]
-  orders         Order[]            @relation("OrderCreator")
-  qcHolds        QCHold[]           @relation("HoldBy")
-  resolvedHolds  QCHold[]           @relation("ResolvedBy")
-  approvedTests  TestResult[]       @relation("ApprovedBy")
-  testResults    TestResult[]       @relation("TestedBy")
-  organization   Organization       @relation(fields: [organizationId], references: [id])
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  userDivisions  UserDivision[]
+}
+
+// Approval workflow tracking
+model ApprovalRequest {
+  id            String             @id @default(uuid())
+  tenantId      String
+  requestType   String             // e.g., "QUOTE_DISCOUNT", "INVENTORY_ADJUST"
+  resourceType  String
+  resourceId    String
+  requesterId   String
+  status        ApprovalStatus     @default(PENDING)
+  requestData   Json
+  justification String?
+  expiresAt     DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  requester     User               @relation("ApprovalRequester", fields: [requesterId], references: [id])
+  decisions     ApprovalDecision[]
+  
+  @@index([tenantId, status])
+  @@index([requesterId])
+}
+
+model ApprovalDecision {
+  id         String          @id @default(uuid())
+  requestId  String
+  deciderId  String
+  decision   DecisionType
+  comments   String?
+  createdAt  DateTime        @default(now())
+  request    ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  decider    User            @relation("ApprovalDecider", fields: [deciderId], references: [id])
+  
+  @@index([requestId])
+}
+
+// Audit log for security events
+model AuditLog {
+  id            String   @id @default(uuid())
+  tenantId      String?
+  category      String   // AUTH, AUTHZ, DATA, FINANCIAL, WORKFLOW, SYSTEM
+  eventType     String
+  severity      String   @default("INFO")
+  userId        String?
+  targetUserId  String?
+  resourceType  String?
+  resourceId    String?
+  action        String?
+  ipAddress     String?
+  userAgent     String?
+  sessionId     String?
+  correlationId String?
+  requestPath   String?
+  requestMethod String?
+  responseCode  Int?
+  durationMs    Int?
+  details       Json?
+  fieldChanges  Json?
+  timestamp     DateTime @default(now())
+  
+  user          User?    @relation("AuditActor", fields: [userId], references: [id])
+  
+  @@index([tenantId, timestamp])
+  @@index([userId, timestamp])
+  @@index([category, eventType])
+  @@index([resourceType, resourceId])
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ESCALATED
+  EXPIRED
+  CANCELLED
+}
+
+enum DecisionType {
+  APPROVE
+  REJECT
+  ESCALATE
 }
 
 model Grade {
@@ -208,6 +374,8 @@ model Location {
   movementsTo   MaterialMovement[] @relation("MovementTo")
   shipments     Shipment[]
   workCenters   WorkCenter[]
+  usersHome     User[]             @relation("UserHomeLocation")
+  userLocations UserLocation[]
 }
 
 model Inventory {
@@ -689,23 +857,6 @@ model CommodityPrice {
   @@index([indexCode, effectiveDate])
 }
 
-model AuditLog {
-  id         String   @id @default(uuid())
-  entityType String
-  entityId   String
-  action     String
-  oldValues  Json?
-  newValues  Json?
-  userId     String?
-  ipAddress  String?
-  sessionId  String?
-  createdAt  DateTime @default(now())
-
-  @@index([entityType, entityId])
-  @@index([userId])
-  @@index([createdAt])
-}
-
 model BomRecipe {
   id           String          @id @default(uuid())
   name         String
@@ -757,6 +908,65 @@ enum OrgType {
 }
 
 enum UserRole {
+  // System Roles
+  SUPER_ADMIN
+  TENANT_OWNER
+  
+  // Executive Roles
+  EXECUTIVE
+  CFO
+  COO
+  CIO
+  
+  // Division/Branch Roles
+  DIVISION_DIRECTOR
+  BRANCH_MANAGER
+  
+  // Sales Roles
+  SALES_DIRECTOR
+  SALES_REP
+  CSR
+  ESTIMATOR
+  CREDIT_MANAGER
+  
+  // Operations Roles
+  OPS_MANAGER
+  PRODUCTION_MANAGER
+  SCHEDULER
+  INVENTORY_MANAGER
+  BUYER
+  WORKCENTER_LEAD
+  
+  // Shop Floor Roles
+  OPERATOR_SAW
+  OPERATOR_ROUTER
+  OPERATOR_SHEAR
+  OPERATOR_PLASMA
+  OPERATOR_GENERAL
+  MATERIAL_HANDLER
+  RECEIVING_CLERK
+  SHIPPING_COORDINATOR
+  PACKAGING_LEAD
+  
+  // Quality Roles
+  QC_MANAGER
+  QC_INSPECTOR
+  
+  // Support Roles
+  MAINTENANCE_MANAGER
+  INTEGRATION_ADMIN
+  DATA_ANALYST
+  SUPPORT_AGENT
+  AUDITOR
+  
+  // External Portal Roles
+  CUSTOMER_ADMIN
+  CUSTOMER_BUYER
+  CUSTOMER_VIEWER
+  SUPPLIER_USER
+  CARRIER_USER
+  
+  // Legacy (for backward compatibility)
   ADMIN
   MILL_OPERATOR
   SERVICE_CENTER

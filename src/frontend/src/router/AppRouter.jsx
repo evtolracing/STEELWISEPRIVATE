@@ -78,6 +78,9 @@ const WorkCenterQueuePage = lazy(() => import('../apps/shopfloor/WorkCenterQueue
 // OrderHub App
 const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 
+// Admin Pages
+const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -583,6 +586,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <PlanningSchedulingApp />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Admin - User Management
+      {
+        path: 'admin/users',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <UserManagementPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

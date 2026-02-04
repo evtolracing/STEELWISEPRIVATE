@@ -27,11 +27,14 @@ import {
   ViewModule as GridIcon,
   Inventory as UnitIcon,
   AutoAwesome as AIIcon,
+  Upload as UploadIcon,
 } from '@mui/icons-material'
 import { useApiQuery } from '../../hooks/useApiQuery'
 import { getUnits } from '../../api'
 import { DataTable, StatusChip } from '../../components/common'
 import { UnitCard } from '../../components/traceability'
+import { InventoryUpload } from '../../components/inventory'
+import { bulkUploadInventory } from '../../api/inventory'
 
 export default function UnitListPage() {
   const navigate = useNavigate()
@@ -42,6 +45,8 @@ export default function UnitListPage() {
     grade: '',
   })
   const [anchorEl, setAnchorEl] = useState(null)
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
 
   const { data, isLoading, refetch } = useApiQuery(
     ['units', filters],
@@ -105,6 +110,24 @@ export default function UnitListPage() {
 
   const handleRowClick = (row) => {
     navigate(`/units/${row.id}`)
+  }
+
+  const handleBulkUpload = async (data) => {
+    try {
+      const result = await bulkUploadInventory(data)
+      setSnackbar({
+        open: true,
+        message: `Successfully uploaded ${result.created || data.items.length} units`,
+        severity: 'success',
+      })
+      refetch() // Refresh data
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Upload failed: ${error.message}`,
+        severity: 'error',
+      })
+    }
   }
 
   // Mock data for demo
@@ -185,6 +208,18 @@ export default function UnitListPage() {
               }}
             >
               Export
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<UploadIcon />}
+              onClick={() => setUploadDialogOpen(true)}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              Upload
             </Button>
             <Button
               variant="contained"
@@ -311,6 +346,34 @@ export default function UnitListPage() {
           Place on Hold
         </MenuItem>
       </Menu>
+
+      {/* Inventory Upload Dialog */}
+      <InventoryUpload
+        open={uploadDialogOpen}
+        onClose={() => setUploadDialogOpen(false)}
+        onUpload={handleBulkUpload}
+        defaultTemplate="coils"
+      />
+
+      {/* Snackbar for notifications */}
+      {snackbar.open && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 1400,
+            p: 2,
+            bgcolor: snackbar.severity === 'success' ? 'success.main' : 'error.main',
+            color: 'white',
+            borderRadius: 2,
+            boxShadow: 3,
+          }}
+          onClick={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          <Typography variant="body2">{snackbar.message}</Typography>
+        </Box>
+      )}
       </Box>
     </Box>
   )

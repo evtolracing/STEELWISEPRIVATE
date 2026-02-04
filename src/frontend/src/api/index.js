@@ -13,6 +13,7 @@ export * from './boms'
 export * from './fabrication'
 export * from './qaqc'
 export * from './jobs'
+export * from './users'
 
 // Dashboard API
 import client from './client'

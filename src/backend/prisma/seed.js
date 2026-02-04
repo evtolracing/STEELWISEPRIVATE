@@ -47,7 +47,7 @@ async function main() {
       passwordHash: hashedPassword,
       firstName: 'Operator',
       lastName: 'User',
-      role: 'OPERATOR',
+      role: 'MILL_OPERATOR',
       organizationId: org.id,
     },
   });
@@ -62,8 +62,7 @@ async function main() {
       code: 'A36',
       name: 'ASTM A36',
       family: 'CARBON',
-      spec: 'ASTM A36/A36M',
-      description: 'Carbon structural steel',
+      specStandard: 'ASTM A36/A36M',
     },
   });
 
@@ -73,9 +72,8 @@ async function main() {
     create: {
       code: 'A572-50',
       name: 'ASTM A572 Grade 50',
-      family: 'HSLA',
-      spec: 'ASTM A572/A572M',
-      description: 'High-strength low-alloy structural steel',
+      family: 'ALLOY',
+      specStandard: 'ASTM A572/A572M',
     },
   });
 
@@ -86,8 +84,7 @@ async function main() {
       code: '304SS',
       name: '304 Stainless Steel',
       family: 'STAINLESS',
-      spec: 'ASTM A240',
-      description: 'Austenitic stainless steel',
+      specStandard: 'ASTM A240',
     },
   });
 
@@ -115,8 +112,6 @@ async function main() {
       code: 'ACME-STEEL',
       name: 'Acme Steel Fabricators',
       type: 'FABRICATOR',
-      paymentTerms: 'NET30',
-      creditLimit: 100000,
       isActive: true,
     },
   });
@@ -145,11 +140,11 @@ async function main() {
     create: {
       sku: 'HRC-A36-048',
       name: 'Hot Rolled Coil A36 0.048"',
-      type: 'FLAT',
+      productType: 'FLAT',
       form: 'COIL',
       gradeId: gradeA36.id,
-      thicknessIn: 0.048,
-      widthIn: 48,
+      thicknessMin: 0.048,
+      widthMin: 48,
     },
   });
 
@@ -159,11 +154,11 @@ async function main() {
     create: {
       sku: 'CRC-A36-060',
       name: 'Cold Rolled Coil A36 0.060"',
-      type: 'FLAT',
+      productType: 'FLAT',
       form: 'COIL',
       gradeId: gradeA36.id,
-      thicknessIn: 0.060,
-      widthIn: 60,
+      thicknessMin: 0.060,
+      widthMin: 60,
     },
   });
 
@@ -194,11 +189,14 @@ async function main() {
       heatId: heat.id,
       gradeId: gradeA36.id,
       productId: productHRC.id,
+      ownerId: org.id,
+      form: 'COIL',
       thicknessIn: 0.048,
       widthIn: 48,
-      weightLb: 25000,
+      grossWeightLb: 25000,
+      netWeightLb: 24800,
       status: 'AVAILABLE',
-      qcStatus: 'APPROVED',
+      qcStatus: 'PASSED',
       locationId: warehouse.id,
       createdById: admin.id,
     },
@@ -210,11 +208,14 @@ async function main() {
       heatId: heat.id,
       gradeId: gradeA36.id,
       productId: productHRC.id,
+      ownerId: org.id,
+      form: 'COIL',
       thicknessIn: 0.048,
       widthIn: 48,
-      weightLb: 28000,
+      grossWeightLb: 28000,
+      netWeightLb: 27800,
       status: 'AVAILABLE',
-      qcStatus: 'APPROVED',
+      qcStatus: 'PASSED',
       locationId: warehouse.id,
       createdById: admin.id,
     },
@@ -227,8 +228,8 @@ async function main() {
     data: {
       coilId: coil1.id,
       locationId: warehouse.id,
-      qtyOnHand: coil1.weightLb,
-      qtyAvailable: coil1.weightLb,
+      qtyOnHand: coil1.grossWeightLb,
+      qtyAvailable: coil1.grossWeightLb,
       qtyAllocated: 0,
       qtyOnHold: 0,
     },
@@ -238,8 +239,8 @@ async function main() {
     data: {
       coilId: coil2.id,
       locationId: warehouse.id,
-      qtyOnHand: coil2.weightLb,
-      qtyAvailable: coil2.weightLb,
+      qtyOnHand: coil2.grossWeightLb,
+      qtyAvailable: coil2.grossWeightLb,
       qtyAllocated: 0,
       qtyOnHold: 0,
     },
@@ -247,36 +248,128 @@ async function main() {
 
   console.log('Created inventory records');
 
-  // Create a sample order
-  const order = await prisma.order.create({
-    data: {
-      orderNumber: 'SO-000001',
-      orderType: 'SO',
-      buyerId: customer.id,
-      sellerId: org.id,
-      status: 'CONFIRMED',
-      createdById: admin.id,
-      lines: {
-        create: [
-          {
-            lineNumber: 1,
-            productId: productHRC.id,
-            gradeId: gradeA36.id,
-            description: 'Hot Rolled Coil A36',
-            thicknessIn: 0.048,
-            widthIn: 48,
-            qtyOrdered: 25000,
-            unit: 'LB',
-            unitPrice: 0.45,
-            priceUnit: 'LB',
-          },
-        ],
+  // Create a sample order (if not exists)
+  let order = await prisma.order.findUnique({ where: { orderNumber: 'SO-000001' } });
+  if (!order) {
+    order = await prisma.order.create({
+      data: {
+        orderNumber: 'SO-000001',
+        orderType: 'SO',
+        buyerId: customer.id,
+        sellerId: org.id,
+        status: 'CONFIRMED',
+        createdById: admin.id,
+        lines: {
+          create: [
+            {
+              lineNumber: 1,
+              productId: productHRC.id,
+              gradeId: gradeA36.id,
+              description: 'Hot Rolled Coil A36',
+              thicknessIn: 0.048,
+              widthIn: 48,
+              qtyOrdered: 25000,
+              unit: 'LB',
+              unitPrice: 0.45,
+              priceUnit: 'LB',
+            },
+          ],
+        },
       },
-    },
-    include: { lines: true },
-  });
+      include: { lines: true },
+    });
+    console.log('Created sample order:', order.orderNumber);
+  } else {
+    console.log('Sample order already exists:', order.orderNumber);
+  }
 
-  console.log('Created sample order:', order.orderNumber);
+  // Create default roles with permissions
+  const defaultRoles = [
+    {
+      name: 'SUPER_ADMIN',
+      displayName: 'Super Admin',
+      description: 'Full system access across all tenants',
+      permissions: ['*'],
+      isSystem: true,
+    },
+    {
+      name: 'TENANT_OWNER',
+      displayName: 'Tenant Owner',
+      description: 'Full access within tenant',
+      permissions: ['iam.*', 'tenant.*', 'crm.*', 'rfq.*', 'quote.*', 'order.*', 'inv.*', 'po.*', 'recv.*', 'bom.*', 'job.*', 'dispatch.*', 'floor.*', 'qc.*', 'pack.*', 'ship.*', 'fin.*', 'analytics.*', 'sim.*', 'int.*', 'master.*', 'trace.*', 'support.*'],
+      isSystem: true,
+    },
+    {
+      name: 'BRANCH_MANAGER',
+      displayName: 'Branch Manager',
+      description: 'Full access within assigned branch',
+      permissions: ['crm.*', 'rfq.*', 'quote.*', 'order.*', 'inv.*', 'job.*', 'dispatch.*', 'floor.view', 'floor.list', 'floor.time.approve', 'qc.*', 'pack.*', 'ship.*', 'recv.*', 'analytics.*', 'iam.user.view', 'iam.user.list'],
+      isSystem: true,
+    },
+    {
+      name: 'OPS_MANAGER',
+      displayName: 'Operations Manager',
+      description: 'Manage production and operations',
+      permissions: ['job.*', 'dispatch.*', 'floor.*', 'bom.*', 'inv.*', 'qc.*', 'pack.*', 'ship.*', 'recv.*', 'order.promise.override', 'analytics.*'],
+      isSystem: true,
+    },
+    {
+      name: 'SALES_REP',
+      displayName: 'Sales Representative',
+      description: 'Manage assigned customer accounts',
+      permissions: ['crm.contact.*', 'crm.note.*', 'rfq.*', 'quote.view', 'quote.list', 'quote.create', 'quote.update', 'quote.line.*', 'quote.send', 'quote.clone', 'quote.accept', 'order.view', 'order.list', 'order.create', 'order.notes.add', 'inv.view', 'inv.list'],
+      isSystem: true,
+    },
+    {
+      name: 'OPERATOR',
+      displayName: 'Shop Floor Operator',
+      description: 'Execute shop floor operations',
+      permissions: ['floor.op.*', 'floor.time.log', 'floor.downtime.*', 'floor.scan.*', 'floor.output.record', 'floor.defect.record', 'floor.queue.view', 'job.view'],
+      isSystem: true,
+    },
+    {
+      name: 'QC_INSPECTOR',
+      displayName: 'QC Inspector',
+      description: 'Perform quality inspections',
+      permissions: ['qc.*', 'inv.hold', 'inv.release', 'job.view', 'job.operation.view', 'recv.inspect.*', 'trace.*'],
+      isSystem: true,
+    },
+    {
+      name: 'SHIPPING_COORDINATOR',
+      displayName: 'Shipping Coordinator',
+      description: 'Manage shipping operations',
+      permissions: ['ship.*', 'pack.view', 'pack.list', 'pack.stage', 'order.view', 'inv.view'],
+      isSystem: true,
+    },
+    {
+      name: 'RECEIVING_CLERK',
+      displayName: 'Receiving Clerk',
+      description: 'Process incoming materials',
+      permissions: ['recv.*', 'po.view', 'po.list', 'inv.view', 'inv.lot.assign', 'pack.label.print'],
+      isSystem: true,
+    },
+    {
+      name: 'VIEWER',
+      displayName: 'Viewer',
+      description: 'Read-only access',
+      permissions: ['*.view', '*.list'],
+      isSystem: true,
+    },
+  ];
+
+  for (const role of defaultRoles) {
+    await prisma.role.upsert({
+      where: { name: role.name },
+      update: { 
+        displayName: role.displayName,
+        description: role.description,
+        permissions: role.permissions,
+      },
+      create: role,
+    });
+  }
+
+  console.log('Created default roles:', defaultRoles.length);
 
   console.log('✅ Database seeded successfully!');
 }

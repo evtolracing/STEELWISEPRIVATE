@@ -51,9 +51,12 @@ import {
   Assignment as AllocatedIcon,
   Clear as ClearIcon,
   AutoAwesome as AIIcon,
+  Upload as UploadIcon,
 } from '@mui/icons-material';
 import { getInventory, getInventorySummary, getLocations } from '../../services/inventoryApi';
 import InventoryAiAssistantPanel from '../../components/InventoryAiAssistantPanel';
+import { InventoryUpload } from '../../components/inventory';
+import { bulkUploadInventory } from '../../api/inventory';
 
 export default function InventoryDashboardPage() {
   const navigate = useNavigate();
@@ -75,6 +78,8 @@ export default function InventoryDashboardPage() {
   // Pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   // Load data
   const loadData = useCallback(async () => {
@@ -136,6 +141,24 @@ export default function InventoryDashboardPage() {
     }
   };
 
+  const handleBulkUpload = async (data) => {
+    try {
+      const result = await bulkUploadInventory(data);
+      setSnackbar({
+        open: true,
+        message: `Successfully uploaded ${result.created || data.items.length} items`,
+        severity: 'success',
+      });
+      loadData(); // Refresh data
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Upload failed: ${error.message}`,
+        severity: 'error',
+      });
+    }
+  };
+
   const getStatusChip = (status) => {
     switch (status) {
       case 'AVAILABLE':
@@ -188,6 +211,18 @@ export default function InventoryDashboardPage() {
             </Box>
           </Box>
           <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={<UploadIcon />}
+              onClick={() => setUploadDialogOpen(true)}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              Upload
+            </Button>
             <Button
               variant="outlined"
               startIcon={<TransferIcon />}
@@ -485,6 +520,25 @@ export default function InventoryDashboardPage() {
       </Box>
     </Box>
     </Box>
+
+      {/* Inventory Upload Dialog */}
+      <InventoryUpload
+        open={uploadDialogOpen}
+        onClose={() => setUploadDialogOpen(false)}
+        onUpload={handleBulkUpload}
+        defaultTemplate="coils"
+      />
+
+      {/* Snackbar */}
+      {snackbar.open && (
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1400 }}
+        >
+          {snackbar.message}
+        </Alert>
+      )}
     </Box>
   );
 }

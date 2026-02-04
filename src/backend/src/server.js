@@ -33,6 +33,7 @@ import operationsRoutes from './routes/operationsRoutes.js';
 import orderHubRoutes from './routes/orderHubRoutes.js';
 import aiOrderHubRoutes from './routes/aiOrderHubRoutes.js';
 import ingestRoutes from './routes/ingestRoutes.js';
+import pipelineRoutes from './routes/pipelineRoutes.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 
 dotenv.config();
@@ -84,6 +85,9 @@ app.use('/api/v1/operations', operationsRoutes);
 app.use('/api/v1', orderHubRoutes);        // /api/v1/contacts, /api/v1/rfq, /api/v1/quotes, /api/v1/orders
 app.use('/api/v1/ai', aiOrderHubRoutes);   // /api/v1/ai/parse-email-rfq, /api/v1/ai/quote-assistant
 app.use('/api/v1/ingest', ingestRoutes);   // /api/v1/ingest/email-rfq
+
+// Pipeline Orchestrator - Complete Order-to-Invoice Workflow
+app.use('/api/v1/pipeline', pipelineRoutes);  // /api/v1/pipeline (create, advance, auto-advance, simulate)
 
 // Initialize OrderHub seed data
 console.log('🌱 About to initialize seed data...');

@@ -7,31 +7,744 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============== ORGANIZATION & USERS ==============
-
 model Organization {
-  id            String   @id @default(uuid())
+  id             String     @id @default(uuid())
+  name           String
+  type           OrgType
+  address        String?
+  city           String?
+  state          String?
+  postalCode     String?
+  country        String     @default("USA")
+  phone          String?
+  email          String?
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  coils          Coil[]
+  documents      Document[]
+  heats          Heat[]
+  locations      Location[]
+  ordersAsBuyer  Order[]    @relation("BuyerOrders")
+  ordersAsSeller Order[]    @relation("SellerOrders")
+  rfqs           RFQ[]      @relation("CustomerRFQs")
+  users          User[]
+}
+
+model User {
+  id             String             @id @default(uuid())
+  email          String             @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  role           UserRole
+  organizationId String
+  isActive       Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdCoils   Coil[]             @relation("CoilCreator")
+  createdHeats   Heat[]             @relation("HeatCreator")
+  assignedJobs   Job[]              @relation("JobAssignee")
+  createdJobs    Job[]              @relation("JobCreator")
+  movements      MaterialMovement[]
+  orders         Order[]            @relation("OrderCreator")
+  qcHolds        QCHold[]           @relation("HoldBy")
+  resolvedHolds  QCHold[]           @relation("ResolvedBy")
+  approvedTests  TestResult[]       @relation("ApprovedBy")
+  testResults    TestResult[]       @relation("TestedBy")
+  organization   Organization       @relation(fields: [organizationId], references: [id])
+}
+
+model Grade {
+  id            String      @id @default(uuid())
+  code          String      @unique
   name          String
-  type          OrgType
-  address       String?
+  family        GradeFamily
+  specStandard  String?
+  chemistryMin  Json?
+  chemistryMax  Json?
+  tensileMin    Decimal?
+  tensileMax    Decimal?
+  yieldMin      Decimal?
+  yieldMax      Decimal?
+  elongationMin Decimal?
+  hardnessMin   Decimal?
+  hardnessMax   Decimal?
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  coils         Coil[]
+  heats         Heat[]
+  orderLines    OrderLine[]
+  products      Product[]
+}
+
+model Product {
+  id           String      @id @default(uuid())
+  sku          String      @unique
+  name         String
+  description  String?
+  category     String?
+  productType  ProductType
+  form         ProductForm
+  gradeId      String?
+  specStandard String?
+  thicknessMin Decimal?
+  thicknessMax Decimal?
+  widthMin     Decimal?
+  widthMax     Decimal?
+  basePriceCwt Decimal?
+  priceUnit    PriceUnit   @default(CWT)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  coils        Coil[]
+  orderLines   OrderLine[]
+  grade        Grade?      @relation(fields: [gradeId], references: [id])
+}
+
+model Heat {
+  id              String       @id @default(uuid())
+  heatNumber      String       @unique
+  millId          String
+  gradeId         String
+  castDate        DateTime
+  meltType        MeltType?
+  castType        CastType?
+  chemistry       Json?
+  mechanicalProps Json?
+  totalWeightLb   Decimal?
+  status          HeatStatus   @default(ACTIVE)
+  mtrDocumentId   String?
+  createdAt       DateTime     @default(now())
+  createdById     String
+  updatedAt       DateTime     @updatedAt
+  coils           Coil[]
+  createdBy       User         @relation("HeatCreator", fields: [createdById], references: [id])
+  grade           Grade        @relation(fields: [gradeId], references: [id])
+  mill            Organization @relation(fields: [millId], references: [id])
+  mtrDocument     Document?    @relation(fields: [mtrDocumentId], references: [id])
+  testResults     TestResult[]
+}
+
+model Coil {
+  id               String                @id @default(uuid())
+  coilNumber       String                @unique
+  heatId           String
+  parentCoilId     String?
+  productId        String?
+  gradeId          String
+  ownerId          String
+  form             ProductForm
+  thicknessIn      Decimal?
+  widthIn          Decimal?
+  lengthIn         Decimal?
+  odIn             Decimal?
+  idIn             Decimal?
+  gauge            Int?
+  grossWeightLb    Decimal
+  netWeightLb      Decimal
+  temper           String?
+  finish           String?
+  coating          String?
+  coatingWeight    String?
+  edgeCondition    EdgeCondition?
+  status           CoilStatus            @default(AVAILABLE)
+  qcStatus         QCStatus              @default(PENDING)
+  holdCode         String?
+  locationId       String?
+  binLocation      String?
+  unitCost         Decimal?
+  landedCost       Decimal?
+  originOrderId    String?
+  createdAt        DateTime              @default(now())
+  createdById      String
+  updatedAt        DateTime              @updatedAt
+  createdBy        User                  @relation("CoilCreator", fields: [createdById], references: [id])
+  grade            Grade                 @relation(fields: [gradeId], references: [id])
+  heat             Heat                  @relation(fields: [heatId], references: [id])
+  location         Location?             @relation(fields: [locationId], references: [id])
+  originOrder      Order?                @relation("OriginOrder", fields: [originOrderId], references: [id])
+  owner            Organization          @relation(fields: [ownerId], references: [id])
+  parentCoil       Coil?                 @relation("CoilParent", fields: [parentCoilId], references: [id])
+  childCoils       Coil[]                @relation("CoilParent")
+  product          Product?              @relation(fields: [productId], references: [id])
+  documentLinks    DocumentLink[]
+  inventory        Inventory?
+  movements        MaterialMovement[]
+  allocations      OrderLineAllocation[]
+  qcHolds          QCHold[]
+  testResults      TestResult[]
+  workOrderInputs  WorkOrder[]           @relation("WorkOrderInput")
+  workOrderOutputs WorkOrderOutput[]
+}
+
+model Location {
+  id            String             @id @default(uuid())
+  code          String             @unique
+  name          String
+  type          LocationType
+  parentId      String?
+  ownerId       String
+  addressLine1  String?
   city          String?
   state         String?
   postalCode    String?
-  country       String   @default("USA")
-  phone         String?
-  email         String?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  users         User[]
-  heats         Heat[]
+  country       String?
+  lat           Decimal?
+  lng           Decimal?
+  maxWeightLb   Decimal?
+  isOutdoor     Boolean            @default(false)
+  hasCrane      Boolean            @default(false)
+  isActive      Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
   coils         Coil[]
-  locations     Location[]
-  ordersAsBuyer Order[]  @relation("BuyerOrders")
-  ordersAsSeller Order[] @relation("SellerOrders")
-  documents     Document[]
-  rfqs          RFQ[]    @relation("CustomerRFQs")
+  inventories   Inventory[]
+  owner         Organization       @relation(fields: [ownerId], references: [id])
+  parent        Location?          @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children      Location[]         @relation("LocationHierarchy")
+  movementsFrom MaterialMovement[] @relation("MovementFrom")
+  movementsTo   MaterialMovement[] @relation("MovementTo")
+  shipments     Shipment[]
+  workCenters   WorkCenter[]
+}
+
+model Inventory {
+  id            String    @id @default(uuid())
+  coilId        String    @unique
+  locationId    String
+  qtyOnHand     Decimal
+  qtyAvailable  Decimal
+  qtyAllocated  Decimal   @default(0)
+  qtyOnHold     Decimal   @default(0)
+  unit          String    @default("LB")
+  unitCost      Decimal?
+  landedCost    Decimal?
+  avgCost       Decimal?
+  lastCountDate DateTime?
+  lastMovement  DateTime?
+  status        String    @default("ACTIVE")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  coil          Coil      @relation(fields: [coilId], references: [id])
+  location      Location  @relation(fields: [locationId], references: [id])
+}
+
+model MaterialMovement {
+  id             String       @id @default(uuid())
+  coilId         String
+  movementType   MovementType
+  fromLocationId String?
+  toLocationId   String?
+  qtyMoved       Decimal
+  unit           String       @default("LB")
+  orderId        String?
+  workOrderId    String?
+  shipmentId     String?
+  reasonCode     String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  createdById    String
+  coil           Coil         @relation(fields: [coilId], references: [id])
+  createdBy      User         @relation(fields: [createdById], references: [id])
+  fromLocation   Location?    @relation("MovementFrom", fields: [fromLocationId], references: [id])
+  order          Order?       @relation(fields: [orderId], references: [id])
+  shipment       Shipment?    @relation(fields: [shipmentId], references: [id])
+  toLocation     Location?    @relation("MovementTo", fields: [toLocationId], references: [id])
+  workOrder      WorkOrder?   @relation(fields: [workOrderId], references: [id])
+}
+
+model TestResult {
+  id           String   @id @default(uuid())
+  coilId       String?
+  heatId       String
+  testType     TestType
+  testDate     DateTime
+  results      Json
+  specLimits   Json?
+  passFail     PassFail
+  equipmentId  String?
+  labId        String?
+  testedById   String
+  approvedById String?
+  certNumber   String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  approvedBy   User?    @relation("ApprovedBy", fields: [approvedById], references: [id])
+  coil         Coil?    @relation(fields: [coilId], references: [id])
+  heat         Heat     @relation(fields: [heatId], references: [id])
+  testedBy     User     @relation("TestedBy", fields: [testedById], references: [id])
+}
+
+model QCHold {
+  id              String       @id @default(uuid())
+  coilId          String
+  holdType        HoldType
+  holdReason      String
+  holdDate        DateTime     @default(now())
+  holdById        String
+  status          HoldStatus   @default(ACTIVE)
+  disposition     Disposition?
+  resolvedDate    DateTime?
+  resolvedById    String?
+  resolutionNotes String?
+  ncrId           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  coil            Coil         @relation(fields: [coilId], references: [id])
+  holdBy          User         @relation("HoldBy", fields: [holdById], references: [id])
+  resolvedBy      User?        @relation("ResolvedBy", fields: [resolvedById], references: [id])
+}
+
+model RFQ {
+  id            String       @id @default(uuid())
+  rfqNumber     String       @unique
+  customerId    String
+  status        RFQStatus    @default(DRAFT)
+  contactName   String?
+  contactEmail  String?
+  contactPhone  String?
+  requestedDate DateTime?
+  notes         String?
+  submittedAt   DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  quotes        Quote[]
+  customer      Organization @relation("CustomerRFQs", fields: [customerId], references: [id])
+  lines         RFQLine[]
+}
+
+model RFQLine {
+  id             String      @id @default(uuid())
+  rfqId          String
+  lineNumber     Int
+  materialCode   String?
+  division       String?
+  productId      String?
+  description    String?
+  requestedQty   Decimal
+  unit           String      @default("LB")
+  specifications Json?
+  notes          String?
+  createdAt      DateTime    @default(now())
+  quoteLines     QuoteLine[]
+  rfq            RFQ         @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+}
+
+model Quote {
+  id               String      @id @default(uuid())
+  quoteNumber      String      @unique
+  rfqId            String
+  version          Int         @default(1)
+  status           QuoteStatus @default(DRAFT)
+  subtotal         Decimal?
+  taxAmount        Decimal?
+  freightAmount    Decimal?
+  totalAmount      Decimal?
+  currency         String      @default("USD")
+  validFrom        DateTime    @default(now())
+  validUntil       DateTime?
+  paymentTerms     String?
+  freightTerms     String?
+  notes            String?
+  internalNotes    String?
+  createdById      String?
+  sentAt           DateTime?
+  acceptedAt       DateTime?
+  convertedOrderId String?     @unique
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  convertedOrder   Order?      @relation("QuoteToOrder", fields: [convertedOrderId], references: [id])
+  rfq              RFQ         @relation(fields: [rfqId], references: [id])
+  lines            QuoteLine[]
+}
+
+model QuoteLine {
+  id            String   @id @default(uuid())
+  quoteId       String
+  rfqLineId     String?
+  lineNumber    Int
+  productId     String?
+  description   String?
+  quantity      Decimal
+  unit          String   @default("LB")
+  unitPrice     Decimal?
+  priceUnit     String   @default("CWT")
+  extendedPrice Decimal?
+  leadTimeDays  Int?
+  notes         String?
+  createdAt     DateTime @default(now())
+  quote         Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  rfqLine       RFQLine? @relation(fields: [rfqLineId], references: [id])
+}
+
+model WorkCenter {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  locationId   String
+  type         String?
+  capabilities String[]
+  capacity     Json?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  jobs         Job[]
+  location     Location @relation(fields: [locationId], references: [id])
+}
+
+model Job {
+  id               String      @id @default(uuid())
+  jobNumber        String      @unique
+  orderId          String?
+  orderLineId      String?
+  workCenterId     String?
+  workOrderId      String?
+  assignedToId     String?
+  createdById      String?
+  status           JobStatus   @default(SCHEDULED)
+  operationType    String?
+  priority         Int         @default(3)
+  scheduledStart   DateTime?
+  scheduledEnd     DateTime?
+  actualStart      DateTime?
+  actualEnd        DateTime?
+  inputWeightLb    Decimal?
+  outputWeightLb   Decimal?
+  scrapWeightLb    Decimal?
+  operatorId       String?
+  instructions     String?
+  notes            String?
+  shippingCarrier  String?
+  trackingNumber   String?
+  shippedAt        DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  hasCustomRouting Boolean     @default(false)
+  recipeId         String?
+  recipeVersion    Int?
+  assignedTo       User?       @relation("JobAssignee", fields: [assignedToId], references: [id])
+  createdBy        User?       @relation("JobCreator", fields: [createdById], references: [id])
+  order            Order?      @relation(fields: [orderId], references: [id])
+  recipe           BomRecipe?  @relation("JobRecipe", fields: [recipeId], references: [id])
+  workCenter       WorkCenter? @relation(fields: [workCenterId], references: [id])
+
+  @@index([recipeId])
+}
+
+model Order {
+  id            String             @id @default(uuid())
+  orderNumber   String             @unique
+  orderType     OrderType
+  buyerId       String?
+  sellerId      String?
+  shipToAddress String?
+  shipToCity    String?
+  shipToState   String?
+  shipToZip     String?
+  orderDate     DateTime           @default(now())
+  requiredDate  DateTime?
+  promisedDate  DateTime?
+  expireDate    DateTime?
+  status        OrderStatus        @default(DRAFT)
+  subtotal      Decimal?
+  taxAmount     Decimal?
+  freightAmount Decimal?
+  totalAmount   Decimal?
+  currency      String             @default("USD")
+  paymentTerms  String?
+  freightTerms  FreightTerms?
+  poReference   String?
+  notes         String?
+  createdAt     DateTime           @default(now())
+  createdById   String
+  updatedAt     DateTime           @updatedAt
+  originCoils   Coil[]             @relation("OriginOrder")
+  invoices      Invoice[]
+  jobs          Job[]
+  movements     MaterialMovement[]
+  buyer         Organization?      @relation("BuyerOrders", fields: [buyerId], references: [id])
+  createdBy     User               @relation("OrderCreator", fields: [createdById], references: [id])
+  seller        Organization?      @relation("SellerOrders", fields: [sellerId], references: [id])
+  lines         OrderLine[]
+  fromQuote     Quote?             @relation("QuoteToOrder")
+  shipments     Shipment[]
+}
+
+model OrderLine {
+  id            String                @id @default(uuid())
+  orderId       String
+  lineNumber    Int
+  productId     String?
+  gradeId       String?
+  description   String?
+  thicknessIn   Decimal?
+  widthIn       Decimal?
+  lengthIn      Decimal?
+  finish        String?
+  coating       String?
+  qtyOrdered    Decimal
+  qtyShipped    Decimal               @default(0)
+  qtyReceived   Decimal               @default(0)
+  unit          String                @default("LB")
+  unitPrice     Decimal?
+  priceUnit     PriceUnit             @default(CWT)
+  discountPct   Decimal?
+  extendedPrice Decimal?
+  lineStatus    LineStatus            @default(OPEN)
+  notes         String?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  grade         Grade?                @relation(fields: [gradeId], references: [id])
+  order         Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product?              @relation(fields: [productId], references: [id])
+  allocations   OrderLineAllocation[]
+  shipmentItems ShipmentItem[]
+}
+
+model OrderLineAllocation {
+  id           String    @id @default(uuid())
+  orderLineId  String
+  coilId       String
+  qtyAllocated Decimal
+  allocatedAt  DateTime  @default(now())
+  coil         Coil      @relation(fields: [coilId], references: [id])
+  orderLine    OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
+}
+
+model WorkOrder {
+  id             String             @id @default(uuid())
+  woNumber       String             @unique
+  woType         WOType
+  status         WOStatus           @default(DRAFT)
+  sourceCoilId   String
+  lineId         String?
+  salesOrderId   String?
+  priority       Int                @default(3)
+  scheduledDate  DateTime?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  slitPattern    Json?
+  inputWeightLb  Decimal?
+  outputWeightLb Decimal?
+  scrapWeightLb  Decimal?
+  yieldPct       Decimal?
+  notes          String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  movements      MaterialMovement[]
+  sourceCoil     Coil               @relation("WorkOrderInput", fields: [sourceCoilId], references: [id])
+  outputs        WorkOrderOutput[]
+}
+
+model WorkOrderOutput {
+  id           String    @id @default(uuid())
+  workOrderId  String
+  outputCoilId String
+  sequence     Int
+  targetWidth  Decimal?
+  actualWidth  Decimal?
+  actualWeight Decimal?
+  destination  String?
+  createdAt    DateTime  @default(now())
+  outputCoil   Coil      @relation(fields: [outputCoilId], references: [id])
+  workOrder    WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+}
+
+model Shipment {
+  id             String             @id @default(uuid())
+  shipmentNumber String             @unique
+  orderId        String
+  fromLocationId String
+  carrierId      String?
+  carrierName    String?
+  truckNumber    String?
+  driverName     String?
+  driverPhone    String?
+  status         ShipmentStatus     @default(PENDING)
+  scheduledDate  DateTime?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  totalWeightLb  Decimal?
+  bolNumber      String?
+  podCaptured    Boolean            @default(false)
+  podImageUrl    String?
+  podSignature   String?
+  notes          String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  movements      MaterialMovement[]
+  fromLocation   Location           @relation(fields: [fromLocationId], references: [id])
+  order          Order              @relation(fields: [orderId], references: [id])
+  items          ShipmentItem[]
+  stops          ShipmentStop[]
+}
+
+model ShipmentItem {
+  id          String    @id @default(uuid())
+  shipmentId  String
+  orderLineId String
+  qtyShipped  Decimal
+  weightLb    Decimal?
+  createdAt   DateTime  @default(now())
+  orderLine   OrderLine @relation(fields: [orderLineId], references: [id])
+  shipment    Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+model ShipmentStop {
+  id            String    @id @default(uuid())
+  shipmentId    String
+  stopNumber    Int
+  address       String
+  city          String?
+  state         String?
+  zipCode       String?
+  scheduledTime DateTime?
+  arrivedAt     DateTime?
+  departedAt    DateTime?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  shipment      Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  orderId       String
+  invoiceDate   DateTime      @default(now())
+  dueDate       DateTime?
+  subtotal      Decimal
+  taxAmount     Decimal       @default(0)
+  freightAmount Decimal       @default(0)
+  totalAmount   Decimal
+  paidAmount    Decimal       @default(0)
+  status        InvoiceStatus @default(DRAFT)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  order         Order         @relation(fields: [orderId], references: [id])
+  payments      Payment[]
+}
+
+model Payment {
+  id              String   @id @default(uuid())
+  invoiceId       String
+  amount          Decimal
+  paymentDate     DateTime @default(now())
+  paymentMethod   String?
+  referenceNumber String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  invoice         Invoice  @relation(fields: [invoiceId], references: [id])
+}
+
+model Document {
+  id             String         @id @default(uuid())
+  documentType   DocumentType
+  documentNumber String?
+  title          String?
+  fileName       String
+  fileType       String?
+  fileSizeBytes  Int?
+  storagePath    String
+  checksum       String?
+  extractedData  Json?
+  isVerified     Boolean        @default(false)
+  verifiedById   String?
+  verifiedAt     DateTime?
+  issueDate      DateTime?
+  expiryDate     DateTime?
+  ownerId        String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  owner          Organization?  @relation(fields: [ownerId], references: [id])
+  links          DocumentLink[]
+  heats          Heat[]
+}
+
+model DocumentLink {
+  id         String   @id @default(uuid())
+  documentId String
+  entityType String
+  entityId   String
+  linkType   String   @default("PRIMARY")
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  coil       Coil     @relation(fields: [entityId], references: [id], map: "document_coil_link")
+}
+
+model CommodityPrice {
+  id            String   @id @default(uuid())
+  indexCode     String
+  indexName     String
+  price         Decimal
+  unit          String
+  effectiveDate DateTime
+  source        String?
+  createdAt     DateTime @default(now())
+
+  @@index([indexCode, effectiveDate])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String
+  entityId   String
+  action     String
+  oldValues  Json?
+  newValues  Json?
+  userId     String?
+  ipAddress  String?
+  sessionId  String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model BomRecipe {
+  id           String          @id @default(uuid())
+  name         String
+  code         String
+  materialCode String?
+  commodity    String?
+  form         String?
+  grade        String?
+  thicknessMin Decimal?
+  thicknessMax Decimal?
+  division     String?
+  version      Int             @default(1)
+  status       BomRecipeStatus @default(DRAFT)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  operations   BomOperation[]
+  jobs         Job[]           @relation("JobRecipe")
+
+  @@index([code, version])
+  @@index([status])
+  @@index([materialCode])
+  @@index([commodity, form, grade])
+}
+
+model BomOperation {
+  id                      String    @id @default(uuid())
+  recipeId                String
+  sequence                Int
+  name                    String
+  workCenterType          String
+  estimatedMachineMinutes Int       @default(0)
+  estimatedLaborMinutes   Int       @default(0)
+  setupMinutes            Int       @default(0)
+  parameters              Json?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  recipe                  BomRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId, sequence])
 }
 
 enum OrgType {
@@ -41,31 +754,6 @@ enum OrgType {
   BROKER
   FABRICATOR
   OEM
-}
-
-model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  passwordHash   String
-  firstName      String
-  lastName       String
-  role           UserRole
-  organizationId String
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  createdHeats   Heat[]       @relation("HeatCreator")
-  createdCoils   Coil[]       @relation("CoilCreator")
-  testResults    TestResult[] @relation("TestedBy")
-  approvedTests  TestResult[] @relation("ApprovedBy")
-  qcHolds        QCHold[]     @relation("HoldBy")
-  resolvedHolds  QCHold[]     @relation("ResolvedBy")
-  orders         Order[]      @relation("OrderCreator")
-  movements      MaterialMovement[]
-  assignedJobs   Job[]        @relation("JobAssignee")
-  createdJobs    Job[]        @relation("JobCreator")
 }
 
 enum UserRole {
@@ -79,64 +767,12 @@ enum UserRole {
   VIEWER
 }
 
-// ============== PRODUCT CATALOG ==============
-
-model Grade {
-  id            String   @id @default(uuid())
-  code          String   @unique
-  name          String
-  family        GradeFamily
-  specStandard  String?
-  chemistryMin  Json?
-  chemistryMax  Json?
-  tensileMin    Decimal?
-  tensileMax    Decimal?
-  yieldMin      Decimal?
-  yieldMax      Decimal?
-  elongationMin Decimal?
-  hardnessMin   Decimal?
-  hardnessMax   Decimal?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  heats         Heat[]
-  coils         Coil[]
-  products      Product[]
-  orderLines    OrderLine[]
-}
-
 enum GradeFamily {
   CARBON
   ALLOY
   STAINLESS
   TOOL
   HSLA
-}
-
-model Product {
-  id            String      @id @default(uuid())
-  sku           String      @unique
-  name          String
-  description   String?
-  category      String?
-  productType   ProductType
-  form          ProductForm
-  gradeId       String?
-  specStandard  String?
-  thicknessMin  Decimal?
-  thicknessMax  Decimal?
-  widthMin      Decimal?
-  widthMax      Decimal?
-  basePriceCwt  Decimal?
-  priceUnit     PriceUnit   @default(CWT)
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  grade         Grade?      @relation(fields: [gradeId], references: [id])
-  coils         Coil[]
-  orderLines    OrderLine[]
 }
 
 enum ProductType {
@@ -165,33 +801,6 @@ enum PriceUnit {
   LF
 }
 
-// ============== MATERIAL TRACKING ==============
-
-model Heat {
-  id            String    @id @default(uuid())
-  heatNumber    String    @unique
-  millId        String
-  gradeId       String
-  castDate      DateTime
-  meltType      MeltType?
-  castType      CastType?
-  chemistry     Json?
-  mechanicalProps Json?
-  totalWeightLb Decimal?
-  status        HeatStatus @default(ACTIVE)
-  mtrDocumentId String?
-  createdAt     DateTime  @default(now())
-  createdById   String
-  updatedAt     DateTime  @updatedAt
-
-  mill          Organization @relation(fields: [millId], references: [id])
-  grade         Grade        @relation(fields: [gradeId], references: [id])
-  createdBy     User         @relation("HeatCreator", fields: [createdById], references: [id])
-  mtrDocument   Document?    @relation(fields: [mtrDocumentId], references: [id])
-  coils         Coil[]
-  testResults   TestResult[]
-}
-
 enum MeltType {
   BOF
   EAF
@@ -207,60 +816,6 @@ enum HeatStatus {
   ACTIVE
   CONSUMED
   ARCHIVED
-}
-
-model Coil {
-  id              String      @id @default(uuid())
-  coilNumber      String      @unique
-  heatId          String
-  parentCoilId    String?
-  productId       String?
-  gradeId         String
-  ownerId         String
-  form            ProductForm
-  thicknessIn     Decimal?
-  widthIn         Decimal?
-  lengthIn        Decimal?
-  odIn            Decimal?
-  idIn            Decimal?
-  gauge           Int?
-  grossWeightLb   Decimal
-  netWeightLb     Decimal
-  temper          String?
-  finish          String?
-  coating         String?
-  coatingWeight   String?
-  edgeCondition   EdgeCondition?
-  status          CoilStatus  @default(AVAILABLE)
-  qcStatus        QCStatus    @default(PENDING)
-  holdCode        String?
-  locationId      String?
-  binLocation     String?
-  unitCost        Decimal?
-  landedCost      Decimal?
-  originOrderId   String?
-  createdAt       DateTime    @default(now())
-  createdById     String
-  updatedAt       DateTime    @updatedAt
-
-  heat            Heat        @relation(fields: [heatId], references: [id])
-  parentCoil      Coil?       @relation("CoilParent", fields: [parentCoilId], references: [id])
-  childCoils      Coil[]      @relation("CoilParent")
-  product         Product?    @relation(fields: [productId], references: [id])
-  grade           Grade       @relation(fields: [gradeId], references: [id])
-  owner           Organization @relation(fields: [ownerId], references: [id])
-  location        Location?   @relation(fields: [locationId], references: [id])
-  createdBy       User        @relation("CoilCreator", fields: [createdById], references: [id])
-  originOrder     Order?      @relation("OriginOrder", fields: [originOrderId], references: [id])
-  
-  inventory       Inventory?
-  testResults     TestResult[]
-  qcHolds         QCHold[]
-  movements       MaterialMovement[]
-  workOrderInputs WorkOrder[] @relation("WorkOrderInput")
-  workOrderOutputs WorkOrderOutput[]
-  allocations     OrderLineAllocation[]
-  documentLinks   DocumentLink[]
 }
 
 enum EdgeCondition {
@@ -285,93 +840,12 @@ enum QCStatus {
   HOLD
 }
 
-// ============== INVENTORY ==============
-
-model Location {
-  id            String       @id @default(uuid())
-  code          String       @unique
-  name          String
-  type          LocationType
-  parentId      String?
-  ownerId       String
-  addressLine1  String?
-  city          String?
-  state         String?
-  postalCode    String?
-  country       String?
-  lat           Decimal?
-  lng           Decimal?
-  maxWeightLb   Decimal?
-  isOutdoor     Boolean      @default(false)
-  hasCrane      Boolean      @default(false)
-  isActive      Boolean      @default(true)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-
-  parent        Location?    @relation("LocationHierarchy", fields: [parentId], references: [id])
-  children      Location[]   @relation("LocationHierarchy")
-  owner         Organization @relation(fields: [ownerId], references: [id])
-  coils         Coil[]
-  inventories   Inventory[]
-  movementsFrom MaterialMovement[] @relation("MovementFrom")
-  movementsTo   MaterialMovement[] @relation("MovementTo")
-  shipments     Shipment[]
-  workCenters   WorkCenter[]
-}
-
 enum LocationType {
   WAREHOUSE
   YARD
   RACK
   BIN
   FLOOR
-}
-
-model Inventory {
-  id            String   @id @default(uuid())
-  coilId        String   @unique
-  locationId    String
-  qtyOnHand     Decimal
-  qtyAvailable  Decimal
-  qtyAllocated  Decimal  @default(0)
-  qtyOnHold     Decimal  @default(0)
-  unit          String   @default("LB")
-  unitCost      Decimal?
-  landedCost    Decimal?
-  avgCost       Decimal?
-  lastCountDate DateTime?
-  lastMovement  DateTime?
-  status        String   @default("ACTIVE")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  coil          Coil     @relation(fields: [coilId], references: [id])
-  location      Location @relation(fields: [locationId], references: [id])
-}
-
-model MaterialMovement {
-  id            String       @id @default(uuid())
-  coilId        String
-  movementType  MovementType
-  fromLocationId String?
-  toLocationId  String?
-  qtyMoved      Decimal
-  unit          String       @default("LB")
-  orderId       String?
-  workOrderId   String?
-  shipmentId    String?
-  reasonCode    String?
-  notes         String?
-  createdAt     DateTime     @default(now())
-  createdById   String
-
-  coil          Coil         @relation(fields: [coilId], references: [id])
-  fromLocation  Location?    @relation("MovementFrom", fields: [fromLocationId], references: [id])
-  toLocation    Location?    @relation("MovementTo", fields: [toLocationId], references: [id])
-  order         Order?       @relation(fields: [orderId], references: [id])
-  workOrder     WorkOrder?   @relation(fields: [workOrderId], references: [id])
-  shipment      Shipment?    @relation(fields: [shipmentId], references: [id])
-  createdBy     User         @relation(fields: [createdById], references: [id])
 }
 
 enum MovementType {
@@ -383,32 +857,6 @@ enum MovementType {
   CONSUME
   SCRAP
   COUNT
-}
-
-// ============== QUALITY ==============
-
-model TestResult {
-  id            String    @id @default(uuid())
-  coilId        String?
-  heatId        String
-  testType      TestType
-  testDate      DateTime
-  results       Json
-  specLimits    Json?
-  passFail      PassFail
-  equipmentId   String?
-  labId         String?
-  testedById    String
-  approvedById  String?
-  certNumber    String?
-  notes         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  coil          Coil?     @relation(fields: [coilId], references: [id])
-  heat          Heat      @relation(fields: [heatId], references: [id])
-  testedBy      User      @relation("TestedBy", fields: [testedById], references: [id])
-  approvedBy    User?     @relation("ApprovedBy", fields: [approvedById], references: [id])
 }
 
 enum TestType {
@@ -424,27 +872,6 @@ enum PassFail {
   PASS
   FAIL
   CONDITIONAL
-}
-
-model QCHold {
-  id            String      @id @default(uuid())
-  coilId        String
-  holdType      HoldType
-  holdReason    String
-  holdDate      DateTime    @default(now())
-  holdById      String
-  status        HoldStatus  @default(ACTIVE)
-  disposition   Disposition?
-  resolvedDate  DateTime?
-  resolvedById  String?
-  resolutionNotes String?
-  ncrId         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  coil          Coil        @relation(fields: [coilId], references: [id])
-  holdBy        User        @relation("HoldBy", fields: [holdById], references: [id])
-  resolvedBy    User?       @relation("ResolvedBy", fields: [resolvedById], references: [id])
 }
 
 enum HoldType {
@@ -472,28 +899,6 @@ enum Disposition {
   PENDING
 }
 
-// ============== RFQ & QUOTES ==============
-
-model RFQ {
-  id              String    @id @default(uuid())
-  rfqNumber       String    @unique
-  customerId      String
-  status          RFQStatus @default(DRAFT)
-  contactName     String?
-  contactEmail    String?
-  contactPhone    String?
-  requestedDate   DateTime?
-  notes           String?
-  submittedAt     DateTime?
-  expiresAt       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  customer        Organization @relation("CustomerRFQs", fields: [customerId], references: [id])
-  lines           RFQLine[]
-  quotes          Quote[]
-}
-
 enum RFQStatus {
   DRAFT
   SUBMITTED
@@ -505,53 +910,6 @@ enum RFQStatus {
   WITHDRAWN
 }
 
-model RFQLine {
-  id            String   @id @default(uuid())
-  rfqId         String
-  lineNumber    Int
-  materialCode  String?
-  division      String?
-  productId     String?
-  description   String?
-  requestedQty  Decimal
-  unit          String   @default("LB")
-  specifications Json?
-  notes         String?
-  createdAt     DateTime @default(now())
-
-  rfq           RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
-  quoteLines    QuoteLine[]
-}
-
-model Quote {
-  id            String      @id @default(uuid())
-  quoteNumber   String      @unique
-  rfqId         String
-  version       Int         @default(1)
-  status        QuoteStatus @default(DRAFT)
-  subtotal      Decimal?
-  taxAmount     Decimal?
-  freightAmount Decimal?
-  totalAmount   Decimal?
-  currency      String      @default("USD")
-  validFrom     DateTime    @default(now())
-  validUntil    DateTime?
-  paymentTerms  String?
-  freightTerms  String?
-  notes         String?
-  internalNotes String?
-  createdById   String?
-  sentAt        DateTime?
-  acceptedAt    DateTime?
-  convertedOrderId String?  @unique
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  rfq           RFQ         @relation(fields: [rfqId], references: [id])
-  lines         QuoteLine[]
-  convertedOrder Order?     @relation("QuoteToOrder", fields: [convertedOrderId], references: [id])
-}
-
 enum QuoteStatus {
   DRAFT
   PENDING_APPROVAL
@@ -560,84 +918,6 @@ enum QuoteStatus {
   ACCEPTED
   REJECTED
   EXPIRED
-}
-
-model QuoteLine {
-  id            String   @id @default(uuid())
-  quoteId       String
-  rfqLineId     String?
-  lineNumber    Int
-  productId     String?
-  description   String?
-  quantity      Decimal
-  unit          String   @default("LB")
-  unitPrice     Decimal?
-  priceUnit     String   @default("CWT")
-  extendedPrice Decimal?
-  leadTimeDays  Int?
-  notes         String?
-  createdAt     DateTime @default(now())
-
-  quote         Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  rfqLine       RFQLine? @relation(fields: [rfqLineId], references: [id])
-}
-
-// ============== WORK CENTERS ==============
-
-model WorkCenter {
-  id            String   @id @default(uuid())
-  code          String   @unique
-  name          String
-  locationId    String
-  type          String?
-  capabilities  String[]
-  capacity      Json?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  location      Location @relation(fields: [locationId], references: [id])
-  jobs          Job[]
-}
-
-model Job {
-  id              String    @id @default(uuid())
-  jobNumber       String    @unique
-  orderId         String?
-  orderLineId     String?
-  workCenterId    String?
-  workOrderId     String?
-  assignedToId    String?
-  createdById     String?
-  status          JobStatus @default(SCHEDULED)
-  operationType   String?
-  priority        Int       @default(3)
-  scheduledStart  DateTime?
-  scheduledEnd    DateTime?
-  actualStart     DateTime?
-  actualEnd       DateTime?
-  inputWeightLb   Decimal?
-  outputWeightLb  Decimal?
-  scrapWeightLb   Decimal?
-  operatorId      String?
-  instructions    String?
-  notes           String?
-  shippingCarrier String?
-  trackingNumber  String?
-  shippedAt       DateTime?
-  recipeId        String?   // BOM Recipe used to generate this job
-  recipeVersion   Int?      // Version at time of job creation
-  hasCustomRouting Boolean  @default(false) // True if manually modified after recipe application
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  order           Order?      @relation(fields: [orderId], references: [id])
-  workCenter      WorkCenter? @relation(fields: [workCenterId], references: [id])
-  assignedTo      User?       @relation("JobAssignee", fields: [assignedToId], references: [id])
-  createdBy       User?       @relation("JobCreator", fields: [createdById], references: [id])
-  recipe          BomRecipe?  @relation("JobRecipe", fields: [recipeId], references: [id])
-
-  @@index([recipeId])
 }
 
 enum JobStatus {
@@ -651,48 +931,6 @@ enum JobStatus {
   COMPLETED
   CANCELLED
   ON_HOLD
-}
-
-// ============== ORDERS ==============
-
-model Order {
-  id            String      @id @default(uuid())
-  orderNumber   String      @unique
-  orderType     OrderType
-  buyerId       String?
-  sellerId      String?
-  shipToAddress String?
-  shipToCity    String?
-  shipToState   String?
-  shipToZip     String?
-  orderDate     DateTime    @default(now())
-  requiredDate  DateTime?
-  promisedDate  DateTime?
-  expireDate    DateTime?
-  status        OrderStatus @default(DRAFT)
-  subtotal      Decimal?
-  taxAmount     Decimal?
-  freightAmount Decimal?
-  totalAmount   Decimal?
-  currency      String      @default("USD")
-  paymentTerms  String?
-  freightTerms  FreightTerms?
-  poReference   String?
-  notes         String?
-  createdAt     DateTime    @default(now())
-  createdById   String
-  updatedAt     DateTime    @updatedAt
-
-  buyer         Organization? @relation("BuyerOrders", fields: [buyerId], references: [id])
-  seller        Organization? @relation("SellerOrders", fields: [sellerId], references: [id])
-  createdBy     User          @relation("OrderCreator", fields: [createdById], references: [id])
-  lines         OrderLine[]
-  originCoils   Coil[]        @relation("OriginOrder")
-  movements     MaterialMovement[]
-  shipments     Shipment[]
-  invoices      Invoice[]
-  jobs          Job[]
-  fromQuote     Quote?        @relation("QuoteToOrder")
 }
 
 enum OrderType {
@@ -719,82 +957,11 @@ enum FreightTerms {
   THIRD_PARTY
 }
 
-model OrderLine {
-  id            String    @id @default(uuid())
-  orderId       String
-  lineNumber    Int
-  productId     String?
-  gradeId       String?
-  description   String?
-  thicknessIn   Decimal?
-  widthIn       Decimal?
-  lengthIn      Decimal?
-  finish        String?
-  coating       String?
-  qtyOrdered    Decimal
-  qtyShipped    Decimal   @default(0)
-  qtyReceived   Decimal   @default(0)
-  unit          String    @default("LB")
-  unitPrice     Decimal?
-  priceUnit     PriceUnit @default(CWT)
-  discountPct   Decimal?
-  extendedPrice Decimal?
-  lineStatus    LineStatus @default(OPEN)
-  notes         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product       Product?  @relation(fields: [productId], references: [id])
-  grade         Grade?    @relation(fields: [gradeId], references: [id])
-  allocations   OrderLineAllocation[]
-  shipmentItems ShipmentItem[]
-}
-
 enum LineStatus {
   OPEN
   PARTIAL
   COMPLETE
   CANCELLED
-}
-
-model OrderLineAllocation {
-  id          String    @id @default(uuid())
-  orderLineId String
-  coilId      String
-  qtyAllocated Decimal
-  allocatedAt DateTime  @default(now())
-
-  orderLine   OrderLine @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
-  coil        Coil      @relation(fields: [coilId], references: [id])
-}
-
-// ============== SHOP FLOOR ==============
-
-model WorkOrder {
-  id            String      @id @default(uuid())
-  woNumber      String      @unique
-  woType        WOType
-  status        WOStatus    @default(DRAFT)
-  sourceCoilId  String
-  lineId        String?
-  salesOrderId  String?
-  priority      Int         @default(3)
-  scheduledDate DateTime?
-  startedAt     DateTime?
-  completedAt   DateTime?
-  slitPattern   Json?
-  inputWeightLb Decimal?
-  outputWeightLb Decimal?
-  scrapWeightLb Decimal?
-  yieldPct      Decimal?
-  notes         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  sourceCoil    Coil        @relation("WorkOrderInput", fields: [sourceCoilId], references: [id])
-  outputs       WorkOrderOutput[]
-  movements     MaterialMovement[]
 }
 
 enum WOType {
@@ -815,53 +982,6 @@ enum WOStatus {
   CANCELLED
 }
 
-model WorkOrderOutput {
-  id            String   @id @default(uuid())
-  workOrderId   String
-  outputCoilId  String
-  sequence      Int
-  targetWidth   Decimal?
-  actualWidth   Decimal?
-  actualWeight  Decimal?
-  destination   String?
-  createdAt     DateTime @default(now())
-
-  workOrder     WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
-  outputCoil    Coil      @relation(fields: [outputCoilId], references: [id])
-}
-
-// ============== LOGISTICS ==============
-
-model Shipment {
-  id            String         @id @default(uuid())
-  shipmentNumber String        @unique
-  orderId       String
-  fromLocationId String
-  carrierId     String?
-  carrierName   String?
-  truckNumber   String?
-  driverName    String?
-  driverPhone   String?
-  status        ShipmentStatus @default(PENDING)
-  scheduledDate DateTime?
-  shippedAt     DateTime?
-  deliveredAt   DateTime?
-  totalWeightLb Decimal?
-  bolNumber     String?
-  podCaptured   Boolean        @default(false)
-  podImageUrl   String?
-  podSignature  String?
-  notes         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  order         Order          @relation(fields: [orderId], references: [id])
-  fromLocation  Location       @relation(fields: [fromLocationId], references: [id])
-  items         ShipmentItem[]
-  movements     MaterialMovement[]
-  stops         ShipmentStop[]
-}
-
 enum ShipmentStatus {
   PENDING
   LOADING
@@ -871,57 +991,6 @@ enum ShipmentStatus {
   CANCELLED
 }
 
-model ShipmentItem {
-  id            String   @id @default(uuid())
-  shipmentId    String
-  orderLineId   String
-  qtyShipped    Decimal
-  weightLb      Decimal?
-  createdAt     DateTime @default(now())
-
-  shipment      Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-  orderLine     OrderLine @relation(fields: [orderLineId], references: [id])
-}
-
-model ShipmentStop {
-  id            String   @id @default(uuid())
-  shipmentId    String
-  stopNumber    Int
-  address       String
-  city          String?
-  state         String?
-  zipCode       String?
-  scheduledTime DateTime?
-  arrivedAt     DateTime?
-  departedAt    DateTime?
-  notes         String?
-  createdAt     DateTime @default(now())
-
-  shipment      Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-}
-
-// ============== BILLING ==============
-
-model Invoice {
-  id            String        @id @default(uuid())
-  invoiceNumber String        @unique
-  orderId       String
-  invoiceDate   DateTime      @default(now())
-  dueDate       DateTime?
-  subtotal      Decimal
-  taxAmount     Decimal       @default(0)
-  freightAmount Decimal       @default(0)
-  totalAmount   Decimal
-  paidAmount    Decimal       @default(0)
-  status        InvoiceStatus @default(DRAFT)
-  notes         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  order         Order         @relation(fields: [orderId], references: [id])
-  payments      Payment[]
-}
-
 enum InvoiceStatus {
   DRAFT
   SENT
@@ -929,46 +998,6 @@ enum InvoiceStatus {
   PAID
   OVERDUE
   CANCELLED
-}
-
-model Payment {
-  id            String      @id @default(uuid())
-  invoiceId     String
-  amount        Decimal
-  paymentDate   DateTime    @default(now())
-  paymentMethod String?
-  referenceNumber String?
-  notes         String?
-  createdAt     DateTime    @default(now())
-
-  invoice       Invoice     @relation(fields: [invoiceId], references: [id])
-}
-
-// ============== DOCUMENTS ==============
-
-model Document {
-  id            String       @id @default(uuid())
-  documentType  DocumentType
-  documentNumber String?
-  title         String?
-  fileName      String
-  fileType      String?
-  fileSizeBytes Int?
-  storagePath   String
-  checksum      String?
-  extractedData Json?
-  isVerified    Boolean      @default(false)
-  verifiedById  String?
-  verifiedAt    DateTime?
-  issueDate     DateTime?
-  expiryDate    DateTime?
-  ownerId       String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-
-  owner         Organization? @relation(fields: [ownerId], references: [id])
-  heats         Heat[]
-  links         DocumentLink[]
 }
 
 enum DocumentType {
@@ -984,100 +1013,10 @@ enum DocumentType {
   OTHER
 }
 
-model DocumentLink {
-  id            String   @id @default(uuid())
-  documentId    String
-  entityType    String
-  entityId      String
-  linkType      String   @default("PRIMARY")
-  createdAt     DateTime @default(now())
-
-  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  coil          Coil?    @relation(fields: [entityId], references: [id], map: "document_coil_link")
-}
-
-// ============== COMMODITY PRICING ==============
-
-model CommodityPrice {
-  id            String   @id @default(uuid())
-  indexCode     String
-  indexName     String
-  price         Decimal
-  unit          String
-  effectiveDate DateTime
-  source        String?
-  createdAt     DateTime @default(now())
-
-  @@index([indexCode, effectiveDate])
-}
-
-// ============== AUDIT ==============
-
-model AuditLog {
-  id          String   @id @default(uuid())
-  entityType  String
-  entityId    String
-  action      String
-  oldValues   Json?
-  newValues   Json?
-  userId      String?
-  ipAddress   String?
-  sessionId   String?
-  createdAt   DateTime @default(now())
-
-  @@index([entityType, entityId])
-  @@index([userId])
-  @@index([createdAt])
-}
-// ============== BOM / RECIPES ==============
-
-model BomRecipe {
-  id            String   @id @default(uuid())
-  name          String
-  code          String   // Used for version grouping
-  materialCode  String?
-  commodity     String?  // METALS, PLASTICS
-  form          String?  // PLATE, SHEET, BAR, TUBE, etc.
-  grade         String?
-  thicknessMin  Decimal?
-  thicknessMax  Decimal?
-  division      String?  // METALS, PLASTICS
-  version       Int      @default(1)
-  status        BomRecipeStatus @default(DRAFT)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  operations    BomOperation[]
-  jobs          Job[]    @relation("JobRecipe")
-
-  @@index([code, version])
-  @@index([status])
-  @@index([materialCode])
-  @@index([commodity, form, grade])
-}
-
 enum BomRecipeStatus {
   DRAFT
   REVIEW
   ACTIVE
   DEPRECATED
   ARCHIVED
-}
-
-model BomOperation {
-  id                      String   @id @default(uuid())
-  recipeId                String
-  sequence                Int
-  name                    String
-  workCenterType          String
-  estimatedMachineMinutes Int      @default(0)
-  estimatedLaborMinutes   Int      @default(0)
-  setupMinutes            Int      @default(0)
-  parameters              Json?    // Array of {key, label, value}
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-
-  recipe                  BomRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  @@index([recipeId, sequence])
 }

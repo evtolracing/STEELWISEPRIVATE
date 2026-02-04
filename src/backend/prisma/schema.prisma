@@ -33,8 +33,8 @@ model Organization {
 }
 
 model User {
-  id               String             @id @default(uuid())
-  email            String             @unique
+  id               String               @id @default(uuid())
+  email            String               @unique
   passwordHash     String
   firstName        String
   lastName         String
@@ -45,28 +45,28 @@ model User {
   phone            String?
   avatarUrl        String?
   lastLoginAt      DateTime?
-  mfaEnabled       Boolean            @default(false)
-  isActive         Boolean            @default(true)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  createdCoils     Coil[]             @relation("CoilCreator")
-  createdHeats     Heat[]             @relation("HeatCreator")
-  assignedJobs     Job[]              @relation("JobAssignee")
-  createdJobs      Job[]              @relation("JobCreator")
+  mfaEnabled       Boolean              @default(false)
+  isActive         Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  createdCoils     Coil[]               @relation("CoilCreator")
+  createdHeats     Heat[]               @relation("HeatCreator")
+  assignedJobs     Job[]                @relation("JobAssignee")
+  createdJobs      Job[]                @relation("JobCreator")
   movements        MaterialMovement[]
-  orders           Order[]            @relation("OrderCreator")
-  qcHolds          QCHold[]           @relation("HoldBy")
-  resolvedHolds    QCHold[]           @relation("ResolvedBy")
-  approvedTests    TestResult[]       @relation("ApprovedBy")
-  testResults      TestResult[]       @relation("TestedBy")
-  organization     Organization       @relation(fields: [organizationId], references: [id])
-  homeLocation     Location?          @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
+  orders           Order[]              @relation("OrderCreator")
+  qcHolds          QCHold[]             @relation("HoldBy")
+  resolvedHolds    QCHold[]             @relation("ResolvedBy")
+  approvedTests    TestResult[]         @relation("ApprovedBy")
+  testResults      TestResult[]         @relation("TestedBy")
+  organization     Organization         @relation(fields: [organizationId], references: [id])
+  homeLocation     Location?            @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
   userRoles        UserRoleAssignment[]
   userLocations    UserLocation[]
   userDivisions    UserDivision[]
-  auditLogs        AuditLog[]         @relation("AuditActor")
-  approvalRequests ApprovalRequest[]  @relation("ApprovalRequester")
-  approvalsMade    ApprovalDecision[] @relation("ApprovalDecider")
+  auditLogs        AuditLog[]           @relation("AuditActor")
+  approvalRequests ApprovalRequest[]    @relation("ApprovalRequester")
+  approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
 }
 
 // Role definition with permissions
@@ -75,7 +75,7 @@ model Role {
   name        String               @unique
   displayName String
   description String?
-  permissions Json                 // Array of permission strings
+  permissions Json // Array of permission strings
   isSystem    Boolean              @default(false)
   isActive    Boolean              @default(true)
   createdAt   DateTime             @default(now())
@@ -85,15 +85,15 @@ model Role {
 
 // Many-to-many: User <-> Role
 model UserRoleAssignment {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
   roleId    String
-  grantedAt DateTime @default(now())
+  grantedAt DateTime  @default(now())
   grantedBy String?
   expiresAt DateTime?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
   @@unique([userId, roleId])
   @@index([userId])
   @@index([roleId])
@@ -108,7 +108,7 @@ model UserLocation {
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  
+
   @@unique([userId, locationId])
   @@index([userId])
   @@index([locationId])
@@ -122,7 +122,7 @@ model UserDivision {
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   division   Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
-  
+
   @@unique([userId, divisionId])
   @@index([userId])
   @@index([divisionId])
@@ -144,7 +144,7 @@ model Division {
 model ApprovalRequest {
   id            String             @id @default(uuid())
   tenantId      String
-  requestType   String             // e.g., "QUOTE_DISCOUNT", "INVENTORY_ADJUST"
+  requestType   String // e.g., "QUOTE_DISCOUNT", "INVENTORY_ADJUST"
   resourceType  String
   resourceId    String
   requesterId   String
@@ -156,21 +156,21 @@ model ApprovalRequest {
   updatedAt     DateTime           @updatedAt
   requester     User               @relation("ApprovalRequester", fields: [requesterId], references: [id])
   decisions     ApprovalDecision[]
-  
+
   @@index([tenantId, status])
   @@index([requesterId])
 }
 
 model ApprovalDecision {
-  id         String          @id @default(uuid())
-  requestId  String
-  deciderId  String
-  decision   DecisionType
-  comments   String?
-  createdAt  DateTime        @default(now())
-  request    ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  decider    User            @relation("ApprovalDecider", fields: [deciderId], references: [id])
-  
+  id        String          @id @default(uuid())
+  requestId String
+  deciderId String
+  decision  DecisionType
+  comments  String?
+  createdAt DateTime        @default(now())
+  request   ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  decider   User            @relation("ApprovalDecider", fields: [deciderId], references: [id])
+
   @@index([requestId])
 }
 
@@ -178,7 +178,7 @@ model ApprovalDecision {
 model AuditLog {
   id            String   @id @default(uuid())
   tenantId      String?
-  category      String   // AUTH, AUTHZ, DATA, FINANCIAL, WORKFLOW, SYSTEM
+  category      String // AUTH, AUTHZ, DATA, FINANCIAL, WORKFLOW, SYSTEM
   eventType     String
   severity      String   @default("INFO")
   userId        String?
@@ -197,9 +197,9 @@ model AuditLog {
   details       Json?
   fieldChanges  Json?
   timestamp     DateTime @default(now())
-  
-  user          User?    @relation("AuditActor", fields: [userId], references: [id])
-  
+
+  user User? @relation("AuditActor", fields: [userId], references: [id])
+
   @@index([tenantId, timestamp])
   @@index([userId, timestamp])
   @@index([category, eventType])
@@ -376,6 +376,7 @@ model Location {
   workCenters   WorkCenter[]
   usersHome     User[]             @relation("UserHomeLocation")
   userLocations UserLocation[]
+  assets        Asset[]            @relation("AssetSite")
 }
 
 model Inventory {
@@ -562,6 +563,7 @@ model WorkCenter {
   updatedAt    DateTime @updatedAt
   jobs         Job[]
   location     Location @relation(fields: [locationId], references: [id])
+  assets       Asset[]  @relation("AssetWorkCenter")
 }
 
 model Job {
@@ -911,24 +913,24 @@ enum UserRole {
   // System Roles
   SUPER_ADMIN
   TENANT_OWNER
-  
+
   // Executive Roles
   EXECUTIVE
   CFO
   COO
   CIO
-  
+
   // Division/Branch Roles
   DIVISION_DIRECTOR
   BRANCH_MANAGER
-  
+
   // Sales Roles
   SALES_DIRECTOR
   SALES_REP
   CSR
   ESTIMATOR
   CREDIT_MANAGER
-  
+
   // Operations Roles
   OPS_MANAGER
   PRODUCTION_MANAGER
@@ -936,7 +938,7 @@ enum UserRole {
   INVENTORY_MANAGER
   BUYER
   WORKCENTER_LEAD
-  
+
   // Shop Floor Roles
   OPERATOR_SAW
   OPERATOR_ROUTER
@@ -947,25 +949,25 @@ enum UserRole {
   RECEIVING_CLERK
   SHIPPING_COORDINATOR
   PACKAGING_LEAD
-  
+
   // Quality Roles
   QC_MANAGER
   QC_INSPECTOR
-  
+
   // Support Roles
   MAINTENANCE_MANAGER
   INTEGRATION_ADMIN
   DATA_ANALYST
   SUPPORT_AGENT
   AUDITOR
-  
+
   // External Portal Roles
   CUSTOMER_ADMIN
   CUSTOMER_BUYER
   CUSTOMER_VIEWER
   SUPPLIER_USER
   CARRIER_USER
-  
+
   // Legacy (for backward compatibility)
   ADMIN
   MILL_OPERATOR
@@ -1229,4 +1231,654 @@ enum BomRecipeStatus {
   ACTIVE
   DEPRECATED
   ARCHIVED
+}
+
+// ============================================================================
+// MAINTENANCE & RELIABILITY MODULE
+// ============================================================================
+
+model Asset {
+  id          String  @id @default(uuid())
+  assetNumber String  @unique
+  name        String
+  description String?
+  assetTypeId String
+
+  // Hierarchy
+  parentAssetId String?
+  siteId        String // Location reference
+  areaCode      String?
+  workCenterId  String?
+
+  // Equipment Details
+  manufacturer      String?
+  model             String?
+  serialNumber      String?
+  purchaseDate      DateTime?
+  installDate       DateTime?
+  warrantyExpires   DateTime?
+  expectedLifeYears Int?
+  replacementCost   Decimal?
+
+  // Criticality
+  criticality    AssetCriticality @default(C)
+  safetyRelated  Boolean          @default(false)
+  qualityRelated Boolean          @default(false)
+
+  // Status
+  status          AssetStatus @default(IN_SERVICE)
+  statusReason    String?
+  statusChangedAt DateTime?
+  statusChangedBy String?
+
+  // Metering
+  currentHours  Decimal?
+  currentCycles Int?
+  currentMiles  Decimal?
+
+  // PM Information
+  lastPMDate         DateTime?
+  nextPMDueDate      DateTime?
+  pmComplianceStatus PMComplianceStatus?
+
+  // Certification
+  certificationRequired Boolean   @default(false)
+  certificationExpires  DateTime?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  assetType   AssetType   @relation(fields: [assetTypeId], references: [id])
+  parentAsset Asset?      @relation("AssetHierarchy", fields: [parentAssetId], references: [id])
+  childAssets Asset[]     @relation("AssetHierarchy")
+  site        Location    @relation("AssetSite", fields: [siteId], references: [id])
+  workCenter  WorkCenter? @relation("AssetWorkCenter", fields: [workCenterId], references: [id])
+
+  components        AssetComponent[]
+  meterReadings     MeterReading[]
+  maintenanceOrders MaintenanceOrder[]
+  pmSchedules       PMSchedule[]
+  downtimeRecords   DowntimeRecord[]
+  spareParts        SparePart[]
+
+  @@index([assetNumber])
+  @@index([siteId])
+  @@index([status])
+  @@index([criticality])
+  @@index([assetTypeId])
+}
+
+model AssetType {
+  id                 String           @id @default(uuid())
+  code               String           @unique
+  name               String
+  category           String? // SAW, ROUTER, FORKLIFT, CRANE, etc.
+  description        String?
+  defaultCriticality AssetCriticality @default(C)
+  pmTemplateId       String?
+
+  // Default Intervals
+  defaultPMIntervalDays  Int?
+  defaultPMIntervalHours Int?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assets      Asset[]
+  pmTemplates PMTemplate[]
+
+  @@index([code])
+  @@index([category])
+}
+
+model AssetComponent {
+  id                String          @id @default(uuid())
+  assetId           String
+  name              String
+  partNumber        String?
+  serialNumber      String?
+  manufacturer      String?
+  installDate       DateTime?
+  warrantyExpires   DateTime?
+  expectedLifeHours Int?
+  currentHours      Decimal?
+  status            ComponentStatus @default(ACTIVE)
+  notes             String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+}
+
+model MeterReading {
+  id          String    @id @default(uuid())
+  assetId     String
+  meterType   MeterType
+  reading     Decimal
+  readingDate DateTime  @default(now())
+  recordedBy  String
+  source      String? // MANUAL, AUTOMATIC, IMPORT
+  notes       String?
+
+  createdAt DateTime @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId, meterType])
+  @@index([readingDate])
+}
+
+// Work Order for Maintenance
+model MaintenanceOrder {
+  id       String @id @default(uuid())
+  woNumber String @unique
+  assetId  String
+
+  // Type & Priority
+  type     MaintenanceOrderType
+  priority MaintenancePriority  @default(NORMAL)
+
+  // Description
+  title       String
+  description String?
+  problemCode String?
+  failureCode String?
+
+  // Scheduling
+  status         MaintenanceOrderStatus @default(DRAFT)
+  scheduledStart DateTime?
+  scheduledEnd   DateTime?
+  estimatedHours Decimal?
+
+  // Execution
+  actualStart DateTime?
+  actualEnd   DateTime?
+  actualHours Decimal?
+
+  // Assignment
+  assignedToId String?
+  assignedTeam String?
+
+  // Safety
+  lotoRequired          Boolean @default(false)
+  permitRequired        Boolean @default(false)
+  hotWorkRequired       Boolean @default(false)
+  confinedSpaceRequired Boolean @default(false)
+  safetyRelated         Boolean @default(false)
+
+  // Linked Records
+  pmScheduleId     String?
+  pmTemplateId     String?
+  downtimeRecordId String?
+  stopWorkId       String?
+  ncrId            String?
+  spcViolationId   String?
+
+  // Verification
+  requiresFirstArticle Boolean  @default(false)
+  firstArticlePassed   Boolean?
+  testRunPassed        Boolean?
+
+  // Approval
+  submittedAt DateTime?
+  submittedBy String?
+  approvedAt  DateTime?
+  approvedBy  String?
+
+  // Completion
+  completedAt     DateTime?
+  completedBy     String?
+  completionNotes String?
+
+  // Verification & Closure
+  verifiedAt        DateTime?
+  verifiedBy        String?
+  verificationNotes String?
+  closedAt          DateTime?
+  closedBy          String?
+
+  createdAt DateTime @default(now())
+  createdBy String?
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  asset          Asset           @relation(fields: [assetId], references: [id])
+  pmSchedule     PMSchedule?     @relation(fields: [pmScheduleId], references: [id])
+  pmTemplate     PMTemplate?     @relation(fields: [pmTemplateId], references: [id])
+  downtimeRecord DowntimeRecord? @relation(fields: [downtimeRecordId], references: [id])
+
+  tasks       MaintenanceTask[]
+  parts       MaintenanceOrderPart[]
+  labor       MaintenanceOrderLabor[]
+  attachments MaintenanceAttachment[]
+
+  @@index([woNumber])
+  @@index([assetId])
+  @@index([status])
+  @@index([type])
+  @@index([priority])
+  @@index([scheduledStart])
+}
+
+model MaintenanceTask {
+  id                 String     @id @default(uuid())
+  maintenanceOrderId String
+  sequence           Int
+  description        String
+  estimatedMinutes   Int?
+  actualMinutes      Int?
+  status             TaskStatus @default(PENDING)
+  completedAt        DateTime?
+  completedBy        String?
+  notes              String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  maintenanceOrder MaintenanceOrder @relation(fields: [maintenanceOrderId], references: [id], onDelete: Cascade)
+
+  @@index([maintenanceOrderId, sequence])
+}
+
+model MaintenanceOrderPart {
+  id                 String    @id @default(uuid())
+  maintenanceOrderId String
+  sparePartId        String?
+  partNumber         String
+  partDescription    String?
+  quantityRequired   Decimal
+  quantityUsed       Decimal   @default(0)
+  unitCost           Decimal?
+  issuedAt           DateTime?
+  issuedBy           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  maintenanceOrder MaintenanceOrder @relation(fields: [maintenanceOrderId], references: [id], onDelete: Cascade)
+  sparePart        SparePart?       @relation(fields: [sparePartId], references: [id])
+
+  @@index([maintenanceOrderId])
+}
+
+model MaintenanceOrderLabor {
+  id                 String    @id @default(uuid())
+  maintenanceOrderId String
+  technicianId       String
+  technicianName     String
+  startTime          DateTime
+  endTime            DateTime?
+  regularHours       Decimal   @default(0)
+  overtimeHours      Decimal   @default(0)
+  laborRate          Decimal?
+  notes              String?
+
+  createdAt DateTime @default(now())
+
+  maintenanceOrder MaintenanceOrder @relation(fields: [maintenanceOrderId], references: [id], onDelete: Cascade)
+
+  @@index([maintenanceOrderId])
+}
+
+model MaintenanceAttachment {
+  id                 String         @id @default(uuid())
+  maintenanceOrderId String
+  type               AttachmentType
+  fileName           String
+  fileType           String?
+  fileSizeBytes      Int?
+  storagePath        String
+  description        String?
+  uploadedAt         DateTime       @default(now())
+  uploadedBy         String
+
+  maintenanceOrder MaintenanceOrder @relation(fields: [maintenanceOrderId], references: [id], onDelete: Cascade)
+
+  @@index([maintenanceOrderId])
+}
+
+// PM Templates
+model PMTemplate {
+  id          String  @id @default(uuid())
+  code        String  @unique
+  name        String
+  description String?
+  assetTypeId String?
+
+  // Default Schedule
+  intervalType  PMIntervalType
+  intervalValue Int
+  intervalUnit  String? // DAYS, HOURS, MILES, CYCLES
+
+  // Trigger Settings
+  triggerOnHours     Boolean @default(false)
+  triggerOnCalendar  Boolean @default(true)
+  triggerOnCondition Boolean @default(false)
+  conditionThreshold Json?
+
+  // Default Task List
+  taskList Json? // Array of task templates
+
+  // Default Parts
+  defaultParts Json? // Array of part requirements
+
+  // Safety
+  lotoRequired   Boolean  @default(false)
+  permitRequired Boolean  @default(false)
+  estimatedHours Decimal?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assetType         AssetType?         @relation(fields: [assetTypeId], references: [id])
+  pmSchedules       PMSchedule[]
+  maintenanceOrders MaintenanceOrder[]
+
+  @@index([code])
+  @@index([assetTypeId])
+}
+
+model PMSchedule {
+  id           String  @id @default(uuid())
+  assetId      String
+  pmTemplateId String?
+
+  // Schedule
+  intervalType  PMIntervalType
+  intervalValue Int
+  intervalUnit  String?
+
+  // Trigger Tracking
+  lastCompletedDate  DateTime?
+  lastCompletedHours Decimal?
+  nextDueDate        DateTime?
+  nextDueHours       Decimal?
+
+  // Overdue Handling
+  overdueAction        OverdueAction @default(ALERT)
+  overdueThresholdDays Int?
+
+  // Status
+  status PMScheduleStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  asset             Asset              @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  pmTemplate        PMTemplate?        @relation(fields: [pmTemplateId], references: [id])
+  maintenanceOrders MaintenanceOrder[]
+
+  @@index([assetId])
+  @@index([nextDueDate])
+  @@index([status])
+}
+
+// Downtime Tracking
+model DowntimeRecord {
+  id      String @id @default(uuid())
+  assetId String
+
+  // Timing
+  startTime       DateTime
+  endTime         DateTime?
+  durationMinutes Int?
+
+  // Classification
+  type              DowntimeType
+  reasonCode        String?
+  reasonDescription String?
+
+  // Impact
+  impactedJobs        String[] // Array of job IDs
+  productionLossUnits Decimal?
+  estimatedCost       Decimal?
+
+  // Reporting
+  reportedBy String
+  reportedAt DateTime @default(now())
+  symptoms   String?
+
+  // Resolution
+  resolvedBy      String?
+  resolutionNotes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  asset             Asset              @relation(fields: [assetId], references: [id])
+  maintenanceOrders MaintenanceOrder[]
+
+  @@index([assetId])
+  @@index([startTime])
+  @@index([type])
+}
+
+// Spare Parts Inventory
+model SparePart {
+  id           String  @id @default(uuid())
+  partNumber   String  @unique
+  name         String
+  description  String?
+  category     String?
+  manufacturer String?
+
+  // Inventory
+  quantityOnHand   Decimal @default(0)
+  quantityReserved Decimal @default(0)
+  quantityOnOrder  Decimal @default(0)
+  reorderPoint     Int?
+  reorderQuantity  Int?
+  unitOfMeasure    String  @default("EACH")
+
+  // Cost
+  unitCost          Decimal?
+  lastPurchasePrice Decimal?
+  lastPurchaseDate  DateTime?
+
+  // Location
+  storageLocation String?
+  binNumber       String?
+
+  // Asset Links
+  assetId       String? // Optional: specific asset
+  assetTypeCode String? // Or: applies to asset type
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  asset        Asset?                 @relation(fields: [assetId], references: [id])
+  orderParts   MaintenanceOrderPart[]
+  transactions SparePartTransaction[]
+
+  @@index([partNumber])
+  @@index([category])
+  @@index([assetId])
+}
+
+model SparePartTransaction {
+  id              String              @id @default(uuid())
+  sparePartId     String
+  transactionType PartTransactionType
+  quantity        Decimal
+  unitCost        Decimal?
+  referenceType   String? // MAINTENANCE_ORDER, PURCHASE, ADJUSTMENT
+  referenceId     String?
+  notes           String?
+  performedBy     String
+  performedAt     DateTime            @default(now())
+
+  sparePart SparePart @relation(fields: [sparePartId], references: [id])
+
+  @@index([sparePartId])
+  @@index([performedAt])
+}
+
+// Maintenance Audit Log
+model MaintenanceAuditLog {
+  id String @id @default(uuid())
+
+  // What
+  entityType String // ASSET, MAINTENANCE_ORDER, PM_SCHEDULE
+  entityId   String
+  action     String
+
+  // Before/After
+  previousState Json?
+  newState      Json?
+  changedFields String[]
+
+  // Who
+  userId   String
+  userRole String?
+  userName String?
+
+  // When
+  occurredAt DateTime @default(now())
+
+  // Context
+  ipAddress String?
+  reason    String?
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([occurredAt])
+}
+
+// ============================================================================
+// MAINTENANCE ENUMS
+// ============================================================================
+
+enum AssetStatus {
+  IN_SERVICE
+  OUT_OF_SERVICE
+  MAINTENANCE
+  SAFETY_HOLD
+  QUALITY_HOLD
+  PENDING_RETURN
+  DECOMMISSIONED
+}
+
+enum AssetCriticality {
+  A // Critical - Production stops
+  B // Important - Workaround exists
+  C // Standard - Minimal impact
+}
+
+enum ComponentStatus {
+  ACTIVE
+  WORN
+  FAILED
+  REPLACED
+}
+
+enum MeterType {
+  HOURS
+  CYCLES
+  MILES
+  UNITS_PRODUCED
+}
+
+enum MaintenanceOrderType {
+  PM // Preventive Maintenance
+  CORRECTIVE // Scheduled repair
+  BREAKDOWN // Emergency repair
+  INSPECTION // Planned inspection
+  CALIBRATION // Calibration
+  MODIFICATION // Asset modification
+  SAFETY_RELATED // Safety-related work
+  QUALITY_RELATED // Quality-triggered work
+}
+
+enum MaintenancePriority {
+  EMERGENCY // Immediate response
+  HIGH // Same day
+  NORMAL // Within 3 days
+  LOW // Within week
+  SCHEDULED // Planned
+}
+
+enum MaintenanceOrderStatus {
+  DRAFT // Being created
+  PENDING_APPROVAL // Waiting approval
+  APPROVED // Approved, not started
+  SCHEDULED // Scheduled for work
+  WAITING_PARTS // Parts on order
+  IN_PROGRESS // Work underway
+  COMPLETED // Work done, pending verification
+  VERIFIED // Verified, pending return to service
+  CLOSED // Fully closed
+  CANCELLED // Cancelled
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+enum AttachmentType {
+  PHOTO_BEFORE
+  PHOTO_AFTER
+  CHECKLIST
+  PERMIT
+  DOCUMENT
+  TEST_RESULT
+  SIGNATURE
+  OTHER
+}
+
+enum PMIntervalType {
+  TIME_BASED // Calendar days
+  METER_BASED // Hours, miles, cycles
+  CONDITION_BASED // Sensor/inspection trigger
+  HYBRID // Whichever comes first
+}
+
+enum PMScheduleStatus {
+  ACTIVE
+  SUSPENDED
+  COMPLETED
+  CANCELLED
+}
+
+enum OverdueAction {
+  ALERT // Send notification only
+  ESCALATE // Escalate to manager
+  BLOCK // Put asset out of service
+}
+
+enum PMComplianceStatus {
+  CURRENT
+  DUE_SOON
+  OVERDUE
+  SEVERELY_OVERDUE
+}
+
+enum DowntimeType {
+  BREAKDOWN // Unplanned failure
+  PLANNED_MAINTENANCE // Scheduled PM
+  CORRECTIVE // Scheduled repair
+  SETUP_CHANGEOVER // Setup time
+  QUALITY_HOLD // Quality issue
+  SAFETY_HOLD // Safety issue
+  NO_WORK // No work scheduled
+  OTHER // Other reason
+}
+
+enum PartTransactionType {
+  RECEIVE // Received from supplier
+  ISSUE // Issued to work order
+  RETURN // Returned from work order
+  ADJUST // Inventory adjustment
+  TRANSFER // Transfer between locations
+  SCRAP // Scrapped
 }

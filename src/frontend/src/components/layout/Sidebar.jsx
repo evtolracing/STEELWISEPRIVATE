@@ -42,6 +42,15 @@ import {
   RequestQuote as OrderHubIcon,
   Group as UsersIcon,
   AdminPanelSettings as AdminIcon,
+  HealthAndSafety as SafetyIcon,
+  ReportProblem as IncidentIcon,
+  Checklist as InspectionIcon,
+  Lock as PermitIcon,
+  School as TrainingIcon,
+  Visibility as ObservationIcon,
+  BuildCircle as CAPAIcon,
+  SmartToy as AssistantIcon,
+  Block as StopWorkIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -111,6 +120,20 @@ const navSections = [
     items: [
       { path: '/qaqc', label: 'QA/QC', icon: QualityIcon },
       { path: '/provenance', label: 'Provenance', icon: ProvenanceIcon },
+    ],
+  },
+  {
+    title: 'Safety & EHS',
+    items: [
+      { path: '/safety', label: 'Safety Dashboard', icon: SafetyIcon },
+      { path: '/safety/stop-work', label: 'Stop-Work Authority', icon: StopWorkIcon, highlight: true },
+      { path: '/safety/assistant', label: 'Safety Assistant', icon: AssistantIcon },
+      { path: '/safety/incidents', label: 'Incidents', icon: IncidentIcon },
+      { path: '/safety/inspections', label: 'Inspections', icon: InspectionIcon },
+      { path: '/safety/permits', label: 'Permits', icon: PermitIcon },
+      { path: '/safety/training', label: 'Training', icon: TrainingIcon },
+      { path: '/safety/observations', label: 'Observations', icon: ObservationIcon },
+      { path: '/safety/capa', label: 'CAPA', icon: CAPAIcon },
     ],
   },
   {

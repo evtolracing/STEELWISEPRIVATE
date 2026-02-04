@@ -81,6 +81,9 @@ const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 // Admin Pages
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
 
+// Safety / EHS App
+const SafetyApp = lazy(() => import('../apps/safety'))
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -340,6 +343,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <ProvenanceLookupPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Safety / EHS Module
+      {
+        path: 'safety/*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SafetyApp />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

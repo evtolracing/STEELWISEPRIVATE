@@ -35,6 +35,7 @@ import orderHubRoutes from './routes/orderHubRoutes.js';
 import aiOrderHubRoutes from './routes/aiOrderHubRoutes.js';
 import ingestRoutes from './routes/ingestRoutes.js';
 import pipelineRoutes from './routes/pipelineRoutes.js';
+import stopWorkRoutes from './routes/stopWork.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 
 dotenv.config();
@@ -90,6 +91,9 @@ app.use('/api/v1/ingest', ingestRoutes);   // /api/v1/ingest/email-rfq
 
 // Pipeline Orchestrator - Complete Order-to-Invoice Workflow
 app.use('/api/v1/pipeline', pipelineRoutes);  // /api/v1/pipeline (create, advance, auto-advance, simulate)
+
+// Safety Module - Stop-Work Authority System
+app.use('/api/safety/stop-work', stopWorkRoutes);  // /api/safety/stop-work (initiate, clear, validate)
 
 // Initialize OrderHub seed data
 console.log('🌱 About to initialize seed data...');

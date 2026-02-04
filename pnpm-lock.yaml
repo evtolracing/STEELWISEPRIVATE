@@ -60,14 +60,14 @@ importers:
         specifier: ^5.18.0
         version: 5.18.0(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@19.2.8)(react@18.3.1)
       '@mui/lab':
-        specifier: ^5.0.0-alpha.177
+        specifier: 5.0.0-alpha.177
         version: 5.0.0-alpha.177(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mui/material':
         specifier: ^5.18.0
         version: 5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mui/x-date-pickers':
         specifier: ^8.25.0
-        version: 8.25.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(date-fns@3.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 8.25.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(date-fns@3.6.0)(dayjs@1.11.19)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
         specifier: ^5.17.0
         version: 5.90.19(react@18.3.1)
@@ -77,6 +77,9 @@ importers:
       date-fns:
         specifier: ^3.2.0
         version: 3.6.0
+      dayjs:
+        specifier: ^1.11.19
+        version: 1.11.19
       mapbox-gl:
         specifier: 2.15.0
         version: 2.15.0
@@ -957,6 +960,9 @@ packages:
 
   date-fns@3.6.0:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
+
+  dayjs@1.11.19:
+    resolution: {integrity: sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -2120,7 +2126,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.8
 
-  '@mui/x-date-pickers@8.25.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(date-fns@3.6.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@mui/x-date-pickers@8.25.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(date-fns@3.6.0)(dayjs@1.11.19)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.28.6
       '@mui/material': 5.18.0(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2137,6 +2143,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.2.8)(react@18.3.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.8)(react@18.3.1))(@types/react@19.2.8)(react@18.3.1)
       date-fns: 3.6.0
+      dayjs: 1.11.19
     transitivePeerDependencies:
       - '@types/react'
 
@@ -2446,6 +2453,8 @@ snapshots:
   csstype@3.2.3: {}
 
   date-fns@3.6.0: {}
+
+  dayjs@1.11.19: {}
 
   debug@2.6.9:
     dependencies:

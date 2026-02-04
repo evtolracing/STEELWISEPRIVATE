@@ -1,0 +1,1356 @@
+// ============================================================================
+// SAFETY MODULE SCHEMA EXTENSIONS
+// ============================================================================
+// This file contains Prisma schema definitions for the Safety/EHS module.
+// These should be merged into the main schema.prisma file.
+// Version: 1.0.0
+// ============================================================================
+
+// ============================================================================
+// ENUMS - Safety Module
+// ============================================================================
+
+enum PolicyStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  PUBLISHED
+  SUPERSEDED
+  ARCHIVED
+}
+
+enum PolicyType {
+  SAFETY_PROGRAM
+  LOTO_PROGRAM
+  HOT_WORK
+  ELECTRICAL_SAFETY
+  CONFINED_SPACE
+  CHEMICAL_SAFETY
+  EMERGENCY_RESPONSE
+  PPE_POLICY
+  GENERAL_SAFETY
+  CONTRACTOR_SAFETY
+  ENVIRONMENTAL
+  OTHER
+}
+
+enum TrainingCategory {
+  ONBOARDING
+  LOTO
+  FORKLIFT
+  CRANE_RIGGING
+  HOT_WORK
+  ELECTRICAL
+  CONFINED_SPACE
+  CHEMICAL_HAZMAT
+  PPE
+  ERGONOMICS
+  FALL_PROTECTION
+  MACHINE_GUARDING
+  EMERGENCY_RESPONSE
+  FIRST_AID
+  SUPERVISOR
+  ANNUAL_REFRESHER
+  OTHER
+}
+
+enum TrainingDeliveryMethod {
+  IN_PERSON
+  VIRTUAL_LIVE
+  E_LEARNING
+  ON_THE_JOB
+  BLENDED
+  SELF_STUDY
+  EXTERNAL
+}
+
+enum TrainingAssignmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  ESCALATED
+  WAIVED
+  CANCELLED
+}
+
+enum IncidentType {
+  INJURY
+  ILLNESS
+  NEAR_MISS
+  PROPERTY_DAMAGE
+  ENVIRONMENTAL
+  VEHICLE
+  SECURITY
+  FIRE
+  OTHER
+}
+
+enum IncidentSeverity {
+  NEAR_MISS
+  FIRST_AID
+  MINOR
+  MODERATE
+  SERIOUS
+  SEVERE
+  FATALITY
+}
+
+enum IncidentStatus {
+  DRAFT
+  SUBMITTED
+  TRIAGED
+  INVESTIGATING
+  CAPA_ASSIGNED
+  VERIFICATION
+  CLOSED
+  REOPENED
+}
+
+enum OshaClassification {
+  NOT_RECORDABLE
+  RECORDABLE_OTHER
+  RECORDABLE_RESTRICTED
+  RECORDABLE_DAW
+  FATALITY
+}
+
+enum AffectedPersonType {
+  EMPLOYEE
+  CONTRACTOR
+  VISITOR
+  CUSTOMER
+  OTHER
+}
+
+enum CapaStatus {
+  DRAFT
+  ASSIGNED
+  IN_PROGRESS
+  PENDING_VERIFICATION
+  VERIFIED
+  CLOSED
+  OVERDUE
+  ESCALATED
+}
+
+enum CapaType {
+  CORRECTIVE
+  PREVENTIVE
+}
+
+enum CapaSourceType {
+  INCIDENT
+  INSPECTION
+  AUDIT
+  OBSERVATION
+  MANAGEMENT_REVIEW
+  REGULATORY
+  OTHER
+}
+
+enum CapaPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum VerificationResult {
+  EFFECTIVE
+  PARTIALLY_EFFECTIVE
+  NOT_EFFECTIVE
+  NOT_VERIFIED
+}
+
+enum InspectionType {
+  FORKLIFT_DAILY
+  FORKLIFT_MONTHLY
+  CRANE_DAILY
+  CRANE_MONTHLY
+  CRANE_ANNUAL
+  FIRE_EXTINGUISHER
+  EYEWASH_SHOWER
+  GUARD_CHECK
+  HOUSEKEEPING
+  PPE_STATION
+  FIRST_AID
+  AED
+  GENERAL_AREA
+  ELECTRICAL_EQUIPMENT
+  LADDER
+  DOCK_LEVELER
+  OTHER
+}
+
+enum InspectionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  PENDING_REVIEW
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}
+
+enum DefectSeverity {
+  MINOR
+  MODERATE
+  MAJOR
+  CRITICAL
+}
+
+enum DefectStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  DEFERRED
+}
+
+enum PermitType {
+  LOTO
+  HOT_WORK
+  ELECTRICAL
+  CONFINED_SPACE
+  EXCAVATION
+  ELEVATED_WORK
+  CRANE_LIFT
+  OTHER
+}
+
+enum PermitStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  ACTIVE
+  SUSPENDED
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum ElectricalWorkType {
+  DE_ENERGIZED
+  ENERGIZED
+}
+
+enum ConfinedSpaceType {
+  PERMIT_REQUIRED
+  NON_PERMIT
+}
+
+enum StopWorkStatus {
+  ISSUED
+  ACKNOWLEDGED
+  MITIGATION
+  RESUME_AUTHORIZED
+  CLOSED
+}
+
+enum SafetyObservationType {
+  SAFE_BEHAVIOR
+  AT_RISK_BEHAVIOR
+  HAZARD
+  POSITIVE_RECOGNITION
+}
+
+enum ObservationCategory {
+  PPE
+  BODY_MECHANICS
+  HOUSEKEEPING
+  TOOLS_EQUIPMENT
+  PROCEDURE_COMPLIANCE
+  COMMUNICATION
+  LINE_OF_FIRE
+  EYES_ON_TASK
+  OTHER
+}
+
+enum EquipmentSafetyStatus {
+  SAFE
+  REQUIRES_INSPECTION
+  DEFECT_REPORTED
+  OUT_OF_SERVICE_SAFETY
+  LOCKED_OUT
+}
+
+enum AuditType {
+  INTERNAL
+  EXTERNAL
+  REGULATORY
+  INSURANCE
+  CORPORATE
+}
+
+enum AuditStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AuditFindingSeverity {
+  OBSERVATION
+  MINOR
+  MAJOR
+  CRITICAL
+}
+
+enum AuditFindingStatus {
+  OPEN
+  CAPA_ASSIGNED
+  CLOSED
+}
+
+// ============================================================================
+// POLICIES & PROCEDURES
+// ============================================================================
+
+model SafetyPolicyDocument {
+  id                String                    @id @default(uuid())
+  tenantId          String
+  code              String
+  title             String
+  type              PolicyType
+  version           Int                       @default(1)
+  status            PolicyStatus              @default(DRAFT)
+  contentUrl        String?
+  contentMarkdown   String?
+  summary           String?
+  scope             String?
+  effectiveDate     DateTime?
+  expiresAt         DateTime?
+  supersededById    String?
+  appliesToRoles    String[]
+  appliesToLocations String[]
+  requiresAck       Boolean                   @default(true)
+  ackDueDays        Int                       @default(30)
+  createdById       String
+  approvedById      String?
+  approvedAt        DateTime?
+  publishedAt       DateTime?
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  supersededBy      SafetyPolicyDocument?     @relation("PolicySupersession", fields: [supersededById], references: [id])
+  supersedes        SafetyPolicyDocument[]    @relation("PolicySupersession")
+  acknowledgements  SafetyPolicyAcknowledgement[]
+
+  @@unique([tenantId, code, version])
+  @@index([tenantId, status])
+  @@index([type])
+}
+
+model SafetyPolicyAcknowledgement {
+  id          String               @id @default(uuid())
+  policyId    String
+  userId      String
+  acknowledgedAt DateTime          @default(now())
+  signatureData String?
+  ipAddress   String?
+  userAgent   String?
+  policy      SafetyPolicyDocument @relation(fields: [policyId], references: [id])
+
+  @@unique([policyId, userId])
+  @@index([userId])
+}
+
+// ============================================================================
+// TRAINING
+// ============================================================================
+
+model SafetyTrainingCourse {
+  id                String                    @id @default(uuid())
+  tenantId          String
+  code              String
+  title             String
+  description       String?
+  category          TrainingCategory
+  deliveryMethod    TrainingDeliveryMethod
+  durationMinutes   Int                       @default(60)
+  validityMonths    Int?
+  passingScore      Int?
+  hasAssessment     Boolean                   @default(false)
+  assessmentQuestions Json?
+  contentUrl        String?
+  version           Int                       @default(1)
+  isActive          Boolean                   @default(true)
+  requiredForRoles  String[]
+  prerequisites     String[]
+  externalCourseId  String?
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  assignments       SafetyTrainingAssignment[]
+  completions       SafetyTrainingCompletion[]
+
+  @@unique([tenantId, code, version])
+  @@index([tenantId, category])
+  @@index([isActive])
+}
+
+model SafetyTrainingAssignment {
+  id            String                    @id @default(uuid())
+  tenantId      String
+  courseId      String
+  userId        String
+  status        TrainingAssignmentStatus  @default(ASSIGNED)
+  assignedById  String
+  assignedAt    DateTime                  @default(now())
+  dueDate       DateTime
+  escalationLevel Int                     @default(0)
+  notes         String?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+  course        SafetyTrainingCourse      @relation(fields: [courseId], references: [id])
+  completion    SafetyTrainingCompletion?
+
+  @@unique([courseId, userId, dueDate])
+  @@index([tenantId, status])
+  @@index([userId, status])
+  @@index([dueDate])
+}
+
+model SafetyTrainingCompletion {
+  id              String                   @id @default(uuid())
+  assignmentId    String                   @unique
+  courseId        String
+  userId          String
+  completedAt     DateTime                 @default(now())
+  expiresAt       DateTime?
+  score           Int?
+  passed          Boolean                  @default(true)
+  instructorId    String?
+  instructorName  String?
+  certificateUrl  String?
+  certificateNumber String?
+  externalRecordId String?
+  signatureData   String?
+  notes           String?
+  createdAt       DateTime                 @default(now())
+  assignment      SafetyTrainingAssignment @relation(fields: [assignmentId], references: [id])
+  course          SafetyTrainingCourse     @relation(fields: [courseId], references: [id])
+
+  @@index([userId, courseId])
+  @@index([expiresAt])
+}
+
+// ============================================================================
+// INCIDENTS
+// ============================================================================
+
+model SafetyIncident {
+  id                    String               @id @default(uuid())
+  tenantId              String
+  incidentNumber        String               @unique
+  type                  IncidentType
+  severity              IncidentSeverity?
+  status                IncidentStatus       @default(DRAFT)
+  title                 String?
+  description           String
+  occurredAt            DateTime
+  reportedAt            DateTime             @default(now())
+  locationId            String
+  workCenterId          String?
+  exactLocation         String?
+  shiftId               String?
+  reportedById          String
+  affectedPersonType    AffectedPersonType?
+  affectedPersonId      String?
+  affectedPersonName    String?
+  affectedPersonCompany String?
+  witnessNames          String[]
+  immediateActions      String?
+  rootCauseDescription  String?
+  oshaRecordable        Boolean?
+  oshaClassification    OshaClassification?
+  daysAwayFromWork      Int?
+  daysRestricted        Int?
+  estimatedCost         Decimal?
+  workersCompClaimId    String?
+  triageNotes           String?
+  triagedById           String?
+  triagedAt             DateTime?
+  closedById            String?
+  closedAt              DateTime?
+  closureNotes          String?
+  reopenedAt            DateTime?
+  reopenReason          String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  investigation         SafetyIncidentInvestigation?
+  injuryDetails         SafetyInjuryDetails?
+  attachments           SafetyAttachment[]
+  capas                 SafetyCorrectiveAction[] @relation("IncidentCapas")
+
+  @@index([tenantId, status])
+  @@index([locationId])
+  @@index([occurredAt])
+  @@index([oshaRecordable])
+  @@index([type])
+}
+
+model SafetyIncidentInvestigation {
+  id                    String           @id @default(uuid())
+  incidentId            String           @unique
+  leadInvestigatorId    String
+  teamMemberIds         String[]
+  startedAt             DateTime         @default(now())
+  dueDate               DateTime
+  completedAt           DateTime?
+  escalationLevel       Int              @default(0)
+  methodology           String?
+  fiveWhysAnalysis      Json?
+  fishboneAnalysis      Json?
+  rootCauseCategories   String[]
+  rootCauseDescription  String?
+  contributingFactors   String[]
+  findings              Json?
+  recommendations       String[]
+  lessonsLearned        String?
+  preventabilityRating  String?
+  signoffUserId         String?
+  signoffAt             DateTime?
+  signatureData         String?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  incident              SafetyIncident   @relation(fields: [incidentId], references: [id])
+
+  @@index([leadInvestigatorId])
+  @@index([dueDate])
+}
+
+model SafetyInjuryDetails {
+  id                String         @id @default(uuid())
+  incidentId        String         @unique
+  bodyPartAffected  String[]
+  injuryNature      String[]
+  treatmentType     String
+  treatedOnsite     Boolean        @default(false)
+  medicalFacility   String?
+  physicianName     String?
+  returnToWorkDate  DateTime?
+  restrictionsNotes String?
+  hospitalizedOvernight Boolean    @default(false)
+  deathDate         DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  incident          SafetyIncident @relation(fields: [incidentId], references: [id])
+}
+
+// ============================================================================
+// CORRECTIVE ACTIONS (CAPA)
+// ============================================================================
+
+model SafetyCorrectiveAction {
+  id                String           @id @default(uuid())
+  tenantId          String
+  capaNumber        String           @unique
+  type              CapaType         @default(CORRECTIVE)
+  sourceType        CapaSourceType
+  sourceId          String?
+  incidentId        String?
+  inspectionId      String?
+  auditId           String?
+  observationId     String?
+  title             String
+  description       String
+  priority          CapaPriority     @default(MEDIUM)
+  status            CapaStatus       @default(DRAFT)
+  assignedToId      String
+  assignedById      String
+  assignedAt        DateTime         @default(now())
+  dueDate           DateTime
+  escalationLevel   Int              @default(0)
+  implementationNotes String?
+  implementedAt     DateTime?
+  implementedById   String?
+  verifiedById      String?
+  verifiedAt        DateTime?
+  verificationResult VerificationResult?
+  verificationNotes String?
+  effectivenessCheckDate DateTime?
+  closedById        String?
+  closedAt          DateTime?
+  closureNotes      String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  incident          SafetyIncident?  @relation("IncidentCapas", fields: [incidentId], references: [id])
+  inspection        SafetyInspection? @relation("InspectionCapas", fields: [inspectionId], references: [id])
+  audit             SafetyAudit?     @relation("AuditCapas", fields: [auditId], references: [id])
+  observation       SafetyObservation? @relation("ObservationCapas", fields: [observationId], references: [id])
+  attachments       SafetyAttachment[]
+
+  @@index([tenantId, status])
+  @@index([assignedToId, status])
+  @@index([dueDate])
+  @@index([priority])
+}
+
+// ============================================================================
+// INSPECTIONS
+// ============================================================================
+
+model SafetyInspectionTemplate {
+  id                String             @id @default(uuid())
+  tenantId          String
+  code              String
+  name              String
+  type              InspectionType
+  description       String?
+  frequency         String?
+  estimatedMinutes  Int                @default(15)
+  sections          Json
+  scoringMethod     String?
+  passingThreshold  Int?
+  version           Int                @default(1)
+  isActive          Boolean            @default(true)
+  appliesToAssetTypes String[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  inspections       SafetyInspection[]
+
+  @@unique([tenantId, code, version])
+  @@index([tenantId, type])
+  @@index([isActive])
+}
+
+model SafetyInspection {
+  id                String                   @id @default(uuid())
+  tenantId          String
+  inspectionNumber  String                   @unique
+  templateId        String
+  type              InspectionType
+  status            InspectionStatus         @default(SCHEDULED)
+  scheduledDate     DateTime
+  scheduledById     String?
+  assignedToId      String?
+  locationId        String
+  workCenterId      String?
+  assetId           String?
+  assetNumber       String?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  completedById     String?
+  responses         Json?
+  score             Int?
+  passed            Boolean?
+  findings          String?
+  notes             String?
+  reviewedById      String?
+  reviewedAt        DateTime?
+  signatureData     String?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  template          SafetyInspectionTemplate @relation(fields: [templateId], references: [id])
+  defects           SafetyInspectionDefect[]
+  capas             SafetyCorrectiveAction[] @relation("InspectionCapas")
+  attachments       SafetyAttachment[]
+
+  @@index([tenantId, status])
+  @@index([scheduledDate])
+  @@index([locationId])
+  @@index([assetId])
+  @@index([type])
+}
+
+model SafetyInspectionDefect {
+  id              String            @id @default(uuid())
+  inspectionId    String
+  questionRef     String?
+  severity        DefectSeverity
+  status          DefectStatus      @default(OPEN)
+  description     String
+  photoUrls       String[]
+  locationNotes   String?
+  correctiveAction String?
+  resolvedById    String?
+  resolvedAt      DateTime?
+  resolutionNotes String?
+  causedAssetOOS  Boolean           @default(false)
+  capaId          String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  inspection      SafetyInspection  @relation(fields: [inspectionId], references: [id])
+
+  @@index([inspectionId])
+  @@index([severity, status])
+}
+
+// ============================================================================
+// PERMITS
+// ============================================================================
+
+model SafetyPermit {
+  id                String           @id @default(uuid())
+  tenantId          String
+  permitNumber      String           @unique
+  type              PermitType
+  status            PermitStatus     @default(DRAFT)
+  title             String
+  description       String?
+  locationId        String
+  workCenterId      String?
+  exactLocation     String?
+  equipmentAssetIds String[]
+  requestedById     String
+  requestedAt       DateTime         @default(now())
+  validFrom         DateTime?
+  validTo           DateTime?
+  activatedAt       DateTime?
+  activatedById     String?
+  completedAt       DateTime?
+  completedById     String?
+  suspendedAt       DateTime?
+  suspendedById     String?
+  suspendReason     String?
+  cancelledAt       DateTime?
+  cancelledById     String?
+  cancelReason      String?
+  hazardsIdentified String[]
+  controlMeasures   String[]
+  ppeRequired       String[]
+  emergencyProcedure String?
+  workerIds         String[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  lotoData          SafetyPermitLoto?
+  hotWorkData       SafetyPermitHotWork?
+  electricalData    SafetyPermitElectrical?
+  confinedSpaceData SafetyPermitConfinedSpace?
+  signoffs          SafetyPermitSignoff[]
+  attachments       SafetyAttachment[]
+
+  @@index([tenantId, status])
+  @@index([type])
+  @@index([locationId])
+  @@index([validTo])
+}
+
+model SafetyPermitLoto {
+  id                String        @id @default(uuid())
+  permitId          String        @unique
+  procedureId       String?
+  energySources     Json[]
+  verificationMethod String?
+  verificationNotes String?
+  locks             Json[]
+  groupLockboxId    String?
+  tryStartCompleted Boolean       @default(false)
+  tryStartById      String?
+  tryStartAt        DateTime?
+  allLocksRemoved   Boolean       @default(false)
+  permit            SafetyPermit  @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitHotWork {
+  id                String        @id @default(uuid())
+  permitId          String        @unique
+  workType          String
+  ignitionSources   String[]
+  combustiblesCleared Boolean     @default(false)
+  clearanceRadius   Int?
+  fireWatchRequired Boolean       @default(true)
+  fireWatchDuration Int?
+  fireWatcherId     String?
+  fireWatcherName   String?
+  fireExtinguisherLocation String?
+  fireExtinguisherType String?
+  sprinklerStatus   String?
+  monitoringRequired Boolean      @default(false)
+  atmosphereTestedAt DateTime?
+  atmosphereTestResults Json?
+  permit            SafetyPermit  @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitElectrical {
+  id                String            @id @default(uuid())
+  permitId          String            @unique
+  workType          ElectricalWorkType
+  voltage           Int?
+  arcFlashBoundary  Decimal?
+  shockBoundary     Decimal?
+  arcFlashPPELevel  Int?
+  arcFlashPPE       String[]
+  arcFlashEnergy    Decimal?
+  equipmentInfo     String?
+  secondPersonRequired Boolean        @default(false)
+  secondPersonId    String?
+  testingRequired   Boolean           @default(true)
+  testEquipment     String?
+  permit            SafetyPermit      @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitConfinedSpace {
+  id                    String          @id @default(uuid())
+  permitId              String          @unique
+  spaceType             ConfinedSpaceType
+  spaceName             String?
+  knownHazards          String[]
+  atmosphereTestResults Json[]
+  atmosphereContinuousMonitor Boolean   @default(false)
+  ventilationType       String?
+  ventilationVerified   Boolean         @default(false)
+  entryAttendantId      String?
+  entryAttendantName    String?
+  rescuePlanType        String?
+  rescueTeamContact     String?
+  communicationMethod   String?
+  entrantIds            String[]
+  permit                SafetyPermit    @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitSignoff {
+  id            String       @id @default(uuid())
+  permitId      String
+  signoffType   String
+  userId        String
+  signedAt      DateTime     @default(now())
+  signatureData String?
+  attestationText String?
+  ipAddress     String?
+  comments      String?
+  permit        SafetyPermit @relation(fields: [permitId], references: [id])
+
+  @@index([permitId])
+  @@index([userId])
+}
+
+// ============================================================================
+// LOTO PROCEDURES
+// ============================================================================
+
+model SafetyLotoProcedure {
+  id                String       @id @default(uuid())
+  tenantId          String
+  procedureNumber   String
+  equipmentAssetId  String
+  equipmentName     String
+  title             String
+  description       String?
+  version           Int          @default(1)
+  status            PolicyStatus @default(DRAFT)
+  energySources     Json[]
+  isolationSteps    Json[]
+  verificationSteps Json[]
+  restorationSteps  Json[]
+  specialInstructions String?
+  estimatedMinutes  Int?
+  requiredTraining  String[]
+  ppeRequired       String[]
+  authorizedByIds   String[]
+  photoUrls         String[]
+  reviewDate        DateTime?
+  expiresAt         DateTime?
+  createdById       String
+  approvedById      String?
+  approvedAt        DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@unique([tenantId, procedureNumber, version])
+  @@index([equipmentAssetId])
+  @@index([tenantId, status])
+}
+
+// ============================================================================
+// SAFETY OBSERVATIONS
+// ============================================================================
+
+model SafetyObservation {
+  id              String                @id @default(uuid())
+  tenantId        String
+  observationNumber String              @unique
+  type            SafetyObservationType
+  category        ObservationCategory
+  locationId      String
+  workCenterId    String?
+  exactLocation   String?
+  observedAt      DateTime              @default(now())
+  observedById    String
+  observedPersonId String?
+  description     String
+  atRiskBehavior  String?
+  safeBehavior    String?
+  immediateDanger Boolean               @default(false)
+  coachingProvided Boolean              @default(false)
+  coachingNotes   String?
+  requiresFollowUp Boolean              @default(false)
+  photoUrls       String[]
+  isAnonymous     Boolean               @default(false)
+  status          String                @default("OPEN")
+  closedAt        DateTime?
+  closureNotes    String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  capas           SafetyCorrectiveAction[] @relation("ObservationCapas")
+
+  @@index([tenantId, type])
+  @@index([locationId])
+  @@index([observedAt])
+  @@index([category])
+}
+
+// ============================================================================
+// STOP WORK AUTHORITY
+// ============================================================================
+
+model SafetyStopWorkEvent {
+  id                String         @id @default(uuid())
+  tenantId          String
+  stopWorkNumber    String         @unique
+  status            StopWorkStatus @default(ISSUED)
+  issuedById        String
+  issuedAt          DateTime       @default(now())
+  locationId        String
+  workCenterId      String?
+  equipmentAssetIds String[]
+  affectedJobIds    String[]
+  hazardDescription String
+  immediateDanger   Boolean        @default(false)
+  immediateActions  String?
+  acknowledgedById  String?
+  acknowledgedAt    DateTime?
+  mitigationPlan    String?
+  mitigationById    String?
+  mitigationAt      DateTime?
+  resumeAuthorizedById String?
+  resumeAuthorizedAt DateTime?
+  resumeConditions  String?
+  closedById        String?
+  closedAt          DateTime?
+  closureNotes      String?
+  duration          Int?
+  rootCauseId       String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([tenantId, status])
+  @@index([locationId])
+  @@index([issuedAt])
+}
+
+// ============================================================================
+// EQUIPMENT SAFETY
+// ============================================================================
+
+model SafetyEquipmentAsset {
+  id                String               @id @default(uuid())
+  tenantId          String
+  assetNumber       String
+  name              String
+  assetType         String
+  locationId        String
+  workCenterId      String?
+  manufacturer      String?
+  model             String?
+  serialNumber      String?
+  installDate       DateTime?
+  safetyStatus      EquipmentSafetyStatus @default(SAFE)
+  lastInspectionDate DateTime?
+  nextInspectionDue DateTime?
+  inspectionFrequency String?
+  lotoProcedureId   String?
+  requiredTraining  String[]
+  ppeRequired       String[]
+  hazards           String[]
+  safetyFeatures    String[]
+  guardingStatus    String?
+  notes             String?
+  isActive          Boolean              @default(true)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  guards            SafetyEquipmentGuard[]
+
+  @@unique([tenantId, assetNumber])
+  @@index([locationId])
+  @@index([safetyStatus])
+  @@index([nextInspectionDue])
+}
+
+model SafetyEquipmentGuard {
+  id              String               @id @default(uuid())
+  assetId         String
+  guardType       String
+  location        String?
+  status          String               @default("INSTALLED")
+  interlocked     Boolean              @default(false)
+  interlockType   String?
+  lastCheckedAt   DateTime?
+  lastCheckedById String?
+  notes           String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  asset           SafetyEquipmentAsset @relation(fields: [assetId], references: [id])
+
+  @@index([assetId])
+}
+
+// ============================================================================
+// SDS (SAFETY DATA SHEETS)
+// ============================================================================
+
+model SafetySDSRecord {
+  id              String           @id @default(uuid())
+  tenantId        String
+  productName     String
+  manufacturer    String
+  casNumber       String?
+  unNumber        String?
+  signalWord      String?
+  hazardStatements String[]
+  precautionaryStatements String[]
+  pictogramCodes  String[]
+  ghs_classification Json?
+  storageClass    String?
+  storageConditions String?
+  ppeRequired     String[]
+  firstAidMeasures Json?
+  firefightingMeasures Json?
+  spillProcedures String?
+  disposalInfo    String?
+  emergencyPhone  String?
+  locations       String[]
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  revisions       SafetySDSRevision[]
+
+  @@index([tenantId, productName])
+  @@index([casNumber])
+  @@index([isActive])
+}
+
+model SafetySDSRevision {
+  id            String          @id @default(uuid())
+  sdsId         String
+  version       Int
+  effectiveDate DateTime
+  expiresAt     DateTime?
+  documentUrl   String
+  uploadedById  String
+  reviewedById  String?
+  reviewedAt    DateTime?
+  notes         String?
+  createdAt     DateTime        @default(now())
+  sds           SafetySDSRecord @relation(fields: [sdsId], references: [id])
+
+  @@unique([sdsId, version])
+  @@index([effectiveDate])
+}
+
+// ============================================================================
+// SAFETY MEETINGS (TOOLBOX TALKS)
+// ============================================================================
+
+model SafetyMeeting {
+  id              String                  @id @default(uuid())
+  tenantId        String
+  meetingNumber   String                  @unique
+  type            String
+  title           String
+  topic           String?
+  agenda          String?
+  presenterId     String
+  locationId      String
+  scheduledAt     DateTime
+  startedAt       DateTime?
+  endedAt         DateTime?
+  durationMinutes Int?
+  discussionNotes String?
+  actionItems     String[]
+  materialsUrl    String?
+  status          String                  @default("SCHEDULED")
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  attendees       SafetyMeetingAttendee[]
+
+  @@index([tenantId, scheduledAt])
+  @@index([locationId])
+  @@index([type])
+}
+
+model SafetyMeetingAttendee {
+  id            String        @id @default(uuid())
+  meetingId     String
+  userId        String?
+  attendeeName  String?
+  attended      Boolean       @default(false)
+  signedAt      DateTime?
+  signatureData String?
+  meeting       SafetyMeeting @relation(fields: [meetingId], references: [id])
+
+  @@unique([meetingId, userId])
+  @@index([userId])
+}
+
+// ============================================================================
+// AUDITS
+// ============================================================================
+
+model SafetyAudit {
+  id                String            @id @default(uuid())
+  tenantId          String
+  auditNumber       String            @unique
+  type              AuditType
+  status            AuditStatus       @default(PLANNED)
+  title             String
+  scope             String?
+  standard          String?
+  locationIds       String[]
+  leadAuditorId     String?
+  leadAuditorName   String?
+  auditTeam         String[]
+  scheduledDate     DateTime?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  reportUrl         String?
+  executiveSummary  String?
+  overallRating     String?
+  nextAuditDate     DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  findings          SafetyAuditFinding[]
+  capas             SafetyCorrectiveAction[] @relation("AuditCapas")
+
+  @@index([tenantId, status])
+  @@index([type])
+  @@index([scheduledDate])
+}
+
+model SafetyAuditFinding {
+  id            String               @id @default(uuid())
+  auditId       String
+  findingNumber Int
+  severity      AuditFindingSeverity
+  status        AuditFindingStatus   @default(OPEN)
+  clause        String?
+  description   String
+  evidence      String?
+  recommendation String?
+  capaId        String?
+  closedAt      DateTime?
+  closureNotes  String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  audit         SafetyAudit          @relation(fields: [auditId], references: [id])
+
+  @@index([auditId])
+  @@index([severity, status])
+}
+
+// ============================================================================
+// CONTRACTORS & VISITORS
+// ============================================================================
+
+model SafetyContractorCompany {
+  id                String                  @id @default(uuid())
+  tenantId          String
+  companyName       String
+  contactName       String?
+  contactEmail      String?
+  contactPhone      String?
+  insuranceExpiresAt DateTime?
+  insuranceVerified Boolean                @default(false)
+  safetyProgramVerified Boolean            @default(false)
+  approvalStatus    String                  @default("PENDING")
+  approvedById      String?
+  approvedAt        DateTime?
+  notes             String?
+  isActive          Boolean                 @default(true)
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  workers           SafetyContractorWorker[]
+
+  @@unique([tenantId, companyName])
+  @@index([tenantId, approvalStatus])
+  @@index([insuranceExpiresAt])
+}
+
+model SafetyContractorWorker {
+  id                String                  @id @default(uuid())
+  companyId         String
+  firstName         String
+  lastName          String
+  email             String?
+  phone             String?
+  badgeNumber       String?
+  photoUrl          String?
+  orientationCompletedAt DateTime?
+  siteTrainingExpires DateTime?
+  siteAccessApproved Boolean               @default(false)
+  isActive          Boolean                 @default(true)
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  company           SafetyContractorCompany @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+  @@index([siteTrainingExpires])
+}
+
+model SafetyVisitorSignIn {
+  id              String    @id @default(uuid())
+  tenantId        String
+  locationId      String
+  visitorName     String
+  company         String?
+  hostEmployeeId  String?
+  hostName        String?
+  purpose         String?
+  badgeNumber     String?
+  signedInAt      DateTime  @default(now())
+  signedOutAt     DateTime?
+  orientationConfirmed Boolean @default(false)
+  nda_signed      Boolean   @default(false)
+  photoUrl        String?
+  createdAt       DateTime  @default(now())
+
+  @@index([tenantId, locationId, signedInAt])
+  @@index([signedOutAt])
+}
+
+// ============================================================================
+// PPE MATRIX
+// ============================================================================
+
+model SafetyPPEMatrix {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  version     Int      @default(1)
+  isActive    Boolean  @default(true)
+  entries     Json
+  effectiveDate DateTime?
+  createdById String
+  approvedById String?
+  approvedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, name, version])
+}
+
+// ============================================================================
+// ATTACHMENTS & EVIDENCE
+// ============================================================================
+
+model SafetyAttachment {
+  id            String     @id @default(uuid())
+  tenantId      String
+  entityType    String
+  entityId      String
+  fileName      String
+  fileType      String?
+  fileSizeBytes Int?
+  storageUrl    String
+  storagePath   String?
+  checksum      String?
+  uploadedById  String
+  uploadedAt    DateTime   @default(now())
+  description   String?
+  isEvidence    Boolean    @default(false)
+  retainUntil   DateTime?
+  incident      SafetyIncident? @relation(fields: [entityId], references: [id], map: "attachment_incident")
+  capa          SafetyCorrectiveAction? @relation(fields: [entityId], references: [id], map: "attachment_capa")
+  inspection    SafetyInspection? @relation(fields: [entityId], references: [id], map: "attachment_inspection")
+  permit        SafetyPermit? @relation(fields: [entityId], references: [id], map: "attachment_permit")
+
+  @@index([entityType, entityId])
+  @@index([tenantId])
+  @@index([retainUntil])
+}
+
+// ============================================================================
+// IMMUTABLE AUDIT LOG
+// ============================================================================
+
+model SafetyAuditEvent {
+  id              String   @id @default(uuid())
+  tenantId        String
+  sequenceNumber  BigInt   @default(autoincrement())
+  timestamp       DateTime @default(now())
+  eventType       String
+  action          String
+  resourceType    String
+  resourceId      String
+  actorId         String
+  actorType       String   @default("USER")
+  actorIpAddress  String?
+  actorUserAgent  String?
+  changes         Json?
+  previousState   Json?
+  newState        Json?
+  metadata        Json?
+  signatureData   String?
+  previousHash    String?
+  eventHash       String
+  integrityVerified Boolean @default(true)
+
+  @@index([tenantId, timestamp])
+  @@index([resourceType, resourceId])
+  @@index([actorId])
+  @@index([eventType])
+  @@index([sequenceNumber])
+}
+
+// ============================================================================
+// ELECTRONIC SIGNATURES
+// ============================================================================
+
+model SafetyElectronicSignature {
+  id              String   @id @default(uuid())
+  tenantId        String
+  signerId        String
+  signerName      String
+  signerTitle     String?
+  signedAt        DateTime @default(now())
+  resourceType    String
+  resourceId      String
+  signatureType   String
+  attestationText String
+  signatureMethod String   @default("PASSWORD")
+  signatureData   String?
+  biometricHash   String?
+  ipAddress       String
+  userAgent       String?
+  deviceId        String?
+  signatureHash   String
+  verified        Boolean  @default(true)
+
+  @@index([resourceType, resourceId])
+  @@index([signerId])
+  @@index([signedAt])
+}
+
+// ============================================================================
+// JOB HAZARD ANALYSIS (JHA)
+// ============================================================================
+
+model SafetyJobHazardAnalysis {
+  id                String   @id @default(uuid())
+  tenantId          String
+  jhaNumber         String   @unique
+  title             String
+  taskDescription   String?
+  locationId        String?
+  workCenterId      String?
+  equipmentAssetIds String[]
+  status            PolicyStatus @default(DRAFT)
+  version           Int      @default(1)
+  steps             Json[]
+  overallRiskLevel  String?
+  ppeRequired       String[]
+  trainingRequired  String[]
+  permitsRequired   String[]
+  emergencyProcedure String?
+  reviewDate        DateTime?
+  expiresAt         DateTime?
+  createdById       String
+  reviewedById      String?
+  reviewedAt        DateTime?
+  approvedById      String?
+  approvedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([tenantId, jhaNumber, version])
+  @@index([tenantId, status])
+  @@index([workCenterId])
+}

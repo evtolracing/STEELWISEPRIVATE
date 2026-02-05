@@ -91,6 +91,15 @@ const ForecastExplorer = lazy(() => import('../pages/Executive/ForecastExplorer'
 const DecisionLog = lazy(() => import('../pages/Executive/DecisionLog'))
 const DigitalTwinViewer = lazy(() => import('../pages/Executive/DigitalTwinViewer'))
 
+// Drop Tag Engine Pages
+const DropTagPackagingQueue = lazy(() => import('../pages/DropTags/PackagingQueue'))
+const DropTagPrintCenter = lazy(() => import('../pages/DropTags/DropTagPrintCenter'))
+const DropTagApplyScanScreen = lazy(() => import('../pages/DropTags/ApplyScanScreen'))
+const DropTagListingPage = lazy(() => import('../pages/DropTags/DropTagListingPage'))
+const DropTagStagingBoard = lazy(() => import('../pages/DropTags/StagingBoard'))
+const DropTagLoadingScreen = lazy(() => import('../pages/DropTags/LoadingScreen'))
+const DropTagTraceabilityViewer = lazy(() => import('../pages/DropTags/TraceabilityViewer'))
+
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
@@ -1025,6 +1034,80 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <DigitalTwinViewer />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Drop Tag Engine Module
+      {
+        path: 'drop-tags/queue',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagPackagingQueue />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'drop-tags/print-center',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagPrintCenter />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'drop-tags/apply',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagApplyScanScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'drop-tags/listings',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagListingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'drop-tags/staging',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagStagingBoard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'drop-tags/load',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagLoadingScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'drop-tags/traceability',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagTraceabilityViewer />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'drop-tags/traceability/:tagId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DropTagTraceabilityViewer />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

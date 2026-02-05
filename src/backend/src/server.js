@@ -38,6 +38,7 @@ import pipelineRoutes from './routes/pipelineRoutes.js';
 import stopWorkRoutes from './routes/stopWork.js';
 import salesRoutes from './routes/salesRoutes.js';
 import executiveRoutes from './routes/executive.js';
+import dropTagRoutes from './routes/dropTagRoutes.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 import { seedSupabaseData } from './seeds/supabaseSeed.js';
 
@@ -103,6 +104,9 @@ app.use('/api/sales', salesRoutes);  // /api/sales/rfqs, /api/sales/quotes, /api
 
 // Executive Ops Cockpit & Digital Twin Module
 app.use('/api/executive', executiveRoutes);  // /api/executive/cockpit, /api/executive/simulation, /api/executive/forecast, /api/executive/decisions
+
+// Drop Tag Engine - Production-to-Delivery Tracking
+app.use('/api/drop-tags', dropTagRoutes);  // /api/drop-tags, /api/drop-tags/listings, /api/drop-tags/scans, /api/drop-tags/templates
 
 // Initialize OrderHub seed data (in-memory store)
 console.log('🌱 Initializing in-memory OrderHub data...');

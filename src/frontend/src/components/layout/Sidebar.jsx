@@ -272,6 +272,18 @@ const navSections = [
     ],
   },
   {
+    title: 'Drop Tag Engine',
+    items: [
+      { path: '/drop-tags/queue', label: 'Packaging Queue', icon: PackagingQueueIcon },
+      { path: '/drop-tags/print-center', label: 'Print Center', icon: LabelIcon },
+      { path: '/drop-tags/apply', label: 'Apply Station', icon: SealIcon },
+      { path: '/drop-tags/listings', label: 'Listings', icon: DocsIcon },
+      { path: '/drop-tags/staging', label: 'Staging Board', icon: StagingIcon },
+      { path: '/drop-tags/load', label: 'Loading Screen', icon: LogisticsIcon },
+      { path: '/drop-tags/traceability', label: 'Traceability', icon: CustodyIcon },
+    ],
+  },
+  {
     title: 'Freight & Delivery',
     items: [
       { path: '/freight/planner', label: 'Shipment Planner', icon: LogisticsIcon },

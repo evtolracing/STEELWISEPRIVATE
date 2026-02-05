@@ -31,6 +31,8 @@ model Organization {
   rfqs           RFQ[]      @relation("CustomerRFQs")
   users          User[]
   pricingTier    CustomerPricingTier? @relation("CustomerPricingTier")
+  dropTags       DropTag[]  @relation("DropTagCustomer")
+  tagRequirements CustomerTagRequirement[] @relation("CustomerTagRequirements")
 }
 
 model User {
@@ -378,6 +380,8 @@ model Location {
   usersHome     User[]             @relation("UserHomeLocation")
   userLocations UserLocation[]
   assets        Asset[]            @relation("AssetSite")
+  packages      Package[]          @relation("PackageLocation")
+  dropTagListings DropTagListing[] @relation("ListingOrigin")
 }
 
 model Inventory {
@@ -602,6 +606,8 @@ model Job {
   order            Order?      @relation(fields: [orderId], references: [id])
   recipe           BomRecipe?  @relation("JobRecipe", fields: [recipeId], references: [id])
   workCenter       WorkCenter? @relation(fields: [workCenterId], references: [id])
+  dropTags         DropTag[]
+  packages         Package[]
 
   @@index([recipeId])
 }
@@ -643,6 +649,8 @@ model Order {
   lines         OrderLine[]
   fromQuote     Quote?             @relation("QuoteToOrder")
   shipments     Shipment[]
+  dropTags      DropTag[]
+  packages      Package[]
 }
 
 model OrderLine {
@@ -674,6 +682,8 @@ model OrderLine {
   product       Product?              @relation(fields: [productId], references: [id])
   allocations   OrderLineAllocation[]
   shipmentItems ShipmentItem[]
+  dropTags      DropTag[]
+  packages      Package[]
 }
 
 model OrderLineAllocation {
@@ -752,6 +762,8 @@ model Shipment {
   order          Order              @relation(fields: [orderId], references: [id])
   items          ShipmentItem[]
   stops          ShipmentStop[]
+  dropTags       DropTag[]
+  dropTagListings DropTagListing[]
 }
 
 model ShipmentItem {
@@ -2042,4 +2054,459 @@ enum RFQSourceType {
   EDI
   MANUAL
   ECOMMERCE
+}
+
+// ============================================================================
+// DROP TAG ENGINE MODULE
+// ============================================================================
+
+// Drop Tag - Material Identity Tag
+model DropTag {
+  id                String          @id @default(uuid())
+  dropTagId         String          @unique  // Human-friendly: DT-2026-001234
+  tenantId          String?
+
+  // Package Association (required)
+  packageId         String
+  package           Package         @relation(fields: [packageId], references: [id])
+
+  // Shipment Association (assigned later)
+  shipmentId        String?
+  shipment          Shipment?       @relation(fields: [shipmentId], references: [id])
+  listingId         String?
+  listing           DropTagListing? @relation(fields: [listingId], references: [id])
+
+  // Order Context
+  orderId           String
+  order             Order           @relation(fields: [orderId], references: [id])
+  orderLineId       String
+  orderLine         OrderLine       @relation(fields: [orderLineId], references: [id])
+  jobId             String?
+  job               Job?            @relation(fields: [jobId], references: [id])
+
+  // Customer Context
+  customerId        String
+  customer          Organization    @relation("DropTagCustomer", fields: [customerId], references: [id])
+  customerPO        String?
+  customerPartNo    String?
+
+  // Material Identity (denormalized from inventory for immutability)
+  division          String          // STEEL, ALUMINUM, PLASTICS, STAINLESS
+  form              String          // ROUND_BAR, FLAT_BAR, PLATE, TUBE, SHEET
+  grade             String          // 4140, 1018, 6061-T6, etc.
+  specification     String?         // ASTM A108, AMS 2759, etc.
+  condition         String?         // HR, CF, Q&T, ANNEALED
+  dimensions        Json            // {od, id, width, thickness, etc.}
+  lengthInches      Decimal?
+  lengthFeet        Decimal?
+
+  // Trace Identity
+  heatNumber        String?
+  lotId             String?
+  inventoryLotId    String?
+  supplierId        String?
+  mtrDocId          String?         // Mill Test Report document ID
+  cocDocId          String?         // Certificate of Conformance document ID
+
+  // Quantity
+  pieces            Int
+  weightLbs         Decimal
+  uom               String          @default("EA")  // EA, LB, FT, etc.
+
+  // Processing Summary
+  workCenters       String[]        // Work centers that processed this material
+  operationsSummary String?         // Brief text summary of operations
+  completedAt       DateTime?
+  operatorIds       String[]        // User IDs of operators who processed
+
+  // Handling Instructions
+  bundleType        String?         // BANDED, BOXED, WRAPPED, CRATED
+  packagingNotes    String?
+  specialInstructions String?
+
+  // Destination
+  shipToAddress     Json?           // {name, line1, line2, city, state, zip}
+  routeStop         Int?            // Stop sequence number
+  requiredDate      DateTime?
+
+  // Status & Lifecycle
+  status            DropTagStatus   @default(DRAFT)
+  version           Int             @default(1)
+  reprintCount      Int             @default(0)
+  lastReprintReason String?
+
+  // Identifier Bindings (for RFID/etch future)
+  identifiers       TagIdentifier[]
+
+  // Timestamps & Audit
+  createdBy         String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  printedBy         String?
+  printedAt         DateTime?
+  appliedBy         String?
+  appliedAt         DateTime?
+  sealedAt          DateTime?
+  voidedBy          String?
+  voidedAt          DateTime?
+  voidReason        String?
+
+  // Trace Events
+  traceEvents       TraceEvent[]
+
+  @@index([packageId])
+  @@index([shipmentId])
+  @@index([orderId])
+  @@index([customerId])
+  @@index([heatNumber])
+  @@index([status])
+  @@index([dropTagId])
+}
+
+enum DropTagStatus {
+  DRAFT             // Just created, not yet ready
+  READY_TO_PRINT    // All validations passed, ready for printing
+  PRINTED           // Tag printed but not yet applied
+  APPLIED           // Tag physically applied to package
+  SEALED            // Package sealed, identity immutable
+  STAGED            // Package in staging area
+  LOADED            // Package loaded on truck
+  SHIPPED           // Truck departed
+  DELIVERED         // Delivery confirmed
+  VOID              // Voided (before ship only without escalation)
+}
+
+// Drop Tag Listing - Shipment Manifest
+model DropTagListing {
+  id                String              @id @default(uuid())
+  listingId         String              @unique  // Human-friendly: DTL-2026-001234
+  tenantId          String?
+
+  // Shipment Association
+  shipmentId        String
+  shipment          Shipment            @relation(fields: [shipmentId], references: [id])
+
+  // Location & Route
+  originLocationId  String
+  originLocation    Location            @relation("ListingOrigin", fields: [originLocationId], references: [id])
+  routeId           String?
+  loadId            String?
+
+  // Stop Sequence
+  stopSequence      Json                // [{stop: 1, customerId, shipTo, dropTagIds: [...]}]
+
+  // Drop Tags
+  dropTags          DropTag[]
+
+  // Aggregated Totals (computed)
+  totalPackages     Int                 @default(0)
+  totalPieces       Int                 @default(0)
+  totalWeightLbs    Decimal             @default(0)
+
+  // Linked Documents
+  cocBundleId       String?             // Combined CoC document bundle
+  mtrBundleId       String?             // Combined MTR document bundle
+  packingListDocId  String?             // Generated packing list
+
+  // Status
+  status            DropTagListingStatus @default(DRAFT)
+  lockedAt          DateTime?
+  lockedBy          String?
+
+  // Timestamps
+  createdBy         String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  departedAt        DateTime?
+  deliveredAt       DateTime?
+  closedAt          DateTime?
+
+  // Proof of Delivery
+  podDocId          String?
+  podSignature      String?
+  podSignedBy       String?
+  podSignedAt       DateTime?
+
+  @@index([shipmentId])
+  @@index([originLocationId])
+  @@index([status])
+}
+
+enum DropTagListingStatus {
+  DRAFT             // Being assembled
+  READY             // All tags assigned, ready for print
+  PRINTED           // Manifest printed
+  LOADED            // All packages loaded
+  DEPARTED          // Truck left
+  DELIVERED         // All stops confirmed
+  CLOSED            // Custody chain closed
+}
+
+// Package - Container for material with drop tags
+model Package {
+  id                String          @id @default(uuid())
+  packageId         String          @unique  // Human-friendly: PKG-2026-001234
+  tenantId          String?
+
+  // Status
+  status            PackageStatus   @default(OPEN)
+
+  // Seal (required after SEALED)
+  sealId            String?
+  sealType          String?         // BAND, STRAP, SHRINK, LOCK
+  sealAppliedBy     String?
+  sealAppliedAt     DateTime?
+
+  // Package Specification
+  packageType       String          // BUNDLE, SKID, BOX, CRATE, DRUM
+  dimensions        Json?           // {length, width, height, unit}
+  tareWeightLbs     Decimal?
+  grossWeightLbs    Decimal?
+  netWeightLbs      Decimal?
+
+  // Contents
+  packageItems      PackageItem[]
+  dropTags          DropTag[]
+
+  // Location Tracking
+  currentLocationId String?
+  currentLocation   Location?       @relation("PackageLocation", fields: [currentLocationId], references: [id])
+  currentBinId      String?
+
+  // Order/Job Context
+  orderId           String?
+  order             Order?          @relation(fields: [orderId], references: [id])
+  orderLineId       String?
+  orderLine         OrderLine?      @relation(fields: [orderLineId], references: [id])
+  jobId             String?
+  job               Job?            @relation(fields: [jobId], references: [id])
+
+  // QC Status
+  qcStatus          PackageQCStatus @default(PENDING)
+  qcReleasedBy      String?
+  qcReleasedAt      DateTime?
+  qcNotes           String?
+
+  // Timestamps
+  createdBy         String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  packedAt          DateTime?
+  stagedAt          DateTime?
+  loadedAt          DateTime?
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+
+  @@index([status])
+  @@index([orderId])
+  @@index([currentLocationId])
+  @@index([packageId])
+}
+
+enum PackageStatus {
+  OPEN              // Being created
+  PACKING           // Items being added
+  READY_FOR_QC      // Awaiting QC inspection
+  QC_RELEASED       // QC approved, ready for tagging
+  QC_HOLD           // QC hold
+  SEALED            // Sealed with tamper-evident seal
+  STAGED            // In staging area
+  LOADED            // On truck
+  SHIPPED           // In transit
+  DELIVERED         // At customer
+}
+
+enum PackageQCStatus {
+  PENDING           // Not yet reviewed
+  RELEASED          // Full release
+  CONDITIONAL       // Released with conditions (needs approval)
+  HOLD              // On hold, cannot proceed
+  REJECTED          // Failed inspection
+}
+
+// Package Item - Individual material in a package
+model PackageItem {
+  id                String      @id @default(uuid())
+  packageId         String
+  package           Package     @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  // Material Reference
+  inventoryLotId    String?
+  coilId            String?
+  heatNumber        String?
+
+  // Material Details (snapshot)
+  grade             String
+  form              String
+  dimensions        Json
+  specification     String?
+  condition         String?
+
+  // Quantity
+  pieces            Int
+  weightLbs         Decimal
+  lengthFeet        Decimal?
+
+  // Piece Marks (if applicable)
+  pieceMarks        String[]
+
+  createdAt         DateTime    @default(now())
+
+  @@index([packageId])
+  @@index([inventoryLotId])
+  @@index([coilId])
+}
+
+// Tag Identifier - For RFID/Etch future support
+model TagIdentifier {
+  id                String          @id @default(uuid())
+  dropTagId         String
+  dropTag           DropTag         @relation(fields: [dropTagId], references: [id], onDelete: Cascade)
+
+  identifierType    IdentifierType
+  identifierValue   String
+  isPrimary         Boolean         @default(false)
+
+  createdAt         DateTime        @default(now())
+
+  @@unique([identifierType, identifierValue])
+  @@index([dropTagId])
+}
+
+enum IdentifierType {
+  BARCODE           // 1D barcode
+  QR                // QR code
+  RFID              // RFID tag
+  ETCH              // Steel etching
+  DATAMATRIX        // DataMatrix code
+}
+
+// Label Template - For printing drop tags
+model LabelTemplate {
+  id                String      @id @default(uuid())
+  tenantId          String?
+
+  name              String
+  code              String      @unique  // BUNDLE_TAG, PIECE_TAG, etc.
+  description       String?
+
+  // Template Type
+  templateType      String      // BUNDLE_TAG, PIECE_TAG, SKID_LABEL
+  mediaType         String      // PAPER, PLASTIC, METAL_PLATE
+
+  // Dimensions
+  widthInches       Decimal
+  heightInches      Decimal
+
+  // Template Content (HTML or structured layout)
+  templateContent   String
+
+  // Barcode Settings
+  barcodeType       String      @default("QR")  // QR, CODE128, CODE39
+  barcodePosition   Json        // {x, y, width, height}
+
+  // Customer Specific
+  customerId        String?     // If specific to a customer
+
+  // Status
+  isActive          Boolean     @default(true)
+  isDefault         Boolean     @default(false)
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([code])
+  @@index([customerId])
+  @@index([templateType])
+}
+
+// Trace Event - Immutable audit trail for drop tags
+model TraceEvent {
+  id                String      @id @default(uuid())
+  eventId           String      @unique @default(uuid())
+
+  // Event Classification
+  eventType         String      // DROP_TAG_GENERATED, DROP_TAG_PRINTED, etc.
+  eventCategory     String      // DROP_TAG, PACKAGE, SHIPMENT, LISTING
+
+  // Actor
+  actorUserId       String
+  actorRole         String
+  actorName         String?
+
+  // Resource
+  resourceType      String      // DropTag, Package, DropTagListing, Shipment
+  resourceId        String
+
+  // State Change
+  previousState     String?
+  newState          String?
+
+  // Context
+  locationId        String?
+  stationId         String?     // Print station, scan station, etc.
+
+  // Payload (full before/after snapshots)
+  beforeSnapshot    Json?
+  afterSnapshot     Json?
+  metadata          Json?       // Additional context
+
+  // Correlation
+  correlationId     String?     // Links related events
+  orderId           String?
+  shipmentId        String?
+
+  // Drop Tag Reference
+  dropTagId         String?
+  dropTag           DropTag?    @relation(fields: [dropTagId], references: [id])
+
+  // Timestamp (immutable)
+  occurredAt        DateTime    @default(now())
+
+  // Immutability hash
+  eventHash         String?     // SHA-256 of event content
+  previousHash      String?     // Chain to previous event
+
+  @@index([resourceType, resourceId])
+  @@index([eventType])
+  @@index([actorUserId])
+  @@index([orderId])
+  @@index([shipmentId])
+  @@index([correlationId])
+  @@index([occurredAt])
+  @@index([dropTagId])
+}
+
+// Customer Tag Requirements - Customer-specific tagging rules
+model CustomerTagRequirement {
+  id                String      @id @default(uuid())
+  customerId        String
+  customer          Organization @relation("CustomerTagRequirements", fields: [customerId], references: [id])
+
+  // Mandatory Fields
+  requireHeatNumber     Boolean @default(true)
+  requireMtrReference   Boolean @default(true)
+  requireCocReference   Boolean @default(true)
+  requirePieceMarks     Boolean @default(false)
+  requireCustomerPartNo Boolean @default(false)
+  requireCustomerPO     Boolean @default(true)
+  requireSpecification  Boolean @default(true)
+  requireCountryOfOrigin Boolean @default(false)
+
+  // Label Format
+  templateCode      String?     // Customer-specific template code
+  barcodeType       String?     // Customer-required symbology
+  includeQRCode     Boolean     @default(true)
+
+  // Mixed Material Rules
+  allowMixedHeat    Boolean     @default(false)
+  allowMixedLength  Boolean     @default(false)
+  requireCertPerHeat Boolean    @default(false)
+
+  isActive          Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([customerId])
+  @@index([customerId])
 }

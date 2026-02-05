@@ -36,6 +36,8 @@ import aiOrderHubRoutes from './routes/aiOrderHubRoutes.js';
 import ingestRoutes from './routes/ingestRoutes.js';
 import pipelineRoutes from './routes/pipelineRoutes.js';
 import stopWorkRoutes from './routes/stopWork.js';
+import salesRoutes from './routes/salesRoutes.js';
+import executiveRoutes from './routes/executive.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 import { seedSupabaseData } from './seeds/supabaseSeed.js';
 
@@ -95,6 +97,12 @@ app.use('/api/v1/pipeline', pipelineRoutes);  // /api/v1/pipeline (create, advan
 
 // Safety Module - Stop-Work Authority System
 app.use('/api/safety/stop-work', stopWorkRoutes);  // /api/safety/stop-work (initiate, clear, validate)
+
+// Sales & Pricing Intelligence Module
+app.use('/api/sales', salesRoutes);  // /api/sales/rfqs, /api/sales/quotes, /api/sales/pricing, /api/sales/dashboard
+
+// Executive Ops Cockpit & Digital Twin Module
+app.use('/api/executive', executiveRoutes);  // /api/executive/cockpit, /api/executive/simulation, /api/executive/forecast, /api/executive/decisions
 
 // Initialize OrderHub seed data (in-memory store)
 console.log('🌱 Initializing in-memory OrderHub data...');

@@ -30,6 +30,7 @@ model Organization {
   ordersAsSeller Order[]    @relation("SellerOrders")
   rfqs           RFQ[]      @relation("CustomerRFQs")
   users          User[]
+  pricingTier    CustomerPricingTier? @relation("CustomerPricingTier")
 }
 
 model User {
@@ -1881,4 +1882,164 @@ enum PartTransactionType {
   ADJUST // Inventory adjustment
   TRANSFER // Transfer between locations
   SCRAP // Scrapped
+}
+
+// =============================================
+// SALES & PRICING INTELLIGENCE MODELS
+// =============================================
+
+// Customer pricing tier & margin settings
+model CustomerPricingTier {
+  id               String    @id @default(uuid())
+  customerId       String    @unique
+  tierCode         String    // A, B, C, D
+  marginFloor      Decimal   // Minimum margin % allowed
+  marginTarget     Decimal   // Target margin %
+  discountMaxPct   Decimal?  // Max discount from list
+  paymentTerms     String?   // Net 30, etc.
+  freightTerms     String?   // FOB, Prepaid, etc.
+  creditLimit      Decimal?
+  creditRating     String?
+  isActive         Boolean   @default(true)
+  effectiveFrom    DateTime  @default(now())
+  effectiveUntil   DateTime?
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  customer         Organization @relation("CustomerPricingTier", fields: [customerId], references: [id])
+}
+
+// Pricing recommendation record (audit trail)
+model PricingRecommendation {
+  id                String    @id @default(uuid())
+  quoteLineId       String?
+  rfqLineId         String?
+  productCode       String?
+  grade             String?
+  form              String?
+  dimensions        Json?     // { thickness, width, length }
+  quantity          Decimal
+  unit              String    @default("LB")
+  
+  // Cost components
+  materialCost      Decimal?
+  processingCost    Decimal?
+  laborCost         Decimal?
+  freightCost       Decimal?
+  yieldLossCost     Decimal?
+  packagingCost     Decimal?
+  overheadCost      Decimal?
+  totalCost         Decimal?
+  
+  // Pricing output
+  recommendedPrice  Decimal
+  minimumPrice      Decimal?  // Floor based on margin
+  listPrice         Decimal?
+  marginPct         Decimal?
+  confidenceScore   Decimal?  // 0-100
+  
+  // Context
+  customerId        String?
+  customerTier      String?
+  locationId        String?
+  inventorySource   String?   // Stock, Mill, Transfer
+  leadTimeDays      Int?
+  
+  // Alternatives
+  alternatives      Json?     // [{ type, price, leadTime, description }]
+  
+  // Model info
+  pricingModel      String?   // V1, V2, etc.
+  modelInputs       Json?     // Full inputs for audit
+  createdAt         DateTime  @default(now())
+}
+
+// Pricing override record
+model PricingOverride {
+  id               String    @id @default(uuid())
+  quoteLineId      String?
+  quoteId          String?
+  originalPrice    Decimal
+  overridePrice    Decimal
+  originalMargin   Decimal?
+  overrideMargin   Decimal?
+  reason           String
+  justification    String?
+  
+  // Approval
+  requestedById    String
+  approvedById     String?
+  approvalStatus   ApprovalStatus @default(PENDING)
+  approvedAt       DateTime?
+  rejectedAt       DateTime?
+  rejectionReason  String?
+  
+  // Audit
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// Quote acceptance record
+model QuoteAcceptance {
+  id               String    @id @default(uuid())
+  quoteId          String    @unique
+  acceptedAt       DateTime  @default(now())
+  acceptedBy       String?   // Customer contact name
+  acceptedByEmail  String?
+  customerPO       String?
+  termsAccepted    Boolean   @default(true)
+  signatureData    String?   // Base64 or URL
+  ipAddress        String?
+  notes            String?
+  createdAt        DateTime  @default(now())
+}
+
+// RFQ source tracking
+model RFQSource {
+  id               String    @id @default(uuid())
+  rfqId            String    @unique
+  sourceType       RFQSourceType
+  sourceChannel    String?   // Email, Phone, Portal, EDI
+  rawContent       String?   // Original email body, etc.
+  parsedData       Json?     // AI-parsed structure
+  parsingConfidence Decimal? // 0-100
+  parseErrors      Json?     // Any parsing issues
+  receivedAt       DateTime  @default(now())
+  processedAt      DateTime?
+  createdAt        DateTime  @default(now())
+}
+
+// Pricing analytics snapshot
+model PricingAnalytics {
+  id               String    @id @default(uuid())
+  period           String    // YYYY-MM or YYYY-WW
+  customerId       String?
+  productCategory  String?
+  locationId       String?
+  
+  // Metrics
+  quotesCreated    Int       @default(0)
+  quotesWon        Int       @default(0)
+  quotesLost       Int       @default(0)
+  winRate          Decimal?
+  avgMarginQuoted  Decimal?
+  avgMarginWon     Decimal?
+  avgResponseHours Decimal?
+  avgCycleTimeDays Decimal?
+  totalValueQuoted Decimal?
+  totalValueWon    Decimal?
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  @@unique([period, customerId, productCategory, locationId])
+}
+
+enum RFQSourceType {
+  EMAIL
+  PHONE
+  PORTAL
+  EDI
+  MANUAL
+  ECOMMERCE
 }

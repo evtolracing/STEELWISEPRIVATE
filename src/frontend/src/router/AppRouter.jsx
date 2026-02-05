@@ -20,6 +20,77 @@ const PricingDashboardPage = lazy(() => import('../pages/Pricing/PricingDashboar
 const QuoteBuilderPage = lazy(() => import('../pages/Pricing/QuoteBuilderPage'))
 const QualityDashboardPage = lazy(() => import('../pages/QAQC/QualityDashboardPage'))
 const TestEntryPage = lazy(() => import('../pages/QAQC/TestEntryPage'))
+
+// Supplier Quality Management (SQM) / IQC Pages
+const InboundReceivingPage = lazy(() => import('../pages/SQM/InboundReceivingPage'))
+const IQCInspectionsPage = lazy(() => import('../pages/SQM/IQCInspectionsPage'))
+const SupplierNonconformancePage = lazy(() => import('../pages/SQM/SupplierNonconformancePage'))
+const SCARManagementPage = lazy(() => import('../pages/SQM/SCARManagementPage'))
+const SupplierScorecardsPage = lazy(() => import('../pages/SQM/SupplierScorecardsPage'))
+const SupplierListPage = lazy(() => import('../pages/SQM/SupplierListPage'))
+
+// Customer Quality Pages
+const ClaimsInboxPage = lazy(() => import('../pages/CustomerQuality/ClaimsInboxPage'))
+const RMAManagementPage = lazy(() => import('../pages/CustomerQuality/RMAManagementPage'))
+const CARManagementPage = lazy(() => import('../pages/CustomerQuality/CARManagementPage'))
+const CreditsApprovalsPage = lazy(() => import('../pages/CustomerQuality/CreditsApprovalsPage'))
+
+// Contractor Portal Pages
+const ActiveVisitorsDashboard = lazy(() => import('../pages/ContractorPortal/ActiveVisitorsDashboard'))
+const ContractorRegistryPage = lazy(() => import('../pages/ContractorPortal/ContractorRegistryPage'))
+const PreRegistrationPage = lazy(() => import('../pages/ContractorPortal/PreRegistrationPage'))
+const CheckInKiosk = lazy(() => import('../pages/ContractorPortal/CheckInKiosk'))
+
+// Training Engine Pages
+const TrainingDashboard = lazy(() => import('../pages/Training/TrainingDashboard'))
+const CourseCatalogPage = lazy(() => import('../pages/Training/CourseCatalogPage'))
+const MyCertificationsPage = lazy(() => import('../pages/Training/MyCertificationsPage'))
+const CompetencyMatrixPage = lazy(() => import('../pages/Training/CompetencyMatrixPage'))
+
+// Production Quality Pages
+const ProdQualityDashboard = lazy(() => import('../pages/ProductionQuality/QualityDashboard'))
+const InspectionExecution = lazy(() => import('../pages/ProductionQuality/InspectionExecution'))
+const NCRManagement = lazy(() => import('../pages/ProductionQuality/NCRManagement'))
+const SPCChartsPage = lazy(() => import('../pages/ProductionQuality/SPCChartsPage'))
+const TraceabilitySearch = lazy(() => import('../pages/ProductionQuality/TraceabilitySearch'))
+
+// Maintenance & Reliability Pages
+const MaintenanceDashboard = lazy(() => import('../pages/Maintenance/MaintenanceDashboard'))
+const WorkOrderCenter = lazy(() => import('../pages/Maintenance/WorkOrderCenter'))
+const AssetRegistry = lazy(() => import('../pages/Maintenance/AssetRegistry'))
+const PMSchedules = lazy(() => import('../pages/Maintenance/PMSchedules'))
+const PartsInventory = lazy(() => import('../pages/Maintenance/PartsInventory'))
+
+// Packaging & Chain-of-Custody Pages
+const PackagingQueue = lazy(() => import('../pages/Packaging/PackagingQueue'))
+const PackageBuilder = lazy(() => import('../pages/Packaging/PackageBuilder'))
+const QCReleaseStation = lazy(() => import('../pages/Packaging/QCReleaseStation'))
+const LabelManagement = lazy(() => import('../pages/Packaging/LabelManagement'))
+const StagingBoard = lazy(() => import('../pages/Packaging/StagingBoard'))
+const CustodyTimeline = lazy(() => import('../pages/Packaging/CustodyTimeline'))
+const DocumentationCenter = lazy(() => import('../pages/Packaging/DocumentationCenter'))
+
+// Freight & Delivery Pages
+const ShipmentPlanner = lazy(() => import('../pages/Freight/ShipmentPlanner'))
+const FreightComparison = lazy(() => import('../pages/Freight/FreightComparison'))
+const RouteView = lazy(() => import('../pages/Freight/RouteView'))
+const ShipmentTrackingBoard = lazy(() => import('../pages/Freight/ShipmentTrackingBoard'))
+const ExceptionInbox = lazy(() => import('../pages/Freight/ExceptionInbox'))
+const PODViewer = lazy(() => import('../pages/Freight/PODViewer'))
+
+// Sales & Pricing Pages
+const RFQInbox = lazy(() => import('../pages/Sales/RFQInbox'))
+const SalesQuoteBuilder = lazy(() => import('../pages/Sales/QuoteBuilder'))
+const SalesDashboard = lazy(() => import('../pages/Sales/SalesDashboard'))
+const CustomerQuotePortal = lazy(() => import('../pages/Sales/CustomerQuotePortal'))
+
+// Executive Ops Cockpit & Digital Twin Pages
+const ExecutiveCockpit = lazy(() => import('../pages/Executive/ExecutiveCockpit'))
+const SimulationWorkspace = lazy(() => import('../pages/Executive/SimulationWorkspace'))
+const ForecastExplorer = lazy(() => import('../pages/Executive/ForecastExplorer'))
+const DecisionLog = lazy(() => import('../pages/Executive/DecisionLog'))
+const DigitalTwinViewer = lazy(() => import('../pages/Executive/DigitalTwinViewer'))
+
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
@@ -337,6 +408,270 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
+      // Supplier Quality Management (SQM) / Inbound Quality Control
+      {
+        path: 'sqm/receiving',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <InboundReceivingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sqm/inspections',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <IQCInspectionsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sqm/snc',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SupplierNonconformancePage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sqm/scar',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SCARManagementPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sqm/scorecards',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SupplierScorecardsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sqm/suppliers',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SupplierListPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Customer Quality Management (RMA/CAR)
+      {
+        path: 'customer-quality/claims',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ClaimsInboxPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'customer-quality/rma',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RMAManagementPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'customer-quality/car',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CARManagementPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'customer-quality/credits',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CreditsApprovalsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Contractor Portal
+      {
+        path: 'contractors/active',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ActiveVisitorsDashboard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'contractors/registry',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ContractorRegistryPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'contractors/invitations',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PreRegistrationPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'contractors/kiosk',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CheckInKiosk />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Training Engine
+      {
+        path: 'training/dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TrainingDashboard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'training/courses',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CourseCatalogPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'training/my-certs',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MyCertificationsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'training/matrix',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CompetencyMatrixPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Production Quality
+      {
+        path: 'production-quality/dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ProdQualityDashboard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'production-quality/inspections',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <InspectionExecution />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'production-quality/ncr',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <NCRManagement />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'production-quality/spc',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SPCChartsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'production-quality/trace',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TraceabilitySearch />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Maintenance & Reliability
+      {
+        path: 'maintenance/dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MaintenanceDashboard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'maintenance/work-orders',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <WorkOrderCenter />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'maintenance/assets',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AssetRegistry />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'maintenance/pm-schedules',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PMSchedules />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'maintenance/parts',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PartsInventory />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
       // Provenance
       {
         path: 'provenance',
@@ -457,6 +792,239 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <PackagingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Packaging & Chain-of-Custody Module
+      {
+        path: 'packaging/queue',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PackagingQueue />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'packaging/builder/:orderId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PackageBuilder />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'packaging/qc-release',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <QCReleaseStation />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'packaging/labels',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <LabelManagement />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'packaging/staging',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <StagingBoard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'packaging/custody',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CustodyTimeline />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'packaging/custody/:packageId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CustodyTimeline />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'packaging/docs',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DocumentationCenter />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Freight & Delivery Module
+      {
+        path: 'freight/planner',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShipmentPlanner />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'freight/comparison',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <FreightComparison />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'freight/comparison/:shipmentId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <FreightComparison />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'freight/route/:shipmentId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RouteView />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'freight/tracking',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShipmentTrackingBoard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'freight/exceptions',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ExceptionInbox />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'freight/pod/:shipmentId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PODViewer />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Sales & Pricing Module
+      {
+        path: 'sales/rfq-inbox',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RFQInbox />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sales/quote/:quoteId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SalesQuoteBuilder />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sales/quote/new',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SalesQuoteBuilder />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'sales/dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SalesDashboard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'portal/quote/:quoteToken',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CustomerQuotePortal />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Executive Ops Cockpit & Digital Twin Module
+      {
+        path: 'executive/cockpit',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ExecutiveCockpit />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'executive/simulation',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SimulationWorkspace />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'executive/forecast',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ForecastExplorer />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'executive/decisions',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DecisionLog />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'executive/digital-twin',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DigitalTwinViewer />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

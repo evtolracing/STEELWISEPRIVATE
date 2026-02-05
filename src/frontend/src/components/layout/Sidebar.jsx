@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   Box,
@@ -11,8 +12,11 @@ import {
   Divider,
   Avatar,
   IconButton,
+  Collapse,
 } from '@mui/material'
 import {
+  ExpandLess,
+  ExpandMore,
   Dashboard as DashboardIcon,
   Thermostat as HeatIcon,
   ViewModule as UnitsIcon,
@@ -51,6 +55,65 @@ import {
   BuildCircle as CAPAIcon,
   SmartToy as AssistantIcon,
   Block as StopWorkIcon,
+  // Supplier Quality Icons
+  LocalShipping as InboundIcon,
+  Rule as IQCIcon,
+  Warning as SNCIcon,
+  Gavel as SCARIcon,
+  Assessment as ScorecardIcon,
+  Business as SupplierIcon,
+  // Customer Quality Icons
+  Inbox as ClaimsIcon,
+  AssignmentReturn as RMAIcon,
+  BugReport as CARIcon,
+  CreditCard as CreditsIcon,
+  // Contractor Portal Icons
+  Badge as VisitorBadgeIcon,
+  HowToReg as PreRegIcon,
+  Groups as ActiveVisitorsIcon,
+  ContactPage as ContractorRegistryIcon,
+  // Training Engine Icons
+  School as TrainingIcon2,
+  MenuBook as CatalogIcon,
+  CardMembership as CertificationIcon,
+  GridOn as MatrixIcon,
+  // Production Quality Icons
+  PlaylistAddCheck as InspectionExecIcon,
+  ShowChart as SPCIcon,
+  Timeline as TraceIcon,
+  FactCheck as QualityDashIcon,
+  ReportProblem as NCRIcon,
+  // Maintenance Icons
+  Build as MaintenanceIcon,
+  Handyman as WorkOrderIcon,
+  EventRepeat as PMIcon,
+  Warehouse as PartsIcon,
+  PrecisionManufacturing as AssetIcon,
+  // Packaging & Chain-of-Custody Icons
+  Inventory2 as PackagingQueueIcon,
+  QrCode2 as LabelIcon,
+  Lock as SealIcon,
+  Dock as StagingIcon,
+  Timeline as CustodyIcon,
+  Description as DocsIcon,
+  // Freight & Delivery Icons
+  RequestQuote as FreightQuoteIcon,
+  CompareArrows as FreightCompareIcon,
+  Map as FreightRouteIcon,
+  ViewKanban as FreightTrackingIcon,
+  ErrorOutline as FreightExceptionIcon,
+  VerifiedUser as FreightPODIcon,
+  // Sales & Pricing Icons
+  RequestQuote as RFQIcon,
+  Calculate as PricingCalcIcon,
+  TrendingUp as SalesDashIcon,
+  Handshake as QuoteAcceptIcon,
+  // Executive Cockpit & Digital Twin Icons
+  Insights as ExecutiveIcon,
+  PlayCircle as SimulationIcon,
+  StackedLineChart as ForecastIcon,
+  HistoryEdu as DecisionLogIcon,
+  Hub as DigitalTwinIcon,
 } from '@mui/icons-material'
 
 const navSections = [
@@ -59,6 +122,16 @@ const navSections = [
     items: [
       { path: '/ops-cockpit', label: 'Ops Cockpit', icon: CockpitIcon },
       { path: '/role-dashboard', label: 'My Dashboard', icon: DashboardIcon },
+    ],
+  },
+  {
+    title: 'Executive',
+    items: [
+      { path: '/executive/cockpit', label: 'Executive Cockpit', icon: ExecutiveIcon },
+      { path: '/executive/simulation', label: 'Simulation', icon: SimulationIcon },
+      { path: '/executive/forecast', label: 'Forecasts', icon: ForecastIcon },
+      { path: '/executive/decisions', label: 'Decision Log', icon: DecisionLogIcon },
+      { path: '/executive/digital-twin', label: 'Digital Twin', icon: DigitalTwinIcon },
     ],
   },
   // {
@@ -116,10 +189,95 @@ const navSections = [
     ],
   },
   {
+    title: 'Sales & Pricing',
+    items: [
+      { path: '/sales/rfq-inbox', label: 'RFQ Inbox', icon: RFQIcon },
+      { path: '/sales/dashboard', label: 'Sales Dashboard', icon: SalesDashIcon },
+    ],
+  },
+  {
     title: 'Quality & Compliance',
     items: [
       { path: '/qaqc', label: 'QA/QC', icon: QualityIcon },
       { path: '/provenance', label: 'Provenance', icon: ProvenanceIcon },
+    ],
+  },
+  {
+    title: 'Supplier Quality',
+    items: [
+      { path: '/sqm/receiving', label: 'Inbound Receiving', icon: InboundIcon },
+      { path: '/sqm/inspections', label: 'IQC Inspections', icon: IQCIcon },
+      { path: '/sqm/snc', label: 'Nonconformances', icon: SNCIcon },
+      { path: '/sqm/scar', label: 'SCAR Management', icon: SCARIcon },
+      { path: '/sqm/scorecards', label: 'Scorecards', icon: ScorecardIcon },
+      { path: '/sqm/suppliers', label: 'Suppliers', icon: SupplierIcon },
+    ],
+  },
+  {
+    title: 'Customer Quality',
+    items: [
+      { path: '/customer-quality/claims', label: 'Claims Inbox', icon: ClaimsIcon },
+      { path: '/customer-quality/rma', label: 'RMA Management', icon: RMAIcon },
+      { path: '/customer-quality/car', label: 'CAR Management', icon: CARIcon },
+      { path: '/customer-quality/credits', label: 'Credits & Approvals', icon: CreditsIcon },
+    ],
+  },
+  {
+    title: 'Contractor Portal',
+    items: [
+      { path: '/contractors/active', label: 'Active Visitors', icon: ActiveVisitorsIcon },
+      { path: '/contractors/registry', label: 'Contractor Registry', icon: ContractorRegistryIcon },
+      { path: '/contractors/invitations', label: 'Pre-Registration', icon: PreRegIcon },
+      { path: '/contractors/kiosk', label: 'Check-In Kiosk', icon: VisitorBadgeIcon },
+    ],
+  },
+  {
+    title: 'Training Engine',
+    items: [
+      { path: '/training/dashboard', label: 'Training Dashboard', icon: TrainingIcon2 },
+      { path: '/training/courses', label: 'Course Catalog', icon: CatalogIcon },
+      { path: '/training/my-certs', label: 'My Certifications', icon: CertificationIcon },
+      { path: '/training/matrix', label: 'Competency Matrix', icon: MatrixIcon },
+    ],
+  },
+  {
+    title: 'Production Quality',
+    items: [
+      { path: '/production-quality/dashboard', label: 'Quality Dashboard', icon: QualityDashIcon },
+      { path: '/production-quality/inspections', label: 'Inspections', icon: InspectionExecIcon },
+      { path: '/production-quality/ncr', label: 'NCR Management', icon: NCRIcon },
+      { path: '/production-quality/spc', label: 'SPC Charts', icon: SPCIcon },
+      { path: '/production-quality/trace', label: 'Traceability', icon: TraceIcon },
+    ],
+  },
+  {
+    title: 'Maintenance',
+    items: [
+      { path: '/maintenance/dashboard', label: 'Maintenance Dashboard', icon: MaintenanceIcon },
+      { path: '/maintenance/work-orders', label: 'Work Orders', icon: WorkOrderIcon },
+      { path: '/maintenance/assets', label: 'Asset Registry', icon: AssetIcon },
+      { path: '/maintenance/pm-schedules', label: 'PM Schedules', icon: PMIcon },
+      { path: '/maintenance/parts', label: 'Parts Inventory', icon: PartsIcon },
+    ],
+  },
+  {
+    title: 'Packaging & Custody',
+    items: [
+      { path: '/packaging/queue', label: 'Packaging Queue', icon: PackagingQueueIcon },
+      { path: '/packaging/qc-release', label: 'QC Release Station', icon: QualityIcon },
+      { path: '/packaging/labels', label: 'Label Management', icon: LabelIcon },
+      { path: '/packaging/staging', label: 'Staging & Docks', icon: StagingIcon },
+      { path: '/packaging/custody', label: 'Chain of Custody', icon: CustodyIcon },
+      { path: '/packaging/docs', label: 'Documentation Center', icon: DocsIcon },
+    ],
+  },
+  {
+    title: 'Freight & Delivery',
+    items: [
+      { path: '/freight/planner', label: 'Shipment Planner', icon: LogisticsIcon },
+      { path: '/freight/comparison', label: 'Freight Comparison', icon: FreightCompareIcon },
+      { path: '/freight/tracking', label: 'Tracking Board', icon: FreightTrackingIcon },
+      { path: '/freight/exceptions', label: 'Exception Inbox', icon: FreightExceptionIcon },
     ],
   },
   {
@@ -146,6 +304,22 @@ const navSections = [
 
 export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
   const location = useLocation()
+  
+  // Initialize all sections as expanded
+  const [openSections, setOpenSections] = useState(() => {
+    const initial = {}
+    navSections.forEach((section) => {
+      initial[section.title] = true
+    })
+    return initial
+  })
+
+  const handleToggleSection = (title) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }))
+  }
 
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -181,57 +355,76 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
       {/* Navigation */}
       <Box sx={{ flex: 1, overflowY: 'auto', py: 1 }}>
         {navSections.map((section) => (
-          <Box key={section.title} sx={{ mb: 1 }}>
-            <Typography
-              variant="overline"
-              sx={{ px: 2, color: 'text.secondary', fontSize: '0.7rem' }}
+          <Box key={section.title} sx={{ mb: 0.5 }}>
+            <ListItemButton
+              onClick={() => handleToggleSection(section.title)}
+              sx={{
+                py: 0.5,
+                px: 2,
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+              }}
             >
-              {section.title}
-            </Typography>
-            <List dense sx={{ px: 1 }}>
-              {section.items.map((item) => {
-                const Icon = item.icon
-                const isActive = location.pathname.startsWith(item.path)
-                const isHighlight = item.highlight
-                return (
-                  <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
-                    <ListItemButton
-                      component={NavLink}
-                      to={item.path}
-                      onClick={onMobileClose}
-                      sx={{
-                        borderRadius: 1,
-                        bgcolor: isActive 
-                          ? 'primary.main' 
-                          : isHighlight 
-                            ? 'warning.light' 
-                            : 'transparent',
-                        color: isActive ? 'white' : 'text.primary',
-                        border: isHighlight && !isActive ? '2px solid' : 'none',
-                        borderColor: isHighlight && !isActive ? 'warning.main' : 'transparent',
-                        '&:hover': {
-                          bgcolor: isActive ? 'primary.dark' : 'action.hover',
-                        },
-                        py: 0.75,
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{ color: isActive ? 'white' : isHighlight ? 'warning.dark' : 'text.secondary', minWidth: 36 }}
-                      >
-                        <Icon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText 
-                        primary={item.label} 
-                        primaryTypographyProps={{ 
-                          fontSize: '0.875rem',
-                          fontWeight: isHighlight ? 600 : 400,
+              <ListItemText
+                primary={section.title}
+                primaryTypographyProps={{
+                  variant: 'overline',
+                  sx: { color: 'text.secondary', fontSize: '0.7rem', fontWeight: 600 },
+                }}
+              />
+              {openSections[section.title] ? (
+                <ExpandLess sx={{ fontSize: 18, color: 'text.secondary' }} />
+              ) : (
+                <ExpandMore sx={{ fontSize: 18, color: 'text.secondary' }} />
+              )}
+            </ListItemButton>
+            <Collapse in={openSections[section.title]} timeout="auto" unmountOnExit>
+              <List dense sx={{ px: 1 }}>
+                {section.items.map((item) => {
+                  const Icon = item.icon
+                  const isActive = location.pathname.startsWith(item.path)
+                  const isHighlight = item.highlight
+                  return (
+                    <ListItem key={item.path} disablePadding sx={{ mb: 0.25 }}>
+                      <ListItemButton
+                        component={NavLink}
+                        to={item.path}
+                        onClick={onMobileClose}
+                        sx={{
+                          borderRadius: 1,
+                          bgcolor: isActive 
+                            ? 'primary.main' 
+                            : isHighlight 
+                              ? 'warning.light' 
+                              : 'transparent',
+                          color: isActive ? 'white' : 'text.primary',
+                          border: isHighlight && !isActive ? '2px solid' : 'none',
+                          borderColor: isHighlight && !isActive ? 'warning.main' : 'transparent',
+                          '&:hover': {
+                            bgcolor: isActive ? 'primary.dark' : 'action.hover',
+                          },
+                          py: 0.75,
                         }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                )
-              })}
-            </List>
+                      >
+                        <ListItemIcon
+                          sx={{ color: isActive ? 'white' : isHighlight ? 'warning.dark' : 'text.secondary', minWidth: 36 }}
+                        >
+                          <Icon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary={item.label} 
+                          primaryTypographyProps={{ 
+                            fontSize: '0.875rem',
+                            fontWeight: isHighlight ? 600 : 400,
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  )
+                })}
+              </List>
+            </Collapse>
           </Box>
         ))}
       </Box>

@@ -37,6 +37,7 @@ import ingestRoutes from './routes/ingestRoutes.js';
 import pipelineRoutes from './routes/pipelineRoutes.js';
 import stopWorkRoutes from './routes/stopWork.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
+import { seedSupabaseData } from './seeds/supabaseSeed.js';
 
 dotenv.config();
 
@@ -95,10 +96,15 @@ app.use('/api/v1/pipeline', pipelineRoutes);  // /api/v1/pipeline (create, advan
 // Safety Module - Stop-Work Authority System
 app.use('/api/safety/stop-work', stopWorkRoutes);  // /api/safety/stop-work (initiate, clear, validate)
 
-// Initialize OrderHub seed data
-console.log('🌱 About to initialize seed data...');
+// Initialize OrderHub seed data (in-memory store)
+console.log('🌱 Initializing in-memory OrderHub data...');
 initOrderHubData();
-console.log('✅ Seed data initialized');
+console.log('✅ In-memory data initialized');
+
+// Seed Supabase database (async)
+seedSupabaseData()
+  .then(() => console.log('✅ Supabase seed complete'))
+  .catch(err => console.error('❌ Supabase seed error:', err));
 
 // Error handler
 app.use((err, req, res, next) => {

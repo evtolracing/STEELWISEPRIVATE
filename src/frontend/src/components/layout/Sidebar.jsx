@@ -61,19 +61,19 @@ const navSections = [
       { path: '/role-dashboard', label: 'My Dashboard', icon: DashboardIcon },
     ],
   },
-  {
-    title: 'Production',
-    items: [
-      { path: '/production', label: 'Workflow Board', icon: ProductionIcon },
-      { path: '/production/shop-floor', label: 'Shop Floor', icon: ShopFloorIcon },
-      { path: '/production/shipping', label: 'Prod Shipping', icon: ShippingIcon },
-    ],
-  },
+  // {
+  //   title: 'Production',
+  //   items: [
+  //     { path: '/production', label: 'Workflow Board', icon: ProductionIcon },
+  //     { path: '/production/shop-floor', label: 'Shop Floor', icon: ShopFloorIcon },
+  //     { path: '/production/shipping', label: 'Prod Shipping', icon: ShippingIcon },
+  //   ],
+  // },
   {
     title: 'Service Center',
     items: [
       { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
-      { path: '/shopfloor', label: 'Shop Floor Queue', icon: WorkCenterIcon, highlight: true },
+      { path: '/shopfloor', label: 'Shop Floor Queue', icon: WorkCenterIcon },
       { path: '/planning', label: 'Planning', icon: PlanningIcon },
       { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
       { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
@@ -90,15 +90,15 @@ const navSections = [
       { path: '/inventory', label: 'Inventory', icon: InventoryIcon },
     ],
   },
-  {
-    title: 'Operations',
-    items: [
-      { path: '/work-orders', label: 'Work Orders', icon: WorkOrdersIcon },
-      { path: '/bom', label: 'BOM / Recipes', icon: BOMIcon },
-      { path: '/orders', label: 'Orders', icon: OrdersIcon },
-      { path: '/optimization', label: 'AI Optimization', icon: OptimizationIcon },
-    ],
-  },
+  // {
+  //   title: 'Operations',
+  //   items: [
+  //     { path: '/work-orders', label: 'Work Orders', icon: WorkOrdersIcon },
+  //     { path: '/bom', label: 'BOM / Recipes', icon: BOMIcon },
+  //     { path: '/orders', label: 'Orders', icon: OrdersIcon },
+  //     { path: '/optimization', label: 'AI Optimization', icon: OptimizationIcon },
+  //   ],
+  // },
   {
     title: 'Logistics',
     items: [
@@ -126,7 +126,7 @@ const navSections = [
     title: 'Safety & EHS',
     items: [
       { path: '/safety', label: 'Safety Dashboard', icon: SafetyIcon },
-      { path: '/safety/stop-work', label: 'Stop-Work Authority', icon: StopWorkIcon, highlight: true },
+      { path: '/safety/stop-work', label: 'Stop-Work Authority', icon: StopWorkIcon },
       { path: '/safety/assistant', label: 'Safety Assistant', icon: AssistantIcon },
       { path: '/safety/incidents', label: 'Incidents', icon: IncidentIcon },
       { path: '/safety/inspections', label: 'Inspections', icon: InspectionIcon },

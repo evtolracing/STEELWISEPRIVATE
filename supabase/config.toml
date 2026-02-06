@@ -1,0 +1,20 @@
+[project]
+id = "giyheniqqqwpmetefdxj"
+name = "steelwise"
+
+[db]
+port = 5432
+major_version = 15
+
+[db.pooler]
+enabled = true
+port = 6543
+pool_mode = "transaction"
+
+[api]
+enabled = true
+port = 54321
+
+[studio]
+enabled = true
+port = 54323

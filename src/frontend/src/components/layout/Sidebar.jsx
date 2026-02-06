@@ -13,10 +13,12 @@ import {
   Avatar,
   IconButton,
   Collapse,
+  Button,
 } from '@mui/material'
 import {
   ExpandLess,
   ExpandMore,
+  PlayCircle as DemoPlayIcon,
   Dashboard as DashboardIcon,
   Thermostat as HeatIcon,
   ViewModule as UnitsIcon,
@@ -116,6 +118,8 @@ import {
   HistoryEdu as DecisionLogIcon,
   Hub as DigitalTwinIcon,
 } from '@mui/icons-material'
+
+import { useDemo } from '../../contexts/DemoContext'
 
 const navSections = [
   {
@@ -318,6 +322,7 @@ const navSections = [
 
 export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
   const location = useLocation()
+  const { isActive, startDemo, stopDemo } = useDemo()
   
   // Initialize all sections as expanded
   const [openSections, setOpenSections] = useState(() => {
@@ -362,6 +367,50 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
             Steel ERP Platform
           </Typography>
         </Box>
+      </Box>
+
+      <Divider />
+
+      {/* Demo Launcher */}
+      <Box sx={{ px: 2, py: 1.5 }}>
+        {!isActive ? (
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<DemoPlayIcon />}
+            onClick={startDemo}
+            sx={{
+              background: 'linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #01579b 100%)',
+              color: 'white',
+              fontWeight: 700,
+              py: 1.2,
+              borderRadius: 2,
+              fontSize: '0.85rem',
+              textTransform: 'none',
+              letterSpacing: 0.5,
+              boxShadow: '0 4px 12px rgba(13, 71, 161, 0.4)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0d47a1 0%, #01579b 50%, #006064 100%)',
+                boxShadow: '0 6px 16px rgba(13, 71, 161, 0.6)',
+                transform: 'translateY(-1px)',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            ▶ Start Alro Demo
+          </Button>
+        ) : (
+          <Button
+            fullWidth
+            variant="outlined"
+            color="error"
+            onClick={stopDemo}
+            size="small"
+            sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
+          >
+            ■ End Demo Mode
+          </Button>
+        )}
       </Box>
 
       <Divider />

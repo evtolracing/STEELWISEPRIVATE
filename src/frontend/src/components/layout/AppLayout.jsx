@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom'
 import { Box, useMediaQuery, useTheme } from '@mui/material'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import { DemoProvider } from '../../contexts/DemoContext'
+import DemoOverlay from '../demo/DemoOverlay'
 
 const DRAWER_WIDTH = 260
 
@@ -16,32 +18,36 @@ export default function AppLayout() {
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <TopBar 
-        drawerWidth={DRAWER_WIDTH} 
-        onMenuClick={handleDrawerToggle} 
-      />
-      
-      <Sidebar 
-        drawerWidth={DRAWER_WIDTH}
-        mobileOpen={mobileOpen}
-        onMobileClose={handleDrawerToggle}
-      />
+    <DemoProvider>
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        <TopBar 
+          drawerWidth={DRAWER_WIDTH} 
+          onMenuClick={handleDrawerToggle} 
+        />
+        
+        <Sidebar 
+          drawerWidth={DRAWER_WIDTH}
+          mobileOpen={mobileOpen}
+          onMobileClose={handleDrawerToggle}
+        />
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-          mt: 8,
-          bgcolor: 'background.default',
-          height: 'calc(100vh - 64px)',
-          overflow: 'auto',
-        }}
-      >
-        <Outlet />
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+            mt: 8,
+            bgcolor: 'background.default',
+            height: 'calc(100vh - 64px)',
+            overflow: 'auto',
+          }}
+        >
+          <Outlet />
+        </Box>
+
+        <DemoOverlay />
       </Box>
-    </Box>
+    </DemoProvider>
   )
 }

@@ -33,7 +33,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   Warning as WarningIcon,
-  Package as PackageIcon,
+  Inventory2 as PackageIcon,
   LocalShipping as ShippingIcon,
   History as HistoryIcon,
   Refresh as RefreshIcon,

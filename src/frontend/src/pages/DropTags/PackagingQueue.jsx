@@ -38,7 +38,7 @@ import {
 import {
   Search as SearchIcon,
   QrCode as QrCodeIcon,
-  Package as PackageIcon,
+  Inventory2 as PackageIcon,
   Inventory as InventoryIcon,
   CheckCircle as CheckCircleIcon,
   Schedule as ScheduleIcon,

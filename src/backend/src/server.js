@@ -39,6 +39,12 @@ import stopWorkRoutes from './routes/stopWork.js';
 import salesRoutes from './routes/salesRoutes.js';
 import executiveRoutes from './routes/executive.js';
 import dropTagRoutes from './routes/dropTagRoutes.js';
+import partnerAuthRoutes from './routes/partner/partnerAuthRoutes.js';
+import partnerCustomerRoutes from './routes/partner/customerRoutes.js';
+import partnerSupplierRoutes from './routes/partner/supplierRoutes.js';
+import partnerCarrierRoutes from './routes/partner/carrierRoutes.js';
+import partnerWebhookRoutes from './routes/partner/webhookRoutes.js';
+import partnerAdminRoutes from './routes/partner/adminRoutes.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 import { seedSupabaseData } from './seeds/supabaseSeed.js';
 
@@ -107,6 +113,14 @@ app.use('/api/executive', executiveRoutes);  // /api/executive/cockpit, /api/exe
 
 // Drop Tag Engine - Production-to-Delivery Tracking
 app.use('/api/drop-tags', dropTagRoutes);  // /api/drop-tags, /api/drop-tags/listings, /api/drop-tags/scans, /api/drop-tags/templates
+
+// ── External Partner API Layer ──────────────────────────────────────────────────
+app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)
+app.use('/api/v1/partner/customer', partnerCustomerRoutes);  // Customer-facing: RFQs, Quotes, Orders, Shipments, Docs
+app.use('/api/v1/partner/supplier', partnerSupplierRoutes);  // Supplier-facing: POs, ASNs, Documents, SCARs
+app.use('/api/v1/partner/carrier', partnerCarrierRoutes);    // Carrier-facing: Shipments, Status, POD, Exceptions
+app.use('/api/v1/partner/webhooks', partnerWebhookRoutes);   // Self-service webhook management
+app.use('/api/v1/admin/partners', partnerAdminRoutes);       // Internal admin: Partner registry, Keys, Usage
 
 // Initialize OrderHub seed data (in-memory store)
 console.log('🌱 Initializing in-memory OrderHub data...');

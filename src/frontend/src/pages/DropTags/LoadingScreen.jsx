@@ -44,7 +44,7 @@ import {
   PlayArrow as StartIcon,
   Lock as LockIcon,
   DoneAll as CompleteIcon,
-  Package as PackageIcon,
+  Inventory2 as PackageIcon,
 } from '@mui/icons-material';
 
 // Mock shipments ready for loading

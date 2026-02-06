@@ -161,6 +161,9 @@ const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 // Admin Pages
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
 
+// Partner API Management
+const PartnerRegistryPage = lazy(() => import('../pages/Partners/PartnerRegistryPage'))
+
 // Safety / EHS App
 const SafetyApp = lazy(() => import('../apps/safety'))
 
@@ -1262,6 +1265,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <UserManagementPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Admin - Partner API Registry
+      {
+        path: 'admin/partners',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PartnerRegistryPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

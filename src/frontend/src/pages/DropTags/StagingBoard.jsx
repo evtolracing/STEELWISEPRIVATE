@@ -37,7 +37,7 @@ import {
   Warning as WarningIcon,
   ArrowForward as ArrowIcon,
   Timer as TimerIcon,
-  Package as PackageIcon,
+  Inventory2 as PackageIcon,
 } from '@mui/icons-material';
 
 // Mock staging lanes

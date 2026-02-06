@@ -33,6 +33,7 @@ model Organization {
   pricingTier    CustomerPricingTier? @relation("CustomerPricingTier")
   dropTags       DropTag[]  @relation("DropTagCustomer")
   tagRequirements CustomerTagRequirement[] @relation("CustomerTagRequirements")
+  partners       Partner[]  @relation("PartnerOrganization")
 }
 
 model User {
@@ -2509,4 +2510,230 @@ model CustomerTagRequirement {
 
   @@unique([customerId])
   @@index([customerId])
+}
+
+// ============================================================================
+// EXTERNAL PARTNER API LAYER
+// ============================================================================
+
+enum PartnerType {
+  CUSTOMER
+  SUPPLIER
+  CARRIER
+  STRATEGIC
+}
+
+enum PartnerStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REVOKED
+}
+
+enum PartnerTier {
+  STANDARD
+  STRATEGIC
+  INTERNAL
+}
+
+enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum WebhookStatus {
+  ACTIVE
+  PAUSED
+  DISABLED
+  FAILED
+}
+
+enum WebhookDeliveryStatus {
+  PENDING
+  DELIVERED
+  FAILED
+  RETRYING
+}
+
+// Partner - External organization integration profile
+model Partner {
+  id              String        @id @default(uuid())
+  organizationId  String
+  organization    Organization  @relation("PartnerOrganization", fields: [organizationId], references: [id])
+  
+  partnerType     PartnerType
+  status          PartnerStatus @default(PENDING)
+  tier            PartnerTier   @default(STANDARD)
+  
+  // Contact info
+  contactName     String?
+  contactEmail    String?
+  contactPhone    String?
+  
+  // Security
+  ipAllowList     String[]      @default([])  // Empty = no restriction
+  sandboxEnabled  Boolean       @default(true)
+  productionEnabled Boolean     @default(false)
+  
+  // Rate limits (override defaults if set)
+  rateLimitPerMin    Int?
+  rateLimitPerHour   Int?
+  burstLimit         Int?
+  
+  // Metadata
+  notes           String?
+  onboardedAt     DateTime?
+  lastActiveAt    DateTime?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // Relations
+  apiKeys         PartnerApiKey[]
+  webhooks        PartnerWebhook[]
+  apiLogs         PartnerApiLog[]
+  
+  @@unique([organizationId, partnerType])
+  @@index([partnerType])
+  @@index([status])
+  @@index([tier])
+}
+
+// PartnerApiKey - OAuth2 client credentials for partner authentication
+model PartnerApiKey {
+  id              String        @id @default(uuid())
+  partnerId       String
+  partner         Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  
+  // Credentials (client_id is the key id, client_secret stored as hash)
+  keyName         String        // Human-readable label, e.g. "Production Key"
+  clientSecret    String        // bcrypt hashed secret
+  
+  // Scopes
+  scopes          String[]      // e.g. ["rfq:write", "orders:read", "documents:read"]
+  
+  // Status
+  status          ApiKeyStatus  @default(ACTIVE)
+  environment     String        @default("sandbox")  // "sandbox" | "production"
+  
+  // Expiry
+  expiresAt       DateTime?
+  lastUsedAt      DateTime?
+  
+  // Security
+  revokedAt       DateTime?
+  revokedBy       String?       // User ID who revoked
+  revokeReason    String?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([partnerId])
+  @@index([status])
+  @@index([environment])
+}
+
+// PartnerWebhook - Webhook subscription for event notifications
+model PartnerWebhook {
+  id              String         @id @default(uuid())
+  partnerId       String
+  partner         Partner        @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  
+  // Endpoint
+  url             String
+  secret          String         // HMAC signing secret (encrypted at rest)
+  
+  // Subscription
+  events          String[]       // e.g. ["order.confirmed", "shipment.dispatched"]
+  
+  // Status
+  status          WebhookStatus  @default(ACTIVE)
+  
+  // Health tracking
+  consecutiveFailures Int        @default(0)
+  lastDeliveredAt     DateTime?
+  lastFailedAt        DateTime?
+  disabledAt          DateTime?
+  disableReason       String?
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  // Relations
+  deliveries      WebhookDelivery[]
+  
+  @@index([partnerId])
+  @@index([status])
+}
+
+// WebhookDelivery - Individual webhook delivery attempt log
+model WebhookDelivery {
+  id              String                @id @default(uuid())
+  webhookId       String
+  webhook         PartnerWebhook        @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  
+  // Event
+  eventType       String
+  eventId         String                // Unique event ID
+  payload         Json
+  
+  // Delivery
+  status          WebhookDeliveryStatus @default(PENDING)
+  attempts        Int                   @default(0)
+  maxAttempts     Int                   @default(5)
+  
+  // Response
+  httpStatus      Int?
+  responseBody    String?
+  responseTimeMs  Int?
+  errorMessage    String?
+  
+  // Timing
+  nextRetryAt     DateTime?
+  deliveredAt     DateTime?
+  
+  createdAt       DateTime              @default(now())
+  
+  @@index([webhookId])
+  @@index([eventId])
+  @@index([status])
+  @@index([nextRetryAt])
+}
+
+// PartnerApiLog - Audit log for every partner API call
+model PartnerApiLog {
+  id              String        @id @default(uuid())
+  partnerId       String
+  partner         Partner       @relation(fields: [partnerId], references: [id])
+  
+  // Request
+  method          String        // GET, POST, PUT, DELETE
+  endpoint        String        // /api/v1/partner/customer/orders
+  statusCode      Int
+  
+  // Metadata
+  apiKeyId        String?
+  ipAddress       String?
+  userAgent       String?
+  requestBody     Json?         // Sanitized, no secrets
+  
+  // Performance
+  responseTimeMs  Int?
+  
+  // Error detail
+  errorCode       String?
+  errorMessage    String?
+  
+  // Data access tracking
+  resourceType    String?       // "Order", "RFQ", "Shipment"
+  resourceId      String?       // ID of accessed resource
+  
+  createdAt       DateTime      @default(now())
+  
+  @@index([partnerId])
+  @@index([endpoint])
+  @@index([statusCode])
+  @@index([createdAt])
+  @@index([apiKeyId])
 }

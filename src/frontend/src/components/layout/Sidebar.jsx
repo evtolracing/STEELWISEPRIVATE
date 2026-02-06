@@ -46,6 +46,7 @@ import {
   RequestQuote as OrderHubIcon,
   Group as UsersIcon,
   AdminPanelSettings as AdminIcon,
+  Shield as PartnerApiIcon,
   HealthAndSafety as SafetyIcon,
   ReportProblem as IncidentIcon,
   Checklist as InspectionIcon,
@@ -310,6 +311,7 @@ const navSections = [
     title: 'Administration',
     items: [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
+      { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
     ],
   },
 ]

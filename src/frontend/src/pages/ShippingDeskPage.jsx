@@ -72,6 +72,18 @@ import {
   calculateDeliveryCost,
   estimateDeliveryTime,
 } from '../services/mapService'
+import {
+  getOrdersWithFulfillment,
+  getSplitShipments,
+  createSplitShipment,
+  ORDER_FULFILLMENT_STATUS,
+  orderShippedPct,
+  calcRemaining,
+} from '../services/splitShipmentApi'
+import SplitShipmentDialog from '../components/shipping/SplitShipmentDialog'
+import ShipmentTracker from '../components/shipping/ShipmentTracker'
+import PartialFulfillmentBanner from '../components/shipping/PartialFulfillmentBanner'
+import { CallSplit as SplitIcon } from '@mui/icons-material'
 
 // Mock shipments ready to ship
 const generateMockShipments = () => [
@@ -173,6 +185,13 @@ const ShippingDeskPage = () => {
   const [selectedShipment, setSelectedShipment] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
   
+  // Split shipment state
+  const [splitDialogOpen, setSplitDialogOpen] = useState(false)
+  const [splitDialogOrder, setSplitDialogOrder] = useState(null)
+  const [creatingSplit, setCreatingSplit] = useState(false)
+  const [fulfillmentOrders, setFulfillmentOrders] = useState([])
+  const [splitShipmentsList, setSplitShipmentsList] = useState([])
+
   // Map dialog state
   const [mapDialogOpen, setMapDialogOpen] = useState(false)
   const [routeInfo, setRouteInfo] = useState(null)
@@ -204,6 +223,15 @@ const ShippingDeskPage = () => {
       await new Promise((r) => setTimeout(r, 400))
       setShipments(generateMockShipments())
       setRecentShipped(generateRecentShipped())
+      // Load fulfillment + split shipment data
+      try {
+        const [ordersRes, splitsRes] = await Promise.all([
+          getOrdersWithFulfillment(),
+          getSplitShipments(),
+        ])
+        setFulfillmentOrders(ordersRes.data)
+        setSplitShipmentsList(splitsRes.data)
+      } catch { /* non-critical */ }
     } catch (error) {
       console.error('Failed to load data:', error)
     } finally {
@@ -214,6 +242,33 @@ const ShippingDeskPage = () => {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  // ── Split shipment handlers ──
+  const handleOpenSplitFromShipment = (shipment) => {
+    // Find the fulfillment order associated with this shipment
+    const matchingOrder = fulfillmentOrders.find((o) => o.orderNumber === shipment.orderNumber)
+    if (matchingOrder) {
+      setSplitDialogOrder(matchingOrder)
+      setSplitDialogOpen(true)
+    } else {
+      setSnackbar({ open: true, message: 'No partial-fulfillment data for this order', severity: 'warning' })
+    }
+  }
+
+  const handleConfirmSplit = async (splitLines, meta) => {
+    if (!splitDialogOrder) return
+    setCreatingSplit(true)
+    try {
+      await createSplitShipment(splitDialogOrder.id, splitLines, meta)
+      setSplitDialogOpen(false)
+      setSnackbar({ open: true, message: 'Split shipment created with packages & drop tags!', severity: 'success' })
+      loadData()
+    } catch (err) {
+      setSnackbar({ open: true, message: err.message || 'Split failed', severity: 'error' })
+    } finally {
+      setCreatingSplit(false)
+    }
+  }
 
   const handleOpenScheduleDialog = (shipment) => {
     setSelectedShipment(shipment)
@@ -696,6 +751,17 @@ const ShippingDeskPage = () => {
                         <Button variant="outlined" startIcon={<PrintIcon />} size="small">
                           Print BOL
                         </Button>
+                        <Tooltip title="Split this order for partial shipment">
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            startIcon={<SplitIcon />}
+                            size="small"
+                            onClick={() => handleOpenSplitFromShipment(shipment)}
+                          >
+                            Split
+                          </Button>
+                        </Tooltip>
                       </CardActions>
                     </Card>
                   </Grid>
@@ -921,6 +987,15 @@ const ShippingDeskPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Split Shipment Dialog */}
+      <SplitShipmentDialog
+        open={splitDialogOpen}
+        onClose={() => setSplitDialogOpen(false)}
+        order={splitDialogOrder}
+        onConfirm={handleConfirmSplit}
+        creating={creatingSplit}
+      />
 
       {/* Snackbar */}
       <Snackbar

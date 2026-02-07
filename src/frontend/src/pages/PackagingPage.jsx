@@ -50,6 +50,16 @@ import {
 } from '@mui/icons-material'
 import { JOB_STATUSES, JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 import { PRIORITY_LEVELS_CONFIG } from '../constants/materials'
+import {
+  getOrdersWithFulfillment,
+  ORDER_FULFILLMENT_STATUS,
+  lineShippedPct,
+  orderShippedPct,
+  calcRemaining,
+} from '../services/splitShipmentApi'
+import PartialFulfillmentBanner from '../components/shipping/PartialFulfillmentBanner'
+import SplitShipmentDialog from '../components/shipping/SplitShipmentDialog'
+import { CallSplit as SplitIcon } from '@mui/icons-material'
 
 // Mock jobs ready for packaging
 const generateMockPackagingQueue = () => [
@@ -131,6 +141,12 @@ const PackagingPage = () => {
   const [selectedJob, setSelectedJob] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
 
+  // Split shipment state
+  const [splitDialogOpen, setSplitDialogOpen] = useState(false)
+  const [splitDialogOrder, setSplitDialogOrder] = useState(null)
+  const [creatingSplit, setCreatingSplit] = useState(false)
+  const [fulfillmentOrders, setFulfillmentOrders] = useState([])
+
   // Package form state
   const [packageForm, setPackageForm] = useState({
     pieces: '',
@@ -148,6 +164,11 @@ const PackagingPage = () => {
       await new Promise((r) => setTimeout(r, 400))
       setPackagingQueue(generateMockPackagingQueue())
       setRecentPackaged(generateRecentPackaged())
+      // Load fulfillment data for partial-shipment awareness
+      try {
+        const { data: orders } = await getOrdersWithFulfillment()
+        setFulfillmentOrders(orders)
+      } catch { /* non-critical */ }
     } catch (error) {
       console.error('Failed to load data:', error)
     } finally {
@@ -158,6 +179,36 @@ const PackagingPage = () => {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  // ── Split shipment helpers ──
+  const getFulfillmentForJob = (jobNumber) =>
+    fulfillmentOrders.find((o) => o.lines?.some((l) => l.jobNumber === jobNumber))
+
+  const handleOpenSplitDialog = (job) => {
+    const order = getFulfillmentForJob(job.jobNumber)
+    if (order) {
+      setSplitDialogOrder(order)
+      setSplitDialogOpen(true)
+    } else {
+      setSnackbar({ open: true, message: 'No order fulfillment data found for this job', severity: 'warning' })
+    }
+  }
+
+  const handleConfirmSplit = async (splitLines, meta) => {
+    if (!splitDialogOrder) return
+    setCreatingSplit(true)
+    try {
+      const { createSplitShipment } = await import('../services/splitShipmentApi')
+      await createSplitShipment(splitDialogOrder.id, splitLines, meta)
+      setSplitDialogOpen(false)
+      setSnackbar({ open: true, message: 'Split shipment created! Packages & drop tags generated.', severity: 'success' })
+      loadData() // refresh
+    } catch (err) {
+      setSnackbar({ open: true, message: err.message || 'Failed to create split', severity: 'error' })
+    } finally {
+      setCreatingSplit(false)
+    }
+  }
 
   const handleOpenPackageDialog = (job) => {
     setSelectedJob(job)
@@ -494,6 +545,27 @@ const PackagingPage = () => {
                       <Alert severity="info" sx={{ mt: 2, py: 0.5 }} icon={<PackageIcon fontSize="small" />}>
                         <Typography variant="caption">{job.packagingSpec}</Typography>
                       </Alert>
+
+                      {/* Partial Fulfillment Indicator */}
+                      {(() => {
+                        const fo = getFulfillmentForJob(job.jobNumber)
+                        if (fo && fo.fulfillmentStatus === ORDER_FULFILLMENT_STATUS.PARTIAL) {
+                          const pct = orderShippedPct(fo.lines)
+                          const rem = calcRemaining(fo.lines)
+                          return (
+                            <Box sx={{ mt: 1.5 }}>
+                              <PartialFulfillmentBanner
+                                order={fo}
+                                shippedPct={pct}
+                                remaining={rem}
+                                splitCount={fo.shipments?.length || 0}
+                                compact
+                              />
+                            </Box>
+                          )
+                        }
+                        return null
+                      })()}
                     </CardContent>
                     <CardActions sx={{ p: 2, pt: 0 }}>
                       <Button
@@ -503,6 +575,15 @@ const PackagingPage = () => {
                         disabled={job.status === JOB_STATUSES.WAITING_QC}
                       >
                         Create Package
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<SplitIcon />}
+                        onClick={() => handleOpenSplitDialog(job)}
+                        size="small"
+                      >
+                        Split for Shipment
                       </Button>
                       {progress >= 100 && (
                         <Button
@@ -667,6 +748,15 @@ const PackagingPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Split Shipment Dialog */}
+      <SplitShipmentDialog
+        open={splitDialogOpen}
+        onClose={() => setSplitDialogOpen(false)}
+        order={splitDialogOrder}
+        onConfirm={handleConfirmSplit}
+        creating={creatingSplit}
+      />
 
       {/* Snackbar */}
       <Snackbar

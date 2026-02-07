@@ -47,6 +47,7 @@ import {
   Timer as TimeTrackingIcon,
   RequestQuote as OrderHubIcon,
   Group as UsersIcon,
+  People as CustomersIcon,
   AdminPanelSettings as AdminIcon,
   Shield as PartnerApiIcon,
   HealthAndSafety as SafetyIcon,
@@ -111,12 +112,23 @@ import {
   Calculate as PricingCalcIcon,
   TrendingUp as SalesDashIcon,
   Handshake as QuoteAcceptIcon,
+  // Order Intake Icons
+  PhoneInTalk as CSRIntakeIcon,
+  Inbox as OnlineInboxIcon,
+  Storefront as RetailPOSIcon,
   // Executive Cockpit & Digital Twin Icons
   Insights as ExecutiveIcon,
   PlayCircle as SimulationIcon,
   StackedLineChart as ForecastIcon,
   HistoryEdu as DecisionLogIcon,
   Hub as DigitalTwinIcon,
+  // E-Commerce Icons
+  Storefront as ShopIcon,
+  Search as ShopSearchIcon,
+  ShoppingCart as CartIcon,
+  ListAlt as MyOrdersIcon,
+  Tune as OnlineSettingsIcon,
+  Inventory as AdminCatalogIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -191,6 +203,31 @@ const navSections = [
     items: [
       { path: '/orderhub', label: 'OrderHub', icon: OrderHubIcon },
       { path: '/pricing', label: 'Pricing', icon: PricingIcon },
+    ],
+  },
+  {
+    title: 'Customers',
+    items: [
+      { path: '/customers', label: 'Customer Directory', icon: CustomersIcon },
+    ],
+  },
+  {
+    title: 'Order Intake',
+    items: [
+      { path: '/orders/intake', label: 'CSR Intake', icon: CSRIntakeIcon, highlight: true },
+      { path: '/orders/online-inbox', label: 'Online Inbox', icon: OnlineInboxIcon },
+      { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },
+    ],
+  },
+  {
+    title: 'E-Commerce',
+    items: [
+      { path: '/shop', label: 'Online Store', icon: ShopIcon, highlight: true },
+      { path: '/shop/search', label: 'Product Search', icon: ShopSearchIcon },
+      { path: '/shop/cart', label: 'Shopping Cart', icon: CartIcon },
+      { path: '/shop/orders', label: 'My Orders', icon: MyOrdersIcon },
+      { path: '/admin/catalog', label: 'Catalog Admin', icon: AdminCatalogIcon },
+      { path: '/admin/online-settings', label: 'Online Settings', icon: OnlineSettingsIcon },
     ],
   },
   {

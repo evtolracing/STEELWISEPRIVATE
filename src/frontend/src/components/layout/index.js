@@ -1,3 +1,7 @@
 export { default as AppLayout } from './AppLayout'
 export { default as Sidebar } from './Sidebar'
 export { default as TopBar } from './TopBar'
+export { default as HeaderAIAssistant } from './HeaderAIAssistant'
+export { default as VoiceSettingsDialog } from './VoiceSettingsDialog'
+export { default as CutoffClockChip } from './CutoffClockChip'
+export { default as CutoffClockPopover } from './CutoffClockPopover'

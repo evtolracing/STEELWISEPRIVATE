@@ -101,6 +101,7 @@ const DropTagLoadingScreen = lazy(() => import('../pages/DropTags/LoadingScreen'
 const DropTagTraceabilityViewer = lazy(() => import('../pages/DropTags/TraceabilityViewer'))
 
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
+const CustomersPage = lazy(() => import('../pages/Customers/CustomersPage'))
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
 // Phase 1 - Service Center Pages
@@ -116,6 +117,23 @@ const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
 // POS - Point of Sale
 const POSPage = lazy(() => import('../pages/POSPage'))
+
+// Order Intake + POS + Retail Counter
+const CSRIntakePage = lazy(() => import('../pages/Orders/CSRIntakePage'))
+const OnlineInboxPage = lazy(() => import('../pages/Orders/OnlineInboxPage'))
+const IntakeOrderDetailPage = lazy(() => import('../pages/Orders/OrderDetailPage'))
+const RetailPOSPage = lazy(() => import('../pages/Orders/RetailPOSPage'))
+
+// E-Commerce Customer Portal + Admin
+const ShopHomePage = lazy(() => import('../pages/Ecommerce/ShopHomePage'))
+const SearchResultsPage = lazy(() => import('../pages/Ecommerce/SearchResultsPage'))
+const ProductDetailPage = lazy(() => import('../pages/Ecommerce/ProductDetailPage'))
+const CartPage = lazy(() => import('../pages/Ecommerce/CartPage'))
+const CheckoutPage = lazy(() => import('../pages/Ecommerce/CheckoutPage'))
+const MyOrdersPage = lazy(() => import('../pages/Ecommerce/MyOrdersPage'))
+const MyOrderDetailPage = lazy(() => import('../pages/Ecommerce/MyOrderDetailPage'))
+const AdminCatalogPage = lazy(() => import('../pages/Ecommerce/AdminCatalogPage'))
+const OnlineSettingsPage = lazy(() => import('../pages/Ecommerce/OnlineSettingsPage'))
 
 // Planning App
 const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
@@ -231,6 +249,19 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Suspense fallback={<PageLoader />}>
           <POSPage />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorPage />,
+  },
+
+  // Retail POS - Walk-in counter (standalone full-screen)
+  {
+    path: '/pos/retail',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <RetailPOSPage />
         </Suspense>
       </ProtectedRoute>
     ),
@@ -1259,6 +1290,46 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
+      // Order Intake
+      {
+        path: 'orders/intake',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CSRIntakePage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'orders/online-inbox',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OnlineInboxPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'orders/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <IntakeOrderDetailPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Customers
+      {
+        path: 'customers',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CustomersPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
       // Admin - User Management
       {
         path: 'admin/users',
@@ -1276,6 +1347,91 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <PartnerRegistryPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // ═══ E-Commerce — Customer Portal ═══
+      {
+        path: 'shop',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShopHomePage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shop/search',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SearchResultsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shop/products/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ProductDetailPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shop/cart',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CartPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shop/checkout',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CheckoutPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shop/orders',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MyOrdersPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shop/orders/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MyOrderDetailPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // ═══ E-Commerce — Admin ═══
+      {
+        path: 'admin/catalog',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminCatalogPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'admin/online-settings',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OnlineSettingsPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

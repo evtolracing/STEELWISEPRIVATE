@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElevenLabs TTS Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #1E3A5F; color: white; border: none; border-radius: 5px; }
+        button:hover { background: #2A4A70; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px; white-space: pre-wrap; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e9; color: #2e7d32; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <h1>🔊 ElevenLabs TTS Test</h1>
+    
+    <div class="section">
+        <h2>Step 1: Check Configuration</h2>
+        <button onclick="testConfig()">Test API Key Configuration</button>
+        <div id="configResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="section">
+        <h2>Step 2: Test Text-to-Speech</h2>
+        <input type="text" id="testText" placeholder="Enter text to speak" value="Hello! This is a test of the SteelWise AI assistant voice.">
+        <button onclick="testSpeak()">Speak Text</button>
+        <div id="speakResult" class="result" style="display: none;"></div>
+        <audio id="audioPlayer" controls style="width: 100%; margin-top: 10px; display: none;"></audio>
+    </div>
+
+    <div class="section">
+        <h2>Instructions</h2>
+        <ol>
+            <li>Click "Test API Key Configuration" to check if your ElevenLabs API key is set</li>
+            <li>If not configured, get a free API key from <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">ElevenLabs</a></li>
+            <li>Add it to <code>src/backend/.env</code> file: <code>ELEVENLABS_API_KEY=your_key_here</code></li>
+            <li>Restart the backend server</li>
+            <li>Test again</li>
+        </ol>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api/ai/tts';
+
+        async function testConfig() {
+            const resultDiv = document.getElementById('configResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Testing...';
+
+            try {
+                const response = await fetch(`${API_BASE}/test`);
+                const data = await response.json();
+
+                if (data.configured) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ ${data.message}\n\nUser: ${data.user.email}\nCharacters: ${data.user.characterCount} / ${data.user.characterLimit}\nAPI Key: ${data.apiKeyPrefix}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ ${data.message}\n\n${data.instructions || ''}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Error: ${error.message}\n\nMake sure the backend server is running on port 3001`;
+            }
+        }
+
+        async function testSpeak() {
+            const text = document.getElementById('testText').value;
+            const resultDiv = document.getElementById('speakResult');
+            const audioPlayer = document.getElementById('audioPlayer');
+
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Generating speech...';
+            audioPlayer.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/speak`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || `HTTP ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+
+                audioPlayer.src = url;
+                audioPlayer.style.display = 'block';
+                audioPlayer.play();
+
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Audio generated successfully! (${blob.size} bytes)\nPlaying now...`;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

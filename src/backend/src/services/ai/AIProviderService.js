@@ -7,47 +7,73 @@
  * FALLBACK CHAIN: DeepSeek → OpenAI → Anthropic
  * 
  * Setup:
- * 1. Add DEEPSEEK_API_KEY to .env (primary/default)
+ * 1. Add DEEPSEEK_API_KEY to .env OR store in Supabase secrets (primary/default)
  * 2. Optionally add OPENAI_API_KEY and/or ANTHROPIC_API_KEY for fallback
  * 3. Set AI_DEFAULT_PROVIDER="deepseek" in .env (already configured)
+ * 4. For Supabase secrets: Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env
  */
 
 import { OpenAIProvider } from './providers/OpenAIProvider.js';
 import { DeepSeekProvider } from './providers/DeepSeekProvider.js';
 import { AnthropicProvider } from './providers/AnthropicProvider.js';
 import { AIConfig } from './AIConfig.js';
+import { getSupabaseSecret } from '../../config/supabaseClient.js';
 
 export class AIProviderService {
   constructor() {
     this.providers = new Map();
     this.config = new AIConfig();
     this.usageStats = new Map();
-    this.initializeProviders();
+    this.initialized = false;
+    this.initPromise = this.initializeProviders();
   }
 
   /**
    * Initialize all configured AI providers
    * Priority order: DeepSeek (primary/default) → OpenAI → Anthropic
+   * Fetches API keys from environment or Supabase secrets
    */
-  initializeProviders() {
+  async initializeProviders() {
+    // Fetch API keys from Supabase secrets or environment
+    const deepseekKey = await getSupabaseSecret('DEEPSEEK_API_KEY');
+    const openaiKey = await getSupabaseSecret('OPENAI_API_KEY');
+    const anthropicKey = await getSupabaseSecret('ANTHROPIC_API_KEY');
+
     // Register available providers (DeepSeek first as primary)
-    if (process.env.DEEPSEEK_API_KEY) {
-      this.providers.set('deepseek', new DeepSeekProvider(process.env.DEEPSEEK_API_KEY));
+    if (deepseekKey) {
+      this.providers.set('deepseek', new DeepSeekProvider(deepseekKey));
       console.log('✅ DeepSeek provider initialized (PRIMARY)');
     }
 
-    if (process.env.OPENAI_API_KEY) {
-      this.providers.set('openai', new OpenAIProvider(process.env.OPENAI_API_KEY));
+    // Register available providers (DeepSeek first as primary)
+    if (deepseekKey) {
+      this.providers.set('deepseek', new DeepSeekProvider(deepseekKey));
+      console.log('✅ DeepSeek provider initialized (PRIMARY)');
+    }
+
+    if (openaiKey) {
+      this.providers.set('openai', new OpenAIProvider(openaiKey));
       console.log('✅ OpenAI provider initialized (fallback)');
     }
 
-    if (process.env.ANTHROPIC_API_KEY) {
-      this.providers.set('anthropic', new AnthropicProvider(process.env.ANTHROPIC_API_KEY));
+    if (anthropicKey) {
+      this.providers.set('anthropic', new AnthropicProvider(anthropicKey));
       console.log('✅ Anthropic provider initialized (fallback)');
     }
 
     if (this.providers.size === 0) {
-      console.warn('⚠️  No AI providers configured. Add DEEPSEEK_API_KEY (primary) or other API keys to .env');
+      console.warn('⚠️  No AI providers configured. Add DEEPSEEK_API_KEY to .env or Supabase secrets');
+    }
+
+    this.initialized = true;
+  }
+
+  /**
+   * Ensure providers are initialized before use
+   */
+  async ensureInitialized() {
+    if (!this.initialized) {
+      await this.initPromise;
     }
   }
 
@@ -62,6 +88,9 @@ export class AIProviderService {
    * @returns {Promise<Object>} Chat completion response
    */
   async getChatCompletion(options) {
+    // Ensure providers are initialized
+    await this.ensureInitialized();
+
     const {
       provider = 'auto',
       task = 'chat',

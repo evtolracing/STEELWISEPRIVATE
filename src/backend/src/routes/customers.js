@@ -33,9 +33,14 @@ router.get('/', async (req, res) => {
           code: true,
           name: true,
           type: true,
+          address: true,
+          city: true,
+          state: true,
+          postalCode: true,
+          country: true,
+          phone: true,
+          email: true,
           isActive: true,
-          creditLimit: true,
-          paymentTerms: true,
           createdAt: true,
         },
       }),
@@ -95,15 +100,13 @@ router.get('/:id', async (req, res) => {
 // POST /customers - Create a new customer organization
 router.post('/', async (req, res) => {
   try {
-    const { code, name, type = 'OEM', paymentTerms, creditLimit, ...rest } = req.body;
+    const { code, name, type = 'OEM', ...rest } = req.body;
     
     const customer = await prisma.organization.create({
       data: {
         code,
         name,
         type,
-        paymentTerms,
-        creditLimit: creditLimit ? parseFloat(creditLimit) : null,
         ...rest,
       },
     });
@@ -120,10 +123,6 @@ router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    
-    if (updateData.creditLimit) {
-      updateData.creditLimit = parseFloat(updateData.creditLimit);
-    }
     
     const customer = await prisma.organization.update({
       where: { id },

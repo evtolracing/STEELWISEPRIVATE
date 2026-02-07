@@ -18,6 +18,8 @@ import {
   Help as HelpIcon,
 } from '@mui/icons-material'
 import { useState } from 'react'
+import HeaderAIAssistant from './HeaderAIAssistant'
+import CutoffClockChip from './CutoffClockChip'
 
 export default function TopBar({ drawerWidth, onMenuClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -95,6 +97,14 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
         </Box>
 
         <Box sx={{ flex: 1 }} />
+
+        {/* Cutoff Clock */}
+        <Box sx={{ mr: 1 }}>
+          <CutoffClockChip />
+        </Box>
+
+        {/* AI Assistant */}
+        <HeaderAIAssistant />
 
         {/* Help */}
         <IconButton color="inherit" sx={{ mr: 1 }}>

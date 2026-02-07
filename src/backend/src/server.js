@@ -45,6 +45,8 @@ import partnerSupplierRoutes from './routes/partner/supplierRoutes.js';
 import partnerCarrierRoutes from './routes/partner/carrierRoutes.js';
 import partnerWebhookRoutes from './routes/partner/webhookRoutes.js';
 import partnerAdminRoutes from './routes/partner/adminRoutes.js';
+import ttsRoutes from './routes/tts.js';
+import aiAssistantRoutes from './routes/aiAssistant.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 import { seedSupabaseData } from './seeds/supabaseSeed.js';
 
@@ -82,6 +84,8 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/pos', posRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/ai/tts', ttsRoutes);
+app.use('/api/ai/assistant', aiAssistantRoutes);
 app.use('/api/v1/inventory', inventoryV1Routes);
 app.use('/api/v1/bom', bomV1Routes);
 app.use('/api/v1/ai/work-order-optimize', optimizationV1Routes);

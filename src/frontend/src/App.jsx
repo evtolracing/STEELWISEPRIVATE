@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './hooks/useAuth'
 import { AppRouter } from './router'
 import { ErrorBoundary } from './components/common'
+import { CartProvider } from './contexts/CartContext'
+import { CustomerSessionProvider } from './contexts/CustomerSessionContext'
 import theme from './theme'
 
 // Create React Query client
@@ -24,7 +26,11 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <AuthProvider>
-            <AppRouter />
+            <CartProvider>
+              <CustomerSessionProvider>
+                <AppRouter />
+              </CustomerSessionProvider>
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </QueryClientProvider>

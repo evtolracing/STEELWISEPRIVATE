@@ -72,7 +72,7 @@ export default function SearchResultsPage() {
         form: filters.forms.length > 0 ? filters.forms[0] : undefined,
         family: filters.families.length > 0 ? filters.families[0] : undefined,
         inStockOnly: filters.inStockOnly || undefined,
-        locationId: session.locationId,
+        locationId: session?.locationId || 'loc-1',
         limit: PAGE_SIZE,
         offset: (page - 1) * PAGE_SIZE,
       }
@@ -94,7 +94,7 @@ export default function SearchResultsPage() {
     } finally {
       setLoading(false)
     }
-  }, [query, filters, page, sortBy, session.locationId])
+  }, [query, filters, page, sortBy, session?.locationId])
 
   useEffect(() => { doSearch() }, [doSearch])
 

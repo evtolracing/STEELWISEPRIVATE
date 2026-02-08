@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Middleware to verify JWT and extract user
 const authenticate = async (req, res, next) => {

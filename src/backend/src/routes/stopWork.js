@@ -4,10 +4,8 @@
  */
 
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 const router = express.Router();
 

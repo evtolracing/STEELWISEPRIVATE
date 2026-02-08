@@ -1,8 +1,7 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // GET /work-centers - List work centers with optional location filter
 router.get('/', async (req, res) => {

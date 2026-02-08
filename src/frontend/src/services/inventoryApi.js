@@ -190,7 +190,7 @@ export async function getInventoryRisk(params = {}) {
   if (params.division) queryParams.append('division', params.division);
   
   try {
-    const response = await fetch(`${API_BASE}/analytics/inventory/risk?${queryParams.toString()}`);
+    const response = await fetch(`${API_BASE}/v1/analytics/inventory/risk?${queryParams.toString()}`);
     if (!response.ok) return getMockInventoryRisk(params);
     return response.json();
   } catch (error) {

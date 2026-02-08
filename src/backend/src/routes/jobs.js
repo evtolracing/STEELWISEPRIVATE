@@ -1,8 +1,7 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // GET /jobs - List jobs with optional filters
 router.get('/', async (req, res) => {

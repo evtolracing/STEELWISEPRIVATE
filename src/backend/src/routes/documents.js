@@ -1,8 +1,7 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // GET /documents - List documents with optional filters
 router.get('/', async (req, res) => {

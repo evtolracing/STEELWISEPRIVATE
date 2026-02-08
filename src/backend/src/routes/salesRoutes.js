@@ -9,11 +9,10 @@
  */
 
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 import pricingService from '../services/pricingIntelligenceService.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // =============================================
 // PRICING INTELLIGENCE ENDPOINTS

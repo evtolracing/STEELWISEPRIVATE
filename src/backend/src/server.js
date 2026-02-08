@@ -49,11 +49,12 @@ import ttsRoutes from './routes/tts.js';
 import aiAssistantRoutes from './routes/aiAssistant.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 import { seedSupabaseData } from './seeds/supabaseSeed.js';
+import prisma from './lib/db.js';
 
 dotenv.config();
 
 const app = express();
-export const prisma = new PrismaClient();
+export { prisma };
 
 // Middleware
 app.use(cors());

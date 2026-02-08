@@ -9,11 +9,10 @@
  */
 
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 import { aiProvider } from '../services/ai/AIProviderService.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Keywords that trigger database queries
 const DB_QUERY_PATTERNS = [

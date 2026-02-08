@@ -122,6 +122,7 @@ import {
   StackedLineChart as ForecastIcon,
   HistoryEdu as DecisionLogIcon,
   Hub as DigitalTwinIcon,
+  Speed as CompressionIcon,
   // E-Commerce Icons
   Storefront as ShopIcon,
   Search as ShopSearchIcon,
@@ -152,6 +153,7 @@ const navSections = [
       { path: '/executive/forecast', label: 'Forecasts', icon: ForecastIcon },
       { path: '/executive/decisions', label: 'Decision Log', icon: DecisionLogIcon },
       { path: '/executive/digital-twin', label: 'Digital Twin', icon: DigitalTwinIcon },
+      { path: '/executive/compression-metrics', label: 'Speed Metrics', icon: CompressionIcon },
     ],
   },
   // {

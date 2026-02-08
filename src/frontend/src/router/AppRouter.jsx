@@ -90,6 +90,7 @@ const SimulationWorkspace = lazy(() => import('../pages/Executive/SimulationWork
 const ForecastExplorer = lazy(() => import('../pages/Executive/ForecastExplorer'))
 const DecisionLog = lazy(() => import('../pages/Executive/DecisionLog'))
 const DigitalTwinViewer = lazy(() => import('../pages/Executive/DigitalTwinViewer'))
+const CompressionMetricsDashboard = lazy(() => import('../pages/Executive/CompressionMetricsDashboard'))
 
 // Drop Tag Engine Pages
 const DropTagPackagingQueue = lazy(() => import('../pages/DropTags/PackagingQueue'))
@@ -1071,6 +1072,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <DigitalTwinViewer />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'executive/compression-metrics',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CompressionMetricsDashboard />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

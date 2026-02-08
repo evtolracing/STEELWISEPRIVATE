@@ -24,7 +24,6 @@ import {
   FlashOn as QuickSaleIcon,
   DirectionsCar as WillCallIcon,
   Description as QuoteIcon,
-  ArrowBack as BackIcon,
   PointOfSale as POSIcon,
   AutoAwesome as AIIcon,
 } from '@mui/icons-material';
@@ -147,44 +146,35 @@ export function POSPage() {
   // Flow selection screen
   return (
     <Box sx={{ 
-      minHeight: '100vh', 
+      minHeight: 'calc(100vh - 64px)', 
       background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)',
-      mx: -3,
-      mt: -3,
     }}>
       {/* Modern Header */}
       <Box sx={{ 
         px: 3, 
-        py: 3, 
-        mb: 4,
+        py: 2.5, 
+        mb: 3,
         background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
         color: 'white',
         boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
       }}>
         <Container maxWidth="lg" disableGutters>
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Button 
-              startIcon={<BackIcon />} 
-              href="/"
-              sx={{ color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
-            >
-              Back
-            </Button>
             <Avatar sx={{ 
-              width: 56, 
-              height: 56, 
+              width: 48, 
+              height: 48, 
               background: 'rgba(255,255,255,0.15)',
               backdropFilter: 'blur(10px)',
             }}>
-              <POSIcon sx={{ fontSize: 30 }} />
+              <POSIcon sx={{ fontSize: 26 }} />
             </Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 Point of Sale
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
-                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                <AIIcon sx={{ fontSize: 14, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.85, fontSize: '0.875rem' }}>
                   Select a workflow to begin processing an order
                 </Typography>
               </Stack>

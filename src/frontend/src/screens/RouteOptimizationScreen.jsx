@@ -45,7 +45,7 @@ import {
   ExpandMore,
   ExpandLess,
   SwapVert,
-  Download,
+  Download as DownloadIcon,
   Share,
   Print,
   Traffic,

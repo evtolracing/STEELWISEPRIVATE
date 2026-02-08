@@ -260,32 +260,6 @@ const router = createBrowserRouter([
     errorElement: <RouteErrorPage />,
   },
 
-  // POS - Point of Sale (standalone full-screen for counter operations)
-  {
-    path: '/pos',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <POSPage />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-    errorElement: <RouteErrorPage />,
-  },
-
-  // Retail POS - Walk-in counter (standalone full-screen)
-  {
-    path: '/pos/retail',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <RetailPOSPage />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-    errorElement: <RouteErrorPage />,
-  },
-
   // Sales Rep Mobile Mode — standalone (no sidebar, bottom nav layout)
   {
     path: '/mobile-rep',
@@ -1370,6 +1344,26 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <IntakeOrderDetailPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // POS - Point of Sale
+      {
+        path: 'pos',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <POSPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'pos/retail',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RetailPOSPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

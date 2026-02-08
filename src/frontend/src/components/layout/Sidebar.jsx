@@ -134,6 +134,7 @@ import {
   Gavel as AuditLogIcon,
   Timer as RecipesIcon,
   Tune as PreferencesIcon,
+  TrendingDown as DemandShapingIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -209,6 +210,7 @@ const navSections = [
     items: [
       { path: '/orderhub', label: 'OrderHub', icon: OrderHubIcon },
       { path: '/pricing', label: 'Pricing', icon: PricingIcon },
+      { path: '/commercial/demand-shaping', label: 'Demand Shaping', icon: DemandShapingIcon },
     ],
   },
   {

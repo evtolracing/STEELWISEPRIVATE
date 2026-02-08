@@ -8,3 +8,4 @@ export {
   useInvalidateQueries,
 } from './useApiQuery.jsx'
 export { default as useCustomerDefaults } from './useCustomerDefaults.js'
+export { default as useDemandShaping } from './useDemandShaping.js'

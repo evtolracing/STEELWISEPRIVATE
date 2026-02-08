@@ -18,6 +18,7 @@ const ShipmentListPage = lazy(() => import('../pages/Logistics/ShipmentListPage'
 const ShipmentDetailPage = lazy(() => import('../pages/Logistics/ShipmentDetailPage'))
 const PricingDashboardPage = lazy(() => import('../pages/Pricing/PricingDashboardPage'))
 const QuoteBuilderPage = lazy(() => import('../pages/Pricing/QuoteBuilderPage'))
+const DemandShapingDashboard = lazy(() => import('../pages/Commercial/DemandShapingDashboard'))
 const QualityDashboardPage = lazy(() => import('../pages/QAQC/QualityDashboardPage'))
 const TestEntryPage = lazy(() => import('../pages/QAQC/TestEntryPage'))
 
@@ -431,6 +432,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <QuoteBuilderPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'commercial/demand-shaping',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DemandShapingDashboard />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

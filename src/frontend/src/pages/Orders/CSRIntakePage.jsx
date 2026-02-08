@@ -38,6 +38,8 @@ import { OVERRIDE_TYPE, getOverridesForOrder } from '../../services/overrideApi'
 import RemnantSuggestionPanel from '../../components/orders/RemnantSuggestionPanel'
 import TimeEstimatePreview from '../../components/processing/TimeEstimatePreview'
 import useCustomerDefaults from '../../hooks/useCustomerDefaults'
+import DemandShapingSuggestionPanel from '../../components/orders/DemandShapingSuggestionPanel'
+import useDemandShaping from '../../hooks/useDemandShaping'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -90,6 +92,16 @@ export default function CSRIntakePage() {
 
   // ── customer preference memory ──
   const { loadDefaults: loadCustomerDefaults, badges: prefBadges, hasPreferences: hasCustPrefs, applied: prefsApplied, applyDefaults, prefs: custPrefs } = useCustomerDefaults()
+
+  // ── demand shaping suggestions ──
+  const demandCtx = { branchKey: location, priority, division, requestedDate, lines, source: 'CSR' }
+  const { suggestions: shapingSuggestions, loading: shapingLoading, handleAccept: handleShapingAccept, handleDismiss: handleShapingDismiss } = useDemandShaping(demandCtx, {
+    onApply: ({ field, value }) => {
+      if (field === 'requestedDate') setRequestedDate(value)
+      if (field === 'location') setLocation(value)
+      if (field === 'priority') setPriority(value)
+    },
+  })
 
   // ── CSR override state ──
   const [overrides, setOverrides] = useState([])
@@ -489,6 +501,16 @@ export default function CSRIntakePage() {
                 })
                 setSnack({ open: true, msg: `Remnant ${remnant.sku} applied to line`, severity: 'success' })
               }}
+            />
+          </Box>
+
+          {/* Demand shaping — gentle incentive suggestions */}
+          <Box sx={{ mt: 3 }}>
+            <DemandShapingSuggestionPanel
+              suggestions={shapingSuggestions}
+              loading={shapingLoading}
+              onAccept={handleShapingAccept}
+              onDismiss={handleShapingDismiss}
             />
           </Box>
 

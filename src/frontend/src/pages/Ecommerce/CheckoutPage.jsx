@@ -24,6 +24,8 @@ import { estimateTax } from '../../services/ecomPricingApi'
 import { buildPromiseSnapshot } from '../../services/promiseApi'
 import { compareBranches } from '../../services/branchComparisonApi'
 import useFulfillmentOverride from '../../hooks/useFulfillmentOverride'
+import DemandShapingSuggestionPanel from '../../components/orders/DemandShapingSuggestionPanel'
+import useDemandShaping from '../../hooks/useDemandShaping'
 
 const SOURCE_COLOR = { CONTRACT: 'success', RETAIL: 'primary', REMNANT: 'warning', REVIEW_REQUIRED: 'error' }
 
@@ -42,6 +44,18 @@ export default function CheckoutPage() {
   const [fulfillmentSuggestions, setFulfillmentSuggestions] = useState([])
   const [fulfillmentLoading, setFulfillmentLoading] = useState(false)
   const { logOverride } = useFulfillmentOverride('ECOMMERCE_CHECKOUT')
+
+  // Demand shaping suggestions (never blocks checkout)
+  const demandCtx = { branchKey: session.locationName?.toUpperCase().replace(/ /g, '_') || 'JACKSON', priority: 'STANDARD', division: session.division || 'METALS', lines: items, source: 'ECOMMERCE' }
+  const { suggestions: shapingSuggestions, loading: shapingLoading, handleAccept: handleShapingAccept, handleDismiss: handleShapingDismiss } = useDemandShaping(demandCtx, {
+    onApply: ({ field, value }) => {
+      // Ecommerce: session-level changes only
+      if (field === 'location') {
+        const locMap = { JACKSON: 'loc-1', DETROIT: 'loc-2', KALAMAZOO: 'loc-3', GRAND_RAPIDS: 'loc-4' }
+        if (locMap[value]) session.setLocation?.(locMap[value])
+      }
+    },
+  })
 
   useEffect(() => {
     if (items.length === 0) return
@@ -239,6 +253,17 @@ export default function CheckoutPage() {
                 loading={fulfillmentLoading}
                 currentLocationId={session.locationId}
                 onSelectBranch={handleBranchSwitch}
+                compact
+              />
+            </Box>
+
+            {/* Demand shaping — gentle savings suggestions */}
+            <Box sx={{ mt: 2 }}>
+              <DemandShapingSuggestionPanel
+                suggestions={shapingSuggestions}
+                loading={shapingLoading}
+                onAccept={handleShapingAccept}
+                onDismiss={handleShapingDismiss}
                 compact
               />
             </Box>

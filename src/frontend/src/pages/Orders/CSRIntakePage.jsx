@@ -32,6 +32,10 @@ import { estimateTax, getContractPricing } from '../../services/intakePricingApi
 import { compareBranches, csrKeyToLocationId, locationIdToCsrKey } from '../../services/branchComparisonApi'
 import FulfillmentSuggestionPanel from '../../components/orders/FulfillmentSuggestionPanel'
 import useFulfillmentOverride from '../../hooks/useFulfillmentOverride'
+import OverrideDialog from '../../components/orders/OverrideDialog'
+import OverrideIndicator from '../../components/orders/OverrideIndicator'
+import { OVERRIDE_TYPE, getOverridesForOrder } from '../../services/overrideApi'
+import RemnantSuggestionPanel from '../../components/orders/RemnantSuggestionPanel'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -81,6 +85,11 @@ export default function CSRIntakePage() {
   const [fulfillmentSuggestions, setFulfillmentSuggestions] = useState([])
   const [fulfillmentLoading, setFulfillmentLoading] = useState(false)
   const { logOverride } = useFulfillmentOverride('CSR_INTAKE')
+
+  // ── CSR override state ──
+  const [overrides, setOverrides] = useState([])
+  const [overrideDialog, setOverrideDialog] = useState({ open: false, type: null, warning: '', originalValue: '', overrideValue: '' })
+  const [pendingSubmit, setPendingSubmit] = useState(false)
 
   React.useEffect(() => {
     setFulfillmentLoading(true)
@@ -185,7 +194,74 @@ export default function CSRIntakePage() {
     setSaving(false)
   }, [source, division, location, priority, ownership, poNumber, notes, requestedDate, customer, lines, orderId])
 
-  const handleSubmit = useCallback(async () => {
+  // ── Override triggers: detect cutoff, capacity, pricing issues ──
+  const checkForWarnings = useCallback(() => {
+    const now = new Date()
+    const hour = now.getHours()
+    // Cutoff check: after 3:30 PM local
+    if (hour >= 15 && now.getMinutes() > 30 || hour >= 16) {
+      const cutoffTime = '3:30 PM'
+      const currentTime = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+      setOverrideDialog({
+        open: true,
+        type: OVERRIDE_TYPE.CUTOFF_VIOLATION,
+        warning: `This order is being placed after the ${cutoffTime} cutoff for ${location.replace(/_/g, ' ')}. Standard next-day shipping is no longer guaranteed.`,
+        originalValue: `Cutoff ${cutoffTime} — current time ${currentTime}`,
+        overrideValue: 'Force next-day processing despite late submission',
+      })
+      setPendingSubmit(true)
+      return true
+    }
+    // Capacity check: EMERGENCY + RUSH get a simulated capacity warning
+    if (priority === 'EMERGENCY' || priority === 'HOT') {
+      const hasProcessing = lines.some(l => l.processes?.length > 0)
+      if (hasProcessing) {
+        setOverrideDialog({
+          open: true,
+          type: OVERRIDE_TYPE.CAPACITY_WARNING,
+          warning: `${priority} priority with processing steps — ${location.replace(/_/g, ' ')} production queue is nearing capacity for today.`,
+          originalValue: `Current queue: ~85% capacity at ${location.replace(/_/g, ' ')}`,
+          overrideValue: `Accept ${priority} job despite capacity risk`,
+        })
+        setPendingSubmit(true)
+        return true
+      }
+    }
+    return false
+  }, [location, priority, lines])
+
+  /** Trigger a pricing override dialog (called from pricing panel or manual) */
+  const triggerPricingOverride = useCallback((originalPrice, newPrice) => {
+    const pctDiff = originalPrice > 0 ? (((newPrice - originalPrice) / originalPrice) * 100).toFixed(1) : 0
+    setOverrideDialog({
+      open: true,
+      type: OVERRIDE_TYPE.PRICING_OVERRIDE,
+      warning: `Pricing has been changed from the contract/list price. This requires an override with justification.`,
+      originalValue: `List / contract price: $${originalPrice.toFixed(2)}`,
+      overrideValue: `Adjusted price: $${newPrice.toFixed(2)} (${pctDiff}%)`,
+    })
+  }, [])
+
+  const handleOverrideConfirm = useCallback((newOverride) => {
+    setOverrides(prev => [newOverride, ...prev])
+    setOverrideDialog({ open: false, type: null, warning: '', originalValue: '', overrideValue: '' })
+    setSnack({ open: true, msg: `Override recorded — ${newOverride.reasonLabel}`, severity: 'info' })
+    // If this was blocking a submit, continue the submit
+    if (pendingSubmit) {
+      setPendingSubmit(false)
+      doSubmit()
+    }
+  }, [pendingSubmit])
+
+  const handleOverrideClose = useCallback(() => {
+    setOverrideDialog({ open: false, type: null, warning: '', originalValue: '', overrideValue: '' })
+    if (pendingSubmit) {
+      setPendingSubmit(false)
+      setSnack({ open: true, msg: 'Submit cancelled — override required', severity: 'warning' })
+    }
+  }, [pendingSubmit])
+
+  const doSubmit = useCallback(async () => {
     setSaving(true)
     try {
       let id = orderId
@@ -206,6 +282,13 @@ export default function CSRIntakePage() {
     setSaving(false)
   }, [source, division, location, priority, ownership, poNumber, notes, requestedDate, customer, lines, orderId, navigate])
 
+  const handleSubmit = useCallback(async () => {
+    // Check for warnings that need overrides before submitting
+    const hasWarning = checkForWarnings()
+    if (hasWarning) return // override dialog will call doSubmit on confirm
+    doSubmit()
+  }, [checkForWarnings, doSubmit])
+
   // ──────────────────── RENDER ──────────────────
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
@@ -220,6 +303,7 @@ export default function CSRIntakePage() {
         <Typography variant="h5" fontWeight={700}>CSR Order Intake</Typography>
         <OrderSourceChip source={source} />
         {orderId && <Chip label={`Draft #${orderId}`} size="small" variant="outlined" />}
+        {overrides.length > 0 && <OverrideIndicator overrides={overrides} compact />}
         <Box sx={{ flex: 1 }} />
         <FormControlLabel
           control={<Switch checked={fastMode} onChange={e => setFastMode(e.target.checked)} size="small" />}
@@ -342,6 +426,33 @@ export default function CSRIntakePage() {
             />
           </Box>
 
+          {/* Remnant suggestions — push remnants first */}
+          <Box sx={{ mt: 3 }}>
+            <RemnantSuggestionPanel
+              lines={lines}
+              location={location}
+              onSelectRemnant={(remnant, lineIdx) => {
+                setLines(prev => {
+                  const next = [...prev]
+                  if (next[lineIdx]) {
+                    next[lineIdx] = {
+                      ...next[lineIdx],
+                      productId: remnant.id,
+                      description: remnant.name,
+                      unitPrice: remnant.pricePerLb,
+                      weight: remnant.estimatedWeight,
+                      isRemnant: true,
+                      remnantDiscount: 25,
+                      extPrice: +(remnant.estimatedWeight * remnant.pricePerLb).toFixed(2),
+                    }
+                  }
+                  return next
+                })
+                setSnack({ open: true, msg: `Remnant ${remnant.sku} applied to line`, severity: 'success' })
+              }}
+            />
+          </Box>
+
           <Paper variant="outlined" sx={{ p: 2, mt: 3, borderRadius: 2 }}>
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>Quick Actions</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -355,6 +466,20 @@ export default function CSRIntakePage() {
       </Grid>
 
       {/* ── Dialogs ── */}
+      <OverrideDialog
+        open={overrideDialog.open}
+        onClose={handleOverrideClose}
+        overrideType={overrideDialog.type}
+        orderId={orderId || 'NEW-ORDER'}
+        orderNumber={orderId ? `SO-${orderId}` : 'New Order'}
+        warningMessage={overrideDialog.warning}
+        originalValue={overrideDialog.originalValue}
+        overrideValue={overrideDialog.overrideValue}
+        location={location}
+        division={division}
+        customerName={customer?.name}
+        onConfirm={handleOverrideConfirm}
+      />
       <CustomerLookupDialog
         open={customerDialogOpen}
         onClose={() => setCustomerDialogOpen(false)}

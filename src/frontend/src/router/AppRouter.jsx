@@ -134,6 +134,7 @@ const MyOrdersPage = lazy(() => import('../pages/Ecommerce/MyOrdersPage'))
 const MyOrderDetailPage = lazy(() => import('../pages/Ecommerce/MyOrderDetailPage'))
 const AdminCatalogPage = lazy(() => import('../pages/Ecommerce/AdminCatalogPage'))
 const OnlineSettingsPage = lazy(() => import('../pages/Ecommerce/OnlineSettingsPage'))
+const RemnantCategoryPage = lazy(() => import('../pages/Ecommerce/RemnantCategoryPage'))
 
 // Planning App
 const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
@@ -178,6 +179,7 @@ const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 
 // Admin Pages
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
+const AuditLogPage = lazy(() => import('../pages/Admin/AuditLogPage'))
 
 // Partner API Management
 const PartnerRegistryPage = lazy(() => import('../pages/Partners/PartnerRegistryPage'))
@@ -1351,6 +1353,16 @@ const router = createBrowserRouter([
         ),
         errorElement: <RouteErrorPage />,
       },
+      // Admin - Override Audit Log
+      {
+        path: 'admin/audit-log',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AuditLogPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
 
       // ═══ E-Commerce — Customer Portal ═══
       {
@@ -1367,6 +1379,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <SearchResultsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shop/remnants',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RemnantCategoryPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

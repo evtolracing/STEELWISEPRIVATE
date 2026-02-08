@@ -141,7 +141,7 @@ export default function ShopHomePage() {
           {[
             { label: 'My Orders', desc: 'Track orders & download docs', path: '/shop/orders', icon: '📦' },
             { label: 'My Cart', desc: `${itemCount} item(s) in cart`, path: '/shop/cart', icon: '🛒' },
-            { label: 'Remnant / Clearance', desc: 'Discounted in-stock items', path: '/shop/search?division=OUTLET', icon: '🏷️' },
+            { label: 'Remnant Outlet', desc: 'Drops, offcuts & overruns — save up to 65%', path: '/shop/remnants', icon: '♻️' },
           ].map(lnk => (
             <Grid item xs={12} sm={4} key={lnk.path}>
               <Paper variant="outlined" sx={{ p: 2, cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, borderRadius: 2 }}

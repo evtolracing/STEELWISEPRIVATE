@@ -26,6 +26,7 @@ import { searchProducts } from '../../services/intakeProductsApi'
 import { searchInventory } from '../../services/intakeInventoryApi'
 import { createIntakeOrder, submitOrder } from '../../services/intakeOrdersApi'
 import { calculateLinePrice, estimateTax } from '../../services/intakePricingApi'
+import RemnantQuickAdd from '../../components/pos/RemnantQuickAdd'
 
 const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
@@ -232,6 +233,11 @@ export default function RetailPOSPage() {
 
         {/* ── RIGHT: Cart + Customer + Totals ── */}
         <Box sx={{ width: 380, display: 'flex', flexDirection: 'column', borderLeft: 1, borderColor: 'divider', bgcolor: '#fff' }}>
+          {/* Quick Remnants */}
+          <Box sx={{ p: 1, borderBottom: 1, borderColor: 'divider' }}>
+            <RemnantQuickAdd onAddToCart={addToCart} location="JACKSON" />
+          </Box>
+
           {/* Customer */}
           <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
             <Typography variant="overline" color="text.secondary">Customer</Typography>

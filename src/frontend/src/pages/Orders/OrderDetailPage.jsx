@@ -8,7 +8,7 @@ import {
   Box, Paper, Typography, Button, Grid, Divider, Chip, IconButton, Tooltip,
   CircularProgress, Alert, Snackbar, Breadcrumbs, Link as MuiLink,
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tabs, Tab,
-  Stepper, Step, StepLabel,
+  Stepper, Step, StepLabel, Stack,
 } from '@mui/material'
 import {
   ArrowBack as BackIcon, Edit as EditIcon, Save as SaveIcon,
@@ -40,6 +40,10 @@ import OrderStatusTimeline from '../../components/shipping/OrderStatusTimeline'
 import ShipmentTracker from '../../components/shipping/ShipmentTracker'
 import SplitShipmentDialog from '../../components/shipping/SplitShipmentDialog'
 import { CallSplit as SplitIcon } from '@mui/icons-material'
+
+import { getOverridesForOrder } from '../../services/overrideApi'
+import OverrideIndicator from '../../components/orders/OverrideIndicator'
+import AuditLogViewer from '../../components/orders/AuditLogViewer'
 
 const STATUS_COLOR = {
   DRAFT: 'default', SUBMITTED: 'primary', CONFIRMED: 'info', IN_PRODUCTION: 'warning',
@@ -76,6 +80,9 @@ export default function OrderDetailPage() {
   const [woDialogOpen, setWoDialogOpen] = useState(false)
   const [woResult, setWoResult] = useState(null)
 
+  // ── Override state ──
+  const [overrides, setOverrides] = useState([])
+
   // ── Load order ──
   const loadOrder = useCallback(async () => {
     setLoading(true)
@@ -98,6 +105,14 @@ export default function OrderDetailPage() {
     if (!id) return
     getOrderFulfillmentDetail(`ORD-2026-0200`) // demo: load first mock order
       .then(({ data }) => setFulfillment(data))
+      .catch(() => {}) // non-critical
+  }, [id])
+
+  // Load overrides for this order
+  useEffect(() => {
+    if (!id) return
+    getOverridesForOrder(id)
+      .then(({ data }) => setOverrides(data || []))
       .catch(() => {}) // non-critical
   }, [id])
 
@@ -200,6 +215,7 @@ export default function OrderDetailPage() {
         {order.priority && order.priority !== 'STANDARD' && (
           <Chip label={order.priority} size="small" color={order.priority === 'EMERGENCY' ? 'error' : order.priority === 'HOT' ? 'warning' : 'info'} />
         )}
+        {overrides.length > 0 && <OverrideIndicator overrides={overrides} />}
         <Box sx={{ flex: 1 }} />
         {order.status === 'DRAFT' && (
           <>
@@ -294,6 +310,16 @@ export default function OrderDetailPage() {
                   </Stack>
                 ) : (
                   <Alert severity="info" variant="outlined">No fulfillment data available yet.</Alert>
+                )}
+
+                {/* CSR Override Audit Trail */}
+                {overrides.length > 0 && (
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      ⚠️ CSR Overrides ({overrides.length})
+                    </Typography>
+                    <AuditLogViewer orderId={id} maxHeight={320} />
+                  </Box>
                 )}
               </Box>
             )}

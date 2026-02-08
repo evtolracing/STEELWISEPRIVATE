@@ -129,6 +129,8 @@ import {
   ListAlt as MyOrdersIcon,
   Tune as OnlineSettingsIcon,
   Inventory as AdminCatalogIcon,
+  Recycling as RemnantOutletIcon,
+  Gavel as AuditLogIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -223,6 +225,7 @@ const navSections = [
     title: 'E-Commerce',
     items: [
       { path: '/shop', label: 'Online Store', icon: ShopIcon, highlight: true },
+      { path: '/shop/remnants', label: 'Remnant Outlet', icon: RemnantOutletIcon },
       { path: '/shop/search', label: 'Product Search', icon: ShopSearchIcon },
       { path: '/shop/cart', label: 'Shopping Cart', icon: CartIcon },
       { path: '/shop/orders', label: 'My Orders', icon: MyOrdersIcon },
@@ -353,6 +356,7 @@ const navSections = [
     items: [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
+      { path: '/admin/audit-log', label: 'Override Audit Log', icon: AuditLogIcon },
     ],
   },
 ]

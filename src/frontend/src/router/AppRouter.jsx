@@ -180,6 +180,7 @@ const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 // Admin Pages
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
 const AuditLogPage = lazy(() => import('../pages/Admin/AuditLogPage'))
+const RecipeEditorPage = lazy(() => import('../pages/Admin/RecipeEditorPage'))
 
 // Partner API Management
 const PartnerRegistryPage = lazy(() => import('../pages/Partners/PartnerRegistryPage'))
@@ -1359,6 +1360,16 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <AuditLogPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      // Admin - Processing Recipes & Time Standards
+      {
+        path: 'admin/processing-recipes',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RecipeEditorPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

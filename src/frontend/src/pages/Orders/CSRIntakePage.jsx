@@ -36,6 +36,7 @@ import OverrideDialog from '../../components/orders/OverrideDialog'
 import OverrideIndicator from '../../components/orders/OverrideIndicator'
 import { OVERRIDE_TYPE, getOverridesForOrder } from '../../services/overrideApi'
 import RemnantSuggestionPanel from '../../components/orders/RemnantSuggestionPanel'
+import TimeEstimatePreview from '../../components/processing/TimeEstimatePreview'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -403,6 +404,28 @@ export default function CSRIntakePage() {
               onOpenMaterialPicker={handleOpenMaterialPicker}
               onOpenProcessingMenu={handleOpenProcessing}
             />
+            {/* Processing time estimate based on recipe standards */}
+            {lines.some(l => l.processes?.length > 0) && (
+              <Box sx={{ mt: 2 }}>
+                {lines.filter(l => l.processes?.length > 0).map((line, i) => (
+                  <Box key={i} sx={{ mb: 1 }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                      Line {i + 1}: {line.description || line.productId || 'Item'}
+                    </Typography>
+                    <TimeEstimatePreview
+                      steps={line.processes}
+                      materialGrade={line.grade || line.productGrade}
+                      thickness={line.thickness}
+                      division={division}
+                      qty={line.qty || 1}
+                      compact={false}
+                      showBreakdown
+                      showRisk
+                    />
+                  </Box>
+                ))}
+              </Box>
+            )}
           </Paper>
 
           {/* Notes */}

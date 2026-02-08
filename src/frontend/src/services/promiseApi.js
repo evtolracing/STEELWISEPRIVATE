@@ -9,6 +9,7 @@
  *   earliestShipDate, suggestedDates, reasons }
  */
 import { getLocationCutoffRules } from './cutoffRulesApi'
+import { estimateForPromise as getRecipeBasedEstimate } from './processingRecipesApi'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 const USE_MOCK = window.__USE_MOCK_RULES__ !== false
@@ -103,6 +104,20 @@ const CAPACITY_PROCESSING_THRESHOLD = 2 // steps
 function checkCapacityStub(itemsSummary) {
   if (!itemsSummary) return { risk: false }
   const { totalQty = 0, totalWeight = 0, processingStepsCount = 0 } = itemsSummary
+
+  // Enhanced: Use recipe-based time estimation if processing steps detail is available
+  if (itemsSummary.processingStepsDetail && itemsSummary.processingStepsDetail.length > 0) {
+    try {
+      const recipeEst = getRecipeBasedEstimate(itemsSummary.processingStepsDetail, itemsSummary.division)
+      if (recipeEst.capacityRisk === 'HIGH') {
+        return { risk: true, reason: `Processing requires ~${recipeEst.totalHours}h (recipe-based estimate) — scheduling review needed`, estimatedHours: recipeEst.totalHours }
+      }
+      if (recipeEst.capacityRisk === 'MEDIUM') {
+        return { risk: true, reason: `Processing requires ~${recipeEst.totalHours}h — may require extra lead time`, estimatedHours: recipeEst.totalHours }
+      }
+    } catch { /* fall through to legacy check */ }
+  }
+
   if (processingStepsCount > CAPACITY_PROCESSING_THRESHOLD) {
     return { risk: true, reason: `${processingStepsCount} processing steps may require extra lead time` }
   }

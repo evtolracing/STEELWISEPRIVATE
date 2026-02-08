@@ -131,6 +131,7 @@ import {
   Inventory as AdminCatalogIcon,
   Recycling as RemnantOutletIcon,
   Gavel as AuditLogIcon,
+  Timer as RecipesIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -357,6 +358,7 @@ const navSections = [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
       { path: '/admin/audit-log', label: 'Override Audit Log', icon: AuditLogIcon },
+      { path: '/admin/processing-recipes', label: 'Processing Recipes', icon: RecipesIcon },
     ],
   },
 ]

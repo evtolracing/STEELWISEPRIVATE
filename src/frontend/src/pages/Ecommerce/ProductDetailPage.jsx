@@ -20,6 +20,7 @@ import ProcessingConfigurator from '../../components/ecommerce/ProcessingConfigu
 import PriceBreakdownPanel from '../../components/ecommerce/PriceBreakdownPanel'
 import CutoffCallout from '../../components/ecommerce/CutoffCallout'
 import PromiseBadge from '../../components/ecommerce/PromiseBadge'
+import TimeEstimatePreview from '../../components/processing/TimeEstimatePreview'
 import { getProduct, getAvailability } from '../../services/ecomCatalogApi'
 import { priceConfig } from '../../services/ecomPricingApi'
 import { evaluatePromise } from '../../services/promiseApi'
@@ -274,6 +275,20 @@ export default function ProductDetailPage() {
                 steps={processingSteps}
                 onChange={setProcessingSteps}
                 division={product.division}
+              />
+            )}
+
+            {/* Processing time estimate */}
+            {processingSteps.length > 0 && (
+              <TimeEstimatePreview
+                steps={processingSteps}
+                materialGrade={product.grade}
+                thickness={dimensions.thickness}
+                division={product.division}
+                qty={dimensions.quantity || 1}
+                form={product.form}
+                compact={false}
+                showRisk
               />
             )}
 

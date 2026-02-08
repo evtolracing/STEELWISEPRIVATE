@@ -33,7 +33,7 @@ export default function ShopHomePage() {
     setLoading(true)
     try {
       const [prodRes, divRes] = await Promise.all([
-        searchProducts({ limit: 8, locationId: session.locationId }),
+        searchProducts({ limit: 8, locationId: session?.locationId || 'loc-1' }),
         getDivisions(),
       ])
       setFeatured(prodRes.data || [])
@@ -43,7 +43,7 @@ export default function ShopHomePage() {
     } finally {
       setLoading(false)
     }
-  }, [session.locationId])
+  }, [session?.locationId])
 
   useEffect(() => { loadFeatured() }, [loadFeatured])
 

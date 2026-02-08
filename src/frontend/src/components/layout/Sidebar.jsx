@@ -133,6 +133,7 @@ import {
   Recycling as RemnantOutletIcon,
   Gavel as AuditLogIcon,
   Timer as RecipesIcon,
+  Tune as PreferencesIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -214,6 +215,7 @@ const navSections = [
     title: 'Customers',
     items: [
       { path: '/customers', label: 'Customer Directory', icon: CustomersIcon },
+      { path: '/customers/preferences', label: 'Preference Memory', icon: PreferencesIcon },
     ],
   },
   {

@@ -103,6 +103,7 @@ const DropTagTraceabilityViewer = lazy(() => import('../pages/DropTags/Traceabil
 
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
 const CustomersPage = lazy(() => import('../pages/Customers/CustomersPage'))
+const CustomerPreferencesPage = lazy(() => import('../pages/Customers/CustomerPreferencesPage'))
 const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
 // Phase 1 - Service Center Pages
@@ -1338,6 +1339,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <CustomersPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'customers/preferences',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CustomerPreferencesPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

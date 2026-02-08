@@ -37,6 +37,7 @@ import OverrideIndicator from '../../components/orders/OverrideIndicator'
 import { OVERRIDE_TYPE, getOverridesForOrder } from '../../services/overrideApi'
 import RemnantSuggestionPanel from '../../components/orders/RemnantSuggestionPanel'
 import TimeEstimatePreview from '../../components/processing/TimeEstimatePreview'
+import useCustomerDefaults from '../../hooks/useCustomerDefaults'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -87,6 +88,9 @@ export default function CSRIntakePage() {
   const [fulfillmentLoading, setFulfillmentLoading] = useState(false)
   const { logOverride } = useFulfillmentOverride('CSR_INTAKE')
 
+  // ── customer preference memory ──
+  const { loadDefaults: loadCustomerDefaults, badges: prefBadges, hasPreferences: hasCustPrefs, applied: prefsApplied, applyDefaults, prefs: custPrefs } = useCustomerDefaults()
+
   // ── CSR override state ──
   const [overrides, setOverrides] = useState([])
   const [overrideDialog, setOverrideDialog] = useState({ open: false, type: null, warning: '', originalValue: '', overrideValue: '' })
@@ -132,7 +136,19 @@ export default function CSRIntakePage() {
         setContractName(c.name)
       }
     } catch { /* ignore */ }
-  }, [])
+    // load & apply customer preference defaults (soft suggestions)
+    try {
+      const defs = await loadCustomerDefaults(cust.id)
+      if (defs && Object.keys(defs).length > 0) {
+        // Auto-apply as soft defaults — CSR can always override
+        if (defs.location)  setLocation(defs.location)
+        if (defs.division)  setDivision(defs.division)
+        if (defs.priority)  setPriority(defs.priority)
+        if (defs.ownership) setOwnership(defs.ownership)
+        if (defs.notes)     setNotes(prev => prev || defs.notes)
+      }
+    } catch { /* preferences are optional — never block intake */ }
+  }, [loadCustomerDefaults])
 
   const handleOpenMaterialPicker = useCallback((idx) => {
     setMaterialPickerIdx(idx)

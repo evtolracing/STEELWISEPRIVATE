@@ -3,6 +3,7 @@
  * Selected location, division, ship-to address. Persists to localStorage.
  */
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
+import { getCustomerPreferences, buildSmartDefaults, summarizePreferences } from '../services/customerPreferencesApi'
 
 const CustomerSessionContext = createContext(null)
 const STORAGE_KEY = 'steelwise_customer_session'
@@ -62,10 +63,37 @@ export function CustomerSessionProvider({ children }) {
     })
   }, [])
 
+  // ── Customer Preference Memory ──
+  const [preferences, setPreferences] = useState(null)
+  const [prefBadges, setPrefBadges] = useState([])
+
+  useEffect(() => {
+    if (!session.customerId) return
+    getCustomerPreferences(session.customerId)
+      .then(res => {
+        if (res.hasPreferences) {
+          setPreferences(res.data)
+          setPrefBadges(summarizePreferences(res.data))
+          // Apply soft defaults to session (only if not already customized)
+          const defs = buildSmartDefaults(res.data)
+          setSession(prev => {
+            const updates = {}
+            if (defs.location && prev.locationId === DEFAULT_SESSION.locationId) {
+              const loc = LOCATIONS.find(l => l.name.toUpperCase().replace(/ /g, '_') === defs.location)
+              if (loc) { updates.locationId = loc.id; updates.locationName = loc.name }
+            }
+            if (defs.division && prev.division === DEFAULT_SESSION.division) updates.division = defs.division
+            return Object.keys(updates).length ? { ...prev, ...updates } : prev
+          })
+        }
+      })
+      .catch(() => { /* preferences are optional */ })
+  }, [session.customerId])
+
   const value = useMemo(() => ({
-    ...session, locations: LOCATIONS,
+    ...session, locations: LOCATIONS, preferences, prefBadges,
     setLocation, setDivision, setShipTo, addRecentConfig,
-  }), [session, setLocation, setDivision, setShipTo, addRecentConfig])
+  }), [session, setLocation, setDivision, setShipTo, addRecentConfig, preferences, prefBadges])
 
   return <CustomerSessionContext.Provider value={value}>{children}</CustomerSessionContext.Provider>
 }

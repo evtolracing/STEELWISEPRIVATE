@@ -7,3 +7,4 @@ export {
   usePrefetch,
   useInvalidateQueries,
 } from './useApiQuery.jsx'
+export { default as useCustomerDefaults } from './useCustomerDefaults.js'

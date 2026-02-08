@@ -94,7 +94,7 @@ export default function ShopHomePage() {
             placeholder="Search products — e.g. 'A36 plate', '304 stainless bar'…"
             autoFocus
           />
-          {session.accountType === 'ACCOUNT' && (
+          {session?.accountType === 'ACCOUNT' && (
             <Chip
               label={`${session.customerName} • ${session.priceLevel} pricing`}
               size="small" sx={{ mt: 1.5, bgcolor: 'rgba(255,255,255,0.15)', color: '#fff' }}

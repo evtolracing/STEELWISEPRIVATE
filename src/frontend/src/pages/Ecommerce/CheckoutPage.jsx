@@ -46,7 +46,7 @@ export default function CheckoutPage() {
   const { logOverride } = useFulfillmentOverride('ECOMMERCE_CHECKOUT')
 
   // Demand shaping suggestions (never blocks checkout)
-  const demandCtx = { branchKey: session.locationName?.toUpperCase().replace(/ /g, '_') || 'JACKSON', priority: 'STANDARD', division: session.division || 'METALS', lines: items, source: 'ECOMMERCE' }
+  const demandCtx = { branchKey: session?.locationName?.toUpperCase().replace(/ /g, '_') || 'JACKSON', priority: 'STANDARD', division: session?.division || 'METALS', lines: items, source: 'ECOMMERCE' }
   const { suggestions: shapingSuggestions, loading: shapingLoading, handleAccept: handleShapingAccept, handleDismiss: handleShapingDismiss } = useDemandShaping(demandCtx, {
     onApply: ({ field, value }) => {
       // Ecommerce: session-level changes only
@@ -62,14 +62,14 @@ export default function CheckoutPage() {
     setFulfillmentLoading(true)
     const requiredProcessing = [...new Set(items.flatMap(i => (i.processing || []).map(p => p.code || p.name)).filter(Boolean))]
     compareBranches({
-      division: session.division || 'METALS',
+      division: session?.division || 'METALS',
       requiredProcessing,
-      shipTo: session.shipTo ? { lat: session.shipTo.lat, lng: session.shipTo.lng } : undefined,
+      shipTo: session?.shipTo ? { lat: session.shipTo.lat, lng: session.shipTo.lng } : undefined,
     })
       .then(res => setFulfillmentSuggestions(res.suggestions || []))
       .catch(() => setFulfillmentSuggestions([]))
       .finally(() => setFulfillmentLoading(false))
-  }, [items, session.division, session.locationId, session.shipTo])
+  }, [items, session?.division, session?.locationId, session?.shipTo])
 
   const handleBranchSwitch = (locId, locName) => {
     const best = fulfillmentSuggestions.find(s => s.recommended)
@@ -101,12 +101,12 @@ export default function CheckoutPage() {
     setError(null)
     try {
       const payload = {
-        customerId: session.customerId,
-        customerName: session.customerName,
-        accountType: session.accountType,
-        locationId: session.locationId,
-        division: session.division,
-        priceLevel: session.priceLevel,
+        customerId: session?.customerId,
+        customerName: session?.customerName,
+        accountType: session?.accountType,
+        locationId: session?.locationId,
+        division: session?.division,
+        priceLevel: session?.priceLevel,
         ...formData,
         promiseSnapshot: promiseEval ? buildPromiseSnapshot(promiseEval) : null,
         promiseStatus: promiseEval?.status || null,
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
             </Box>
 
             <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
-              {session.customerName} • {session.locationName || session.locationId}
+              {session?.customerName} • {session?.locationName || session?.locationId}
             </Typography>
 
             {/* Shipping promise panel */}
@@ -235,7 +235,7 @@ export default function CheckoutPage() {
               <Box sx={{ mt: 2 }}>
                 <PromiseSummaryPanel
                   evaluation={promiseEval}
-                  locationName={session.locationName}
+                  locationName={session?.locationName}
                   compact={false}
                 />
                 {promiseEval.status === 'RED' && (
@@ -251,7 +251,7 @@ export default function CheckoutPage() {
               <FulfillmentSuggestionPanel
                 suggestions={fulfillmentSuggestions}
                 loading={fulfillmentLoading}
-                currentLocationId={session.locationId}
+                currentLocationId={session?.locationId}
                 onSelectBranch={handleBranchSwitch}
                 compact
               />

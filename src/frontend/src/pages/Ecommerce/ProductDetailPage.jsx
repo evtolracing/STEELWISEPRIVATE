@@ -58,12 +58,12 @@ export default function ProductDetailPage() {
     setLoading(true)
     Promise.all([
       getProduct(id),
-      getAvailability(id, session.locationId),
+      getAvailability(id, session?.locationId || 'loc-1'),
     ]).then(([pRes, aRes]) => {
       setProduct(pRes.data || null)
       setAvailability(aRes.data || null)
     }).catch(() => {}).finally(() => setLoading(false))
-  }, [id, session.locationId])
+  }, [id, session?.locationId])
 
   // Re-price when config changes
   useEffect(() => {
@@ -81,9 +81,9 @@ export default function ProductDetailPage() {
             unit: dimensions.unit,
           },
           processing: processingSteps,
-          priceLevel: session.priceLevel,
-          customerId: session.customerId,
-          locationId: session.locationId,
+          priceLevel: session?.priceLevel,
+          customerId: session?.customerId,
+          locationId: session?.locationId,
         })
         setPricing(res.data || null)
       } catch {
@@ -98,13 +98,13 @@ export default function ProductDetailPage() {
   // Evaluate shipping promise when product/location/division changes
   useEffect(() => {
     if (!product) { setPromiseEval(null); return }
-    const division = product.division || session.division || 'METALS'
+    const division = product.division || session?.division || 'METALS'
     // Evaluate for "tomorrow" to show default next-day promise status
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     const tomorrowStr = tomorrow.toISOString().split('T')[0]
     evaluatePromise({
-      locationId: session.locationId,
+      locationId: session?.locationId || 'loc-1',
       division,
       requestedShipDate: tomorrowStr,
       itemsSummary: {
@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
         estimatedWeight: pricing?.estimatedWeight || 0,
       },
     }).then(setPromiseEval).catch(() => setPromiseEval(null))
-  }, [product, session.locationId, session.division, processingSteps.length, dimensions.quantity, pricing?.estimatedWeight])
+  }, [product, session?.locationId, session?.division, processingSteps.length, dimensions.quantity, pricing?.estimatedWeight])
 
   const handleAddToCart = () => {
     if (!product || !pricing) return

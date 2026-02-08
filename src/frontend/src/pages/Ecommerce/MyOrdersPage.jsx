@@ -57,7 +57,7 @@ export default function MyOrdersPage() {
     } finally {
       setLoading(false)
     }
-  }, [session.customerId, statusFilter, search])
+  }, [session?.customerId, statusFilter, search])
 
   useEffect(() => { loadOrders() }, [loadOrders])
 

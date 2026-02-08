@@ -63,7 +63,7 @@ export default function ShopHomePage() {
       form: product.form,
       grade: product.grade,
       unitPrice: product.basePrice,
-      priceSource: session.priceLevel?.startsWith('CONTRACT') ? 'CONTRACT' : 'RETAIL',
+      priceSource: session?.priceLevel?.startsWith('CONTRACT') ? 'CONTRACT' : 'RETAIL',
       quantity: 1,
       unit: product.unit || 'ea',
     })

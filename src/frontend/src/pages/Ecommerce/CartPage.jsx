@@ -50,7 +50,7 @@ export default function CartPage() {
       divisions.map(div => {
         const divItems = items.filter(i => (i.division || 'METALS') === div)
         return evaluatePromise({
-          locationId: session.locationId,
+          locationId: session?.locationId || 'loc-1',
           division: div,
           requestedShipDate: tomorrowStr,
           itemsSummary: {
@@ -67,7 +67,7 @@ export default function CartPage() {
       const worst = evals.reduce((w, e) => (rank[e.status] || 0) > (rank[w.status] || 0) ? e : w, evals[0])
       setOverallEval(worst || null)
     }).catch(() => { setLineEvals([]); setOverallEval(null) })
-  }, [items, session.locationId])
+  }, [items, session?.locationId])
 
   const handleQtyChange = (cartId, delta) => {
     const item = items.find(i => i._cartId === cartId)
@@ -87,8 +87,8 @@ export default function CartPage() {
           priceSource: i.priceSource,
           dimensions: i.dimensions,
         })),
-        customerId: session.customerId,
-        locationId: session.locationId,
+        customerId: session?.customerId,
+        locationId: session?.locationId,
       })
       if (res.data?.valid === false && res.data.errors?.length > 0) {
         setValidationErrors(res.data.errors)
@@ -290,8 +290,8 @@ export default function CartPage() {
             </Button>
 
             <Typography variant="caption" color="text.secondary" align="center" display="block">
-              {session.accountType === 'ACCOUNT'
-                ? `Ordering as ${session.customerName} • ${session.priceLevel}`
+              {session?.accountType === 'ACCOUNT'
+                ? `Ordering as ${session?.customerName} • ${session?.priceLevel}`
                 : 'Retail pricing applied'}
             </Typography>
           </Paper>

@@ -135,6 +135,7 @@ import {
   Timer as RecipesIcon,
   Tune as PreferencesIcon,
   TrendingDown as DemandShapingIcon,
+  PhoneAndroid as MobileRepIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -226,6 +227,7 @@ const navSections = [
       { path: '/orders/intake', label: 'CSR Intake', icon: CSRIntakeIcon, highlight: true },
       { path: '/orders/online-inbox', label: 'Online Inbox', icon: OnlineInboxIcon },
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },
+      { path: '/mobile-rep', label: 'Sales Rep Mobile', icon: MobileRepIcon, highlight: true },
     ],
   },
   {

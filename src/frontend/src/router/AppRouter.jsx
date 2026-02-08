@@ -118,6 +118,14 @@ const PackagingPage = lazy(() => import('../pages/PackagingPage'))
 const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
+// Sales Rep Mobile Mode
+const MobileRepLayout = lazy(() => import('../components/layout/MobileRepLayout'))
+const MobileRepHomePage = lazy(() => import('../pages/MobileRep/MobileRepHomePage'))
+const MobileRepIntakePage = lazy(() => import('../pages/MobileRep/MobileRepIntakePage'))
+const MobileInventoryLookup = lazy(() => import('../pages/MobileRep/MobileInventoryLookup'))
+const MobilePromisePreview = lazy(() => import('../pages/MobileRep/MobilePromisePreview'))
+const MobileOrderPlacement = lazy(() => import('../pages/MobileRep/MobileOrderPlacement'))
+
 // POS - Point of Sale
 const POSPage = lazy(() => import('../pages/POSPage'))
 
@@ -272,6 +280,26 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     errorElement: <RouteErrorPage />,
+  },
+
+  // Sales Rep Mobile Mode — standalone (no sidebar, bottom nav layout)
+  {
+    path: '/mobile-rep',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <MobileRepLayout />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorPage />,
+    children: [
+      { index: true, element: <Suspense fallback={<PageLoader />}><MobileRepHomePage /></Suspense> },
+      { path: 'intake', element: <Suspense fallback={<PageLoader />}><MobileRepIntakePage /></Suspense> },
+      { path: 'inventory', element: <Suspense fallback={<PageLoader />}><MobileInventoryLookup /></Suspense> },
+      { path: 'promise', element: <Suspense fallback={<PageLoader />}><MobilePromisePreview /></Suspense> },
+      { path: 'place-order', element: <Suspense fallback={<PageLoader />}><MobileOrderPlacement /></Suspense> },
+    ],
   },
 
   // Protected routes with layout

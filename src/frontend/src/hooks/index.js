@@ -9,3 +9,4 @@ export {
 } from './useApiQuery.jsx'
 export { default as useCustomerDefaults } from './useCustomerDefaults.js'
 export { default as useDemandShaping } from './useDemandShaping.js'
+export { default as useMobileMode } from './useMobileMode.js'

@@ -136,6 +136,7 @@ import {
   Tune as PreferencesIcon,
   TrendingDown as DemandShapingIcon,
   PhoneAndroid as MobileRepIcon,
+  BusinessCenter as AccountIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -238,6 +239,7 @@ const navSections = [
       { path: '/shop/search', label: 'Product Search', icon: ShopSearchIcon },
       { path: '/shop/cart', label: 'Shopping Cart', icon: CartIcon },
       { path: '/shop/orders', label: 'My Orders', icon: MyOrdersIcon },
+      { path: '/account/dashboard', label: 'Enterprise Account', icon: AccountIcon, highlight: true },
       { path: '/admin/catalog', label: 'Catalog Admin', icon: AdminCatalogIcon },
       { path: '/admin/online-settings', label: 'Online Settings', icon: OnlineSettingsIcon },
     ],

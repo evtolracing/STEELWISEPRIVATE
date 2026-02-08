@@ -143,6 +143,10 @@ const CartPage = lazy(() => import('../pages/Ecommerce/CartPage'))
 const CheckoutPage = lazy(() => import('../pages/Ecommerce/CheckoutPage'))
 const MyOrdersPage = lazy(() => import('../pages/Ecommerce/MyOrdersPage'))
 const MyOrderDetailPage = lazy(() => import('../pages/Ecommerce/MyOrderDetailPage'))
+const AccountDashboardPage = lazy(() => import('../pages/Ecommerce/AccountDashboardPage'))
+const AccountOrdersPage = lazy(() => import('../pages/Ecommerce/AccountOrdersPage'))
+const AccountShipmentsPage = lazy(() => import('../pages/Ecommerce/AccountShipmentsPage'))
+const AccountDocumentsPage = lazy(() => import('../pages/Ecommerce/AccountDocumentsPage'))
 const AdminCatalogPage = lazy(() => import('../pages/Ecommerce/AdminCatalogPage'))
 const OnlineSettingsPage = lazy(() => import('../pages/Ecommerce/OnlineSettingsPage'))
 const RemnantCategoryPage = lazy(() => import('../pages/Ecommerce/RemnantCategoryPage'))
@@ -1502,6 +1506,44 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <MyOrderDetailPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // ═══ Enterprise Customer Account ═══
+      {
+        path: 'account/dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AccountDashboardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'account/orders',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AccountOrdersPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'account/shipments',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AccountShipmentsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'account/documents',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AccountDocumentsPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

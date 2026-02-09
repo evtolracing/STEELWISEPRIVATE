@@ -11,10 +11,11 @@ import {
 } from '@mui/material'
 import {
   ShoppingCart, ArrowBack, Inventory, LocalShipping, CheckCircle,
-  Warning, LocationOn,
+  Warning, LocationOn, CloudUpload as UploadIcon, Description as DocIcon,
 } from '@mui/icons-material'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
+import { FileUploadZone } from '../../components/common'
 import CutToSizeConfigurator from '../../components/ecommerce/CutToSizeConfigurator'
 import ProcessingConfigurator from '../../components/ecommerce/ProcessingConfigurator'
 import PriceBreakdownPanel from '../../components/ecommerce/PriceBreakdownPanel'
@@ -219,6 +220,7 @@ export default function ProductDetailPage() {
               <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 1 }}>
                 <Tab label="Specifications" />
                 <Tab label="Details" />
+                <Tab label="Documents" icon={<DocIcon sx={{ fontSize: 16 }} />} iconPosition="start" />
               </Tabs>
 
               {tab === 0 && (
@@ -252,6 +254,24 @@ export default function ProductDetailPage() {
                   {product.allowCutToSize && <><br /><br />✂️ This product supports <b>cut-to-size</b> ordering.</>}
                   {product.allowProcessing && <><br />🔧 Processing options available (sawing, shearing, etc.).</>}
                 </Typography>
+              )}
+
+              {tab === 2 && (
+                <Box sx={{ p: 1 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Spec sheets, SDS documents, certifications, and product photos.
+                  </Typography>
+                  <FileUploadZone
+                    entityType="PRODUCT"
+                    entityId={product.id}
+                    docType="PRODUCT_SPEC"
+                    accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+                    multiple
+                    maxSizeMB={15}
+                    onUploaded={(doc) => setSnack({ open: true, msg: `"${doc.fileName}" uploaded`, severity: 'success' })}
+                    onError={(err) => setSnack({ open: true, msg: err || 'Upload failed', severity: 'error' })}
+                  />
+                </Box>
               )}
             </Box>
           </Paper>
@@ -329,7 +349,9 @@ export default function ProductDetailPage() {
       </Grid>
 
       <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))}
-        message={snack.msg} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} />
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+        <Alert severity={snack.severity || 'success'} variant="filled">{snack.msg}</Alert>
+      </Snackbar>
     </Container>
   )
 }

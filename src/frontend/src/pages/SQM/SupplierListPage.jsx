@@ -36,6 +36,8 @@ import {
   ListItemIcon,
   Switch,
   FormControlLabel,
+  Snackbar,
+  Alert,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -56,6 +58,7 @@ import {
   Assignment as CertIcon,
   LocalShipping as ShippingIcon,
   Inventory as InventoryIcon,
+  CloudUpload as UploadIcon,
 } from '@mui/icons-material'
 
 // Mock Supplier Data
@@ -211,6 +214,8 @@ export default function SupplierListPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSupplier, setSelectedSupplier] = useState(null)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [uploadDialog, setUploadDialog] = useState({ open: false, supplier: null })
+  const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' })
 
   const filteredSuppliers = mockSuppliers.filter((sup) => {
     if (searchQuery) {
@@ -249,13 +254,22 @@ export default function SupplierListPage() {
             Approved supplier list and quality profiles
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setCreateDialogOpen(true)}
-        >
-          Add Supplier
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            startIcon={<UploadIcon />}
+            onClick={() => setUploadDialog({ open: true, supplier: null })}
+          >
+            Upload Documents
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateDialogOpen(true)}
+          >
+            Add Supplier
+          </Button>
+        </Box>
       </Box>
 
       {/* Stats Cards */}
@@ -529,6 +543,57 @@ export default function SupplierListPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Upload Documents Dialog */}
+      <Dialog
+        open={uploadDialog.open}
+        onClose={() => setUploadDialog({ open: false, supplier: null })}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Upload Supplier Documents{uploadDialog.supplier ? ` — ${uploadDialog.supplier.name}` : ''}
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Upload contracts, W-9s, insurance certificates, audit reports, or other supplier documents.
+          </Typography>
+          <FileUploadZone
+            entityType="SUPPLIER"
+            entityId={uploadDialog.supplier?.id}
+            docType="GENERAL"
+            accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+            multiple
+            onUploaded={() =>
+              setSnack({ open: true, message: 'Document uploaded successfully', severity: 'success' })
+            }
+            onError={(err) =>
+              setSnack({ open: true, message: err || 'Upload failed', severity: 'error' })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setUploadDialog({ open: false, supplier: null })}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snack.severity}
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          variant="filled"
+        >
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
@@ -713,6 +778,28 @@ function SupplierDetailView({ supplier, onBack }) {
               accept="application/pdf,image/*"
               buttonLabel="Upload Certificate"
               sx={{ mt: 2 }}
+            />
+          </Paper>
+        </Grid>
+
+        {/* Documents */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Documents
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Upload contracts, W-9s, insurance certificates, audit reports, or other supplier documents.
+            </Typography>
+            <FileUploadZone
+              entityType="SUPPLIER"
+              entityId={supplier.id}
+              docType="GENERAL"
+              accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+              multiple
+              onUploaded={() => {}}
+              onError={() => {}}
             />
           </Paper>
         </Grid>

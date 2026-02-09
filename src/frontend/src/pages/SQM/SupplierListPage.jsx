@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileUploadZone } from '../../components/common'
 import {
   Box,
   Paper,
@@ -705,14 +706,14 @@ function SupplierDetailView({ supplier, onBack }) {
                 No certifications on file
               </Typography>
             )}
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<AttachIcon />}
+            <FileUploadZone
+              compact
+              entityType="SUPPLIER"
+              docType="CERT"
+              accept="application/pdf,image/*"
+              buttonLabel="Upload Certificate"
               sx={{ mt: 2 }}
-            >
-              Upload Certificate
-            </Button>
+            />
           </Paper>
         </Grid>
 

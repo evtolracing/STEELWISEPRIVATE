@@ -12,11 +12,12 @@ import {
 } from '@mui/material'
 import {
   Search, Edit, Visibility, VisibilityOff, Star, StarBorder, Refresh,
-  FilterList, Save,
+  FilterList, Save, CloudUpload as UploadIcon,
 } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 
 import { listCatalogItems, updateVisibility, updateMetadata } from '../../services/adminCatalogApi'
+import { FileUploadZone } from '../../components/common'
 
 const DIV_COLOR = { METALS: 'primary', PLASTICS: 'success', SUPPLIES: 'warning', OUTLET: 'error' }
 
@@ -214,6 +215,25 @@ export default function AdminCatalogPage() {
               <Grid item xs={6}>
                 <TextField fullWidth label="Min Order Qty" type="number" value={editForm.minOrderQty}
                   onChange={e => setEditForm(f => ({ ...f, minOrderQty: e.target.value }))} />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" fontWeight={600} sx={{ mt: 1 }}>
+                  Product Image / Spec Sheet
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Upload product photos, spec sheets, or certification documents.
+                </Typography>
+                <FileUploadZone
+                  entityType="PRODUCT"
+                  entityId={editItem?.id}
+                  docType="PRODUCT_IMAGE"
+                  accept="image/*,application/pdf"
+                  multiple
+                  maxSizeMB={10}
+                  onUploaded={(doc) => setSnack({ open: true, msg: `"${doc.fileName}" uploaded`, severity: 'success' })}
+                  onError={(err) => setSnack({ open: true, msg: err, severity: 'error' })}
+                  sx={{ mt: 1 }}
+                />
               </Grid>
             </Grid>
           )}

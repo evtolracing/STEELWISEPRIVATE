@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileUploadZone } from '../../components/common'
 import {
   Box,
   Paper,
@@ -651,9 +652,13 @@ function SCARDetailView({ scar, onBack }) {
               <Button variant="outlined" size="small" fullWidth startIcon={<CommentIcon />}>
                 Add Comment
               </Button>
-              <Button variant="outlined" size="small" fullWidth startIcon={<AttachIcon />}>
-                Add Attachment
-              </Button>
+              <FileUploadZone
+                compact
+                entityType="SCAR"
+                accept="application/pdf,image/*"
+                buttonLabel="Add Attachment"
+                multiple
+              />
               <Button variant="outlined" size="small" fullWidth startIcon={<ScheduleIcon />}>
                 Set Reminder
               </Button>

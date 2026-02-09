@@ -3158,7 +3158,7 @@ const manualModules = [
   {
     moduleId: 'safety-ehs',
     title: 'Safety & EHS',
-    shortDescription: 'Comprehensive safety management — dashboard, stop-work authority, incidents, inspections, permits, training, observations, and CAPA.',
+    shortDescription: 'Safety management system covering incidents, inspections, permits, and training compliance.',
     icon: 'HealthAndSafety',
     roles: ['EHS', 'SAFETY_OFFICER', 'SHOP_SUPERVISOR', 'PLANT_MANAGER', 'ADMIN'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileUploadZone } from '../../components/common'
 import {
   Box,
   Paper,
@@ -586,9 +587,13 @@ function InspectionEntryView({ inspection, expandedItem, setExpandedItem, onBack
 
                   {cp.type === 'DOCUMENT' && (
                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                      <Button size="small" variant="outlined" startIcon={<UploadIcon />}>
-                        Upload MTR
-                      </Button>
+                      <FileUploadZone
+                        compact
+                        entityType="IQC_INSPECTION"
+                        docType="MTR"
+                        accept="application/pdf,image/*"
+                        buttonLabel="Upload MTR"
+                      />
                       <FormControlLabel control={<Checkbox />} label="Heat matches" />
                       <FormControlLabel control={<Checkbox />} label="Chemistry OK" />
                     </Box>

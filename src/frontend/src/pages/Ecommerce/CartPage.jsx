@@ -273,7 +273,7 @@ export default function CartPage() {
                 <PromiseSummaryPanel
                   evaluation={overallEval}
                   lineEvaluations={lineEvals}
-                  locationName={session.locationName}
+                  locationName={session?.locationName || 'Main Location'}
                   compact={false}
                 />
               </Box>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileUploadZone } from '../../components/common'
 import {
   Box,
   Paper,
@@ -538,9 +539,13 @@ export default function ClaimsInboxPage() {
               <TextField fullWidth label="Claimed Quantity" type="number" />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="outlined" startIcon={<AttachIcon />}>
-                Add Attachments
-              </Button>
+              <FileUploadZone
+                compact
+                entityType="CLAIM"
+                accept="application/pdf,image/*"
+                buttonLabel="Add Attachments"
+                multiple
+              />
             </Grid>
           </Grid>
         </DialogContent>

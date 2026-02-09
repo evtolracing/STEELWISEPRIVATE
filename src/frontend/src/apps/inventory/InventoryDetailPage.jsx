@@ -26,6 +26,12 @@ import {
   IconButton,
   Breadcrumbs,
   Link,
+  Snackbar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemSecondaryAction,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -40,8 +46,14 @@ import {
   Assignment as AllocatedIcon,
   LocationOn as LocationIcon,
   Category as MaterialIcon,
+  PictureAsPdf as PdfIcon,
+  InsertDriveFile as FileIcon,
+  Download as DownloadIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { getInventoryById, adjustInventory } from '../../services/inventoryApi';
+import { getEntityDocuments, deleteDocument, getDocumentDownloadUrl } from '../../api/documents';
+import { FileUploadZone } from '../../components/common';
 
 export default function InventoryDetailPage() {
   const { inventoryId } = useParams();
@@ -59,8 +71,21 @@ export default function InventoryDetailPage() {
   const [adjusting, setAdjusting] = useState(false);
   const [adjustError, setAdjustError] = useState(null);
 
+  // Document state
+  const [documents, setDocuments] = useState([]);
+  const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' });
+
   useEffect(() => {
     loadInventoryUnit();
+  }, [inventoryId]);
+
+  // Load documents for this inventory unit
+  useEffect(() => {
+    if (inventoryId) {
+      getEntityDocuments('INVENTORY', inventoryId)
+        .then(res => setDocuments(res.data || []))
+        .catch(() => setDocuments([]));
+    }
   }, [inventoryId]);
 
   const loadInventoryUnit = async () => {
@@ -361,6 +386,57 @@ export default function InventoryDetailPage() {
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 3 }}>
               Last Updated: {new Date(inventoryUnit.lastUpdated).toLocaleString()}
             </Typography>
+
+            {/* Documents Section */}
+            <Typography variant="h6" fontWeight={600} sx={{ mt: 4 }} gutterBottom>
+              Documents &amp; Attachments
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <FileUploadZone
+              entityType="INVENTORY"
+              entityId={inventoryId}
+              accept="application/pdf,image/*"
+              multiple
+              onUploaded={(doc) => {
+                setDocuments(prev => [{ ...doc, downloadUrl: `/api/documents/${doc.id}/download` }, ...prev]);
+                setSnack({ open: true, msg: `"${doc.fileName}" uploaded`, severity: 'success' });
+              }}
+              onError={(err) => setSnack({ open: true, msg: err, severity: 'error' })}
+            />
+            {documents.length > 0 && (
+              <List dense sx={{ mt: 2 }}>
+                {documents.map((doc) => (
+                  <ListItem
+                    key={doc.id}
+                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 0.5 }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 36 }}>
+                      {doc.mimeType === 'application/pdf' ? <PdfIcon color="error" /> : <FileIcon color="action" />}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={doc.fileName}
+                      secondary={`${doc.sizeBytes ? (doc.sizeBytes / 1024).toFixed(1) + ' KB' : ''} • ${new Date(doc.createdAt).toLocaleDateString()}`}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton size="small" href={getDocumentDownloadUrl(doc.id)} target="_blank" title="Download">
+                        <DownloadIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={async () => {
+                        try {
+                          await deleteDocument(doc.id);
+                          setDocuments(prev => prev.filter(d => d.id !== doc.id));
+                          setSnack({ open: true, msg: 'Document deleted', severity: 'success' });
+                        } catch {
+                          setSnack({ open: true, msg: 'Failed to delete', severity: 'error' });
+                        }
+                      }} title="Delete">
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+            )}
           </Paper>
         </Grid>
 
@@ -501,6 +577,10 @@ export default function InventoryDetailPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))}>
+        <Alert severity={snack.severity} variant="filled">{snack.msg}</Alert>
+      </Snackbar>
     </Box>
   );
 }

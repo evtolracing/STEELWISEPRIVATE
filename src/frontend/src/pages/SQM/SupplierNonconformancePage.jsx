@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileUploadZone } from '../../components/common'
 import {
   Box,
   Paper,
@@ -493,9 +494,13 @@ export default function SupplierNonconformancePage() {
               <TextField fullWidth label="Estimated Cost Impact ($)" type="number" />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="outlined" startIcon={<AttachIcon />}>
-                Add Attachments
-              </Button>
+              <FileUploadZone
+                compact
+                entityType="SNC"
+                accept="application/pdf,image/*"
+                buttonLabel="Add Attachments"
+                multiple
+              />
             </Grid>
           </Grid>
         </DialogContent>
@@ -679,9 +684,12 @@ function SNCDetailView({ snc, onBack }) {
               <Button variant="contained" size="small">
                 Add Comment
               </Button>
-              <Button variant="outlined" size="small" startIcon={<AttachIcon />}>
-                Attach File
-              </Button>
+              <FileUploadZone
+                compact
+                entityType="SNC"
+                accept="application/pdf,image/*"
+                buttonLabel="Attach File"
+              />
             </Box>
           </Paper>
         </Grid>
@@ -738,14 +746,13 @@ function SNCDetailView({ snc, onBack }) {
             <Typography variant="body2" color="text.secondary">
               No attachments yet
             </Typography>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<AttachIcon />}
+            <FileUploadZone
+              compact
+              entityType="SNC"
+              accept="application/pdf,image/*"
+              buttonLabel="Add Attachment"
               sx={{ mt: 1 }}
-            >
-              Add Attachment
-            </Button>
+            />
           </Paper>
         </Grid>
       </Grid>

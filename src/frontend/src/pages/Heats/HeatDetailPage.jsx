@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -14,6 +14,13 @@ import {
   IconButton,
   Card,
   CardContent,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemSecondaryAction,
+  Snackbar,
+  Alert,
 } from '@mui/material'
 import {
   ArrowBack as BackIcon,
@@ -24,10 +31,15 @@ import {
   Inventory as InventoryIcon,
   Description as DocIcon,
   Timeline as TimelineIcon,
+  PictureAsPdf as PdfIcon,
+  InsertDriveFile as FileIcon,
+  Download as DownloadIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material'
 import { useApiQuery } from '../../hooks/useApiQuery'
 import { getHeat, getHeatTrace } from '../../api'
-import { DataTable, StatusChip } from '../../components/common'
+import { getEntityDocuments, deleteDocument, getDocumentDownloadUrl } from '../../api/documents'
+import { DataTable, StatusChip, FileUploadZone } from '../../components/common'
 import { TraceTimeline, UnitCard } from '../../components/traceability'
 
 function TabPanel({ children, value, index, ...props }) {
@@ -83,6 +95,8 @@ export default function HeatDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [tabValue, setTabValue] = useState(0)
+  const [documents, setDocuments] = useState([])
+  const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' })
 
   const { data: heat, isLoading } = useApiQuery(
     ['heat', id],
@@ -94,6 +108,36 @@ export default function HeatDetailPage() {
     () => getHeatTrace(id),
     { enabled: tabValue === 3 }
   )
+
+  // Load documents linked to this heat
+  const loadDocuments = useCallback(async () => {
+    try {
+      const res = await getEntityDocuments('HEAT', id)
+      setDocuments(res.data || [])
+    } catch {
+      // Use mock data on failure (e.g. no DocumentLink table yet)
+      setDocuments([])
+    }
+  }, [id])
+
+  useEffect(() => {
+    if (tabValue === 2) loadDocuments()
+  }, [tabValue, loadDocuments])
+
+  const handleDocUploaded = (doc) => {
+    setDocuments(prev => [{ ...doc, downloadUrl: `/api/documents/${doc.id}/download` }, ...prev])
+    setSnack({ open: true, msg: `"${doc.fileName}" uploaded successfully`, severity: 'success' })
+  }
+
+  const handleDeleteDoc = async (docId) => {
+    try {
+      await deleteDocument(docId)
+      setDocuments(prev => prev.filter(d => d.id !== docId))
+      setSnack({ open: true, msg: 'Document deleted', severity: 'success' })
+    } catch {
+      setSnack({ open: true, msg: 'Failed to delete document', severity: 'error' })
+    }
+  }
 
   // Mock data for demo
   const mockHeat = {
@@ -126,10 +170,7 @@ export default function HeatDetailPage() {
       { id: 2, unitNumber: 'U-001-02', weight: 11800, status: 'ALLOCATED', grade: 'A36', location: 'Bay A-02' },
       { id: 3, unitNumber: 'U-001-03', weight: 13200, status: 'AVAILABLE', grade: 'A36', location: 'Bay A-03' },
     ],
-    documents: [
-      { id: 1, name: 'Mill Test Certificate', type: 'MTC', uploadedAt: new Date() },
-      { id: 2, name: 'Chemical Analysis Report', type: 'CAR', uploadedAt: new Date() },
-    ],
+    documents: [],
   }
 
   const mockTraceEvents = [
@@ -149,11 +190,7 @@ export default function HeatDetailPage() {
     { id: 'status', label: 'Status', minWidth: 100, render: (row) => <StatusChip status={row.status} /> },
   ]
 
-  const docColumns = [
-    { id: 'name', label: 'Document Name', minWidth: 200 },
-    { id: 'type', label: 'Type', minWidth: 100 },
-    { id: 'uploadedAt', label: 'Uploaded', minWidth: 120, render: (row) => new Date(row.uploadedAt).toLocaleDateString() },
-  ]
+  const docColumns = [] // Deprecated: Documents tab now uses FileUploadZone
 
   return (
     <Box>
@@ -289,11 +326,64 @@ export default function HeatDetailPage() {
       </TabPanel>
 
       <TabPanel value={tabValue} index={2}>
-        <Paper>
-          <DataTable
-            columns={docColumns}
-            data={displayHeat.documents || []}
+        <Paper sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>Upload Documents</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Attach Mill Test Certificates (MTCs), Chemical Analysis Reports, or other heat documentation.
+          </Typography>
+          <FileUploadZone
+            entityType="HEAT"
+            entityId={id}
+            docType="MTC"
+            accept="application/pdf,image/*"
+            multiple
+            onUploaded={handleDocUploaded}
+            onError={(err) => setSnack({ open: true, msg: err, severity: 'error' })}
           />
+
+          {/* Document list */}
+          {documents.length > 0 && (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                Attached Documents ({documents.length})
+              </Typography>
+              <List dense>
+                {documents.map((doc) => (
+                  <ListItem
+                    key={doc.id}
+                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 0.5 }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 36 }}>
+                      {doc.mimeType === 'application/pdf' ? <PdfIcon color="error" /> : <FileIcon color="action" />}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={doc.fileName}
+                      secondary={`${doc.type || 'Document'} • ${doc.sizeBytes ? (doc.sizeBytes / 1024).toFixed(1) + ' KB' : ''} • ${new Date(doc.createdAt).toLocaleDateString()}`}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        size="small"
+                        href={getDocumentDownloadUrl(doc.id)}
+                        target="_blank"
+                        title="Download"
+                      >
+                        <DownloadIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDeleteDoc(doc.id)} title="Delete">
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          )}
+
+          {documents.length === 0 && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
+              No documents attached yet. Upload MTCs or other certifications above.
+            </Typography>
+          )}
         </Paper>
       </TabPanel>
 
@@ -303,6 +393,10 @@ export default function HeatDetailPage() {
           <TraceTimeline events={displayTrace} />
         </Paper>
       </TabPanel>
+
+      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))}>
+        <Alert severity={snack.severity} variant="filled">{snack.msg}</Alert>
+      </Snackbar>
     </Box>
   )
 }

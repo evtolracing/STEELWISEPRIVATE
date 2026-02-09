@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FileUploadZone } from '../../components/common'
 import {
   Box,
   Paper,
@@ -597,7 +598,13 @@ function CARDetailView({ car, onBack }) {
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>Quick Actions</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Button variant="outlined" size="small" fullWidth startIcon={<CommentIcon />}>Add Comment</Button>
-              <Button variant="outlined" size="small" fullWidth startIcon={<AttachIcon />}>Add Attachment</Button>
+              <FileUploadZone
+                compact
+                entityType="CAR"
+                accept="application/pdf,image/*"
+                buttonLabel="Add Attachment"
+                multiple
+              />
               <Button variant="outlined" size="small" fullWidth startIcon={<TaskIcon />}>Add Action Item</Button>
             </Box>
           </Paper>

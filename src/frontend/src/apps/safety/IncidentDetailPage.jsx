@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { FileUploadZone } from '../../components/common';
 import {
   Box,
   Paper,
@@ -547,9 +548,13 @@ export default function IncidentDetailPage() {
                 <Box>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                     <Typography variant="h6">Attachments ({incident.attachments.length})</Typography>
-                    <Button startIcon={<AttachIcon />} variant="outlined">
-                      Add Attachment
-                    </Button>
+                    <FileUploadZone
+                      compact
+                      entityType="INCIDENT"
+                      accept="application/pdf,image/*"
+                      buttonLabel="Add Attachment"
+                      multiple
+                    />
                   </Stack>
 
                   <List>

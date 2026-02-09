@@ -1495,6 +1495,1984 @@ const manualModules = [
       },
     ],
   },
+
+  // ─── 13. COMMAND CENTER ──────────────────────────────────────────────
+  {
+    moduleId: 'command-center',
+    title: 'Command Center',
+    shortDescription: 'Your operational nerve center — real-time dashboards, KPIs, and the Ops Cockpit for monitoring the entire service center.',
+    icon: 'Dashboard',
+    roles: ['BRANCH_MANAGER', 'OPS_MANAGER', 'PLANT_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/ops-cockpit', '/role-dashboard'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Command Center is where managers and operators get a real-time view of everything happening across the service center. The Ops Cockpit shows live production status, order pipeline, shipment progress, and critical alerts in a single screen. My Dashboard gives each user a personalized view based on their role — CSRs see their open orders, shop supervisors see machine utilization, shipping staff see outbound loads.' },
+        ],
+      },
+      {
+        id: 'ops-cockpit',
+        title: 'Ops Cockpit',
+        blocks: [
+          { type: 'text', value: 'The Ops Cockpit is the main operational overview. It displays live tiles for orders in progress, jobs on the shop floor, packages staged, shipments out for delivery, and any bottlenecks or alerts.' },
+          { type: 'steps', items: [
+            'Click "Ops Cockpit" in the sidebar under Command Center.',
+            'The cockpit loads with real-time tiles. Each tile shows a count and status color (green = on track, yellow = warning, red = behind).',
+            'Click any tile to drill down into the detail view (e.g., clicking "Jobs In Progress" opens the Shop Floor Queue filtered to active jobs).',
+            'Use the time range selector at the top to switch between Today, This Week, or This Month.',
+            'The alerts ribbon at the top shows critical items: overdue orders, stuck jobs, equipment alarms, or quality holds.',
+            'Click an alert to jump directly to the affected item.',
+          ]},
+          { type: 'tip', value: 'The Ops Cockpit auto-refreshes every 30 seconds. You can also click the refresh icon in the top-right corner to force an immediate update.' },
+        ],
+      },
+      {
+        id: 'my-dashboard',
+        title: 'My Dashboard',
+        blocks: [
+          { type: 'text', value: 'My Dashboard is personalized for each user based on their role. It shows the KPIs, tasks, and shortcuts most relevant to your daily work.' },
+          { type: 'bullets', items: [
+            'CSR Dashboard — open orders, pending quotes, recent customer activity, follow-up reminders',
+            'Shop Supervisor Dashboard — machine utilization, job queue, operator attendance, quality alerts',
+            'Shipping Dashboard — outbound loads, staged packages, carrier ETAs, delivery exceptions',
+            'Manager Dashboard — revenue metrics, throughput, on-time delivery %, labor efficiency',
+          ]},
+          { type: 'steps', items: [
+            'Click "My Dashboard" in the sidebar under Command Center.',
+            'Your role-specific dashboard loads automatically.',
+            'Use the widget gear icon to customize which tiles appear and their layout.',
+            'Drag and drop tiles to rearrange them.',
+            'Click "Add Widget" to include additional KPIs from the available library.',
+          ]},
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        blocks: [
+          { type: 'troubleshoot', items: [
+            { problem: 'Tiles show stale data', solution: 'Click the refresh icon. If still stale, check your internet connection. The cockpit requires a live connection to the server.' },
+            { problem: 'Dashboard is blank or missing widgets', solution: 'Your role may not have a default dashboard configured. Ask an admin to assign dashboard widgets to your role under Admin > User Management.' },
+            { problem: 'Alert count seems wrong', solution: 'Alerts are scoped to your assigned location. Make sure your location is set correctly in the top-right corner of the app.' },
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 14. EXECUTIVE SUITE ─────────────────────────────────────────────
+  {
+    moduleId: 'executive',
+    title: 'Executive Suite',
+    shortDescription: 'Strategic analytics for leadership — simulations, forecasts, decision logs, digital twin, and speed metrics.',
+    icon: 'Insights',
+    roles: ['EXECUTIVE', 'VP_OPS', 'PLANT_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/executive/cockpit', '/executive/simulation', '/executive/forecast', '/executive/decisions', '/executive/digital-twin', '/executive/compression-metrics'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Executive Suite is designed for leadership to make data-driven strategic decisions. It includes six sub-modules: an executive cockpit with high-level KPIs, a simulation workspace for what-if scenarios, a forecast explorer for demand and revenue projections, a decision log for tracking strategic choices, a digital twin for virtual plant modeling, and compression metrics for measuring operational speed.' },
+        ],
+      },
+      {
+        id: 'executive-cockpit',
+        title: 'Executive Cockpit',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Executive Cockpit" under the Executive section in the sidebar.',
+            'The cockpit displays high-level KPIs: revenue, margin, throughput, on-time delivery, and customer satisfaction.',
+            'Use the date range picker to compare periods (this month vs. last month, this quarter vs. same quarter last year).',
+            'Click any KPI card to drill down into the underlying data.',
+            'Use the "Compare Locations" toggle to see side-by-side performance across service centers.',
+          ]},
+        ],
+      },
+      {
+        id: 'simulation',
+        title: 'Simulation Workspace',
+        blocks: [
+          { type: 'text', value: 'Run what-if scenarios to test the impact of pricing changes, capacity additions, or demand shifts before making real decisions.' },
+          { type: 'steps', items: [
+            'Click "Simulation" in the sidebar under Executive.',
+            'Choose a scenario type: Pricing Change, Capacity Change, Demand Shift, or Custom.',
+            'Set your variables (e.g., "Increase plate prices by 5%" or "Add one saw shift").',
+            'Click "Run Simulation" — the system calculates projected revenue, margin, throughput, and delivery times.',
+            'Review the results. Save the scenario for comparison or share it with other executives.',
+            'Use "Compare Scenarios" to put two or more saved scenarios side by side.',
+          ]},
+          { type: 'tip', value: 'Simulations use the last 90 days of real data as their baseline. For more accurate results, make sure recent data (orders, production, costs) is up to date.' },
+        ],
+      },
+      {
+        id: 'forecast-explorer',
+        title: 'Forecast Explorer',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Forecasts" under Executive in the sidebar.',
+            'The forecast dashboard shows projected demand, revenue, and capacity utilization for the next 30, 60, and 90 days.',
+            'Use the product filter to focus on specific product lines (plate, bar, tube, sheet).',
+            'Toggle between "Revenue Forecast," "Volume Forecast," and "Capacity Forecast" views.',
+            'The confidence band (shaded area on the chart) shows the range of likely outcomes.',
+            'Click "Export" to download forecast data as CSV for offline analysis.',
+          ]},
+        ],
+      },
+      {
+        id: 'decision-log',
+        title: 'Decision Log',
+        blocks: [
+          { type: 'text', value: 'A running record of strategic decisions made by leadership — pricing changes, investment approvals, policy updates — with context and outcomes tracked over time.' },
+          { type: 'steps', items: [
+            'Click "Decision Log" under Executive.',
+            'The log shows all recorded decisions with date, author, category, and status.',
+            'Click "New Decision" to record a new strategic decision.',
+            'Fill in the title, category (Pricing, Capacity, Policy, Investment), description, and expected impact.',
+            'Attach supporting documents or simulation results if applicable.',
+            'Click "Save." The decision is timestamped and added to the log.',
+            'After implementation, update the decision with actual outcomes using the "Record Outcome" button.',
+          ]},
+        ],
+      },
+      {
+        id: 'digital-twin',
+        title: 'Digital Twin',
+        blocks: [
+          { type: 'text', value: 'A virtual model of your service center — equipment layout, material flow, and process relationships — used for planning, optimization, and bottleneck analysis.' },
+          { type: 'steps', items: [
+            'Click "Digital Twin" under Executive.',
+            'The twin view renders a visual model of your plant floor with equipment nodes and material flow arrows.',
+            'Color-coded nodes show real-time status: green (running), yellow (idle), red (down), blue (maintenance).',
+            'Click any equipment node to see its current job, utilization rate, and upcoming schedule.',
+            'Use "Highlight Bottleneck" to identify the constraint in your current workflow.',
+            'Toggle "Heat Map" to overlay throughput density across the plant.',
+          ]},
+        ],
+      },
+      {
+        id: 'speed-metrics',
+        title: 'Speed / Compression Metrics',
+        blocks: [
+          { type: 'text', value: 'Measures how fast orders move through the system — from intake to shipment — and identifies where time is being lost.' },
+          { type: 'steps', items: [
+            'Click "Speed Metrics" under Executive.',
+            'The dashboard shows average cycle times for each stage: Order Entry → Scheduling → Production → Packaging → Shipping.',
+            'Compare current cycle times against targets (set in Admin > Settings).',
+            'Click any stage to see a breakdown by product type, shift, and operator.',
+            'Use the "Trend" view to see if cycle times are improving or degrading over time.',
+            'The "Compression Score" is a single number (0-100) rating your overall speed. Higher is better.',
+          ]},
+          { type: 'tip', value: 'Focus improvement efforts on the stage with the longest average cycle time — that is your biggest opportunity for time compression.' },
+        ],
+      },
+    ],
+  },
+
+  // ─── 15. ORDER BOARD ─────────────────────────────────────────────────
+  {
+    moduleId: 'order-board',
+    title: 'Order Board (Service Center)',
+    shortDescription: 'Kanban-style board showing all orders across their lifecycle stages — from intake through shipping.',
+    icon: 'ViewKanban',
+    roles: ['CSR', 'SHOP_SUPERVISOR', 'BRANCH_MANAGER', 'OPS_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/order-board'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Order Board is a visual Kanban view of every order in the service center. Orders are displayed as cards moving through columns that represent lifecycle stages: New, Scheduled, In Production, Packaging, Staged, Shipped, and Delivered. It gives everyone a quick snapshot of where every order stands.' },
+        ],
+      },
+      {
+        id: 'using-the-board',
+        title: 'How to Use the Order Board',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Order Board" in the sidebar under Service Center.',
+            'The board loads with columns for each order stage. Each card shows the order number, customer name, due date, and priority color.',
+            'Red border = past due. Orange = due today. Green = on track.',
+            'Click any card to open the order detail panel on the right side.',
+            'Use the search bar at the top to find a specific order by number, customer, or PO.',
+            'Use the filter dropdowns to narrow by priority, product type, or assigned CSR.',
+            'Drag-and-drop cards between columns to manually advance an order stage (if you have permission).',
+          ]},
+          { type: 'tip', value: 'Most order transitions happen automatically as jobs progress on the shop floor. Manual drag-and-drop is for exceptions only.' },
+        ],
+      },
+      {
+        id: 'order-detail-panel',
+        title: 'Order Detail Panel',
+        blocks: [
+          { type: 'text', value: 'When you click an order card, the detail panel shows:' },
+          { type: 'bullets', items: [
+            'Order header — order number, PO number, customer name, account number, order date, due date',
+            'Line items — each product, quantity, dimensions, processing operations, and status',
+            'Job links — click to jump to the job on the Shop Floor Queue',
+            'Documents — BOL, packing list, MTR, certificates attached to this order',
+            'Timeline — a chronological log of every event (created, scheduled, started, completed, shipped)',
+            'Notes — internal notes from CSRs, shop floor, or shipping',
+          ]},
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        blocks: [
+          { type: 'troubleshoot', items: [
+            { problem: 'Order card stuck in a column', solution: 'Check the underlying job status in Shop Floor Queue. If the job is done but the order card didn\'t move, there may be a pending QC hold or packaging step that needs to complete first.' },
+            { problem: 'Can\'t find an order on the board', solution: 'Check the filters — you may have a filter active that hides it. Also check the "Completed" and "Cancelled" archive tabs at the bottom.' },
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 16. RECEIVING ───────────────────────────────────────────────────
+  {
+    moduleId: 'receiving',
+    title: 'Receiving',
+    shortDescription: 'Receive inbound material shipments, verify quantities, check mill certs, and add stock to inventory.',
+    icon: 'CallReceived',
+    roles: ['WAREHOUSE', 'RECEIVING', 'INVENTORY_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/receiving'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Receiving is where inbound material arrives at your service center. When a truck shows up with steel, aluminum, plastic, or supplies, the receiving team uses this module to log the delivery, verify quantities against the purchase order (PO), inspect the material, scan or attach mill test reports (MTRs), and put the stock into the correct inventory location.' },
+        ],
+      },
+      {
+        id: 'receive-shipment',
+        title: 'How to Receive a Shipment',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Receiving" in the sidebar under Service Center.',
+            'The Receiving dashboard shows a list of expected inbound deliveries (from open purchase orders).',
+            'When a truck arrives, find the PO in the list and click "Start Receiving."',
+            'Scan or enter the packing list / BOL number from the driver.',
+            'For each line item on the PO, verify the quantity, grade, dimensions, and heat number.',
+            'If there is a discrepancy (short ship, damage, wrong grade), click "Flag Discrepancy" on that line and enter details.',
+            'Attach the MTR (mill test report) by scanning or uploading the PDF. The system links it to the heat number automatically.',
+            'Enter the warehouse location (bay, rack, slot) where the material will be stored.',
+            'Click "Complete Receiving." The stock is added to inventory and the PO is updated.',
+          ]},
+          { type: 'warning', value: 'Always verify heat numbers match the MTR before completing receiving. Mismatched heat numbers cause traceability failures and potential compliance issues.' },
+        ],
+      },
+      {
+        id: 'discrepancies',
+        title: 'Handling Discrepancies',
+        blocks: [
+          { type: 'bullets', items: [
+            'Short Ship — quantity received is less than PO quantity. The system keeps the PO open for the remaining quantity.',
+            'Over Ship — quantity received exceeds PO quantity. You can accept the overage or refuse it.',
+            'Damage — material is damaged. Flag it, take photos, and create a supplier claim.',
+            'Wrong Grade — the grade doesn\'t match the PO. Quarantine the material and notify procurement.',
+            'Missing MTR — log the receipt but mark it "Pending MTR." The material goes into a QC hold until the MTR is received.',
+          ]},
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        blocks: [
+          { type: 'troubleshoot', items: [
+            { problem: 'PO not showing in expected deliveries', solution: 'Check if the PO was created in the procurement system. Only approved POs with a future or recent delivery date appear in the receiving queue.' },
+            { problem: 'Can\'t scan the MTR', solution: 'Make sure the scanner is connected and the MTR is a clear PDF. You can also manually upload the file using the "Upload" button.' },
+            { problem: 'Material doesn\'t show in inventory after receiving', solution: 'Check if the receiving was fully completed (not just saved as draft). Also check the assigned warehouse location — it may have gone to a different bay than expected.' },
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 17. TIME TRACKING ───────────────────────────────────────────────
+  {
+    moduleId: 'time-tracking',
+    title: 'Time Tracking',
+    shortDescription: 'Track operator hours, job labor time, clock-in/out, and labor cost allocation across production jobs.',
+    icon: 'AccessTime',
+    roles: ['OPERATOR', 'SHOP_SUPERVISOR', 'BRANCH_MANAGER', 'HR', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/time-tracking'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Time Tracking records when operators clock in and out, which jobs they work on, and how long each operation takes. This data feeds labor cost calculations, efficiency metrics, and payroll reports. Supervisors can review and approve timesheets, and the system automatically allocates labor costs to specific jobs.' },
+        ],
+      },
+      {
+        id: 'clock-in-out',
+        title: 'Clock In / Clock Out',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Time Tracking" in the sidebar under Service Center.',
+            'If you are an operator, the screen shows your current clock status (clocked in or out).',
+            'Click "Clock In" to start your shift. Select your work center if you have multiple options.',
+            'When starting a job, click "Start Job" and scan or enter the job number. The system begins tracking time against that job.',
+            'When you finish a job or switch to another, click "Stop Job" or "Switch Job."',
+            'At the end of your shift, click "Clock Out." Your total hours are recorded.',
+          ]},
+        ],
+      },
+      {
+        id: 'supervisor-view',
+        title: 'Supervisor Timesheet Review',
+        blocks: [
+          { type: 'steps', items: [
+            'As a supervisor, navigate to Time Tracking and click the "Team View" tab.',
+            'You see all operators on your shift with their clock-in time, current job, and hours worked today.',
+            'Click an operator to see their detailed timesheet: jobs worked, breaks, idle time.',
+            'Flag any discrepancies (e.g., forgot to clock out, missing job entries).',
+            'At the end of the pay period, click "Approve Timesheets" to approve hours for payroll.',
+            'Approved timesheets lock and cannot be edited without manager override.',
+          ]},
+          { type: 'tip', value: 'The "Idle Time" column shows time clocked in but not assigned to any job. High idle time may indicate scheduling gaps or operators waiting for material.' },
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        blocks: [
+          { type: 'troubleshoot', items: [
+            { problem: 'Operator forgot to clock in', solution: 'A supervisor can add a manual clock-in entry with the correct time. Go to Team View, click the operator, then "Add Manual Entry."' },
+            { problem: 'Job time seems too high', solution: 'Check if the operator forgot to stop the job before going on break or switching tasks. Edit the time entry to split or correct it.' },
+            { problem: 'Timesheet already approved but needs correction', solution: 'A manager or admin can unlock an approved timesheet from the "Approved" tab by clicking "Unlock for Edit." This is logged in the audit trail.' },
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 18. MATERIALS (HEATS & UNITS) ───────────────────────────────────
+  {
+    moduleId: 'materials',
+    title: 'Materials (Heats & Units)',
+    shortDescription: 'Manage material master data — heats with MTRs and chemistry, and individual units/coils with dimensions and location.',
+    icon: 'Science',
+    roles: ['INVENTORY_MANAGER', 'WAREHOUSE', 'QA', 'PURCHASING', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/heats', '/units'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Materials is where you manage the foundational data for your stock: Heats and Units. A Heat is a batch of material from the mill identified by a heat number — it carries the MTR (mill test report) with chemistry, mechanical properties, and certifications. A Unit is an individual physical piece of material (a plate, coil, bar, bundle) that belongs to a heat. Together, heats and units give you full traceability from mill source to customer delivery.' },
+        ],
+      },
+      {
+        id: 'heats',
+        title: 'Heats',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Heats" in the sidebar under Materials.',
+            'The heat list shows all heats in inventory with heat number, grade, mill, date received, and number of units.',
+            'Use the search bar to find a specific heat by number, grade, or mill.',
+            'Click a heat to open its detail view showing MTR data, chemistry, mechanical properties, and linked units.',
+            'To add a new heat, click "Add Heat" and enter the heat number, grade, mill source, and upload the MTR.',
+            'The system parses the MTR and auto-fills chemistry fields (C, Mn, P, S, Si, etc.) when possible.',
+            'Review and confirm the parsed values. Click "Save Heat."',
+          ]},
+          { type: 'warning', value: 'Never create duplicate heat numbers. If a heat already exists, add new units to the existing heat instead of creating a new one.' },
+        ],
+      },
+      {
+        id: 'units',
+        title: 'Units / Coils',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Units" in the sidebar under Materials.',
+            'The unit list shows all individual pieces/coils with unit ID, heat number, grade, dimensions, weight, location, and status.',
+            'Use filters to narrow by grade, thickness range, width range, location, or status (Available, Reserved, In Process, Shipped).',
+            'Click a unit to see its full detail: parent heat, MTR link, processing history, and current job assignment.',
+            'To add a unit, click "Add Unit" — select the parent heat, enter dimensions (thickness, width, length), weight, and warehouse location.',
+            'For coils, enter OD, ID, width, and weight. The system calculates estimated lineal footage.',
+            'Scan or enter the unit tag/barcode to link the physical tag to the system record.',
+          ]},
+          { type: 'tip', value: 'Use the "Bulk Import" feature to load many units at once from a CSV file — useful when receiving a large shipment with dozens of pieces.' },
+        ],
+      },
+      {
+        id: 'traceability',
+        title: 'Traceability',
+        blocks: [
+          { type: 'text', value: 'Every unit traces back to its heat, and every heat traces back to its MTR and mill. When a unit is processed (cut, bent, drilled), the child pieces inherit the parent heat and MTR. When a unit ships to a customer, the BOL and packing list reference the heat number so the customer can trace the material back to its source.' },
+          { type: 'bullets', items: [
+            'Heat → MTR → Chemistry & mechanical properties',
+            'Unit → Heat → full mill traceability',
+            'Processed piece → parent unit → parent heat → full chain',
+            'Shipment → BOL → units → heats → MTRs',
+          ]},
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        blocks: [
+          { type: 'troubleshoot', items: [
+            { problem: 'MTR upload fails', solution: 'Check the file format — only PDF is supported. Maximum file size is 25 MB. If the file is a scan, make sure it\'s legible.' },
+            { problem: 'Unit shows wrong location', solution: 'The location was likely not updated after a physical move. Edit the unit and update the location, or use the Inventory Transfer feature to move it properly.' },
+            { problem: 'Can\'t find a heat', solution: 'Search by partial heat number. Also check if the heat was entered under a slightly different format (dashes vs. no dashes, leading zeros).' },
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 19. LOGISTICS ───────────────────────────────────────────────────
+  {
+    moduleId: 'logistics',
+    title: 'Logistics',
+    shortDescription: 'Manage outbound shipments, live tracking, dispatch planning, and AI-powered route optimization.',
+    icon: 'LocalShipping',
+    roles: ['SHIPPING', 'LOGISTICS', 'DISPATCH', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/logistics/shipments', '/logistics/tracking', '/logistics/dispatch', '/logistics/route-optimization'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Logistics is the transportation management hub. It covers four key areas: Shipments (creating and managing outbound loads), Tracking (real-time GPS and status updates), Dispatch Planning (assigning drivers and trucks to routes), and Route Optimization (AI-calculated optimal delivery routes to save fuel and time).' },
+        ],
+      },
+      {
+        id: 'shipments',
+        title: 'Shipments',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Shipments" under Logistics in the sidebar.',
+            'The shipment list shows all outbound loads with shipment ID, carrier, status, pickup date, and destination.',
+            'Click "Create Shipment" to build a new load.',
+            'Select the orders/packages to include in the shipment.',
+            'Choose the carrier (company truck, LTL, FTL, UPS, FedEx) and enter the trailer/truck number.',
+            'Set the pickup date/time and expected delivery date.',
+            'Generate the BOL (Bill of Lading) by clicking "Generate BOL." Review and print.',
+            'When the truck departs, click "Mark as Shipped." The tracking timeline begins.',
+          ]},
+        ],
+      },
+      {
+        id: 'tracking',
+        title: 'Live Tracking',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Tracking" under Logistics.',
+            'The tracking map shows all active shipments with their current GPS position (for company trucks) or last carrier scan (for third-party carriers).',
+            'Click a shipment pin on the map to see details: driver, ETA, stops remaining, and delivery status.',
+            'The timeline view below the map shows chronological events: departed, in transit, at stop, delivered.',
+            'Click "Notify Customer" to send the customer an email/SMS with a tracking link.',
+          ]},
+          { type: 'tip', value: 'For third-party carriers (UPS, FedEx, LTL), tracking updates come from the carrier API and may have a 15-30 minute delay.' },
+        ],
+      },
+      {
+        id: 'dispatch',
+        title: 'Dispatch Planning',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Dispatch Planning" under Logistics.',
+            'The dispatch board shows available drivers, trucks, and pending loads.',
+            'Drag loads onto drivers/trucks to build routes.',
+            'The system calculates estimated drive time, distance, and delivery windows for each route.',
+            'Review the route summary. Adjust stop order if needed by dragging stops up or down.',
+            'Click "Confirm Dispatch" to assign the routes. Drivers receive their assignments on the mobile app.',
+          ]},
+        ],
+      },
+      {
+        id: 'route-optimization',
+        title: 'Route Optimization',
+        blocks: [
+          { type: 'text', value: 'AI-powered route optimization analyzes all pending deliveries and calculates the most efficient routes based on distance, traffic patterns, delivery windows, truck capacity, and driver hours.' },
+          { type: 'steps', items: [
+            'Click "Route Optimization" under Logistics.',
+            'Select the date you want to optimize routes for.',
+            'The system loads all pending deliveries for that date and available trucks/drivers.',
+            'Click "Optimize Routes." The AI engine calculates optimal route assignments.',
+            'Review the suggested routes on the map. Each route is color-coded.',
+            'Accept the routes as-is, or manually adjust by moving stops between routes.',
+            'Click "Apply & Dispatch" to finalize the optimized routes.',
+          ]},
+          { type: 'tip', value: 'Run route optimization the evening before to give drivers time to review their routes. Re-optimize in the morning if there are last-minute changes.' },
+        ],
+      },
+    ],
+  },
+
+  // ─── 20. COMMERCIAL ──────────────────────────────────────────────────
+  {
+    moduleId: 'commercial',
+    title: 'Commercial',
+    shortDescription: 'OrderHub for managing the full order pipeline, and Demand Shaping for AI-driven demand analysis.',
+    icon: 'BusinessCenter',
+    roles: ['CSR', 'SALES_REP', 'BRANCH_MANAGER', 'SALES_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/orderhub', '/commercial/demand-shaping'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Commercial module is where sales and operations manage the order pipeline. OrderHub is the central command for all orders across channels (phone, online, POS, mobile rep). Demand Shaping uses AI to analyze ordering patterns and suggest pricing or promotion strategies to smooth demand peaks and fill capacity valleys.' },
+        ],
+      },
+      {
+        id: 'orderhub',
+        title: 'OrderHub',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "OrderHub" under Commercial in the sidebar.',
+            'The hub shows all orders from every channel in a unified table: order number, source (Phone, Online, POS, Mobile), customer, total, status, and due date.',
+            'Use column filters to narrow by source, status, date range, CSR, or customer.',
+            'Click any order to open its detail view with full line items, processing, documents, and timeline.',
+            'Use the "Bulk Actions" dropdown to apply status changes, assign CSRs, or flag orders for review.',
+            'The sidebar summary shows today\'s order count, revenue, and average order value by channel.',
+          ]},
+          { type: 'tip', value: 'OrderHub is the best place to get a cross-channel view. If you\'re looking for a specific order and don\'t know which channel it came from, start here.' },
+        ],
+      },
+      {
+        id: 'demand-shaping',
+        title: 'Demand Shaping',
+        blocks: [
+          { type: 'text', value: 'Demand Shaping analyzes historical ordering patterns to identify trends, seasonality, and demand peaks. It suggests actions to smooth demand — like promotions during slow periods or surcharges during peak times — to optimize capacity utilization.' },
+          { type: 'steps', items: [
+            'Click "Demand Shaping" under Commercial.',
+            'The dashboard shows a demand heat map by product category and week.',
+            'Red zones are peak demand periods. Blue zones are low demand. Green is balanced.',
+            'Click a zone to see which products and customers drive that demand.',
+            'The "Suggestions" panel offers AI-recommended actions: promotional pricing, lead time adjustments, or capacity reallocation.',
+            'Approve or dismiss each suggestion. Approved actions are routed to the responsible team (pricing, scheduling).',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 21. CUSTOMERS ───────────────────────────────────────────────────
+  {
+    moduleId: 'customers',
+    title: 'Customer Management',
+    shortDescription: 'Customer directory with full account details, contact info, pricing tiers, order history, and preference memory.',
+    icon: 'People',
+    roles: ['CSR', 'SALES_REP', 'SALES_MANAGER', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/customers', '/customers/preferences'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Customer Management is the CRM (Customer Relationship Management) hub. The Customer Directory stores every customer account with contacts, addresses, pricing tier, credit terms, and order history. Preference Memory remembers each customer\'s specific preferences — favorite products, preferred processing specs, delivery instructions, packaging requirements — so you can serve them faster and more accurately.' },
+        ],
+      },
+      {
+        id: 'customer-directory',
+        title: 'Customer Directory',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Customer Directory" under Customers in the sidebar.',
+            'The directory lists all customer accounts with name, account number, city, pricing tier, and last order date.',
+            'Use the search bar to find a customer by name, account number, phone, or email.',
+            'Click a customer to open their profile with tabs: Overview, Contacts, Addresses, Orders, Documents, Preferences.',
+            'On the Overview tab, see account status, credit limit, balance, pricing tier, and assigned sales rep.',
+            'On the Contacts tab, add or edit contact people (buyer, AP contact, shipping contact).',
+            'On the Addresses tab, manage ship-to and bill-to addresses.',
+            'On the Orders tab, see full order history with filters for date range, status, and product.',
+          ]},
+        ],
+      },
+      {
+        id: 'add-customer',
+        title: 'How to Add a New Customer',
+        blocks: [
+          { type: 'steps', items: [
+            'From the Customer Directory, click "Add Customer."',
+            'Enter the company name, account type (Commercial, Contractor, Walk-In, Government), and tax ID.',
+            'Add the primary contact: name, phone, email, title.',
+            'Enter the billing address and at least one ship-to address.',
+            'Set the pricing tier (Standard, Contract, Preferred, Custom).',
+            'Set credit terms (COD, Net 15, Net 30, Net 45) and credit limit.',
+            'Assign a sales rep from the dropdown.',
+            'Click "Save Customer." The account is active and ready for orders.',
+          ]},
+          { type: 'tip', value: 'For walk-in or cash customers, use the "Walk-In" account type. This sets terms to COD and skips the credit check on orders.' },
+        ],
+      },
+      {
+        id: 'preference-memory',
+        title: 'Preference Memory',
+        blocks: [
+          { type: 'text', value: 'Preference Memory stores customer-specific preferences so your team can provide consistent, personalized service across every interaction.' },
+          { type: 'steps', items: [
+            'Click "Preference Memory" under Customers.',
+            'Search for a customer or browse recent accounts.',
+            'Click a customer to see their preference profile.',
+            'Preferences include: favorite products, standard dimensions, preferred processing operations, packaging requirements, delivery instructions, and communication preferences.',
+            'Add a new preference by clicking "Add Preference" — choose the category and enter the details.',
+            'When a CSR takes an order for this customer, preferences auto-display as suggestions in the order intake form.',
+          ]},
+          { type: 'do-dont', dos: [
+            'Update preferences after every order if the customer mentions something new',
+            'Note delivery instructions like "call before delivery" or "use rear dock"',
+            'Record preferred dimensions for repeat products',
+          ], donts: [
+            'Store sensitive personal information (SSN, personal financial data) in preferences',
+            'Override customer preferences without confirming with the customer first',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 22. SALES & QUOTING ─────────────────────────────────────────────
+  {
+    moduleId: 'sales-quoting',
+    title: 'Sales & Quoting',
+    shortDescription: 'Manage RFQs, build quotes, track sales performance, and provide a customer-facing quote portal.',
+    icon: 'RequestQuote',
+    roles: ['SALES_REP', 'SALES_MANAGER', 'CSR', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/sales/rfq-inbox', '/sales/dashboard'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Sales & Quoting covers the pre-order pipeline: receiving RFQs (Requests for Quote), building quotes with accurate pricing, tracking quote conversion rates, and monitoring overall sales performance. The RFQ Inbox collects incoming quote requests from email, web forms, and phone calls in one place. The Sales Dashboard shows KPIs like revenue, quote win rate, and pipeline value.' },
+        ],
+      },
+      {
+        id: 'rfq-inbox',
+        title: 'RFQ Inbox',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "RFQ Inbox" under Sales & Pricing in the sidebar.',
+            'The inbox shows all incoming quote requests with requester name, date, product summary, and status (New, In Progress, Quoted, Won, Lost).',
+            'New RFQs appear at the top with a "New" badge. Click one to open it.',
+            'Review the customer\'s request: products, quantities, specifications, and any special requirements.',
+            'Click "Build Quote" to open the quote builder pre-filled with the RFQ details.',
+            'In the quote builder, add products, set pricing (list, contract, or manual), add processing charges, and set validity period.',
+            'Click "Preview" to see the customer-facing quote PDF. Review for accuracy.',
+            'Click "Send Quote" to email the quote to the customer. The RFQ status changes to "Quoted."',
+            'When the customer accepts, click "Convert to Order" to create an order from the quote.',
+          ]},
+          { type: 'tip', value: 'Set follow-up reminders on quotes. Click the calendar icon on a quoted RFQ to schedule a follow-up call with the customer.' },
+        ],
+      },
+      {
+        id: 'sales-dashboard',
+        title: 'Sales Dashboard',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Sales Dashboard" under Sales & Pricing.',
+            'The dashboard shows KPIs: monthly revenue, revenue vs. target, quote win rate, average order value, top customers, and pipeline value.',
+            'Use the date range picker to compare periods.',
+            'Click any KPI card to drill down into the detail.',
+            'The "Pipeline" section shows all open quotes organized by stage (Sent, Followed Up, Negotiating, Decision Pending).',
+            'The "Leaderboard" shows sales rep performance ranked by revenue, quote count, and win rate.',
+            'Export reports by clicking "Export" — available as PDF or CSV.',
+          ]},
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        blocks: [
+          { type: 'troubleshoot', items: [
+            { problem: 'RFQ not appearing in inbox', solution: 'Check if the RFQ email integration is active (Admin > Partner API > Email Integration). Also check spam filters on the RFQ email address.' },
+            { problem: 'Quote pricing seems wrong', solution: 'Check the customer\'s pricing tier in their profile. Also verify the product base price and any active price overrides. The quote builder uses real-time pricing from the pricing engine.' },
+            { problem: 'Can\'t convert quote to order', solution: 'The quote may have expired. Check the validity date. If expired, you\'ll need to re-quote. Also check customer credit status — orders won\'t create if the customer is on credit hold.' },
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 23. MOBILE REP ──────────────────────────────────────────────────
+  {
+    moduleId: 'mobile-rep',
+    title: 'Sales Rep Mobile',
+    shortDescription: 'Mobile-optimized order entry and customer visit tool for outside sales representatives in the field.',
+    icon: 'PhoneAndroid',
+    roles: ['SALES_REP', 'SALES_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/mobile-rep'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Sales Rep Mobile is a mobile-optimized interface for outside sales reps visiting customers in the field. Reps can look up customer accounts, check inventory availability, enter orders on the spot, capture signatures, and log visit notes — all from a phone or tablet. Orders entered through Mobile Rep flow into the same pipeline as phone and online orders.' },
+        ],
+      },
+      {
+        id: 'using-mobile-rep',
+        title: 'How to Use Sales Rep Mobile',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Sales Rep Mobile" under Order Intake in the sidebar (or bookmark the /mobile-rep URL on your phone).',
+            'The mobile interface loads with a simplified layout optimized for touch.',
+            'Search for the customer you\'re visiting using name, account number, or phone.',
+            'The customer card shows their recent orders, pricing tier, and preferences.',
+            'Tap "New Order" to start an order. Add items by searching products or scanning barcodes.',
+            'Check real-time inventory availability for each item. If stock is low, the system suggests alternatives.',
+            'Set delivery method (Will Call, Delivery, Ship) and date.',
+            'Tap "Review Order" to see the summary with pricing.',
+            'Have the customer review and tap "Capture Signature" for approval.',
+            'Tap "Submit Order." The order enters the pipeline and the CSR team is notified.',
+          ]},
+          { type: 'tip', value: 'You can work offline if you lose cell signal. Orders will sync automatically when you reconnect.' },
+        ],
+      },
+      {
+        id: 'visit-log',
+        title: 'Logging Customer Visits',
+        blocks: [
+          { type: 'steps', items: [
+            'After submitting an order (or even without an order), tap "Log Visit."',
+            'Enter visit notes: what you discussed, customer feedback, competitive intel, upcoming project mentions.',
+            'Tap "Add Photo" to attach photos of the customer\'s facility or project.',
+            'Tag the visit type: Sales Call, Follow-Up, Issue Resolution, New Account.',
+            'The visit is logged to the customer\'s CRM record and visible to your sales manager on the Sales Dashboard.',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 24. QUALITY & COMPLIANCE ─────────────────────────────────────────
+  {
+    moduleId: 'quality-compliance',
+    title: 'Quality & Compliance',
+    shortDescription: 'QA/QC inspection management and material provenance tracking for regulatory compliance.',
+    icon: 'VerifiedUser',
+    roles: ['QA', 'QC_INSPECTOR', 'QA_MANAGER', 'COMPLIANCE', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/qaqc', '/provenance'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Quality & Compliance is the umbrella module for all QA/QC activities and regulatory compliance. QA/QC handles inspection plans, hold/release decisions, and quality certifications. Provenance tracks the origin and chain of custody of materials to satisfy regulatory requirements (Buy America, DFARS, ITAR, EN 10204, etc.).' },
+        ],
+      },
+      {
+        id: 'qaqc',
+        title: 'QA/QC',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "QA/QC" under Quality & Compliance in the sidebar.',
+            'The QA dashboard shows items pending inspection, items on hold, and recent pass/fail rates.',
+            'Click "Pending Inspections" to see the inspection queue.',
+            'Select an item to inspect. The inspection form loads with the inspection plan (what to check, tolerances, pass/fail criteria).',
+            'Enter measurements, observations, and pass/fail results for each checkpoint.',
+            'If all checkpoints pass, click "Release" — the item moves forward to the next stage.',
+            'If any checkpoint fails, click "Hold" and select the disposition: Rework, Scrap, Use As-Is (requires approval), or Return to Supplier.',
+            'Attach photos, measurement data, or documents as evidence.',
+          ]},
+          { type: 'warning', value: 'Never release material that fails a critical checkpoint without documented engineering approval. "Use As-Is" dispositions require QA Manager sign-off.' },
+        ],
+      },
+      {
+        id: 'provenance',
+        title: 'Provenance / Chain of Custody',
+        blocks: [
+          { type: 'text', value: 'Provenance tracks where materials came from and validates compliance with domestic sourcing requirements.' },
+          { type: 'steps', items: [
+            'Click "Provenance" under Quality & Compliance.',
+            'The provenance dashboard shows all materials with their origin status: Verified, Pending, or Exception.',
+            'Click a material to see its full provenance chain: country of melt, country of manufacture, mill, distributor, and your service center.',
+            'For Buy America orders, the system automatically flags materials that don\'t meet domestic sourcing requirements.',
+            'Upload supporting documents (mill certs, customs declarations, supplier attestations) to verify provenance.',
+            'Generate a provenance report for a specific order or shipment by clicking "Generate Report."',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 25. SUPPLIER QUALITY MANAGEMENT ──────────────────────────────────
+  {
+    moduleId: 'supplier-quality',
+    title: 'Supplier Quality Management',
+    shortDescription: 'Full SQM suite — inbound receiving inspection, IQC, nonconformances, SCAR management, and supplier scorecards.',
+    icon: 'Assessment',
+    roles: ['QA', 'QC_INSPECTOR', 'QA_MANAGER', 'PURCHASING', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/sqm/receiving', '/sqm/inspections', '/sqm/snc', '/sqm/scar', '/sqm/scorecards', '/sqm/suppliers'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Supplier Quality Management (SQM) tracks the quality of materials received from suppliers. It includes six sub-modules: Inbound Receiving inspection, IQC (Incoming Quality Control) inspections, SNC (Supplier Nonconformance) tracking, SCAR (Supplier Corrective Action Request) management, Scorecards for rating supplier performance, and a Supplier directory.' },
+        ],
+      },
+      {
+        id: 'inbound-receiving',
+        title: 'Inbound Receiving Inspection',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Inbound Receiving" under Supplier Quality in the sidebar.',
+            'The queue shows recently received shipments pending quality inspection.',
+            'Click a shipment to start the receiving inspection.',
+            'Verify: correct material grade, dimensions within tolerance, surface condition acceptable, heat numbers match MTR.',
+            'Record inspection results for each line item: Pass, Fail, or Conditional Accept.',
+            'If Pass — material is released to inventory.',
+            'If Fail — material is quarantined. A Supplier Nonconformance (SNC) is auto-created.',
+            'If Conditional Accept — material is released with a note, and the supplier is notified of the deviation.',
+          ]},
+        ],
+      },
+      {
+        id: 'iqc-inspections',
+        title: 'IQC Inspections',
+        blocks: [
+          { type: 'text', value: 'IQC (Incoming Quality Control) inspections are detailed quality checks performed on incoming materials based on predefined inspection plans.' },
+          { type: 'steps', items: [
+            'Click "IQC Inspections" under Supplier Quality.',
+            'The inspection queue shows materials awaiting IQC based on the inspection sampling plan (every lot, skip-lot, or random).',
+            'Select a lot to inspect. The inspection form loads with checkpoints from the quality plan.',
+            'Perform measurements (thickness, hardness, surface roughness, chemistry spot-check) and enter results.',
+            'The system auto-compares results against specification tolerances and highlights any out-of-spec values.',
+            'Submit the inspection. Pass results release the material; fail results create an SNC.',
+          ]},
+        ],
+      },
+      {
+        id: 'snc',
+        title: 'Supplier Nonconformances (SNC)',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Nonconformances" under Supplier Quality.',
+            'The SNC list shows all open and recent nonconformances with supplier, material, severity, and status.',
+            'Click an SNC to see details: what failed, inspection data, photos, and affected material.',
+            'Assign a disposition: Return to Supplier, Rework, Scrap, or Use As-Is (with approval).',
+            'If the issue is significant or recurring, escalate to a SCAR by clicking "Escalate to SCAR."',
+            'Track the SNC through resolution. Close it when the disposition is complete.',
+          ]},
+        ],
+      },
+      {
+        id: 'scar',
+        title: 'SCAR Management',
+        blocks: [
+          { type: 'text', value: 'A SCAR (Supplier Corrective Action Request) is a formal request to a supplier to investigate a quality problem, identify the root cause, and implement corrective actions to prevent recurrence.' },
+          { type: 'steps', items: [
+            'Click "SCAR Management" under Supplier Quality.',
+            'Click "Create SCAR" or escalate from an existing SNC.',
+            'Fill in the problem description, affected material/lots, impact, and required response date.',
+            'Send the SCAR to the supplier. They receive a notification and can respond through the portal.',
+            'Review the supplier\'s response: root cause analysis, containment actions, and permanent corrective actions.',
+            'Approve or reject the response. If rejected, send it back with feedback.',
+            'Verify corrective action effectiveness over the follow-up period (30, 60, 90 days).',
+            'Close the SCAR when corrective actions are verified effective.',
+          ]},
+        ],
+      },
+      {
+        id: 'scorecards',
+        title: 'Supplier Scorecards',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Scorecards" under Supplier Quality.',
+            'Each supplier has a scorecard showing quality metrics: inspection pass rate, on-time delivery %, SNC count, SCAR count, and overall score.',
+            'Scores are calculated automatically from receiving, IQC, and SNC data.',
+            'Click a supplier scorecard to see trend charts over the last 12 months.',
+            'Use the "Compare" feature to rank suppliers side by side.',
+            'Export scorecards as PDF for supplier review meetings.',
+          ]},
+        ],
+      },
+      {
+        id: 'suppliers',
+        title: 'Supplier Directory',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Suppliers" under Supplier Quality.',
+            'The directory lists all approved suppliers with name, products supplied, quality score, and status (Active, Probation, Inactive).',
+            'Click a supplier to see their profile: contact info, certifications, approved products, quality history, and open SCARs.',
+            'To add a new supplier, click "Add Supplier" and complete the qualification form.',
+            'Set the inspection level for the supplier: Level 1 (every lot), Level 2 (sampling), Level 3 (skip-lot).',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 26. CUSTOMER QUALITY ─────────────────────────────────────────────
+  {
+    moduleId: 'customer-quality',
+    title: 'Customer Quality',
+    shortDescription: 'Handle customer claims, RMAs, corrective actions, and credit/refund approvals.',
+    icon: 'SupportAgent',
+    roles: ['CSR', 'QA', 'QA_MANAGER', 'BRANCH_MANAGER', 'FINANCE', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/customer-quality/claims', '/customer-quality/rma', '/customer-quality/car', '/customer-quality/credits'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Customer Quality manages quality issues reported by customers. It covers four workflows: Claims Inbox (receiving and triaging customer complaints), RMA (Return Material Authorization) for handling returns, CAR (Corrective Action Reports) for investigating root causes, and Credits & Approvals for issuing refunds or credits.' },
+        ],
+      },
+      {
+        id: 'claims-inbox',
+        title: 'Claims Inbox',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Claims Inbox" under Customer Quality in the sidebar.',
+            'The inbox shows all open customer claims with claim number, customer, date, product, issue type, and status.',
+            'To log a new claim, click "New Claim."',
+            'Select the customer and the order/shipment the claim is against.',
+            'Choose the issue type: Dimensional Error, Wrong Grade, Damage, Surface Defect, Processing Error, Shortage, or Other.',
+            'Enter the claim description and attach photos or documents from the customer.',
+            'Assign the claim to a QA investigator.',
+            'The investigator reviews the claim, checks production records, and determines the disposition.',
+          ]},
+        ],
+      },
+      {
+        id: 'rma',
+        title: 'RMA Management',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "RMA Management" under Customer Quality.',
+            'If a claim requires a return, click "Create RMA" from the claim detail page.',
+            'The RMA form generates a return authorization number and return shipping instructions.',
+            'Send the RMA to the customer with instructions on how to return the material.',
+            'When the return arrives, the receiving team logs it against the RMA number.',
+            'QA inspects the returned material and confirms the defect.',
+            'The RMA is resolved with a replacement shipment, credit, or repair.',
+          ]},
+        ],
+      },
+      {
+        id: 'car',
+        title: 'CAR Management (Corrective Action)',
+        blocks: [
+          { type: 'text', value: 'A CAR (Corrective Action Report) documents the root cause investigation and corrective actions taken to prevent the quality issue from recurring.' },
+          { type: 'steps', items: [
+            'Click "CAR Management" under Customer Quality.',
+            'CARs are created from claims that indicate a systemic issue (not a one-off).',
+            'Click "Create CAR" and link it to one or more claims.',
+            'Fill in the root cause analysis: what happened, why, and what process or control failed.',
+            'Define corrective actions: what will change, who is responsible, and by when.',
+            'Track implementation of each corrective action to completion.',
+            'After the corrective actions are in place, monitor for recurrence over 30-90 days.',
+            'Close the CAR when effectiveness is verified.',
+          ]},
+        ],
+      },
+      {
+        id: 'credits',
+        title: 'Credits & Approvals',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Credits & Approvals" under Customer Quality.',
+            'The credit queue shows all pending credit/refund requests arising from claims or RMAs.',
+            'Each request shows the claim number, customer, amount, and reason.',
+            'Review the request and supporting documentation.',
+            'Approve, modify, or reject the credit. Credits above a threshold require manager or finance approval.',
+            'Approved credits are posted to the customer\'s account and reflected on their next invoice.',
+          ]},
+          { type: 'tip', value: 'Use the "Credit History" tab to see all credits issued to a customer over time. High credit volumes for a customer may indicate a recurring quality issue that needs a CAR.' },
+        ],
+      },
+    ],
+  },
+
+  // ─── 27. CONTRACTOR PORTAL ────────────────────────────────────────────
+  {
+    moduleId: 'contractor-portal',
+    title: 'Contractor Portal',
+    shortDescription: 'Visitor and contractor management — kiosk check-in, pre-registration, active visitor tracking, and contractor registry.',
+    icon: 'Badge',
+    roles: ['SECURITY', 'RECEPTION', 'EHS', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/contractors/active', '/contractors/registry', '/contractors/invitations', '/contractors/kiosk'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Contractor Portal manages all visitors and contractors who enter your facility. It ensures that every visitor is registered, has completed required safety briefings, holds valid certifications, and is accounted for while on-site. The module includes four sub-pages: Active Visitors (who\'s on-site now), Contractor Registry (approved contractor companies), Pre-Registration (invitations sent before arrival), and Check-In Kiosk (self-service arrival).' },
+        ],
+      },
+      {
+        id: 'check-in-kiosk',
+        title: 'Check-In Kiosk',
+        blocks: [
+          { type: 'text', value: 'The kiosk is a tablet or terminal at the entrance where visitors check themselves in.' },
+          { type: 'steps', items: [
+            'Visitor taps "Check In" on the kiosk screen.',
+            'If pre-registered, they enter their name or scan the QR code from their invitation email.',
+            'If a walk-in, they enter their name, company, purpose of visit, and who they\'re visiting.',
+            'The system checks if they need a safety briefing. If required, a short video or acknowledgment plays.',
+            'The visitor confirms they agree to site rules and safety requirements.',
+            'A visitor badge prints automatically with their name, photo (from webcam), company, host, and badge expiry time.',
+            'The host is notified by email/SMS that their visitor has arrived.',
+          ]},
+          { type: 'warning', value: 'Contractors performing hot work, confined space entry, or working at heights MUST have valid permits before being allowed past the kiosk. The system checks this automatically.' },
+        ],
+      },
+      {
+        id: 'active-visitors',
+        title: 'Active Visitors',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Active Visitors" under Contractor Portal in the sidebar.',
+            'The live board shows everyone currently checked in: name, company, host, check-in time, and area.',
+            'In an emergency evacuation, use this screen as the accountability roster.',
+            'Click a visitor to see their details, safety briefing status, and certifications.',
+            'To manually check out a visitor, click "Check Out" on their row.',
+            'Visitors who exceed their badge expiry time are highlighted in yellow for follow-up.',
+          ]},
+          { type: 'tip', value: 'Display the Active Visitors board on a monitor at the front desk and at the emergency muster point for real-time awareness.' },
+        ],
+      },
+      {
+        id: 'pre-registration',
+        title: 'Pre-Registration / Invitations',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Pre-Registration" under Contractor Portal.',
+            'Click "Invite Visitor" to send a pre-registration invitation.',
+            'Enter the visitor\'s name, email, company, purpose, and expected arrival date/time.',
+            'Select the host (the employee they\'re visiting).',
+            'The visitor receives an email with a QR code and any pre-arrival requirements (safety video, documents to bring).',
+            'When they arrive at the kiosk, they scan the QR code for fast check-in.',
+          ]},
+        ],
+      },
+      {
+        id: 'contractor-registry',
+        title: 'Contractor Registry',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Contractor Registry" under Contractor Portal.',
+            'The registry lists all approved contractor companies with name, services, insurance expiry, and status.',
+            'Click a contractor to see their profile: company details, insurance certificates, worker certifications, and visit history.',
+            'To add a new contractor company, click "Add Contractor" and enter their details.',
+            'Upload insurance certificates and set expiry alerts so you\'re notified before coverage lapses.',
+            'Workers from this company can be pre-approved for site access once the contractor is in the registry.',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 28. TRAINING ENGINE ──────────────────────────────────────────────
+  {
+    moduleId: 'training-engine',
+    title: 'Training Engine',
+    shortDescription: 'Manage training programs, course catalog, employee certifications, and competency tracking.',
+    icon: 'School',
+    roles: ['HR', 'TRAINING_MANAGER', 'SHOP_SUPERVISOR', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/training/dashboard', '/training/courses', '/training/my-certs', '/training/matrix'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Training Engine manages your workforce training and certification programs. It includes a training dashboard with compliance status, a course catalog for available training programs, individual certification tracking, and a competency matrix showing which employees are qualified for which tasks.' },
+        ],
+      },
+      {
+        id: 'training-dashboard',
+        title: 'Training Dashboard',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Training Dashboard" under Training Engine in the sidebar.',
+            'The dashboard shows compliance overview: percentage of employees with current certifications, expiring soon, and overdue.',
+            'Red badges indicate overdue certifications that require immediate attention.',
+            'Yellow badges indicate certifications expiring within 30 days.',
+            'Click a category (Safety, Equipment Operation, Quality, Compliance) to drill down into specific training status.',
+            'The "Upcoming Training" panel shows scheduled training sessions with date, trainer, and enrolled employees.',
+          ]},
+        ],
+      },
+      {
+        id: 'course-catalog',
+        title: 'Course Catalog',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Course Catalog" under Training Engine.',
+            'Browse available courses by category: Safety, Equipment Operation, Quality Procedures, Regulatory Compliance, Software Training.',
+            'Click a course to see its details: description, duration, format (classroom, online, hands-on), prerequisites, and recertification interval.',
+            'To enroll employees, click "Enroll" and select the employees from the dropdown.',
+            'Set the training date and send enrollment notifications.',
+            'To create a new course, click "Add Course" and fill in the course template.',
+          ]},
+        ],
+      },
+      {
+        id: 'my-certs',
+        title: 'My Certifications',
+        blocks: [
+          { type: 'text', value: 'Individual employees can view their own certification status here.' },
+          { type: 'steps', items: [
+            'Click "My Certifications" under Training Engine.',
+            'See a list of all your certifications with status: Current, Expiring Soon, Expired.',
+            'Click a certification to see details: completion date, expiry date, trainer, and certificate document.',
+            'If a recertification is due, the "Schedule Recertification" button appears — click it to request a training slot.',
+            'Download your certification documents by clicking "Download Certificate."',
+          ]},
+        ],
+      },
+      {
+        id: 'competency-matrix',
+        title: 'Competency Matrix',
+        blocks: [
+          { type: 'text', value: 'The competency matrix is a grid showing employees versus skills/certifications. It helps supervisors quickly see who is qualified for what.' },
+          { type: 'steps', items: [
+            'Click "Competency Matrix" under Training Engine.',
+            'The matrix displays employees as rows and competencies/certifications as columns.',
+            'Green = certified and current. Yellow = expiring soon. Red = expired or missing. Gray = not applicable.',
+            'Use the department/shift filter to narrow the view to your team.',
+            'Click any cell to see the certification detail for that employee-competency combination.',
+            'Export the matrix as PDF or CSV for offline review.',
+          ]},
+          { type: 'tip', value: 'Use the competency matrix when planning shift assignments to ensure every shift has operators certified for all required equipment.' },
+        ],
+      },
+    ],
+  },
+
+  // ─── 29. PRODUCTION QUALITY ───────────────────────────────────────────
+  {
+    moduleId: 'production-quality',
+    title: 'Production Quality',
+    shortDescription: 'In-process quality inspections, SPC charting, NCR management, and full production traceability.',
+    icon: 'FactCheck',
+    roles: ['QA', 'QC_INSPECTOR', 'QA_MANAGER', 'SHOP_SUPERVISOR', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/production-quality/dashboard', '/production-quality/inspections', '/production-quality/ncr', '/production-quality/spc', '/production-quality/trace'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Production Quality monitors quality during the manufacturing process — not just at receiving (SQM) or at final shipment, but while work is happening on the shop floor. It includes a quality dashboard, in-process inspection execution, NCR (Non-Conformance Report) management, SPC (Statistical Process Control) charts for monitoring process capability, and traceability for linking inputs to outputs.' },
+        ],
+      },
+      {
+        id: 'quality-dashboard',
+        title: 'Quality Dashboard',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Quality Dashboard" under Production Quality in the sidebar.',
+            'The dashboard displays: first-pass yield, scrap rate, NCR count, inspection pass rate, and SPC alarm count.',
+            'Use the time range selector to view trends by day, week, month, or quarter.',
+            'Click any KPI card to drill down into details (e.g., click scrap rate to see scrap by product, machine, or shift).',
+            'The "Alerts" panel highlights SPC alarms, overdue inspections, and open NCRs requiring action.',
+          ]},
+        ],
+      },
+      {
+        id: 'inspections',
+        title: 'In-Process Inspections',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Inspections" under Production Quality.',
+            'The inspection queue shows jobs with pending in-process inspection points.',
+            'Click a job to open its inspection form. The form is auto-generated from the inspection plan attached to the product/process.',
+            'Enter measurements at each checkpoint (e.g., cut length, bend angle, surface finish, hardness).',
+            'The system compares your measurements against the spec limits and shows pass/fail in real time.',
+            'If all checkpoints pass, click "Accept" to release the job for the next operation.',
+            'If any checkpoint fails, click "Hold" and create an NCR.',
+            'Attach photos, gauge calibration records, or other evidence to the inspection record.',
+          ]},
+        ],
+      },
+      {
+        id: 'ncr',
+        title: 'NCR Management',
+        blocks: [
+          { type: 'text', value: 'An NCR (Non-Conformance Report) documents any product or process deviation from specification.' },
+          { type: 'steps', items: [
+            'Click "NCR Management" under Production Quality.',
+            'The NCR list shows all open, pending, and recently closed NCRs.',
+            'To create a new NCR, click "New NCR" and link it to the job, operation, and inspection that found the issue.',
+            'Describe the non-conformance: what failed, how it was detected, and the severity (Minor, Major, Critical).',
+            'Assign a disposition: Rework, Scrap, Use As-Is (with engineering approval), or Return to Previous Operation.',
+            'If rework, create a rework job order and link it to the NCR.',
+            'Track the NCR through resolution. Record the corrective action taken.',
+            'Close the NCR when the disposition is complete and verified.',
+          ]},
+          { type: 'warning', value: 'Critical NCRs require immediate containment. All potentially affected material must be quarantined until the scope of the issue is determined.' },
+        ],
+      },
+      {
+        id: 'spc',
+        title: 'SPC Charts',
+        blocks: [
+          { type: 'text', value: 'SPC (Statistical Process Control) charts monitor process stability by plotting measurement data over time against control limits.' },
+          { type: 'steps', items: [
+            'Click "SPC Charts" under Production Quality.',
+            'Select the process, machine, or product to monitor from the dropdown.',
+            'The chart displays data points over time with upper and lower control limits (UCL/LCL) and the center line.',
+            'Green points are in control. Yellow points are warning zone (between 1σ and 2σ from center). Red points are out of control.',
+            'The system automatically detects SPC rule violations (e.g., 7 consecutive points above/below center, 2 of 3 points beyond 2σ).',
+            'When an alarm triggers, click it to see the rule violated and suggested investigation actions.',
+            'Use the "Capability" tab to see Cp and Cpk values for the selected process.',
+          ]},
+          { type: 'tip', value: 'SPC is most valuable when data is collected consistently. Make sure operators record measurements at every required inspection point to keep charts meaningful.' },
+        ],
+      },
+      {
+        id: 'traceability',
+        title: 'Production Traceability',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Traceability" under Production Quality.',
+            'Search by job number, unit ID, heat number, or order number.',
+            'The traceability tree shows the complete genealogy: input materials → processing operations → output pieces → packaging → shipment.',
+            'Click any node to see its detail: timestamps, operators, machines, inspection results.',
+            'Use "Forward Trace" to find all output pieces and customers affected by a specific input material.',
+            'Use "Backward Trace" to find all input materials and sources for a specific output piece.',
+            'Export the traceability report as PDF for customer requests or regulatory audits.',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 30. MAINTENANCE ──────────────────────────────────────────────────
+  {
+    moduleId: 'maintenance',
+    title: 'Maintenance',
+    shortDescription: 'Equipment maintenance management — work orders, PM schedules, asset registry, and spare parts inventory.',
+    icon: 'Build',
+    roles: ['MAINTENANCE', 'MAINTENANCE_MANAGER', 'SHOP_SUPERVISOR', 'PLANT_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/maintenance/dashboard', '/maintenance/work-orders', '/maintenance/assets', '/maintenance/pm-schedules', '/maintenance/parts'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Maintenance manages all equipment upkeep activities. It includes a maintenance dashboard for KPIs, a work order system for reactive and planned repairs, a PM (Preventive Maintenance) scheduler, an asset registry for tracking all equipment, and a spare parts inventory. The goal is to maximize equipment uptime and minimize unplanned breakdowns.' },
+        ],
+      },
+      {
+        id: 'maintenance-dashboard',
+        title: 'Maintenance Dashboard',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Maintenance Dashboard" under Maintenance in the sidebar.',
+            'The dashboard shows KPIs: overall equipment availability, open work orders, overdue PMs, MTBF (mean time between failures), and MTTR (mean time to repair).',
+            'Red indicators show critical issues: equipment down, overdue PMs past threshold, or safety-related work orders.',
+            'Click any KPI to drill down into the underlying data.',
+            'The "Today\'s Schedule" panel shows maintenance tasks scheduled for today with assigned technicians.',
+          ]},
+        ],
+      },
+      {
+        id: 'work-orders',
+        title: 'Maintenance Work Orders',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Work Orders" under Maintenance.',
+            'The list shows all work orders with WO number, asset, priority, status, and assigned technician.',
+            'To create a new work order, click "New Work Order."',
+            'Select the asset (machine/equipment) from the dropdown.',
+            'Enter the problem description, priority (Emergency, High, Medium, Low), and requested completion date.',
+            'Assign a technician or maintenance team.',
+            'When work begins, the technician updates status to "In Progress" and logs labor hours.',
+            'Record parts used from the spare parts inventory (auto-deducted from stock).',
+            'When complete, the technician enters completion notes and changes status to "Complete."',
+            'The supervisor reviews and closes the work order.',
+          ]},
+          { type: 'tip', value: 'Anyone can submit a work order request. Operators should submit a request immediately when they notice equipment problems, strange noises, or safety concerns.' },
+        ],
+      },
+      {
+        id: 'pm-schedules',
+        title: 'PM Schedules',
+        blocks: [
+          { type: 'text', value: 'PM (Preventive Maintenance) schedules define recurring maintenance tasks based on time intervals or usage counts.' },
+          { type: 'steps', items: [
+            'Click "PM Schedules" under Maintenance.',
+            'The PM list shows all scheduled preventive maintenance tasks with asset, frequency, next due date, and status.',
+            'Click "Add PM Schedule" to create a new recurring task.',
+            'Select the asset, define the task (lubrication, filter change, belt inspection, etc.), and set the frequency (daily, weekly, monthly, or by usage hours/cycles).',
+            'Assign a default technician or team.',
+            'When a PM comes due, the system auto-generates a work order.',
+            'After completion, the next due date is automatically calculated based on the frequency.',
+          ]},
+          { type: 'warning', value: 'Skipping preventive maintenance increases the risk of unplanned breakdowns. If a PM must be deferred, document the reason and the new scheduled date.' },
+        ],
+      },
+      {
+        id: 'asset-registry',
+        title: 'Asset Registry',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Asset Registry" under Maintenance.',
+            'The registry lists all equipment and assets with ID, name, type, location, status (Running, Down, Maintenance, Decommissioned), and install date.',
+            'Click an asset to see its profile: specifications, maintenance history, PM schedules, parts list, and documents (manuals, drawings).',
+            'To add a new asset, click "Add Asset" and enter the details: name, type, manufacturer, model, serial number, install date, location, and criticality rating.',
+            'Attach manuals, warranty documents, and photos to the asset record.',
+          ]},
+        ],
+      },
+      {
+        id: 'parts-inventory',
+        title: 'Spare Parts Inventory',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Parts Inventory" under Maintenance.',
+            'The parts list shows all spare parts with part number, description, quantity on hand, reorder point, and associated assets.',
+            'When a part is used on a work order, it\'s auto-deducted from inventory.',
+            'When stock falls below the reorder point, the system generates a purchase request notification.',
+            'Click "Add Part" to add a new spare part to the inventory.',
+            'Link parts to specific assets so the system knows which parts go with which machines.',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 31. PACKAGING & CUSTODY ──────────────────────────────────────────
+  {
+    moduleId: 'packaging-custody',
+    title: 'Packaging & Custody',
+    shortDescription: 'Full packaging workflow — queue, QC release, labeling, staging, chain of custody tracking, and document management.',
+    icon: 'Inventory2',
+    roles: ['PACKAGING', 'WAREHOUSE', 'QA', 'SHIPPING', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/packaging/queue', '/packaging/qc-release', '/packaging/labels', '/packaging/staging', '/packaging/custody', '/packaging/docs'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Packaging & Custody manages the complete packaging process from finished production through dock staging. It includes a packaging queue (jobs ready to pack), QC release station (final quality sign-off), label management (printing and applying labels/tags), staging & docks (organizing packages for pickup), chain of custody (tracking who handled what and when), and a documentation center (MTRs, certs, packing lists).' },
+        ],
+      },
+      {
+        id: 'packaging-queue',
+        title: 'Packaging Queue',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Packaging Queue" under Packaging & Custody in the sidebar.',
+            'The queue shows all completed jobs ready for packaging, sorted by priority and due date.',
+            'Click a job to see what needs to be packaged: pieces, dimensions, weight, and any special packaging instructions from the customer.',
+            'Select the packaging method: banding, palletizing, boxing, or crating.',
+            'Enter package details: piece count per package, package weight, package dimensions.',
+            'Scan or enter each piece being added to the package for traceability.',
+            'Click "Complete Package" when done. The package gets a unique package ID.',
+          ]},
+        ],
+      },
+      {
+        id: 'qc-release',
+        title: 'QC Release Station',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "QC Release Station" under Packaging & Custody.',
+            'Packages pending QC release are listed here.',
+            'Select a package and perform the final quality check: correct pieces, dimensions verified, no damage, labels correct.',
+            'If everything checks out, click "Release." The package is cleared for shipping.',
+            'If there\'s an issue, click "Hold" and enter the reason. The package is flagged and routed back for correction.',
+          ]},
+        ],
+      },
+      {
+        id: 'label-management',
+        title: 'Label Management',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Label Management" under Packaging & Custody.',
+            'Select a package or batch of packages to generate labels for.',
+            'Choose label type: shipping label, product label, drop tag, customer-specific label.',
+            'Preview the label. Verify barcode, heat number, grade, dimensions, and customer info.',
+            'Click "Print" to send to the label printer.',
+            'Scan the printed label onto the package to confirm application.',
+          ]},
+        ],
+      },
+      {
+        id: 'staging-docks',
+        title: 'Staging & Docks',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Staging & Docks" under Packaging & Custody.',
+            'The staging board shows dock assignments: which dock each shipment is staged at and its pickup time.',
+            'Drag packages to dock positions to assign staging locations.',
+            'The board uses color coding: Green = ready for pickup, Yellow = partially staged, Red = missing packages.',
+            'When the carrier arrives, check off packages as they\'re loaded onto the truck.',
+          ]},
+        ],
+      },
+      {
+        id: 'chain-of-custody',
+        title: 'Chain of Custody',
+        blocks: [
+          { type: 'text', value: 'Chain of Custody tracks every handoff of material — from production completion through packaging, staging, loading, and delivery.' },
+          { type: 'steps', items: [
+            'Click "Chain of Custody" under Packaging & Custody.',
+            'Search by package ID, order number, or heat number.',
+            'The custody timeline shows every touchpoint: who handled the material, when, and where.',
+            'Each handoff is recorded with a timestamp, operator ID, and location.',
+            'Use this for compliance audits, customer inquiries, or loss investigations.',
+          ]},
+        ],
+      },
+      {
+        id: 'documentation-center',
+        title: 'Documentation Center',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Documentation Center" under Packaging & Custody.',
+            'The document center stores all shipping documents: MTRs, certificates of conformance, packing lists, BOLs, and customer-specific documentation.',
+            'Search by order number, shipment number, or customer name.',
+            'Click "Generate Document" to create a new document from templates.',
+            'Attach documents to specific shipments or orders.',
+            'Customers can access their documents through the customer portal or via emailed links.',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 32. DROP TAG ENGINE ──────────────────────────────────────────────
+  {
+    moduleId: 'drop-tag-engine',
+    title: 'Drop Tag Engine',
+    shortDescription: 'Dedicated tag lifecycle — queue, print center, apply station, listings, staging, loading, and traceability.',
+    icon: 'Label',
+    roles: ['PACKAGING', 'WAREHOUSE', 'SHIPPING', 'SHOP_SUPERVISOR', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/drop-tags/queue', '/drop-tags/print-center', '/drop-tags/apply', '/drop-tags/listings', '/drop-tags/staging', '/drop-tags/load', '/drop-tags/traceability'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Drop Tag Engine is a dedicated module for managing the lifecycle of drop tags (identification tags attached to individual pieces, bundles, or packages). It covers the full cycle: generating tags in the queue, printing at the print center, applying at the apply station, listing all active tags, staging tagged material, loading onto trucks, and tracing tags through the supply chain.' },
+        ],
+      },
+      {
+        id: 'tag-queue',
+        title: 'Packaging Queue (Tag Generation)',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Packaging Queue" under Drop Tag Engine in the sidebar.',
+            'The queue shows all items needing drop tags: completed jobs, cut pieces, and packages awaiting tagging.',
+            'Each item shows the order number, customer, product, quantity of tags needed, and priority.',
+            'Click "Generate Tags" on an item to create the tag records with unique tag IDs.',
+            'Tags are auto-populated with: tag ID, heat number, grade, dimensions, weight, customer, and order number.',
+            'Review the tag data. Click "Send to Print" to move tags to the Print Center queue.',
+          ]},
+        ],
+      },
+      {
+        id: 'print-center',
+        title: 'Print Center',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Print Center" under Drop Tag Engine.',
+            'The print queue shows all tags ready to print with tag ID, tag type, and printer assignment.',
+            'Select tags to print (individually or in batches).',
+            'Choose the printer and tag format (metal tag, paper tag, barcode label, RFID tag).',
+            'Click "Print." The system sends the job to the selected printer.',
+            'Verify printed tags for readability and correct information.',
+            'Mark tags as "Printed" to move them to the Apply Station queue.',
+          ]},
+        ],
+      },
+      {
+        id: 'apply-station',
+        title: 'Apply Station',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Apply Station" under Drop Tag Engine.',
+            'The apply queue shows printed tags ready to be attached to physical pieces.',
+            'Scan the piece/package barcode, then scan the drop tag.',
+            'The system confirms the match (correct tag for this piece) with a green checkmark.',
+            'If it\'s a mismatch, the system shows a red alert. Do NOT apply the tag — find the correct one.',
+            'After applying, the tag status changes to "Applied" and the piece is traceable by tag ID.',
+          ]},
+          { type: 'warning', value: 'Applying the wrong tag to a piece causes a traceability break. Always scan both the piece and the tag to verify the match before attaching.' },
+        ],
+      },
+      {
+        id: 'listings',
+        title: 'Tag Listings',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Listings" under Drop Tag Engine.',
+            'The tag listing is a searchable table of all tags: generated, printed, applied, staged, shipped.',
+            'Use filters for status, date range, customer, order, or heat number.',
+            'Click any tag to see its full lifecycle: when generated, printed, applied, and to which piece/package.',
+            'Export listings as CSV or PDF for inventory audits or customer documentation.',
+          ]},
+        ],
+      },
+      {
+        id: 'staging-board',
+        title: 'Staging Board',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Staging Board" under Drop Tag Engine.',
+            'The staging board shows tagged material organized by shipment and dock location.',
+            'Scan tags as material is moved to the staging area. The board updates in real time.',
+            'Verify all tags for a shipment are accounted for before the truck is loaded.',
+            'The board shows: Green = all tags staged, Yellow = partially staged, Red = tags missing.',
+          ]},
+        ],
+      },
+      {
+        id: 'loading',
+        title: 'Loading Screen',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Loading Screen" under Drop Tag Engine.',
+            'Select the shipment being loaded.',
+            'As each piece is loaded onto the truck, scan its drop tag.',
+            'The system checks off each piece and updates the load manifest in real time.',
+            'If a piece is scanned that doesn\'t belong to this shipment, the system alerts you immediately.',
+            'When all pieces are loaded, click "Complete Loading." The shipment status changes to "Loaded."',
+          ]},
+        ],
+      },
+      {
+        id: 'traceability',
+        title: 'Tag Traceability',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Traceability" under Drop Tag Engine.',
+            'Enter a tag ID, heat number, or order number to trace.',
+            'The traceability view shows the complete tag journey: generation → printing → application → staging → loading → shipping → delivery.',
+            'Each step includes timestamp, operator, and location.',
+            'Use "Forward Trace" from a heat number to find all tags and customers who received material from that heat.',
+            'Use "Reverse Trace" from a customer complaint to trace back to the exact heat and mill source.',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 33. FREIGHT & DELIVERY ───────────────────────────────────────────
+  {
+    moduleId: 'freight-delivery',
+    title: 'Freight & Delivery',
+    shortDescription: 'Plan shipments, compare freight rates, track deliveries in real time, and manage delivery exceptions.',
+    icon: 'LocalShipping',
+    roles: ['SHIPPING', 'LOGISTICS', 'DISPATCH', 'CSR', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/freight/planner', '/freight/comparison', '/freight/tracking', '/freight/exceptions'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Freight & Delivery focuses specifically on freight management: planning outbound shipments, comparing carrier rates to find the best option, tracking deliveries with real-time updates, and handling delivery exceptions (damages, delays, refused shipments). This module works alongside Logistics but focuses on the freight/carrier side of transportation.' },
+        ],
+      },
+      {
+        id: 'shipment-planner',
+        title: 'Shipment Planner',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Shipment Planner" under Freight & Delivery in the sidebar.',
+            'The planner shows all packages staged and ready to ship, organized by destination region.',
+            'Select packages to build into a shipment. The system calculates total weight, dimensions, and freight class.',
+            'Choose delivery priority: Standard, Expedited, or Hot Rush.',
+            'Click "Get Rates" to request carrier quotes (see Freight Comparison).',
+            'Select the carrier and service level.',
+            'Generate BOL and shipping documents.',
+            'Schedule the pickup with the carrier.',
+          ]},
+        ],
+      },
+      {
+        id: 'freight-comparison',
+        title: 'Freight Comparison',
+        blocks: [
+          { type: 'text', value: 'Compare real-time freight rates from multiple carriers to find the best price and transit time for each shipment.' },
+          { type: 'steps', items: [
+            'Click "Freight Comparison" under Freight & Delivery.',
+            'Enter shipment details: origin, destination, weight, dimensions, and freight class.',
+            'Click "Compare Rates." The system queries connected carriers and displays quotes in a comparison table.',
+            'The table shows: carrier name, service level, transit time, cost, and reliability score (based on historical performance).',
+            'Sort by price, transit time, or reliability to find the best option.',
+            'Click "Select" on your chosen carrier to apply the rate to the shipment.',
+          ]},
+          { type: 'tip', value: 'The reliability score is calculated from historical data — on-time delivery rate and damage claim rate for that carrier and lane. A cheaper rate isn\'t always better if the carrier has reliability issues.' },
+        ],
+      },
+      {
+        id: 'tracking-board',
+        title: 'Tracking Board',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Tracking Board" under Freight & Delivery.',
+            'The board shows all in-transit shipments with carrier, status, ETA, and last update.',
+            'Status colors: Green = on time, Yellow = minor delay, Red = significant delay or exception.',
+            'Click a shipment to see the tracking timeline with all carrier scan events.',
+            'Click "Send Update to Customer" to email the customer a delivery status update.',
+            'The "Delivery Today" section highlights all shipments expected to deliver today.',
+          ]},
+        ],
+      },
+      {
+        id: 'exception-inbox',
+        title: 'Exception Inbox',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Exception Inbox" under Freight & Delivery.',
+            'The inbox shows all delivery exceptions: refused deliveries, damage reports, address issues, missed appointments, and carrier delays.',
+            'Click an exception to see details and the affected shipment.',
+            'Assign the exception to a handler (shipping coordinator or CSR).',
+            'Take action: redeliver, reroute, file a carrier claim, or notify the customer.',
+            'Document the resolution and close the exception.',
+          ]},
+          { type: 'warning', value: 'Delivery exceptions must be addressed within 24 hours. Unresolved exceptions can lead to customer dissatisfaction and carrier claim deadlines expiring.' },
+        ],
+      },
+    ],
+  },
+
+  // ─── 34. SAFETY & EHS ────────────────────────────────────────────────
+  {
+    moduleId: 'safety-ehs',
+    title: 'Safety & EHS',
+    shortDescription: 'Comprehensive safety management — dashboard, stop-work authority, incidents, inspections, permits, training, observations, and CAPA.',
+    icon: 'HealthAndSafety',
+    roles: ['EHS', 'SAFETY_OFFICER', 'SHOP_SUPERVISOR', 'PLANT_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/safety', '/safety/stop-work', '/safety/assistant', '/safety/incidents', '/safety/inspections', '/safety/permits', '/safety/training', '/safety/observations', '/safety/capa'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Safety & EHS (Environment, Health & Safety) is a comprehensive safety management system. It covers: Safety Dashboard (overall safety metrics and trends), Stop-Work Authority (empowering anyone to halt unsafe operations), Safety Assistant (AI-powered safety guidance), Incident Management (reporting and investigating incidents), Safety Inspections (scheduled workplace safety audits), Permits (hot work, confined space, LOTO permits), Safety Training (safety-specific training tracking), Behavioral Observations (safety observation cards), and CAPA (Corrective and Preventive Actions).' },
+        ],
+      },
+      {
+        id: 'safety-dashboard',
+        title: 'Safety Dashboard',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Safety Dashboard" under Safety & EHS in the sidebar.',
+            'The dashboard displays key safety metrics: days since last recordable incident, total incident count (YTD), near-miss count, open investigations, inspection compliance rate, and training compliance.',
+            'The trend chart shows incident rates over the past 12 months.',
+            'Click any metric to drill down into the underlying data.',
+            'The "Safety Alerts" panel shows active safety bulletins, recent stop-work events, and overdue inspections.',
+          ]},
+        ],
+      },
+      {
+        id: 'stop-work',
+        title: 'Stop-Work Authority',
+        blocks: [
+          { type: 'text', value: 'Anyone — from the newest operator to the plant manager — has the authority and responsibility to stop work if they see an unsafe condition. This module makes it easy to exercise that right.' },
+          { type: 'steps', items: [
+            'Click "Stop-Work Authority" under Safety & EHS.',
+            'Click "Issue Stop-Work" to halt an unsafe operation.',
+            'Select the area or machine involved.',
+            'Describe the hazard: what is unsafe and why work must stop.',
+            'The system immediately notifies the supervisor, EHS team, and affected operators.',
+            'Work cannot resume until the hazard is resolved and a "Resume Work" authorization is entered by a supervisor or EHS officer.',
+            'The stop-work event is logged with full details for follow-up investigation.',
+          ]},
+          { type: 'warning', value: 'There are NO negative consequences for issuing a stop-work. It is always better to stop and investigate than to risk an injury. The company fully supports stop-work authority at all levels.' },
+        ],
+      },
+      {
+        id: 'safety-assistant',
+        title: 'Safety Assistant (AI)',
+        blocks: [
+          { type: 'text', value: 'The Safety Assistant is an AI-powered chatbot that answers safety-related questions, looks up procedures, and provides guidance for hazard assessment.' },
+          { type: 'steps', items: [
+            'Click "Safety Assistant" under Safety & EHS.',
+            'Type your safety question in natural language (e.g., "What PPE do I need for plasma cutting?" or "What\'s the lockout procedure for the shear?").',
+            'The assistant retrieves the relevant safety procedure, regulation, or SDS (Safety Data Sheet).',
+            'For complex situations, the assistant suggests consulting the EHS team directly.',
+          ]},
+        ],
+      },
+      {
+        id: 'incidents',
+        title: 'Incident Reporting & Investigation',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Incidents" under Safety & EHS.',
+            'The incident log shows all reported incidents with date, type, severity, status, and investigator.',
+            'To report a new incident, click "Report Incident."',
+            'Select the incident type: Injury, Near Miss, Property Damage, Environmental Release, or Vehicle Accident.',
+            'Enter details: date/time, location, people involved, description of what happened, and immediate actions taken.',
+            'Attach photos, witness statements, or documents.',
+            'Assign an investigator and target investigation completion date.',
+            'The investigator completes a root cause analysis (5-Why, Fishbone, or Fault Tree).',
+            'Record corrective actions and track them to completion.',
+            'Close the incident when all actions are verified complete.',
+          ]},
+        ],
+      },
+      {
+        id: 'inspections',
+        title: 'Safety Inspections',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Inspections" under Safety & EHS.',
+            'The inspection schedule shows all upcoming and overdue safety audits.',
+            'Click a scheduled inspection to start it. The checklist loads with items to verify.',
+            'Walk through the area and check each item: fire extinguishers, machine guards, PPE compliance, housekeeping, etc.',
+            'Mark each item as Pass, Fail, or N/A. Add photos and notes for any deficiencies.',
+            'Submit the inspection. Failed items auto-generate corrective action tasks.',
+            'Track corrective action completion from the Inspections dashboard.',
+          ]},
+        ],
+      },
+      {
+        id: 'permits',
+        title: 'Safety Permits',
+        blocks: [
+          { type: 'text', value: 'Certain high-risk activities require permits before work can begin: hot work (welding, cutting, grinding in non-designated areas), confined space entry, lockout/tagout (LOTO), and working at heights.' },
+          { type: 'steps', items: [
+            'Click "Permits" under Safety & EHS.',
+            'Click "Request Permit" and select the permit type.',
+            'Fill in the details: location, scope of work, duration, personnel involved, and hazard controls.',
+            'The system routes the permit to the authorizing person (supervisor, EHS, or both) for approval.',
+            'Once approved, the permit is active for the specified duration.',
+            'The permit holder must verify all controls are in place before starting work.',
+            'When work is complete, close the permit. For hot work, a fire watch period is required before closing.',
+          ]},
+          { type: 'warning', value: 'Working without a required permit is a serious safety violation. If you\'re unsure whether a permit is needed, ask EHS before starting the work.' },
+        ],
+      },
+      {
+        id: 'safety-training',
+        title: 'Safety Training',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Training" under Safety & EHS.',
+            'This is the safety-specific training tracker (separate from the general Training Engine).',
+            'View safety training requirements by role: which safety courses are required and their recertification intervals.',
+            'See compliance status: who is current, who is expiring, and who is overdue.',
+            'Schedule safety training sessions: toolbox talks, annual safety refreshers, equipment-specific safety training.',
+            'Record attendance and completion for each session.',
+          ]},
+        ],
+      },
+      {
+        id: 'observations',
+        title: 'Behavioral Safety Observations',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Observations" under Safety & EHS.',
+            'Behavioral observations are informal safety checks where anyone notes safe or at-risk behaviors.',
+            'Click "New Observation" to log an observation.',
+            'Select: Safe Behavior (positive reinforcement) or At-Risk Behavior (coaching opportunity).',
+            'Describe what you observed. No names required for at-risk observations — the goal is to improve processes, not blame individuals.',
+            'Observations feed into the safety dashboard\'s trends to identify areas needing attention.',
+          ]},
+          { type: 'tip', value: 'Aim for a ratio of at least 5 safe observations for every 1 at-risk observation. Positive reinforcement is the strongest driver of safety culture.' },
+        ],
+      },
+      {
+        id: 'capa',
+        title: 'CAPA (Corrective and Preventive Actions)',
+        blocks: [
+          { type: 'text', value: 'CAPA is the process for ensuring that safety issues are not just fixed, but that the root cause is addressed and controls are put in place to prevent recurrence.' },
+          { type: 'steps', items: [
+            'Click "CAPA" under Safety & EHS.',
+            'The CAPA log shows all open and recently closed corrective/preventive actions.',
+            'CAPAs are generated from incidents, inspections, observations, or manual entry.',
+            'Each CAPA includes: source event, root cause, corrective action (fix the immediate problem), preventive action (prevent recurrence), responsible person, and due date.',
+            'Track CAPA implementation through the status workflow: Open → In Progress → Verification → Closed.',
+            'Verify effectiveness: after implementation, monitor for recurrence over 30-90 days.',
+            'Close the CAPA when effectiveness is confirmed. If the issue recurs, re-open and strengthen the corrective action.',
+          ]},
+        ],
+      },
+    ],
+  },
+
+  // ─── 35. ENTERPRISE ACCOUNT PORTAL ────────────────────────────────────
+  {
+    moduleId: 'enterprise-account',
+    title: 'Enterprise Account Portal',
+    shortDescription: 'Customer-facing account dashboard — order history, invoices, documents, preferences, and self-service tools.',
+    icon: 'AccountBalance',
+    roles: ['CUSTOMER', 'ACCOUNT_MANAGER', 'CSR', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/account/dashboard'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'The Enterprise Account Portal is a customer-facing dashboard where your customers can log in and manage their account. They can view order history, track active orders, download invoices and MTRs, update their preferences, and place repeat orders. For your internal team, it reduces inbound calls by giving customers self-service access to common information.' },
+        ],
+      },
+      {
+        id: 'customer-features',
+        title: 'Customer-Facing Features',
+        blocks: [
+          { type: 'bullets', items: [
+            'Order History — search and filter past orders, view line-item detail, and re-order with one click',
+            'Active Orders — real-time status tracking for open orders (In Production, Packaging, Shipped, Delivered)',
+            'Documents — download MTRs, certificates of conformance, BOLs, and invoices',
+            'Invoices & Payments — view invoice history and current balance, make online payments (if enabled)',
+            'Preferences — update contact info, ship-to addresses, product favorites, and communication preferences',
+            'Support — submit questions or issues directly to the assigned CSR',
+          ]},
+        ],
+      },
+      {
+        id: 'setup',
+        title: 'Setting Up Customer Access',
+        blocks: [
+          { type: 'steps', items: [
+            'Go to Customer Directory and open the customer\'s profile.',
+            'Click the "Portal Access" tab.',
+            'Click "Invite User" and enter the customer contact\'s name and email.',
+            'The contact receives an email invitation to create their portal login.',
+            'Set permissions: which features the contact can access (orders, documents, invoices, payments).',
+            'Multiple contacts per company can have portal access with different permission levels.',
+          ]},
+          { type: 'tip', value: 'Encourage your top customers to use the portal for document downloads and order tracking. It saves your CSR team significant time on routine inquiries.' },
+        ],
+      },
+    ],
+  },
+
+  // ─── 36. E-COMMERCE ADMIN ─────────────────────────────────────────────
+  {
+    moduleId: 'ecommerce-admin',
+    title: 'E-Commerce Administration',
+    shortDescription: 'Manage the online store catalog, product listings, remnant outlet, and online settings.',
+    icon: 'AdminPanelSettings',
+    roles: ['ECOMMERCE_ADMIN', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/admin/catalog', '/admin/online-settings', '/shop/remnants'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'E-Commerce Administration covers the backend management of your online store. Catalog Admin lets you control which products appear online, set descriptions, images, and pricing visibility. Online Settings configures store behavior (checkout rules, shipping options, payment methods, customer registration). The Remnant Outlet is a special section for selling off-cuts and remnant pieces at discounted prices.' },
+        ],
+      },
+      {
+        id: 'catalog-admin',
+        title: 'Catalog Admin',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Catalog Admin" under E-Commerce in the sidebar.',
+            'The catalog manager shows all products with their online status: Published, Draft, or Hidden.',
+            'Click a product to edit its online listing: title, description, images, specifications, and pricing visibility.',
+            'Use "Publish" to make a product visible in the online store. Use "Hide" to remove it without deleting.',
+            'Organize products into categories and subcategories for easy customer navigation.',
+            'Set inventory visibility rules: show exact stock count, "In Stock / Out of Stock" only, or "Call for Availability."',
+            'Preview the product page by clicking "Preview" before publishing.',
+          ]},
+        ],
+      },
+      {
+        id: 'online-settings',
+        title: 'Online Settings',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Online Settings" under E-Commerce.',
+            'Configure store settings: business hours display, minimum order amounts, shipping methods available, payment methods accepted.',
+            'Set checkout rules: require account to order, allow guest checkout, require PO number.',
+            'Configure email templates for order confirmation, shipping notification, and delivery confirmation.',
+            'Set up tax rules by state/region.',
+            'Enable or disable customer self-registration.',
+            'Configure the store banner, announcements, and promotional content.',
+          ]},
+        ],
+      },
+      {
+        id: 'remnant-outlet',
+        title: 'Remnant Outlet',
+        blocks: [
+          { type: 'text', value: 'The Remnant Outlet is a special section of the online store for selling off-cuts, short pieces, and remnants at discounted prices. This helps recover value from material that would otherwise be scrap.' },
+          { type: 'steps', items: [
+            'Remnant pieces are automatically flagged during production when a cut creates an off-cut below a configurable threshold.',
+            'Review flagged remnants and set a discount percentage (or fixed price) for each.',
+            'Publish to the Remnant Outlet. Customers can browse and purchase remnants online at discounted prices.',
+            'Remnants are first-come-first-served. When purchased, they\'re removed from the outlet and enter the normal order pipeline.',
+          ]},
+          { type: 'tip', value: 'Popular remnant materials (4×8 drops of A36 plate, short bars) sell quickly. Price them competitively to move inventory fast and free up warehouse space.' },
+        ],
+      },
+    ],
+  },
+
+  // ─── 37. PLANNING ─────────────────────────────────────────────────────
+  {
+    moduleId: 'planning',
+    title: 'Planning',
+    shortDescription: 'Production planning and capacity management — schedule jobs, allocate machine time, and balance workloads.',
+    icon: 'EventNote',
+    roles: ['PLANNER', 'SHOP_SUPERVISOR', 'OPS_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
+    routes: ['/planning'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'Planning is where production schedulers organize jobs across machines and shifts to meet delivery dates. It shows available capacity, pending jobs, and lets you drag-and-drop jobs onto machine timeslots. The planner automatically calculates load vs. capacity and warns about overloaded periods.' },
+        ],
+      },
+      {
+        id: 'using-planning',
+        title: 'How to Schedule Jobs',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Planning" in the sidebar under Service Center.',
+            'The planning board shows a Gantt-style view with machines as rows and time as columns.',
+            'Unscheduled jobs appear in the "Unscheduled" panel on the left.',
+            'Drag a job from the Unscheduled panel onto a machine timeslot.',
+            'The system checks the job\'s processing requirements against the machine capabilities.',
+            'If the machine can handle the job, it snaps into place. If not, a warning appears.',
+            'Adjust job duration by dragging the right edge of the job bar.',
+            'Check the capacity bar at the bottom — it shows overall load vs. available hours.',
+            'Click "Publish Schedule" to make the schedule visible to shop floor operators.',
+          ]},
+          { type: 'tip', value: 'Use "Auto-Schedule" to let the system automatically place all unscheduled jobs based on priority, due date, and machine availability. Review and adjust as needed.' },
+        ],
+      },
+      {
+        id: 'troubleshooting',
+        title: 'Troubleshooting',
+        blocks: [
+          { type: 'troubleshoot', items: [
+            { problem: 'Job won\'t drop onto a machine', solution: 'The machine may not have the required capability for that processing operation. Check the job\'s operation type and the machine\'s configured capabilities in Admin > Processing Recipes.' },
+            { problem: 'Capacity shows overloaded', solution: 'Too many jobs are scheduled for the available hours. Options: move jobs to another shift, extend the schedule to overtime, or re-negotiate delivery dates with customers.' },
+            { problem: 'Schedule doesn\'t show on shop floor', solution: 'Make sure you clicked "Publish Schedule." Unpublished schedules are in draft mode and not visible to operators.' },
+          ]},
+        ],
+      },
+    ],
+  },
 ]
 
 export default manualModules

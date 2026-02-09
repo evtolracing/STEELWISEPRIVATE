@@ -39,6 +39,28 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import GavelIcon from '@mui/icons-material/Gavel'
 import SettingsIcon from '@mui/icons-material/Settings'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import InsightsIcon from '@mui/icons-material/Insights'
+import ViewKanbanIcon from '@mui/icons-material/ViewKanban'
+import CallReceivedIcon from '@mui/icons-material/CallReceived'
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
+import ScienceIcon from '@mui/icons-material/Science'
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter'
+import PeopleIcon from '@mui/icons-material/People'
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote'
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
+import AssessmentIcon from '@mui/icons-material/Assessment'
+import SupportAgentIcon from '@mui/icons-material/SupportAgent'
+import BadgeIcon from '@mui/icons-material/Badge'
+import SchoolIcon from '@mui/icons-material/School'
+import FactCheckIcon from '@mui/icons-material/FactCheck'
+import BuildIcon from '@mui/icons-material/Build'
+import LabelIcon from '@mui/icons-material/Label'
+import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import EventNoteIcon from '@mui/icons-material/EventNote'
 
 const ICON_MAP = {
   PhoneInTalk: PhoneInTalkIcon,
@@ -51,6 +73,28 @@ const ICON_MAP = {
   AttachMoney: AttachMoneyIcon,
   Gavel: GavelIcon,
   Settings: SettingsIcon,
+  Dashboard: DashboardIcon,
+  Insights: InsightsIcon,
+  ViewKanban: ViewKanbanIcon,
+  CallReceived: CallReceivedIcon,
+  AccessTime: AccessTimeIcon,
+  Science: ScienceIcon,
+  BusinessCenter: BusinessCenterIcon,
+  People: PeopleIcon,
+  RequestQuote: RequestQuoteIcon,
+  PhoneAndroid: PhoneAndroidIcon,
+  VerifiedUser: VerifiedUserIcon,
+  Assessment: AssessmentIcon,
+  SupportAgent: SupportAgentIcon,
+  Badge: BadgeIcon,
+  School: SchoolIcon,
+  FactCheck: FactCheckIcon,
+  Build: BuildIcon,
+  Label: LabelIcon,
+  HealthAndSafety: HealthAndSafetyIcon,
+  AccountBalance: AccountBalanceIcon,
+  AdminPanelSettings: AdminPanelSettingsIcon,
+  EventNote: EventNoteIcon,
 }
 
 function getIcon(iconName) {
@@ -64,7 +108,7 @@ function getIcon(iconName) {
  * Features:
  *   - Search across all modules
  *   - Quick-filter chips to jump to a module
- *   - All 12 modules as top-level accordions
+ *   - All modules as top-level accordions
  *   - Each module expands into section-level sub-accordions
  *   - Copy link, print, and back-to-top buttons
  */

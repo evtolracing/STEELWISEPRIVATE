@@ -14,6 +14,12 @@ import {
   InputAdornment,
   Avatar,
   alpha,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Snackbar,
+  Alert,
 } from '@mui/material'
 import {
   Add as AddIcon,
@@ -23,10 +29,11 @@ import {
   Search as SearchIcon,
   LocalFireDepartment as HeatIcon,
   AutoAwesome as AIIcon,
+  CloudUpload as UploadIcon,
 } from '@mui/icons-material'
 import { useApiQuery } from '../../hooks/useApiQuery'
 import { getHeats } from '../../api'
-import { DataTable, StatusChip, DateRangePicker } from '../../components/common'
+import { DataTable, StatusChip, DateRangePicker, FileUploadZone } from '../../components/common'
 
 export default function HeatListPage() {
   const navigate = useNavigate()
@@ -36,6 +43,8 @@ export default function HeatListPage() {
     dateRange: { startDate: null, endDate: null },
   })
   const [anchorEl, setAnchorEl] = useState(null)
+  const [uploadDialog, setUploadDialog] = useState({ open: false, heat: null })
+  const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' })
 
   const { data, isLoading, refetch } = useApiQuery(
     ['heats', filters],
@@ -167,6 +176,18 @@ export default function HeatListPage() {
           <Stack direction="row" spacing={1}>
             <Button
               variant="outlined"
+              startIcon={<UploadIcon />}
+              onClick={() => setUploadDialog({ open: true, heat: null })}
+              sx={{
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: 'white',
+                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
+              }}
+            >
+              Upload MTR
+            </Button>
+            <Button
+              variant="outlined"
               startIcon={<DownloadIcon />}
               onClick={handleExport}
               sx={{
@@ -269,11 +290,66 @@ export default function HeatListPage() {
         <MenuItem onClick={() => { navigate(`/heats/${anchorEl?.row?.id}/trace`); handleMenuClose(); }}>
           View Trace
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>View Mill Cert</MenuItem>
+        <MenuItem onClick={() => {
+          setUploadDialog({ open: true, heat: anchorEl?.row });
+          handleMenuClose();
+        }}>
+          Upload / View Mill Cert
+        </MenuItem>
         <MenuItem onClick={handleMenuClose} sx={{ color: 'error.main' }}>
           Place on Hold
         </MenuItem>
       </Menu>
+
+      {/* Upload MTR Dialog */}
+      <Dialog
+        open={uploadDialog.open}
+        onClose={() => setUploadDialog({ open: false, heat: null })}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {uploadDialog.heat
+            ? `Upload Documents — Heat ${uploadDialog.heat.heatNumber}`
+            : 'Upload Mill Test Certificate'}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Upload Mill Test Certificates (MTCs), Chemical Analysis Reports, or other heat documentation.
+          </Typography>
+          <FileUploadZone
+            entityType="HEAT"
+            entityId={uploadDialog.heat?.id}
+            docType="MTC"
+            accept="application/pdf,image/*"
+            multiple
+            onUploaded={(doc) => {
+              setSnack({ open: true, msg: `"${doc.fileName}" uploaded successfully`, severity: 'success' });
+            }}
+            onError={(err) => setSnack({ open: true, msg: err, severity: 'error' })}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setUploadDialog({ open: false, heat: null })}>
+            Close
+          </Button>
+          {uploadDialog.heat && (
+            <Button
+              variant="outlined"
+              onClick={() => {
+                navigate(`/heats/${uploadDialog.heat.id}`);
+                setUploadDialog({ open: false, heat: null });
+              }}
+            >
+              View Heat Details
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))}>
+        <Alert severity={snack.severity} variant="filled">{snack.msg}</Alert>
+      </Snackbar>
       </Box>
     </Box>
   )

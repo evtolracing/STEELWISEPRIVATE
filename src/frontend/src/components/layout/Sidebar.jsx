@@ -137,6 +137,7 @@ import {
   TrendingDown as DemandShapingIcon,
   PhoneAndroid as MobileRepIcon,
   BusinessCenter as AccountIcon,
+  HelpOutline as HelpManualIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -369,6 +370,12 @@ const navSections = [
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
       { path: '/admin/audit-log', label: 'Override Audit Log', icon: AuditLogIcon },
       { path: '/admin/processing-recipes', label: 'Processing Recipes', icon: RecipesIcon },
+    ],
+  },
+  {
+    title: 'Help & Manual',
+    items: [
+      { path: '/help/manual', label: 'Instruction Manual', icon: HelpManualIcon },
     ],
   },
 ]

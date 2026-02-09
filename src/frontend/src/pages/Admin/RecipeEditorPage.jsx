@@ -658,6 +658,7 @@ export default function RecipeEditorPage() {
                       value={previewThickness} onChange={(_, v) => setPreviewThickness(v)}
                       min={0.0625} max={8} step={0.0625} valueLabelDisplay="auto"
                       marks={THICKNESS_BANDS.map(b => ({ value: b.min || 0.0625, label: b.label.split('(')[0].trim() }))}
+                      sx={{ '& .MuiSlider-markLabel': { fontSize: '0.65rem', whiteSpace: 'nowrap' } }}
                     />
                   </Box>
 

@@ -203,6 +203,9 @@ const PartnerRegistryPage = lazy(() => import('../pages/Partners/PartnerRegistry
 // Safety / EHS App
 const SafetyApp = lazy(() => import('../apps/safety'))
 
+// Help / Manual
+const ManualPage = lazy(() => import('../pages/Help/ManualPage'))
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -1558,6 +1561,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <OnlineSettingsPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // ═══ Help / Manual ═══
+      {
+        path: 'help/manual',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ManualPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

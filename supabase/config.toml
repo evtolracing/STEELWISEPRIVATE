@@ -1,10 +1,6 @@
-[project]
-id = "giyheniqqqwpmetefdxj"
-name = "steelwise"
-
 [db]
 port = 5432
-major_version = 15
+major_version = 17
 
 [db.pooler]
 enabled = true

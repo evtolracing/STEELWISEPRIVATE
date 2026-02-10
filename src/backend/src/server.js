@@ -38,6 +38,7 @@ import aiOrderHubRoutes from './routes/aiOrderHubRoutes.js';
 import ingestRoutes from './routes/ingestRoutes.js';
 import pipelineRoutes from './routes/pipelineRoutes.js';
 import stopWorkRoutes from './routes/stopWork.js';
+import intakeOrderRoutes from './routes/intakeOrders.js';
 import salesRoutes from './routes/salesRoutes.js';
 import executiveRoutes from './routes/executive.js';
 import dropTagRoutes from './routes/dropTagRoutes.js';
@@ -80,6 +81,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/heats', heatRoutes);
 app.use('/api/coils', coilRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/orders/intake', intakeOrderRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/work-orders', workOrderRoutes);
 app.use('/api/shipments', shipmentRoutes);
@@ -139,10 +141,14 @@ console.log('🌱 Initializing in-memory OrderHub data...');
 initOrderHubData();
 console.log('✅ In-memory data initialized');
 
-// Seed Supabase database (async)
-seedSupabaseData()
-  .then(() => console.log('✅ Supabase seed complete'))
-  .catch(err => console.error('❌ Supabase seed error:', err));
+// Seed Supabase database (async) - only if DATABASE_URL is not localhost
+if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('localhost')) {
+  seedSupabaseData()
+    .then(() => console.log('✅ Supabase seed complete'))
+    .catch(err => console.error('❌ Supabase seed error:', err));
+} else {
+  console.log('ℹ️  Skipping Supabase seed (using in-memory data or local DB)');
+}
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -169,16 +175,24 @@ process.on('unhandledRejection', (reason, promise) => {
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   console.error('❌ Uncaught Exception:', error);
-  // Don't exit - keep server running
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is in use, exiting so --watch can retry`);
+    process.exit(1);
+  }
+  // Don't exit for other errors - keep server running
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, closing server gracefully');
+const shutdown = () => {
+  console.log('Shutdown signal received, closing server gracefully');
   server.close(() => {
     console.log('Server closed');
     process.exit(0);
   });
-});
+  // Force exit after 3s if server doesn't close
+  setTimeout(() => process.exit(0), 3000);
+};
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
 
 console.log('✅ All listeners attached, entering event loop...');

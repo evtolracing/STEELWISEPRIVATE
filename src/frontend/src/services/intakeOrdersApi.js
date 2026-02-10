@@ -4,7 +4,7 @@
  */
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
-const USE_MOCK = true
+const USE_MOCK = false
 
 let _mockOrders = []
 let _seq = 1000
@@ -25,7 +25,7 @@ export async function createIntakeOrder(payload) {
       updatedAt: new Date().toISOString(),
     }
     _mockOrders.unshift(order)
-    return order
+    return { data: order }
   }
   const res = await fetch(`${API_BASE}/orders/intake`, {
     method: 'POST',
@@ -40,7 +40,7 @@ export async function updateIntakeOrder(id, payload) {
   if (USE_MOCK) {
     const idx = _mockOrders.findIndex(o => o.id === id)
     if (idx >= 0) _mockOrders[idx] = { ..._mockOrders[idx], ...payload, updatedAt: new Date().toISOString() }
-    return _mockOrders[idx] || { id, ...payload }
+    return { data: _mockOrders[idx] || { id, ...payload } }
   }
   const res = await fetch(`${API_BASE}/orders/intake/${id}`, {
     method: 'PATCH',
@@ -55,7 +55,7 @@ export async function submitOrder(id) {
   if (USE_MOCK) {
     const idx = _mockOrders.findIndex(o => o.id === id)
     if (idx >= 0) { _mockOrders[idx].status = 'SUBMITTED'; _mockOrders[idx].submittedAt = new Date().toISOString() }
-    return _mockOrders[idx] || { id, status: 'SUBMITTED' }
+    return { data: _mockOrders[idx] || { id, status: 'SUBMITTED' } }
   }
   const res = await fetch(`${API_BASE}/orders/intake/${id}/submit`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
   if (!res.ok) throw new Error('Failed to submit order')
@@ -64,7 +64,8 @@ export async function submitOrder(id) {
 
 export async function getIntakeOrder(id) {
   if (USE_MOCK) {
-    return _mockOrders.find(o => o.id === id) || null
+    const order = _mockOrders.find(o => o.id === id) || null
+    return { data: order }
   }
   const res = await fetch(`${API_BASE}/orders/intake/${id}`)
   if (!res.ok) throw new Error('Failed to get order')
@@ -100,7 +101,7 @@ export async function convertQuoteToOrder(quoteId) {
       lines: [],
     }
     _mockOrders.unshift(order)
-    return order
+    return { data: order }
   }
   const res = await fetch(`${API_BASE}/orders/intake/convert-quote`, {
     method: 'POST',
@@ -126,7 +127,7 @@ export async function createWorkOrdersFromOrder(orderId) {
         createdAt: new Date().toISOString(),
       }))
     if (order) { order.status = 'PROCESSING'; order.workOrderIds = workOrders.map(w => w.id) }
-    return { workOrders, count: workOrders.length }
+    return { data: { workOrders, count: workOrders.length } }
   }
   const res = await fetch(`${API_BASE}/orders/intake/${orderId}/create-work-orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
   if (!res.ok) throw new Error('Failed to create work orders')

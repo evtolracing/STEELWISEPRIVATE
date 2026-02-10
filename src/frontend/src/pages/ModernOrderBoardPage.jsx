@@ -146,7 +146,7 @@ const ModernOrderBoardPage = () => {
     try {
       const jobData = {
         operationType: newJob.processingType,
-        priority: Object.keys(PRIORITY_LEVELS).indexOf(newJob.priority) + 1 || 3,
+        priority: newJob.priority || 'NORMAL',
         instructions: `${newJob.customerName} - ${newJob.material || 'No material specified'}`,
         notes: newJob.notes,
         status: JOB_STATUSES.ORDERED,

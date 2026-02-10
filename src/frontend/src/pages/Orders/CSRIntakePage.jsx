@@ -49,6 +49,13 @@ const SOURCES = ['PHONE', 'EMAIL', 'REP']
 
 const STEPS = ['Header', 'Customer', 'Lines', 'Review']
 
+// Helper: get tomorrow's date in YYYY-MM-DD format
+function getTomorrowDate() {
+  const d = new Date()
+  d.setDate(d.getDate() + 1)
+  return d.toISOString().split('T')[0]
+}
+
 export default function CSRIntakePage() {
   const navigate = useNavigate()
 
@@ -60,7 +67,7 @@ export default function CSRIntakePage() {
   const [ownership, setOwnership] = useState('HOUSE')
   const [poNumber, setPoNumber] = useState('')
   const [notes, setNotes] = useState('')
-  const [requestedDate, setRequestedDate] = useState('')
+  const [requestedDate, setRequestedDate] = useState(getTomorrowDate())
   const [fastMode, setFastMode] = useState(false)
 
   // ── customer state ──
@@ -171,16 +178,42 @@ export default function CSRIntakePage() {
     setLines(prev => {
       const next = [...prev]
       if (materialPickerIdx !== null && next[materialPickerIdx]) {
-        next[materialPickerIdx] = {
-          ...next[materialPickerIdx],
-          productId: product.id,
-          description: product.name || product.description,
-          unitPrice: product.basePrice || product.price || 0,
-          uom: product.uom || 'EA',
-          weight: product.weight || 0,
-          isRemnant: !!product.isRemnant,
-          remnantDiscount: product.remnantDiscount || 0,
-          extPrice: +((next[materialPickerIdx].qty || 1) * (product.basePrice || product.price || 0)).toFixed(2),
+        if (product.type === 'coil') {
+          // Selected from Live Inventory tab
+          const qty = next[materialPickerIdx].qty || 1
+          next[materialPickerIdx] = {
+            ...next[materialPickerIdx],
+            productId: product.id,
+            description: product.description,
+            unitPrice: product.unitPrice || 0,
+            uom: product.uom || 'LB',
+            weight: product.weight || 0,
+            dimensions: product.dimensions || '',
+            isRemnant: false,
+            remnantDiscount: 0,
+            extPrice: +(qty * (product.unitPrice || 0)).toFixed(2),
+            // Extra metadata
+            coilNumber: product.coilNumber,
+            grade: product.grade,
+            gradeId: product.gradeId,
+            heatNumber: product.heatNumber,
+            form: product.form,
+            location: product.location,
+            finish: product.finish,
+          }
+        } else {
+          // Legacy product/inventory selection
+          next[materialPickerIdx] = {
+            ...next[materialPickerIdx],
+            productId: product.id,
+            description: product.name || product.description,
+            unitPrice: product.basePrice || product.price || 0,
+            uom: product.uom || 'EA',
+            weight: product.weight || 0,
+            isRemnant: !!product.isRemnant,
+            remnantDiscount: product.remnantDiscount || 0,
+            extPrice: +((next[materialPickerIdx].qty || 1) * (product.basePrice || product.price || 0)).toFixed(2),
+          }
         }
       }
       return next
@@ -224,38 +257,11 @@ export default function CSRIntakePage() {
   }, [source, division, location, priority, ownership, poNumber, notes, requestedDate, customer, lines, orderId])
 
   // ── Override triggers: detect cutoff, capacity, pricing issues ──
+  // NOTE: Cutoff and capacity checks are informational only — they no longer
+  //       block submission.  CSR can still manually trigger an override from
+  //       the pricing panel if needed.
   const checkForWarnings = useCallback(() => {
-    const now = new Date()
-    const hour = now.getHours()
-    // Cutoff check: after 3:30 PM local
-    if (hour >= 15 && now.getMinutes() > 30 || hour >= 16) {
-      const cutoffTime = '3:30 PM'
-      const currentTime = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-      setOverrideDialog({
-        open: true,
-        type: OVERRIDE_TYPE.CUTOFF_VIOLATION,
-        warning: `This order is being placed after the ${cutoffTime} cutoff for ${location.replace(/_/g, ' ')}. Standard next-day shipping is no longer guaranteed.`,
-        originalValue: `Cutoff ${cutoffTime} — current time ${currentTime}`,
-        overrideValue: 'Force next-day processing despite late submission',
-      })
-      setPendingSubmit(true)
-      return true
-    }
-    // Capacity check: EMERGENCY + RUSH get a simulated capacity warning
-    if (priority === 'EMERGENCY' || priority === 'HOT') {
-      const hasProcessing = lines.some(l => l.processes?.length > 0)
-      if (hasProcessing) {
-        setOverrideDialog({
-          open: true,
-          type: OVERRIDE_TYPE.CAPACITY_WARNING,
-          warning: `${priority} priority with processing steps — ${location.replace(/_/g, ' ')} production queue is nearing capacity for today.`,
-          originalValue: `Current queue: ~85% capacity at ${location.replace(/_/g, ' ')}`,
-          overrideValue: `Accept ${priority} job despite capacity risk`,
-        })
-        setPendingSubmit(true)
-        return true
-      }
-    }
+    // Informational warnings only — never block submit
     return false
   }, [location, priority, lines])
 
@@ -304,7 +310,7 @@ export default function CSRIntakePage() {
       }
       await submitOrder(id)
       setSnack({ open: true, msg: 'Order submitted!', severity: 'success' })
-      setTimeout(() => navigate('/orders/online-inbox'), 1200)
+      setTimeout(() => navigate(`/orders/${id}`), 1200)
     } catch {
       setSnack({ open: true, msg: 'Submit failed', severity: 'error' })
     }
@@ -324,7 +330,8 @@ export default function CSRIntakePage() {
       {/* Breadcrumb */}
       <Breadcrumbs sx={{ mb: 2 }}>
         <MuiLink underline="hover" color="inherit" href="/" onClick={e => { e.preventDefault(); navigate('/') }}>Home</MuiLink>
-        <Typography color="text.primary">Order Intake</Typography>
+        <MuiLink underline="hover" color="inherit" href="/orders" onClick={e => { e.preventDefault(); navigate('/orders') }}>Orders</MuiLink>
+        <Typography color="text.primary">New Order</Typography>
       </Breadcrumbs>
 
       {/* Title bar */}

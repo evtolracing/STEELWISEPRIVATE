@@ -224,8 +224,9 @@ const navSections = [
     ],
   },
   {
-    title: 'Order Intake',
+    title: 'Orders',
     items: [
+      { path: '/orders', label: 'All Orders', icon: OrdersIcon },
       { path: '/orders/intake', label: 'CSR Intake', icon: CSRIntakeIcon, highlight: true },
       { path: '/orders/online-inbox', label: 'Online Inbox', icon: OnlineInboxIcon },
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },

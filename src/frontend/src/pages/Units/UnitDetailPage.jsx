@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -19,6 +19,15 @@ import {
   TableRow,
   Avatar,
   alpha,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
+  Alert,
+  CircularProgress,
+  Snackbar,
 } from '@mui/material'
 import {
   ArrowBack as BackIcon,
@@ -30,11 +39,245 @@ import {
   Timeline as TimelineIcon,
   LocalShipping as ShipIcon,
   AutoAwesome as AIIcon,
+  Save as SaveIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material'
-import { useApiQuery } from '../../hooks/useApiQuery'
-import { getUnit, getUnitTrace } from '../../api'
+import { useApiQuery, useApiMutation } from '../../hooks/useApiQuery'
+import { getUnit, getUnitTrace, updateUnit } from '../../api'
 import { StatusChip, DataTable } from '../../components/common'
 import { TraceTimeline } from '../../components/traceability'
+
+// ─── Status & QC options matching Prisma enums ───
+const STATUS_OPTIONS = [
+  { value: 'AVAILABLE', label: 'Available' },
+  { value: 'ALLOCATED', label: 'Allocated' },
+  { value: 'IN_PROCESS', label: 'In Process' },
+  { value: 'HOLD', label: 'Hold' },
+  { value: 'SHIPPED', label: 'Shipped' },
+  { value: 'CONSUMED', label: 'Consumed' },
+]
+
+const QC_STATUS_OPTIONS = [
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'PASSED', label: 'Passed' },
+  { value: 'FAILED', label: 'Failed' },
+  { value: 'HOLD', label: 'Hold' },
+]
+
+const FORM_OPTIONS = [
+  { value: 'COIL', label: 'Coil' },
+  { value: 'SHEET', label: 'Sheet' },
+  { value: 'PLATE', label: 'Plate' },
+  { value: 'BAR', label: 'Bar' },
+  { value: 'TUBE', label: 'Tube' },
+  { value: 'BEAM', label: 'Beam' },
+  { value: 'REBAR', label: 'Rebar' },
+  { value: 'WIRE', label: 'Wire' },
+]
+
+const EDGE_OPTIONS = [
+  { value: 'MILL', label: 'Mill Edge' },
+  { value: 'SLIT', label: 'Slit Edge' },
+  { value: 'TRIMMED', label: 'Trimmed' },
+]
+
+// ─── Edit Unit Dialog ───
+function EditUnitDialog({ open, onClose, unit, onSave, saving, saveError }) {
+  const [form, setForm] = useState({})
+
+  useEffect(() => {
+    if (unit && open) {
+      setForm({
+        coilNumber: unit.coilNumber || unit.unitNumber || '',
+        form: unit.form || 'COIL',
+        status: unit.status || 'AVAILABLE',
+        qcStatus: unit.qcStatus || unit.qualityStatus || 'PENDING',
+        grossWeightLb: unit.grossWeightLb ?? unit.weight ?? '',
+        netWeightLb: unit.netWeightLb ?? unit.weight ?? '',
+        thicknessIn: unit.thicknessIn ?? unit.dimensions?.gauge ?? '',
+        widthIn: unit.widthIn ?? unit.dimensions?.width ?? '',
+        lengthIn: unit.lengthIn ?? '',
+        odIn: unit.odIn ?? unit.dimensions?.outerDiameter ?? '',
+        idIn: unit.idIn ?? unit.dimensions?.innerDiameter ?? '',
+        gauge: unit.gauge ?? '',
+        temper: unit.temper ?? '',
+        finish: unit.finish ?? '',
+        coating: unit.coating ?? '',
+        coatingWeight: unit.coatingWeight ?? '',
+        edgeCondition: unit.edgeCondition ?? '',
+        binLocation: unit.binLocation ?? '',
+        holdCode: unit.holdCode ?? '',
+        unitCost: unit.unitCost ?? '',
+        landedCost: unit.landedCost ?? '',
+      })
+    }
+  }, [unit, open])
+
+  const handleChange = (field) => (e) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }))
+  }
+
+  const handleSubmit = () => {
+    // Build payload – only send changed & non-empty numeric values as numbers
+    const payload = {}
+    const numericFields = ['grossWeightLb', 'netWeightLb', 'thicknessIn', 'widthIn', 'lengthIn', 'odIn', 'idIn', 'gauge', 'unitCost', 'landedCost']
+
+    Object.entries(form).forEach(([key, val]) => {
+      if (val === '' || val === null || val === undefined) return
+      if (numericFields.includes(key)) {
+        const num = parseFloat(val)
+        if (!isNaN(num)) payload[key] = num
+      } else {
+        payload[key] = val
+      }
+    })
+
+    onSave(payload)
+  }
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <EditIcon color="primary" />
+          <Typography variant="h6">Edit Unit</Typography>
+        </Stack>
+        <IconButton onClick={onClose} size="small"><CloseIcon /></IconButton>
+      </DialogTitle>
+
+      <DialogContent dividers>
+        {saveError && (
+          <Alert severity="error" sx={{ mb: 2 }}>{saveError}</Alert>
+        )}
+
+        {/* ─ Identity ─ */}
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5 }}>Identity</Typography>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Unit / Coil Number" value={form.coilNumber ?? ''} onChange={handleChange('coilNumber')} disabled />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              fullWidth select size="small" label="Form"
+              value={form.form || ''}
+              onChange={handleChange('form')}
+            >
+              {FORM_OPTIONS.map((o) => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+            </TextField>
+          </Grid>
+        </Grid>
+
+        {/* ─ Status ─ */}
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5 }}>Status</Typography>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              fullWidth select size="small" label="Status"
+              value={form.status || ''}
+              onChange={handleChange('status')}
+            >
+              {STATUS_OPTIONS.map((o) => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              fullWidth select size="small" label="QC Status"
+              value={form.qcStatus || ''}
+              onChange={handleChange('qcStatus')}
+            >
+              {QC_STATUS_OPTIONS.map((o) => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Hold Code" value={form.holdCode ?? ''} onChange={handleChange('holdCode')} />
+          </Grid>
+        </Grid>
+
+        {/* ─ Dimensions ─ */}
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5 }}>Dimensions &amp; Weight</Typography>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Gross Weight (lbs)" type="number" value={form.grossWeightLb ?? ''} onChange={handleChange('grossWeightLb')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Net Weight (lbs)" type="number" value={form.netWeightLb ?? ''} onChange={handleChange('netWeightLb')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Thickness (in)" type="number" inputProps={{ step: 0.001 }} value={form.thicknessIn ?? ''} onChange={handleChange('thicknessIn')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Width (in)" type="number" inputProps={{ step: 0.01 }} value={form.widthIn ?? ''} onChange={handleChange('widthIn')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Length (in)" type="number" inputProps={{ step: 0.01 }} value={form.lengthIn ?? ''} onChange={handleChange('lengthIn')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="OD (in)" type="number" inputProps={{ step: 0.01 }} value={form.odIn ?? ''} onChange={handleChange('odIn')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="ID (in)" type="number" inputProps={{ step: 0.01 }} value={form.idIn ?? ''} onChange={handleChange('idIn')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Gauge" type="number" value={form.gauge ?? ''} onChange={handleChange('gauge')} />
+          </Grid>
+        </Grid>
+
+        {/* ─ Surface / Coating ─ */}
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5 }}>Surface &amp; Coating</Typography>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Temper" value={form.temper ?? ''} onChange={handleChange('temper')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Finish" value={form.finish ?? ''} onChange={handleChange('finish')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Coating" value={form.coating ?? ''} onChange={handleChange('coating')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Coating Weight" value={form.coatingWeight ?? ''} onChange={handleChange('coatingWeight')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              fullWidth select size="small" label="Edge Condition"
+              value={form.edgeCondition || ''}
+              onChange={handleChange('edgeCondition')}
+            >
+              <MenuItem value="">None</MenuItem>
+              {EDGE_OPTIONS.map((o) => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+            </TextField>
+          </Grid>
+        </Grid>
+
+        {/* ─ Location / Cost ─ */}
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5 }}>Location &amp; Cost</Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Bin Location" value={form.binLocation ?? ''} onChange={handleChange('binLocation')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Unit Cost ($)" type="number" inputProps={{ step: 0.01 }} value={form.unitCost ?? ''} onChange={handleChange('unitCost')} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth size="small" label="Landed Cost ($)" type="number" inputProps={{ step: 0.01 }} value={form.landedCost ?? ''} onChange={handleChange('landedCost')} />
+          </Grid>
+        </Grid>
+      </DialogContent>
+
+      <DialogActions sx={{ p: 2 }}>
+        <Button onClick={onClose} color="inherit">Cancel</Button>
+        <Button
+          variant="contained"
+          startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
+          onClick={handleSubmit}
+          disabled={saving}
+        >
+          {saving ? 'Saving…' : 'Save Changes'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
 
 function TabPanel({ children, value, index, ...props }) {
   return (
@@ -60,7 +303,12 @@ export default function UnitDetailPage() {
   const navigate = useNavigate()
   const [tabValue, setTabValue] = useState(0)
 
-  const { data: unit, isLoading } = useApiQuery(
+  // ─── Edit state ───
+  const [editOpen, setEditOpen] = useState(false)
+  const [saveError, setSaveError] = useState(null)
+  const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' })
+
+  const { data: unit, isLoading, refetch } = useApiQuery(
     ['unit', id],
     () => getUnit(id)
   )
@@ -70,6 +318,28 @@ export default function UnitDetailPage() {
     () => getUnitTrace(id),
     { enabled: tabValue === 2 }
   )
+
+  // Mutation for saving edits
+  const saveMutation = useApiMutation(
+    (payload) => updateUnit(id, payload),
+    {
+      invalidateKeys: [['unit', id], 'units'],
+      onSuccess: () => {
+        setEditOpen(false)
+        setSaveError(null)
+        setSnack({ open: true, message: 'Unit updated successfully', severity: 'success' })
+        refetch()
+      },
+      onError: (err) => {
+        setSaveError(err?.response?.data?.error || err.message || 'Failed to save changes')
+      },
+    }
+  )
+
+  const handleEditSave = useCallback((payload) => {
+    setSaveError(null)
+    saveMutation.mutate(payload)
+  }, [saveMutation])
 
   // Mock data for demo
   const mockUnit = {
@@ -193,6 +463,7 @@ export default function UnitDetailPage() {
             <Button 
               startIcon={<EditIcon />} 
               variant="contained"
+              onClick={() => { setSaveError(null); setEditOpen(true) }}
               sx={{
                 bgcolor: 'rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',
@@ -333,6 +604,33 @@ export default function UnitDetailPage() {
         </Paper>
       </TabPanel>
       </Box>
+
+      {/* ─── Edit Unit Dialog ─── */}
+      <EditUnitDialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        unit={displayUnit}
+        onSave={handleEditSave}
+        saving={saveMutation.isPending}
+        saveError={saveError}
+      />
+
+      {/* ─── Success / Error Snackbar ─── */}
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

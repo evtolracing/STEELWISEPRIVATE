@@ -27,16 +27,22 @@ import {
   Phone as PhoneIcon,
   Email as EmailIcon,
   Print as PrintIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { mockOrders } from '../../mocks/ordersData';
-
-const USE_MOCK_DATA = true;
+import { listIntakeOrders } from '../../services/intakeOrdersApi';
 
 const statusColors = {
+  DRAFT: 'default',
+  SUBMITTED: 'primary',
+  PENDING: 'primary',
   QUOTED: 'default',
+  CONFIRMED: 'info',
   IN_PROGRESS: 'warning',
   SHIPPED: 'info',
   COMPLETED: 'success',
+  CANCELLED: 'error',
 };
 
 const priorityColors = {
@@ -46,6 +52,7 @@ const priorityColors = {
 };
 
 function OrdersPage() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -59,20 +66,52 @@ function OrdersPage() {
     try {
       setLoading(true);
       setError(null);
-      
-      if (USE_MOCK_DATA) {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setOrders(mockOrders);
-        if (mockOrders.length > 0) {
-          setSelectedOrder(mockOrders[0]);
-        }
-      } else {
-        const response = await fetch('/api/orders', { credentials: 'include' });
-        const data = await response.json();
-        setOrders(data);
-        if (data.length > 0) {
-          setSelectedOrder(data[0]);
-        }
+
+      // Fetch real orders from the intake API (backed by Supabase)
+      const intakeRes = await listIntakeOrders();
+      const intakeOrders = (intakeRes.data || []).map(io => ({
+        id: io.id,
+        orderNumber: io.orderNumber || 'NEW',
+        status: io.status || 'DRAFT',
+        priority: io.priority || 'NORMAL',
+        customerName: io.customerName || io.customer?.name || 'Walk-In',
+        customerContact: io.customerName || '',
+        customerPhone: io.customer?.phone || '',
+        customerEmail: io.customer?.email || '',
+        orderDate: io.createdAt || new Date().toISOString(),
+        dueDate: io.requestedDate || new Date().toISOString(),
+        poNumber: io.poNumber || '',
+        lineItems: (io.lines || []).map((l, i) => ({
+          id: l.id || `li-${i}`,
+          material: l.description || l.productId || 'Material',
+          grade: l.grade || '',
+          processingType: (l.processes || []).map(p => p.name || p).join(', ') || 'None',
+          thickness: l.thicknessIn || '',
+          width: l.widthIn || '',
+          length: l.lengthIn || '',
+          quantity: l.qty || 1,
+          unit: l.uom || 'EA',
+          weightLbs: l.weight || 0,
+          pricePerLb: l.unitPrice || 0,
+          totalPrice: l.extPrice || 0,
+        })),
+        subtotal: (io.lines || []).reduce((s, l) => s + (l.extPrice || 0), 0),
+        processingFees: 0,
+        shippingCost: 0,
+        tax: 0,
+        total: (io.lines || []).reduce((s, l) => s + (l.extPrice || 0), 0),
+        notes: io.notes || '',
+        source: io.source || 'PHONE',
+        location: io.location || '',
+        division: io.division || 'METALS',
+      }));
+
+      // Fall back to static mocks only if no real orders exist yet
+      const allOrders = intakeOrders.length > 0 ? intakeOrders : [...mockOrders];
+
+      setOrders(allOrders);
+      if (allOrders.length > 0) {
+        setSelectedOrder(allOrders[0]);
       }
     } catch (err) {
       setError(err.message);
@@ -93,9 +132,14 @@ function OrdersPage() {
     <Box sx={{ p: 3 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h5">Orders</Typography>
-        <Button variant="outlined" startIcon={<RefreshIcon />} onClick={loadOrders}>
-          Refresh
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/orders/intake')}>
+            New Order
+          </Button>
+          <Button variant="outlined" startIcon={<RefreshIcon />} onClick={loadOrders}>
+            Refresh
+          </Button>
+        </Stack>
       </Stack>
 
       {error && (
@@ -129,11 +173,11 @@ function OrdersPage() {
                           <Stack direction="row" spacing={1}>
                             <Chip label={order.priority} size="small" color={priorityColors[order.priority]} variant="outlined" />
                             <Typography variant="caption" color="text.secondary">
-                              Due: {new Date(order.dueDate).toLocaleDateString()}
+                              Due: {order.dueDate ? new Date(order.dueDate).toLocaleDateString() : '—'}
                             </Typography>
                           </Stack>
                           <Typography variant="subtitle2" color="primary">
-                            ${order.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            ${(order.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                           </Typography>
                         </Stack>
                       }

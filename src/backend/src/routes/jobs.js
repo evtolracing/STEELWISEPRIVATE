@@ -3,6 +3,26 @@ import prisma from '../lib/db.js';
 
 const router = Router();
 
+// Priority mapping: DB stores Int, frontend expects string labels
+const PRIORITY_INT_TO_STRING = { 1: 'LOW', 2: 'LOW', 3: 'NORMAL', 4: 'HIGH', 5: 'HOT' }
+const PRIORITY_STRING_TO_INT = { LOW: 1, NORMAL: 3, HIGH: 4, RUSH: 4, URGENT: 4, HOT: 5 }
+
+function mapJobForFrontend(job) {
+  return {
+    ...job,
+    // Map numeric priority → string for frontend cards/board
+    priority: PRIORITY_INT_TO_STRING[job.priority] || 'NORMAL',
+    // Alias operationType → processingType for card display
+    processingType: job.operationType || null,
+    // Alias scheduledEnd → dueDate for card display
+    dueDate: job.scheduledEnd || job.scheduledStart || null,
+    // Customer name from related order's buyer
+    customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : null) || 'Unassigned',
+    // Material hint from instructions
+    material: job.instructions || null,
+  }
+}
+
 // GET /jobs - List jobs with optional filters
 router.get('/', async (req, res) => {
   try {
@@ -32,7 +52,7 @@ router.get('/', async (req, res) => {
       ],
       include: {
         order: {
-          select: { id: true, orderNumber: true, buyerId: true },
+          select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
         },
         workCenter: {
           select: { id: true, code: true, name: true, locationId: true },
@@ -43,7 +63,8 @@ router.get('/', async (req, res) => {
       },
     });
     
-    res.json(jobs);
+    const mapped = jobs.map(mapJobForFrontend);
+    res.json(mapped);
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'Failed to fetch jobs' });
@@ -156,7 +177,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Job not found' });
     }
     
-    res.json(job);
+    res.json(mapJobForFrontend(job));
   } catch (error) {
     console.error('Error fetching job:', error);
     res.status(500).json({ error: 'Failed to fetch job' });
@@ -186,7 +207,7 @@ router.post('/', async (req, res) => {
     // Build data object with only defined fields
     const data = {
       jobNumber,
-      priority: priority || 3,
+      priority: typeof priority === 'string' ? (PRIORITY_STRING_TO_INT[priority] || 3) : (priority || 3),
       status: status || 'SCHEDULED',
     };
     
@@ -220,7 +241,7 @@ router.post('/', async (req, res) => {
       },
     });
     
-    res.status(201).json(jobWithRelations || job);
+    res.status(201).json(mapJobForFrontend(jobWithRelations || job));
   } catch (error) {
     console.error('Error creating job:', error);
     console.error('Request body:', req.body);
@@ -284,7 +305,7 @@ router.post('/:id/status', async (req, res) => {
     });
     
     console.log('Job updated successfully');
-    res.json(updatedJob);
+    res.json(mapJobForFrontend(updatedJob));
   } catch (error) {
     console.error('Error updating job status:', error);
     console.error('Error stack:', error.stack);
@@ -297,6 +318,11 @@ router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body };
+    
+    // Convert string priority to int for DB
+    if (typeof updateData.priority === 'string') {
+      updateData.priority = PRIORITY_STRING_TO_INT[updateData.priority] || 3;
+    }
     
     // Handle date conversions
     if (updateData.scheduledStart) {
@@ -322,9 +348,57 @@ router.patch('/:id', async (req, res) => {
       },
     });
     
-    res.json(job);
+    res.json(mapJobForFrontend(job));
   } catch (error) {
     console.error('Error updating job:', error);
+    res.status(500).json({ error: 'Failed to update job' });
+  }
+});
+
+// PUT /jobs/:id - Update job (alias for PATCH, used by frontend jobsApi)
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body };
+    
+    // Convert string priority to int for DB
+    if (typeof updateData.priority === 'string') {
+      updateData.priority = PRIORITY_STRING_TO_INT[updateData.priority] || 3;
+    }
+    
+    // Handle date conversions
+    if (updateData.scheduledStart) {
+      updateData.scheduledStart = new Date(updateData.scheduledStart);
+    }
+    if (updateData.scheduledEnd) {
+      updateData.scheduledEnd = new Date(updateData.scheduledEnd);
+    }
+
+    // Remove virtual fields that don't exist in DB
+    delete updateData.processingType;
+    delete updateData.dueDate;
+    delete updateData.customerName;
+    delete updateData.material;
+    
+    const job = await prisma.job.update({
+      where: { id },
+      data: updateData,
+      include: {
+        order: {
+          select: { id: true, orderNumber: true },
+        },
+        workCenter: {
+          select: { id: true, code: true, name: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+    
+    res.json(mapJobForFrontend(job));
+  } catch (error) {
+    console.error('Error updating job (PUT):', error);
     res.status(500).json({ error: 'Failed to update job' });
   }
 });

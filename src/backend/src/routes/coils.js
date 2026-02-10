@@ -5,13 +5,14 @@ const router = Router();
 
 router.get('/', async (req, res) => {
   try {
-    const { gradeId, status, qcStatus, locationId } = req.query;
+    const { gradeId, status, qcStatus, locationId, form } = req.query;
     const coils = await prisma.coil.findMany({
       where: {
         ...(gradeId && { gradeId }),
         ...(status && { status }),
         ...(qcStatus && { qcStatus }),
-        ...(locationId && { locationId })
+        ...(locationId && { locationId }),
+        ...(form && { form })
       },
       include: { heat: true, grade: true, location: true, product: true },
       orderBy: { createdAt: 'desc' },

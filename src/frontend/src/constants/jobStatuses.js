@@ -110,7 +110,7 @@ export const JOB_STATUS_CONFIG = {
 // Kanban board columns for Order Board view
 export const KANBAN_COLUMNS = [
   { id: 'new', title: 'New Orders', statuses: [JOB_STATUSES.ORDERED] },
-  { id: 'scheduled', title: 'Scheduled', statuses: [JOB_STATUSES.SCHEDULED] },
+  { id: 'planned', title: 'Planned Jobs', statuses: [JOB_STATUSES.SCHEDULED] },
   { id: 'processing', title: 'In Process', statuses: [JOB_STATUSES.IN_PROCESS, JOB_STATUSES.WAITING_QC] },
   { id: 'packaging', title: 'Packaging', statuses: [JOB_STATUSES.PACKAGING] },
   { id: 'shipping', title: 'Ready to Ship', statuses: [JOB_STATUSES.READY_TO_SHIP] },

@@ -115,6 +115,38 @@ export async function updateJob(id, jobData) {
 }
 
 /**
+ * Plan a job - defines routing operations and moves to SCHEDULED status.
+ * This also creates the job + operations in the dispatch engine for shop floor.
+ * @param {string} id - Job ID
+ * @param {Object} planData - Planning data
+ * @param {Array} planData.operations - Array of { workCenterType, name, skillLevel }
+ * @param {string} planData.division - Division (METALS/PLASTICS)
+ * @param {string} planData.dueDate - Due date ISO string
+ * @param {string} planData.materialCode - Material code
+ * @param {string} planData.commodity - Commodity type
+ * @param {number} planData.thickness - Material thickness in inches
+ * @param {string} planData.locationId - Location ID (FWA, IND, CHI)
+ * @returns {Promise<Object>} { success, job, dispatchJob, operations }
+ */
+export async function planJob(id, planData) {
+  const response = await fetch(`${API_BASE}/jobs/${id}/plan`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(planData),
+  });
+  
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || `Failed to plan job: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+/**
  * Assign a job to a user
  * @param {string} id - Job ID
  * @param {string} userId - User ID to assign

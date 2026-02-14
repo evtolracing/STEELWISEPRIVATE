@@ -4,6 +4,173 @@
  */
 
 // ============================================================================
+// WORK CENTER TYPES (Dynamic Registry)
+// ============================================================================
+const workCenterTypes = [
+  {
+    id: 'SAW',
+    label: 'Saw',
+    icon: 'ContentCut',
+    color: '#1976d2',
+    description: 'Band saws, cold saws, and cutting equipment',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'SHEAR',
+    label: 'Shear',
+    icon: 'ContentCut',
+    color: '#0288d1',
+    description: 'Hydraulic shears for sheet and plate',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'ROUTER',
+    label: 'CNC Router',
+    icon: 'Router',
+    color: '#7b1fa2',
+    description: 'CNC routers for plastics and composites',
+    divisions: ['PLASTICS'],
+    isActive: true,
+  },
+  {
+    id: 'WATERJET',
+    label: 'Waterjet',
+    icon: 'Water',
+    color: '#00838f',
+    description: 'Waterjet cutting for precision work',
+    divisions: ['METALS', 'PLASTICS'],
+    isActive: true,
+  },
+  {
+    id: 'DEBURR',
+    label: 'Deburr',
+    icon: 'BuildCircle',
+    color: '#558b2f',
+    description: 'Deburring and edge finishing stations',
+    divisions: ['METALS', 'PLASTICS'],
+    isActive: true,
+  },
+  {
+    id: 'PACKOUT',
+    label: 'Pack-Out',
+    icon: 'LocalShipping',
+    color: '#e65100',
+    description: 'Packaging, crating, and shipping prep',
+    divisions: ['METALS', 'PLASTICS'],
+    isActive: true,
+  },
+  {
+    id: 'SLITTER',
+    label: 'Slitter',
+    icon: 'Straighten',
+    color: '#E91E63',
+    description: 'Coil slitting lines',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'CTL_LINE',
+    label: 'CTL Line',
+    icon: 'Straighten',
+    color: '#9C27B0',
+    description: 'Cut-to-length lines for coil processing',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'LEVELER',
+    label: 'Leveler',
+    icon: 'AlignVerticalBottom',
+    color: '#3F51B5',
+    description: 'Sheet and plate leveling equipment',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'PRESS',
+    label: 'Press/Blanker',
+    icon: 'GridOn',
+    color: '#00BCD4',
+    description: 'Press brakes and blanking presses',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'WELDER',
+    label: 'Welder',
+    icon: 'FlashOn',
+    color: '#FF5722',
+    description: 'MIG, TIG, and spot welding stations',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'INSPECTION',
+    label: 'Inspection',
+    icon: 'FactCheck',
+    color: '#9C27B0',
+    description: 'QA/QC inspection stations',
+    divisions: ['METALS', 'PLASTICS'],
+    isActive: true,
+  },
+  {
+    id: 'PLASMA',
+    label: 'Plasma Cutter',
+    icon: 'FlashOn',
+    color: '#d32f2f',
+    description: 'CNC plasma cutting tables',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'LASER',
+    label: 'Laser Cutter',
+    icon: 'FlashOn',
+    color: '#c62828',
+    description: 'Fiber and CO2 laser cutting systems',
+    divisions: ['METALS', 'PLASTICS'],
+    isActive: true,
+  },
+  {
+    id: 'DRILL',
+    label: 'Drill/Tap',
+    icon: 'Build',
+    color: '#795548',
+    description: 'Drilling, tapping, and boring stations',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'BEND',
+    label: 'Brake/Bend',
+    icon: 'CallSplit',
+    color: '#607D8B',
+    description: 'Press brakes and bending equipment',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+  {
+    id: 'GRIND',
+    label: 'Grinder',
+    icon: 'AutoFixHigh',
+    color: '#455A64',
+    description: 'Surface and edge grinding equipment',
+    divisions: ['METALS'],
+    isActive: true,
+  },
+]
+
+// ============================================================================
+// DIVISIONS (Dynamic Registry)
+// ============================================================================
+const divisions = [
+  { id: 'METALS', label: 'Metals', color: '#1565c0', isActive: true },
+  { id: 'PLASTICS', label: 'Plastics', color: '#7b1fa2', isActive: true },
+]
+
+// ============================================================================
 // WORK CENTERS
 // ============================================================================
 const workCenters = [
@@ -570,6 +737,8 @@ function compareSkillLevel(required, actual) {
 // EXPORTS
 // ============================================================================
 export {
+  workCenterTypes,
+  divisions,
   workCenters,
   operators,
   jobs,

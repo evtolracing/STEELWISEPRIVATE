@@ -6,10 +6,10 @@ export async function seedSupabaseData() {
   try {
     console.log('🌱 Seeding Supabase database...');
 
-    // Check if data already exists
-    const existingJobs = await prisma.job.count();
-    if (existingJobs > 0) {
-      console.log(`✅ Database already has ${existingJobs} jobs, skipping seed`);
+    // Check if data already exists (use organizations as the anchor)
+    const existingOrgs = await prisma.organization.count();
+    if (existingOrgs > 0) {
+      console.log(`✅ Database already has ${existingOrgs} organizations, skipping seed`);
       return;
     }
 
@@ -157,20 +157,7 @@ export async function seedSupabaseData() {
     }
     console.log(`✅ Seeded ${coilData.length} inventory items (coils, sheets, plates, bars, tubes, beams)`);
 
-    // ═══════════════════════════════════════════════════════════
-    //  JOBS
-    // ═══════════════════════════════════════════════════════════
-    const jobs = [
-      { jobNumber: 'JOB-000001', operationType: 'SLITTING', instructions: 'Slit 48" HR A36 coil into (4) 12" strips', priority: 5, status: 'SCHEDULED', scheduledStart: new Date('2026-02-10T08:00:00Z'), scheduledEnd: new Date('2026-02-10T12:00:00Z') },
-      { jobNumber: 'JOB-000002', operationType: 'CUTTING', instructions: 'Plasma cut A36 plate 0.50" to customer DXF profiles', priority: 3, status: 'SCHEDULED', scheduledStart: new Date('2026-02-10T13:00:00Z'), scheduledEnd: new Date('2026-02-10T16:00:00Z') },
-      { jobNumber: 'JOB-000003', operationType: 'GRINDING', instructions: 'Grind and deburr edges on SS 304 sheets', priority: 4, status: 'IN_PROCESS', scheduledStart: new Date('2026-02-09T08:00:00Z'), scheduledEnd: new Date('2026-02-09T17:00:00Z'), actualStart: new Date('2026-02-09T08:15:00Z') },
-      { jobNumber: 'JOB-000004', operationType: 'SHEARING', instructions: 'Shear 60" CQ coil to 48" x 120" blanks (qty 25)', priority: 5, status: 'SCHEDULED', scheduledStart: new Date('2026-02-11T07:00:00Z'), scheduledEnd: new Date('2026-02-11T11:00:00Z') },
-      { jobNumber: 'JOB-000005', operationType: 'LEVELING', instructions: 'Level and flatten A572-50 plate 0.375" x 96" x 240"', priority: 3, status: 'ORDERED', scheduledStart: new Date('2026-02-12T08:00:00Z'), scheduledEnd: new Date('2026-02-12T15:00:00Z') },
-    ];
-    for (const j of jobs) {
-      await prisma.job.create({ data: j });
-    }
-    console.log(`✅ Seeded ${jobs.length} jobs`);
+    // Jobs are no longer seeded — they are created via the Order Board / intake flow
 
     // ═══════════════════════════════════════════════════════════
     //  SUMMARY
@@ -182,9 +169,8 @@ export async function seedSupabaseData() {
     console.log('  - Grades: 8 (A36, CQ, 1018, A572-50, 304 SS, 4140, A500B, W1)');
     console.log('  - Heats: 8');
     console.log(`  - Inventory: ${coilData.length} items across COIL/SHEET/PLATE/BAR/TUBE/BEAM`);
-    console.log(`  - Jobs: ${jobs.length}`);
     
-    return { organizations: 5, users: 3, locations: 4, grades: 8, heats: 8, coils: coilData.length, jobs: jobs.length };
+    return { organizations: 5, users: 3, locations: 4, grades: 8, heats: 8, coils: coilData.length };
   } catch (error) {
     console.error('❌ Error seeding Supabase data:', error);
     throw error;

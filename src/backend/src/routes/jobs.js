@@ -1,5 +1,10 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import {
+  workCenterTypes,
+  jobs as dispatchJobs,
+  jobOperations,
+} from '../data/dispatchData.js';
 
 const router = Router();
 
@@ -202,7 +207,7 @@ router.post('/', async (req, res) => {
     
     // Generate job number
     const jobCount = await prisma.job.count();
-    const jobNumber = `JOB-${String(jobCount + 1).padStart(6, '0')}`;
+    const jobNumber = `JOB-${String(jobCount + 1).padStart(5, '0')}`;
     
     // Build data object with only defined fields
     const data = {
@@ -247,6 +252,164 @@ router.post('/', async (req, res) => {
     console.error('Request body:', req.body);
     console.error('Error details:', error.message, error.stack);
     res.status(500).json({ error: 'Failed to create job', details: error.message });
+  }
+});
+
+// POST /jobs/:id/plan - Plan a job and create dispatch operations
+// This bridges the Prisma DB job with the in-memory dispatch engine
+router.post('/:id/plan', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      operations,  // Array of { workCenterType, name, skillLevel }
+      division,
+      dueDate,
+      materialCode,
+      commodity,
+      thickness,
+      form,
+      grade,
+      locationId,
+    } = req.body;
+
+    // Validate operations array
+    if (!operations || !Array.isArray(operations) || operations.length === 0) {
+      return res.status(400).json({
+        error: 'operations array is required with at least one routing step',
+      });
+    }
+
+    // Validate each operation's work center type exists
+    for (const op of operations) {
+      if (!op.workCenterType) {
+        return res.status(400).json({ error: 'Each operation must have a workCenterType' });
+      }
+      const typeExists = workCenterTypes.find((t) => t.id === op.workCenterType && t.isActive);
+      if (!typeExists) {
+        return res.status(400).json({
+          error: `Unknown or inactive work center type: ${op.workCenterType}`,
+          availableTypes: workCenterTypes.filter((t) => t.isActive).map((t) => t.id),
+        });
+      }
+    }
+
+    // Find the Prisma job
+    const job = await prisma.job.findUnique({
+      where: { id },
+      include: {
+        order: {
+          select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
+        },
+      },
+    });
+
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    if (job.status !== 'ORDERED') {
+      return res.status(400).json({
+        error: `Job must be in ORDERED status to plan. Current status: ${job.status}`,
+      });
+    }
+
+    // 1. Update Prisma job status to SCHEDULED
+    const updateData = {
+      status: 'SCHEDULED',
+    };
+    if (dueDate) {
+      updateData.scheduledEnd = new Date(dueDate);
+    }
+
+    const updatedJob = await prisma.job.update({
+      where: { id },
+      data: updateData,
+      include: {
+        order: {
+          select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
+        },
+        workCenter: {
+          select: { id: true, code: true, name: true, locationId: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+
+    // 2. Create dispatch engine job entry
+    const dispatchJobId = `DISPATCH-${job.jobNumber}`;
+    
+    // Remove existing dispatch job/operations if re-planning
+    const existingIdx = dispatchJobs.findIndex((j) => j.id === dispatchJobId);
+    if (existingIdx !== -1) {
+      dispatchJobs.splice(existingIdx, 1);
+    }
+    // Remove existing operations for this dispatch job
+    for (let i = jobOperations.length - 1; i >= 0; i--) {
+      if (jobOperations[i].jobId === dispatchJobId) {
+        jobOperations.splice(i, 1);
+      }
+    }
+
+    const priorityMap = { 1: 'NORMAL', 2: 'NORMAL', 3: 'NORMAL', 4: 'RUSH', 5: 'HOT' };
+
+    const newDispatchJob = {
+      id: dispatchJobId,
+      prismaJobId: id,
+      jobNumber: job.jobNumber,
+      orderId: job.orderId || `ORD-${job.jobNumber}`,
+      materialCode: materialCode || job.instructions || 'N/A',
+      commodity: commodity || 'METALS',
+      form: form || 'PLATE',
+      grade: grade || 'A36',
+      thickness: thickness || 0.5,
+      division: division || 'METALS',
+      locationId: locationId || 'FWA',
+      dueDate: dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      priority: priorityMap[job.priority] || 'NORMAL',
+      customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : 'Customer'),
+    };
+
+    dispatchJobs.push(newDispatchJob);
+
+    // 3. Create job operations (routing steps)
+    const createdOps = operations.map((op, idx) => {
+      const opId = `JOPN-${job.jobNumber}-${String(idx + 1).padStart(2, '0')}`;
+      const newOp = {
+        id: opId,
+        jobId: dispatchJobId,
+        sequence: idx + 1,
+        name: op.name || `Step ${idx + 1}: ${op.workCenterType}`,
+        requiredWorkCenterType: op.workCenterType,
+        requiredDivision: division || 'METALS',
+        requiredSkillLevel: op.skillLevel || 'STANDARD',
+        specialization: op.specialization || null,
+        thickness: thickness || 0.5,
+        materialCode: materialCode || job.instructions || 'N/A',
+        status: 'PENDING',
+        assignedWorkCenterId: null,
+        assignedOperatorId: null,
+        scheduledStart: null,
+        scheduledEnd: null,
+      };
+      jobOperations.push(newOp);
+      return newOp;
+    });
+
+    console.log(`Job ${job.jobNumber} planned: ${createdOps.length} operations created in dispatch engine`);
+    console.log('Dispatch jobs count:', dispatchJobs.length);
+    console.log('Total job operations count:', jobOperations.length);
+
+    res.json({
+      success: true,
+      job: mapJobForFrontend(updatedJob),
+      dispatchJob: newDispatchJob,
+      operations: createdOps,
+    });
+  } catch (error) {
+    console.error('Error planning job:', error);
+    res.status(500).json({ error: 'Failed to plan job', details: error.message });
   }
 });
 

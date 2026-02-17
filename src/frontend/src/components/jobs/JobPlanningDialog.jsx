@@ -37,7 +37,8 @@ import {
   Schedule as ScheduleIcon,
   PrecisionManufacturing as MachineIcon,
 } from '@mui/icons-material'
-import { getWorkCenterTypes, getLocations, getDivisions } from '../../services/dispatchApi'
+import { getWorkCenterTypes, getLocations, getDivisions, getWorkCenters } from '../../services/dispatchApi'
+import { getJobPlan } from '../../services/jobsApi'
 
 const SKILL_LEVELS = [
   { value: 'NOVICE', label: 'Novice' },
@@ -48,6 +49,7 @@ const SKILL_LEVELS = [
 const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
   // Available data from dispatch engine
   const [workCenterTypes, setWorkCenterTypes] = useState([])
+  const [workCenters, setWorkCenters] = useState([])
   const [locations, setLocations] = useState([])
   const [divisions, setDivisions] = useState([])
   const [loading, setLoading] = useState(false)
@@ -81,19 +83,59 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       // Reset operations when opening a new job
       setOperations([])
       setError(null)
+
+      // If job is already SCHEDULED, load existing plan for editing
+      if (job.status === 'SCHEDULED') {
+        loadExistingPlan()
+      }
     }
   }, [job, open])
 
+  const loadExistingPlan = async () => {
+    if (!job) return
+    try {
+      const plan = await getJobPlan(job.id)
+      if (plan.exists && plan.operations.length > 0) {
+        // Populate form from dispatch job
+        const dj = plan.dispatchJob
+        if (dj) {
+          if (dj.division) setDivision(dj.division)
+          if (dj.locationId) setLocationId(dj.locationId)
+          if (dj.dueDate) setDueDate(dj.dueDate.split('T')[0])
+          if (dj.materialCode && dj.materialCode !== 'N/A') setMaterialCode(dj.materialCode)
+          if (dj.commodity) setCommodity(dj.commodity)
+          if (dj.thickness) setThickness(String(dj.thickness))
+          if (dj.form) setForm(dj.form)
+          if (dj.grade) setGrade(dj.grade)
+        }
+        // Populate operations from existing routing
+        const existingOps = plan.operations.map((op) => ({
+          id: Date.now() + op.sequence,
+          workCenterType: op.requiredWorkCenterType || '',
+          workCenterId: op.assignedWorkCenterId || '',
+          name: op.name || '',
+          skillLevel: op.requiredSkillLevel || 'STANDARD',
+        }))
+        setOperations(existingOps)
+      }
+    } catch (err) {
+      console.error('Failed to load existing plan:', err)
+      // Non-fatal — user can still build a new plan
+    }
+  }
+
   const loadData = async () => {
     try {
-      const [types, locs, divs] = await Promise.all([
+      const [types, locs, divs, wcs] = await Promise.all([
         getWorkCenterTypes(true),
         getLocations(),
         getDivisions(),
+        getWorkCenters(),
       ])
       setWorkCenterTypes(types || [])
       setLocations(locs || [])
       setDivisions(divs || [])
+      setWorkCenters(wcs || [])
       // Default to first available location
       if (locs && locs.length > 0 && !locationId) {
         setLocationId(locs[0].id)
@@ -104,12 +146,30 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
     }
   }
 
+  // Reload work centers when location changes
+  useEffect(() => {
+    if (open) {
+      // Always load ALL work centers so the type dropdown is never empty
+      // The location filter is applied visually, not as a hard filter
+      getWorkCenters().then(wcs => setWorkCenters(wcs || [])).catch(() => {})
+    }
+  }, [locationId, open])
+
+  // Helper: get work centers matching a given type (show all, prefer current location)
+  const getWorkCentersForType = (wcType) => {
+    return workCenters.filter((wc) => {
+      const matchesType = !wcType || wc.workCenterType === wcType
+      return matchesType && wc.isOnline !== false
+    })
+  }
+
   const addOperation = () => {
     setOperations((prev) => [
       ...prev,
       {
         id: Date.now(),
         workCenterType: '',
+        workCenterId: '',
         name: '',
         skillLevel: 'STANDARD',
       },
@@ -125,11 +185,18 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       prev.map((op) => {
         if (op.id !== id) return op
         const updated = { ...op, [field]: value }
-        // Auto-generate name when work center type changes
+        // Auto-generate name and reset work center when type changes
         if (field === 'workCenterType' && value) {
           const type = workCenterTypes.find((t) => t.id === value)
           if (type && !op.name) {
             updated.name = type.label
+          }
+          // Auto-select work center if only one matches
+          const matching = getWorkCentersForType(value)
+          if (matching.length === 1) {
+            updated.workCenterId = matching[0].id
+          } else {
+            updated.workCenterId = ''
           }
         }
         return updated
@@ -170,6 +237,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       const planData = {
         operations: operations.map((op) => ({
           workCenterType: op.workCenterType,
+          workCenterId: op.workCenterId || undefined,
           name: op.name || `${op.workCenterType} Operation`,
           skillLevel: op.skillLevel || 'STANDARD',
         })),
@@ -193,12 +261,16 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
 
   // Quick-add common routing templates
   const addTemplate = (templateOps) => {
-    const newOps = templateOps.map((op, i) => ({
-      id: Date.now() + i,
-      workCenterType: op.type,
-      name: op.name,
-      skillLevel: op.skill || 'STANDARD',
-    }))
+    const newOps = templateOps.map((op, i) => {
+      const matching = getWorkCentersForType(op.type)
+      return {
+        id: Date.now() + i,
+        workCenterType: op.type,
+        workCenterId: matching.length === 1 ? matching[0].id : '',
+        name: op.name,
+        skillLevel: op.skill || 'STANDARD',
+      }
+    })
     setOperations(newOps)
   }
 
@@ -261,13 +333,15 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
 
   if (!job) return null
 
+  const isReplan = job.status === 'SCHEDULED'
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <JobIcon color="primary" />
         <Box sx={{ flex: 1 }}>
           <Typography variant="h6" component="span">
-            Plan Job: {job.jobNumber}
+            {isReplan ? 'Edit Plan' : 'Plan Job'}: {job.jobNumber}
           </Typography>
           <Typography variant="body2" color="text.secondary" component="div">
             {job.customerName} — {job.material || job.processingType || 'No material specified'}
@@ -462,7 +536,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                         value={op.workCenterType}
                         onChange={(e) => updateOperation(op.id, 'workCenterType', e.target.value)}
                         size="small"
-                        sx={{ minWidth: 180 }}
+                        sx={{ minWidth: 160 }}
                         required
                       >
                         {workCenterTypes.map((type) => (
@@ -482,11 +556,38 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                         ))}
                       </TextField>
                       <TextField
+                        select
+                        label="Work Center"
+                        value={op.workCenterId || ''}
+                        onChange={(e) => updateOperation(op.id, 'workCenterId', e.target.value)}
+                        size="small"
+                        sx={{ minWidth: 180 }}
+                        disabled={!op.workCenterType}
+                        helperText={op.workCenterType && getWorkCentersForType(op.workCenterType).length === 0 ? 'No machines of this type exist' : ''}
+                      >
+                        <MenuItem value="">
+                          <em>Auto-assign</em>
+                        </MenuItem>
+                        {getWorkCentersForType(op.workCenterType).map((wc) => (
+                          <MenuItem key={wc.id} value={wc.id}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <MachineIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                              {wc.name} ({wc.code})
+                              {wc.location?.name && (
+                                <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+                                  — {wc.location.name}
+                                </Typography>
+                              )}
+                            </Box>
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                      <TextField
                         label="Operation Name"
                         value={op.name}
                         onChange={(e) => updateOperation(op.id, 'name', e.target.value)}
                         size="small"
-                        sx={{ minWidth: 180, flex: 1 }}
+                        sx={{ minWidth: 150, flex: 1 }}
                         placeholder="e.g., Cut to Size"
                       />
                       <TextField
@@ -495,7 +596,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                         value={op.skillLevel}
                         onChange={(e) => updateOperation(op.id, 'skillLevel', e.target.value)}
                         size="small"
-                        sx={{ minWidth: 120 }}
+                        sx={{ minWidth: 110 }}
                       >
                         {SKILL_LEVELS.map((sl) => (
                           <MenuItem key={sl.value} value={sl.value}>
@@ -547,7 +648,9 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
 
       <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
         <Typography variant="caption" color="text.secondary">
-          Planning will move this job to "Planned Jobs" and populate the Shop Floor queue.
+          {isReplan
+            ? 'Updating will replace the existing routing and refresh the Shop Floor queue.'
+            : 'Planning will move this job to "Planned Jobs" and populate the Shop Floor queue.'}
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button onClick={onClose} disabled={loading}>
@@ -559,7 +662,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
             disabled={loading || operations.length === 0}
             startIcon={<ScheduleIcon />}
           >
-            {loading ? 'Planning...' : 'Plan Job'}
+            {loading ? (isReplan ? 'Updating...' : 'Planning...') : (isReplan ? 'Update Plan' : 'Plan Job')}
           </Button>
         </Box>
       </DialogActions>

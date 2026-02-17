@@ -15,6 +15,7 @@ export * from './qaqc'
 export * from './jobs'
 export * from './users'
 export * from './documents'
+export * from './staff'
 
 // Dashboard API
 import client from './client'

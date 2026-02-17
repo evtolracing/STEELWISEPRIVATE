@@ -147,6 +147,23 @@ export async function planJob(id, planData) {
 }
 
 /**
+ * Get existing plan/routing for a job from the dispatch engine
+ * @param {string} id - Job ID
+ * @returns {Promise<Object>} { exists, dispatchJob, operations }
+ */
+export async function getJobPlan(id) {
+  const response = await fetch(`${API_BASE}/jobs/${id}/plan`, {
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch job plan: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
  * Assign a job to a user
  * @param {string} id - Job ID
  * @param {string} userId - User ID to assign

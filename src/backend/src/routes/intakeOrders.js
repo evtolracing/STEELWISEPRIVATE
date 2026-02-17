@@ -391,7 +391,7 @@ router.post('/:id/create-work-orders', async (req, res) => {
           jobNumber,
           orderId: order.id,
           orderLineId: line.id,
-          status: 'SCHEDULED',
+          status: 'ORDERED',
           operationType: opType,
           priority: priorityInt,
           scheduledStart: order.requiredDate || null,

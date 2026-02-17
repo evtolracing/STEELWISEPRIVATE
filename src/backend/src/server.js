@@ -42,6 +42,7 @@ import intakeOrderRoutes from './routes/intakeOrders.js';
 import salesRoutes from './routes/salesRoutes.js';
 import executiveRoutes from './routes/executive.js';
 import dropTagRoutes from './routes/dropTagRoutes.js';
+import staffRoutes from './routes/staff.js';
 import partnerAuthRoutes from './routes/partner/partnerAuthRoutes.js';
 import partnerCustomerRoutes from './routes/partner/customerRoutes.js';
 import partnerSupplierRoutes from './routes/partner/supplierRoutes.js';
@@ -127,6 +128,9 @@ app.use('/api/executive', executiveRoutes);  // /api/executive/cockpit, /api/exe
 
 // Drop Tag Engine - Production-to-Delivery Tracking
 app.use('/api/drop-tags', dropTagRoutes);  // /api/drop-tags, /api/drop-tags/listings, /api/drop-tags/scans, /api/drop-tags/templates
+
+// Staff & Operator Management
+app.use('/api/staff', staffRoutes);  // /api/staff/operators, /api/staff/shifts, /api/staff/stats, /api/staff/available
 
 // ── External Partner API Layer ──────────────────────────────────────────────────
 app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)

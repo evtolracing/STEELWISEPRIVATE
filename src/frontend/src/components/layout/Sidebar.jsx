@@ -133,6 +133,7 @@ import {
   Recycling as RemnantOutletIcon,
   Gavel as AuditLogIcon,
   Timer as RecipesIcon,
+  Engineering as StaffIcon,
   Tune as PreferencesIcon,
   TrendingDown as DemandShapingIcon,
   PhoneAndroid as MobileRepIcon,
@@ -368,6 +369,7 @@ const navSections = [
     title: 'Administration',
     items: [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
+      { path: '/admin/staff', label: 'Staff & Operators', icon: StaffIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
       { path: '/admin/audit-log', label: 'Override Audit Log', icon: AuditLogIcon },
       { path: '/admin/processing-recipes', label: 'Processing Recipes', icon: RecipesIcon },

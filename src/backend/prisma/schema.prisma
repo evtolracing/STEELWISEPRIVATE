@@ -72,6 +72,7 @@ model User {
   auditLogs        AuditLog[]           @relation("AuditActor")
   approvalRequests ApprovalRequest[]    @relation("ApprovalRequester")
   approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
+  operator         Operator?
 }
 
 // Role definition with permissions
@@ -384,6 +385,7 @@ model Location {
   assets        Asset[]            @relation("AssetSite")
   packages      Package[]          @relation("PackageLocation")
   dropTagListings DropTagListing[] @relation("ListingOrigin")
+  operatorsHome Operator[]         @relation("OperatorHomeLocation")
 }
 
 model Inventory {
@@ -557,6 +559,204 @@ model QuoteLine {
   rfqLine       RFQLine? @relation(fields: [rfqLineId], references: [id])
 }
 
+// ============================================================================
+// STAFF & OPERATOR MANAGEMENT
+// ============================================================================
+
+model Operator {
+  id                       String          @id @default(uuid())
+  userId                   String?         @unique
+  employeeCode             String          @unique
+  firstName                String
+  lastName                 String
+  email                    String?
+  phone                    String?
+  homeLocationId           String?
+  homeWorkCenterId         String?
+  hireDate                 DateTime?
+  status                   OperatorStatus  @default(ACTIVE)
+  maxThicknessInches       Decimal?
+  hourlyRate               Decimal?
+  overtimeMultiplier       Decimal?        @default(1.5)
+  notes                    String?
+  avatarUrl                String?
+  emergencyContactName     String?
+  emergencyContactPhone    String?
+  isActive                 Boolean         @default(true)
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+
+  user                     User?           @relation(fields: [userId], references: [id])
+  homeLocation             Location?       @relation("OperatorHomeLocation", fields: [homeLocationId], references: [id])
+  homeWorkCenter           WorkCenter?     @relation("OperatorHomeWorkCenter", fields: [homeWorkCenterId], references: [id])
+  skills                   OperatorSkill[]
+  shifts                   Shift[]
+
+  @@index([homeLocationId])
+  @@index([status])
+}
+
+model OperatorSkill {
+  id                String      @id @default(uuid())
+  operatorId        String
+  workCenterTypeId  String
+  skillLevel        SkillLevel  @default(STANDARD)
+  certifiedDate     DateTime    @default(now())
+  expiresAt         DateTime?
+  certificationRef  String?
+  isActive          Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  operator          Operator    @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+
+  @@unique([operatorId, workCenterTypeId])
+  @@index([workCenterTypeId])
+}
+
+model Shift {
+  id              String     @id @default(uuid())
+  operatorId      String
+  locationId      String?
+  workCenterId    String?
+  shiftDate       DateTime
+  startTime       DateTime
+  endTime         DateTime
+  shiftType       ShiftType  @default(DAY)
+  breakMinutes    Int        @default(30)
+  status          ShiftStatus @default(SCHEDULED)
+  notes           String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  operator        Operator   @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+
+  @@index([operatorId, shiftDate])
+  @@index([locationId, shiftDate])
+}
+
+enum OperatorStatus {
+  ACTIVE
+  ON_LEAVE
+  SUSPENDED
+  TERMINATED
+  TRAINING
+}
+
+enum SkillLevel {
+  NOVICE
+  STANDARD
+  ADVANCED
+  EXPERT
+}
+
+enum ShiftType {
+  DAY
+  NIGHT
+  SWING
+  SPLIT
+  OVERTIME
+}
+
+enum ShiftStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ============================================================================
+// DISPATCH ENGINE — Persistent Job Routing & Operations
+// ============================================================================
+
+model DispatchJob {
+  id                String              @id @default(uuid())
+  jobId             String              @unique
+  jobNumber         String
+  orderId           String?
+  materialCode      String?
+  commodity         String              @default("METALS")
+  form              String              @default("PLATE")
+  grade             String?
+  thickness         Decimal             @default(0.5)
+  division          String              @default("METALS")
+  locationId        String              @default("FWA")
+  dueDate           DateTime?
+  priority          String              @default("NORMAL")
+  customerName      String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  job               Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  operations        DispatchOperation[]
+
+  @@index([locationId])
+  @@index([jobNumber])
+}
+
+model DispatchOperation {
+  id                      String       @id @default(uuid())
+  dispatchJobId           String
+  sequence                Int
+  name                    String
+  requiredWorkCenterType  String
+  requiredDivision        String       @default("METALS")
+  requiredSkillLevel      String       @default("STANDARD")
+  specialization          String?
+  thickness               Decimal      @default(0.5)
+  materialCode            String?
+  status                  String       @default("PENDING")
+  assignedWorkCenterId    String?
+  assignedOperatorId      String?
+  scheduledStart          DateTime?
+  scheduledEnd            DateTime?
+  actualStart             DateTime?
+  actualEnd               DateTime?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  dispatchJob             DispatchJob  @relation(fields: [dispatchJobId], references: [id], onDelete: Cascade)
+  timeLogs                DispatchTimeLog[]
+
+  @@index([dispatchJobId])
+  @@index([assignedWorkCenterId])
+  @@index([status])
+  @@unique([dispatchJobId, sequence])
+}
+
+model DispatchTimeLog {
+  id                    String            @id @default(uuid())
+  dispatchOperationId   String
+  jobId                 String?
+  operatorId            String?
+  workCenterId          String?
+  status                String            @default("RUNNING")    // RUNNING, PAUSED, COMPLETE
+  startAt               DateTime          @default(now())
+  endAt                 DateTime?
+  downtimeReason        String?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  dispatchOperation     DispatchOperation @relation(fields: [dispatchOperationId], references: [id], onDelete: Cascade)
+
+  @@index([dispatchOperationId])
+  @@index([operatorId])
+  @@index([status])
+}
+
+model WorkCenterType {
+  id          String   @id
+  label       String
+  icon        String   @default("Build")
+  color       String   @default("#1976d2")
+  description String?
+  divisions   String[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model WorkCenter {
   id           String   @id @default(uuid())
   code         String   @unique
@@ -571,6 +771,7 @@ model WorkCenter {
   jobs         Job[]
   location     Location @relation(fields: [locationId], references: [id])
   assets       Asset[]  @relation("AssetWorkCenter")
+  operatorsHome Operator[] @relation("OperatorHomeWorkCenter")
 }
 
 model Job {
@@ -610,6 +811,7 @@ model Job {
   workCenter       WorkCenter? @relation(fields: [workCenterId], references: [id])
   dropTags         DropTag[]
   packages         Package[]
+  dispatchJob      DispatchJob?
 
   @@index([recipeId])
 }

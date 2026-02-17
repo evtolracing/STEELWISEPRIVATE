@@ -1,10 +1,5 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import {
-  workCenterTypes,
-  jobs as dispatchJobs,
-  jobOperations,
-} from '../data/dispatchData.js';
 
 const router = Router();
 
@@ -255,8 +250,57 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET /jobs/:id/plan - Retrieve existing dispatch plan for a job
+router.get('/:id/plan', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const dispatchJob = await prisma.dispatchJob.findUnique({
+      where: { jobId: id },
+      include: {
+        operations: { orderBy: { sequence: 'asc' } },
+      },
+    });
+
+    if (!dispatchJob || dispatchJob.operations.length === 0) {
+      return res.json({ exists: false, dispatchJob: null, operations: [] });
+    }
+
+    // Map to the shape the frontend expects
+    const mappedJob = {
+      ...dispatchJob,
+      thickness: Number(dispatchJob.thickness),
+    };
+    const mappedOps = dispatchJob.operations.map((op) => ({
+      id: op.id,
+      jobId: op.dispatchJobId,
+      sequence: op.sequence,
+      name: op.name,
+      requiredWorkCenterType: op.requiredWorkCenterType,
+      requiredDivision: op.requiredDivision,
+      requiredSkillLevel: op.requiredSkillLevel,
+      specialization: op.specialization,
+      thickness: Number(op.thickness),
+      materialCode: op.materialCode,
+      status: op.status,
+      assignedWorkCenterId: op.assignedWorkCenterId,
+      assignedOperatorId: op.assignedOperatorId,
+      scheduledStart: op.scheduledStart,
+      scheduledEnd: op.scheduledEnd,
+    }));
+
+    res.json({
+      exists: true,
+      dispatchJob: mappedJob,
+      operations: mappedOps,
+    });
+  } catch (error) {
+    console.error('Error fetching job plan:', error);
+    res.status(500).json({ error: 'Failed to fetch job plan', details: error.message });
+  }
+});
+
 // POST /jobs/:id/plan - Plan a job and create dispatch operations
-// This bridges the Prisma DB job with the in-memory dispatch engine
+// Persists dispatch job + operations to Supabase via Prisma
 router.post('/:id/plan', async (req, res) => {
   try {
     const { id } = req.params;
@@ -279,16 +323,17 @@ router.post('/:id/plan', async (req, res) => {
       });
     }
 
-    // Validate each operation's work center type exists
+    // Validate each operation's work center type exists (from Supabase)
     for (const op of operations) {
       if (!op.workCenterType) {
         return res.status(400).json({ error: 'Each operation must have a workCenterType' });
       }
-      const typeExists = workCenterTypes.find((t) => t.id === op.workCenterType && t.isActive);
-      if (!typeExists) {
+      const typeExists = await prisma.workCenterType.findUnique({ where: { id: op.workCenterType } });
+      if (!typeExists || !typeExists.isActive) {
+        const allActive = await prisma.workCenterType.findMany({ where: { isActive: true }, select: { id: true } });
         return res.status(400).json({
           error: `Unknown or inactive work center type: ${op.workCenterType}`,
-          availableTypes: workCenterTypes.filter((t) => t.isActive).map((t) => t.id),
+          availableTypes: allActive.map((t) => t.id),
         });
       }
     }
@@ -307,9 +352,9 @@ router.post('/:id/plan', async (req, res) => {
       return res.status(404).json({ error: 'Job not found' });
     }
 
-    if (job.status !== 'ORDERED') {
+    if (job.status !== 'ORDERED' && job.status !== 'SCHEDULED') {
       return res.status(400).json({
-        error: `Job must be in ORDERED status to plan. Current status: ${job.status}`,
+        error: `Job must be in ORDERED or SCHEDULED status to plan. Current status: ${job.status}`,
       });
     }
 
@@ -337,75 +382,68 @@ router.post('/:id/plan', async (req, res) => {
       },
     });
 
-    // 2. Create dispatch engine job entry
-    const dispatchJobId = `DISPATCH-${job.jobNumber}`;
-    
-    // Remove existing dispatch job/operations if re-planning
-    const existingIdx = dispatchJobs.findIndex((j) => j.id === dispatchJobId);
-    if (existingIdx !== -1) {
-      dispatchJobs.splice(existingIdx, 1);
-    }
-    // Remove existing operations for this dispatch job
-    for (let i = jobOperations.length - 1; i >= 0; i--) {
-      if (jobOperations[i].jobId === dispatchJobId) {
-        jobOperations.splice(i, 1);
-      }
-    }
-
     const priorityMap = { 1: 'NORMAL', 2: 'NORMAL', 3: 'NORMAL', 4: 'RUSH', 5: 'HOT' };
 
-    const newDispatchJob = {
-      id: dispatchJobId,
-      prismaJobId: id,
-      jobNumber: job.jobNumber,
-      orderId: job.orderId || `ORD-${job.jobNumber}`,
-      materialCode: materialCode || job.instructions || 'N/A',
-      commodity: commodity || 'METALS',
-      form: form || 'PLATE',
-      grade: grade || 'A36',
-      thickness: thickness || 0.5,
-      division: division || 'METALS',
-      locationId: locationId || 'FWA',
-      dueDate: dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      priority: priorityMap[job.priority] || 'NORMAL',
-      customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : 'Customer'),
-    };
+    // 2. Upsert dispatch job in database (delete old one if re-planning)
+    await prisma.dispatchJob.deleteMany({ where: { jobId: id } });
 
-    dispatchJobs.push(newDispatchJob);
-
-    // 3. Create job operations (routing steps)
-    const createdOps = operations.map((op, idx) => {
-      const opId = `JOPN-${job.jobNumber}-${String(idx + 1).padStart(2, '0')}`;
-      const newOp = {
-        id: opId,
-        jobId: dispatchJobId,
-        sequence: idx + 1,
-        name: op.name || `Step ${idx + 1}: ${op.workCenterType}`,
-        requiredWorkCenterType: op.workCenterType,
-        requiredDivision: division || 'METALS',
-        requiredSkillLevel: op.skillLevel || 'STANDARD',
-        specialization: op.specialization || null,
-        thickness: thickness || 0.5,
+    const newDispatchJob = await prisma.dispatchJob.create({
+      data: {
+        jobId: id,
+        jobNumber: job.jobNumber,
+        orderId: job.orderId || null,
         materialCode: materialCode || job.instructions || 'N/A',
-        status: 'PENDING',
-        assignedWorkCenterId: null,
-        assignedOperatorId: null,
-        scheduledStart: null,
-        scheduledEnd: null,
-      };
-      jobOperations.push(newOp);
-      return newOp;
+        commodity: commodity || 'METALS',
+        form: form || 'PLATE',
+        grade: grade || 'A36',
+        thickness: thickness || 0.5,
+        division: division || 'METALS',
+        locationId: locationId || 'FWA',
+        dueDate: dueDate ? new Date(dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        priority: priorityMap[job.priority] || 'NORMAL',
+        customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : 'Customer'),
+        operations: {
+          create: operations.map((op, idx) => ({
+            sequence: idx + 1,
+            name: op.name || `Step ${idx + 1}: ${op.workCenterType}`,
+            requiredWorkCenterType: op.workCenterType,
+            requiredDivision: division || 'METALS',
+            requiredSkillLevel: op.skillLevel || 'STANDARD',
+            specialization: op.specialization || null,
+            thickness: thickness || 0.5,
+            materialCode: materialCode || job.instructions || 'N/A',
+            status: 'PENDING',
+          })),
+        },
+      },
+      include: {
+        operations: { orderBy: { sequence: 'asc' } },
+      },
     });
 
-    console.log(`Job ${job.jobNumber} planned: ${createdOps.length} operations created in dispatch engine`);
-    console.log('Dispatch jobs count:', dispatchJobs.length);
-    console.log('Total job operations count:', jobOperations.length);
+    console.log(`Job ${job.jobNumber} planned: ${newDispatchJob.operations.length} operations persisted to database`);
 
     res.json({
       success: true,
       job: mapJobForFrontend(updatedJob),
-      dispatchJob: newDispatchJob,
-      operations: createdOps,
+      dispatchJob: { ...newDispatchJob, thickness: Number(newDispatchJob.thickness) },
+      operations: newDispatchJob.operations.map((op) => ({
+        id: op.id,
+        jobId: op.dispatchJobId,
+        sequence: op.sequence,
+        name: op.name,
+        requiredWorkCenterType: op.requiredWorkCenterType,
+        requiredDivision: op.requiredDivision,
+        requiredSkillLevel: op.requiredSkillLevel,
+        specialization: op.specialization,
+        thickness: Number(op.thickness),
+        materialCode: op.materialCode,
+        status: op.status,
+        assignedWorkCenterId: op.assignedWorkCenterId,
+        assignedOperatorId: op.assignedOperatorId,
+        scheduledStart: op.scheduledStart,
+        scheduledEnd: op.scheduledEnd,
+      })),
     });
   } catch (error) {
     console.error('Error planning job:', error);

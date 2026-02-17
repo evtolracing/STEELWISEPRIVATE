@@ -163,29 +163,24 @@ function WorkCenterQueuePage() {
     }
   }, [locationId, workCenterId, selectedOperation])
 
-  // Load operators
+  // Load operators — qualified for this work center's type
   useEffect(() => {
     async function loadOperators() {
       try {
-        const data = await getOperators(workCenterId)
-        setOperatorsState(data)
-        if (data.length > 0 && !selectedOperator) {
+        let data = await getOperators(workCenterId)
+        // If no qualified operators found, load all operators as fallback
+        if (!data || data.length === 0) {
+          data = await getOperators()
+        }
+        setOperatorsState(data || [])
+        if (data?.length > 0 && !selectedOperator) {
           setSelectedOperator(data[0].id)
         }
       } catch (err) {
         console.error('Failed to load operators:', err)
-        // Fallback to all operators
-        try {
-          const allOps = await getOperators()
-          setOperatorsState(allOps)
-          if (allOps.length > 0 && !selectedOperator) {
-            setSelectedOperator(allOps[0].id)
-          }
-        } catch {
-          // Use placeholder
-          setOperatorsState([{ id: 'OP-001', name: 'Default Operator' }])
-          setSelectedOperator('OP-001')
-        }
+        // Use placeholder on total failure
+        setOperatorsState([{ id: 'OP-001', name: 'Default Operator' }])
+        setSelectedOperator('OP-001')
       }
     }
     loadOperators()

@@ -196,6 +196,7 @@ const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
 const AuditLogPage = lazy(() => import('../pages/Admin/AuditLogPage'))
 const RecipeEditorPage = lazy(() => import('../pages/Admin/RecipeEditorPage'))
+const StaffManagementPage = lazy(() => import('../pages/Admin/StaffManagementPage'))
 
 // Partner API Management
 const PartnerRegistryPage = lazy(() => import('../pages/Partners/PartnerRegistryPage'))
@@ -1429,6 +1430,16 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <RecipeEditorPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      // Admin - Staff & Operator Management
+      {
+        path: 'admin/staff',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <StaffManagementPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

@@ -2,20 +2,16 @@
  * Dispatch Engine Routes
  * Handles automatic assignment of job operations to work centers and operators
  * 
- * Work Centers & Locations: Read from Supabase (Prisma) — persistent
+ * All data is persisted to Supabase via Prisma:
+ * Work Centers, Locations, Operators, DispatchJobs, DispatchOperations
  * Work Center Types & Divisions: In-memory registries — configuration
- * Jobs, Operations, Operators: In-memory dispatch engine — runtime scheduling
  */
 
 import express from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import prisma from '../lib/db.js'
 import {
-  workCenterTypes,
   divisions,
-  operators,
-  jobs,
-  jobOperations,
   compareSkillLevel,
 } from '../data/dispatchData.js'
 
@@ -71,12 +67,13 @@ function mapPrismaLocation(loc) {
 /**
  * Get count of operations assigned to a work center with active status
  */
-function getWorkCenterLoad(workCenterId) {
-  return jobOperations.filter(
-    (op) =>
-      op.assignedWorkCenterId === workCenterId &&
-      (op.status === 'SCHEDULED' || op.status === 'IN_PROCESS')
-  ).length
+async function getWorkCenterLoad(workCenterId) {
+  return prisma.dispatchOperation.count({
+    where: {
+      assignedWorkCenterId: workCenterId,
+      status: { in: ['SCHEDULED', 'IN_PROCESS'] },
+    },
+  })
 }
 
 /**
@@ -127,9 +124,10 @@ function operatorCanHandle(op, operation) {
 
 /**
  * Get job for an operation (for priority sorting)
+ * Now uses a pre-loaded map passed in, or queries Prisma
  */
-function getJobForOperation(operationJobId) {
-  return jobs.find((j) => j.id === operationJobId)
+async function getJobForOperation(operationJobId) {
+  return prisma.dispatchJob.findUnique({ where: { id: operationJobId } })
 }
 
 /**
@@ -147,99 +145,127 @@ const PRIORITY_ORDER = { VIP: 0, RUSH: 1, HOT: 2, NORMAL: 3 }
 
 /**
  * GET /v1/dispatch/work-center-types
- * List all work center types (dynamic registry)
+ * List all work center types (persistent in Supabase)
  */
-router.get('/work-center-types', (req, res) => {
-  const { activeOnly } = req.query
-  let filtered = workCenterTypes
-  if (activeOnly === 'true') {
-    filtered = workCenterTypes.filter((t) => t.isActive)
+router.get('/work-center-types', async (req, res) => {
+  try {
+    const { activeOnly } = req.query
+    const where = activeOnly === 'true' ? { isActive: true } : {}
+    const types = await prisma.workCenterType.findMany({
+      where,
+      orderBy: { label: 'asc' },
+    })
+    res.json({ success: true, data: types })
+  } catch (error) {
+    console.error('Error fetching work center types:', error)
+    res.status(500).json({ success: false, error: 'Failed to fetch work center types' })
   }
-  res.json({ success: true, data: filtered })
 })
 
 /**
  * GET /v1/dispatch/work-center-types/:id
  * Get a single work center type
  */
-router.get('/work-center-types/:id', (req, res) => {
-  const wct = workCenterTypes.find((t) => t.id === req.params.id)
-  if (!wct) {
-    return res.status(404).json({ success: false, error: 'Work center type not found' })
+router.get('/work-center-types/:id', async (req, res) => {
+  try {
+    const wct = await prisma.workCenterType.findUnique({ where: { id: req.params.id } })
+    if (!wct) {
+      return res.status(404).json({ success: false, error: 'Work center type not found' })
+    }
+    res.json({ success: true, data: wct })
+  } catch (error) {
+    console.error('Error fetching work center type:', error)
+    res.status(500).json({ success: false, error: 'Failed to fetch work center type' })
   }
-  res.json({ success: true, data: wct })
 })
 
 /**
  * POST /v1/dispatch/work-center-types
  * Create a new work center type
  */
-router.post('/work-center-types', (req, res) => {
-  const { id, label, icon, color, description, divisions: divs } = req.body
+router.post('/work-center-types', async (req, res) => {
+  try {
+    const { id, label, icon, color, description, divisions: divs } = req.body
 
-  if (!id || !label) {
-    return res.status(400).json({ success: false, error: 'id and label are required' })
+    if (!id || !label) {
+      return res.status(400).json({ success: false, error: 'id and label are required' })
+    }
+
+    const normalizedId = id.toUpperCase().replace(/[^A-Z0-9_]/g, '_')
+
+    // Check for existing
+    const existing = await prisma.workCenterType.findUnique({ where: { id: normalizedId } })
+    if (existing) {
+      return res.status(409).json({ success: false, error: `Work center type '${normalizedId}' already exists` })
+    }
+
+    const newType = await prisma.workCenterType.create({
+      data: {
+        id: normalizedId,
+        label: label.trim(),
+        icon: icon || 'Settings',
+        color: color || '#666666',
+        description: description || '',
+        divisions: divs || [],
+        isActive: true,
+      },
+    })
+
+    res.status(201).json({ success: true, data: newType })
+  } catch (error) {
+    console.error('Error creating work center type:', error)
+    res.status(500).json({ success: false, error: 'Failed to create work center type' })
   }
-
-  // Validate unique ID
-  const normalizedId = id.toUpperCase().replace(/[^A-Z0-9_]/g, '_')
-  if (workCenterTypes.find((t) => t.id === normalizedId)) {
-    return res.status(409).json({ success: false, error: `Work center type '${normalizedId}' already exists` })
-  }
-
-  const newType = {
-    id: normalizedId,
-    label: label.trim(),
-    icon: icon || 'Settings',
-    color: color || '#666666',
-    description: description || '',
-    divisions: divs || [],
-    isActive: true,
-  }
-
-  workCenterTypes.push(newType)
-  res.status(201).json({ success: true, data: newType })
 })
 
 /**
  * PATCH /v1/dispatch/work-center-types/:id
  * Update a work center type
  */
-router.patch('/work-center-types/:id', (req, res) => {
-  const idx = workCenterTypes.findIndex((t) => t.id === req.params.id)
-  if (idx === -1) {
-    return res.status(404).json({ success: false, error: 'Work center type not found' })
+router.patch('/work-center-types/:id', async (req, res) => {
+  try {
+    const existing = await prisma.workCenterType.findUnique({ where: { id: req.params.id } })
+    if (!existing) {
+      return res.status(404).json({ success: false, error: 'Work center type not found' })
+    }
+
+    const { label, icon, color, description, divisions: divs, isActive } = req.body
+    const data = {}
+    if (label !== undefined) data.label = label.trim()
+    if (icon !== undefined) data.icon = icon
+    if (color !== undefined) data.color = color
+    if (description !== undefined) data.description = description
+    if (divs !== undefined) data.divisions = divs
+    if (isActive !== undefined) data.isActive = isActive
+
+    const updated = await prisma.workCenterType.update({
+      where: { id: req.params.id },
+      data,
+    })
+
+    res.json({ success: true, data: updated })
+  } catch (error) {
+    console.error('Error updating work center type:', error)
+    res.status(500).json({ success: false, error: 'Failed to update work center type' })
   }
-
-  const { label, icon, color, description, divisions: divs, isActive } = req.body
-  const existing = workCenterTypes[idx]
-
-  if (label !== undefined) existing.label = label.trim()
-  if (icon !== undefined) existing.icon = icon
-  if (color !== undefined) existing.color = color
-  if (description !== undefined) existing.description = description
-  if (divs !== undefined) existing.divisions = divs
-  if (isActive !== undefined) existing.isActive = isActive
-
-  res.json({ success: true, data: existing })
 })
 
 /**
  * DELETE /v1/dispatch/work-center-types/:id
  * Deactivate a work center type (soft-delete to preserve history)
  */
-router.delete('/work-center-types/:id', (req, res) => {
-  const idx = workCenterTypes.findIndex((t) => t.id === req.params.id)
-  if (idx === -1) {
-    return res.status(404).json({ success: false, error: 'Work center type not found' })
-  }
+router.delete('/work-center-types/:id', async (req, res) => {
+  try {
+    const existing = await prisma.workCenterType.findUnique({ where: { id: req.params.id } })
+    if (!existing) {
+      return res.status(404).json({ success: false, error: 'Work center type not found' })
+    }
 
-  // Check if any active work centers in Prisma DB use this type
-  // (async handler wrapped in promise)
-  prisma.workCenter.findMany({
-    where: { type: req.params.id, isActive: true },
-    select: { id: true, name: true },
-  }).then((usedBy) => {
+    // Check if any active work centers use this type
+    const usedBy = await prisma.workCenter.findMany({
+      where: { type: req.params.id, isActive: true },
+      select: { id: true, name: true },
+    })
     if (usedBy.length > 0) {
       return res.status(409).json({
         success: false,
@@ -248,14 +274,16 @@ router.delete('/work-center-types/:id', (req, res) => {
       })
     }
 
-    workCenterTypes[idx].isActive = false
-    res.json({ success: true, data: workCenterTypes[idx] })
-  }).catch((err) => {
-    console.error('Error checking work centers for type deletion:', err)
-    // Fallback: allow deletion
-    workCenterTypes[idx].isActive = false
-    res.json({ success: true, data: workCenterTypes[idx] })
-  })
+    const deactivated = await prisma.workCenterType.update({
+      where: { id: req.params.id },
+      data: { isActive: false },
+    })
+
+    res.json({ success: true, data: deactivated })
+  } catch (error) {
+    console.error('Error deleting work center type:', error)
+    res.status(500).json({ success: false, error: 'Failed to delete work center type' })
+  }
 })
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -314,12 +342,13 @@ router.post('/work-centers', async (req, res) => {
     }
 
     // Validate type exists in registry
-    const typeExists = workCenterTypes.find((t) => t.id === workCenterType)
+    const typeExists = await prisma.workCenterType.findUnique({ where: { id: workCenterType } })
     if (!typeExists) {
+      const allTypes = await prisma.workCenterType.findMany({ where: { isActive: true }, select: { id: true } })
       return res.status(400).json({
         success: false,
         error: `Unknown workCenterType '${workCenterType}'. Create the type first.`,
-        availableTypes: workCenterTypes.filter((t) => t.isActive).map((t) => t.id),
+        availableTypes: allTypes.map((t) => t.id),
       })
     }
 
@@ -392,7 +421,7 @@ router.patch('/work-centers/:id', async (req, res) => {
     if (capabilities !== undefined) updateData.capabilities = capabilities
     if (isOnline !== undefined) updateData.isActive = isOnline
     if (workCenterType !== undefined) {
-      const typeExists = workCenterTypes.find((t) => t.id === workCenterType)
+      const typeExists = await prisma.workCenterType.findUnique({ where: { id: workCenterType } })
       if (!typeExists) {
         return res.status(400).json({ success: false, error: `Unknown workCenterType '${workCenterType}'.` })
       }
@@ -433,15 +462,16 @@ router.delete('/work-centers/:id', async (req, res) => {
     }
 
     // Check for active dispatch operations
-    const activeOps = jobOperations.filter(
-      (op) =>
-        op.assignedWorkCenterId === req.params.id &&
-        (op.status === 'SCHEDULED' || op.status === 'IN_PROCESS')
-    )
-    if (activeOps.length > 0) {
+    const activeOpsCount = await prisma.dispatchOperation.count({
+      where: {
+        assignedWorkCenterId: req.params.id,
+        status: { in: ['SCHEDULED', 'IN_PROCESS'] },
+      },
+    })
+    if (activeOpsCount > 0) {
       return res.status(409).json({
         success: false,
-        error: `Cannot delete — ${activeOps.length} active operation(s) assigned`,
+        error: `Cannot delete — ${activeOpsCount} active operation(s) assigned`,
       })
     }
 
@@ -555,20 +585,75 @@ router.get('/work-centers', async (req, res) => {
 
 /**
  * GET /v1/dispatch/operators
- * List operators, optionally filtered by location/work center
+ * List operators from Prisma (Supabase) only.
+ * Optionally filtered by work center ID or type.
  */
-router.get('/operators', (req, res) => {
-  const { workCenterId } = req.query
-  
-  let filtered = operators
-  if (workCenterId) {
-    filtered = operators.filter((op) => op.homeWorkCenterId === workCenterId)
+router.get('/operators', async (req, res) => {
+  try {
+    const { workCenterId, workCenterType } = req.query
+
+    // Load Prisma operators with their skills
+    const prismaOperators = await prisma.operator.findMany({
+      where: { isActive: true, status: 'ACTIVE' },
+      include: {
+        skills: { where: { isActive: true }, select: { workCenterTypeId: true, skillLevel: true } },
+        homeWorkCenter: { select: { id: true, type: true } },
+      },
+    })
+
+    // Map to dispatch-compatible shape
+    const allOperators = prismaOperators.map((op) => ({
+      id: op.id,
+      name: `${op.firstName} ${op.lastName}`,
+      employeeCode: op.employeeCode,
+      homeWorkCenterId: op.homeWorkCenterId || null,
+      qualifiedWorkCenterTypes: op.skills.map((s) => s.workCenterTypeId),
+      qualifiedDivisions: ['METALS', 'PLASTICS'],
+      skillLevel: op.skills.length > 0
+        ? op.skills.reduce((best, s) => {
+            const order = { NOVICE: 0, STANDARD: 1, EXPERT: 2 }
+            return (order[s.skillLevel] || 0) > (order[best] || 0) ? s.skillLevel : best
+          }, 'NOVICE')
+        : 'STANDARD',
+      maxThicknessInches: op.maxThicknessInches ? Number(op.maxThicknessInches) : 999,
+    }))
+
+    // Apply filters
+    let filtered = allOperators
+
+    // Resolve the work center type for filtering
+    let resolvedType = workCenterType || null
+    if (!resolvedType && workCenterId) {
+      const wc = await prisma.workCenter.findUnique({
+        where: { id: workCenterId },
+        select: { type: true },
+      })
+      resolvedType = wc?.type || null
+    }
+
+    if (resolvedType) {
+      filtered = allOperators.filter((op) =>
+        op.qualifiedWorkCenterTypes.includes(resolvedType)
+      )
+    }
+
+    // If nothing matched, return all operators so the dropdown is never empty
+    if (filtered.length === 0) {
+      filtered = allOperators
+    }
+
+    res.json({
+      success: true,
+      data: filtered,
+    })
+  } catch (error) {
+    console.error('Error fetching operators:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch operators',
+      data: [],
+    })
   }
-  
-  res.json({
-    success: true,
-    data: filtered,
-  })
 })
 
 /**
@@ -592,23 +677,58 @@ router.post('/run', async (req, res) => {
       where: { locationId, isActive: true },
     })
     const locationWorkCenters = prismaWCs.map(mapPrismaWC)
+
+    // Load operators from database
+    const prismaOps = await prisma.operator.findMany({
+      where: { isActive: true, status: 'ACTIVE' },
+      include: {
+        skills: { where: { isActive: true }, select: { workCenterTypeId: true, skillLevel: true } },
+      },
+    })
+    const dbOperators = prismaOps.map((op) => ({
+      id: op.id,
+      name: `${op.firstName} ${op.lastName}`,
+      homeWorkCenterId: op.homeWorkCenterId || null,
+      qualifiedWorkCenterTypes: op.skills.map((s) => s.workCenterTypeId),
+      qualifiedDivisions: ['METALS', 'PLASTICS'],
+      skillLevel: op.skills.length > 0
+        ? op.skills.reduce((best, s) => {
+            const order = { NOVICE: 0, STANDARD: 1, EXPERT: 2 }
+            return (order[s.skillLevel] || 0) > (order[best] || 0) ? s.skillLevel : best
+          }, 'NOVICE')
+        : 'STANDARD',
+      maxThicknessInches: op.maxThicknessInches ? Number(op.maxThicknessInches) : 999,
+    }))
   
-  // Get jobs at this location
-  const locationJobs = jobs.filter((j) => j.locationId === locationId)
-  const locationJobIds = locationJobs.map((j) => j.id)
+  // Get dispatch jobs at this location from Prisma
+  const locationDispatchJobs = await prisma.dispatchJob.findMany({
+    where: { locationId },
+    include: { operations: true },
+  })
   
-  // Get pending operations for jobs at this location
-  const pendingOperations = jobOperations.filter(
-    (op) =>
-      locationJobIds.includes(op.jobId) &&
-      op.status === 'PENDING' &&
-      !op.assignedWorkCenterId
-  )
+  // Build a lookup map: dispatchJobId -> dispatchJob
+  const jobMap = new Map()
+  locationDispatchJobs.forEach((dj) => jobMap.set(dj.id, dj))
+  
+  // Collect all pending operations from those jobs
+  const pendingOperations = []
+  for (const dj of locationDispatchJobs) {
+    for (const op of dj.operations) {
+      if (op.status === 'PENDING' && !op.assignedWorkCenterId) {
+        pendingOperations.push({
+          ...op,
+          thickness: Number(op.thickness || 0),
+          jobId: dj.id,  // dispatchJob id for lookups
+        })
+      }
+    }
+  }
   
   // Sort by job priority and due date, then by sequence
+  // Use the pre-loaded jobMap for synchronous lookups
   pendingOperations.sort((a, b) => {
-    const jobA = getJobForOperation(a.jobId)
-    const jobB = getJobForOperation(b.jobId)
+    const jobA = jobMap.get(a.jobId)
+    const jobB = jobMap.get(b.jobId)
     
     // Priority first
     const prioA = PRIORITY_ORDER[jobA?.priority] ?? 99
@@ -630,10 +750,10 @@ router.post('/run', async (req, res) => {
   
   for (const operation of pendingOperations) {
     // Check if previous operations in the job are complete (dependency check)
-    const priorOps = jobOperations.filter(
-      (op) => op.jobId === operation.jobId && op.sequence < operation.sequence
+    const parentJob = jobMap.get(operation.jobId)
+    const priorOps = (parentJob?.operations || []).filter(
+      (op) => op.sequence < operation.sequence
     )
-    const allPriorComplete = priorOps.every((op) => op.status === 'COMPLETE')
     
     // Only schedule first operation or if prior ones are done/scheduled
     const allPriorScheduledOrComplete = priorOps.every(
@@ -650,11 +770,15 @@ router.post('/run', async (req, res) => {
     if (candidateWCs.length === 0) continue
     
     // Pick work center with lowest load (simple load balancing)
-    candidateWCs.sort((a, b) => getWorkCenterLoad(a.id) - getWorkCenterLoad(b.id))
-    const chosenWC = candidateWCs[0]
+    // getWorkCenterLoad is now async, so resolve all loads first
+    const loads = await Promise.all(
+      candidateWCs.map(async (wc) => ({ wc, load: await getWorkCenterLoad(wc.id) }))
+    )
+    loads.sort((a, b) => a.load - b.load)
+    const chosenWC = loads[0].wc
     
-    // Find candidate operators
-    const candidateOps = operators.filter((op) => operatorCanHandle(op, operation))
+    // Find candidate operators from database
+    const candidateOps = dbOperators.filter((op) => operatorCanHandle(op, operation))
     
     let chosenOperator = null
     if (candidateOps.length > 0) {
@@ -663,13 +787,21 @@ router.post('/run', async (req, res) => {
       chosenOperator = homeOp || candidateOps[0]
     }
     
-    // Assign
-    operation.assignedWorkCenterId = chosenWC.id
-    operation.assignedOperatorId = chosenOperator?.id || null
-    operation.status = 'SCHEDULED'
-    operation.scheduledStart = new Date().toISOString()
+    // Persist assignment to Prisma
+    const updated = await prisma.dispatchOperation.update({
+      where: { id: operation.id },
+      data: {
+        assignedWorkCenterId: chosenWC.id,
+        assignedOperatorId: chosenOperator?.id || null,
+        status: 'SCHEDULED',
+        scheduledStart: new Date(),
+      },
+    })
     
-    assigned.push(operation)
+    assigned.push({
+      ...updated,
+      thickness: Number(updated.thickness || 0),
+    })
   }
   
   res.json({
@@ -700,76 +832,104 @@ router.get('/queue', async (req, res) => {
     })
   }
   
-  // Get operations assigned to this work center
-  let queue = jobOperations.filter(
-    (op) =>
-      op.assignedWorkCenterId === workCenterId &&
-      (op.status === 'SCHEDULED' || op.status === 'IN_PROCESS')
-  )
-  
-  // If locationId provided, filter by jobs at that location
-  if (locationId) {
-    const locationJobs = jobs.filter((j) => j.locationId === locationId)
-    const locationJobIds = locationJobs.map((j) => j.id)
-    queue = queue.filter((op) => locationJobIds.includes(op.jobId))
-  }
-  
-  // Sort: IN_PROCESS first, then by priority, then by due date
-  queue.sort((a, b) => {
-    // IN_PROCESS always first
-    if (a.status === 'IN_PROCESS' && b.status !== 'IN_PROCESS') return -1
-    if (b.status === 'IN_PROCESS' && a.status !== 'IN_PROCESS') return 1
-    
-    const jobA = getJobForOperation(a.jobId)
-    const jobB = getJobForOperation(b.jobId)
-    
-    const prioA = PRIORITY_ORDER[jobA?.priority] ?? 99
-    const prioB = PRIORITY_ORDER[jobB?.priority] ?? 99
-    if (prioA !== prioB) return prioA - prioB
-    
-    const dueA = new Date(jobA?.dueDate || '2099-12-31')
-    const dueB = new Date(jobB?.dueDate || '2099-12-31')
-    return dueA - dueB
-  })
-  
-  // Enrich with job data
-  const enrichedQueue = queue.map((op) => {
-    const job = getJobForOperation(op.jobId)
-    return {
-      ...op,
-      job: job
-        ? {
-            id: job.id,
-            orderId: job.orderId,
-            materialCode: job.materialCode,
-            commodity: job.commodity,
-            form: job.form,
-            grade: job.grade,
-            thickness: job.thickness,
-            dueDate: job.dueDate,
-            priority: job.priority,
-          }
-        : null,
-    }
-  })
-  
-  // Look up work center name from Prisma
-  let wcName = workCenterId
   try {
-    const wc = await prisma.workCenter.findUnique({ where: { id: workCenterId }, select: { name: true } })
-    if (wc) wcName = wc.name
-  } catch (e) { /* use id as fallback */ }
-  
-  res.json({
-    success: true,
-    data: {
-      locationId: locationId || null,
-      workCenterId,
-      workCenterName: wcName,
-      operationCount: enrichedQueue.length,
-      operations: enrichedQueue,
-    },
-  })
+    // Build where clause for Prisma query
+    const opWhere = {
+      assignedWorkCenterId: workCenterId,
+      status: { in: ['SCHEDULED', 'IN_PROCESS'] },
+    }
+    
+    // If locationId provided, filter by dispatch jobs at that location
+    if (locationId) {
+      opWhere.dispatchJob = { locationId }
+    }
+    
+    const rawOps = await prisma.dispatchOperation.findMany({
+      where: opWhere,
+      include: { dispatchJob: true },
+      orderBy: { sequence: 'asc' },
+    })
+    
+    // Sort: IN_PROCESS first, then by priority, then by due date
+    const queue = rawOps
+      .map((op) => ({
+        ...op,
+        thickness: Number(op.thickness || 0),
+      }))
+      .sort((a, b) => {
+        if (a.status === 'IN_PROCESS' && b.status !== 'IN_PROCESS') return -1
+        if (b.status === 'IN_PROCESS' && a.status !== 'IN_PROCESS') return 1
+        
+        const prioA = PRIORITY_ORDER[a.dispatchJob?.priority] ?? 99
+        const prioB = PRIORITY_ORDER[b.dispatchJob?.priority] ?? 99
+        if (prioA !== prioB) return prioA - prioB
+        
+        const dueA = new Date(a.dispatchJob?.dueDate || '2099-12-31')
+        const dueB = new Date(b.dispatchJob?.dueDate || '2099-12-31')
+        return dueA - dueB
+      })
+    
+    // Enrich with job data
+    const enrichedQueue = queue.map((op) => {
+      const job = op.dispatchJob
+      return {
+        id: op.id,
+        dispatchJobId: op.dispatchJobId,
+        sequence: op.sequence,
+        name: op.name,
+        requiredWorkCenterType: op.requiredWorkCenterType,
+        requiredDivision: op.requiredDivision,
+        requiredSkillLevel: op.requiredSkillLevel,
+        specialization: op.specialization,
+        thickness: op.thickness,
+        materialCode: op.materialCode,
+        status: op.status,
+        assignedWorkCenterId: op.assignedWorkCenterId,
+        assignedOperatorId: op.assignedOperatorId,
+        scheduledStart: op.scheduledStart,
+        scheduledEnd: op.scheduledEnd,
+        actualStart: op.actualStart,
+        actualEnd: op.actualEnd,
+        jobId: job?.id || null,
+        job: job
+          ? {
+              id: job.id,
+              orderId: job.orderId,
+              materialCode: job.materialCode,
+              commodity: job.commodity,
+              form: job.form,
+              grade: job.grade,
+              thickness: Number(job.thickness || 0),
+              dueDate: job.dueDate,
+              priority: job.priority,
+              customerName: job.customerName,
+              jobNumber: job.jobNumber,
+            }
+          : null,
+      }
+    })
+    
+    // Look up work center name from Prisma
+    let wcName = workCenterId
+    try {
+      const wc = await prisma.workCenter.findUnique({ where: { id: workCenterId }, select: { name: true } })
+      if (wc) wcName = wc.name
+    } catch (e) { /* use id as fallback */ }
+    
+    res.json({
+      success: true,
+      data: {
+        locationId: locationId || null,
+        workCenterId,
+        workCenterName: wcName,
+        operationCount: enrichedQueue.length,
+        operations: enrichedQueue,
+      },
+    })
+  } catch (error) {
+    console.error('Error fetching queue:', error)
+    res.status(500).json({ success: false, error: 'Failed to fetch queue' })
+  }
 })
 
 /**
@@ -780,20 +940,33 @@ router.get('/stats', async (req, res) => {
   try {
     const { locationId } = req.query
     
-    const locationJobs = locationId
-      ? jobs.filter((j) => j.locationId === locationId)
-      : jobs
-    const locationJobIds = locationJobs.map((j) => j.id)
+    // Build where clause: filter operations by location via their parent dispatchJob
+    const opWhere = {}
+    if (locationId) {
+      opWhere.dispatchJob = { locationId }
+    }
     
-    const ops = jobOperations.filter((op) => locationJobIds.includes(op.jobId))
+    // Aggregate counts by status using Prisma groupBy
+    const statusGroups = await prisma.dispatchOperation.groupBy({
+      by: ['status'],
+      where: opWhere,
+      _count: true,
+    })
+    
+    const unassignedCount = await prisma.dispatchOperation.count({
+      where: { ...opWhere, assignedWorkCenterId: null },
+    })
+    
+    const statusMap = {}
+    statusGroups.forEach((g) => { statusMap[g.status] = g._count })
     
     const stats = {
-      total: ops.length,
-      pending: ops.filter((op) => op.status === 'PENDING').length,
-      scheduled: ops.filter((op) => op.status === 'SCHEDULED').length,
-      inProcess: ops.filter((op) => op.status === 'IN_PROCESS').length,
-      complete: ops.filter((op) => op.status === 'COMPLETE').length,
-      unassigned: ops.filter((op) => !op.assignedWorkCenterId).length,
+      total: Object.values(statusMap).reduce((s, c) => s + c, 0),
+      pending: statusMap['PENDING'] || 0,
+      scheduled: statusMap['SCHEDULED'] || 0,
+      inProcess: statusMap['IN_PROCESS'] || 0,
+      complete: statusMap['COMPLETE'] || 0,
+      unassigned: unassignedCount,
     }
     
     // Per work center stats from Prisma
@@ -801,16 +974,26 @@ router.get('/stats', async (req, res) => {
     if (locationId) wcWhere.locationId = locationId
     const prismaWCs = await prisma.workCenter.findMany({ where: wcWhere, select: { id: true, name: true, type: true } })
     
+    const wcIds = prismaWCs.map((wc) => wc.id)
+    const wcStatusGroups = await prisma.dispatchOperation.groupBy({
+      by: ['assignedWorkCenterId', 'status'],
+      where: {
+        assignedWorkCenterId: { in: wcIds },
+        ...(locationId ? { dispatchJob: { locationId } } : {}),
+      },
+      _count: true,
+    })
+    
     const wcStats = {}
     prismaWCs.forEach((wc) => {
-      const wcOps = ops.filter((op) => op.assignedWorkCenterId === wc.id)
-      wcStats[wc.id] = {
-        name: wc.name,
-        type: wc.type,
-        scheduled: wcOps.filter((op) => op.status === 'SCHEDULED').length,
-        inProcess: wcOps.filter((op) => op.status === 'IN_PROCESS').length,
-        complete: wcOps.filter((op) => op.status === 'COMPLETE').length,
-      }
+      wcStats[wc.id] = { name: wc.name, type: wc.type, scheduled: 0, inProcess: 0, complete: 0 }
+    })
+    wcStatusGroups.forEach((g) => {
+      const entry = wcStats[g.assignedWorkCenterId]
+      if (!entry) return
+      if (g.status === 'SCHEDULED') entry.scheduled = g._count
+      else if (g.status === 'IN_PROCESS') entry.inProcess = g._count
+      else if (g.status === 'COMPLETE') entry.complete = g._count
     })
     
     res.json({

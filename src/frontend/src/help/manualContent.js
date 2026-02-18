@@ -254,7 +254,7 @@ const manualModules = [
             'A manager can approve by entering their PIN or scanning their badge.',
             'The discount is logged with your name and the manager who approved it.',
           ]},
-          { type: 'tip', value: 'Remnant and drop items have pre-set discounts. Check the Remnant Outlet section for clearance pricing before manually discounting.' },
+          { type: 'tip', value: 'Remnant and drop items have pre-set discounts. Check the Steel Outlet section for clearance pricing before manually discounting.' },
         ],
       },
       {
@@ -3365,7 +3365,7 @@ const manualModules = [
   {
     moduleId: 'ecommerce-admin',
     title: 'E-Commerce Administration',
-    shortDescription: 'Manage the online store catalog, product listings, remnant outlet, and online settings.',
+    shortDescription: 'Manage the online store catalog, product listings, steel outlet, and online settings.',
     icon: 'AdminPanelSettings',
     roles: ['ECOMMERCE_ADMIN', 'BRANCH_MANAGER', 'ADMIN'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
@@ -3375,7 +3375,7 @@ const manualModules = [
         id: 'what-it-does',
         title: 'What This Module Does',
         blocks: [
-          { type: 'text', value: 'E-Commerce Administration covers the backend management of your online store. Catalog Admin lets you control which products appear online, set descriptions, images, and pricing visibility. Online Settings configures store behavior (checkout rules, shipping options, payment methods, customer registration). The Remnant Outlet is a special section for selling off-cuts and remnant pieces at discounted prices.' },
+          { type: 'text', value: 'E-Commerce Administration covers the backend management of your online store. Catalog Admin lets you control which products appear online, set descriptions, images, and pricing visibility. Online Settings configures store behavior (checkout rules, shipping options, payment methods, customer registration). The Steel Outlet is a special section for selling off-cuts and remnant pieces at discounted prices.' },
         ],
       },
       {
@@ -3409,14 +3409,14 @@ const manualModules = [
         ],
       },
       {
-        id: 'remnant-outlet',
-        title: 'Remnant Outlet',
+        id: 'steel-outlet',
+        title: 'Steel Outlet',
         blocks: [
-          { type: 'text', value: 'The Remnant Outlet is a special section of the online store for selling off-cuts, short pieces, and remnants at discounted prices. This helps recover value from material that would otherwise be scrap.' },
+          { type: 'text', value: 'The Steel Outlet is a special section of the online store for selling off-cuts, short pieces, and remnants at discounted prices. This helps recover value from material that would otherwise be scrap.' },
           { type: 'steps', items: [
             'Remnant pieces are automatically flagged during production when a cut creates an off-cut below a configurable threshold.',
             'Review flagged remnants and set a discount percentage (or fixed price) for each.',
-            'Publish to the Remnant Outlet. Customers can browse and purchase remnants online at discounted prices.',
+            'Publish to the Steel Outlet. Customers can browse and purchase remnants online at discounted prices.',
             'Remnants are first-come-first-served. When purchased, they\'re removed from the outlet and enter the normal order pipeline.',
           ]},
           { type: 'tip', value: 'Popular remnant materials (4×8 drops of A36 plate, short bars) sell quickly. Price them competitively to move inventory fast and free up warehouse space.' },

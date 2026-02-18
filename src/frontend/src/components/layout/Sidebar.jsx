@@ -111,7 +111,7 @@ import {
   ListAlt as MyOrdersIcon,
   Tune as OnlineSettingsIcon,
   Inventory as AdminCatalogIcon,
-  Recycling as RemnantOutletIcon,
+  Recycling as SteelOutletIcon,
   // Admin
   Group as UsersIcon,
   Gavel as AuditLogIcon,
@@ -236,7 +236,7 @@ const navSections = [
     title: 'E-Commerce',
     items: [
       { path: '/shop', label: 'Online Store', icon: ShopIcon, highlight: true },
-      { path: '/shop/remnants', label: 'Remnant Outlet', icon: RemnantOutletIcon },
+      { path: '/shop/remnants', label: 'Steel Outlet', icon: SteelOutletIcon },
       { path: '/shop/search', label: 'Product Search', icon: ShopSearchIcon },
       { path: '/shop/cart', label: 'Shopping Cart', icon: CartIcon },
       { path: '/shop/orders', label: 'My Orders', icon: MyOrdersIcon },

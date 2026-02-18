@@ -35,6 +35,75 @@ model Organization {
   dropTags       DropTag[]  @relation("DropTagCustomer")
   tagRequirements CustomerTagRequirement[] @relation("CustomerTagRequirements")
   partners       Partner[]  @relation("PartnerOrganization")
+  preferences    CustomerPreference?  @relation("CustomerPreferences")
+}
+
+// Customer preferences — per-customer defaults for orders, shipping, specs, packaging
+model CustomerPreference {
+  id                   String    @id @default(uuid())
+  customerId           String    @unique
+  customer             Organization @relation("CustomerPreferences", fields: [customerId], references: [id])
+
+  // Location & Shipping
+  preferredBranch      String?   // branch code e.g. JACKSON
+  preferredShipMethod  String?   // DELIVERY, WILL_CALL, SHIP_CARRIER, LTL, FLATBED
+  defaultDivision      String?   // METALS, PLASTICS, SUPPLIES
+  preferredCarrier     String?   // e.g. XPO, FedEx Freight
+  freightTerms         String?   // FOB_ORIGIN, FOB_DEST, PREPAID, COLLECT
+  deliveryWindow       String?   // e.g. "Tue/Thu 7am-2pm"
+  shipToAddress        Json?     // { label, address, city, state, zip }
+
+  // Priority & Order Rules
+  defaultPriority      String    @default("STANDARD") // STANDARD, RUSH, HOT, EMERGENCY
+  rushDefault           Boolean  @default(false)
+  defaultOwnership     String    @default("HOUSE")     // HOUSE, CUSTOMER_MATERIAL
+  requirePONumber      Boolean   @default(false)
+  autoApplyContract    Boolean   @default(true)
+  autoApproveOrders    Boolean   @default(false)
+  minOrderQty          Decimal?
+  minOrderValue        Decimal?
+
+  // Pricing
+  pricingTier          String?   // A, B, C, D
+  discountPct          Decimal?  // default discount %
+  fuelSurchargeExempt  Boolean   @default(false)
+  paymentTerms         String?   // Net 30, Net 60, COD
+  creditLimit          Decimal?
+  contractNotes        String?
+
+  // Material Specs
+  tolerancePreset      String    @default("STANDARD")
+  tolerancePlus        Decimal   @default(0.010)
+  toleranceMinus       Decimal   @default(0.010)
+  approvedGrades       Json?     // ["A36", "A572-50", ...]
+  surfaceFinish        String?   // MILL, PICKLED, OILED, BLASTED
+  specialSpecs         String?   // free-text spec notes
+
+  // Certifications
+  certRequirements     Json?     // ["MTR", "COC", "FIRST_ARTICLE", ...]
+  autoSendMTR          Boolean   @default(false)
+  autoSendInvoice      Boolean   @default(false)
+  mtrEmail             String?
+  invoiceEmail         String?
+
+  // Packaging & Labeling
+  bundleMaxWeight      Decimal?  // max lbs per bundle
+  bundleMaxPieces      Int?
+  packagingType        String?   // BANDED, CRATED, PALLETIZED, LOOSE
+  labelTemplate        String?   // customer-specific tag template code
+  packagingNotes       String?
+
+  // Notes
+  specialInstructions  String?
+  internalNotes        String?
+
+  // Audit
+  updatedBy            String?
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([customerId])
 }
 
 model User {

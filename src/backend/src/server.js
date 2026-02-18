@@ -43,6 +43,7 @@ import salesRoutes from './routes/salesRoutes.js';
 import executiveRoutes from './routes/executive.js';
 import dropTagRoutes from './routes/dropTagRoutes.js';
 import staffRoutes from './routes/staff.js';
+import qcRoutes from './routes/qcRoutes.js';
 import partnerAuthRoutes from './routes/partner/partnerAuthRoutes.js';
 import partnerCustomerRoutes from './routes/partner/customerRoutes.js';
 import partnerSupplierRoutes from './routes/partner/supplierRoutes.js';
@@ -131,6 +132,9 @@ app.use('/api/drop-tags', dropTagRoutes);  // /api/drop-tags, /api/drop-tags/lis
 
 // Staff & Operator Management
 app.use('/api/staff', staffRoutes);  // /api/staff/operators, /api/staff/shifts, /api/staff/stats, /api/staff/available
+
+// QC Inspection Module - Job-level quality control
+app.use('/api/qc', qcRoutes);  // /api/qc/queue, /api/qc/inspections, /api/qc/stats, /api/qc/inspectors
 
 // ── External Partner API Layer ──────────────────────────────────────────────────
 app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)

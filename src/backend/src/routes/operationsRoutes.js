@@ -338,7 +338,7 @@ router.post('/:id/complete', async (req, res) => {
       data: { status: 'COMPLETE', actualEnd: new Date() },
     })
     
-    // Check if ALL operations for this dispatch job are complete → update parent Job
+    // Check if ALL operations for this dispatch job are complete → move job to QC
     if (operation.dispatchJob?.jobId) {
       const remaining = await prisma.dispatchOperation.count({
         where: {
@@ -348,10 +348,12 @@ router.post('/:id/complete', async (req, res) => {
         },
       })
       if (remaining === 0) {
+        // All operations done → job goes to QC inspection queue (not directly to COMPLETE)
         await prisma.job.update({
           where: { id: operation.dispatchJob.jobId },
-          data: { status: 'COMPLETE' },
+          data: { status: 'WAITING_QC' },
         })
+        console.log(`[OPERATIONS] All ops complete for job ${operation.dispatchJob.jobId} — moved to WAITING_QC`)
       }
     }
     

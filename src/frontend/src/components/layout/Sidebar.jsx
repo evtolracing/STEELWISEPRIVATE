@@ -257,6 +257,7 @@ const navSections = [
   {
     title: 'Quality & Compliance',
     items: [
+      { path: '/qc', label: 'QC Inspections', icon: QualityIcon },
       { path: '/qaqc', label: 'QA/QC', icon: QualityIcon },
       { path: '/provenance', label: 'Provenance', icon: ProvenanceIcon },
     ],

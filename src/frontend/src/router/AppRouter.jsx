@@ -118,6 +118,10 @@ const PackagingPage = lazy(() => import('../pages/PackagingPage'))
 const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
+// QC Inspection Module
+const QCDashboardPage = lazy(() => import('../pages/QC/QCDashboardPage'))
+const QCInspectionPage = lazy(() => import('../pages/QC/QCInspectionPage'))
+
 // Sales Rep Mobile Mode
 const MobileRepLayout = lazy(() => import('../components/layout/MobileRepLayout'))
 const MobileRepHomePage = lazy(() => import('../pages/MobileRep/MobileRepHomePage'))
@@ -641,6 +645,26 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <CompetencyMatrixPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // QC Inspection Module
+      {
+        path: 'qc',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <QCDashboardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'qc/inspect/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <QCInspectionPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

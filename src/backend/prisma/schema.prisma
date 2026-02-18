@@ -591,6 +591,7 @@ model Operator {
   homeWorkCenter           WorkCenter?     @relation("OperatorHomeWorkCenter", fields: [homeWorkCenterId], references: [id])
   skills                   OperatorSkill[]
   shifts                   Shift[]
+  inspections              JobInspection[] @relation("InspectorInspections")
 
   @@index([homeLocationId])
   @@index([status])
@@ -745,6 +746,35 @@ model DispatchTimeLog {
   @@index([status])
 }
 
+// ── Job-Level QC Inspection ─────────────────────────────────────────────────────
+model JobInspection {
+  id                  String       @id @default(uuid())
+  inspectionNumber    String       @unique
+  jobId               String
+  inspectorId         String?
+  status              String       @default("PENDING")    // PENDING, IN_PROGRESS, PASSED, FAILED, CONDITIONAL
+  overallResult       String?                              // PASS, FAIL, CONDITIONAL
+  disposition         String?                              // USE_AS_IS, REWORK, SCRAP, RETURN, SELL_SECONDARY, PENDING
+  inspectionType      String       @default("FINAL")      // FINAL, IN_PROCESS, FIRST_ARTICLE, RECEIVING
+  checklist           Json?                                // Array of {item, required, result, notes}
+  dimensionalChecks   Json?                                // Array of {dimension, nominal, tolerance, actual, pass}
+  visualNotes         String?
+  defects             Json?                                // Array of {type, severity, description, location, photo}
+  reworkInstructions  String?
+  notes               String?
+  startedAt           DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  job                 Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  inspector           Operator?    @relation("InspectorInspections", fields: [inspectorId], references: [id])
+
+  @@index([jobId])
+  @@index([inspectorId])
+  @@index([status])
+}
+
 model WorkCenterType {
   id          String   @id
   label       String
@@ -812,6 +842,7 @@ model Job {
   dropTags         DropTag[]
   packages         Package[]
   dispatchJob      DispatchJob?
+  inspections      JobInspection[]
 
   @@index([recipeId])
 }

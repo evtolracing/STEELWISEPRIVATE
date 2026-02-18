@@ -158,6 +158,7 @@ const WorkOrderCenter = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [createStep, setCreateStep] = useState(0);
   const [workCenters, setWorkCenters] = useState([]);
+  const [selectedWorkCenter, setSelectedWorkCenter] = useState('');
 
   const loadWorkCenters = useCallback(async () => {
     try {
@@ -575,7 +576,7 @@ const WorkOrderCenter = () => {
       </Dialog>
 
       {/* Create Work Order Dialog */}
-      <Dialog open={showCreateDialog} onClose={() => { setShowCreateDialog(false); setCreateStep(0); }} maxWidth="md" fullWidth>
+      <Dialog open={showCreateDialog} onClose={() => { setShowCreateDialog(false); setCreateStep(0); setSelectedWorkCenter(''); }} maxWidth="md" fullWidth>
         <DialogTitle>Create Work Order</DialogTitle>
         <DialogContent>
           <Stepper activeStep={createStep} sx={{ my: 3 }}>
@@ -591,7 +592,7 @@ const WorkOrderCenter = () => {
               <Grid item xs={12}>
                 <FormControl fullWidth>
                   <InputLabel>Select Asset / Work Center</InputLabel>
-                  <Select label="Select Asset / Work Center" defaultValue="">
+                  <Select label="Select Asset / Work Center" value={selectedWorkCenter} onChange={(e) => setSelectedWorkCenter(e.target.value)}>
                     {workCenters.map((wc) => (
                       <MenuItem key={wc.id} value={wc.id}>
                         {wc.code} — {wc.name}
@@ -643,16 +644,14 @@ const WorkOrderCenter = () => {
           {createStep === 2 && (
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Work Center</InputLabel>
-                  <Select label="Work Center" defaultValue="">
-                    {workCenters.map((wc) => (
-                      <MenuItem key={wc.id} value={wc.id}>
-                        {wc.code} — {wc.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField
+                  fullWidth
+                  label="Work Center"
+                  value={(() => { const wc = workCenters.find(w => w.id === selectedWorkCenter); return wc ? `${wc.code} — ${wc.name}` : 'Not selected'; })()}
+                  InputProps={{ readOnly: true }}
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ '& .MuiInputBase-input': { color: 'text.primary' } }}
+                />
               </Grid>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>

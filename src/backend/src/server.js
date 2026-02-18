@@ -44,6 +44,7 @@ import executiveRoutes from './routes/executive.js';
 import dropTagRoutes from './routes/dropTagRoutes.js';
 import staffRoutes from './routes/staff.js';
 import qcRoutes from './routes/qcRoutes.js';
+import materialTrackingRoutes from './routes/materialTrackingRoutes.js';
 import partnerAuthRoutes from './routes/partner/partnerAuthRoutes.js';
 import partnerCustomerRoutes from './routes/partner/customerRoutes.js';
 import partnerSupplierRoutes from './routes/partner/supplierRoutes.js';
@@ -135,6 +136,9 @@ app.use('/api/staff', staffRoutes);  // /api/staff/operators, /api/staff/shifts,
 
 // QC Inspection Module - Job-level quality control
 app.use('/api/qc', qcRoutes);  // /api/qc/queue, /api/qc/inspections, /api/qc/stats, /api/qc/inspectors
+
+// Material Tracking - Unified packaging, tags, staging, custody/traceability
+app.use('/api/material-tracking', materialTrackingRoutes);  // /api/material-tracking/stats, /api/material-tracking/custody-log, /api/material-tracking/staging
 
 // ── External Partner API Layer ──────────────────────────────────────────────────
 app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)

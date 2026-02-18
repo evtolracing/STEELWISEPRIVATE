@@ -62,14 +62,12 @@ const AssetRegistry = lazy(() => import('../pages/Maintenance/AssetRegistry'))
 const PMSchedules = lazy(() => import('../pages/Maintenance/PMSchedules'))
 const PartsInventory = lazy(() => import('../pages/Maintenance/PartsInventory'))
 
-// Packaging & Chain-of-Custody Pages
-const PackagingQueue = lazy(() => import('../pages/Packaging/PackagingQueue'))
-const PackageBuilder = lazy(() => import('../pages/Packaging/PackageBuilder'))
-const QCReleaseStation = lazy(() => import('../pages/Packaging/QCReleaseStation'))
-const LabelManagement = lazy(() => import('../pages/Packaging/LabelManagement'))
-const StagingBoard = lazy(() => import('../pages/Packaging/StagingBoard'))
-const CustodyTimeline = lazy(() => import('../pages/Packaging/CustodyTimeline'))
-const DocumentationCenter = lazy(() => import('../pages/Packaging/DocumentationCenter'))
+// Material Tracking (unified packaging + tags + staging + traceability)
+const MaterialTrackingDashboard = lazy(() => import('../pages/MaterialTracking/MaterialTrackingDashboard'))
+const MTPackagingQueue = lazy(() => import('../pages/MaterialTracking/PackagingQueue'))
+const MTTagManagement = lazy(() => import('../pages/MaterialTracking/TagManagement'))
+const MTStagingLoading = lazy(() => import('../pages/MaterialTracking/StagingLoading'))
+const MTTraceability = lazy(() => import('../pages/MaterialTracking/TraceabilityPage'))
 
 // Freight & Delivery Pages
 const ShipmentPlanner = lazy(() => import('../pages/Freight/ShipmentPlanner'))
@@ -93,14 +91,7 @@ const DecisionLog = lazy(() => import('../pages/Executive/DecisionLog'))
 const DigitalTwinViewer = lazy(() => import('../pages/Executive/DigitalTwinViewer'))
 const CompressionMetricsDashboard = lazy(() => import('../pages/Executive/CompressionMetricsDashboard'))
 
-// Drop Tag Engine Pages
-const DropTagPackagingQueue = lazy(() => import('../pages/DropTags/PackagingQueue'))
-const DropTagPrintCenter = lazy(() => import('../pages/DropTags/DropTagPrintCenter'))
-const DropTagApplyScanScreen = lazy(() => import('../pages/DropTags/ApplyScanScreen'))
-const DropTagListingPage = lazy(() => import('../pages/DropTags/DropTagListingPage'))
-const DropTagStagingBoard = lazy(() => import('../pages/DropTags/StagingBoard'))
-const DropTagLoadingScreen = lazy(() => import('../pages/DropTags/LoadingScreen'))
-const DropTagTraceabilityViewer = lazy(() => import('../pages/DropTags/TraceabilityViewer'))
+// (Drop Tag & Packaging pages removed — consolidated into Material Tracking)
 
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
 const CustomersPage = lazy(() => import('../pages/Customers/CustomersPage'))
@@ -877,12 +868,67 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Packaging & Chain-of-Custody Module
+      // Material Tracking Module (unified packaging + tags + staging + traceability)
+      {
+        path: 'material-tracking',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MaterialTrackingDashboard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/packaging',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTPackagingQueue />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/tags',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTTagManagement />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/staging',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTStagingLoading />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/traceability',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTTraceability />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/traceability/:jobId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTTraceability />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      // Legacy routes redirect to new material-tracking paths
       {
         path: 'packaging',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PackagingQueue />
+            <MTPackagingQueue />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -891,70 +937,7 @@ const router = createBrowserRouter([
         path: 'packaging/queue',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PackagingQueue />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/builder/:orderId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <PackageBuilder />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/qc-release',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <QCReleaseStation />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/labels',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <LabelManagement />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/staging',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <StagingBoard />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/custody',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <CustodyTimeline />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/custody/:packageId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <CustodyTimeline />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/docs',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DocumentationCenter />
+            <MTPackagingQueue />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1128,79 +1111,7 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Drop Tag Engine Module
-      {
-        path: 'drop-tags/queue',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagPackagingQueue />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/print-center',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagPrintCenter />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/apply',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagApplyScanScreen />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/listings',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagListingPage />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/staging',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagStagingBoard />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/load',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagLoadingScreen />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/traceability',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagTraceabilityViewer />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/traceability/:tagId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagTraceabilityViewer />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
+      // (Drop Tag routes removed — consolidated into Material Tracking module above),
 
       // Shipping/Shipments
       {

@@ -231,6 +231,7 @@ export default function CustomerPreferencesPage() {
                         primary={
                           <Typography variant="body2" fontWeight={600}>{cust.name}</Typography>
                         }
+                        secondaryTypographyProps={{ component: 'div' }}
                         secondary={
                           <Box>
                             <Typography variant="caption" color="text.secondary">

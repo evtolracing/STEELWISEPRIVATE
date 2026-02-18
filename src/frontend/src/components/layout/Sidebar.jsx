@@ -93,13 +93,11 @@ import {
   EventRepeat as PMIcon,
   Warehouse as PartsIcon,
   PrecisionManufacturing as AssetIcon,
-  // Packaging & Chain-of-Custody Icons
+  // Material Tracking Icons
   Inventory2 as PackagingQueueIcon,
   QrCode2 as LabelIcon,
-  Lock as SealIcon,
   Dock as StagingIcon,
   Timeline as CustodyIcon,
-  Description as DocsIcon,
   // Freight & Delivery Icons
   RequestQuote as FreightQuoteIcon,
   CompareArrows as FreightCompareIcon,

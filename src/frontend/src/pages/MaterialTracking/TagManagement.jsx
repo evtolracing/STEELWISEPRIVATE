@@ -127,10 +127,10 @@ const TagManagement = () => {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total Tags', value: tags.length, color: 'primary' },
+          { label: 'Total Tags', value: (Array.isArray(tags) ? tags : []).length, color: 'primary' },
           { label: 'Ready to Print', value: readyToPrint.length, color: 'info' },
-          { label: 'Printed', value: tags.filter(t => t.status === 'PRINTED').length, color: 'warning' },
-          { label: 'Applied', value: tags.filter(t => ['APPLIED', 'SEALED'].includes(t.status)).length, color: 'success' },
+          { label: 'Printed', value: (Array.isArray(tags) ? tags : []).filter(t => t.status === 'PRINTED').length, color: 'warning' },
+          { label: 'Applied', value: (Array.isArray(tags) ? tags : []).filter(t => ['APPLIED', 'SEALED'].includes(t.status)).length, color: 'success' },
         ].map((s) => (
           <Grid item xs={6} sm={3} key={s.label}>
             <Card>

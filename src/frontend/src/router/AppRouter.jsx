@@ -91,8 +91,6 @@ const DecisionLog = lazy(() => import('../pages/Executive/DecisionLog'))
 const DigitalTwinViewer = lazy(() => import('../pages/Executive/DigitalTwinViewer'))
 const CompressionMetricsDashboard = lazy(() => import('../pages/Executive/CompressionMetricsDashboard'))
 
-// (Drop Tag & Packaging pages removed — consolidated into Material Tracking)
-
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
 const CustomersPage = lazy(() => import('../pages/Customers/CustomersPage'))
 const CustomerPreferencesPage = lazy(() => import('../pages/Customers/CustomerPreferencesPage'))
@@ -923,25 +921,7 @@ const router = createBrowserRouter([
         ),
         errorElement: <RouteErrorPage />,
       },
-      // Legacy routes redirect to new material-tracking paths
-      {
-        path: 'packaging',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <MTPackagingQueue />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/queue',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <MTPackagingQueue />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
+
 
       // Freight & Delivery Module
       {

@@ -25,12 +25,25 @@ export const CERT_OPTIONS = [
   { value: 'NONE',          label: 'None Required' },
 ]
 
+// Per-preset values:  thk = thickness (in), len = length (in), wid = width (in)
 export const TOLERANCE_PRESETS = [
-  { value: 'STANDARD',   label: 'Standard (\u00b10.010")',  plus: 0.010, minus: 0.010 },
-  { value: 'TIGHT',      label: 'Tight (\u00b10.005")',     plus: 0.005, minus: 0.005 },
-  { value: 'PRECISION',  label: 'Precision (\u00b10.002")', plus: 0.002, minus: 0.002 },
-  { value: 'LOOSE',      label: 'Loose (\u00b10.030")',     plus: 0.030, minus: 0.030 },
-  { value: 'CUSTOM',     label: 'Custom' },
+  { value: 'STANDARD',  label: 'Standard',
+    thkPlus: 0.010, thkMinus: 0.010,
+    lenPlus: 0.125, lenMinus: 0.000,
+    widPlus: 0.063, widMinus: 0.031 },
+  { value: 'TIGHT',     label: 'Tight',
+    thkPlus: 0.005, thkMinus: 0.005,
+    lenPlus: 0.063, lenMinus: 0.000,
+    widPlus: 0.031, widMinus: 0.016 },
+  { value: 'PRECISION', label: 'Precision',
+    thkPlus: 0.002, thkMinus: 0.002,
+    lenPlus: 0.032, lenMinus: 0.000,
+    widPlus: 0.016, widMinus: 0.008 },
+  { value: 'LOOSE',     label: 'Loose',
+    thkPlus: 0.030, thkMinus: 0.030,
+    lenPlus: 0.250, lenMinus: 0.000,
+    widPlus: 0.125, widMinus: 0.063 },
+  { value: 'CUSTOM',    label: 'Custom' },
 ]
 
 export const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -114,8 +127,15 @@ export const DEFAULT_PREFS = {
   contractNotes: '',
   // Material Specs
   tolerancePreset: 'STANDARD',
-  tolerancePlus: 0.010,
-  toleranceMinus: 0.010,
+  // Thickness
+  thkTolerancePlus: 0.010,
+  thkToleranceMinus: 0.010,
+  // Length
+  lenTolerancePlus: 0.125,
+  lenToleranceMinus: 0.000,
+  // Width
+  widTolerancePlus: 0.063,
+  widToleranceMinus: 0.031,
   approvedGrades: [],
   surfaceFinish: '',
   specialSpecs: '',
@@ -197,8 +217,7 @@ export function summarizePreferences(prefs) {
     items.push({ key: 'tier', label: `Tier ${prefs.pricingTier}`, color: 'success' })
   }
   if (prefs.tolerancePreset && prefs.tolerancePreset !== 'STANDARD') {
-    const tp = TOLERANCE_PRESETS.find(t => t.value === prefs.tolerancePreset)
-    items.push({ key: 'tol', label: `Tol: ${tp?.label || prefs.tolerancePreset}`, color: 'default' })
+    items.push({ key: 'tol', label: `Tol: ${prefs.tolerancePreset}`, color: 'default' })
   }
   if (prefs.specialInstructions) {
     items.push({ key: 'notes', label: 'Special instructions', color: 'default' })

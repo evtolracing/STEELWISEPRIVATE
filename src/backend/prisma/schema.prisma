@@ -72,10 +72,17 @@ model CustomerPreference {
   contractNotes        String?
 
   // Material Specs
-  tolerancePreset      String    @default("STANDARD")
-  tolerancePlus        Decimal   @default(0.010)
-  toleranceMinus       Decimal   @default(0.010)
-  approvedGrades       Json?     // ["A36", "A572-50", ...]
+  tolerancePreset          String    @default("STANDARD")
+  // Thickness tolerances
+  thkTolerancePlus         Decimal   @default(0.010)
+  thkToleranceMinus        Decimal   @default(0.010)
+  // Length tolerances
+  lenTolerancePlus         Decimal   @default(0.125)
+  lenToleranceMinus        Decimal   @default(0.000)
+  // Width tolerances
+  widTolerancePlus         Decimal   @default(0.063)
+  widToleranceMinus        Decimal   @default(0.031)
+  approvedGrades           Json?     // ["A36", "A572-50", ...]
   surfaceFinish        String?   // MILL, PICKLED, OILED, BLASTED
   specialSpecs         String?   // free-text spec notes
 

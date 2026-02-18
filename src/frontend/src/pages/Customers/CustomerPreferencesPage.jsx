@@ -71,8 +71,12 @@ export default function CustomerPreferencesPage() {
         ...data,
         certRequirements: Array.isArray(data.certRequirements) ? data.certRequirements : [],
         approvedGrades: Array.isArray(data.approvedGrades) ? data.approvedGrades : [],
-        tolerancePlus: data.tolerancePlus != null ? Number(data.tolerancePlus) : 0.010,
-        toleranceMinus: data.toleranceMinus != null ? Number(data.toleranceMinus) : 0.010,
+        thkTolerancePlus:  data.thkTolerancePlus  != null ? Number(data.thkTolerancePlus)  : 0.010,
+        thkToleranceMinus: data.thkToleranceMinus != null ? Number(data.thkToleranceMinus) : 0.010,
+        lenTolerancePlus:  data.lenTolerancePlus  != null ? Number(data.lenTolerancePlus)  : 0.125,
+        lenToleranceMinus: data.lenToleranceMinus != null ? Number(data.lenToleranceMinus) : 0.000,
+        widTolerancePlus:  data.widTolerancePlus  != null ? Number(data.widTolerancePlus)  : 0.063,
+        widToleranceMinus: data.widToleranceMinus != null ? Number(data.widToleranceMinus) : 0.031,
       })
       setHasPreferences(res.hasPreferences)
       setDirty(false)
@@ -100,7 +104,9 @@ export default function CustomerPreferencesPage() {
     setPrefs(prev => ({
       ...prev,
       tolerancePreset: preset,
-      ...(tp && tp.plus != null ? { tolerancePlus: tp.plus, toleranceMinus: tp.minus } : {}),
+      ...(tp && tp.thkPlus  != null ? { thkTolerancePlus:  tp.thkPlus,  thkToleranceMinus:  tp.thkMinus  } : {}),
+      ...(tp && tp.lenPlus  != null ? { lenTolerancePlus:  tp.lenPlus,  lenToleranceMinus:  tp.lenMinus  } : {}),
+      ...(tp && tp.widPlus  != null ? { widTolerancePlus:  tp.widPlus,  widToleranceMinus:  tp.widMinus  } : {}),
     }))
     setDirty(true)
   }, [])
@@ -324,7 +330,9 @@ export default function CustomerPreferencesPage() {
       <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
         <Straighten fontSize="small" color="primary" /> Tolerances
       </Typography>
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+
+      {/* Preset quick-fill */}
+      <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth size="small">
             <InputLabel>Tolerance Preset</InputLabel>
@@ -334,21 +342,80 @@ export default function CustomerPreferencesPage() {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField label="Plus (+)" type="number" size="small" fullWidth
-            value={prefs.tolerancePlus}
-            onChange={e => { updateField('tolerancePlus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
-            InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment>, endAdornment: <InputAdornment position="end">in</InputAdornment> }}
-            inputProps={{ step: 0.001, min: 0 }} />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField label="Minus (\u2212)" type="number" size="small" fullWidth
-            value={prefs.toleranceMinus}
-            onChange={e => { updateField('toleranceMinus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
-            InputProps={{ startAdornment: <InputAdornment position="start">\u2212</InputAdornment>, endAdornment: <InputAdornment position="end">in</InputAdornment> }}
-            inputProps={{ step: 0.001, min: 0 }} />
-        </Grid>
       </Grid>
+
+      {/* Per-dimension tolerance table */}
+      <Box sx={{ border: 1, borderColor: 'grey.200', borderRadius: 1, overflow: 'hidden', mb: 3 }}>
+        {/* Header */}
+        <Grid container sx={{ bgcolor: 'grey.50', px: 2, py: 1 }}>
+          <Grid item xs={3}><Typography variant="caption" fontWeight={700} color="text.secondary">DIMENSION</Typography></Grid>
+          <Grid item xs={4.5}><Typography variant="caption" fontWeight={700} color="text.secondary">PLUS (+) in</Typography></Grid>
+          <Grid item xs={4.5}><Typography variant="caption" fontWeight={700} color="text.secondary">MINUS (−) in</Typography></Grid>
+        </Grid>
+        <Divider />
+        {/* Thickness */}
+        <Grid container alignItems="center" sx={{ px: 2, py: 1.5 }}>
+          <Grid item xs={3}>
+            <Typography variant="body2" fontWeight={600}>Thickness</Typography>
+          </Grid>
+          <Grid item xs={4.5} sx={{ pr: 1 }}>
+            <TextField size="small" type="number" fullWidth
+              value={prefs.thkTolerancePlus}
+              onChange={e => { updateField('thkTolerancePlus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
+              InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
+              inputProps={{ step: 0.001, min: 0 }} />
+          </Grid>
+          <Grid item xs={4.5}>
+            <TextField size="small" type="number" fullWidth
+              value={prefs.thkToleranceMinus}
+              onChange={e => { updateField('thkToleranceMinus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
+              InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
+              inputProps={{ step: 0.001, min: 0 }} />
+          </Grid>
+        </Grid>
+        <Divider />
+        {/* Length */}
+        <Grid container alignItems="center" sx={{ px: 2, py: 1.5 }}>
+          <Grid item xs={3}>
+            <Typography variant="body2" fontWeight={600}>Length</Typography>
+          </Grid>
+          <Grid item xs={4.5} sx={{ pr: 1 }}>
+            <TextField size="small" type="number" fullWidth
+              value={prefs.lenTolerancePlus}
+              onChange={e => { updateField('lenTolerancePlus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
+              InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
+              inputProps={{ step: 0.001, min: 0 }} />
+          </Grid>
+          <Grid item xs={4.5}>
+            <TextField size="small" type="number" fullWidth
+              value={prefs.lenToleranceMinus}
+              onChange={e => { updateField('lenToleranceMinus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
+              InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
+              inputProps={{ step: 0.001, min: 0 }} />
+          </Grid>
+        </Grid>
+        <Divider />
+        {/* Width */}
+        <Grid container alignItems="center" sx={{ px: 2, py: 1.5 }}>
+          <Grid item xs={3}>
+            <Typography variant="body2" fontWeight={600}>Width</Typography>
+          </Grid>
+          <Grid item xs={4.5} sx={{ pr: 1 }}>
+            <TextField size="small" type="number" fullWidth
+              value={prefs.widTolerancePlus}
+              onChange={e => { updateField('widTolerancePlus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
+              InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
+              inputProps={{ step: 0.001, min: 0 }} />
+          </Grid>
+          <Grid item xs={4.5}>
+            <TextField size="small" type="number" fullWidth
+              value={prefs.widToleranceMinus}
+              onChange={e => { updateField('widToleranceMinus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
+              InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
+              inputProps={{ step: 0.001, min: 0 }} />
+          </Grid>
+        </Grid>
+      </Box>
 
       <Divider sx={{ my: 2 }} />
       <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>

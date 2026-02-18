@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -59,6 +59,7 @@ import {
   AccessTime,
   Assignment,
 } from '@mui/icons-material';
+import { getWorkCenters } from '../../api/workCenters';
 
 // Mock Data
 const workOrders = [
@@ -156,6 +157,18 @@ const WorkOrderCenter = () => {
   const [selectedWO, setSelectedWO] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [createStep, setCreateStep] = useState(0);
+  const [workCenters, setWorkCenters] = useState([]);
+
+  const loadWorkCenters = useCallback(async () => {
+    try {
+      const data = await getWorkCenters();
+      setWorkCenters(Array.isArray(data) ? data : data?.workCenters || []);
+    } catch (err) {
+      console.error('Failed to load work centers:', err);
+    }
+  }, []);
+
+  useEffect(() => { loadWorkCenters(); }, [loadWorkCenters]);
 
   const getTypeColor = (type) => {
     switch (type) {
@@ -625,6 +638,18 @@ const WorkOrderCenter = () => {
 
           {createStep === 2 && (
             <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Work Center</InputLabel>
+                  <Select label="Work Center" defaultValue="">
+                    {workCenters.map((wc) => (
+                      <MenuItem key={wc.id} value={wc.id}>
+                        {wc.code} — {wc.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
                   <InputLabel>Priority</InputLabel>

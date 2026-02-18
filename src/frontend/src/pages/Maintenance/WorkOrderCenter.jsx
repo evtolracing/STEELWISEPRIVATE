@@ -589,12 +589,16 @@ const WorkOrderCenter = () => {
           {createStep === 0 && (
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField fullWidth label="Asset Number" placeholder="SAW-01" />
-              </Grid>
-              <Grid item xs={12}>
-                <Alert severity="info">
-                  Selected: SAW-JKS-001 - DoALL C-916 Band Saw (In Service)
-                </Alert>
+                <FormControl fullWidth>
+                  <InputLabel>Select Asset / Work Center</InputLabel>
+                  <Select label="Select Asset / Work Center" defaultValue="">
+                    {workCenters.map((wc) => (
+                      <MenuItem key={wc.id} value={wc.id}>
+                        {wc.code} — {wc.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
           )}

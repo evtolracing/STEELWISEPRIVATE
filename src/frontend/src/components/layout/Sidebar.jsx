@@ -178,7 +178,7 @@ const navSections = [
       { path: '/planning', label: 'Planning', icon: PlanningIcon },
       { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
       { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
-      { path: '/packaging', label: 'Packaging', icon: PackagingIcon },
+      { path: '/packaging/queue', label: 'Packaging', icon: PackagingIcon },
       { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
       { path: '/time-tracking', label: 'Time Tracking', icon: TimeTrackingIcon },
     ],

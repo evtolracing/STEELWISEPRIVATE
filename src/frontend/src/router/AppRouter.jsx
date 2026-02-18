@@ -114,7 +114,6 @@ const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const ShopFloorPage = lazy(() => import('../pages/ShopFloorPage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
-const PackagingPage = lazy(() => import('../pages/PackagingPage'))
 const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
@@ -878,18 +877,16 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Packaging
+      // Packaging & Chain-of-Custody Module
       {
         path: 'packaging',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PackagingPage />
+            <PackagingQueue />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
       },
-
-      // Packaging & Chain-of-Custody Module
       {
         path: 'packaging/queue',
         element: (

@@ -556,6 +556,41 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+// PATCH /jobs/:id/status - Update job status (used by PackagingQueue, Material Tracking)
+router.patch('/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+    
+    const validStatuses = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'ON_HOLD'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+    
+    const job = await prisma.job.update({
+      where: { id },
+      data: { status },
+      include: {
+        order: { select: { id: true, orderNumber: true } },
+        workCenter: { select: { id: true, code: true, name: true } },
+        assignedTo: { select: { id: true, firstName: true, lastName: true } },
+      },
+    });
+    
+    res.json(mapJobForFrontend(job));
+  } catch (error) {
+    console.error('Error updating job status:', error);
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+    res.status(500).json({ error: 'Failed to update job status' });
+  }
+});
+
 // PUT /jobs/:id - Update job (alias for PATCH, used by frontend jobsApi)
 router.put('/:id', async (req, res) => {
   try {

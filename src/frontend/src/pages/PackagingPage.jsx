@@ -60,77 +60,7 @@ import {
 import PartialFulfillmentBanner from '../components/shipping/PartialFulfillmentBanner'
 import SplitShipmentDialog from '../components/shipping/SplitShipmentDialog'
 import { CallSplit as SplitIcon } from '@mui/icons-material'
-
-// Mock jobs ready for packaging
-const generateMockPackagingQueue = () => [
-  {
-    id: 'JOB-1005',
-    jobNumber: 'JOB-1005',
-    customerName: 'ABC Steel Corp',
-    status: JOB_STATUSES.PACKAGING,
-    priority: 'HOT',
-    material: 'HR Coil 0.125" x 48" - Slit to 6"',
-    pieces: 150,
-    totalWeight: 28500,
-    packaged: 0,
-    packages: [],
-    dueDate: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
-    packagingSpec: 'Bundle max 5000 lbs, wood skid, steel straps',
-  },
-  {
-    id: 'JOB-1006',
-    jobNumber: 'JOB-1006',
-    customerName: 'Metro Manufacturing',
-    status: JOB_STATUSES.PACKAGING,
-    priority: 'NORMAL',
-    material: 'CR Sheet 16ga x 60" - CTL 120"',
-    pieces: 200,
-    totalWeight: 18000,
-    packaged: 80,
-    packages: [
-      { id: 'PKG-001', pieces: 40, weight: 3600, skidNumber: 'SKD-001' },
-      { id: 'PKG-002', pieces: 40, weight: 3600, skidNumber: 'SKD-002' },
-    ],
-    dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    packagingSpec: 'Skid max 50 sheets, paper interleave, plastic wrap',
-  },
-  {
-    id: 'JOB-1007',
-    jobNumber: 'JOB-1007',
-    customerName: 'Industrial Corp',
-    status: JOB_STATUSES.WAITING_QC,
-    priority: 'NORMAL',
-    material: 'Galv Coil 0.060" x 36" - Slit to 12"',
-    pieces: 75,
-    totalWeight: 12000,
-    packaged: 0,
-    packages: [],
-    dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-    packagingSpec: 'Eye to sky, wood crate',
-  },
-]
-
-// Mock recently packaged
-const generateRecentPackaged = () => [
-  {
-    id: 'PKG-100',
-    jobNumber: 'JOB-1004',
-    skidNumber: 'SKD-100',
-    pieces: 45,
-    weight: 4200,
-    packagedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    status: 'READY',
-  },
-  {
-    id: 'PKG-099',
-    jobNumber: 'JOB-1004',
-    skidNumber: 'SKD-099',
-    pieces: 45,
-    weight: 4200,
-    packagedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-    status: 'READY',
-  },
-]
+import { getJobs, updateJobStatus } from '../api/jobs'
 
 const PackagingPage = () => {
   const [packagingQueue, setPackagingQueue] = useState([])
@@ -161,9 +91,19 @@ const PackagingPage = () => {
   const loadData = useCallback(async () => {
     setLoading(true)
     try {
-      await new Promise((r) => setTimeout(r, 400))
-      setPackagingQueue(generateMockPackagingQueue())
-      setRecentPackaged(generateRecentPackaged())
+      // Fetch real jobs with packaging-related statuses
+      const jobs = await getJobs({ status: 'PACKAGING,WAITING_QC,READY_TO_SHIP' })
+      // Normalize job shape for the cards
+      const normalized = (jobs || []).map(job => ({
+        ...job,
+        packages: job.packages || [],
+        packaged: 0,
+        pieces: Number(job.inputWeightLb) || 0,
+        totalWeight: Number(job.inputWeightLb) || 0,
+        packagingSpec: job.instructions || job.notes || '',
+      }))
+      setPackagingQueue(normalized)
+      setRecentPackaged([])
       // Load fulfillment data for partial-shipment awareness
       try {
         const { data: orders } = await getOrdersWithFulfillment()
@@ -261,17 +201,26 @@ const PackagingPage = () => {
     })
   }
 
-  const handleMarkReady = (job) => {
-    setPackagingQueue((prev) =>
-      prev.map((j) =>
-        j.id === job.id ? { ...j, status: JOB_STATUSES.READY_TO_SHIP } : j
+  const handleMarkReady = async (job) => {
+    try {
+      await updateJobStatus(job.id, 'READY_TO_SHIP')
+      setPackagingQueue((prev) =>
+        prev.map((j) =>
+          j.id === job.id ? { ...j, status: JOB_STATUSES.READY_TO_SHIP } : j
+        )
       )
-    )
-    setSnackbar({
-      open: true,
-      message: `${job.jobNumber} marked ready to ship`,
-      severity: 'success',
-    })
+      setSnackbar({
+        open: true,
+        message: `${job.jobNumber} marked ready to ship`,
+        severity: 'success',
+      })
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: `Failed to update status: ${err.message}`,
+        severity: 'error',
+      })
+    }
   }
 
   const formatDate = (date) => {

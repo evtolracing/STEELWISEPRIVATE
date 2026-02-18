@@ -51,6 +51,7 @@ import partnerSupplierRoutes from './routes/partner/supplierRoutes.js';
 import partnerCarrierRoutes from './routes/partner/carrierRoutes.js';
 import partnerWebhookRoutes from './routes/partner/webhookRoutes.js';
 import partnerAdminRoutes from './routes/partner/adminRoutes.js';
+import maintenanceOrderRoutes from './routes/maintenanceOrders.js';
 import ttsRoutes from './routes/tts.js';
 import aiAssistantRoutes from './routes/aiAssistant.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
@@ -139,6 +140,9 @@ app.use('/api/qc', qcRoutes);  // /api/qc/queue, /api/qc/inspections, /api/qc/st
 
 // Material Tracking - Unified packaging, tags, staging, custody/traceability
 app.use('/api/material-tracking', materialTrackingRoutes);  // /api/material-tracking/stats, /api/material-tracking/custody-log, /api/material-tracking/staging
+
+// Maintenance Work Orders - CMMS
+app.use('/api/maintenance-orders', maintenanceOrderRoutes);  // /api/maintenance-orders (CRUD, start, complete, assets/list, stats)
 
 // ── External Partner API Layer ──────────────────────────────────────────────────
 app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)

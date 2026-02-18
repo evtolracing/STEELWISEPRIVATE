@@ -28,7 +28,6 @@ import {
   Select,
   MenuItem,
   Alert,
-  Divider,
   Stepper,
   Step,
   StepLabel,
@@ -51,105 +50,19 @@ import {
   Pause,
   Done,
   Visibility,
-  Edit,
   PriorityHigh,
   Engineering,
   LocalShipping,
-  Settings,
-  AccessTime,
   Assignment,
 } from '@mui/icons-material';
-import { getWorkCenters } from '../../api/workCenters';
-
-// Mock Data
-const workOrders = [
-  { 
-    id: 'WO-2026-0892', 
-    asset: 'SAW-02', 
-    assetName: 'Kalamazoo K10 Cold Saw',
-    title: 'Motor overheating - emergency shutdown', 
-    type: 'BREAKDOWN', 
-    status: 'IN_PROGRESS', 
-    priority: 'EMERGENCY',
-    technician: 'Mike Johnson',
-    createdAt: '2026-02-04 08:30 AM',
-    startedAt: '2026-02-04 08:45 AM',
-    estimatedHours: 3,
-    actualHours: null,
-  },
-  { 
-    id: 'WO-2026-0891', 
-    asset: 'FORKLIFT-03', 
-    assetName: 'Yale GP050',
-    title: 'Weekly PM - General inspection and lubrication', 
-    type: 'PM', 
-    status: 'SCHEDULED', 
-    priority: 'NORMAL',
-    technician: 'Tom Davis',
-    createdAt: '2026-02-01',
-    startedAt: null,
-    estimatedHours: 1,
-    actualHours: null,
-  },
-  { 
-    id: 'WO-2026-0890', 
-    asset: 'ROUTER-01', 
-    assetName: 'Thermwood Model 43',
-    title: 'Spindle vibration - abnormal noise during operation', 
-    type: 'CORRECTIVE', 
-    status: 'WAITING_PARTS', 
-    priority: 'HIGH',
-    technician: 'Sarah Williams',
-    createdAt: '2026-02-03',
-    startedAt: '2026-02-03 10:00 AM',
-    estimatedHours: 4,
-    actualHours: 2,
-    waitingFor: 'Spindle Bearing Set (ETA: Feb 6)',
-  },
-  { 
-    id: 'WO-2026-0889', 
-    asset: 'CRANE-01', 
-    assetName: 'Overhead Bridge Crane 10T',
-    title: 'Annual load test and safety certification', 
-    type: 'PM', 
-    status: 'SCHEDULED', 
-    priority: 'NORMAL',
-    technician: 'External Contractor - SafetyFirst Inc.',
-    createdAt: '2026-01-28',
-    startedAt: null,
-    estimatedHours: 8,
-    actualHours: null,
-  },
-  { 
-    id: 'WO-2026-0888', 
-    asset: 'SHEAR-01', 
-    assetName: 'LVD PPEB-8 Press Brake',
-    title: 'Blade replacement and alignment', 
-    type: 'CORRECTIVE', 
-    status: 'COMPLETED', 
-    priority: 'HIGH',
-    technician: 'Mike Johnson',
-    createdAt: '2026-02-01',
-    startedAt: '2026-02-02 09:00 AM',
-    completedAt: '2026-02-02 02:30 PM',
-    estimatedHours: 6,
-    actualHours: 5.5,
-  },
-  { 
-    id: 'WO-2026-0887', 
-    asset: 'FORKLIFT-05', 
-    assetName: 'Toyota 8FGU25',
-    title: 'Transmission fluid leak investigation', 
-    type: 'BREAKDOWN', 
-    status: 'IN_PROGRESS', 
-    priority: 'HIGH',
-    technician: 'Tom Davis',
-    createdAt: '2026-02-03',
-    startedAt: '2026-02-03 02:00 PM',
-    estimatedHours: 4,
-    actualHours: null,
-  },
-];
+import {
+  getMaintenanceOrders,
+  getMaintenanceOrderStats,
+  createMaintenanceOrder,
+  startMaintenanceOrder,
+  completeMaintenanceOrder,
+  getMaintenanceAssets,
+} from '../../api/maintenanceOrders';
 
 const WorkOrderCenter = () => {
   const [tab, setTab] = useState(0);
@@ -157,19 +70,86 @@ const WorkOrderCenter = () => {
   const [selectedWO, setSelectedWO] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [createStep, setCreateStep] = useState(0);
-  const [workCenters, setWorkCenters] = useState([]);
-  const [selectedWorkCenter, setSelectedWorkCenter] = useState('');
 
-  const loadWorkCenters = useCallback(async () => {
+
+  // Real data state
+  const [workOrders, setWorkOrders] = useState([]);
+  const [assets, setAssets] = useState([]);
+  const [stats, setStats] = useState({ total: 0, active: 0, inProgress: 0, waitingParts: 0, breakdowns: 0, completed: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Create form state
+  const [formData, setFormData] = useState({
+    assetId: '',
+    type: 'CORRECTIVE',
+    problemCode: '',
+    title: '',
+    description: '',
+    priority: 'NORMAL',
+    assignedTeam: '',
+    estimatedHours: 2,
+    scheduledStart: '',
+    lotoRequired: false,
+    hotWorkRequired: false,
+    confinedSpaceRequired: false,
+    permitRequired: false,
+    safetyNotes: '',
+  });
+
+  const resetForm = () => {
+    setFormData({
+      assetId: '',
+      type: 'CORRECTIVE',
+      problemCode: '',
+      title: '',
+      description: '',
+      priority: 'NORMAL',
+      assignedTeam: '',
+      estimatedHours: 2,
+      scheduledStart: '',
+      lotoRequired: false,
+      hotWorkRequired: false,
+      confinedSpaceRequired: false,
+      permitRequired: false,
+      safetyNotes: '',
+    });
+    setCreateStep(0);
+  };
+
+  const loadData = useCallback(async () => {
     try {
-      const data = await getWorkCenters();
-      setWorkCenters(Array.isArray(data) ? data : data?.workCenters || []);
+      setLoading(true);
+      const [ordersData, statsData] = await Promise.all([
+        getMaintenanceOrders(),
+        getMaintenanceOrderStats(),
+      ]);
+      setWorkOrders(Array.isArray(ordersData) ? ordersData : []);
+      setStats(statsData || { total: 0, active: 0, inProgress: 0, waitingParts: 0, breakdowns: 0, completed: 0 });
+      setError(null);
     } catch (err) {
-      console.error('Failed to load work centers:', err);
+      console.error('Failed to load maintenance orders:', err);
+      setError('Failed to load work orders');
+      setWorkOrders([]);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  useEffect(() => { loadWorkCenters(); }, [loadWorkCenters]);
+  const loadAssets = useCallback(async () => {
+    try {
+      const data = await getMaintenanceAssets();
+      setAssets(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Failed to load assets:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadData();
+    loadAssets();
+  }, [loadData, loadAssets]);
 
   const getTypeColor = (type) => {
     switch (type) {
@@ -194,21 +174,27 @@ const WorkOrderCenter = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'IN_PROGRESS': return 'info';
-      case 'SCHEDULED': return 'default';
+      case 'SCHEDULED': case 'APPROVED': return 'default';
       case 'WAITING_PARTS': return 'warning';
-      case 'COMPLETED': return 'success';
-      case 'ON_HOLD': return 'error';
+      case 'COMPLETED': case 'VERIFIED': case 'CLOSED': return 'success';
+      case 'PENDING_APPROVAL': return 'secondary';
+      case 'CANCELLED': return 'error';
       default: return 'default';
     }
   };
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'IN_PROGRESS': return 'In Progress';
+      case 'DRAFT': return 'Draft';
+      case 'PENDING_APPROVAL': return 'Pending Approval';
+      case 'APPROVED': return 'Approved';
       case 'SCHEDULED': return 'Scheduled';
+      case 'IN_PROGRESS': return 'In Progress';
       case 'WAITING_PARTS': return 'Waiting Parts';
       case 'COMPLETED': return 'Completed';
-      case 'ON_HOLD': return 'On Hold';
+      case 'VERIFIED': return 'Verified';
+      case 'CLOSED': return 'Closed';
+      case 'CANCELLED': return 'Cancelled';
       default: return status;
     }
   };
@@ -224,24 +210,71 @@ const WorkOrderCenter = () => {
     }
   };
 
+  const closedStatuses = ['COMPLETED', 'VERIFIED', 'CLOSED', 'CANCELLED'];
+
   const filteredWOs = workOrders.filter(wo => {
-    if (tab === 1 && wo.status === 'COMPLETED') return false;
+    if (tab === 1 && closedStatuses.includes(wo.status)) return false;
     if (tab === 2 && wo.status !== 'IN_PROGRESS') return false;
     if (tab === 3 && wo.status !== 'WAITING_PARTS') return false;
-    if (tab === 4 && wo.status !== 'COMPLETED') return false;
+    if (tab === 4 && !closedStatuses.includes(wo.status)) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      return wo.id.toLowerCase().includes(query) || 
-             wo.asset.toLowerCase().includes(query) ||
-             wo.title.toLowerCase().includes(query);
+      return (wo.woNumber || '').toLowerCase().includes(query) || 
+             (wo.asset?.assetNumber || '').toLowerCase().includes(query) ||
+             (wo.asset?.name || '').toLowerCase().includes(query) ||
+             (wo.title || '').toLowerCase().includes(query);
     }
     return true;
   });
 
-  const activeCount = workOrders.filter(w => w.status !== 'COMPLETED').length;
-  const inProgressCount = workOrders.filter(w => w.status === 'IN_PROGRESS').length;
-  const waitingPartsCount = workOrders.filter(w => w.status === 'WAITING_PARTS').length;
-  const breakdownCount = workOrders.filter(w => w.type === 'BREAKDOWN' && w.status !== 'COMPLETED').length;
+  const handleCreateSubmit = async () => {
+    try {
+      setSubmitting(true);
+      await createMaintenanceOrder({
+        assetId: formData.assetId,
+        type: formData.type,
+        title: formData.title,
+        description: formData.description || null,
+        problemCode: formData.problemCode || null,
+        priority: formData.priority,
+        assignedTeam: formData.assignedTeam || null,
+        estimatedHours: formData.estimatedHours || null,
+        scheduledStart: formData.scheduledStart || null,
+        lotoRequired: formData.lotoRequired,
+        hotWorkRequired: formData.hotWorkRequired,
+        confinedSpaceRequired: formData.confinedSpaceRequired,
+        permitRequired: formData.permitRequired,
+      });
+      setShowCreateDialog(false);
+      resetForm();
+      await loadData(); // Refresh list
+    } catch (err) {
+      console.error('Failed to create maintenance order:', err);
+      setError('Failed to create work order: ' + (err?.response?.data?.error || err.message));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleStartWork = async (woId) => {
+    try {
+      await startMaintenanceOrder(woId);
+      await loadData();
+      setSelectedWO(null);
+    } catch (err) {
+      console.error('Failed to start work:', err);
+    }
+  };
+
+  const handleCompleteWork = async (woId) => {
+    try {
+      await completeMaintenanceOrder(woId, {});
+      await loadData();
+      setSelectedWO(null);
+    } catch (err) {
+      console.error('Failed to complete work:', err);
+    }
+  };
 
   const createSteps = ['Select Asset', 'Problem Description', 'Priority & Assignment', 'Safety Requirements', 'Review'];
 
@@ -263,9 +296,14 @@ const WorkOrderCenter = () => {
       </Box>
 
       {/* Alerts */}
-      {breakdownCount > 0 && (
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+      {stats.breakdowns > 0 && (
         <Alert severity="error" sx={{ mb: 3 }} icon={<PriorityHigh />}>
-          <strong>{breakdownCount} active breakdown(s)</strong> requiring immediate attention
+          <strong>{stats.breakdowns} active breakdown(s)</strong> requiring immediate attention
         </Alert>
       )}
 
@@ -278,7 +316,7 @@ const WorkOrderCenter = () => {
                 <Build sx={{ color: 'primary.main' }} />
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>{activeCount}</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.active}</Typography>
                 <Typography variant="body2" color="text.secondary">Active Work Orders</Typography>
               </Box>
             </CardContent>
@@ -291,7 +329,7 @@ const WorkOrderCenter = () => {
                 <PlayArrow sx={{ color: 'info.main' }} />
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>{inProgressCount}</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.inProgress}</Typography>
                 <Typography variant="body2" color="text.secondary">In Progress</Typography>
               </Box>
             </CardContent>
@@ -304,7 +342,7 @@ const WorkOrderCenter = () => {
                 <LocalShipping sx={{ color: 'warning.main' }} />
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>{waitingPartsCount}</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.waitingParts}</Typography>
                 <Typography variant="body2" color="text.secondary">Waiting Parts</Typography>
               </Box>
             </CardContent>
@@ -317,7 +355,7 @@ const WorkOrderCenter = () => {
                 <Warning sx={{ color: 'error.main' }} />
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>{breakdownCount}</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.breakdowns}</Typography>
                 <Typography variant="body2" color="text.secondary">Breakdowns</Typography>
               </Box>
             </CardContent>
@@ -328,11 +366,11 @@ const WorkOrderCenter = () => {
       {/* Tabs */}
       <Paper sx={{ mb: 3 }}>
         <Tabs value={tab} onChange={(e, v) => setTab(v)}>
-          <Tab label={`All (${workOrders.length})`} />
-          <Tab label={`Active (${activeCount})`} />
-          <Tab label={`In Progress (${inProgressCount})`} />
-          <Tab label={`Waiting Parts (${waitingPartsCount})`} />
-          <Tab label="Completed" />
+          <Tab label={`All (${stats.total})`} />
+          <Tab label={`Active (${stats.active})`} />
+          <Tab label={`In Progress (${stats.inProgress})`} />
+          <Tab label={`Waiting Parts (${stats.waitingParts})`} />
+          <Tab label={`Completed (${stats.completed})`} />
         </Tabs>
       </Paper>
 
@@ -379,12 +417,12 @@ const WorkOrderCenter = () => {
           </Grid>
           <Grid item xs={12} md={2}>
             <FormControl fullWidth size="small">
-              <InputLabel>Technician</InputLabel>
-              <Select label="Technician" defaultValue="">
+              <InputLabel>Team</InputLabel>
+              <Select label="Team" defaultValue="">
                 <MenuItem value="">All</MenuItem>
-                <MenuItem value="Mike Johnson">Mike Johnson</MenuItem>
-                <MenuItem value="Tom Davis">Tom Davis</MenuItem>
-                <MenuItem value="Sarah Williams">Sarah Williams</MenuItem>
+                <MenuItem value="Mechanical">Mechanical</MenuItem>
+                <MenuItem value="Electrical">Electrical</MenuItem>
+                <MenuItem value="External">External</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -402,13 +440,27 @@ const WorkOrderCenter = () => {
                 <TableCell>Type</TableCell>
                 <TableCell>Priority</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Technician</TableCell>
+                <TableCell>Team</TableCell>
                 <TableCell>Est. Hours</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredWOs.map((wo) => (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                    <Typography color="text.secondary">Loading work orders...</Typography>
+                  </TableCell>
+                </TableRow>
+              ) : filteredWOs.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                    <Typography color="text.secondary">
+                      {searchQuery ? 'No work orders match your search' : 'No work orders found. Create one to get started.'}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : filteredWOs.map((wo) => (
                 <TableRow 
                   key={wo.id} 
                   hover 
@@ -417,11 +469,13 @@ const WorkOrderCenter = () => {
                 >
                   <TableCell>
                     <Typography variant="body2" fontWeight={600} color="primary.main">
-                      {wo.id}
+                      {wo.woNumber}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" fontWeight={500}>{wo.asset}</Typography>
+                    <Typography variant="body2" fontWeight={500}>
+                      {wo.asset?.assetNumber || '—'}
+                    </Typography>
                     <Typography variant="caption" color="text.secondary" sx={{ 
                       display: 'block', 
                       maxWidth: 250, 
@@ -455,16 +509,16 @@ const WorkOrderCenter = () => {
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Engineering fontSize="small" color="action" />
-                      <Typography variant="body2">{wo.technician}</Typography>
+                      <Typography variant="body2">{wo.assignedTeam || '—'}</Typography>
                     </Box>
                   </TableCell>
                   <TableCell>
-                    {wo.actualHours !== null ? (
+                    {wo.actualHours != null ? (
                       <Typography variant="body2">
-                        {wo.actualHours} / {wo.estimatedHours}h
+                        {Number(wo.actualHours)} / {Number(wo.estimatedHours || 0)}h
                       </Typography>
                     ) : (
-                      <Typography variant="body2">{wo.estimatedHours}h</Typography>
+                      <Typography variant="body2">{wo.estimatedHours ? `${Number(wo.estimatedHours)}h` : '—'}</Typography>
                     )}
                   </TableCell>
                   <TableCell align="right" onClick={(e) => e.stopPropagation()}>
@@ -473,16 +527,16 @@ const WorkOrderCenter = () => {
                         <Visibility />
                       </IconButton>
                     </Tooltip>
-                    {wo.status === 'SCHEDULED' && (
+                    {(wo.status === 'SCHEDULED' || wo.status === 'APPROVED') && (
                       <Tooltip title="Start Work">
-                        <IconButton size="small" color="primary">
+                        <IconButton size="small" color="primary" onClick={() => handleStartWork(wo.id)}>
                           <PlayArrow />
                         </IconButton>
                       </Tooltip>
                     )}
                     {wo.status === 'IN_PROGRESS' && (
                       <Tooltip title="Complete">
-                        <IconButton size="small" color="success">
+                        <IconButton size="small" color="success" onClick={() => handleCompleteWork(wo.id)}>
                           <Done />
                         </IconButton>
                       </Tooltip>
@@ -500,7 +554,7 @@ const WorkOrderCenter = () => {
         <DialogTitle>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h6">{selectedWO?.id}</Typography>
+              <Typography variant="h6">{selectedWO?.woNumber}</Typography>
               <Chip label={selectedWO?.type} size="small" color={getTypeColor(selectedWO?.type)} />
               <Chip label={selectedWO?.priority} size="small" color={getPriorityColor(selectedWO?.priority)} />
             </Box>
@@ -516,21 +570,24 @@ const WorkOrderCenter = () => {
               <Grid item xs={12}>
                 <Typography variant="h6" sx={{ mb: 1 }}>{selectedWO.title}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Asset: {selectedWO.asset} - {selectedWO.assetName}
+                  Asset: {selectedWO.asset?.assetNumber || '—'} — {selectedWO.asset?.name || ''}
                 </Typography>
+                {selectedWO.description && (
+                  <Typography variant="body2" sx={{ mt: 1 }}>{selectedWO.description}</Typography>
+                )}
               </Grid>
 
               <Grid item xs={12} md={6}>
                 <List dense>
                   <ListItem>
-                    <ListItemText primary="Created" secondary={selectedWO.createdAt} />
+                    <ListItemText primary="Created" secondary={selectedWO.createdAt ? new Date(selectedWO.createdAt).toLocaleString() : '—'} />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="Started" secondary={selectedWO.startedAt || 'Not started'} />
+                    <ListItemText primary="Started" secondary={selectedWO.actualStart ? new Date(selectedWO.actualStart).toLocaleString() : 'Not started'} />
                   </ListItem>
                   {selectedWO.completedAt && (
                     <ListItem>
-                      <ListItemText primary="Completed" secondary={selectedWO.completedAt} />
+                      <ListItemText primary="Completed" secondary={new Date(selectedWO.completedAt).toLocaleString()} />
                     </ListItem>
                   )}
                 </List>
@@ -539,21 +596,33 @@ const WorkOrderCenter = () => {
               <Grid item xs={12} md={6}>
                 <List dense>
                   <ListItem>
-                    <ListItemText primary="Assigned To" secondary={selectedWO.technician} />
+                    <ListItemText primary="Team" secondary={selectedWO.assignedTeam || 'Unassigned'} />
                   </ListItem>
                   <ListItem>
                     <ListItemText 
                       primary="Hours" 
-                      secondary={`${selectedWO.actualHours || 0} / ${selectedWO.estimatedHours} hours`} 
+                      secondary={`${selectedWO.actualHours ? Number(selectedWO.actualHours) : 0} / ${selectedWO.estimatedHours ? Number(selectedWO.estimatedHours) : 0} hours`} 
                     />
                   </ListItem>
+                  {selectedWO.problemCode && (
+                    <ListItem>
+                      <ListItemText primary="Problem Category" secondary={selectedWO.problemCode} />
+                    </ListItem>
+                  )}
                 </List>
               </Grid>
 
-              {selectedWO.waitingFor && (
+              {/* Safety info */}
+              {(selectedWO.lotoRequired || selectedWO.hotWorkRequired || selectedWO.confinedSpaceRequired || selectedWO.permitRequired) && (
                 <Grid item xs={12}>
                   <Alert severity="warning">
-                    <strong>Waiting for:</strong> {selectedWO.waitingFor}
+                    <strong>Safety Requirements:</strong>{' '}
+                    {[
+                      selectedWO.lotoRequired && 'LOTO',
+                      selectedWO.hotWorkRequired && 'Hot Work Permit',
+                      selectedWO.confinedSpaceRequired && 'Confined Space',
+                      selectedWO.permitRequired && 'Permit Required',
+                    ].filter(Boolean).join(', ')}
                   </Alert>
                 </Grid>
               )}
@@ -562,13 +631,13 @@ const WorkOrderCenter = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelectedWO(null)}>Close</Button>
-          {selectedWO?.status === 'SCHEDULED' && (
-            <Button variant="contained" color="primary" startIcon={<PlayArrow />}>
+          {(selectedWO?.status === 'SCHEDULED' || selectedWO?.status === 'APPROVED') && (
+            <Button variant="contained" color="primary" startIcon={<PlayArrow />} onClick={() => handleStartWork(selectedWO.id)}>
               Start Work
             </Button>
           )}
           {selectedWO?.status === 'IN_PROGRESS' && (
-            <Button variant="contained" color="success" startIcon={<Done />}>
+            <Button variant="contained" color="success" startIcon={<Done />} onClick={() => handleCompleteWork(selectedWO.id)}>
               Complete
             </Button>
           )}
@@ -576,7 +645,7 @@ const WorkOrderCenter = () => {
       </Dialog>
 
       {/* Create Work Order Dialog */}
-      <Dialog open={showCreateDialog} onClose={() => { setShowCreateDialog(false); setCreateStep(0); setSelectedWorkCenter(''); }} maxWidth="md" fullWidth>
+      <Dialog open={showCreateDialog} onClose={() => { setShowCreateDialog(false); resetForm(); }} maxWidth="md" fullWidth>
         <DialogTitle>Create Work Order</DialogTitle>
         <DialogContent>
           <Stepper activeStep={createStep} sx={{ my: 3 }}>
@@ -591,40 +660,75 @@ const WorkOrderCenter = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel>Select Asset / Work Center</InputLabel>
-                  <Select label="Select Asset / Work Center" value={selectedWorkCenter} onChange={(e) => setSelectedWorkCenter(e.target.value)}>
-                    {workCenters.map((wc) => (
-                      <MenuItem key={wc.id} value={wc.id}>
-                        {wc.code} — {wc.name}
+                  <InputLabel>Select Asset</InputLabel>
+                  <Select
+                    label="Select Asset"
+                    value={formData.assetId}
+                    onChange={(e) => setFormData(f => ({ ...f, assetId: e.target.value }))}
+                  >
+                    {assets.map((a) => (
+                      <MenuItem key={a.id} value={a.id}>
+                        {a.assetNumber} — {a.name}{a.workCenter ? ` (${a.workCenter.code})` : ''}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
+              {assets.length === 0 && (
+                <Grid item xs={12}>
+                  <Alert severity="info">
+                    No assets found in the database. Add assets in the Asset Management section first.
+                  </Alert>
+                </Grid>
+              )}
             </Grid>
           )}
 
           {createStep === 1 && (
             <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Title / Short Description"
+                  placeholder="e.g. Motor overheating - emergency shutdown"
+                  value={formData.title}
+                  onChange={(e) => setFormData(f => ({ ...f, title: e.target.value }))}
+                />
+              </Grid>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
                   <InputLabel>Work Order Type</InputLabel>
-                  <Select label="Work Order Type" defaultValue="CORRECTIVE">
+                  <Select
+                    label="Work Order Type"
+                    value={formData.type}
+                    onChange={(e) => setFormData(f => ({ ...f, type: e.target.value }))}
+                  >
                     <MenuItem value="BREAKDOWN">Breakdown (Emergency)</MenuItem>
                     <MenuItem value="CORRECTIVE">Corrective</MenuItem>
                     <MenuItem value="PM">Preventive Maintenance</MenuItem>
-                    <MenuItem value="PROJECT">Project / Improvement</MenuItem>
+                    <MenuItem value="INSPECTION">Inspection</MenuItem>
+                    <MenuItem value="CALIBRATION">Calibration</MenuItem>
+                    <MenuItem value="MODIFICATION">Modification</MenuItem>
+                    <MenuItem value="SAFETY_RELATED">Safety Related</MenuItem>
+                    <MenuItem value="QUALITY_RELATED">Quality Related</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
                   <InputLabel>Problem Category</InputLabel>
-                  <Select label="Problem Category" defaultValue="">
+                  <Select
+                    label="Problem Category"
+                    value={formData.problemCode}
+                    onChange={(e) => setFormData(f => ({ ...f, problemCode: e.target.value }))}
+                  >
+                    <MenuItem value="">None</MenuItem>
                     <MenuItem value="mechanical">Mechanical</MenuItem>
                     <MenuItem value="electrical">Electrical</MenuItem>
                     <MenuItem value="hydraulic">Hydraulic</MenuItem>
                     <MenuItem value="pneumatic">Pneumatic</MenuItem>
+                    <MenuItem value="software">Software/Controls</MenuItem>
                     <MenuItem value="other">Other</MenuItem>
                   </Select>
                 </FormControl>
@@ -636,6 +740,8 @@ const WorkOrderCenter = () => {
                   rows={4}
                   label="Problem Description"
                   placeholder="Describe the problem or work required..."
+                  value={formData.description}
+                  onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
                 />
               </Grid>
             </Grid>
@@ -646,40 +752,55 @@ const WorkOrderCenter = () => {
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
-                  label="Work Center"
-                  value={(() => { const wc = workCenters.find(w => w.id === selectedWorkCenter); return wc ? `${wc.code} — ${wc.name}` : 'Not selected'; })()}
+                  label="Asset"
+                  value={(() => { const a = assets.find(a => a.id === formData.assetId); return a ? `${a.assetNumber} — ${a.name}` : 'Not selected'; })()}
                   InputProps={{ readOnly: true }}
                   InputLabelProps={{ shrink: true }}
-                  sx={{ '& .MuiInputBase-input': { color: 'text.primary' } }}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth>
                   <InputLabel>Priority</InputLabel>
-                  <Select label="Priority" defaultValue="NORMAL">
+                  <Select
+                    label="Priority"
+                    value={formData.priority}
+                    onChange={(e) => setFormData(f => ({ ...f, priority: e.target.value }))}
+                  >
                     <MenuItem value="EMERGENCY">Emergency</MenuItem>
                     <MenuItem value="HIGH">High</MenuItem>
                     <MenuItem value="NORMAL">Normal</MenuItem>
                     <MenuItem value="LOW">Low</MenuItem>
+                    <MenuItem value="SCHEDULED">Scheduled</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Assign To</InputLabel>
-                  <Select label="Assign To" defaultValue="">
-                    <MenuItem value="mike">Mike Johnson</MenuItem>
-                    <MenuItem value="tom">Tom Davis</MenuItem>
-                    <MenuItem value="sarah">Sarah Williams</MenuItem>
-                    <MenuItem value="external">External Contractor</MenuItem>
-                  </Select>
-                </FormControl>
+                <TextField
+                  fullWidth
+                  label="Assigned Team"
+                  placeholder="e.g. Mechanical, Electrical, External"
+                  value={formData.assignedTeam}
+                  onChange={(e) => setFormData(f => ({ ...f, assignedTeam: e.target.value }))}
+                />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth type="number" label="Estimated Hours" defaultValue={2} />
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Estimated Hours"
+                  value={formData.estimatedHours}
+                  onChange={(e) => setFormData(f => ({ ...f, estimatedHours: e.target.value }))}
+                />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth type="date" label="Target Date" InputLabelProps={{ shrink: true }} />
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="Target Start Date"
+                  InputLabelProps={{ shrink: true }}
+                  value={formData.scheduledStart}
+                  onChange={(e) => setFormData(f => ({ ...f, scheduledStart: e.target.value }))}
+                />
               </Grid>
             </Grid>
           )}
@@ -692,19 +813,38 @@ const WorkOrderCenter = () => {
                 </Alert>
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel control={<Checkbox />} label="LOTO (Lockout/Tagout) Required" />
+                <FormControlLabel
+                  control={<Checkbox checked={formData.lotoRequired} onChange={(e) => setFormData(f => ({ ...f, lotoRequired: e.target.checked }))} />}
+                  label="LOTO (Lockout/Tagout) Required"
+                />
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel control={<Checkbox />} label="Hot Work Permit Required" />
+                <FormControlLabel
+                  control={<Checkbox checked={formData.hotWorkRequired} onChange={(e) => setFormData(f => ({ ...f, hotWorkRequired: e.target.checked }))} />}
+                  label="Hot Work Permit Required"
+                />
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel control={<Checkbox />} label="Confined Space Entry Required" />
+                <FormControlLabel
+                  control={<Checkbox checked={formData.confinedSpaceRequired} onChange={(e) => setFormData(f => ({ ...f, confinedSpaceRequired: e.target.checked }))} />}
+                  label="Confined Space Entry Required"
+                />
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel control={<Checkbox />} label="Work at Height - Fall Protection Required" />
+                <FormControlLabel
+                  control={<Checkbox checked={formData.permitRequired} onChange={(e) => setFormData(f => ({ ...f, permitRequired: e.target.checked }))} />}
+                  label="Work Permit / Fall Protection Required"
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextField fullWidth multiline rows={2} label="Additional Safety Notes" />
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  label="Additional Safety Notes"
+                  value={formData.safetyNotes}
+                  onChange={(e) => setFormData(f => ({ ...f, safetyNotes: e.target.value }))}
+                />
               </Grid>
             </Grid>
           )}
@@ -719,26 +859,48 @@ const WorkOrderCenter = () => {
               <Grid item xs={12}>
                 <Paper variant="outlined" sx={{ p: 2 }}>
                   <Typography variant="subtitle2" color="text.secondary">Asset</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>SAW-JKS-001 - DoALL C-916 Band Saw</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>
+                    {(() => { const a = assets.find(a => a.id === formData.assetId); return a ? `${a.assetNumber} — ${a.name}` : 'Not selected'; })()}
+                  </Typography>
                   
+                  <Typography variant="subtitle2" color="text.secondary">Title</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{formData.title || '—'}</Typography>
+
                   <Typography variant="subtitle2" color="text.secondary">Type & Priority</Typography>
                   <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                    <Chip label="CORRECTIVE" color="warning" size="small" />
-                    <Chip label="NORMAL" color="primary" size="small" />
+                    <Chip label={formData.type} color={getTypeColor(formData.type)} size="small" />
+                    <Chip label={formData.priority} color={getPriorityColor(formData.priority)} size="small" />
                   </Box>
 
-                  <Typography variant="subtitle2" color="text.secondary">Assigned To</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>Mike Johnson</Typography>
+                  {formData.description && (
+                    <>
+                      <Typography variant="subtitle2" color="text.secondary">Description</Typography>
+                      <Typography variant="body1" sx={{ mb: 2 }}>{formData.description}</Typography>
+                    </>
+                  )}
+
+                  <Typography variant="subtitle2" color="text.secondary">Assigned Team</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{formData.assignedTeam || 'Unassigned'}</Typography>
+
+                  <Typography variant="subtitle2" color="text.secondary">Estimated Hours</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>{formData.estimatedHours || '—'}</Typography>
 
                   <Typography variant="subtitle2" color="text.secondary">Safety Requirements</Typography>
-                  <Typography variant="body1">LOTO Required</Typography>
+                  <Typography variant="body1">
+                    {[
+                      formData.lotoRequired && 'LOTO Required',
+                      formData.hotWorkRequired && 'Hot Work Permit',
+                      formData.confinedSpaceRequired && 'Confined Space',
+                      formData.permitRequired && 'Work Permit / Fall Protection',
+                    ].filter(Boolean).join(', ') || 'None'}
+                  </Typography>
                 </Paper>
               </Grid>
             </Grid>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setShowCreateDialog(false); setCreateStep(0); }}>Cancel</Button>
+          <Button onClick={() => { setShowCreateDialog(false); resetForm(); }}>Cancel</Button>
           {createStep > 0 && (
             <Button onClick={() => setCreateStep(createStep - 1)}>Back</Button>
           )}
@@ -749,9 +911,10 @@ const WorkOrderCenter = () => {
             <Button 
               variant="contained" 
               color="success"
-              onClick={() => { setShowCreateDialog(false); setCreateStep(0); alert('Work order created!'); }}
+              disabled={submitting || !formData.assetId || !formData.title}
+              onClick={handleCreateSubmit}
             >
-              Create Work Order
+              {submitting ? 'Creating...' : 'Create Work Order'}
             </Button>
           )}
         </DialogActions>

@@ -39,6 +39,7 @@ import {
 } from '@mui/icons-material'
 import { getWorkCenterTypes, getLocations, getDivisions, getWorkCenters } from '../../services/dispatchApi'
 import { getJobPlan } from '../../services/jobsApi'
+import SpecOverridePanel from '../shared/SpecOverridePanel'
 
 const SKILL_LEVELS = [
   { value: 'NOVICE', label: 'Novice' },
@@ -66,6 +67,9 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
   const [form, setForm] = useState('PLATE')
   const [grade, setGrade] = useState('')
 
+  // Spec overrides for this job
+  const [jobSpecs, setJobSpecs] = useState({})
+
   // Load available work center types, locations, divisions
   useEffect(() => {
     if (open) {
@@ -83,6 +87,20 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       // Reset operations when opening a new job
       setOperations([])
       setError(null)
+      // Pre-fill specs from job if they exist
+      setJobSpecs({
+        tolerancePreset: job.tolerancePreset || '',
+        thkTolerancePlus: job.thkTolerancePlus ?? '',
+        thkToleranceMinus: job.thkToleranceMinus ?? '',
+        lenTolerancePlus: job.lenTolerancePlus ?? '',
+        lenToleranceMinus: job.lenToleranceMinus ?? '',
+        widTolerancePlus: job.widTolerancePlus ?? '',
+        widToleranceMinus: job.widToleranceMinus ?? '',
+        surfaceFinish: job.surfaceFinish || '',
+        gradeOverride: job.gradeOverride || '',
+        certRequirements: job.certRequirements || [],
+        specNotes: job.specNotes || '',
+      })
 
       // If job is already SCHEDULED, load existing plan for editing
       if (job.status === 'SCHEDULED') {
@@ -249,6 +267,8 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
         form,
         grade: grade || undefined,
         locationId,
+        // Spec overrides
+        ...jobSpecs,
       }
 
       await onSave(job.id, planData)
@@ -452,9 +472,17 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
           />
         </Stack>
 
-        <Divider sx={{ mb: 2 }} />
+        {/* Spec Overrides Section */}
+        <Box sx={{ mb: 3 }}>
+          <SpecOverridePanel
+            specs={jobSpecs}
+            onChange={setJobSpecs}
+            inheritedFrom={job?.orderId ? 'order' : null}
+            compact={true}
+          />
+        </Box>
 
-        {/* Routing Operations Section */}
+        <Divider sx={{ mb: 2 }} />
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <RoutingIcon color="primary" />

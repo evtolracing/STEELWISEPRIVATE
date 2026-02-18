@@ -53,6 +53,7 @@ import partnerWebhookRoutes from './routes/partner/webhookRoutes.js';
 import partnerAdminRoutes from './routes/partner/adminRoutes.js';
 import maintenanceOrderRoutes from './routes/maintenanceOrders.js';
 import assetRoutes from './routes/assets.js';
+import specRoutes from './routes/specInheritance.js';
 import ttsRoutes from './routes/tts.js';
 import aiAssistantRoutes from './routes/aiAssistant.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
@@ -147,6 +148,9 @@ app.use('/api/maintenance-orders', maintenanceOrderRoutes);  // /api/maintenance
 
 // Asset Registry - Equipment management
 app.use('/api/assets', assetRoutes);  // /api/assets (CRUD, stats, types, seed-from-work-centers)
+
+// Spec Inheritance - resolve effective specs per order-line or job
+app.use('/api/specs', specRoutes);
 
 // ── External Partner API Layer ──────────────────────────────────────────────────
 app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)

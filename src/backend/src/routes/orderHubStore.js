@@ -161,7 +161,19 @@ export function createQuote(data) {
       quantity,
       unitPrice,
       extendedPrice: Math.round(quantity * unitPrice * 100) / 100,
-      notes: line.notes || null
+      notes: line.notes || null,
+      // Spec overrides from quote pricing form
+      surfaceFinish: line.surfaceFinish || null,
+      tolerancePreset: line.tolerancePreset || null,
+      thkTolerancePlus: line.thkTolerancePlus ?? null,
+      thkToleranceMinus: line.thkToleranceMinus ?? null,
+      lenTolerancePlus: line.lenTolerancePlus ?? null,
+      lenToleranceMinus: line.lenToleranceMinus ?? null,
+      widTolerancePlus: line.widTolerancePlus ?? null,
+      widToleranceMinus: line.widToleranceMinus ?? null,
+      certRequirements: line.certRequirements || [],
+      specNotes: line.specNotes || null,
+      gradeOverride: line.gradeOverride || null,
     };
   });
 
@@ -215,14 +227,25 @@ export function acceptQuote(quoteId) {
       materialCode: ql.materialCode || null,
       commodity: null,
       form: null,
-      grade: null,
+      grade: ql.gradeOverride || null,
       thickness: null,
       width: null,
       length: null,
       quantity: ql.quantity,
       division: null,
       status: 'NEW',
-      jobId: null
+      jobId: null,
+      // Inherit spec overrides from quote line
+      surfaceFinish: ql.surfaceFinish || null,
+      tolerancePreset: ql.tolerancePreset || null,
+      thkTolerancePlus: ql.thkTolerancePlus ?? null,
+      thkToleranceMinus: ql.thkToleranceMinus ?? null,
+      lenTolerancePlus: ql.lenTolerancePlus ?? null,
+      lenToleranceMinus: ql.lenToleranceMinus ?? null,
+      widTolerancePlus: ql.widTolerancePlus ?? null,
+      widToleranceMinus: ql.widToleranceMinus ?? null,
+      certRequirements: ql.certRequirements || [],
+      specNotes: ql.specNotes || null,
     }))
   };
 
@@ -272,7 +295,18 @@ export function createOrder(data) {
       quantity: line.quantity || 1,
       division: line.division || null,
       status: 'NEW',
-      jobId: null
+      jobId: null,
+      // Spec overrides
+      surfaceFinish: line.surfaceFinish || null,
+      tolerancePreset: line.tolerancePreset || null,
+      thkTolerancePlus: line.thkTolerancePlus ?? null,
+      thkToleranceMinus: line.thkToleranceMinus ?? null,
+      lenTolerancePlus: line.lenTolerancePlus ?? null,
+      lenToleranceMinus: line.lenToleranceMinus ?? null,
+      widTolerancePlus: line.widTolerancePlus ?? null,
+      widToleranceMinus: line.widToleranceMinus ?? null,
+      certRequirements: line.certRequirements || [],
+      specNotes: line.specNotes || null,
     }))
   };
 
@@ -298,7 +332,22 @@ export function planOrder(orderId) {
       division: line.division || order.division || 'METALS',
       materialCode: line.materialCode || 'UNKNOWN',
       thickness: line.thickness,
-      status: 'PLANNING'
+      width: line.width,
+      length: line.length,
+      grade: line.grade,
+      status: 'PLANNING',
+      // Inherit specs from order line
+      surfaceFinish: line.surfaceFinish || null,
+      tolerancePreset: line.tolerancePreset || null,
+      thkTolerancePlus: line.thkTolerancePlus ?? null,
+      thkToleranceMinus: line.thkToleranceMinus ?? null,
+      lenTolerancePlus: line.lenTolerancePlus ?? null,
+      lenToleranceMinus: line.lenToleranceMinus ?? null,
+      widTolerancePlus: line.widTolerancePlus ?? null,
+      widToleranceMinus: line.widToleranceMinus ?? null,
+      certRequirements: line.certRequirements || [],
+      specNotes: line.specNotes || null,
+      specsInherited: true,
     };
     jobs.push(job);
     createdJobs.push(job);

@@ -630,6 +630,23 @@ model QuoteLine {
   extendedPrice Decimal?
   leadTimeDays  Int?
   notes         String?
+
+  // Dimensions & Specs (override customer defaults)
+  thicknessIn          Decimal?
+  widthIn              Decimal?
+  lengthIn             Decimal?
+  gradeOverride        String?
+  surfaceFinish        String?
+  tolerancePreset      String?
+  thkTolerancePlus     Decimal?
+  thkToleranceMinus    Decimal?
+  lenTolerancePlus     Decimal?
+  lenToleranceMinus    Decimal?
+  widTolerancePlus     Decimal?
+  widToleranceMinus    Decimal?
+  certRequirements     Json?       // ["MTR", "COC", ...]
+  specNotes            String?
+
   createdAt     DateTime @default(now())
   quote         Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   rfqLine       RFQLine? @relation(fields: [rfqLineId], references: [id])
@@ -910,6 +927,24 @@ model Job {
   hasCustomRouting Boolean     @default(false)
   recipeId         String?
   recipeVersion    Int?
+
+  // Spec overrides (inherit from OrderLine → QuoteLine → CustomerPreference)
+  thicknessIn          Decimal?
+  widthIn              Decimal?
+  lengthIn             Decimal?
+  gradeOverride        String?
+  surfaceFinish        String?
+  tolerancePreset      String?
+  thkTolerancePlus     Decimal?
+  thkToleranceMinus    Decimal?
+  lenTolerancePlus     Decimal?
+  lenToleranceMinus    Decimal?
+  widTolerancePlus     Decimal?
+  widToleranceMinus    Decimal?
+  certRequirements     Json?       // ["MTR", "COC", ...]
+  specNotes            String?
+  specsInherited       Boolean     @default(true) // false = manually overridden
+
   assignedTo       User?       @relation("JobAssignee", fields: [assignedToId], references: [id])
   createdBy        User?       @relation("JobCreator", fields: [createdById], references: [id])
   order            Order?      @relation(fields: [orderId], references: [id])
@@ -986,6 +1021,20 @@ model OrderLine {
   extendedPrice Decimal?
   lineStatus    LineStatus            @default(OPEN)
   notes         String?
+
+  // Spec overrides (inherit from QuoteLine → CustomerPreference)
+  gradeOverride        String?
+  surfaceFinish        String?
+  tolerancePreset      String?
+  thkTolerancePlus     Decimal?
+  thkToleranceMinus    Decimal?
+  lenTolerancePlus     Decimal?
+  lenToleranceMinus    Decimal?
+  widTolerancePlus     Decimal?
+  widToleranceMinus    Decimal?
+  certRequirements     Json?       // ["MTR", "COC", ...]
+  specNotes            String?
+
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
   grade         Grade?                @relation(fields: [gradeId], references: [id])

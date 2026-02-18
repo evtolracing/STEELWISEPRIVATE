@@ -98,12 +98,10 @@ const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
 // Phase 1 - Service Center Pages
 const OrderBoardPage = lazy(() => import('../pages/ModernOrderBoardPage'))
-const OrderBoardPageLegacy = lazy(() => import('../pages/OrderBoardPage'))
 const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const ShopFloorPage = lazy(() => import('../pages/ShopFloorPage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
-const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
 // QC Inspection Module
@@ -147,7 +145,6 @@ const RemnantCategoryPage = lazy(() => import('../pages/Ecommerce/RemnantCategor
 const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
 
 // Production Workflow
-const ProductionLayout = lazy(() => import('../components/production/ProductionLayout'))
 const ProductionWorkflowBoard = lazy(() => import('../components/production/ProductionWorkflowBoard'))
 const ShopFloorScreen = lazy(() => import('../components/production/ShopFloorScreen'))
 const ShippingScreen = lazy(() => import('../components/production/ShippingScreen'))
@@ -822,17 +819,6 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Order Board - Legacy Version
-      {
-        path: 'order-board-legacy',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <OrderBoardPageLegacy />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-
       // Work Center Schedule
       {
         path: 'schedule',
@@ -999,7 +985,7 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
       {
-        path: 'sales/quote/:quoteId',
+        path: 'sales/quote/new',
         element: (
           <Suspense fallback={<PageLoader />}>
             <SalesQuoteBuilder />
@@ -1008,7 +994,7 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
       {
-        path: 'sales/quote/new',
+        path: 'sales/quote/:quoteId',
         element: (
           <Suspense fallback={<PageLoader />}>
             <SalesQuoteBuilder />

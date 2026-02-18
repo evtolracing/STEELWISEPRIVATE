@@ -22,33 +22,21 @@ import {
   Dashboard as DashboardIcon,
   Thermostat as HeatIcon,
   ViewModule as UnitsIcon,
-  Build as WorkOrdersIcon,
   Inventory2 as InventoryIcon,
   LocalShipping as LogisticsIcon,
-  AttachMoney as PricingIcon,
   VerifiedUser as QualityIcon,
   AccountTree as ProvenanceIcon,
-  Category as BOMIcon,
   Settings as SettingsIcon,
   ShoppingCart as OrdersIcon,
   ViewKanban as KanbanIcon,
   Schedule as ScheduleIcon,
-  PrecisionManufacturing as ShopFloorIcon,
-  AutoAwesome as OptimizationIcon,
   MoveToInbox as ReceivingIcon,
-  Inventory as PackagingIcon,
   LocalShipping as ShippingIcon,
   TableChart as PlanningIcon,
-  Assignment as ProductionIcon,
-  Map as MapIcon,
-  Route as RouteIcon,
   Speed as CockpitIcon,
   Factory as WorkCenterIcon,
   Timer as TimeTrackingIcon,
-  RequestQuote as OrderHubIcon,
-  Group as UsersIcon,
   People as CustomersIcon,
-  AdminPanelSettings as AdminIcon,
   Shield as PartnerApiIcon,
   HealthAndSafety as SafetyIcon,
   ReportProblem as IncidentIcon,
@@ -59,69 +47,64 @@ import {
   BuildCircle as CAPAIcon,
   SmartToy as AssistantIcon,
   Block as StopWorkIcon,
-  // Supplier Quality Icons
+  // Supplier Quality
   LocalShipping as InboundIcon,
   Rule as IQCIcon,
   Warning as SNCIcon,
   Gavel as SCARIcon,
   Assessment as ScorecardIcon,
   Business as SupplierIcon,
-  // Customer Quality Icons
+  // Customer Quality
   Inbox as ClaimsIcon,
   AssignmentReturn as RMAIcon,
   BugReport as CARIcon,
   CreditCard as CreditsIcon,
-  // Contractor Portal Icons
+  // Contractor Portal
   Badge as VisitorBadgeIcon,
   HowToReg as PreRegIcon,
   Groups as ActiveVisitorsIcon,
   ContactPage as ContractorRegistryIcon,
-  // Training Engine Icons
+  // Training
   School as TrainingIcon2,
   MenuBook as CatalogIcon,
   CardMembership as CertificationIcon,
   GridOn as MatrixIcon,
-  // Production Quality Icons
+  // Quality
   PlaylistAddCheck as InspectionExecIcon,
   ShowChart as SPCIcon,
-  Timeline as TraceIcon,
   FactCheck as QualityDashIcon,
   ReportProblem as NCRIcon,
-  // Maintenance Icons
+  // Maintenance
   Build as MaintenanceIcon,
   Handyman as WorkOrderIcon,
   EventRepeat as PMIcon,
   Warehouse as PartsIcon,
   PrecisionManufacturing as AssetIcon,
-  // Material Tracking Icons
+  // Material Tracking
   Inventory2 as PackagingQueueIcon,
   QrCode2 as LabelIcon,
   Dock as StagingIcon,
   Timeline as CustodyIcon,
-  // Freight & Delivery Icons
-  RequestQuote as FreightQuoteIcon,
+  // Shipping & Logistics
   CompareArrows as FreightCompareIcon,
-  Map as FreightRouteIcon,
   ViewKanban as FreightTrackingIcon,
   ErrorOutline as FreightExceptionIcon,
-  VerifiedUser as FreightPODIcon,
-  // Sales & Pricing Icons
+  // Sales
   RequestQuote as RFQIcon,
-  Calculate as PricingCalcIcon,
   TrendingUp as SalesDashIcon,
-  Handshake as QuoteAcceptIcon,
-  // Order Intake Icons
+  TrendingDown as DemandShapingIcon,
+  // Order Intake
   PhoneInTalk as CSRIntakeIcon,
   Inbox as OnlineInboxIcon,
   Storefront as RetailPOSIcon,
-  // Executive Cockpit & Digital Twin Icons
+  // Executive
   Insights as ExecutiveIcon,
   PlayCircle as SimulationIcon,
   StackedLineChart as ForecastIcon,
   HistoryEdu as DecisionLogIcon,
   Hub as DigitalTwinIcon,
   Speed as CompressionIcon,
-  // E-Commerce Icons
+  // E-Commerce
   Storefront as ShopIcon,
   Search as ShopSearchIcon,
   ShoppingCart as CartIcon,
@@ -129,12 +112,12 @@ import {
   Tune as OnlineSettingsIcon,
   Inventory as AdminCatalogIcon,
   Recycling as RemnantOutletIcon,
+  // Admin
+  Group as UsersIcon,
   Gavel as AuditLogIcon,
   Timer as RecipesIcon,
   Engineering as StaffIcon,
   Tune as PreferencesIcon,
-  TrendingDown as DemandShapingIcon,
-  PhoneAndroid as MobileRepIcon,
   BusinessCenter as AccountIcon,
   HelpOutline as HelpManualIcon,
 } from '@mui/icons-material'
@@ -142,124 +125,91 @@ import {
 import { useDemo } from '../../contexts/DemoContext'
 
 const navSections = [
+  // ─── OVERVIEW ─────────────────────────────────────────
   {
-    title: 'Command Center',
+    title: 'Dashboard',
     items: [
       { path: '/ops-cockpit', label: 'Ops Cockpit', icon: CockpitIcon },
       { path: '/role-dashboard', label: 'My Dashboard', icon: DashboardIcon },
     ],
   },
+
+  // ─── SALES WORKFLOW ───────────────────────────────────
   {
-    title: 'Executive',
+    title: 'Sales & Customers',
     items: [
-      { path: '/executive/cockpit', label: 'Executive Cockpit', icon: ExecutiveIcon },
-      { path: '/executive/simulation', label: 'Simulation', icon: SimulationIcon },
-      { path: '/executive/forecast', label: 'Forecasts', icon: ForecastIcon },
-      { path: '/executive/decisions', label: 'Decision Log', icon: DecisionLogIcon },
-      { path: '/executive/digital-twin', label: 'Digital Twin', icon: DigitalTwinIcon },
-      { path: '/executive/compression-metrics', label: 'Speed Metrics', icon: CompressionIcon },
-    ],
-  },
-  // {
-  //   title: 'Production',
-  //   items: [
-  //     { path: '/production', label: 'Workflow Board', icon: ProductionIcon },
-  //     { path: '/production/shop-floor', label: 'Shop Floor', icon: ShopFloorIcon },
-  //     { path: '/production/shipping', label: 'Prod Shipping', icon: ShippingIcon },
-  //   ],
-  // },
-  {
-    title: 'Service Center',
-    items: [
-      { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
-      { path: '/shopfloor', label: 'Shop Floor Queue', icon: WorkCenterIcon },
-      { path: '/planning', label: 'Planning', icon: PlanningIcon },
-      { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
-      { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
-      { path: '/material-tracking/packaging', label: 'Packaging', icon: PackagingIcon },
-      { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
-      { path: '/time-tracking', label: 'Time Tracking', icon: TimeTrackingIcon },
-    ],
-  },
-  {
-    title: 'Materials',
-    items: [
-      { path: '/heats', label: 'Heats', icon: HeatIcon },
-      { path: '/units', label: 'Units', icon: UnitsIcon },
-      { path: '/inventory', label: 'Inventory', icon: InventoryIcon },
-    ],
-  },
-  // {
-  //   title: 'Operations',
-  //   items: [
-  //     { path: '/work-orders', label: 'Work Orders', icon: WorkOrdersIcon },
-  //     { path: '/bom', label: 'BOM / Recipes', icon: BOMIcon },
-  //     { path: '/orders', label: 'Orders', icon: OrdersIcon },
-  //     { path: '/optimization', label: 'AI Optimization', icon: OptimizationIcon },
-  //   ],
-  // },
-  {
-    title: 'Logistics',
-    items: [
-      { path: '/logistics/shipments', label: 'Shipments', icon: LogisticsIcon },
-      { path: '/logistics/tracking', label: 'Tracking', icon: MapIcon },
-      { path: '/logistics/dispatch', label: 'Dispatch Planning', icon: LogisticsIcon },
-      { path: '/logistics/route-optimization', label: 'Route Optimization', icon: RouteIcon },
-    ],
-  },
-  {
-    title: 'Commercial',
-    items: [
-      { path: '/orderhub', label: 'OrderHub', icon: OrderHubIcon },
-      { path: '/pricing', label: 'Pricing', icon: PricingIcon },
+      { path: '/customers', label: 'Customers', icon: CustomersIcon },
+      { path: '/customers/preferences', label: 'Preferences', icon: PreferencesIcon },
+      { path: '/sales/rfq-inbox', label: 'RFQ Inbox', icon: RFQIcon },
+      { path: '/sales/dashboard', label: 'Sales Dashboard', icon: SalesDashIcon },
       { path: '/commercial/demand-shaping', label: 'Demand Shaping', icon: DemandShapingIcon },
-    ],
-  },
-  {
-    title: 'Customers',
-    items: [
-      { path: '/customers', label: 'Customer Directory', icon: CustomersIcon },
-      { path: '/customers/preferences', label: 'Preference Memory', icon: PreferencesIcon },
     ],
   },
   {
     title: 'Orders',
     items: [
+      { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
       { path: '/orders', label: 'All Orders', icon: OrdersIcon },
       { path: '/orders/intake', label: 'CSR Intake', icon: CSRIntakeIcon, highlight: true },
       { path: '/orders/online-inbox', label: 'Online Inbox', icon: OnlineInboxIcon },
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },
-      { path: '/mobile-rep', label: 'Sales Rep Mobile', icon: MobileRepIcon, highlight: true },
     ],
   },
+
+  // ─── PRODUCTION WORKFLOW ──────────────────────────────
   {
-    title: 'E-Commerce',
+    title: 'Production',
     items: [
-      { path: '/shop', label: 'Online Store', icon: ShopIcon, highlight: true },
-      { path: '/shop/remnants', label: 'Remnant Outlet', icon: RemnantOutletIcon },
-      { path: '/shop/search', label: 'Product Search', icon: ShopSearchIcon },
-      { path: '/shop/cart', label: 'Shopping Cart', icon: CartIcon },
-      { path: '/shop/orders', label: 'My Orders', icon: MyOrdersIcon },
-      { path: '/account/dashboard', label: 'Enterprise Account', icon: AccountIcon, highlight: true },
-      { path: '/admin/catalog', label: 'Catalog Admin', icon: AdminCatalogIcon },
-      { path: '/admin/online-settings', label: 'Online Settings', icon: OnlineSettingsIcon },
+      { path: '/planning', label: 'Planning', icon: PlanningIcon },
+      { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
+      { path: '/shopfloor', label: 'Shop Floor', icon: WorkCenterIcon },
+      { path: '/time-tracking', label: 'Time Tracking', icon: TimeTrackingIcon },
     ],
   },
   {
-    title: 'Sales & Pricing',
+    title: 'Inventory & Materials',
     items: [
-      { path: '/sales/rfq-inbox', label: 'RFQ Inbox', icon: RFQIcon },
-      { path: '/sales/dashboard', label: 'Sales Dashboard', icon: SalesDashIcon },
+      { path: '/inventory', label: 'Inventory', icon: InventoryIcon },
+      { path: '/heats', label: 'Heats', icon: HeatIcon },
+      { path: '/units', label: 'Units', icon: UnitsIcon },
     ],
   },
+
+  // ─── QUALITY & FULFILLMENT ────────────────────────────
   {
-    title: 'Quality & Compliance',
+    title: 'Quality',
     items: [
       { path: '/qc', label: 'QC Inspections', icon: QualityIcon },
-      { path: '/qaqc', label: 'QA/QC', icon: QualityIcon },
+      { path: '/production-quality/dashboard', label: 'Quality Dashboard', icon: QualityDashIcon },
+      { path: '/production-quality/inspections', label: 'Inspections', icon: InspectionExecIcon },
+      { path: '/production-quality/ncr', label: 'NCR Management', icon: NCRIcon },
+      { path: '/production-quality/spc', label: 'SPC Charts', icon: SPCIcon },
       { path: '/provenance', label: 'Provenance', icon: ProvenanceIcon },
     ],
   },
+  {
+    title: 'Material Tracking',
+    items: [
+      { path: '/material-tracking', label: 'Dashboard', icon: QualityDashIcon },
+      { path: '/material-tracking/packaging', label: 'Packaging Queue', icon: PackagingQueueIcon },
+      { path: '/material-tracking/tags', label: 'Tag Management', icon: LabelIcon },
+      { path: '/material-tracking/staging', label: 'Staging & Loading', icon: StagingIcon },
+      { path: '/material-tracking/traceability', label: 'Traceability', icon: CustodyIcon },
+    ],
+  },
+  {
+    title: 'Shipping & Logistics',
+    items: [
+      { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
+      { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
+      { path: '/freight/planner', label: 'Shipment Planner', icon: LogisticsIcon },
+      { path: '/freight/comparison', label: 'Freight Comparison', icon: FreightCompareIcon },
+      { path: '/freight/tracking', label: 'Tracking Board', icon: FreightTrackingIcon },
+      { path: '/freight/exceptions', label: 'Exception Inbox', icon: FreightExceptionIcon },
+    ],
+  },
+
+  // ─── QUALITY MANAGEMENT ───────────────────────────────
   {
     title: 'Supplier Quality',
     items: [
@@ -280,61 +230,31 @@ const navSections = [
       { path: '/customer-quality/credits', label: 'Credits & Approvals', icon: CreditsIcon },
     ],
   },
+
+  // ─── E-COMMERCE ───────────────────────────────────────
   {
-    title: 'Contractor Portal',
+    title: 'E-Commerce',
     items: [
-      { path: '/contractors/active', label: 'Active Visitors', icon: ActiveVisitorsIcon },
-      { path: '/contractors/registry', label: 'Contractor Registry', icon: ContractorRegistryIcon },
-      { path: '/contractors/invitations', label: 'Pre-Registration', icon: PreRegIcon },
-      { path: '/contractors/kiosk', label: 'Check-In Kiosk', icon: VisitorBadgeIcon },
+      { path: '/shop', label: 'Online Store', icon: ShopIcon, highlight: true },
+      { path: '/shop/remnants', label: 'Remnant Outlet', icon: RemnantOutletIcon },
+      { path: '/shop/search', label: 'Product Search', icon: ShopSearchIcon },
+      { path: '/shop/cart', label: 'Shopping Cart', icon: CartIcon },
+      { path: '/shop/orders', label: 'My Orders', icon: MyOrdersIcon },
+      { path: '/account/dashboard', label: 'Enterprise Account', icon: AccountIcon, highlight: true },
+      { path: '/admin/catalog', label: 'Catalog Admin', icon: AdminCatalogIcon },
+      { path: '/admin/online-settings', label: 'Online Settings', icon: OnlineSettingsIcon },
     ],
   },
-  {
-    title: 'Training Engine',
-    items: [
-      { path: '/training/dashboard', label: 'Training Dashboard', icon: TrainingIcon2 },
-      { path: '/training/courses', label: 'Course Catalog', icon: CatalogIcon },
-      { path: '/training/my-certs', label: 'My Certifications', icon: CertificationIcon },
-      { path: '/training/matrix', label: 'Competency Matrix', icon: MatrixIcon },
-    ],
-  },
-  {
-    title: 'Production Quality',
-    items: [
-      { path: '/production-quality/dashboard', label: 'Quality Dashboard', icon: QualityDashIcon },
-      { path: '/production-quality/inspections', label: 'Inspections', icon: InspectionExecIcon },
-      { path: '/production-quality/ncr', label: 'NCR Management', icon: NCRIcon },
-      { path: '/production-quality/spc', label: 'SPC Charts', icon: SPCIcon },
-      { path: '/production-quality/trace', label: 'Traceability', icon: TraceIcon },
-    ],
-  },
+
+  // ─── FACILITY & COMPLIANCE ────────────────────────────
   {
     title: 'Maintenance',
     items: [
-      { path: '/maintenance/dashboard', label: 'Maintenance Dashboard', icon: MaintenanceIcon },
+      { path: '/maintenance/dashboard', label: 'Dashboard', icon: MaintenanceIcon },
       { path: '/maintenance/work-orders', label: 'Work Orders', icon: WorkOrderIcon },
       { path: '/maintenance/assets', label: 'Asset Registry', icon: AssetIcon },
       { path: '/maintenance/pm-schedules', label: 'PM Schedules', icon: PMIcon },
       { path: '/maintenance/parts', label: 'Parts Inventory', icon: PartsIcon },
-    ],
-  },
-  {
-    title: 'Material Tracking',
-    items: [
-      { path: '/material-tracking', label: 'Dashboard', icon: QualityDashIcon },
-      { path: '/material-tracking/packaging', label: 'Packaging Queue', icon: PackagingQueueIcon },
-      { path: '/material-tracking/tags', label: 'Tag Management', icon: LabelIcon },
-      { path: '/material-tracking/staging', label: 'Staging & Loading', icon: StagingIcon },
-      { path: '/material-tracking/traceability', label: 'Traceability', icon: CustodyIcon },
-    ],
-  },
-  {
-    title: 'Freight & Delivery',
-    items: [
-      { path: '/freight/planner', label: 'Shipment Planner', icon: LogisticsIcon },
-      { path: '/freight/comparison', label: 'Freight Comparison', icon: FreightCompareIcon },
-      { path: '/freight/tracking', label: 'Tracking Board', icon: FreightTrackingIcon },
-      { path: '/freight/exceptions', label: 'Exception Inbox', icon: FreightExceptionIcon },
     ],
   },
   {
@@ -352,17 +272,48 @@ const navSections = [
     ],
   },
   {
+    title: 'Training',
+    items: [
+      { path: '/training/dashboard', label: 'Training Dashboard', icon: TrainingIcon2 },
+      { path: '/training/courses', label: 'Course Catalog', icon: CatalogIcon },
+      { path: '/training/my-certs', label: 'My Certifications', icon: CertificationIcon },
+      { path: '/training/matrix', label: 'Competency Matrix', icon: MatrixIcon },
+    ],
+  },
+  {
+    title: 'Contractor Portal',
+    items: [
+      { path: '/contractors/active', label: 'Active Visitors', icon: ActiveVisitorsIcon },
+      { path: '/contractors/registry', label: 'Contractor Registry', icon: ContractorRegistryIcon },
+      { path: '/contractors/invitations', label: 'Pre-Registration', icon: PreRegIcon },
+      { path: '/contractors/kiosk', label: 'Check-In Kiosk', icon: VisitorBadgeIcon },
+    ],
+  },
+
+  // ─── EXECUTIVE & ADMIN ────────────────────────────────
+  {
+    title: 'Executive',
+    items: [
+      { path: '/executive/cockpit', label: 'Executive Cockpit', icon: ExecutiveIcon },
+      { path: '/executive/simulation', label: 'Simulation', icon: SimulationIcon },
+      { path: '/executive/forecast', label: 'Forecasts', icon: ForecastIcon },
+      { path: '/executive/decisions', label: 'Decision Log', icon: DecisionLogIcon },
+      { path: '/executive/digital-twin', label: 'Digital Twin', icon: DigitalTwinIcon },
+      { path: '/executive/compression-metrics', label: 'Speed Metrics', icon: CompressionIcon },
+    ],
+  },
+  {
     title: 'Administration',
     items: [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
       { path: '/admin/staff', label: 'Staff & Operators', icon: StaffIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
-      { path: '/admin/audit-log', label: 'Override Audit Log', icon: AuditLogIcon },
+      { path: '/admin/audit-log', label: 'Audit Log', icon: AuditLogIcon },
       { path: '/admin/processing-recipes', label: 'Processing Recipes', icon: RecipesIcon },
     ],
   },
   {
-    title: 'Help & Manual',
+    title: 'Help',
     items: [
       { path: '/help/manual', label: 'Instruction Manual', icon: HelpManualIcon },
     ],

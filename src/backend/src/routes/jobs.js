@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { onJobStatusChange } from '../services/printAutomationService.js';
 
 const router = Router();
 
@@ -571,15 +572,25 @@ router.patch('/:id/status', async (req, res) => {
       return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
     }
     
+    const prevJob = await prisma.job.findUnique({ where: { id } });
+    const oldStatus = prevJob?.status;
+
     const job = await prisma.job.update({
       where: { id },
       data: { status },
       include: {
-        order: { select: { id: true, orderNumber: true } },
+        order: { include: { buyer: true } },
         workCenter: { select: { id: true, code: true, name: true } },
         assignedTo: { select: { id: true, firstName: true, lastName: true } },
       },
     });
+
+    // Auto-queue print jobs based on status transition
+    if (oldStatus !== status) {
+      onJobStatusChange(job, status, oldStatus).catch((e) =>
+        console.error('[PrintAutomation] status hook error:', e.message)
+      );
+    }
     
     res.json(mapJobForFrontend(job));
   } catch (error) {
@@ -740,17 +751,16 @@ router.post('/:id/complete', async (req, res) => {
       where: { id },
       data: updateData,
       include: {
-        order: {
-          select: { id: true, orderNumber: true, buyerId: true },
-        },
-        workCenter: {
-          select: { id: true, code: true, name: true, locationId: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
+        order: { include: { buyer: true } },
+        workCenter: { select: { id: true, code: true, name: true, locationId: true } },
+        assignedTo: { select: { id: true, firstName: true, lastName: true } },
       },
     });
+
+    // Auto-queue shipping label
+    onJobStatusChange(updatedJob, 'READY_TO_SHIP', job.status).catch((e) =>
+      console.error('[PrintAutomation] complete hook error:', e.message)
+    );
     
     res.json(updatedJob);
   } catch (error) {

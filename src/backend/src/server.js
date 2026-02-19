@@ -56,6 +56,8 @@ import assetRoutes from './routes/assets.js';
 import specRoutes from './routes/specInheritance.js';
 import ttsRoutes from './routes/tts.js';
 import aiAssistantRoutes from './routes/aiAssistant.js';
+import opsCockpitRoutes from './routes/opsCockpit.js';
+import printQueueRoutes from './routes/printQueue.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 import { seedSupabaseData } from './seeds/supabaseSeed.js';
 import prisma from './lib/db.js';
@@ -151,6 +153,12 @@ app.use('/api/assets', assetRoutes);  // /api/assets (CRUD, stats, types, seed-f
 
 // Spec Inheritance - resolve effective specs per order-line or job
 app.use('/api/specs', specRoutes);
+
+// Ops Cockpit - Real-time production command center
+app.use('/api/ops-cockpit', opsCockpitRoutes);
+
+// Print Queue - Automated tag/doc print queue
+app.use('/api/print-queue', printQueueRoutes);
 
 // ── External Partner API Layer ──────────────────────────────────────────────────
 app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)

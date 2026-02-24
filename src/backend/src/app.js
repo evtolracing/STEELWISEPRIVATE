@@ -73,10 +73,18 @@ export { prisma };
 app.use(cors());
 app.use(express.json());
 
-// Serve uploaded files statically
+// Serve uploaded files statically (skip on Vercel's read-only filesystem)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+try {
+  const fs = await import('fs');
+  if (fs.existsSync(uploadsDir)) {
+    app.use('/uploads', express.static(uploadsDir));
+  }
+} catch (e) {
+  // Vercel: uploads directory doesn't exist, skip static serving
+}
 
 // Health check
 app.get('/api/health', (req, res) => {

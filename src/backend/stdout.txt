@@ -1,0 +1,11 @@
+✅ OrderHub seed data initialized: { contacts: 4, rfqs: 3, quotes: 1, orders: 2, jobs: 1 }
+🌱 Seeding Supabase database...
+✅ DeepSeek provider initialized (PRIMARY)
+✅ DeepSeek provider initialized (PRIMARY)
+✅ DeepSeek provider initialized (PRIMARY)
+✅ DeepSeek provider initialized (PRIMARY)
+🚀 SteelWise API running on port 3001
+✅ Database already has 11 organizations, skipping seed
+✅ Supabase seed complete
+Shutdown signal received, closing server gracefully
+Server closed

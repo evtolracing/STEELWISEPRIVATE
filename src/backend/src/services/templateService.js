@@ -3,9 +3,7 @@
  * Manages label templates for drop tag printing
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 // Available placeholders for templates
 export const PLACEHOLDERS = {

@@ -5,9 +5,7 @@
  * Handles multi-division customers, ship-to selection, and tax jurisdiction determination.
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../../lib/db.js';
 
 // ============================================
 // CONSTANTS

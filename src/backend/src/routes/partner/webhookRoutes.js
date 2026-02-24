@@ -6,13 +6,12 @@
  */
 
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../lib/db.js';
 import crypto from 'crypto';
 import { partnerAuth } from '../../middleware/partnerAuth.js';
 import { partnerRateLimit, loadPartnerTier } from '../../middleware/partnerRateLimit.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Apply partner middleware stack
 router.use(partnerAuth());

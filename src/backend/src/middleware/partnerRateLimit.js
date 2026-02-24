@@ -4,6 +4,8 @@
  * Adds standard rate limit headers to all responses.
  */
 
+import prisma from '../lib/db.js';
+
 // ─── Rate Limit Configuration by Tier ──────────────────────────────────────────
 const TIER_LIMITS = {
   STANDARD:  { perMin: 60,   perHour: 1000,  burst: 10  },
@@ -122,9 +124,6 @@ export function loadPartnerTier() {
     if (!req.partner) return next();
 
     try {
-      const { PrismaClient } = await import('@prisma/client');
-      const prisma = new PrismaClient();
-
       const partner = await prisma.partner.findUnique({
         where: { id: req.partner.id },
         select: {

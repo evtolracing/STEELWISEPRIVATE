@@ -6,9 +6,7 @@
 
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 const JWT_SECRET = process.env.PARTNER_JWT_SECRET || process.env.JWT_SECRET || 'partner-api-secret';
 const TOKEN_EXPIRY = '1h';

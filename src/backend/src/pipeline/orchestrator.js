@@ -10,9 +10,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 // ============================================================================
 // PIPELINE STAGES (STATE MACHINE)

@@ -3,10 +3,8 @@
  * Universal scan processing for all drop tag workflow stations
  */
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 /**
  * Process a scan at any workflow station

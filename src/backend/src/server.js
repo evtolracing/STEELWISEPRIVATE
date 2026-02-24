@@ -1,177 +1,15 @@
-import express from 'express';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
+/**
+ * Local development server entry point
+ * Imports the Express app from app.js and starts listening
+ * For Vercel serverless deployment, see /api/index.js instead
+ */
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
-
-// Routes
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import gradeRoutes from './routes/grades.js';
-import productRoutes from './routes/products.js';
-import heatRoutes from './routes/heats.js';
-import coilRoutes from './routes/coils.js';
-import inventoryRoutes from './routes/inventory.js';
-import orderRoutes from './routes/orders.js';
-import workOrderRoutes from './routes/workOrders.js';
-import shipmentRoutes from './routes/shipments.js';
-import dashboardRoutes from './routes/dashboard.js';
-import customerRoutes from './routes/customers.js';
-import rfqRoutes from './routes/rfqs.js';
-import quoteRoutes from './routes/quotes.js';
-import workCenterRoutes from './routes/workCenters.js';
-import jobRoutes from './routes/jobs.js';
-import documentRoutes from './routes/documents.js';
-import posRoutes from './routes/pos.js';
-import aiRoutes from './routes/ai.js';
-import inventoryV1Routes from './routes/inventoryV1.js';
-import bomV1Routes from './routes/bomV1.js';
-import optimizationV1Routes from './routes/optimizationV1.js';
-import analyticsV1Routes from './routes/analyticsV1.js';
-import shippingV1Routes from './routes/shippingV1.js';
-import eventsV1Routes from './routes/eventsV1.js';
-import dispatchRoutes from './routes/dispatchRoutes.js';
-import operationsRoutes from './routes/operationsRoutes.js';
-import orderHubRoutes from './routes/orderHubRoutes.js';
-import aiOrderHubRoutes from './routes/aiOrderHubRoutes.js';
-import ingestRoutes from './routes/ingestRoutes.js';
-import pipelineRoutes from './routes/pipelineRoutes.js';
-import stopWorkRoutes from './routes/stopWork.js';
-import intakeOrderRoutes from './routes/intakeOrders.js';
-import salesRoutes from './routes/salesRoutes.js';
-import executiveRoutes from './routes/executive.js';
-import dropTagRoutes from './routes/dropTagRoutes.js';
-import staffRoutes from './routes/staff.js';
-import qcRoutes from './routes/qcRoutes.js';
-import materialTrackingRoutes from './routes/materialTrackingRoutes.js';
-import partnerAuthRoutes from './routes/partner/partnerAuthRoutes.js';
-import partnerCustomerRoutes from './routes/partner/customerRoutes.js';
-import partnerSupplierRoutes from './routes/partner/supplierRoutes.js';
-import partnerCarrierRoutes from './routes/partner/carrierRoutes.js';
-import partnerWebhookRoutes from './routes/partner/webhookRoutes.js';
-import partnerAdminRoutes from './routes/partner/adminRoutes.js';
-import maintenanceOrderRoutes from './routes/maintenanceOrders.js';
-import assetRoutes from './routes/assets.js';
-import specRoutes from './routes/specInheritance.js';
-import ttsRoutes from './routes/tts.js';
-import aiAssistantRoutes from './routes/aiAssistant.js';
-import opsCockpitRoutes from './routes/opsCockpit.js';
-import printQueueRoutes from './routes/printQueue.js';
-import { initOrderHubData } from './routes/initOrderHubData.js';
-import { seedSupabaseData } from './seeds/supabaseSeed.js';
-import prisma from './lib/db.js';
-
 dotenv.config();
 
-const app = express();
+import app, { prisma } from './app.js';
+import { seedSupabaseData } from './seeds/supabaseSeed.js';
+
 export { prisma };
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Serve uploaded files statically
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/grades', gradeRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/heats', heatRoutes);
-app.use('/api/coils', coilRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/orders/intake', intakeOrderRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/work-orders', workOrderRoutes);
-app.use('/api/shipments', shipmentRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/customers', customerRoutes);
-app.use('/api/rfqs', rfqRoutes);
-app.use('/api/quotes', quoteRoutes);
-app.use('/api/work-centers', workCenterRoutes);
-app.use('/api/jobs', jobRoutes);
-app.use('/api/documents', documentRoutes);
-app.use('/api/pos', posRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/ai/tts', ttsRoutes);
-app.use('/api/ai/assistant', aiAssistantRoutes);
-app.use('/api/v1/inventory', inventoryV1Routes);
-app.use('/api/v1/bom', bomV1Routes);
-app.use('/api/v1/ai/work-order-optimize', optimizationV1Routes);
-app.use('/api/v1/analytics', analyticsV1Routes);
-app.use('/api/v1/shipping', shippingV1Routes);
-app.use('/api/v1/shipments', shippingV1Routes);
-app.use('/api/v1/events', eventsV1Routes);
-app.use('/api/v1/jobs', jobRoutes);
-app.use('/api/v1/work-centers', workCenterRoutes);
-app.use('/api/v1/dispatch', dispatchRoutes);
-app.use('/api/v1/operations', operationsRoutes);
-
-// OrderHub - Unified Order Pipeline
-app.use('/api/v1', orderHubRoutes);        // /api/v1/contacts, /api/v1/rfq, /api/v1/quotes, /api/v1/orders
-app.use('/api/v1/ai', aiOrderHubRoutes);   // /api/v1/ai/parse-email-rfq, /api/v1/ai/quote-assistant
-app.use('/api/v1/ingest', ingestRoutes);   // /api/v1/ingest/email-rfq
-
-// Pipeline Orchestrator - Complete Order-to-Invoice Workflow
-app.use('/api/v1/pipeline', pipelineRoutes);  // /api/v1/pipeline (create, advance, auto-advance, simulate)
-
-// Safety Module - Stop-Work Authority System
-app.use('/api/safety/stop-work', stopWorkRoutes);  // /api/safety/stop-work (initiate, clear, validate)
-
-// Sales & Pricing Intelligence Module
-app.use('/api/sales', salesRoutes);  // /api/sales/rfqs, /api/sales/quotes, /api/sales/pricing, /api/sales/dashboard
-
-// Executive Ops Cockpit & Digital Twin Module
-app.use('/api/executive', executiveRoutes);  // /api/executive/cockpit, /api/executive/simulation, /api/executive/forecast, /api/executive/decisions
-
-// Drop Tag Engine - Production-to-Delivery Tracking
-app.use('/api/drop-tags', dropTagRoutes);  // /api/drop-tags, /api/drop-tags/listings, /api/drop-tags/scans, /api/drop-tags/templates
-
-// Staff & Operator Management
-app.use('/api/staff', staffRoutes);  // /api/staff/operators, /api/staff/shifts, /api/staff/stats, /api/staff/available
-
-// QC Inspection Module - Job-level quality control
-app.use('/api/qc', qcRoutes);  // /api/qc/queue, /api/qc/inspections, /api/qc/stats, /api/qc/inspectors
-
-// Material Tracking - Unified packaging, tags, staging, custody/traceability
-app.use('/api/material-tracking', materialTrackingRoutes);  // /api/material-tracking/stats, /api/material-tracking/custody-log, /api/material-tracking/staging
-
-// Maintenance Work Orders - CMMS
-app.use('/api/maintenance-orders', maintenanceOrderRoutes);  // /api/maintenance-orders (CRUD, start, complete, assets/list, stats)
-
-// Asset Registry - Equipment management
-app.use('/api/assets', assetRoutes);  // /api/assets (CRUD, stats, types, seed-from-work-centers)
-
-// Spec Inheritance - resolve effective specs per order-line or job
-app.use('/api/specs', specRoutes);
-
-// Ops Cockpit - Real-time production command center
-app.use('/api/ops-cockpit', opsCockpitRoutes);
-
-// Print Queue - Automated tag/doc print queue
-app.use('/api/print-queue', printQueueRoutes);
-
-// ── External Partner API Layer ──────────────────────────────────────────────────
-app.use('/api/v1/partner/auth', partnerAuthRoutes);         // Token exchange (OAuth2 client_credentials)
-app.use('/api/v1/partner/customer', partnerCustomerRoutes);  // Customer-facing: RFQs, Quotes, Orders, Shipments, Docs
-app.use('/api/v1/partner/supplier', partnerSupplierRoutes);  // Supplier-facing: POs, ASNs, Documents, SCARs
-app.use('/api/v1/partner/carrier', partnerCarrierRoutes);    // Carrier-facing: Shipments, Status, POD, Exceptions
-app.use('/api/v1/partner/webhooks', partnerWebhookRoutes);   // Self-service webhook management
-app.use('/api/v1/admin/partners', partnerAdminRoutes);       // Internal admin: Partner registry, Keys, Usage
-
-// Initialize OrderHub seed data (in-memory store)
-console.log('🌱 Initializing in-memory OrderHub data...');
-initOrderHubData();
-console.log('✅ In-memory data initialized');
 
 // Seed Supabase database (async) - only if DATABASE_URL is not localhost
 if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('localhost')) {
@@ -182,26 +20,15 @@ if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('localhost'))
   console.log('ℹ️  Skipping Supabase seed (using in-memory data or local DB)');
 }
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
 const PORT = process.env.PORT || 3001;
 
 const server = app.listen(PORT, () => {
   console.log(`🚀 SteelWise API running on port ${PORT}`);
-  console.log(`📡 Server object created:`, !!server);
-  console.log(`🔌 Server listening:`, server.listening);
 });
-
-console.log('🔧 After app.listen() call...');
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('⚠️ Unhandled Rejection at:', promise, 'reason:', reason);
-  // Don't exit - keep server running
 });
 
 // Handle uncaught exceptions
@@ -211,7 +38,6 @@ process.on('uncaughtException', (error) => {
     console.error(`Port ${PORT} is in use, exiting so --watch can retry`);
     process.exit(1);
   }
-  // Don't exit for other errors - keep server running
 });
 
 // Graceful shutdown
@@ -221,10 +47,7 @@ const shutdown = () => {
     console.log('Server closed');
     process.exit(0);
   });
-  // Force exit after 3s if server doesn't close
   setTimeout(() => process.exit(0), 3000);
 };
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
-
-console.log('✅ All listeners attached, entering event loop...');

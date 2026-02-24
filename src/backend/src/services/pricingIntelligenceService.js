@@ -6,9 +6,7 @@
  * capacity-aware promise dates, and substitution suggestions.
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 // Default margin targets by customer tier
 const TIER_MARGINS = {

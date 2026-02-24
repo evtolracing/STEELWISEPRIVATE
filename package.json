@@ -7,9 +7,9 @@
   "scripts": {
     "dev": "npm --prefix src/backend run dev",
     "dev:frontend": "npm --prefix src/frontend run dev",
-    "vercel-install": "npm install --prefix src/backend --legacy-peer-deps && npm install --prefix src/frontend --legacy-peer-deps",
-    "vercel-build": "cd src/backend && npx prisma generate && cd ../frontend && npm run build",
-    "build": "cd src/backend && npx prisma generate && cd ../frontend && npm run build",
+    "vercel-install": "cd src/backend && npm install --legacy-peer-deps && cd ../frontend && npm install --legacy-peer-deps",
+    "vercel-build": "node scripts/build.cjs",
+    "build": "node scripts/build.cjs",
     "start": "npm --prefix src/backend run start",
     "prisma:generate": "npm --prefix src/backend run db:generate",
     "prisma:migrate": "npm --prefix src/backend run db:migrate"

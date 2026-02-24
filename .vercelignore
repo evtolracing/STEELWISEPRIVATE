@@ -1,0 +1,16 @@
+# Skip non-deployment files
+archive-design-files/
+DESIGN FILES/
+docs/
+gpt word docs/
+TEMPLATES/
+templates/
+APP STUFF/
+api keys/
+*.md
+!README.md
+docker-compose.yml
+test-*.html
+test-*.ps1
+.git/
+supabase/.temp/

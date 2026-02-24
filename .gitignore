@@ -42,3 +42,5 @@ supabase/.temp/
 
 # Templates (working directory)
 templates/
+.vercel
+.env*.local

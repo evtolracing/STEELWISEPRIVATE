@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "cd src/backend && npm install --legacy-peer-deps && cd ../frontend && npm install --legacy-peer-deps",
+  "installCommand": "cd src/backend && npm install --legacy-peer-deps && cd ../frontend && npm install --include=dev --legacy-peer-deps",
   "buildCommand": "node scripts/build.cjs",
   "outputDirectory": "src/frontend/dist",
   "framework": null,

@@ -37,7 +37,7 @@ import {
 } from '../../api/staff'
 import { getWorkCenters } from '../../api/workCenters'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 async function fetchWorkCenterTypes() {
   const res = await fetch(`${API_BASE}/v1/dispatch/work-center-types?activeOnly=true`)

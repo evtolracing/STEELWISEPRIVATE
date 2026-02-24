@@ -47,7 +47,7 @@ import {
   CloudUpload as UploadIcon,
 } from '@mui/icons-material'
 
-const API_BASE = 'http://localhost:3001/api/customers'
+const API_BASE = '/api/customers'
 
 const ORG_TYPES = ['MILL', 'SERVICE_CENTER', 'DISTRIBUTOR', 'BROKER', 'FABRICATOR', 'OEM']
 

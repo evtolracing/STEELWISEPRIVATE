@@ -2,7 +2,7 @@
  * Customer Orders API — "My Orders" for customer portal.
  * List, detail, documents for the logged-in customer's orders.
  */
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = true
 
 const MOCK_MY_ORDERS = [

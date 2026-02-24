@@ -3,7 +3,7 @@
  * Check stock levels, reserve, and allocate for orders.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 const MOCK_INVENTORY = [
   { id: 'inv-001', productId: 'prod-001', sku: 'HR-A36-PL', description: 'HR A36 Plate 0.50" × 48" × 120"', locationId: 'loc-1', locationName: 'Jackson Branch', division: 'METALS', thickness: 0.5, width: 48, length: 120, weight: 816.0, qty: 12, status: 'AVAILABLE', isRemnant: false, lotNumber: 'L-2024-0891' },

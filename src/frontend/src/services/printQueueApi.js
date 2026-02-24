@@ -3,7 +3,7 @@
  * Frontend client for the automated print queue
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 /**
  * Fetch pending print jobs from the queue

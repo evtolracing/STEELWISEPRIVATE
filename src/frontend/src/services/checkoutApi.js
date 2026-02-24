@@ -2,7 +2,7 @@
  * Checkout API — submit online orders or request quotes.
  * Creates ONLINE-sourced orders that appear in /orders/online-inbox for CSR triage.
  */
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = true
 
 let _seq = 5000

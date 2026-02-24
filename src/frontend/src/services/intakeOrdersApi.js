@@ -3,7 +3,7 @@
  * Create, update, submit orders. Convert quotes → orders → work orders.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = false
 
 let _mockOrders = []

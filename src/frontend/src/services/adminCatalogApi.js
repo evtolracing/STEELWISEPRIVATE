@@ -1,7 +1,7 @@
 /**
  * Admin Catalog API — manage product visibility, divisions, metadata.
  */
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = true
 
 const MOCK_CATALOG_ITEMS = [

@@ -2,7 +2,7 @@
  * E-Commerce Catalog API
  * Product search, detail, availability for customer-facing portal.
  */
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = true
 
 const MOCK_PRODUCTS = [

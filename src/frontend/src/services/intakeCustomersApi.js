@@ -3,7 +3,7 @@
  * Search, lookup, and create walk-in customers for order entry.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 // ── Mock customer data for local dev ──
 const MOCK_CUSTOMERS = [

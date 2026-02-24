@@ -21,7 +21,7 @@ import {
 import { searchProducts } from '../../services/intakeProductsApi'
 import { searchInventory } from '../../services/intakeInventoryApi'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 const FORM_OPTIONS = [
   { value: '', label: 'All Forms' },

@@ -31,8 +31,8 @@ import {
 import { speak, stopSpeaking, isSpeaking, isVoiceEnabled, setVoiceEnabled, createSpeechQueue } from '../../services/voiceService';
 import VoiceSettingsDialog from './VoiceSettingsDialog';
 
-const ASSISTANT_API = 'http://localhost:3001/api/ai/assistant';
-const STREAM_API = 'http://localhost:3001/api/ai/assistant/stream';
+const ASSISTANT_API = '/api/ai/assistant';
+const STREAM_API = '/api/ai/assistant/stream';
 
 // Sentence boundary regex — splits on . ! ? followed by space or end
 const SENTENCE_RE = /(?<=[.!?])\s+/;

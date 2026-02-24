@@ -3,7 +3,7 @@
  * Search product catalog, get product details, division-aware.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 const MOCK_PRODUCTS = [
   { id: 'prod-001', sku: 'HR-A36-PL', name: 'Hot Rolled A36 Plate', form: 'PLATE', grade: 'A36', spec: 'ASTM A36', division: 'METALS', category: 'Carbon Steel', thicknessRange: '0.25" – 4.0"', widthRange: '48" – 96"', basePrice: 0.42, priceUnit: 'LB', inStock: true },

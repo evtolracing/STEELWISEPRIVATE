@@ -1,7 +1,7 @@
 {
   "version": 2,
   "installCommand": "cd src/backend && npm install --legacy-peer-deps && cd ../frontend && npm install --legacy-peer-deps",
-  "buildCommand": "cd src/backend && npx prisma generate && cd ../frontend && npm run build",
+  "buildCommand": "node scripts/build.cjs",
   "outputDirectory": "src/frontend/dist",
   "framework": null,
   "functions": {

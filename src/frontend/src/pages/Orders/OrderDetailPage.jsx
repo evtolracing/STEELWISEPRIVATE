@@ -8,7 +8,7 @@ import {
   Box, Paper, Typography, Button, Grid, Divider, Chip, IconButton, Tooltip,
   CircularProgress, Alert, Snackbar, Breadcrumbs, Link as MuiLink,
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, Tabs, Tab,
-  Stepper, Step, StepLabel, Stack,
+  Stepper, Step, StepLabel,
 } from '@mui/material'
 import {
   ArrowBack as BackIcon, Edit as EditIcon, Save as SaveIcon,
@@ -28,18 +28,6 @@ import ProcessingMenuBuilder from '../../components/orders/ProcessingMenuBuilder
 import {
   getIntakeOrder, updateIntakeOrder, submitOrder, createWorkOrdersFromOrder,
 } from '../../services/intakeOrdersApi'
-import {
-  getOrderFulfillmentDetail,
-  createSplitShipment,
-  ORDER_FULFILLMENT_STATUS,
-  orderShippedPct,
-  calcRemaining,
-} from '../../services/splitShipmentApi'
-import PartialFulfillmentBanner from '../../components/shipping/PartialFulfillmentBanner'
-import OrderStatusTimeline from '../../components/shipping/OrderStatusTimeline'
-import ShipmentTracker from '../../components/shipping/ShipmentTracker'
-import SplitShipmentDialog from '../../components/shipping/SplitShipmentDialog'
-import { CallSplit as SplitIcon } from '@mui/icons-material'
 
 import { getOverridesForOrder } from '../../services/overrideApi'
 import OverrideIndicator from '../../components/orders/OverrideIndicator'
@@ -67,11 +55,6 @@ export default function OrderDetailPage() {
   const [saving, setSaving] = useState(false)
   const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' })
 
-  // ── Fulfillment state ──
-  const [fulfillment, setFulfillment] = useState(null)
-  const [splitDialogOpen, setSplitDialogOpen] = useState(false)
-  const [creatingSplit, setCreatingSplit] = useState(false)
-
   // ── Dialogs ──
   const [materialPickerOpen, setMaterialPickerOpen] = useState(false)
   const [materialPickerIdx, setMaterialPickerIdx] = useState(null)
@@ -88,7 +71,8 @@ export default function OrderDetailPage() {
     setLoading(true)
     try {
       const res = await getIntakeOrder(id)
-      const data = res.data
+      const data = res?.data || res
+      if (!data) throw new Error('Order not found')
       setOrder(data)
       setLines(data.lines || [])
       setNotes(data.notes || '')
@@ -99,14 +83,6 @@ export default function OrderDetailPage() {
   }, [id])
 
   useEffect(() => { loadOrder() }, [loadOrder])
-
-  // Load fulfillment data
-  useEffect(() => {
-    if (!id) return
-    getOrderFulfillmentDetail(`ORD-2026-0200`) // demo: load first mock order
-      .then(({ data }) => setFulfillment(data))
-      .catch(() => {}) // non-critical
-  }, [id])
 
   // Load overrides for this order
   useEffect(() => {
@@ -163,11 +139,36 @@ export default function OrderDetailPage() {
     setLines(prev => {
       const next = [...prev]
       if (materialPickerIdx !== null && next[materialPickerIdx]) {
-        next[materialPickerIdx] = {
-          ...next[materialPickerIdx],
-          productId: product.id, description: product.name || product.description,
-          unitPrice: product.basePrice || product.price || 0, uom: product.uom || 'EA',
-          extPrice: +((next[materialPickerIdx].qty || 1) * (product.basePrice || product.price || 0)).toFixed(2),
+        if (product.type === 'coil') {
+          // Selected from Live Inventory tab
+          const qty = next[materialPickerIdx].qty || 1
+          next[materialPickerIdx] = {
+            ...next[materialPickerIdx],
+            productId: product.id,
+            description: product.description,
+            unitPrice: product.unitPrice || 0,
+            uom: product.uom || 'LB',
+            weight: product.weight || 0,
+            dimensions: product.dimensions || '',
+            extPrice: +(qty * (product.unitPrice || 0)).toFixed(2),
+            coilNumber: product.coilNumber,
+            grade: product.grade,
+            gradeId: product.gradeId,
+            heatNumber: product.heatNumber,
+            form: product.form,
+            location: product.location,
+            finish: product.finish,
+          }
+        } else {
+          // Legacy product/inventory selection
+          next[materialPickerIdx] = {
+            ...next[materialPickerIdx],
+            productId: product.id,
+            description: product.name || product.description,
+            unitPrice: product.basePrice || product.price || 0,
+            uom: product.uom || 'EA',
+            extPrice: +((next[materialPickerIdx].qty || 1) * (product.basePrice || product.price || 0)).toFixed(2),
+          }
         }
       }
       return next
@@ -202,7 +203,7 @@ export default function OrderDetailPage() {
       {/* Breadcrumb */}
       <Breadcrumbs sx={{ mb: 2 }}>
         <MuiLink underline="hover" color="inherit" href="/" onClick={e => { e.preventDefault(); navigate('/') }}>Home</MuiLink>
-        <MuiLink underline="hover" color="inherit" href="/orders/online-inbox" onClick={e => { e.preventDefault(); navigate('/orders/online-inbox') }}>Orders</MuiLink>
+        <MuiLink underline="hover" color="inherit" href="/orders" onClick={e => { e.preventDefault(); navigate('/orders') }}>Orders</MuiLink>
         <Typography color="text.primary">{order.orderNumber}</Typography>
       </Breadcrumbs>
 
@@ -225,7 +226,7 @@ export default function OrderDetailPage() {
             <Button size="small" startIcon={<SubmitIcon />} variant="contained" onClick={handleSubmit} disabled={saving}>Submit</Button>
           </>
         )}
-        {(order.status === 'SUBMITTED' || order.status === 'CONFIRMED') && (
+        {['SUBMITTED', 'PENDING', 'CONFIRMED'].includes(order.status) && (
           <Button size="small" startIcon={<WOIcon />} variant="contained" color="secondary" onClick={handleCreateWOs} disabled={saving}>
             Create Work Orders
           </Button>
@@ -293,28 +294,14 @@ export default function OrderDetailPage() {
               </Box>
             )}
 
-            {/* Tab: History / Fulfillment Timeline */}
+            {/* Tab: History */}
             {tab === 2 && (
               <Box sx={{ p: 2 }}>
-                {fulfillment ? (
-                  <Stack spacing={3}>
-                    <OrderStatusTimeline
-                      events={fulfillment.events || []}
-                      shippedPct={fulfillment.lines ? orderShippedPct(fulfillment.lines) : 0}
-                      fulfillmentStatus={fulfillment.fulfillmentStatus}
-                    />
-                    <ShipmentTracker
-                      splits={fulfillment.splitShipments || []}
-                      title="Split Shipments"
-                    />
-                  </Stack>
-                ) : (
-                  <Alert severity="info" variant="outlined">No fulfillment data available yet.</Alert>
-                )}
+                <Alert severity="info" variant="outlined" sx={{ mb: 2 }}>Order history and status timeline.</Alert>
 
                 {/* CSR Override Audit Trail */}
                 {overrides.length > 0 && (
-                  <Box sx={{ mt: 3 }}>
+                  <Box sx={{ mt: 2 }}>
                     <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       ⚠️ CSR Overrides ({overrides.length})
                     </Typography>
@@ -335,32 +322,14 @@ export default function OrderDetailPage() {
             contractName={order.contractName}
           />
 
-          {/* Fulfillment Status */}
-          {fulfillment && (
-            <Box sx={{ mt: 3 }}>
-              <PartialFulfillmentBanner
-                order={fulfillment}
-                shippedPct={fulfillment.lines ? orderShippedPct(fulfillment.lines) : 0}
-                remaining={fulfillment.lines ? calcRemaining(fulfillment.lines) : {}}
-                splitCount={fulfillment.splitShipments?.length || 0}
-                showLines
-              />
-            </Box>
-          )}
-
           <Paper variant="outlined" sx={{ p: 2, mt: 3, borderRadius: 2 }}>
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>Actions</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {order.status === 'DRAFT' && (
                 <Button fullWidth size="small" variant="contained" startIcon={<SubmitIcon />} onClick={handleSubmit} disabled={saving}>Submit Order</Button>
               )}
-              {(order.status === 'SUBMITTED' || order.status === 'CONFIRMED') && (
+              {['SUBMITTED', 'PENDING', 'CONFIRMED'].includes(order.status) && (
                 <Button fullWidth size="small" variant="contained" color="secondary" startIcon={<WOIcon />} onClick={handleCreateWOs} disabled={saving}>Create Work Orders</Button>
-              )}
-              {fulfillment && fulfillment.fulfillmentStatus !== ORDER_FULFILLMENT_STATUS.FULFILLED && (
-                <Button fullWidth size="small" variant="contained" color="secondary" startIcon={<SplitIcon />} onClick={() => setSplitDialogOpen(true)}>
-                  Split for Shipment
-                </Button>
               )}
               <Button fullWidth size="small" variant="outlined" startIcon={<PrintIcon />} disabled>Print</Button>
               <Button fullWidth size="small" variant="outlined" startIcon={<DuplicateIcon />} disabled>Duplicate</Button>
@@ -370,27 +339,6 @@ export default function OrderDetailPage() {
       </Grid>
 
       {/* ── Dialogs ── */}
-      <SplitShipmentDialog
-        open={splitDialogOpen}
-        onClose={() => setSplitDialogOpen(false)}
-        order={fulfillment}
-        onConfirm={async (splitLines, meta) => {
-          setCreatingSplit(true)
-          try {
-            await createSplitShipment(fulfillment.id, splitLines, meta)
-            setSplitDialogOpen(false)
-            setSnack({ open: true, msg: 'Split shipment created!', severity: 'success' })
-            // Refresh fulfillment
-            const { data } = await getOrderFulfillmentDetail(fulfillment.id)
-            setFulfillment(data)
-          } catch (err) {
-            setSnack({ open: true, msg: err.message, severity: 'error' })
-          } finally {
-            setCreatingSplit(false)
-          }
-        }}
-        creating={creatingSplit}
-      />
       <MaterialPicker open={materialPickerOpen} onClose={() => setMaterialPickerOpen(false)} onSelect={handleMaterialSelected} division={order.division} />
       <ProcessingMenuBuilder open={processingOpen} onClose={() => setProcessingOpen(false)} onSave={handleSaveProcessing} division={order.division} existingProcesses={processingIdx !== null ? (lines[processingIdx]?.processes || []) : []} />
 
@@ -402,7 +350,7 @@ export default function OrderDetailPage() {
             <Box>
               <Alert severity="success" sx={{ mb: 2 }}>Created {woResult.workOrders?.length || 0} work order(s)</Alert>
               {woResult.workOrders?.map((wo, i) => (
-                <Chip key={i} label={wo.woNumber || `WO-${i + 1}`} sx={{ mr: 1, mb: 1 }} color="primary" variant="outlined" />
+                <Chip key={i} label={wo.jobNumber || `JOB-${i + 1}`} sx={{ mr: 1, mb: 1 }} color="primary" variant="outlined" />
               ))}
             </Box>
           )}

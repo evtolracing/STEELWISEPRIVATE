@@ -21,7 +21,7 @@
  * Mock-first: everything runs locally when window.__USE_MOCK_RULES__ ≠ false.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = window.__USE_MOCK_RULES__ !== false
 
 // ─── ENUMS ───────────────────────────────────────────────────────────────────
@@ -209,9 +209,7 @@ export function validateOverride(override) {
   if (!override.reasonCode) {
     errors.push('A reason code is required.')
   }
-  if (!override.notes || override.notes.trim().length < 10) {
-    errors.push('Notes must be at least 10 characters — provide meaningful context.')
-  }
+  // Notes are optional — no minimum length required
   if (!override.orderId) {
     errors.push('Override must be associated with an order.')
   }

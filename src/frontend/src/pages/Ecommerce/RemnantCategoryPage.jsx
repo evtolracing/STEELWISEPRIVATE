@@ -118,7 +118,7 @@ export default function RemnantCategoryPage() {
         <Container maxWidth="md">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
             <RemnantIcon fontSize="large" />
-            <Typography variant="h4" fontWeight={700}>Remnant Outlet</Typography>
+            <Typography variant="h4" fontWeight={700}>Steel Outlet</Typography>
             <Chip label="SAVE UP TO 65%" size="small" sx={{ bgcolor: 'rgba(255,255,255,.2)', color: '#fff', fontWeight: 700 }} />
           </Box>
           <Typography variant="body1" sx={{ opacity: 0.85, mb: 2.5, maxWidth: 600 }}>
@@ -149,7 +149,7 @@ export default function RemnantCategoryPage() {
         <Breadcrumbs sx={{ mb: 2 }}>
           <MuiLink component={Link} to="/" underline="hover" color="inherit">Home</MuiLink>
           <MuiLink component={Link} to="/shop" underline="hover" color="inherit">Shop</MuiLink>
-          <Typography color="text.primary" fontWeight={600}>Remnant Outlet</Typography>
+          <Typography color="text.primary" fontWeight={600}>Steel Outlet</Typography>
         </Breadcrumbs>
 
         {/* Stats Banner */}

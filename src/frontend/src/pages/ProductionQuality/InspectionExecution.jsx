@@ -582,7 +582,7 @@ const InspectionExecution = () => {
                     </TableCell>
                     <TableCell>{insp.workCenter}</TableCell>
                     <TableCell>
-                      <Typography variant="body2">
+                      <Typography variant="body2" component="div">
                         {insp.characteristics} total
                         {insp.criticalCount > 0 && (
                           <Chip label={`${insp.criticalCount} critical`} size="small" color="error" sx={{ ml: 1 }} />

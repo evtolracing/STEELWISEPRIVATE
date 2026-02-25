@@ -42,6 +42,7 @@ import { getRfq } from '../../services/rfqApi';
 import { createQuote, acceptQuote } from '../../services/quoteApi';
 import { createOrder } from '../../services/orderApi';
 import { quoteAssistant } from '../../services/aiOrderHubApi';
+import SpecOverridePanel from '../../components/shared/SpecOverridePanel';
 
 const statusColors = {
   NEW: 'info',
@@ -62,6 +63,8 @@ export default function RfqDetailPage() {
   // Quote creation state
   const [showQuoteForm, setShowQuoteForm] = useState(false);
   const [quotePrices, setQuotePrices] = useState({});
+  const [lineSpecs, setLineSpecs] = useState({});  // { lineId: { tolerancePreset, thkTolerancePlus, ... } }
+  const [expandedSpecLine, setExpandedSpecLine] = useState(null);
 
   // AI Assistant state
   const [aiPanelOpen, setAiPanelOpen] = useState(true);
@@ -123,6 +126,8 @@ export default function RfqDetailPage() {
         description: `${line.grade || ''} ${line.form || ''} ${line.thickness || ''}x${line.width || ''}x${line.length || ''}`,
         quantity: quotePrices[line.id]?.quantity || line.quantity,
         unitPrice: parseFloat(quotePrices[line.id]?.unitPrice) || 0,
+        // Pass spec overrides
+        ...(lineSpecs[line.id] || {}),
       }));
 
       const quote = await createQuote({
@@ -160,6 +165,8 @@ export default function RfqDetailPage() {
           width: line.width,
           length: line.length,
           quantity: line.quantity,
+          // Pass spec overrides
+          ...(lineSpecs[line.id] || {}),
         })),
       });
       navigate(`/orderhub/orders/${order.id}`);
@@ -374,7 +381,8 @@ export default function RfqDetailPage() {
                   </TableHead>
                   <TableBody>
                     {rfq.lines?.map((line, idx) => (
-                      <TableRow key={line.id}>
+                      <React.Fragment key={line.id}>
+                      <TableRow>
                         <TableCell>{idx + 1}</TableCell>
                         <TableCell>
                           <Chip label={line.commodity} size="small" variant="outlined" />
@@ -419,7 +427,28 @@ export default function RfqDetailPage() {
                             />
                           </TableCell>
                         )}
+                        {showQuoteForm && (
+                          <TableCell>
+                            <Button size="small" variant="outlined" color={lineSpecs[line.id] ? 'primary' : 'inherit'}
+                              onClick={() => setExpandedSpecLine(expandedSpecLine === line.id ? null : line.id)}>
+                              {lineSpecs[line.id] ? 'Edit Specs' : 'Add Specs'}
+                            </Button>
+                          </TableCell>
+                        )}
                       </TableRow>
+                      {showQuoteForm && expandedSpecLine === line.id && (
+                        <TableRow>
+                          <TableCell colSpan={9} sx={{ py: 1.5, px: 2 }}>
+                            <SpecOverridePanel
+                              specs={lineSpecs[line.id] || {}}
+                              onChange={(newSpecs) => setLineSpecs({ ...lineSpecs, [line.id]: newSpecs })}
+                              inheritedFrom="customer"
+                              compact={false}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      </React.Fragment>
                     ))}
                   </TableBody>
                 </Table>

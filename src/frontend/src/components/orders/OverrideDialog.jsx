@@ -172,17 +172,15 @@ export default function OverrideDialog({
 
         {/* Notes */}
         <TextField
-          label="Notes (required — minimum 10 characters)"
+          label="Notes (optional)"
           fullWidth
           multiline
-          minRows={3}
+          minRows={2}
           maxRows={6}
           value={notes}
           onChange={e => setNotes(e.target.value)}
-          required
-          placeholder="Provide specific context: customer name, urgency, approvals obtained, dollar impact…"
-          helperText={`${notes.length} characters — provide enough context for manager review`}
-          error={!!error && notes.trim().length < 10}
+          placeholder="Add context if needed: customer name, urgency, approvals…"
+          helperText={notes.length > 0 ? `${notes.length} characters` : 'Optional — add context for audit trail'}
           sx={{ mb: 1 }}
         />
 
@@ -209,12 +207,9 @@ export default function OverrideDialog({
         <Button
           onClick={handleConfirm}
           variant="contained"
-          disabled={saving || !reasonCode || notes.trim().length < 10}
+          disabled={saving || !reasonCode}
           startIcon={saving ? <CircularProgress size={16} color="inherit" /> : TYPE_ICONS[overrideType]}
-          sx={{
-            bgcolor: typeColor,
-            '&:hover': { bgcolor: typeColor, filter: 'brightness(0.9)' },
-          }}
+          color="warning"
         >
           {saving ? 'Saving…' : 'Confirm Override'}
         </Button>

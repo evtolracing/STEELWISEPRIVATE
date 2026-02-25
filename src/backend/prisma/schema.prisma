@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Organization {
@@ -34,6 +36,82 @@ model Organization {
   dropTags       DropTag[]  @relation("DropTagCustomer")
   tagRequirements CustomerTagRequirement[] @relation("CustomerTagRequirements")
   partners       Partner[]  @relation("PartnerOrganization")
+  preferences    CustomerPreference?  @relation("CustomerPreferences")
+}
+
+// Customer preferences — per-customer defaults for orders, shipping, specs, packaging
+model CustomerPreference {
+  id                   String    @id @default(uuid())
+  customerId           String    @unique
+  customer             Organization @relation("CustomerPreferences", fields: [customerId], references: [id])
+
+  // Location & Shipping
+  preferredBranch      String?   // branch code e.g. JACKSON
+  preferredShipMethod  String?   // DELIVERY, WILL_CALL, SHIP_CARRIER, LTL, FLATBED
+  defaultDivision      String?   // METALS, PLASTICS, SUPPLIES
+  preferredCarrier     String?   // e.g. XPO, FedEx Freight
+  freightTerms         String?   // FOB_ORIGIN, FOB_DEST, PREPAID, COLLECT
+  deliveryWindow       String?   // e.g. "Tue/Thu 7am-2pm"
+  shipToAddress        Json?     // { label, address, city, state, zip }
+
+  // Priority & Order Rules
+  defaultPriority      String    @default("STANDARD") // STANDARD, RUSH, HOT, EMERGENCY
+  rushDefault           Boolean  @default(false)
+  defaultOwnership     String    @default("HOUSE")     // HOUSE, CUSTOMER_MATERIAL
+  requirePONumber      Boolean   @default(false)
+  autoApplyContract    Boolean   @default(true)
+  autoApproveOrders    Boolean   @default(false)
+  minOrderQty          Decimal?
+  minOrderValue        Decimal?
+
+  // Pricing
+  pricingTier          String?   // A, B, C, D
+  discountPct          Decimal?  // default discount %
+  fuelSurchargeExempt  Boolean   @default(false)
+  paymentTerms         String?   // Net 30, Net 60, COD
+  creditLimit          Decimal?
+  contractNotes        String?
+
+  // Material Specs
+  tolerancePreset          String    @default("STANDARD")
+  // Thickness tolerances
+  thkTolerancePlus         Decimal   @default(0.010)
+  thkToleranceMinus        Decimal   @default(0.010)
+  // Length tolerances
+  lenTolerancePlus         Decimal   @default(0.125)
+  lenToleranceMinus        Decimal   @default(0.000)
+  // Width tolerances
+  widTolerancePlus         Decimal   @default(0.063)
+  widToleranceMinus        Decimal   @default(0.031)
+  approvedGrades           Json?     // ["A36", "A572-50", ...]
+  surfaceFinish        String?   // MILL, PICKLED, OILED, BLASTED
+  specialSpecs         String?   // free-text spec notes
+
+  // Certifications
+  certRequirements     Json?     // ["MTR", "COC", "FIRST_ARTICLE", ...]
+  autoSendMTR          Boolean   @default(false)
+  autoSendInvoice      Boolean   @default(false)
+  mtrEmail             String?
+  invoiceEmail         String?
+
+  // Packaging & Labeling
+  bundleMaxWeight      Decimal?  // max lbs per bundle
+  bundleMaxPieces      Int?
+  packagingType        String?   // BANDED, CRATED, PALLETIZED, LOOSE
+  labelTemplate        String?   // customer-specific tag template code
+  packagingNotes       String?
+
+  // Notes
+  specialInstructions  String?
+  internalNotes        String?
+
+  // Audit
+  updatedBy            String?
+  isActive             Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([customerId])
 }
 
 model User {
@@ -71,6 +149,7 @@ model User {
   auditLogs        AuditLog[]           @relation("AuditActor")
   approvalRequests ApprovalRequest[]    @relation("ApprovalRequester")
   approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
+  operator         Operator?
 }
 
 // Role definition with permissions
@@ -383,6 +462,7 @@ model Location {
   assets        Asset[]            @relation("AssetSite")
   packages      Package[]          @relation("PackageLocation")
   dropTagListings DropTagListing[] @relation("ListingOrigin")
+  operatorsHome Operator[]         @relation("OperatorHomeLocation")
 }
 
 model Inventory {
@@ -551,9 +631,254 @@ model QuoteLine {
   extendedPrice Decimal?
   leadTimeDays  Int?
   notes         String?
+
+  // Dimensions & Specs (override customer defaults)
+  thicknessIn          Decimal?
+  widthIn              Decimal?
+  lengthIn             Decimal?
+  gradeOverride        String?
+  surfaceFinish        String?
+  tolerancePreset      String?
+  thkTolerancePlus     Decimal?
+  thkToleranceMinus    Decimal?
+  lenTolerancePlus     Decimal?
+  lenToleranceMinus    Decimal?
+  widTolerancePlus     Decimal?
+  widToleranceMinus    Decimal?
+  certRequirements     Json?       // ["MTR", "COC", ...]
+  specNotes            String?
+
   createdAt     DateTime @default(now())
   quote         Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   rfqLine       RFQLine? @relation(fields: [rfqLineId], references: [id])
+}
+
+// ============================================================================
+// STAFF & OPERATOR MANAGEMENT
+// ============================================================================
+
+model Operator {
+  id                       String          @id @default(uuid())
+  userId                   String?         @unique
+  employeeCode             String          @unique
+  firstName                String
+  lastName                 String
+  email                    String?
+  phone                    String?
+  homeLocationId           String?
+  homeWorkCenterId         String?
+  hireDate                 DateTime?
+  status                   OperatorStatus  @default(ACTIVE)
+  maxThicknessInches       Decimal?
+  hourlyRate               Decimal?
+  overtimeMultiplier       Decimal?        @default(1.5)
+  notes                    String?
+  avatarUrl                String?
+  emergencyContactName     String?
+  emergencyContactPhone    String?
+  isActive                 Boolean         @default(true)
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+
+  user                     User?           @relation(fields: [userId], references: [id])
+  homeLocation             Location?       @relation("OperatorHomeLocation", fields: [homeLocationId], references: [id])
+  homeWorkCenter           WorkCenter?     @relation("OperatorHomeWorkCenter", fields: [homeWorkCenterId], references: [id])
+  skills                   OperatorSkill[]
+  shifts                   Shift[]
+  inspections              JobInspection[] @relation("InspectorInspections")
+
+  @@index([homeLocationId])
+  @@index([status])
+}
+
+model OperatorSkill {
+  id                String      @id @default(uuid())
+  operatorId        String
+  workCenterTypeId  String
+  skillLevel        SkillLevel  @default(STANDARD)
+  certifiedDate     DateTime    @default(now())
+  expiresAt         DateTime?
+  certificationRef  String?
+  isActive          Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  operator          Operator    @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+
+  @@unique([operatorId, workCenterTypeId])
+  @@index([workCenterTypeId])
+}
+
+model Shift {
+  id              String     @id @default(uuid())
+  operatorId      String
+  locationId      String?
+  workCenterId    String?
+  shiftDate       DateTime
+  startTime       DateTime
+  endTime         DateTime
+  shiftType       ShiftType  @default(DAY)
+  breakMinutes    Int        @default(30)
+  status          ShiftStatus @default(SCHEDULED)
+  notes           String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  operator        Operator   @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+
+  @@index([operatorId, shiftDate])
+  @@index([locationId, shiftDate])
+}
+
+enum OperatorStatus {
+  ACTIVE
+  ON_LEAVE
+  SUSPENDED
+  TERMINATED
+  TRAINING
+}
+
+enum SkillLevel {
+  NOVICE
+  STANDARD
+  ADVANCED
+  EXPERT
+}
+
+enum ShiftType {
+  DAY
+  NIGHT
+  SWING
+  SPLIT
+  OVERTIME
+}
+
+enum ShiftStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ============================================================================
+// DISPATCH ENGINE — Persistent Job Routing & Operations
+// ============================================================================
+
+model DispatchJob {
+  id                String              @id @default(uuid())
+  jobId             String              @unique
+  jobNumber         String
+  orderId           String?
+  materialCode      String?
+  commodity         String              @default("METALS")
+  form              String              @default("PLATE")
+  grade             String?
+  thickness         Decimal             @default(0.5)
+  division          String              @default("METALS")
+  locationId        String              @default("FWA")
+  dueDate           DateTime?
+  priority          String              @default("NORMAL")
+  customerName      String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  job               Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  operations        DispatchOperation[]
+
+  @@index([locationId])
+  @@index([jobNumber])
+}
+
+model DispatchOperation {
+  id                      String       @id @default(uuid())
+  dispatchJobId           String
+  sequence                Int
+  name                    String
+  requiredWorkCenterType  String
+  requiredDivision        String       @default("METALS")
+  requiredSkillLevel      String       @default("STANDARD")
+  specialization          String?
+  thickness               Decimal      @default(0.5)
+  materialCode            String?
+  status                  String       @default("PENDING")
+  assignedWorkCenterId    String?
+  assignedOperatorId      String?
+  scheduledStart          DateTime?
+  scheduledEnd            DateTime?
+  actualStart             DateTime?
+  actualEnd               DateTime?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  dispatchJob             DispatchJob  @relation(fields: [dispatchJobId], references: [id], onDelete: Cascade)
+  timeLogs                DispatchTimeLog[]
+
+  @@index([dispatchJobId])
+  @@index([assignedWorkCenterId])
+  @@index([status])
+  @@unique([dispatchJobId, sequence])
+}
+
+model DispatchTimeLog {
+  id                    String            @id @default(uuid())
+  dispatchOperationId   String
+  jobId                 String?
+  operatorId            String?
+  workCenterId          String?
+  status                String            @default("RUNNING")    // RUNNING, PAUSED, COMPLETE
+  startAt               DateTime          @default(now())
+  endAt                 DateTime?
+  downtimeReason        String?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  dispatchOperation     DispatchOperation @relation(fields: [dispatchOperationId], references: [id], onDelete: Cascade)
+
+  @@index([dispatchOperationId])
+  @@index([operatorId])
+  @@index([status])
+}
+
+// ── Job-Level QC Inspection ─────────────────────────────────────────────────────
+model JobInspection {
+  id                  String       @id @default(uuid())
+  inspectionNumber    String       @unique
+  jobId               String
+  inspectorId         String?
+  status              String       @default("PENDING")    // PENDING, IN_PROGRESS, PASSED, FAILED, CONDITIONAL
+  overallResult       String?                              // PASS, FAIL, CONDITIONAL
+  disposition         String?                              // USE_AS_IS, REWORK, SCRAP, RETURN, SELL_SECONDARY, PENDING
+  inspectionType      String       @default("FINAL")      // FINAL, IN_PROCESS, FIRST_ARTICLE, RECEIVING
+  checklist           Json?                                // Array of {item, required, result, notes}
+  dimensionalChecks   Json?                                // Array of {dimension, nominal, tolerance, actual, pass}
+  visualNotes         String?
+  defects             Json?                                // Array of {type, severity, description, location, photo}
+  reworkInstructions  String?
+  notes               String?
+  startedAt           DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  job                 Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  inspector           Operator?    @relation("InspectorInspections", fields: [inspectorId], references: [id])
+
+  @@index([jobId])
+  @@index([inspectorId])
+  @@index([status])
+}
+
+model WorkCenterType {
+  id          String   @id
+  label       String
+  icon        String   @default("Build")
+  color       String   @default("#1976d2")
+  description String?
+  divisions   String[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model WorkCenter {
@@ -570,6 +895,7 @@ model WorkCenter {
   jobs         Job[]
   location     Location @relation(fields: [locationId], references: [id])
   assets       Asset[]  @relation("AssetWorkCenter")
+  operatorsHome Operator[] @relation("OperatorHomeWorkCenter")
 }
 
 model Job {
@@ -602,6 +928,24 @@ model Job {
   hasCustomRouting Boolean     @default(false)
   recipeId         String?
   recipeVersion    Int?
+
+  // Spec overrides (inherit from OrderLine → QuoteLine → CustomerPreference)
+  thicknessIn          Decimal?
+  widthIn              Decimal?
+  lengthIn             Decimal?
+  gradeOverride        String?
+  surfaceFinish        String?
+  tolerancePreset      String?
+  thkTolerancePlus     Decimal?
+  thkToleranceMinus    Decimal?
+  lenTolerancePlus     Decimal?
+  lenToleranceMinus    Decimal?
+  widTolerancePlus     Decimal?
+  widToleranceMinus    Decimal?
+  certRequirements     Json?       // ["MTR", "COC", ...]
+  specNotes            String?
+  specsInherited       Boolean     @default(true) // false = manually overridden
+
   assignedTo       User?       @relation("JobAssignee", fields: [assignedToId], references: [id])
   createdBy        User?       @relation("JobCreator", fields: [createdById], references: [id])
   order            Order?      @relation(fields: [orderId], references: [id])
@@ -609,6 +953,8 @@ model Job {
   workCenter       WorkCenter? @relation(fields: [workCenterId], references: [id])
   dropTags         DropTag[]
   packages         Package[]
+  dispatchJob      DispatchJob?
+  inspections      JobInspection[]
 
   @@index([recipeId])
 }
@@ -676,6 +1022,20 @@ model OrderLine {
   extendedPrice Decimal?
   lineStatus    LineStatus            @default(OPEN)
   notes         String?
+
+  // Spec overrides (inherit from QuoteLine → CustomerPreference)
+  gradeOverride        String?
+  surfaceFinish        String?
+  tolerancePreset      String?
+  thkTolerancePlus     Decimal?
+  thkToleranceMinus    Decimal?
+  lenTolerancePlus     Decimal?
+  lenToleranceMinus    Decimal?
+  widTolerancePlus     Decimal?
+  widToleranceMinus    Decimal?
+  certRequirements     Json?       // ["MTR", "COC", ...]
+  specNotes            String?
+
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
   grade         Grade?                @relation(fields: [gradeId], references: [id])

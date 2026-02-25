@@ -5,14 +5,12 @@
  * Handles session lifecycle, transitions, and integration with external services.
  */
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../lib/db.js';
 import POSWorkflowStateMachine, { POSStates, POSTriggers } from './POSWorkflowStateMachine.js';
 import { evaluateGuard, getAllGuardResults } from './guards.js';
 import { executeEffect, recalculatePricing } from './effects.js';
 import { getPricingService } from './POSPricingService.js';
 import { divisionService, DivisionFlowResult } from './DivisionService.js';
-
-const prisma = new PrismaClient();
 const pricingService = getPricingService();
 
 // ============================================

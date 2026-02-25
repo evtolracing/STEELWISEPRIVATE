@@ -23,7 +23,7 @@
 import { getAllLocationCutoffRules } from './cutoffRulesApi'
 import { minutesUntilCutoff, getNowInTz } from '../utils/timeUtils'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = window.__USE_MOCK_RULES__ !== false
 
 // ── Branch master data ─────────────────────────────────────────────────────

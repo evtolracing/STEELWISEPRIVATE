@@ -38,5 +38,13 @@ build/
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Supabase temp files
+supabase/.temp/
+
+# Templates (working directory)
+templates/
+.vercel
+.env*.local
 tmpclaude-*
 nul

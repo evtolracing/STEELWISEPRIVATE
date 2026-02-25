@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -34,126 +34,25 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import {
   Search,
-  QrCode2,
-  Edit,
-  History,
   Build,
   CheckCircle,
   Warning,
-  Error as ErrorIcon,
-  Description,
   Add,
   Visibility,
   Settings,
-  Timeline,
-  LocationOn,
   Speed,
   Schedule,
+  LocationOn,
+  Sync,
 } from '@mui/icons-material';
-
-// Mock Data
-const assets = [
-  {
-    assetNumber: 'SAW-JKS-001',
-    name: 'DoALL C-916 Band Saw',
-    type: 'SAW',
-    manufacturer: 'DoALL',
-    model: 'C-916',
-    serialNumber: 'SN-2019-45678',
-    location: 'Jackson - Sawing Area',
-    status: 'IN_SERVICE',
-    criticality: 'A',
-    currentHours: 4850,
-    lastPMDate: '2026-01-28',
-    nextPMDue: '2026-02-04',
-    installDate: '2019-03-15',
-  },
-  {
-    assetNumber: 'SAW-JKS-002',
-    name: 'Kalamazoo K10 Cold Saw',
-    type: 'SAW',
-    manufacturer: 'Kalamazoo',
-    model: 'K10',
-    serialNumber: 'SN-2020-12345',
-    location: 'Jackson - Sawing Area',
-    status: 'OUT_OF_SERVICE',
-    criticality: 'B',
-    currentHours: 3200,
-    lastPMDate: '2026-01-21',
-    nextPMDue: '2026-01-28',
-    installDate: '2020-06-10',
-  },
-  {
-    assetNumber: 'ROUTER-JKS-001',
-    name: 'Thermwood Model 43 CNC Router',
-    type: 'ROUTER',
-    manufacturer: 'Thermwood',
-    model: 'Model 43',
-    serialNumber: 'TW-2021-78901',
-    location: 'Jackson - CNC Area',
-    status: 'IN_SERVICE',
-    criticality: 'A',
-    currentHours: 2150,
-    lastPMDate: '2026-01-25',
-    nextPMDue: '2026-02-01',
-    installDate: '2021-01-20',
-  },
-  {
-    assetNumber: 'CRANE-JKS-001',
-    name: 'Overhead Bridge Crane 10T',
-    type: 'CRANE',
-    manufacturer: 'Demag',
-    model: 'EKDR 10T',
-    serialNumber: 'DMG-2018-33456',
-    location: 'Jackson - Main Bay',
-    status: 'IN_SERVICE',
-    criticality: 'A',
-    currentHours: null,
-    lastPMDate: '2025-11-15',
-    nextPMDue: '2026-02-15',
-    installDate: '2018-08-01',
-  },
-  {
-    assetNumber: 'FORKLIFT-JKS-003',
-    name: 'Yale GP050 Forklift',
-    type: 'FORKLIFT',
-    manufacturer: 'Yale',
-    model: 'GP050',
-    serialNumber: 'YL-2022-55678',
-    location: 'Jackson - Shipping Area',
-    status: 'IN_SERVICE',
-    criticality: 'B',
-    currentHours: 1250,
-    lastPMDate: '2026-01-30',
-    nextPMDue: '2026-02-06',
-    installDate: '2022-04-12',
-  },
-  {
-    assetNumber: 'FORKLIFT-JKS-005',
-    name: 'Toyota 8FGU25 Forklift',
-    type: 'FORKLIFT',
-    manufacturer: 'Toyota',
-    model: '8FGU25',
-    serialNumber: 'TY-2019-99012',
-    location: 'Jackson - Receiving Area',
-    status: 'MAINTENANCE',
-    criticality: 'B',
-    currentHours: 3890,
-    lastPMDate: '2026-01-15',
-    nextPMDue: '2026-01-22',
-    installDate: '2019-09-05',
-  },
-];
-
-const maintenanceHistory = [
-  { woNumber: 'WO-2026-0845', type: 'PM', description: 'Weekly PM Completed', date: 'Jan 28, 2026', technician: 'Mike Johnson' },
-  { woNumber: 'WO-2026-0712', type: 'CORRECTIVE', description: 'Blade Replacement', date: 'Jan 15, 2026', technician: 'Tom Davis' },
-  { woNumber: 'WO-2026-0598', type: 'PM', description: 'Monthly Inspection', date: 'Jan 7, 2026', technician: 'Mike Johnson' },
-  { woNumber: 'WO-2025-2145', type: 'BREAKDOWN', description: 'Motor Replacement', date: 'Dec 20, 2025', technician: 'Sarah Williams' },
-];
+import { getAssets, getAssetStats, getAssetTypes, createAsset, seedAssetsFromWorkCenters } from '../../api/assets';
+import { getLocations } from '../../api/inventory';
+import { getWorkCenters } from '../../api/workCenters';
 
 const AssetRegistry = () => {
   const [tab, setTab] = useState(0);
@@ -164,6 +63,88 @@ const AssetRegistry = () => {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
+  // Real data state
+  const [assets, setAssets] = useState([]);
+  const [stats, setStats] = useState({ total: 0, inService: 0, down: 0, maintenance: 0 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
+
+  // Create dialog state
+  const [createOpen, setCreateOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [assetTypes, setAssetTypes] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [workCenters, setWorkCenters] = useState([]);
+  const [seeding, setSeeding] = useState(false);
+
+  const [formData, setFormData] = useState({
+    assetNumber: '',
+    name: '',
+    description: '',
+    assetTypeId: '',
+    siteId: '',
+    workCenterId: '',
+    manufacturer: '',
+    model: '',
+    serialNumber: '',
+    criticality: 'C',
+  });
+
+  const resetForm = () => {
+    setFormData({
+      assetNumber: '',
+      name: '',
+      description: '',
+      assetTypeId: '',
+      siteId: '',
+      workCenterId: '',
+      manufacturer: '',
+      model: '',
+      serialNumber: '',
+      criticality: 'C',
+    });
+  };
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [assetsData, statsData] = await Promise.all([
+        getAssets(),
+        getAssetStats(),
+      ]);
+      setAssets(Array.isArray(assetsData) ? assetsData : []);
+      setStats(statsData || { total: 0, inService: 0, down: 0, maintenance: 0 });
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load assets:', err);
+      setError('Failed to load assets');
+      setAssets([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const loadDropdowns = useCallback(async () => {
+    try {
+      const [typesData, locsData, wcData] = await Promise.all([
+        getAssetTypes().catch(() => []),
+        getLocations().catch(() => []),
+        getWorkCenters().catch(() => []),
+      ]);
+      setAssetTypes(Array.isArray(typesData) ? typesData : []);
+      setLocations(Array.isArray(locsData) ? locsData : locsData?.locations || []);
+      setWorkCenters(Array.isArray(wcData) ? wcData : wcData?.workCenters || []);
+    } catch (err) {
+      console.error('Failed to load dropdowns:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadData();
+    loadDropdowns();
+  }, [loadData, loadDropdowns]);
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'IN_SERVICE': return 'success';
@@ -172,6 +153,7 @@ const AssetRegistry = () => {
       case 'SAFETY_HOLD': return 'error';
       case 'QUALITY_HOLD': return 'warning';
       case 'PENDING_RETURN': return 'info';
+      case 'DECOMMISSIONED': return 'default';
       default: return 'default';
     }
   };
@@ -184,6 +166,7 @@ const AssetRegistry = () => {
       case 'SAFETY_HOLD': return 'Safety Hold';
       case 'QUALITY_HOLD': return 'Quality Hold';
       case 'PENDING_RETURN': return 'Pending Return';
+      case 'DECOMMISSIONED': return 'Decommissioned';
       default: return status;
     }
   };
@@ -199,54 +182,106 @@ const AssetRegistry = () => {
 
   const filteredAssets = assets.filter(asset => {
     if (tab === 1 && asset.status !== 'IN_SERVICE') return false;
-    if (tab === 2 && (asset.status === 'IN_SERVICE')) return false;
-    if (typeFilter && asset.type !== typeFilter) return false;
+    if (tab === 2 && asset.status === 'IN_SERVICE') return false;
+    if (typeFilter && asset.assetType?.category !== typeFilter) return false;
     if (statusFilter && asset.status !== statusFilter) return false;
     if (criticalityFilter && asset.criticality !== criticalityFilter) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      return asset.assetNumber.toLowerCase().includes(query) ||
-             asset.name.toLowerCase().includes(query) ||
-             asset.location.toLowerCase().includes(query);
+      return (asset.assetNumber || '').toLowerCase().includes(query) ||
+             (asset.name || '').toLowerCase().includes(query) ||
+             (asset.site?.name || '').toLowerCase().includes(query) ||
+             (asset.manufacturer || '').toLowerCase().includes(query);
     }
     return true;
   });
 
-  const inServiceCount = assets.filter(a => a.status === 'IN_SERVICE').length;
-  const downCount = assets.filter(a => a.status !== 'IN_SERVICE').length;
+  const handleCreate = async () => {
+    try {
+      setSubmitting(true);
+      await createAsset({
+        assetNumber: formData.assetNumber,
+        name: formData.name,
+        description: formData.description || null,
+        assetTypeId: formData.assetTypeId,
+        siteId: formData.siteId,
+        workCenterId: formData.workCenterId || null,
+        manufacturer: formData.manufacturer || null,
+        model: formData.model || null,
+        serialNumber: formData.serialNumber || null,
+        criticality: formData.criticality,
+      });
+      setCreateOpen(false);
+      resetForm();
+      setSuccessMsg('Asset created successfully');
+      setTimeout(() => setSuccessMsg(null), 4000);
+      await loadData();
+    } catch (err) {
+      console.error('Failed to create asset:', err);
+      setError(err?.response?.data?.error || 'Failed to create asset');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSeedFromWorkCenters = async () => {
+    try {
+      setSeeding(true);
+      const result = await seedAssetsFromWorkCenters();
+      const created = result.results?.filter(r => r.status === 'created').length || 0;
+      const skipped = result.results?.filter(r => r.status === 'skipped').length || 0;
+      setSuccessMsg(`Seeded from work centers: ${created} created, ${skipped} skipped (already exist)`);
+      setTimeout(() => setSuccessMsg(null), 6000);
+      await loadData();
+      await loadDropdowns();
+    } catch (err) {
+      console.error('Failed to seed from work centers:', err);
+      setError(err?.response?.data?.error || 'Failed to seed from work centers');
+    } finally {
+      setSeeding(false);
+    }
+  };
+
+  const typeCategories = [...new Set(assets.map(a => a.assetType?.category).filter(Boolean))];
 
   return (
     <Box sx={{ p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
-            Asset Registry
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Equipment inventory and status management
-          </Typography>
+          <Typography variant="h4" fontWeight={700}>Asset Registry</Typography>
+          <Typography variant="body2" color="text.secondary">Equipment inventory and status management</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<QrCode2 />}>
-            Scan QR
+          <Button
+            variant="outlined"
+            startIcon={seeding ? <CircularProgress size={16} /> : <Sync />}
+            onClick={handleSeedFromWorkCenters}
+            disabled={seeding}
+          >
+            {seeding ? 'Seeding...' : 'Import Work Centers'}
           </Button>
-          <Button variant="contained" startIcon={<Add />}>
+          <Button variant="contained" startIcon={<Add />} onClick={() => { setCreateOpen(true); loadDropdowns(); }}>
             Add Asset
           </Button>
         </Box>
       </Box>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>{error}</Alert>
+      )}
+      {successMsg && (
+        <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccessMsg(null)}>{successMsg}</Alert>
+      )}
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{ bgcolor: 'primary.light' }}>
-                <Settings sx={{ color: 'primary.main' }} />
-              </Avatar>
+              <Avatar sx={{ bgcolor: 'primary.light' }}><Settings sx={{ color: 'primary.main' }} /></Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>{assets.length}</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.total}</Typography>
                 <Typography variant="body2" color="text.secondary">Total Assets</Typography>
               </Box>
             </CardContent>
@@ -255,11 +290,9 @@ const AssetRegistry = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{ bgcolor: 'success.light' }}>
-                <CheckCircle sx={{ color: 'success.main' }} />
-              </Avatar>
+              <Avatar sx={{ bgcolor: 'success.light' }}><CheckCircle sx={{ color: 'success.main' }} /></Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>{inServiceCount}</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.inService}</Typography>
                 <Typography variant="body2" color="text.secondary">In Service</Typography>
               </Box>
             </CardContent>
@@ -268,12 +301,10 @@ const AssetRegistry = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{ bgcolor: 'error.light' }}>
-                <Warning sx={{ color: 'error.main' }} />
-              </Avatar>
+              <Avatar sx={{ bgcolor: 'error.light' }}><Warning sx={{ color: 'error.main' }} /></Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>{downCount}</Typography>
-                <Typography variant="body2" color="text.secondary">Down / Maintenance</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.down}</Typography>
+                <Typography variant="body2" color="text.secondary">Down / Out of Service</Typography>
               </Box>
             </CardContent>
           </Card>
@@ -281,12 +312,10 @@ const AssetRegistry = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{ bgcolor: 'warning.light' }}>
-                <Schedule sx={{ color: 'warning.main' }} />
-              </Avatar>
+              <Avatar sx={{ bgcolor: 'warning.light' }}><Schedule sx={{ color: 'warning.main' }} /></Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>5</Typography>
-                <Typography variant="body2" color="text.secondary">PM Due This Week</Typography>
+                <Typography variant="h5" fontWeight={700}>{stats.maintenance}</Typography>
+                <Typography variant="body2" color="text.secondary">In Maintenance</Typography>
               </Box>
             </CardContent>
           </Card>
@@ -296,9 +325,9 @@ const AssetRegistry = () => {
       {/* Tabs */}
       <Paper sx={{ mb: 3 }}>
         <Tabs value={tab} onChange={(e, v) => setTab(v)}>
-          <Tab label={`All Assets (${assets.length})`} />
-          <Tab label={`In Service (${inServiceCount})`} />
-          <Tab label={`Down / Maintenance (${downCount})`} />
+          <Tab label={`All Assets (${stats.total})`} />
+          <Tab label={`In Service (${stats.inService})`} />
+          <Tab label={`Down / Maintenance (${stats.down})`} />
         </Tabs>
       </Paper>
 
@@ -307,18 +336,9 @@ const AssetRegistry = () => {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={3}>
             <TextField
-              fullWidth
-              size="small"
-              placeholder="Search assets..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
+              fullWidth size="small" placeholder="Search assets..."
+              value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{ startAdornment: <InputAdornment position="start"><Search /></InputAdornment> }}
             />
           </Grid>
           <Grid item xs={12} md={2}>
@@ -326,10 +346,7 @@ const AssetRegistry = () => {
               <InputLabel>Type</InputLabel>
               <Select value={typeFilter} label="Type" onChange={(e) => setTypeFilter(e.target.value)}>
                 <MenuItem value="">All</MenuItem>
-                <MenuItem value="SAW">Saw</MenuItem>
-                <MenuItem value="ROUTER">Router</MenuItem>
-                <MenuItem value="CRANE">Crane</MenuItem>
-                <MenuItem value="FORKLIFT">Forklift</MenuItem>
+                {typeCategories.map(cat => <MenuItem key={cat} value={cat}>{cat}</MenuItem>)}
               </Select>
             </FormControl>
           </Grid>
@@ -341,6 +358,7 @@ const AssetRegistry = () => {
                 <MenuItem value="IN_SERVICE">In Service</MenuItem>
                 <MenuItem value="OUT_OF_SERVICE">Out of Service</MenuItem>
                 <MenuItem value="MAINTENANCE">Maintenance</MenuItem>
+                <MenuItem value="SAFETY_HOLD">Safety Hold</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -356,10 +374,7 @@ const AssetRegistry = () => {
             </FormControl>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Button 
-              variant="text" 
-              onClick={() => { setSearchQuery(''); setTypeFilter(''); setStatusFilter(''); setCriticalityFilter(''); }}
-            >
+            <Button variant="text" onClick={() => { setSearchQuery(''); setTypeFilter(''); setStatusFilter(''); setCriticalityFilter(''); }}>
               Clear Filters
             </Button>
           </Grid>
@@ -378,60 +393,58 @@ const AssetRegistry = () => {
                 <TableCell>Location</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Criticality</TableCell>
-                <TableCell>Hours</TableCell>
-                <TableCell>Next PM</TableCell>
+                <TableCell>Work Center</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredAssets.map((asset) => (
-                <TableRow 
-                  key={asset.assetNumber} 
-                  hover 
-                  sx={{ cursor: 'pointer' }}
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                    <CircularProgress size={24} sx={{ mr: 1 }} />
+                    <Typography variant="body2" color="text.secondary" component="span">Loading assets...</Typography>
+                  </TableCell>
+                </TableRow>
+              ) : filteredAssets.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                    <Typography color="text.secondary">
+                      {assets.length === 0
+                        ? 'No assets found. Click "Import Work Centers" to create assets from your work centers, or "Add Asset" to create one manually.'
+                        : 'No assets match your filters.'}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : filteredAssets.map((asset) => (
+                <TableRow key={asset.id} hover sx={{ cursor: 'pointer' }}
                   onClick={() => { setSelectedAsset(asset); setDetailOpen(true); }}
                 >
                   <TableCell>
-                    <Typography variant="body2" fontWeight={600} color="primary.main">
-                      {asset.assetNumber}
-                    </Typography>
+                    <Typography variant="body2" fontWeight={600} color="primary.main">{asset.assetNumber}</Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight={500}>{asset.name}</Typography>
-                    <Typography variant="caption" color="text.secondary">{asset.manufacturer} {asset.model}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {[asset.manufacturer, asset.model].filter(Boolean).join(' ') || '\u2014'}
+                    </Typography>
                   </TableCell>
-                  <TableCell>{asset.type}</TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{asset.assetType?.category || asset.assetType?.name || '\u2014'}</Typography>
+                  </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <LocationOn fontSize="small" color="action" />
-                      <Typography variant="body2">{asset.location}</Typography>
+                      <Typography variant="body2">{asset.site?.name || '\u2014'}</Typography>
                     </Box>
                   </TableCell>
                   <TableCell>
-                    <Chip 
-                      label={getStatusLabel(asset.status)} 
-                      size="small" 
-                      color={getStatusColor(asset.status)} 
-                    />
+                    <Chip label={getStatusLabel(asset.status)} size="small" color={getStatusColor(asset.status)} />
                   </TableCell>
                   <TableCell>
-                    <Chip 
-                      label={`Class ${asset.criticality}`} 
-                      size="small" 
-                      color={getCriticalityColor(asset.criticality)}
-                      variant="outlined"
-                    />
+                    <Chip label={`Class ${asset.criticality}`} size="small" color={getCriticalityColor(asset.criticality)} variant="outlined" />
                   </TableCell>
                   <TableCell>
-                    {asset.currentHours ? asset.currentHours.toLocaleString() : '—'}
-                  </TableCell>
-                  <TableCell>
-                    <Typography 
-                      variant="body2" 
-                      color={new Date(asset.nextPMDue) < new Date() ? 'error.main' : 'text.primary'}
-                    >
-                      {asset.nextPMDue}
-                    </Typography>
+                    <Typography variant="body2">{asset.workCenter?.code || '\u2014'}</Typography>
                   </TableCell>
                   <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                     <Tooltip title="View Details">
@@ -439,15 +452,8 @@ const AssetRegistry = () => {
                         <Visibility />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Edit">
-                      <IconButton size="small">
-                        <Edit />
-                      </IconButton>
-                    </Tooltip>
                     <Tooltip title="Create Work Order">
-                      <IconButton size="small">
-                        <Build />
-                      </IconButton>
+                      <IconButton size="small"><Build /></IconButton>
                     </Tooltip>
                   </TableCell>
                 </TableRow>
@@ -465,115 +471,177 @@ const AssetRegistry = () => {
               <Typography variant="h6">{selectedAsset?.assetNumber}</Typography>
               <Typography variant="body2" color="text.secondary">{selectedAsset?.name}</Typography>
             </Box>
-            <Chip 
-              label={getStatusLabel(selectedAsset?.status)} 
-              color={getStatusColor(selectedAsset?.status)} 
-            />
+            <Chip label={getStatusLabel(selectedAsset?.status)} color={getStatusColor(selectedAsset?.status)} />
           </Box>
         </DialogTitle>
         <DialogContent dividers>
           {selectedAsset && (
             <Grid container spacing={3}>
-              {/* Asset Info */}
               <Grid item xs={12} md={6}>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                  Equipment Details
-                </Typography>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Equipment Details</Typography>
                 <List dense>
-                  <ListItem>
-                    <ListItemText primary="Manufacturer" secondary={selectedAsset.manufacturer} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary="Model" secondary={selectedAsset.model} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary="Serial Number" secondary={selectedAsset.serialNumber} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary="Location" secondary={selectedAsset.location} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary="Criticality" secondary={`Class ${selectedAsset.criticality}`} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemText primary="Install Date" secondary={selectedAsset.installDate} />
-                  </ListItem>
+                  <ListItem><ListItemText primary="Manufacturer" secondary={selectedAsset.manufacturer || '\u2014'} /></ListItem>
+                  <ListItem><ListItemText primary="Model" secondary={selectedAsset.model || '\u2014'} /></ListItem>
+                  <ListItem><ListItemText primary="Serial Number" secondary={selectedAsset.serialNumber || '\u2014'} /></ListItem>
+                  <ListItem><ListItemText primary="Location" secondary={selectedAsset.site?.name || '\u2014'} /></ListItem>
+                  <ListItem><ListItemText primary="Work Center" secondary={selectedAsset.workCenter ? `${selectedAsset.workCenter.code} \u2014 ${selectedAsset.workCenter.name}` : '\u2014'} /></ListItem>
+                  <ListItem><ListItemText primary="Criticality" secondary={`Class ${selectedAsset.criticality}`} /></ListItem>
+                  <ListItem><ListItemText primary="Type" secondary={selectedAsset.assetType?.name || '\u2014'} /></ListItem>
                 </List>
               </Grid>
-
-              {/* Status & Meters */}
               <Grid item xs={12} md={6}>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                  Status & Meters
-                </Typography>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Status & Info</Typography>
                 <List dense>
                   <ListItem>
                     <ListItemIcon><CheckCircle color={getStatusColor(selectedAsset.status)} /></ListItemIcon>
-                    <ListItemText 
-                      primary="Status" 
-                      secondary={getStatusLabel(selectedAsset.status)} 
-                    />
+                    <ListItemText primary="Status" secondary={getStatusLabel(selectedAsset.status)} />
                   </ListItem>
+                  {selectedAsset.currentHours && (
+                    <ListItem>
+                      <ListItemIcon><Speed color="action" /></ListItemIcon>
+                      <ListItemText primary="Current Hours" secondary={Number(selectedAsset.currentHours).toLocaleString()} />
+                    </ListItem>
+                  )}
+                  {selectedAsset.description && (
+                    <ListItem><ListItemText primary="Description" secondary={selectedAsset.description} /></ListItem>
+                  )}
                   <ListItem>
-                    <ListItemIcon><Speed color="action" /></ListItemIcon>
-                    <ListItemText 
-                      primary="Current Hours" 
-                      secondary={selectedAsset.currentHours?.toLocaleString() || 'N/A'} 
-                    />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon><History color="action" /></ListItemIcon>
-                    <ListItemText primary="Last PM" secondary={selectedAsset.lastPMDate} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon><Schedule color="action" /></ListItemIcon>
-                    <ListItemText primary="Next PM Due" secondary={selectedAsset.nextPMDue} />
+                    <ListItemText primary="Created" secondary={selectedAsset.createdAt ? new Date(selectedAsset.createdAt).toLocaleDateString() : '\u2014'} />
                   </ListItem>
                 </List>
               </Grid>
 
-              {/* Maintenance History */}
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
-                  Recent Maintenance History
-                </Typography>
-                <TableContainer>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>WO Number</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Description</TableCell>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Technician</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {maintenanceHistory.map((wo) => (
-                        <TableRow key={wo.woNumber}>
-                          <TableCell>
-                            <Typography variant="body2" color="primary.main">{wo.woNumber}</Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Chip label={wo.type} size="small" />
-                          </TableCell>
-                          <TableCell>{wo.description}</TableCell>
-                          <TableCell>{wo.date}</TableCell>
-                          <TableCell>{wo.technician}</TableCell>
+              {/* Maintenance Orders on this asset */}
+              {selectedAsset.maintenanceOrders?.length > 0 && (
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
+                    Recent Maintenance Orders
+                  </Typography>
+                  <TableContainer>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>WO Number</TableCell>
+                          <TableCell>Type</TableCell>
+                          <TableCell>Title</TableCell>
+                          <TableCell>Status</TableCell>
+                          <TableCell>Date</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Grid>
+                      </TableHead>
+                      <TableBody>
+                        {selectedAsset.maintenanceOrders.map((mo) => (
+                          <TableRow key={mo.id}>
+                            <TableCell><Typography variant="body2" color="primary.main">{mo.woNumber}</Typography></TableCell>
+                            <TableCell><Chip label={mo.type} size="small" /></TableCell>
+                            <TableCell>{mo.title}</TableCell>
+                            <TableCell><Chip label={mo.status} size="small" variant="outlined" /></TableCell>
+                            <TableCell>{new Date(mo.createdAt).toLocaleDateString()}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              )}
             </Grid>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDetailOpen(false)}>Close</Button>
-          <Button variant="outlined" startIcon={<History />}>Full History</Button>
           <Button variant="contained" startIcon={<Build />}>Create Work Order</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Create Asset Dialog */}
+      <Dialog open={createOpen} onClose={() => { setCreateOpen(false); resetForm(); }} maxWidth="sm" fullWidth>
+        <DialogTitle>Add Asset</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth required label="Asset Number" placeholder="e.g. SAW-001"
+                value={formData.assetNumber} onChange={(e) => setFormData(f => ({ ...f, assetNumber: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth required label="Name" placeholder="e.g. DoALL C-916 Band Saw"
+                value={formData.name} onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth label="Description" multiline rows={2}
+                value={formData.description} onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth required>
+                <InputLabel>Asset Type</InputLabel>
+                <Select label="Asset Type" value={formData.assetTypeId}
+                  onChange={(e) => setFormData(f => ({ ...f, assetTypeId: e.target.value }))}>
+                  {assetTypes.map(t => (
+                    <MenuItem key={t.id} value={t.id}>{t.name}{t.category ? ` (${t.category})` : ''}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {assetTypes.length === 0 && (
+                <Typography variant="caption" color="text.secondary">
+                  No asset types found. Import work centers first to create a default type.
+                </Typography>
+              )}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth required>
+                <InputLabel>Site / Location</InputLabel>
+                <Select label="Site / Location" value={formData.siteId}
+                  onChange={(e) => setFormData(f => ({ ...f, siteId: e.target.value }))}>
+                  {locations.map(loc => (
+                    <MenuItem key={loc.id} value={loc.id}>{loc.code ? `${loc.code} \u2014 ` : ''}{loc.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth>
+                <InputLabel>Work Center (optional)</InputLabel>
+                <Select label="Work Center (optional)" value={formData.workCenterId}
+                  onChange={(e) => setFormData(f => ({ ...f, workCenterId: e.target.value }))}>
+                  <MenuItem value="">None</MenuItem>
+                  {workCenters.map(wc => (
+                    <MenuItem key={wc.id} value={wc.id}>{wc.code} \u2014 {wc.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth>
+                <InputLabel>Criticality</InputLabel>
+                <Select label="Criticality" value={formData.criticality}
+                  onChange={(e) => setFormData(f => ({ ...f, criticality: e.target.value }))}>
+                  <MenuItem value="A">Class A \u2014 Critical</MenuItem>
+                  <MenuItem value="B">Class B \u2014 Important</MenuItem>
+                  <MenuItem value="C">Class C \u2014 Standard</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField fullWidth label="Manufacturer"
+                value={formData.manufacturer} onChange={(e) => setFormData(f => ({ ...f, manufacturer: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField fullWidth label="Model"
+                value={formData.model} onChange={(e) => setFormData(f => ({ ...f, model: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField fullWidth label="Serial Number"
+                value={formData.serialNumber} onChange={(e) => setFormData(f => ({ ...f, serialNumber: e.target.value }))} />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { setCreateOpen(false); resetForm(); }}>Cancel</Button>
+          <Button variant="contained"
+            disabled={submitting || !formData.assetNumber || !formData.name || !formData.assetTypeId || !formData.siteId}
+            onClick={handleCreate}
+          >
+            {submitting ? 'Creating...' : 'Create Asset'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

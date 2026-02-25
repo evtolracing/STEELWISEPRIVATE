@@ -3,9 +3,7 @@
  * Generates probabilistic forecasts with confidence intervals
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 /**
  * Get forecast for a specific category and horizon

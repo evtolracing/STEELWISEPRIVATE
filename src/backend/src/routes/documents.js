@@ -9,14 +9,15 @@ import prisma from '../lib/db.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (skip on Vercel's read-only filesystem)
 const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
+const isVercel = !!process.env.VERCEL;
+if (!isVercel && !fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Configure multer storage
-const storage = multer.diskStorage({
+const storage = isVercel ? multer.memoryStorage() : multer.diskStorage({
   destination: (req, file, cb) => {
     // Organize by entity type subdirectory
     const entityType = req.body.entityType || 'general';

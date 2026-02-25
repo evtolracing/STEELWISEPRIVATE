@@ -40,6 +40,7 @@ import {
   Phone as PhoneIcon,
 } from '@mui/icons-material';
 import { getOrder, planOrder, markOrderPackaging } from '../../services/orderApi';
+import { TOLERANCE_PRESETS, CERT_OPTIONS } from '../../services/customerPreferencesApi';
 
 const orderStatuses = ['NEW', 'PLANNING', 'IN_PRODUCTION', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED'];
 const statusColors = {
@@ -362,6 +363,7 @@ export default function OrderDetailPage() {
                       <TableCell sx={{ fontWeight: 600 }}>Qty</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>Job</TableCell>
+                      <TableCell sx={{ fontWeight: 600 }}>Specs</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -399,6 +401,22 @@ export default function OrderDetailPage() {
                           ) : (
                             '-'
                           )}
+                        </TableCell>
+                        <TableCell>
+                          <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ gap: 0.5 }}>
+                            {line.tolerancePreset && (
+                              <Chip label={`Tol: ${line.tolerancePreset}`} size="small" sx={{ height: 18, fontSize: '0.6rem' }} />
+                            )}
+                            {(line.certRequirements || []).length > 0 && (
+                              <Chip label={`${line.certRequirements.length} cert(s)`} size="small" color="secondary" sx={{ height: 18, fontSize: '0.6rem' }} />
+                            )}
+                            {line.surfaceFinish && (
+                              <Chip label={line.surfaceFinish} size="small" color="info" sx={{ height: 18, fontSize: '0.6rem' }} />
+                            )}
+                            {!line.tolerancePreset && !(line.certRequirements || []).length && !line.surfaceFinish && (
+                              <Typography variant="caption" color="text.secondary">Default</Typography>
+                            )}
+                          </Stack>
                         </TableCell>
                       </TableRow>
                     ))}

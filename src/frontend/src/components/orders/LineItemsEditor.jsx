@@ -4,7 +4,7 @@
  * Each line: { lineType, productId, description, qty, uom, unitPrice, extPrice,
  *              weight, dimensions, isRemnant, remnantDiscount, ownership, processes }
  */
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Box, Table, TableHead, TableBody, TableRow, TableCell, TableContainer,
   IconButton, Button, Typography, Chip, Tooltip, TextField, Select, MenuItem,
@@ -38,8 +38,6 @@ const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits:
 export default function LineItemsEditor({
   lines = [], onChange, onOpenMaterialPicker, onOpenProcessingMenu, readOnly = false,
 }) {
-  const [editingIdx, setEditingIdx] = useState(null)
-
   const update = (idx, field, val) => {
     const next = lines.map((l, i) => {
       if (i !== idx) return l
@@ -57,12 +55,10 @@ export default function LineItemsEditor({
 
   const addLine = (type) => {
     onChange([...lines, emptyLine(type)])
-    setEditingIdx(lines.length)
   }
 
   const removeLine = (idx) => {
     onChange(lines.filter((_, i) => i !== idx))
-    if (editingIdx === idx) setEditingIdx(null)
   }
 
   const lineConf = (type) => LINE_TYPES.find(lt => lt.value === type) || LINE_TYPES[0]
@@ -90,7 +86,6 @@ export default function LineItemsEditor({
             )}
             {lines.map((line, idx) => {
               const conf = lineConf(line.lineType)
-              const isEditing = editingIdx === idx && !readOnly
               return (
                 <TableRow key={idx} hover sx={{ '&:last-child td': { border: 0 } }}>
                   <TableCell><Typography variant="caption" color="text.secondary">{idx + 1}</Typography></TableCell>
@@ -98,43 +93,50 @@ export default function LineItemsEditor({
                     <Chip icon={conf.icon} label={conf.label} size="small" color={conf.color} variant="outlined" />
                   </TableCell>
                   <TableCell>
-                    {isEditing ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <TextField size="small" fullWidth variant="standard" value={line.description} onChange={e => update(idx, 'description', e.target.value)} placeholder="Enter description or pick material…" />
-                        {line.lineType === 'MATERIAL' && onOpenMaterialPicker && (
-                          <Tooltip title="Browse catalog"><IconButton size="small" color="primary" onClick={() => onOpenMaterialPicker(idx)}><InvIcon fontSize="small" /></IconButton></Tooltip>
-                        )}
-                        {line.lineType === 'MATERIAL' && onOpenProcessingMenu && (
-                          <Tooltip title="Add processing"><IconButton size="small" color="info" onClick={() => onOpenProcessingMenu(idx)}><ProcIcon fontSize="small" /></IconButton></Tooltip>
-                        )}
-                      </Box>
-                    ) : (
+                    {readOnly ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <Typography variant="body2" noWrap sx={{ maxWidth: 300 }}>{line.description || <em style={{ color: '#999' }}>—</em>}</Typography>
                         {line.processes?.length > 0 && (
                           <Chip label={`+${line.processes.length} ops`} size="small" variant="outlined" color="info" />
                         )}
                       </Box>
+                    ) : (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <TextField size="small" fullWidth variant="standard" value={line.description} onChange={e => update(idx, 'description', e.target.value)} placeholder="Enter description or pick material…" />
+                        {line.lineType === 'MATERIAL' && onOpenMaterialPicker && (
+                          <Tooltip title="Browse inventory"><IconButton size="small" color="primary" onClick={() => onOpenMaterialPicker(idx)}><InvIcon fontSize="small" /></IconButton></Tooltip>
+                        )}
+                        {line.lineType === 'MATERIAL' && onOpenProcessingMenu && (
+                          <Tooltip title={line.processes?.length ? `${line.processes.length} processing step(s) — click to edit` : 'Add processing'}>
+                            <IconButton size="small" color={line.processes?.length ? 'success' : 'info'} onClick={() => onOpenProcessingMenu(idx)}>
+                              <ProcIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {line.processes?.length > 0 && (
+                          <Chip label={`+${line.processes.length} ops`} size="small" variant="filled" color="info" />
+                        )}
+                      </Box>
                     )}
                   </TableCell>
                   <TableCell align="right">
-                    {isEditing ? (
+                    {readOnly ? line.qty : (
                       <TextField size="small" variant="standard" type="number" sx={{ width: 56 }} inputProps={{ min: 0, step: 1 }} value={line.qty} onChange={e => update(idx, 'qty', e.target.value)} />
-                    ) : line.qty}
+                    )}
                   </TableCell>
                   <TableCell>
-                    {isEditing ? (
+                    {readOnly ? line.uom : (
                       <FormControl size="small" variant="standard" sx={{ width: 64 }}>
                         <Select value={line.uom} onChange={e => update(idx, 'uom', e.target.value)}>
                           {UOM_OPTIONS.map(u => <MenuItem key={u} value={u}>{u}</MenuItem>)}
                         </Select>
                       </FormControl>
-                    ) : line.uom}
+                    )}
                   </TableCell>
                   <TableCell align="right">
-                    {isEditing ? (
+                    {readOnly ? fmt(line.unitPrice) : (
                       <TextField size="small" variant="standard" type="number" sx={{ width: 80 }} inputProps={{ min: 0, step: 0.01 }} value={line.unitPrice} onChange={e => update(idx, 'unitPrice', e.target.value)} />
-                    ) : fmt(line.unitPrice)}
+                    )}
                   </TableCell>
                   <TableCell align="right"><Typography variant="body2" fontWeight={500}>{fmt(line.extPrice)}</Typography></TableCell>
                   <TableCell align="center">
@@ -143,9 +145,6 @@ export default function LineItemsEditor({
                   </TableCell>
                   {!readOnly && (
                     <TableCell align="center">
-                      <IconButton size="small" onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}>
-                        <EditIcon fontSize="small" color={isEditing ? 'primary' : 'inherit'} />
-                      </IconButton>
                       <IconButton size="small" color="error" onClick={() => removeLine(idx)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>

@@ -4,6 +4,15 @@
 # working directory name when running `supabase init`.
 project_id = "giyheniqqqwpmetefdxj"
 
+[db]
+port = 5432
+major_version = 17
+
+[db.pooler]
+enabled = true
+port = 6543
+pool_mode = "transaction"
+
 [api]
 enabled = true
 # Port to use for the API URL.

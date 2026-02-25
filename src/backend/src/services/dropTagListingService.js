@@ -3,10 +3,8 @@
  * Business logic for managing shipment manifests (Drop Tag Listings)
  */
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 // ID Generation
 function generateListingId() {

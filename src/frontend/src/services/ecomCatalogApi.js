@@ -2,7 +2,7 @@
  * E-Commerce Catalog API
  * Product search, detail, availability for customer-facing portal.
  */
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 const USE_MOCK = true
 
 const MOCK_PRODUCTS = [
@@ -24,7 +24,7 @@ const MOCK_DIVISIONS = [
   { id: 'METALS', name: 'Metals', description: 'Steel, stainless, aluminum, brass & copper', icon: 'metals', productCount: 8 },
   { id: 'PLASTICS', name: 'Plastics', description: 'HDPE, UHMW, acetal, nylon & more', icon: 'plastics', productCount: 2 },
   { id: 'SUPPLIES', name: 'Industrial Supplies', description: 'Abrasives, safety, welding & tooling', icon: 'supplies', productCount: 2 },
-  { id: 'OUTLET', name: 'Outlet / Remnants', description: 'Discounted remnant & drop pieces', icon: 'outlet', productCount: 1 },
+  { id: 'OUTLET', name: 'Steel Outlet', description: 'Discounted remnant & drop pieces', icon: 'outlet', productCount: 1 },
 ]
 
 const MOCK_FAMILIES = {

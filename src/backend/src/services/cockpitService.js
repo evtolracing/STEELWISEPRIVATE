@@ -3,9 +3,7 @@
  * Aggregates data from all operational systems for executive dashboard
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 /**
  * Get aggregated cockpit data for executive dashboard

@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { Box, useMediaQuery, useTheme } from '@mui/material'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import PrintQueueDrawer from './PrintQueueDrawer'
 import { DemoProvider } from '../../contexts/DemoContext'
 import DemoOverlay from '../demo/DemoOverlay'
 
@@ -47,6 +48,7 @@ export default function AppLayout() {
         </Box>
 
         <DemoOverlay />
+        <PrintQueueDrawer />
       </Box>
     </DemoProvider>
   )

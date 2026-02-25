@@ -3,10 +3,8 @@
  * Core business logic for generating, printing, and managing drop tags
  */
 
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/db.js';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 // ID Generation
 function generateDropTagId() {

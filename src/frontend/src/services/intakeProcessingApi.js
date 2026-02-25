@@ -3,7 +3,7 @@
  * List processing operations, routing templates, by division + machine capabilities.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 const MOCK_PROCESSES = [
   { id: 'proc-001', code: 'SAW-CUT', name: 'Saw Cut to Length', division: 'METALS', type: 'CUT', estimatedMinutes: 15, pricePerOp: 12.00, priceUnit: 'CUT', machines: ['SAW-1', 'SAW-2'], params: [{ key: 'cutLength', label: 'Cut Length', unit: 'in', required: true }, { key: 'qty', label: 'Number of Cuts', unit: 'ea', required: true }] },

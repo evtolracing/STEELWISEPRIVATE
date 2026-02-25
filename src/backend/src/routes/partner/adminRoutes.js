@@ -7,13 +7,12 @@
  */
 
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../lib/db.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { PARTNER_SCOPES } from '../../middleware/partnerAuth.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // ─── Partners CRUD ─────────────────────────────────────────────────────────────
 

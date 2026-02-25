@@ -6,8 +6,8 @@
  */
 
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { posApi } from '../../api/pos';
-import pricingApi from '../../api/pricing';
+import { posApi } from '../api/pos';
+import pricingApi from '../api/pricing';
 
 // ============================================
 // PRICING CONFIGURATION

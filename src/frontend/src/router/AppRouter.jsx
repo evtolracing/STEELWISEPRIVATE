@@ -62,14 +62,12 @@ const AssetRegistry = lazy(() => import('../pages/Maintenance/AssetRegistry'))
 const PMSchedules = lazy(() => import('../pages/Maintenance/PMSchedules'))
 const PartsInventory = lazy(() => import('../pages/Maintenance/PartsInventory'))
 
-// Packaging & Chain-of-Custody Pages
-const PackagingQueue = lazy(() => import('../pages/Packaging/PackagingQueue'))
-const PackageBuilder = lazy(() => import('../pages/Packaging/PackageBuilder'))
-const QCReleaseStation = lazy(() => import('../pages/Packaging/QCReleaseStation'))
-const LabelManagement = lazy(() => import('../pages/Packaging/LabelManagement'))
-const StagingBoard = lazy(() => import('../pages/Packaging/StagingBoard'))
-const CustodyTimeline = lazy(() => import('../pages/Packaging/CustodyTimeline'))
-const DocumentationCenter = lazy(() => import('../pages/Packaging/DocumentationCenter'))
+// Material Tracking (unified packaging + tags + staging + traceability)
+const MaterialTrackingDashboard = lazy(() => import('../pages/MaterialTracking/MaterialTrackingDashboard'))
+const MTPackagingQueue = lazy(() => import('../pages/MaterialTracking/PackagingQueue'))
+const MTTagManagement = lazy(() => import('../pages/MaterialTracking/TagManagement'))
+const MTStagingLoading = lazy(() => import('../pages/MaterialTracking/StagingLoading'))
+const MTTraceability = lazy(() => import('../pages/MaterialTracking/TraceabilityPage'))
 
 // Freight & Delivery Pages
 const ShipmentPlanner = lazy(() => import('../pages/Freight/ShipmentPlanner'))
@@ -93,15 +91,6 @@ const DecisionLog = lazy(() => import('../pages/Executive/DecisionLog'))
 const DigitalTwinViewer = lazy(() => import('../pages/Executive/DigitalTwinViewer'))
 const CompressionMetricsDashboard = lazy(() => import('../pages/Executive/CompressionMetricsDashboard'))
 
-// Drop Tag Engine Pages
-const DropTagPackagingQueue = lazy(() => import('../pages/DropTags/PackagingQueue'))
-const DropTagPrintCenter = lazy(() => import('../pages/DropTags/DropTagPrintCenter'))
-const DropTagApplyScanScreen = lazy(() => import('../pages/DropTags/ApplyScanScreen'))
-const DropTagListingPage = lazy(() => import('../pages/DropTags/DropTagListingPage'))
-const DropTagStagingBoard = lazy(() => import('../pages/DropTags/StagingBoard'))
-const DropTagLoadingScreen = lazy(() => import('../pages/DropTags/LoadingScreen'))
-const DropTagTraceabilityViewer = lazy(() => import('../pages/DropTags/TraceabilityViewer'))
-
 const ProvenanceLookupPage = lazy(() => import('../pages/Provenance/ProvenanceLookupPage'))
 const CustomersPage = lazy(() => import('../pages/Customers/CustomersPage'))
 const CustomerPreferencesPage = lazy(() => import('../pages/Customers/CustomerPreferencesPage'))
@@ -109,14 +98,15 @@ const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 
 // Phase 1 - Service Center Pages
 const OrderBoardPage = lazy(() => import('../pages/ModernOrderBoardPage'))
-const OrderBoardPageLegacy = lazy(() => import('../pages/OrderBoardPage'))
 const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const ShopFloorPage = lazy(() => import('../pages/ShopFloorPage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
-const PackagingPage = lazy(() => import('../pages/PackagingPage'))
-const ShippingDeskPage = lazy(() => import('../pages/ShippingDeskPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
+
+// QC Inspection Module
+const QCDashboardPage = lazy(() => import('../pages/QC/QCDashboardPage'))
+const QCInspectionPage = lazy(() => import('../pages/QC/QCInspectionPage'))
 
 // Sales Rep Mobile Mode
 const MobileRepLayout = lazy(() => import('../components/layout/MobileRepLayout'))
@@ -155,7 +145,6 @@ const RemnantCategoryPage = lazy(() => import('../pages/Ecommerce/RemnantCategor
 const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
 
 // Production Workflow
-const ProductionLayout = lazy(() => import('../components/production/ProductionLayout'))
 const ProductionWorkflowBoard = lazy(() => import('../components/production/ProductionWorkflowBoard'))
 const ShopFloorScreen = lazy(() => import('../components/production/ShopFloorScreen'))
 const ShippingScreen = lazy(() => import('../components/production/ShippingScreen'))
@@ -196,6 +185,7 @@ const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
 const AuditLogPage = lazy(() => import('../pages/Admin/AuditLogPage'))
 const RecipeEditorPage = lazy(() => import('../pages/Admin/RecipeEditorPage'))
+const StaffManagementPage = lazy(() => import('../pages/Admin/StaffManagementPage'))
 
 // Partner API Management
 const PartnerRegistryPage = lazy(() => import('../pages/Partners/PartnerRegistryPage'))
@@ -645,6 +635,26 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
+      // QC Inspection Module
+      {
+        path: 'qc',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <QCDashboardPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'qc/inspect/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <QCInspectionPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
       // Production Quality
       {
         path: 'production-quality/dashboard',
@@ -809,17 +819,6 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Order Board - Legacy Version
-      {
-        path: 'order-board-legacy',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <OrderBoardPageLegacy />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-
       // Work Center Schedule
       {
         path: 'schedule',
@@ -853,90 +852,62 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Packaging
+      // Material Tracking Module (unified packaging + tags + staging + traceability)
       {
-        path: 'packaging',
+        path: 'material-tracking',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PackagingPage />
+            <MaterialTrackingDashboard />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/packaging',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTPackagingQueue />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/tags',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTTagManagement />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/staging',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTStagingLoading />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/traceability',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTTraceability />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/traceability/:jobId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTTraceability />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
       },
 
-      // Packaging & Chain-of-Custody Module
-      {
-        path: 'packaging/queue',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <PackagingQueue />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/builder/:orderId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <PackageBuilder />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/qc-release',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <QCReleaseStation />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/labels',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <LabelManagement />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/staging',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <StagingBoard />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/custody',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <CustodyTimeline />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/custody/:packageId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <CustodyTimeline />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'packaging/docs',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DocumentationCenter />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
 
       // Freight & Delivery Module
       {
@@ -1014,7 +985,7 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
       {
-        path: 'sales/quote/:quoteId',
+        path: 'sales/quote/new',
         element: (
           <Suspense fallback={<PageLoader />}>
             <SalesQuoteBuilder />
@@ -1023,7 +994,7 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
       {
-        path: 'sales/quote/new',
+        path: 'sales/quote/:quoteId',
         element: (
           <Suspense fallback={<PageLoader />}>
             <SalesQuoteBuilder />
@@ -1106,79 +1077,7 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Drop Tag Engine Module
-      {
-        path: 'drop-tags/queue',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagPackagingQueue />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/print-center',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagPrintCenter />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/apply',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagApplyScanScreen />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/listings',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagListingPage />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/staging',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagStagingBoard />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/load',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagLoadingScreen />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/traceability',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagTraceabilityViewer />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'drop-tags/traceability/:tagId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <DropTagTraceabilityViewer />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
+      // (Drop Tag routes removed — consolidated into Material Tracking module above),
 
       // Shipping/Shipments
       {
@@ -1429,6 +1328,16 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <RecipeEditorPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      // Admin - Staff & Operator Management
+      {
+        path: 'admin/staff',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <StaffManagementPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

@@ -81,7 +81,7 @@ export default function MyOrdersPage() {
             sx={{ width: 220 }}
           />
           <TextField size="small" select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-            sx={{ width: 160 }} displayEmpty>
+            sx={{ width: 160 }} SelectProps={{ displayEmpty: true }}>
             <MenuItem value="">All Statuses</MenuItem>
             {Object.keys(STATUS_CFG).map(s => <MenuItem key={s} value={s}>{s.replace(/_/g, ' ')}</MenuItem>)}
           </TextField>

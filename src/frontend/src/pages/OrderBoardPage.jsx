@@ -23,10 +23,12 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material'
 import { KanbanBoard } from '../components/jobs'
+import JobPlanningDialog from '../components/jobs/JobPlanningDialog'
 import { KANBAN_COLUMNS, JOB_STATUSES, canTransitionTo } from '../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../constants/processingTypes'
 import { PRIORITY_LEVELS } from '../constants/materials'
-import { getJobs, createJob, updateJobStatus, updateJob } from '../services/jobsApi'
+import { getJobs, createJob, updateJobStatus, updateJob, planJob } from '../services/jobsApi'
+import { runDispatch } from '../services/dispatchApi'
 
 // Mock data for demo mode
 const generateMockJobs = () => {
@@ -67,6 +69,8 @@ const OrderBoardPage = () => {
   const [loading, setLoading] = useState(true)
   const [selectedJob, setSelectedJob] = useState(null)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [planDialogOpen, setPlanDialogOpen] = useState(false)
+  const [planningJob, setPlanningJob] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
 
   // New job form state
@@ -101,8 +105,43 @@ const OrderBoardPage = () => {
 
   const handleJobClick = (job) => {
     setSelectedJob(job)
-    // Navigate to job detail or show modal
-    console.log('Selected job:', job)
+    // If job is in ORDERED status, open the planning dialog
+    if (job.status === JOB_STATUSES.ORDERED) {
+      setPlanningJob(job)
+      setPlanDialogOpen(true)
+    } else {
+      console.log('Selected job:', job)
+    }
+  }
+
+  const handlePlanJob = async (jobId, planData) => {
+    try {
+      const result = await planJob(jobId, planData)
+      
+      // Auto-run dispatch engine to assign operations to work centers
+      try {
+        if (planData.locationId) {
+          await runDispatch(planData.locationId)
+        }
+        console.log('Dispatch engine run after planning')
+      } catch (dispatchErr) {
+        console.warn('Dispatch auto-run failed (non-critical):', dispatchErr)
+      }
+
+      setPlanDialogOpen(false)
+      setPlanningJob(null)
+      setSnackbar({
+        open: true,
+        message: `Job ${result.job?.jobNumber || jobId} planned successfully with ${result.operations?.length || 0} operations. Shop floor updated.`,
+        severity: 'success',
+      })
+
+      // Reload jobs to reflect the status change
+      await loadJobs()
+    } catch (error) {
+      console.error('Failed to plan job:', error)
+      throw error // Let the dialog handle the error display
+    }
   }
 
   const handleStatusChange = async (jobId, newStatus) => {
@@ -232,6 +271,17 @@ const OrderBoardPage = () => {
           loading={loading}
         />
       </Box>
+
+      {/* Job Planning Dialog */}
+      <JobPlanningDialog
+        open={planDialogOpen}
+        job={planningJob}
+        onClose={() => {
+          setPlanDialogOpen(false)
+          setPlanningJob(null)
+        }}
+        onSave={handlePlanJob}
+      />
 
       {/* Create Job Dialog */}
       <Dialog

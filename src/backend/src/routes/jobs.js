@@ -1,8 +1,29 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { supabase } from '../config/supabaseClient.js';
+import { onJobStatusChange } from '../services/printAutomationService.js';
 
 const router = Router();
+
+// Priority mapping: DB stores Int, frontend expects string labels
+const PRIORITY_INT_TO_STRING = { 1: 'LOW', 2: 'LOW', 3: 'NORMAL', 4: 'HIGH', 5: 'HOT' }
+const PRIORITY_STRING_TO_INT = { LOW: 1, NORMAL: 3, HIGH: 4, RUSH: 4, URGENT: 4, HOT: 5 }
+
+function mapJobForFrontend(job) {
+  return {
+    ...job,
+    // Map numeric priority → string for frontend cards/board
+    priority: PRIORITY_INT_TO_STRING[job.priority] || 'NORMAL',
+    // Alias operationType → processingType for card display
+    processingType: job.operationType || null,
+    // Alias scheduledEnd → dueDate for card display
+    dueDate: job.scheduledEnd || job.scheduledStart || null,
+    // Customer name from related order's buyer
+    customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : null) || 'Unassigned',
+    // Material hint from instructions
+    material: job.instructions || null,
+  }
+}
 
 // GET /jobs - List jobs with optional filters
 router.get('/', async (req, res) => {
@@ -72,7 +93,7 @@ router.get('/', async (req, res) => {
       ],
       include: {
         order: {
-          select: { id: true, orderNumber: true, buyerId: true },
+          select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
         },
         workCenter: {
           select: { id: true, code: true, name: true, locationId: true },
@@ -83,7 +104,8 @@ router.get('/', async (req, res) => {
       },
     });
     
-    res.json(jobs);
+    const mapped = jobs.map(mapJobForFrontend);
+    res.json(mapped);
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'Failed to fetch jobs' });
@@ -196,7 +218,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Job not found' });
     }
     
-    res.json(job);
+    res.json(mapJobForFrontend(job));
   } catch (error) {
     console.error('Error fetching job:', error);
     res.status(500).json({ error: 'Failed to fetch job' });
@@ -221,12 +243,12 @@ router.post('/', async (req, res) => {
     
     // Generate job number
     const jobCount = await prisma.job.count();
-    const jobNumber = `JOB-${String(jobCount + 1).padStart(6, '0')}`;
+    const jobNumber = `JOB-${String(jobCount + 1).padStart(5, '0')}`;
     
     // Build data object with only defined fields
     const data = {
       jobNumber,
-      priority: priority || 3,
+      priority: typeof priority === 'string' ? (PRIORITY_STRING_TO_INT[priority] || 3) : (priority || 3),
       status: status || 'SCHEDULED',
     };
     
@@ -260,12 +282,213 @@ router.post('/', async (req, res) => {
       },
     });
     
-    res.status(201).json(jobWithRelations || job);
+    res.status(201).json(mapJobForFrontend(jobWithRelations || job));
   } catch (error) {
     console.error('Error creating job:', error);
     console.error('Request body:', req.body);
     console.error('Error details:', error.message, error.stack);
     res.status(500).json({ error: 'Failed to create job', details: error.message });
+  }
+});
+
+// GET /jobs/:id/plan - Retrieve existing dispatch plan for a job
+router.get('/:id/plan', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const dispatchJob = await prisma.dispatchJob.findUnique({
+      where: { jobId: id },
+      include: {
+        operations: { orderBy: { sequence: 'asc' } },
+      },
+    });
+
+    if (!dispatchJob || dispatchJob.operations.length === 0) {
+      return res.json({ exists: false, dispatchJob: null, operations: [] });
+    }
+
+    // Map to the shape the frontend expects
+    const mappedJob = {
+      ...dispatchJob,
+      thickness: Number(dispatchJob.thickness),
+    };
+    const mappedOps = dispatchJob.operations.map((op) => ({
+      id: op.id,
+      jobId: op.dispatchJobId,
+      sequence: op.sequence,
+      name: op.name,
+      requiredWorkCenterType: op.requiredWorkCenterType,
+      requiredDivision: op.requiredDivision,
+      requiredSkillLevel: op.requiredSkillLevel,
+      specialization: op.specialization,
+      thickness: Number(op.thickness),
+      materialCode: op.materialCode,
+      status: op.status,
+      assignedWorkCenterId: op.assignedWorkCenterId,
+      assignedOperatorId: op.assignedOperatorId,
+      scheduledStart: op.scheduledStart,
+      scheduledEnd: op.scheduledEnd,
+    }));
+
+    res.json({
+      exists: true,
+      dispatchJob: mappedJob,
+      operations: mappedOps,
+    });
+  } catch (error) {
+    console.error('Error fetching job plan:', error);
+    res.status(500).json({ error: 'Failed to fetch job plan', details: error.message });
+  }
+});
+
+// POST /jobs/:id/plan - Plan a job and create dispatch operations
+// Persists dispatch job + operations to Supabase via Prisma
+router.post('/:id/plan', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      operations,  // Array of { workCenterType, name, skillLevel }
+      division,
+      dueDate,
+      materialCode,
+      commodity,
+      thickness,
+      form,
+      grade,
+      locationId,
+    } = req.body;
+
+    // Validate operations array
+    if (!operations || !Array.isArray(operations) || operations.length === 0) {
+      return res.status(400).json({
+        error: 'operations array is required with at least one routing step',
+      });
+    }
+
+    // Validate each operation's work center type exists (from Supabase)
+    for (const op of operations) {
+      if (!op.workCenterType) {
+        return res.status(400).json({ error: 'Each operation must have a workCenterType' });
+      }
+      const typeExists = await prisma.workCenterType.findUnique({ where: { id: op.workCenterType } });
+      if (!typeExists || !typeExists.isActive) {
+        const allActive = await prisma.workCenterType.findMany({ where: { isActive: true }, select: { id: true } });
+        return res.status(400).json({
+          error: `Unknown or inactive work center type: ${op.workCenterType}`,
+          availableTypes: allActive.map((t) => t.id),
+        });
+      }
+    }
+
+    // Find the Prisma job
+    const job = await prisma.job.findUnique({
+      where: { id },
+      include: {
+        order: {
+          select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
+        },
+      },
+    });
+
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    if (job.status !== 'ORDERED' && job.status !== 'SCHEDULED') {
+      return res.status(400).json({
+        error: `Job must be in ORDERED or SCHEDULED status to plan. Current status: ${job.status}`,
+      });
+    }
+
+    // 1. Update Prisma job status to SCHEDULED
+    const updateData = {
+      status: 'SCHEDULED',
+    };
+    if (dueDate) {
+      updateData.scheduledEnd = new Date(dueDate);
+    }
+
+    const updatedJob = await prisma.job.update({
+      where: { id },
+      data: updateData,
+      include: {
+        order: {
+          select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
+        },
+        workCenter: {
+          select: { id: true, code: true, name: true, locationId: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+
+    const priorityMap = { 1: 'NORMAL', 2: 'NORMAL', 3: 'NORMAL', 4: 'RUSH', 5: 'HOT' };
+
+    // 2. Upsert dispatch job in database (delete old one if re-planning)
+    await prisma.dispatchJob.deleteMany({ where: { jobId: id } });
+
+    const newDispatchJob = await prisma.dispatchJob.create({
+      data: {
+        jobId: id,
+        jobNumber: job.jobNumber,
+        orderId: job.orderId || null,
+        materialCode: materialCode || job.instructions || 'N/A',
+        commodity: commodity || 'METALS',
+        form: form || 'PLATE',
+        grade: grade || 'A36',
+        thickness: thickness || 0.5,
+        division: division || 'METALS',
+        locationId: locationId || 'FWA',
+        dueDate: dueDate ? new Date(dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        priority: priorityMap[job.priority] || 'NORMAL',
+        customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : 'Customer'),
+        operations: {
+          create: operations.map((op, idx) => ({
+            sequence: idx + 1,
+            name: op.name || `Step ${idx + 1}: ${op.workCenterType}`,
+            requiredWorkCenterType: op.workCenterType,
+            requiredDivision: division || 'METALS',
+            requiredSkillLevel: op.skillLevel || 'STANDARD',
+            specialization: op.specialization || null,
+            thickness: thickness || 0.5,
+            materialCode: materialCode || job.instructions || 'N/A',
+            status: 'PENDING',
+          })),
+        },
+      },
+      include: {
+        operations: { orderBy: { sequence: 'asc' } },
+      },
+    });
+
+    console.log(`Job ${job.jobNumber} planned: ${newDispatchJob.operations.length} operations persisted to database`);
+
+    res.json({
+      success: true,
+      job: mapJobForFrontend(updatedJob),
+      dispatchJob: { ...newDispatchJob, thickness: Number(newDispatchJob.thickness) },
+      operations: newDispatchJob.operations.map((op) => ({
+        id: op.id,
+        jobId: op.dispatchJobId,
+        sequence: op.sequence,
+        name: op.name,
+        requiredWorkCenterType: op.requiredWorkCenterType,
+        requiredDivision: op.requiredDivision,
+        requiredSkillLevel: op.requiredSkillLevel,
+        specialization: op.specialization,
+        thickness: Number(op.thickness),
+        materialCode: op.materialCode,
+        status: op.status,
+        assignedWorkCenterId: op.assignedWorkCenterId,
+        assignedOperatorId: op.assignedOperatorId,
+        scheduledStart: op.scheduledStart,
+        scheduledEnd: op.scheduledEnd,
+      })),
+    });
+  } catch (error) {
+    console.error('Error planning job:', error);
+    res.status(500).json({ error: 'Failed to plan job', details: error.message });
   }
 });
 
@@ -324,7 +547,7 @@ router.post('/:id/status', async (req, res) => {
     });
     
     console.log('Job updated successfully');
-    res.json(updatedJob);
+    res.json(mapJobForFrontend(updatedJob));
   } catch (error) {
     console.error('Error updating job status:', error);
     console.error('Error stack:', error.stack);
@@ -337,6 +560,11 @@ router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body };
+    
+    // Convert string priority to int for DB
+    if (typeof updateData.priority === 'string') {
+      updateData.priority = PRIORITY_STRING_TO_INT[updateData.priority] || 3;
+    }
     
     // Handle date conversions
     if (updateData.scheduledStart) {
@@ -362,9 +590,102 @@ router.patch('/:id', async (req, res) => {
       },
     });
     
-    res.json(job);
+    res.json(mapJobForFrontend(job));
   } catch (error) {
     console.error('Error updating job:', error);
+    res.status(500).json({ error: 'Failed to update job' });
+  }
+});
+
+// PATCH /jobs/:id/status - Update job status (used by PackagingQueue, Material Tracking)
+router.patch('/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+    
+    const validStatuses = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'ON_HOLD'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+    
+    const prevJob = await prisma.job.findUnique({ where: { id } });
+    const oldStatus = prevJob?.status;
+
+    const job = await prisma.job.update({
+      where: { id },
+      data: { status },
+      include: {
+        order: { include: { buyer: true } },
+        workCenter: { select: { id: true, code: true, name: true } },
+        assignedTo: { select: { id: true, firstName: true, lastName: true } },
+      },
+    });
+
+    // Auto-queue print jobs based on status transition
+    if (oldStatus !== status) {
+      onJobStatusChange(job, status, oldStatus).catch((e) =>
+        console.error('[PrintAutomation] status hook error:', e.message)
+      );
+    }
+    
+    res.json(mapJobForFrontend(job));
+  } catch (error) {
+    console.error('Error updating job status:', error);
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+    res.status(500).json({ error: 'Failed to update job status' });
+  }
+});
+
+// PUT /jobs/:id - Update job (alias for PATCH, used by frontend jobsApi)
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body };
+    
+    // Convert string priority to int for DB
+    if (typeof updateData.priority === 'string') {
+      updateData.priority = PRIORITY_STRING_TO_INT[updateData.priority] || 3;
+    }
+    
+    // Handle date conversions
+    if (updateData.scheduledStart) {
+      updateData.scheduledStart = new Date(updateData.scheduledStart);
+    }
+    if (updateData.scheduledEnd) {
+      updateData.scheduledEnd = new Date(updateData.scheduledEnd);
+    }
+
+    // Remove virtual fields that don't exist in DB
+    delete updateData.processingType;
+    delete updateData.dueDate;
+    delete updateData.customerName;
+    delete updateData.material;
+    
+    const job = await prisma.job.update({
+      where: { id },
+      data: updateData,
+      include: {
+        order: {
+          select: { id: true, orderNumber: true },
+        },
+        workCenter: {
+          select: { id: true, code: true, name: true },
+        },
+        assignedTo: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+    
+    res.json(mapJobForFrontend(job));
+  } catch (error) {
+    console.error('Error updating job (PUT):', error);
     res.status(500).json({ error: 'Failed to update job' });
   }
 });
@@ -470,17 +791,16 @@ router.post('/:id/complete', async (req, res) => {
       where: { id },
       data: updateData,
       include: {
-        order: {
-          select: { id: true, orderNumber: true, buyerId: true },
-        },
-        workCenter: {
-          select: { id: true, code: true, name: true, locationId: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
+        order: { include: { buyer: true } },
+        workCenter: { select: { id: true, code: true, name: true, locationId: true } },
+        assignedTo: { select: { id: true, firstName: true, lastName: true } },
       },
     });
+
+    // Auto-queue shipping label
+    onJobStatusChange(updatedJob, 'READY_TO_SHIP', job.status).catch((e) =>
+      console.error('[PrintAutomation] complete hook error:', e.message)
+    );
     
     res.json(updatedJob);
   } catch (error) {

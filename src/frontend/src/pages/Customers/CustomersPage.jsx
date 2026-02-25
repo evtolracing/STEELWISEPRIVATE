@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { FileUploadZone } from '../../components/common'
 import {
   Box,
   Paper,
@@ -29,6 +30,7 @@ import {
   Grid,
   Tooltip,
   Menu,
+  Snackbar,
 } from '@mui/material'
 import {
   Search as SearchIcon,
@@ -42,9 +44,10 @@ import {
   Refresh as RefreshIcon,
   FilterList as FilterIcon,
   Download as DownloadIcon,
+  CloudUpload as UploadIcon,
 } from '@mui/icons-material'
 
-const API_BASE = 'http://localhost:3001/api/customers'
+const API_BASE = '/api/customers'
 
 const ORG_TYPES = ['MILL', 'SERVICE_CENTER', 'DISTRIBUTOR', 'BROKER', 'FABRICATOR', 'OEM']
 
@@ -102,6 +105,10 @@ export default function CustomersPage() {
   // row menu
   const [menuAnchor, setMenuAnchor] = useState(null)
   const [menuCustomer, setMenuCustomer] = useState(null)
+
+  // upload dialog
+  const [uploadDialog, setUploadDialog] = useState({ open: false, customer: null })
+  const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' })
 
   /* ── fetch ── */
   const fetchCustomers = useCallback(async () => {
@@ -223,6 +230,14 @@ export default function CustomersPage() {
               <RefreshIcon />
             </IconButton>
           </Tooltip>
+          <Button
+            variant="outlined"
+            startIcon={<UploadIcon />}
+            onClick={() => setUploadDialog({ open: true, customer: null })}
+            sx={{ textTransform: 'none' }}
+          >
+            Upload Documents
+          </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate} sx={{ textTransform: 'none' }}>
             New Customer
           </Button>
@@ -370,6 +385,16 @@ export default function CustomersPage() {
         <MenuItem onClick={() => menuCustomer && openEdit(menuCustomer)}>
           <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (menuCustomer) {
+              setUploadDialog({ open: true, customer: menuCustomer })
+              handleMenuClose()
+            }
+          }}
+        >
+          <UploadIcon fontSize="small" sx={{ mr: 1 }} /> Upload Documents
+        </MenuItem>
       </Menu>
 
       {/* Create / Edit Dialog */}
@@ -437,6 +462,57 @@ export default function CustomersPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Upload Documents Dialog */}
+      <Dialog
+        open={uploadDialog.open}
+        onClose={() => setUploadDialog({ open: false, customer: null })}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Upload Documents{uploadDialog.customer ? ` — ${uploadDialog.customer.name}` : ''}
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Upload contracts, purchase orders, credit applications, or other customer documents.
+          </Typography>
+          <FileUploadZone
+            entityType="CUSTOMER"
+            entityId={uploadDialog.customer?.id}
+            docType="GENERAL"
+            accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx"
+            multiple
+            onUploaded={() =>
+              setSnack({ open: true, message: 'Document uploaded successfully', severity: 'success' })
+            }
+            onError={(err) =>
+              setSnack({ open: true, message: err || 'Upload failed', severity: 'error' })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setUploadDialog({ open: false, customer: null })}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snack.severity}
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          variant="filled"
+        >
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

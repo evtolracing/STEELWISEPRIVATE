@@ -3,7 +3,7 @@
  * Search, lookup, and create walk-in customers for order entry.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 // ── Mock customer data for local dev ──
 const MOCK_CUSTOMERS = [
@@ -14,7 +14,7 @@ const MOCK_CUSTOMERS = [
   { id: 'cust-005', code: 'IND-CO', name: 'Industrial Corp', type: 'OEM', accountType: 'ACCOUNT', status: 'ACTIVE', phone: '(555) 500-6000', email: 'buy@indcorp.com', city: 'Lansing', state: 'MI', paymentTerms: 'NET30', creditLimit: 60000, creditUsed: 8000, taxExempt: false, shipTos: [{ id: 'st-6', label: 'Loading Dock', address: '750 State Ave', city: 'Lansing', state: 'MI', zip: '48933' }], priceLevel: 'CONTRACT_A' },
 ]
 
-const USE_MOCK = true
+const USE_MOCK = false
 
 export async function searchCustomers(query, { limit = 20, type } = {}) {
   if (USE_MOCK) {
@@ -28,7 +28,21 @@ export async function searchCustomers(query, { limit = 20, type } = {}) {
   if (type) params.set('type', type)
   const res = await fetch(`${API_BASE}/customers?${params}`)
   if (!res.ok) throw new Error('Customer search failed')
-  return res.json()
+  const json = await res.json()
+  // Map Organization records to the shape the CustomerLookupDialog expects
+  const orgs = json.data || json.customers || (Array.isArray(json) ? json : [])
+  const mapped = orgs.map(o => ({
+    ...o,
+    status: o.isActive ? 'ACTIVE' : 'INACTIVE',
+    accountType: o.type === 'WALK_IN' ? 'WALKIN' : 'ACCOUNT',
+    paymentTerms: o.paymentTerms || 'NET30',
+    creditLimit: o.creditLimit || 0,
+    creditUsed: o.creditUsed || 0,
+    taxExempt: o.taxExempt || false,
+    shipTos: o.shipTos || [],
+    priceLevel: o.priceLevel || 'RETAIL',
+  }))
+  return { data: mapped, meta: json.meta || { total: mapped.length } }
 }
 
 export async function getCustomerById(id) {
@@ -62,8 +76,25 @@ export async function createWalkInCustomer({ name, phone, email, company }) {
   const res = await fetch(`${API_BASE}/customers`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, phone, email, company, type: 'WALK_IN' }),
+    body: JSON.stringify({
+      name: name || company || 'Walk-in Customer',
+      code: 'WALK-' + Date.now().toString(36).toUpperCase(),
+      phone: phone || null,
+      email: email || null,
+      city: null,
+      state: null,
+      type: 'OEM',
+    }),
   })
   if (!res.ok) throw new Error('Failed to create walk-in customer')
-  return res.json()
+  const created = await res.json()
+  return {
+    ...created,
+    status: 'ACTIVE',
+    accountType: 'WALKIN',
+    paymentTerms: 'COD',
+    taxExempt: false,
+    shipTos: [],
+    priceLevel: 'RETAIL',
+  }
 }

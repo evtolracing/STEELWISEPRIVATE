@@ -4,7 +4,7 @@
  * Supports streaming sentence-by-sentence TTS with audio queue
  */
 
-const API_BASE = 'http://localhost:3001/api/ai/tts';
+const API_BASE = '/api/ai/tts';
 
 // Voice list (mirrored from backend, cached locally)
 const AMERICAN_VOICES = [

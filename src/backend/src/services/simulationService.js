@@ -3,9 +3,7 @@
  * Models what-if scenarios and calculates impact on operations
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 /**
  * Create a new simulation scenario

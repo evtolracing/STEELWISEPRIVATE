@@ -2,7 +2,7 @@
  * Work Order Optimization AI API Client
  */
 
-const API_BASE = 'http://localhost:3001/api/v1/ai/work-order-optimize';
+const API_BASE = '/api/v1/ai/work-order-optimize';
 
 export async function getOptimizationPreview(params = {}) {
   const response = await fetch(`${API_BASE}/preview`, {

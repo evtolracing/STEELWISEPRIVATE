@@ -5,9 +5,7 @@
  * Implements the will-call pickup workflow from design document 42-AI-ORDER-INTAKE-POS.md
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../../lib/db.js';
 
 // ============================================
 // ENUMS

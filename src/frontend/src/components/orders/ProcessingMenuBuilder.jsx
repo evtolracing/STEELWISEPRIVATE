@@ -37,9 +37,15 @@ export default function ProcessingMenuBuilder({ open, onClose, onSave, division,
     })()
   }, [open, division])
 
+  // Helper: update selected and immediately save to parent
+  const updateAndSave = (newSelected) => {
+    setSelected(newSelected)
+    if (onSave) onSave(newSelected)
+  }
+
   const addProcess = (proc) => {
     const entry = { id: proc.id, code: proc.code, name: proc.name, type: proc.type, pricePerOp: proc.pricePerOp, priceUnit: proc.priceUnit, estimatedMinutes: proc.estimatedMinutes, params: {}, estimatedCost: proc.pricePerOp }
-    setSelected(prev => [...prev, entry])
+    updateAndSave([...selected, entry])
   }
 
   const applyTemplate = (tpl) => {
@@ -47,16 +53,23 @@ export default function ProcessingMenuBuilder({ open, onClose, onSave, division,
       const p = s.process || {}
       return { id: p.id, code: p.code, name: p.name, type: p.type, pricePerOp: p.pricePerOp, priceUnit: p.priceUnit, estimatedMinutes: p.estimatedMinutes, params: {}, estimatedCost: p.pricePerOp }
     })
-    setSelected(entries)
+    updateAndSave(entries)
   }
 
-  const removeStep = (idx) => setSelected(prev => prev.filter((_, i) => i !== idx))
+  const removeStep = (idx) => {
+    const next = selected.filter((_, i) => i !== idx)
+    updateAndSave(next)
+  }
 
   const updateParam = (idx, key, val) => {
-    setSelected(prev => prev.map((s, i) => i === idx ? { ...s, params: { ...s.params, [key]: val } } : s))
+    const next = selected.map((s, i) => i === idx ? { ...s, params: { ...s.params, [key]: val } } : s)
+    updateAndSave(next)
   }
 
-  const handleSave = () => { onSave(selected); onClose() }
+  const handleDone = () => {
+    if (onSave) onSave(selected)
+    onClose()
+  }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -136,7 +149,7 @@ export default function ProcessingMenuBuilder({ open, onClose, onSave, division,
           Est. cost: ${selected.reduce((s, p) => s + (p.estimatedCost || 0), 0).toFixed(2)}
         </Typography>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSave}>Save Steps</Button>
+        <Button variant="contained" onClick={handleDone}>Done</Button>
       </DialogActions>
     </Dialog>
   )

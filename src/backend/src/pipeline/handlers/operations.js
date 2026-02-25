@@ -5,11 +5,9 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../lib/db.js';
 import { PIPELINE_STAGES, PRIORITY } from '../orchestrator.js';
 import { planOrder, findOrderById, findJobById, listJobs } from '../../routes/orderHubStore.js';
-
-const prisma = new PrismaClient();
 
 // ============================================================================
 // INVENTORY LOOKUP DATA (In-memory for now)

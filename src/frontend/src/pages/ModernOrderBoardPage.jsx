@@ -44,12 +44,14 @@ import ModernKanbanBoard from '../components/jobs/ModernKanbanBoard'
 import { KANBAN_COLUMNS, JOB_STATUSES, canTransitionTo } from '../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../constants/processingTypes'
 import { PRIORITY_LEVELS } from '../constants/materials'
-import { getJobs, createJob, updateJobStatus, updateJob } from '../services/jobsApi'
+import { getJobs, createJob, updateJobStatus, updateJob, planJob, getJobPlan } from '../services/jobsApi'
+import JobPlanningDialog from '../components/jobs/JobPlanningDialog'
 
 const ModernOrderBoardPage = () => {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedJob, setSelectedJob] = useState(null)
+  const [planningJob, setPlanningJob] = useState(null)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
 
@@ -85,6 +87,23 @@ const ModernOrderBoardPage = () => {
   const handleJobClick = (job) => {
     setSelectedJob(job)
     console.log('Selected job:', job)
+    // Open planning dialog for ORDERED and SCHEDULED jobs
+    if (job.status === 'ORDERED' || job.status === 'SCHEDULED') {
+      setPlanningJob(job)
+    }
+  }
+
+  const handlePlanJob = async (jobId, planData) => {
+    try {
+      const isReplan = planningJob?.status === 'SCHEDULED'
+      await planJob(jobId, planData)
+      setPlanningJob(null)
+      setSnackbar({ open: true, message: isReplan ? 'Job plan updated successfully' : 'Job planned and moved to Scheduled', severity: 'success' })
+      await loadJobs()
+    } catch (error) {
+      console.error('Failed to plan job:', error)
+      throw error
+    }
   }
 
   const handleStatusChange = async (jobId, newStatus) => {
@@ -146,7 +165,7 @@ const ModernOrderBoardPage = () => {
     try {
       const jobData = {
         operationType: newJob.processingType,
-        priority: Object.keys(PRIORITY_LEVELS).indexOf(newJob.priority) + 1 || 3,
+        priority: newJob.priority || 'NORMAL',
         instructions: `${newJob.customerName} - ${newJob.material || 'No material specified'}`,
         notes: newJob.notes,
         status: JOB_STATUSES.ORDERED,
@@ -521,6 +540,14 @@ const ModernOrderBoardPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Job Planning Dialog */}
+      <JobPlanningDialog
+        open={!!planningJob}
+        job={planningJob}
+        onClose={() => setPlanningJob(null)}
+        onSave={handlePlanJob}
+      />
 
       {/* Snackbar */}
       <Snackbar

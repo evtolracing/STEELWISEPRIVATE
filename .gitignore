@@ -8,9 +8,11 @@ Desktop.ini
 
 # Env
 .env
-.env.*
 .env.local
+.env.development
+.env.production
 .env.*.local
+!.env.example
 
 # Archives
 *.zip
@@ -36,3 +38,5 @@ build/
 
 # TypeScript cache
 *.tsbuildinfo
+tmpclaude-*
+nul

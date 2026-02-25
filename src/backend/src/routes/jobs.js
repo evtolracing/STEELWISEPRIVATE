@@ -1,11 +1,51 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { supabase } from '../config/supabaseClient.js';
 
 const router = Router();
 
 // GET /jobs - List jobs with optional filters
 router.get('/', async (req, res) => {
   try {
+    // Try Supabase JS client first if available
+    if (supabase) {
+      try {
+        const { data: jobs, error } = await supabase
+          .from('Job')  // Prisma uses PascalCase (capital J)
+          .select('*')
+          .order('createdAt', { ascending: false })
+          .limit(100);
+
+        if (!error && jobs) {
+          return res.json(jobs);
+        }
+        console.error('Supabase query failed, falling back:', error);
+      } catch (supabaseError) {
+        console.error('Supabase query failed, falling back:', supabaseError);
+      }
+    }
+
+    // Return mock data if Prisma is not configured
+    if (!prisma) {
+      const mockJobs = [
+        {
+          id: '1',
+          jobNumber: 'JOB-000001',
+          operationType: 'SLITTING',
+          instructions: 'Slit 48" x 0.125" CR coil into 12" strips',
+          priority: 5,
+          status: 'SCHEDULED',
+          scheduledStart: new Date('2026-02-10T08:00:00Z'),
+          scheduledEnd: new Date('2026-02-10T12:00:00Z'),
+          order: { id: '1', orderNumber: 'SO-1001', buyerId: 'CUST-001' },
+          workCenter: { id: '1', code: 'SLIT-01', name: 'Slitter #1', locationId: 'LOC-01' },
+          assignedTo: null
+        }
+      ];
+      return res.json(mockJobs);
+    }
+
+    // Fall back to Prisma
     const { status, locationId, workCenterId, orderId } = req.query;
     
     const where = {};

@@ -5,6 +5,35 @@ const router = Router();
 
 router.get('/', async (req, res) => {
   try {
+    // Return mock data if database is not configured
+    if (!prisma) {
+      const mockOrders = [
+        {
+          id: '1',
+          orderNumber: 'SO-1001',
+          orderType: 'SALES_ORDER',
+          status: 'CONFIRMED',
+          buyerId: 'CUST-001',
+          buyer: { id: 'CUST-001', name: 'ABC Manufacturing' },
+          totalAmount: 15000,
+          createdAt: new Date('2026-02-01T10:00:00Z'),
+          lines: []
+        },
+        {
+          id: '2',
+          orderNumber: 'SO-1002',
+          orderType: 'SALES_ORDER',
+          status: 'PENDING',
+          buyerId: 'CUST-002',
+          buyer: { id: 'CUST-002', name: 'XYZ Industries' },
+          totalAmount: 25000,
+          createdAt: new Date('2026-02-05T14:30:00Z'),
+          lines: []
+        }
+      ];
+      return res.json(mockOrders);
+    }
+
     const { orderType, status, buyerId } = req.query;
     const orders = await prisma.order.findMany({
       where: {

@@ -1,8 +1,12 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/db.js';
 
 export async function seedSupabaseData() {
+  // Skip if database is not configured
+  if (!prisma) {
+    console.log('⏭️  Skipping database seed - DATABASE_URL not configured');
+    return;
+  }
+
   try {
     console.log('🌱 Seeding Supabase database...');
 

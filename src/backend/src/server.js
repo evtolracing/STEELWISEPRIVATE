@@ -1,9 +1,13 @@
+// Load environment variables FIRST before any other imports
+import './config/env.js';
+
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Routes
 import authRoutes from './routes/auth.js';
@@ -53,8 +57,6 @@ import { initOrderHubData } from './routes/initOrderHubData.js';
 import { seedSupabaseData } from './seeds/supabaseSeed.js';
 import prisma from './lib/db.js';
 
-dotenv.config();
-
 const app = express();
 export { prisma };
 
@@ -63,8 +65,6 @@ app.use(cors());
 app.use(express.json());
 
 // Serve uploaded files statically
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Health check

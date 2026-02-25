@@ -1,7 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import './env.js';  // Load environment variables
 
 const supabaseUrl = process.env.SUPABASE_URL || 'https://giyheniqqqwpmetefdxj.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
@@ -10,9 +8,14 @@ if (!supabaseServiceKey) {
   console.warn('⚠️  SUPABASE_SERVICE_ROLE_KEY or SUPABASE_KEY not found in environment');
 }
 
-// Create Supabase client with service role key (has access to secrets)
-export const supabase = supabaseServiceKey 
-  ? createClient(supabaseUrl, supabaseServiceKey)
+// Create Supabase client with service role key (bypasses RLS)
+export const supabase = supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
   : null;
 
 /**

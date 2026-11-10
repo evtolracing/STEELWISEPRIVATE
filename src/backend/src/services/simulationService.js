@@ -5,26 +5,48 @@
 
 import prisma from '../lib/db.js';
 
+function requireDb() {
+  if (!prisma) throw new Error('Database is not configured');
+  return prisma;
+}
+
+function scenarioToApi(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description || '',
+    createdBy: row.createdById,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+    status: row.status,
+    changes: Array.isArray(row.changes) ? row.changes : [],
+    baseline: row.baseline,
+    results: row.results,
+  };
+}
+
 /**
  * Create a new simulation scenario
  */
 export async function createScenario(userId, scenarioData) {
-  const scenario = {
-    id: `SCENARIO-${Date.now()}`,
-    name: scenarioData.name,
-    description: scenarioData.description || '',
-    createdBy: userId,
-    createdAt: new Date().toISOString(),
-    status: 'DRAFT',
-    changes: scenarioData.changes || [],
-    baseline: null,
-    results: null,
-  };
+  if (!scenarioData?.name) throw new Error('Scenario name is required');
+  const row = await requireDb().simulationScenario.create({
+    data: {
+      name: scenarioData.name,
+      description: scenarioData.description || null,
+      createdById: userId && userId !== 'anonymous' ? userId : null,
+      changes: Array.isArray(scenarioData.changes) ? scenarioData.changes : [],
+    },
+  });
+  return scenarioToApi(row);
+}
 
-  // In production, save to database
-  // await prisma.simulationScenario.create({ data: scenario });
-
-  return scenario;
+/**
+ * Get one scenario by id
+ */
+export async function getScenario(scenarioId) {
+  return scenarioToApi(await requireDb().simulationScenario.findUnique({ where: { id: String(scenarioId) } }));
 }
 
 /**
@@ -49,7 +71,7 @@ export async function runSimulation(scenarioId, changes) {
   // Document assumptions
   const assumptions = extractAssumptions(changes);
 
-  return {
+  const result = {
     scenarioId,
     timestamp: new Date().toISOString(),
     baseline,
@@ -58,6 +80,16 @@ export async function runSimulation(scenarioId, changes) {
     recommendation,
     assumptions,
   };
+
+  // Keep the latest run on the saved scenario, when there is one.
+  if (prisma && scenarioId) {
+    await prisma.simulationScenario.updateMany({
+      where: { id: String(scenarioId) },
+      data: { changes, baseline, results: result, status: 'READY' },
+    });
+  }
+
+  return result;
 }
 
 /**
@@ -365,21 +397,16 @@ function parseInventoryChange(change) {
 }
 
 /**
- * Get all scenarios for a user
+ * Get scenarios, newest first. With a user id, only that user's scenarios.
  */
 export async function getScenarios(userId) {
-  // In production, query database
-  return [
-    {
-      id: 'SCENARIO-001',
-      name: 'Accept RFQ-2026-089',
-      status: 'READY',
-      changes: [
-        { type: 'DEMAND', description: 'Add 15,000 lbs 4140 Round Bar order', value: '+15000 lbs' },
-      ],
-      createdAt: '2026-02-04T10:30:00Z',
-    },
-  ];
+  const where = userId && userId !== 'anonymous' ? { createdById: userId } : {};
+  const rows = await requireDb().simulationScenario.findMany({
+    where: { ...where, status: { not: 'ARCHIVED' } },
+    orderBy: { createdAt: 'desc' },
+    take: 200,
+  });
+  return rows.map(scenarioToApi);
 }
 
 /**
@@ -387,13 +414,12 @@ export async function getScenarios(userId) {
  */
 export async function compareScenarios(scenarioIds) {
   const results = [];
-  
+
   for (const id of scenarioIds) {
-    // Get scenario and run simulation
-    const scenario = await getScenarios(id);
+    const scenario = await getScenario(id);
     if (scenario) {
-      const result = await runSimulation(id, scenario.changes || []);
-      results.push({ scenarioId: id, ...result });
+      const result = await runSimulation(id, scenario.changes);
+      results.push({ scenarioId: id, name: scenario.name, ...result });
     }
   }
 
@@ -417,6 +443,7 @@ function generateComparison(results) {
 export default {
   createScenario,
   runSimulation,
+  getScenario,
   getScenarios,
   compareScenarios,
   getBaselineMetrics,

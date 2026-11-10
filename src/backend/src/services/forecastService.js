@@ -284,18 +284,20 @@ export async function runSensitivityAnalysis(category, variableName, rangeMin, r
 export async function saveForecastSnapshot(userId, category, horizon) {
   const forecast = await getForecast(category, horizon);
   
+  if (!prisma) throw new Error('Database is not configured');
+  const row = await prisma.forecastSnapshot.create({
+    data: { category, horizon: String(horizon || '1M'), createdById: userId && userId !== 'anonymous' ? userId : null, data: forecast },
+  });
+
   const snapshot = {
-    id: `FCST-${Date.now()}`,
-    category,
-    horizon,
-    createdBy: userId,
-    createdAt: new Date().toISOString(),
-    data: forecast,
+    id: row.id,
+    category: row.category,
+    horizon: row.horizon,
+    createdBy: row.createdById,
+    createdAt: row.createdAt.toISOString(),
+    data: row.data,
   };
-  
-  // In production, save to database
-  // await prisma.forecastSnapshot.create({ data: snapshot });
-  
+
   return snapshot;
 }
 

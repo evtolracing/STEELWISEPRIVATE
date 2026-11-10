@@ -28,6 +28,29 @@ are made and how to bring the existing Supabase database onto migrations.
    and `DIRECT_URL` pointing at it. Vercel builds do not run migrations;
    apply them by hand before deploying code that needs them.
 
+## Applying a new migration from the Supabase SQL Editor
+
+Each PR that adds a migration also adds a paste-ready file under
+`src/backend/prisma/upgrades/sql-editor/`, made with `npm run db:sql-editor`.
+Paste it into Supabase → SQL Editor → New query and click Run. It runs as
+one transaction, skips anything already applied, and records the migration
+the same way `prisma migrate deploy` does, so you can mix the two.
+
+The file also turns on Row Level Security for every table. Supabase serves
+the public schema through its REST API to anyone with the anon key; with RLS
+on and no policies, that API returns nothing. The app connects directly as
+the table owner, which RLS does not restrict. If Supabase asks whether to
+run with RLS, choose to enable it.
+
+Apply the database update before merging the PR that needs it (the change is
+additive, so the old code keeps working against the new tables).
+
+## Loading demo data
+
+`npm run db:seed:demo` from `src/backend`, or, without a terminal, sign in as
+an owner or super admin and call `POST /api/admin/seed-demo`. Both are safe
+to repeat. Set `DEMO_SEED_ENABLED=false` on real production servers.
+
 ## Bringing the existing Supabase database onto migrations (one time)
 
 The Supabase database was created with `prisma db push`, so it has no

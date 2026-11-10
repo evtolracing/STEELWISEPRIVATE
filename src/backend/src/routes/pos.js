@@ -5,6 +5,7 @@
  */
 
 import { Router } from 'express';
+import prisma from '../lib/db.js';
 import posWorkflowService from '../workflows/pos/POSWorkflowService.js';
 import { POSStates, POSTriggers, POSWorkflowDefinition } from '../workflows/pos/POSWorkflowStateMachine.js';
 import { screenFlowManager } from '../workflows/pos/ScreenFlowService.js';
@@ -985,7 +986,7 @@ router.get('/divisions/:divisionId/ship-tos', async (req, res) => {
     
     const { divisionService } = await import('../workflows/pos/DivisionService.js');
     
-    const shipTos = await divisionService.getFilteredShipTos(customerId, divisionId);
+    const shipTos = await divisionService.getFilteredShipTos(divisionId, customerId);
     
     res.json({ shipTos });
   } catch (error) {
@@ -1052,18 +1053,12 @@ router.get('/sessions/:sessionId/tax-jurisdiction', async (req, res) => {
 
 /**
  * Helper: Get customer with divisions
- * TODO: Replace with actual database query
  */
 async function getCustomerWithDivisions(customerId) {
-  // Mock implementation - replace with actual DB query
-  // This would typically query the Customer table with related divisions and ship-tos
-  return {
-    id: customerId,
-    name: 'Mock Customer',
-    type: 'REGULAR',
-    divisions: [],
-    shipTos: []
-  };
+  if (!prisma) return null;
+  const customer = await prisma.organization.findUnique({ where: { id: customerId } });
+  if (!customer) return null;
+  return { ...customer, customerType: 'REGULAR' };
 }
 
 // ============================================

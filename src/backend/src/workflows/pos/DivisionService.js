@@ -7,6 +7,8 @@
 
 import prisma from '../../lib/db.js';
 
+const SHIP_TO_TYPES = ['SHIPPING', 'SHIP_TO', 'DELIVERY'];
+
 // ============================================
 // CONSTANTS
 // ============================================
@@ -454,59 +456,61 @@ class DivisionService {
    * Get customer divisions
    */
   async getCustomerDivisions(customerId) {
-    // Try to get from database
+    // A customer's divisions are the organizations whose parent is the
+    // customer. A customer with no children is its own single division.
     try {
       const customer = await prisma.organization.findUnique({
         where: { id: customerId },
-        include: {
-          childOrganizations: {
-            where: { orgType: 'DIVISION' }
-          }
-        }
+        include: { children: { where: { isActive: true }, orderBy: { name: 'asc' } } }
       });
-      
-      if (customer?.childOrganizations?.length > 0) {
-        return customer.childOrganizations.map(div => ({
-          id: div.id,
-          name: div.legalName,
-          code: div.shortCode,
-          isPrimary: div.isPrimary || false,
-          isActive: div.isActive,
-          address: {
-            street1: div.addressLine1,
-            city: div.city,
-            state: div.state,
-            postalCode: div.postalCode
-          },
-          phone: div.phone,
-          paymentTerms: div.paymentTerms,
-          taxExempt: div.taxExempt || false
-        }));
-      }
-      
-      // If no child divisions, treat customer as single division
-      return [{
-        id: customer.id,
-        name: customer.legalName,
-        code: customer.shortCode,
-        isPrimary: true,
-        isActive: customer.isActive,
+      if (!customer) return [];
+
+      const toDivision = (org, isPrimary) => ({
+        id: org.id,
+        name: org.name,
+        code: org.code,
+        isPrimary,
+        isActive: org.isActive,
         address: {
-          street1: customer.addressLine1,
-          city: customer.city,
-          state: customer.state,
-          postalCode: customer.postalCode
+          street1: org.address,
+          city: org.city,
+          state: org.state,
+          postalCode: org.postalCode
         },
-        phone: customer.phone,
-        paymentTerms: customer.paymentTerms,
-        taxExempt: customer.taxExempt || false
-      }];
+        phone: org.phone,
+        paymentTerms: org.paymentTerms,
+        taxExempt: org.taxExempt
+      });
+
+      if (customer.children.length > 0) {
+        return customer.children.map((div, index) => toDivision(div, index === 0));
+      }
+      return [toDivision(customer, true)];
     } catch (error) {
       console.error('Error fetching divisions:', error);
       return [];
     }
   }
-  
+
+  toShipTo(addr) {
+    return {
+      id: addr.id,
+      name: addr.addressName || 'Shipping Address',
+      address: {
+        line1: addr.addressLine1,
+        line2: addr.addressLine2,
+        city: addr.city,
+        state: addr.state,
+        postalCode: addr.postalCode
+      },
+      isDefault: addr.isPrimary,
+      divisionId: addr.organizationId,
+      shared: addr.shared,
+      allDivisions: addr.allDivisions,
+      usageCount: addr.usageCount
+    };
+  }
+
   /**
    * Get ship-tos for a division
    */
@@ -515,29 +519,18 @@ class DivisionService {
       const shipTos = await prisma.address.findMany({
         where: {
           organizationId: divisionId,
-          addressType: { in: ['SHIPPING', 'SHIP_TO', 'DELIVERY'] }
-        }
-      });
-      
-      return shipTos.map(addr => ({
-        id: addr.id,
-        name: addr.addressName || 'Shipping Address',
-        address: {
-          line1: addr.addressLine1,
-          line2: addr.addressLine2,
-          city: addr.city,
-          state: addr.state,
-          postalCode: addr.postalCode
+          isActive: true,
+          addressType: { in: SHIP_TO_TYPES }
         },
-        isDefault: addr.isPrimary || false,
-        divisionId: addr.organizationId
-      }));
+        orderBy: [{ isPrimary: 'desc' }, { usageCount: 'desc' }]
+      });
+      return shipTos.map(addr => this.toShipTo(addr));
     } catch (error) {
       console.error('Error fetching ship-tos:', error);
       return [];
     }
   }
-  
+
   /**
    * Get all ship-tos for a customer (across all divisions)
    */
@@ -545,94 +538,47 @@ class DivisionService {
     try {
       const addresses = await prisma.address.findMany({
         where: {
+          isActive: true,
           organization: {
             OR: [
               { id: customerId },
               { parentId: customerId }
             ]
           },
-          addressType: { in: ['SHIPPING', 'SHIP_TO', 'DELIVERY'] }
-        }
-      });
-      
-      return addresses.map(addr => ({
-        id: addr.id,
-        name: addr.addressName || 'Shipping Address',
-        address: {
-          line1: addr.addressLine1,
-          line2: addr.addressLine2,
-          city: addr.city,
-          state: addr.state,
-          postalCode: addr.postalCode
+          addressType: { in: SHIP_TO_TYPES }
         },
-        isDefault: addr.isPrimary || false,
-        divisionId: addr.organizationId,
-        shared: addr.shared || false,
-        allDivisions: addr.allDivisions || false,
-        usageCount: addr.usageCount || 0
-      }));
+        orderBy: [{ isPrimary: 'desc' }, { usageCount: 'desc' }]
+      });
+      return addresses.map(addr => this.toShipTo(addr));
     } catch (error) {
       console.error('Error fetching customer ship-tos:', error);
       return [];
     }
   }
-  
+
   /**
    * Get jobs for job account customer
    */
   async getCustomerJobs(customerId) {
-    try {
-      const jobs = await prisma.job.findMany({
-        where: {
-          customerId,
-          status: { in: ['ACTIVE', 'IN_PROGRESS'] }
-        },
-        orderBy: { updatedAt: 'desc' }
-      });
-      
-      return jobs.map(job => ({
-        id: job.id,
-        name: job.jobName,
-        number: job.jobNumber,
-        siteAddress: {
-          line1: job.siteAddress,
-          city: job.siteCity,
-          state: job.siteState,
-          postalCode: job.siteZip
-        },
-        isDefault: job.isDefault || false
-      }));
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-      return [];
-    }
+    // Customer job sites (contractor job accounts) are not modelled yet, so
+    // job-account customers fall back to their ship-to addresses.
+    return [];
   }
-  
+
   /**
    * Get last used division for a customer
    */
   async getLastUsedDivision(customerId) {
+    // The division is the organization that bought on the customer's most
+    // recent order: the customer itself or one of its children.
     try {
       const lastOrder = await prisma.order.findFirst({
-        where: { buyerId: customerId },
-        orderBy: { createdAt: 'desc' }
+        where: { buyer: { OR: [{ id: customerId }, { parentId: customerId }] } },
+        orderBy: { createdAt: 'desc' },
+        include: { buyer: true }
       });
-      
-      if (lastOrder?.divisionId) {
-        const division = await prisma.organization.findUnique({
-          where: { id: lastOrder.divisionId }
-        });
-        
-        if (division) {
-          return {
-            id: division.id,
-            name: division.legalName,
-            code: division.shortCode
-          };
-        }
-      }
-      
-      return null;
+      if (!lastOrder?.buyer) return null;
+      return { id: lastOrder.buyer.id, name: lastOrder.buyer.name, code: lastOrder.buyer.code };
     } catch (error) {
       return null;
     }
@@ -781,6 +727,8 @@ class DivisionService {
       };
     }
     
+    await this.recordShipToUsage(shipToId);
+
     // Recalculate tax jurisdiction
     const taxJurisdiction = await this.determineTaxJurisdiction(
       division,
@@ -799,12 +747,22 @@ class DivisionService {
    * Update division usage for "remember selection" feature
    */
   async updateDivisionUsage(customerId, divisionId) {
+    // The last-used division is derived from orders (getLastUsedDivision),
+    // so nothing needs storing here.
+  }
+
+  /**
+   * Count a ship-to selection so the most used addresses list first.
+   */
+  async recordShipToUsage(shipToId) {
+    if (!shipToId) return;
     try {
-      // This would update a usage tracking table
-      // For now, just log it
-      console.log(`Division ${divisionId} used for customer ${customerId}`);
+      await prisma.address.updateMany({
+        where: { id: shipToId },
+        data: { usageCount: { increment: 1 } }
+      });
     } catch (error) {
-      // Non-critical, ignore errors
+      // Non-critical
     }
   }
 }

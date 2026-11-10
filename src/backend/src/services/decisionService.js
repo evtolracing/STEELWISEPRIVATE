@@ -4,14 +4,62 @@
  */
 
 import prisma from '../lib/db.js';
+import { ci } from '../lib/dbText.js';
+
+function requireDb() {
+  if (!prisma) throw new Error('Database is not configured');
+  return prisma;
+}
+
+// Shape returned by the API: `id` is the human decision number (DEC-2026-0047)
+// and `timestamp` is when the decision was made.
+function toApi(row) {
+  if (!row) return null;
+  return {
+    id: row.decisionNumber,
+    timestamp: row.decidedAt.toISOString(),
+    type: row.type,
+    title: row.title,
+    description: row.description,
+    decisionMaker: row.decisionMaker,
+    role: row.role,
+    status: row.status,
+    scenarioId: row.scenarioId,
+    predictedOutcome: row.predictedOutcome,
+    actualOutcome: row.actualOutcome,
+    variance: row.variance,
+    conditions: Array.isArray(row.conditions) ? row.conditions : [],
+    aiRecommendation: row.aiRecommendation,
+    aiConfidence: row.aiConfidence,
+    outcomeRecordedAt: row.outcomeRecordedAt ? row.outcomeRecordedAt.toISOString() : null,
+    metadata: { createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() },
+  };
+}
+
+async function nextDecisionNumber(db) {
+  const year = new Date().getFullYear();
+  const prefix = `DEC-${year}-`;
+  const last = await db.executiveDecision.findFirst({
+    where: { decisionNumber: { startsWith: prefix } },
+    orderBy: { decisionNumber: 'desc' },
+    select: { decisionNumber: true },
+  });
+  const next = last ? Number(last.decisionNumber.slice(prefix.length)) + 1 : 1;
+  return `${prefix}${String(next).padStart(4, '0')}`;
+}
+
+async function findRow(db, decisionId) {
+  return db.executiveDecision.findFirst({
+    where: { OR: [{ decisionNumber: decisionId }, { id: decisionId }] },
+  });
+}
 
 /**
  * Log a new executive decision
  */
 export async function logDecision(decisionData) {
-  const decision = {
-    id: `DEC-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
-    timestamp: new Date().toISOString(),
+  const db = requireDb();
+  const data = {
     type: decisionData.type,
     title: decisionData.title,
     description: decisionData.description,
@@ -19,82 +67,63 @@ export async function logDecision(decisionData) {
     role: decisionData.role,
     status: 'PENDING',
     scenarioId: decisionData.scenarioId || null,
-    predictedOutcome: decisionData.predictedOutcome,
-    actualOutcome: null,
-    variance: null,
-    conditions: decisionData.conditions || [],
+    predictedOutcome: decisionData.predictedOutcome ?? undefined,
+    conditions: Array.isArray(decisionData.conditions) ? decisionData.conditions : [],
     aiRecommendation: decisionData.aiRecommendation,
-    aiConfidence: decisionData.aiConfidence,
-    metadata: {
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
+    aiConfidence: Number.isFinite(Number(decisionData.aiConfidence)) ? Math.round(Number(decisionData.aiConfidence)) : null,
   };
 
-  // In production, save to database
-  // await prisma.executiveDecision.create({ data: decision });
-
-  return decision;
+  // Two requests can pick the same number; retry on the unique clash.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const row = await db.executiveDecision.create({
+        data: { ...data, decisionNumber: await nextDecisionNumber(db) },
+      });
+      return toApi(row);
+    } catch (error) {
+      if (error.code !== 'P2002' || attempt === 2) throw error;
+    }
+  }
 }
 
 /**
- * Get decision by ID
+ * Get decision by ID (decision number or internal id)
  */
 export async function getDecision(decisionId) {
-  // In production, query database
-  // return await prisma.executiveDecision.findUnique({ where: { id: decisionId } });
-  
-  // Mock return
-  return getMockDecisions().find(d => d.id === decisionId);
+  return toApi(await findRow(requireDb(), decisionId));
 }
 
 /**
  * Get all decisions with filters
  */
 export async function getDecisions(filters = {}) {
-  let decisions = getMockDecisions();
-
-  // Apply filters
-  if (filters.type && filters.type !== 'ALL') {
-    decisions = decisions.filter(d => d.type === filters.type);
+  const db = requireDb();
+  const where = {};
+  if (filters.type && filters.type !== 'ALL') where.type = filters.type;
+  if (filters.status) where.status = filters.status;
+  if (filters.decisionMaker) where.decisionMaker = { contains: filters.decisionMaker, ...ci };
+  if (filters.fromDate || filters.toDate) {
+    where.decidedAt = {};
+    if (filters.fromDate) where.decidedAt.gte = new Date(filters.fromDate);
+    if (filters.toDate) where.decidedAt.lte = new Date(filters.toDate);
   }
 
-  if (filters.status) {
-    decisions = decisions.filter(d => d.status === filters.status);
-  }
+  const page = Math.max(1, filters.page || 1);
+  const limit = Math.min(100, Math.max(1, filters.limit || 20));
 
-  if (filters.decisionMaker) {
-    decisions = decisions.filter(d => 
-      d.decisionMaker.toLowerCase().includes(filters.decisionMaker.toLowerCase())
-    );
-  }
-
-  if (filters.fromDate) {
-    const fromDate = new Date(filters.fromDate);
-    decisions = decisions.filter(d => new Date(d.timestamp) >= fromDate);
-  }
-
-  if (filters.toDate) {
-    const toDate = new Date(filters.toDate);
-    decisions = decisions.filter(d => new Date(d.timestamp) <= toDate);
-  }
-
-  // Sort by timestamp descending
-  decisions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-  // Apply pagination
-  const page = filters.page || 1;
-  const limit = filters.limit || 20;
-  const offset = (page - 1) * limit;
+  const [rows, total] = await Promise.all([
+    db.executiveDecision.findMany({
+      where,
+      orderBy: { decidedAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    db.executiveDecision.count({ where }),
+  ]);
 
   return {
-    data: decisions.slice(offset, offset + limit),
-    pagination: {
-      page,
-      limit,
-      total: decisions.length,
-      totalPages: Math.ceil(decisions.length / limit),
-    },
+    data: rows.map(toApi),
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   };
 }
 
@@ -102,35 +131,26 @@ export async function getDecisions(filters = {}) {
  * Update decision status
  */
 export async function updateDecisionStatus(decisionId, status) {
-  // In production, update database
-  return {
-    id: decisionId,
-    status,
-    updatedAt: new Date().toISOString(),
-  };
+  const db = requireDb();
+  const row = await findRow(db, decisionId);
+  if (!row) throw new Error(`Decision ${decisionId} not found`);
+  return toApi(await db.executiveDecision.update({ where: { id: row.id }, data: { status } }));
 }
 
 /**
  * Record actual outcome for a decision
  */
 export async function recordOutcome(decisionId, actualOutcome) {
-  const decision = await getDecision(decisionId);
-  
-  if (!decision) {
-    throw new Error(`Decision ${decisionId} not found`);
-  }
+  const db = requireDb();
+  const row = await findRow(db, decisionId);
+  if (!row) throw new Error(`Decision ${decisionId} not found`);
 
-  // Calculate variance
-  const variance = calculateVariance(decision.predictedOutcome, actualOutcome);
-
-  // In production, update database
-  return {
-    id: decisionId,
-    status: 'EXECUTED',
-    actualOutcome,
-    variance,
-    outcomeRecordedAt: new Date().toISOString(),
-  };
+  const variance = calculateVariance(row.predictedOutcome || {}, actualOutcome || {});
+  const updated = await db.executiveDecision.update({
+    where: { id: row.id },
+    data: { status: 'EXECUTED', actualOutcome, variance, outcomeRecordedAt: new Date() },
+  });
+  return toApi(updated);
 }
 
 /**
@@ -188,11 +208,12 @@ function parseNumericValue(value) {
  * Get decision statistics
  */
 export async function getDecisionStats(dateRange = 30) {
-  const decisions = getMockDecisions();
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - dateRange);
 
-  const recentDecisions = decisions.filter(d => new Date(d.timestamp) >= cutoffDate);
+  const recentDecisions = (await requireDb().executiveDecision.findMany({
+    where: { decidedAt: { gte: cutoffDate } },
+  })).map(toApi);
 
   const executed = recentDecisions.filter(d => d.status === 'EXECUTED');
   const betterThanExpected = executed.filter(d => 
@@ -202,7 +223,7 @@ export async function getDecisionStats(dateRange = 30) {
     d.variance?.overall === 'AS_EXPECTED'
   );
 
-  const avgConfidence = recentDecisions.reduce((sum, d) => sum + d.aiConfidence, 0) / 
+  const avgConfidence = recentDecisions.reduce((sum, d) => sum + (d.aiConfidence || 0), 0) / 
     (recentDecisions.length || 1);
 
   return {
@@ -252,7 +273,7 @@ function analyzePatterns(decisions) {
   const patterns = [];
 
   // Check for common conditions
-  const allConditions = decisions.flatMap(d => d.conditions);
+  const allConditions = decisions.flatMap(d => d.conditions || []);
   const conditionCounts = {};
   for (const c of allConditions) {
     conditionCounts[c] = (conditionCounts[c] || 0) + 1;
@@ -316,98 +337,6 @@ function generateInsights(stats) {
   }
 
   return insights;
-}
-
-/**
- * Mock decisions data
- */
-function getMockDecisions() {
-  return [
-    {
-      id: 'DEC-2026-0047',
-      timestamp: '2026-02-04T11:30:00Z',
-      type: 'RFQ_ACCEPT',
-      title: 'Accepted RFQ-2026-089 with Conditions',
-      description: 'Accepted 15,000 lbs 4140 Round Bar order from Acme Manufacturing',
-      decisionMaker: 'Sarah Chen',
-      role: 'VP Sales',
-      status: 'EXECUTED',
-      scenarioId: 'SCENARIO-001',
-      predictedOutcome: {
-        margin: '+$18,500',
-        capacity: '+7% utilization',
-        delivery: '95% on-time probability',
-      },
-      actualOutcome: {
-        margin: '+$17,200',
-        capacity: '+6.5% utilization',
-        delivery: '100% on-time (delivered Feb 6)',
-      },
-      variance: {
-        margin: '-7%',
-        overall: 'BETTER_THAN_EXPECTED',
-      },
-      conditions: [
-        'Cleveland capacity confirmed',
-        'Extended ship date by 2 days (approved by customer)',
-        'Expedited 4140 raw material (arrived Feb 5)',
-      ],
-      aiRecommendation: 'ACCEPT_WITH_CONDITIONS',
-      aiConfidence: 78,
-    },
-    {
-      id: 'DEC-2026-0046',
-      timestamp: '2026-02-03T16:45:00Z',
-      type: 'CAPACITY_TRANSFER',
-      title: 'Transferred 3 Jobs from Detroit to Cleveland',
-      description: 'Moved SAW cutting jobs to reduce Detroit utilization from 97% to 82%',
-      decisionMaker: 'Mike Rodriguez',
-      role: 'COO',
-      status: 'EXECUTED',
-      scenarioId: 'SCENARIO-002',
-      predictedOutcome: {
-        capacity: '-15% Detroit, +15% Cleveland',
-        delivery: 'Maintain 96% on-time',
-        cost: '+$1,200 freight adjustment',
-      },
-      actualOutcome: {
-        capacity: '-14% Detroit, +14% Cleveland',
-        delivery: '97% on-time maintained',
-        cost: '+$980 freight',
-      },
-      variance: {
-        cost: '+18% better than expected',
-        overall: 'AS_EXPECTED',
-      },
-      conditions: [],
-      aiRecommendation: 'ACCEPT',
-      aiConfidence: 92,
-    },
-    {
-      id: 'DEC-2026-0044',
-      timestamp: '2026-02-01T14:30:00Z',
-      type: 'MAINTENANCE_DEFER',
-      title: 'Deferred LAT-03 Maintenance by 1 Week',
-      description: 'Postponed scheduled lathe maintenance to complete priority orders',
-      decisionMaker: 'Mike Rodriguez',
-      role: 'COO',
-      status: 'PENDING_OUTCOME',
-      scenarioId: 'SCENARIO-003',
-      predictedOutcome: {
-        capacity: '+40 hours available',
-        risk: '15% increased breakdown probability',
-        delivery: 'Complete 4 priority orders on time',
-      },
-      actualOutcome: null,
-      variance: null,
-      conditions: [
-        'Reschedule maintenance by Feb 8',
-        'Daily equipment inspection required',
-      ],
-      aiRecommendation: 'CAUTION',
-      aiConfidence: 58,
-    },
-  ];
 }
 
 export default {

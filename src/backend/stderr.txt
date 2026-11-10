@@ -1,4 +1,0 @@
-⚠️  Secret OPENAI_API_KEY not in local env. For production, use Edge Functions with Supabase secrets.
-⚠️  Secret OPENAI_API_KEY not in local env. For production, use Edge Functions with Supabase secrets.
-⚠️  Secret ANTHROPIC_API_KEY not in local env. For production, use Edge Functions with Supabase secrets.
-⚠️  Secret ANTHROPIC_API_KEY not in local env. For production, use Edge Functions with Supabase secrets.

@@ -1,53 +1,57 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { authenticate, requireRole, signUserToken } from '../middleware/auth.js';
 
 const router = Router();
+
+function publicUser(user) {
+  return {
+    id: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role,
+    organization: user.organization,
+  };
+}
 
 // Login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    
+    const { email, password } = req.body || {};
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
     const user = await prisma.user.findUnique({
       where: { email },
       include: { organization: true }
     });
 
-    if (!user || !await bcrypt.compare(password, user.passwordHash)) {
+    if (!user || !user.passwordHash || !await bcrypt.compare(password, user.passwordHash)) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    if (user.isActive === false) {
+      return res.status(403).json({ error: 'User account is disabled' });
+    }
 
-    const token = jwt.sign(
-      { userId: user.id, role: user.role, orgId: user.organizationId },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '8h' }
-    );
-
-    res.json({
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        organization: user.organization
-      }
-    });
+    res.json({ token: signUserToken(user), user: publicUser(user) });
   } catch (error) {
+    console.error('Login failed:', error);
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
-// Register (admin only in production)
-router.post('/register', async (req, res) => {
+async function createUser(req, res) {
   try {
-    const { email, password, firstName, lastName, role, organizationId } = req.body;
-    
+    const { email, password, firstName, lastName, role, organizationId } = req.body || {};
+    if (typeof email !== 'string' || typeof password !== 'string' || password.length < 8) {
+      return res.status(400).json({ error: 'Email and a password of at least 8 characters are required' });
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
-    
+
     const user = await prisma.user.create({
       data: {
         email,
@@ -61,35 +65,32 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ id: user.id, email: user.email });
   } catch (error) {
+    console.error('Registration failed:', error);
     res.status(500).json({ error: 'Registration failed' });
   }
+}
+
+// Register: open only while the database has no users (to create the first
+// admin). After that, only admins can create accounts.
+router.post('/register', async (req, res, next) => {
+  try {
+    const userCount = await prisma.user.count();
+    if (userCount === 0) return createUser(req, res);
+  } catch (error) {
+    return next(error);
+  }
+
+  authenticate(req, res, (err) => {
+    if (err) return next(err);
+    requireRole('SUPER_ADMIN', 'TENANT_OWNER')(req, res, () => createUser(req, res));
+  });
 });
 
-// Get current user
-router.get('/me', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) return res.status(401).json({ error: 'No token' });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      include: { organization: true }
-    });
-
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
-    res.json({
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      organization: user.organization
-    });
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
+// Get current user. The user is returned under `user` (what the frontend
+// reads) and also at the top level for older callers.
+router.get('/me', authenticate, (req, res) => {
+  const user = publicUser(req.user);
+  res.json({ ...user, user });
 });
 
 export default router;

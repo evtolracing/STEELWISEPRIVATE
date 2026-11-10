@@ -5,6 +5,9 @@
 
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { randomUUID } from 'crypto';
+
+const generateId = (prefix) => `${prefix}-${randomUUID().slice(0, 8)}`;
 
 const router = Router();
 

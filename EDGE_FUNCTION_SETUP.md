@@ -32,7 +32,7 @@ When prompted for the database password, enter: `Maleah710$$`
 ### 4. Set Your API Key as a Secret
 
 ```powershell
-supabase secrets set DEEPSEEK_API_KEY=sk-73e3fba9137f4f78bed16af8099bdb5a
+supabase secrets set DEEPSEEK_API_KEY=your-deepseek-api-key-here
 ```
 
 This stores the key securely in Supabase (encrypted at rest, only accessible by edge functions).
@@ -60,7 +60,7 @@ supabase start
 
 Set local secret:
 ```powershell
-supabase secrets set --env-file supabase/.env.local DEEPSEEK_API_KEY=sk-73e3fba9137f4f78bed16af8099bdb5a
+supabase secrets set --env-file supabase/.env.local DEEPSEEK_API_KEY=your-deepseek-api-key-here
 ```
 
 Serve functions locally:
@@ -148,7 +148,7 @@ https://supabase.com/dashboard/project/giyheniqqqwpmetefdxj/functions
 ### Error: "DEEPSEEK_API_KEY is not configured"
 Make sure you ran:
 ```powershell
-supabase secrets set DEEPSEEK_API_KEY=sk-73e3fba9137f4f78bed16af8099bdb5a
+supabase secrets set DEEPSEEK_API_KEY=your-deepseek-api-key-here
 ```
 
 ### Error: "Project not linked"

@@ -1,44 +1,9 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { authenticate, requireRole } from '../middleware/auth.js';
 
 const router = Router();
-
-// Middleware to verify JWT and extract user
-const authenticate = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) return res.status(401).json({ error: 'Authentication required' });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      include: { organization: true }
-    });
-
-    if (!user) return res.status(401).json({ error: 'User not found' });
-    if (!user.isActive) return res.status(403).json({ error: 'User account is disabled' });
-
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-};
-
-// Check if user has required role
-const requireRole = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
-    
-    const adminRoles = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER', 'OPS_MANAGER'];
-    if (!roles.some(r => req.user.role === r) && !adminRoles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
-    }
-    next();
-  };
-};
 
 // ==================== USER CRUD ====================
 

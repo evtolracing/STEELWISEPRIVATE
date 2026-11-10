@@ -46,6 +46,7 @@ import stopWorkRoutes from './routes/stopWork.js';
 import intakeOrderRoutes from './routes/intakeOrders.js';
 import salesRoutes from './routes/salesRoutes.js';
 import executiveRoutes from './routes/executive.js';
+import adminRoutes from './routes/admin.js';
 import dropTagRoutes from './routes/dropTagRoutes.js';
 import staffRoutes from './routes/staff.js';
 import qcRoutes from './routes/qcRoutes.js';
@@ -198,6 +199,7 @@ app.use('/api/sales', salesRoutes);
 
 // Executive Ops Cockpit
 app.use('/api/executive', executiveRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Drop Tag Engine
 app.use('/api/drop-tags', dropTagRoutes);

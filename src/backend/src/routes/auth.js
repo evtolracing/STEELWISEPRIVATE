@@ -86,6 +86,32 @@ router.post('/register', async (req, res, next) => {
   });
 });
 
+// Change your own password. Requires the current password.
+router.put('/password', authenticate, async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+    if (typeof currentPassword !== 'string' || typeof newPassword !== 'string') {
+      return res.status(400).json({ error: 'Current and new password are required' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'The new password must be at least 8 characters' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (!user?.passwordHash || !await bcrypt.compare(currentPassword, user.passwordHash)) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: await bcrypt.hash(newPassword, 10) },
+    });
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Get current user. The user is returned under `user` (what the frontend
 // reads) and also at the top level for older callers.
 router.get('/me', authenticate, (req, res) => {

@@ -84,7 +84,7 @@ export function AuthProvider({ children }) {
       
       return { success: true }
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed'
+      const message = err.response?.data?.error || err.response?.data?.message || 'Login failed'
       setError(message)
       return { success: false, error: message }
     } finally {
@@ -113,7 +113,7 @@ export function AuthProvider({ children }) {
       
       return { success: true }
     } catch (err) {
-      const message = err.response?.data?.message || 'Registration failed'
+      const message = err.response?.data?.error || err.response?.data?.message || 'Registration failed'
       setError(message)
       return { success: false, error: message }
     } finally {
@@ -140,7 +140,7 @@ export function AuthProvider({ children }) {
       setUser(response.data.user)
       return { success: true }
     } catch (err) {
-      const message = err.response?.data?.message || 'Update failed'
+      const message = err.response?.data?.error || err.response?.data?.message || 'Update failed'
       return { success: false, error: message }
     }
   }, [])
@@ -155,7 +155,7 @@ export function AuthProvider({ children }) {
       await apiClient.put('/auth/password', { currentPassword, newPassword })
       return { success: true }
     } catch (err) {
-      const message = err.response?.data?.message || 'Password change failed'
+      const message = err.response?.data?.error || err.response?.data?.message || 'Password change failed'
       return { success: false, error: message }
     }
   }, [])

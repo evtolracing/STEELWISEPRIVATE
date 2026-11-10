@@ -23,7 +23,12 @@ client.interceptors.request.use(
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // An expired or invalid session sends the user back to the login page.
+    // A failed login or password check is a normal 401 and is shown on the
+    // form instead.
+    const url = error.config?.url || ''
+    const isCredentialCheck = url.includes('/auth/login') || url.includes('/auth/password')
+    if (error.response?.status === 401 && !isCredentialCheck && window.location.pathname !== '/login') {
       localStorage.removeItem('token')
       window.location.href = '/login'
     }

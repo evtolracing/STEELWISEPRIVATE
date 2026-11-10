@@ -18,13 +18,13 @@ CREATE TABLE IF NOT EXISTS "_prisma_migrations" (
 );
 
 -- 20261110221503_customer_addresses_and_executive
-DO $m_45bbbc7a$
+DO $m_d79a6ebd$
 BEGIN
   IF EXISTS (SELECT 1 FROM "_prisma_migrations" WHERE "migration_name" = '20261110221503_customer_addresses_and_executive' AND "finished_at" IS NOT NULL) THEN
     RAISE NOTICE 'Skipping 20261110221503_customer_addresses_and_executive (already applied)';
     RETURN;
   END IF;
-  EXECUTE $body_45bbbc7a$-- AlterTable
+  EXECUTE $body_d79a6ebd$-- AlterTable
 ALTER TABLE "Organization" ADD COLUMN     "parentId" TEXT,
 ADD COLUMN     "paymentTerms" TEXT,
 ADD COLUMN     "taxExempt" BOOLEAN NOT NULL DEFAULT false;
@@ -131,9 +131,19 @@ ALTER TABLE "Organization" ADD CONSTRAINT "Organization_parentId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-$body_45bbbc7a$;
+$body_d79a6ebd$;
   INSERT INTO "_prisma_migrations" ("id", "checksum", "finished_at", "migration_name", "applied_steps_count")
   VALUES (gen_random_uuid()::text, 'df0f0666aaffd58edaac933a1d9a4c7aa7a4153d23ad4f93c1ef7eb58bb62fc1', now(), '20261110221503_customer_addresses_and_executive', 1);
-END $m_45bbbc7a$;
+END $m_d79a6ebd$;
+
+-- Row Level Security on every table (blocks Supabase's public API keys;
+-- the app connects as the table owner and is not affected).
+DO $rls$
+DECLARE t record;
+BEGIN
+  FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND NOT rowsecurity LOOP
+    EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', t.tablename);
+  END LOOP;
+END $rls$;
 
 COMMIT;

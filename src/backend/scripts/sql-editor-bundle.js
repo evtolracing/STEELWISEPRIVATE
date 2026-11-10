@@ -75,6 +75,22 @@ END ${block};
 `;
 }
 
+// Supabase exposes the public schema through its REST API to anyone with
+// the anon key. The app talks to the database directly as the table owner,
+// which Row Level Security does not restrict, so turning RLS on for every
+// table (with no policies) closes the REST API without affecting the app.
+out += `
+-- Row Level Security on every table (blocks Supabase's public API keys;
+-- the app connects as the table owner and is not affected).
+DO $rls$
+DECLARE t record;
+BEGIN
+  FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND NOT rowsecurity LOOP
+    EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', t.tablename);
+  END LOOP;
+END $rls$;
+`;
+
 out += '\nCOMMIT;\n';
 
 fs.mkdirSync(outDir, { recursive: true });

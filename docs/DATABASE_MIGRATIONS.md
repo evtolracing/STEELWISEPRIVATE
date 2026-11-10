@@ -36,6 +36,12 @@ Paste it into Supabase → SQL Editor → New query and click Run. It runs as
 one transaction, skips anything already applied, and records the migration
 the same way `prisma migrate deploy` does, so you can mix the two.
 
+The file also turns on Row Level Security for every table. Supabase serves
+the public schema through its REST API to anyone with the anon key; with RLS
+on and no policies, that API returns nothing. The app connects directly as
+the table owner, which RLS does not restrict. If Supabase asks whether to
+run with RLS, choose to enable it.
+
 Apply the database update before merging the PR that needs it (the change is
 additive, so the old code keeps working against the new tables).
 

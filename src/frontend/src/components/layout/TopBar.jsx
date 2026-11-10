@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   Divider,
+  ListItemText,
 } from '@mui/material'
 import {
   Menu as MenuIcon,
@@ -18,12 +19,32 @@ import {
   Help as HelpIcon,
 } from '@mui/icons-material'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
+import ChangePasswordDialog from './ChangePasswordDialog'
 import HeaderAIAssistant from './HeaderAIAssistant'
 import CutoffClockChip from './CutoffClockChip'
 
 export default function TopBar({ drawerWidth, onMenuClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [notificationAnchor, setNotificationAnchor] = useState(null)
+  const [passwordOpen, setPasswordOpen] = useState(false)
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || ''
+  const initials = (displayName.match(/\b\w/g) || ['?']).slice(0, 2).join('').toUpperCase()
+
+  const handleLogout = () => {
+    setAnchorEl(null)
+    logout()
+    navigate('/login', { replace: true })
+  }
+
+  const handleChangePassword = () => {
+    setAnchorEl(null)
+    setPasswordOpen(true)
+  }
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -121,7 +142,7 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
         {/* Profile */}
         <IconButton onClick={handleProfileClick} sx={{ p: 0 }}>
           <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
-            <Typography variant="caption">JD</Typography>
+            <Typography variant="caption">{initials}</Typography>
           </Avatar>
         </IconButton>
 
@@ -133,11 +154,15 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
-          <MenuItem onClick={handleProfileClose}>Settings</MenuItem>
+          <MenuItem disabled sx={{ opacity: '1 !important' }}>
+            <ListItemText primary={displayName} secondary={user?.role?.replace(/_/g, ' ')} />
+          </MenuItem>
           <Divider />
-          <MenuItem onClick={handleProfileClose}>Logout</MenuItem>
+          <MenuItem onClick={handleChangePassword}>Change password</MenuItem>
+          <MenuItem onClick={handleLogout}>Log out</MenuItem>
         </Menu>
+
+        <ChangePasswordDialog open={passwordOpen} onClose={() => setPasswordOpen(false)} />
 
         {/* Notifications Menu */}
         <Menu

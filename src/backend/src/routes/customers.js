@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { ci } from '../lib/dbText.js';
 
 const router = Router();
 
@@ -12,11 +13,11 @@ router.get('/', async (req, res) => {
     
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { code: { contains: search, mode: 'insensitive' } },
-        { phone: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
-        { city: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, ...ci } },
+        { code: { contains: search, ...ci } },
+        { phone: { contains: search, ...ci } },
+        { email: { contains: search, ...ci } },
+        { city: { contains: search, ...ci } },
       ];
     }
     

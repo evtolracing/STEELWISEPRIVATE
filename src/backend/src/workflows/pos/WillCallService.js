@@ -6,6 +6,7 @@
  */
 
 import prisma from '../../lib/db.js';
+import { ci } from '../../lib/dbText.js';
 
 // ============================================
 // ENUMS
@@ -88,9 +89,9 @@ class WillCallService {
     
     if (search) {
       where.OR = [
-        { orderNumber: { contains: search, mode: 'insensitive' } },
-        { customer: { name: { contains: search, mode: 'insensitive' } } },
-        { poNumber: { contains: search, mode: 'insensitive' } }
+        { orderNumber: { contains: search, ...ci } },
+        { customer: { name: { contains: search, ...ci } } },
+        { poNumber: { contains: search, ...ci } }
       ];
     }
     

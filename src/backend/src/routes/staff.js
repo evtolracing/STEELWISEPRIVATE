@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import prisma from '../lib/db.js'
+import { ci } from '../lib/dbText.js'
 
 const router = Router()
 
@@ -45,10 +46,10 @@ router.get('/operators', async (req, res) => {
     // Name search
     if (search) {
       where.OR = [
-        { firstName: { contains: search, mode: 'insensitive' } },
-        { lastName: { contains: search, mode: 'insensitive' } },
-        { employeeCode: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { firstName: { contains: search, ...ci } },
+        { lastName: { contains: search, ...ci } },
+        { employeeCode: { contains: search, ...ci } },
+        { email: { contains: search, ...ci } },
       ]
     }
 

@@ -11,6 +11,7 @@ import { evaluateGuard, getAllGuardResults } from './guards.js';
 import { executeEffect, recalculatePricing } from './effects.js';
 import { getPricingService } from './POSPricingService.js';
 import { divisionService, DivisionFlowResult } from './DivisionService.js';
+import { ci } from '../../lib/dbText.js';
 const pricingService = getPricingService();
 
 // ============================================
@@ -252,9 +253,9 @@ class POSWorkflowService {
     const customers = await prisma.organization.findMany({
       where: {
         OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { email: { contains: query, mode: 'insensitive' } },
-          { phone: { contains: query, mode: 'insensitive' } }
+          { name: { contains: query, ...ci } },
+          { email: { contains: query, ...ci } },
+          { phone: { contains: query, ...ci } }
         ],
         type: { in: ['FABRICATOR', 'OEM', 'DISTRIBUTOR'] },
         isActive: true
@@ -467,9 +468,9 @@ class POSWorkflowService {
     const products = await prisma.product.findMany({
       where: {
         OR: [
-          { sku: { contains: query, mode: 'insensitive' } },
-          { name: { contains: query, mode: 'insensitive' } },
-          { description: { contains: query, mode: 'insensitive' } }
+          { sku: { contains: query, ...ci } },
+          { name: { contains: query, ...ci } },
+          { description: { contains: query, ...ci } }
         ],
         isActive: true,
         ...(filters.productType && { productType: filters.productType }),
@@ -1162,12 +1163,9 @@ class POSWorkflowService {
     if (!line) return;
     
     // Check work center availability (simplified)
-    const workCenters = await prisma.workCenter.findMany({
-      where: {
-        capabilities: { has: operationType },
-        isActive: true
-      }
-    });
+    const workCenters = (await prisma.workCenter.findMany({
+      where: { isActive: true }
+    })).filter(wc => Array.isArray(wc.capabilities) && wc.capabilities.includes(operationType));
     
     if (workCenters.length > 0) {
       line.processingStatus = 'AVAILABLE';

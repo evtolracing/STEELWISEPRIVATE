@@ -2,6 +2,7 @@ import { Router } from 'express';
 import prisma from '../lib/db.js';
 import bcrypt from 'bcryptjs';
 import { authenticate, requireRole } from '../middleware/auth.js';
+import { ci } from '../lib/dbText.js';
 
 const router = Router();
 
@@ -27,9 +28,9 @@ router.get('/', authenticate, async (req, res) => {
     // Search by name or email
     if (search) {
       where.OR = [
-        { firstName: { contains: search, mode: 'insensitive' } },
-        { lastName: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
+        { firstName: { contains: search, ...ci } },
+        { lastName: { contains: search, ...ci } },
+        { email: { contains: search, ...ci } },
       ];
     }
 

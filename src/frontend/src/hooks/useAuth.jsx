@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 // ============================================
-// DEMO MODE - Set to false when database is ready
+// DEMO MODE - skips login and signs everyone in as a demo admin.
+// Off unless the build sets VITE_DEMO_MODE=true. Never enable it on a
+// deployment that holds real data.
 // ============================================
-const DEMO_MODE = true
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true'
 
 const DEMO_USER = {
   id: 1,

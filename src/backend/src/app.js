@@ -4,6 +4,8 @@
  */
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -63,15 +65,51 @@ import opsCockpitRoutes from './routes/opsCockpit.js';
 import printQueueRoutes from './routes/printQueue.js';
 import { initOrderHubData } from './routes/initOrderHubData.js';
 import prisma from './lib/db.js';
+import config from './config/index.js';
 
 dotenv.config();
 
 const app = express();
 export { prisma };
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Behind Vercel / Nginx: trust the first proxy so client IPs are correct
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+// Security headers. Cross-origin resource policy is relaxed so the frontend
+// can load uploaded files when it runs on a different origin.
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+
+// CORS: an explicit allowlist from CORS_ORIGIN. Without one, production only
+// accepts same-origin requests (the frontend and API share a domain on
+// Vercel) and development accepts any origin.
+app.use(cors({
+  origin: config.corsOrigins.length > 0 ? config.corsOrigins : !config.isProduction,
+  credentials: true,
+}));
+
+app.use(express.json({ limit: config.jsonBodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: config.jsonBodyLimit }));
+
+// Rate limits. The general limit is per IP and generous because many staff at
+// one location can share an IP. Note: on Vercel each function instance keeps
+// its own counters; a shared store is planned for later phases.
+app.use('/api', rateLimit({
+  windowMs: config.rateLimit.windowMs,
+  limit: config.rateLimit.max,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please slow down' },
+}));
+
+app.use('/api/auth/login', rateLimit({
+  windowMs: config.rateLimit.loginWindowMs,
+  limit: config.rateLimit.loginMax,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  keyGenerator: (req) => `${req.ip}:${String(req.body?.email || '').toLowerCase()}`,
+  message: { error: 'Too many login attempts, please try again later' },
+}));
 
 // Serve uploaded files statically (skip on Vercel's read-only filesystem)
 const __filename = fileURLToPath(import.meta.url);
@@ -183,7 +221,13 @@ initOrderHubData();
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Request body too large' });
+  }
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Invalid JSON body' });
+  }
+  console.error(err.stack || err);
   res.status(500).json({ error: 'Internal server error' });
 });
 

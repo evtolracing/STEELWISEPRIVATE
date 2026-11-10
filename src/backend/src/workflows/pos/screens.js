@@ -111,7 +111,7 @@ export const POSComponents = {
   TermsDisplay: { id: 'TermsDisplay', type: 'display' },
   CreditAvailable: { id: 'CreditAvailable', type: 'display' },
   AmountDue: { id: 'AmountDue', type: 'display', highlight: true },
-  DepositRequired: { id: 'DepositRequired', type: 'input', type: 'currency' },
+  DepositRequired: { id: 'DepositRequired', type: 'currency' },
   PayNowOption: { id: 'PayNowOption', type: 'checkbox' },
   SplitPaymentOption: { id: 'SplitPaymentOption', type: 'button' },
   

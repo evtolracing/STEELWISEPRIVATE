@@ -1,5 +1,9 @@
 // Mapbox Configuration and Service
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2lnbndpc2UiLCJhIjoiY21raXh4eGp5MHlxdDNlcHpid3M2a2g3NyJ9.RIqOGRmtiTyvbjAY2thruQ';
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
+
+if (!MAPBOX_TOKEN) {
+  console.warn('⚠️ VITE_MAPBOX_TOKEN is not set; maps will not load.');
+}
 
 // Map styles - all Mapbox styles
 export const MAP_STYLES = {

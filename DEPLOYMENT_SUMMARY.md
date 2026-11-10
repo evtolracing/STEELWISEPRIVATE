@@ -127,7 +127,7 @@ If you need to revert to the old backend AI service:
 
 1. Add back to `.env`:
    ```
-   DEEPSEEK_API_KEY="sk-73e3fba9137f4f78bed16af8099bdb5a"
+   DEEPSEEK_API_KEY="your-deepseek-api-key-here"
    ```
 
 2. Update frontend to use backend API:

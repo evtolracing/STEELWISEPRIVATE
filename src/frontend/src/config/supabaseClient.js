@@ -1,26 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://giyheniqqqwpmetefdxj.supabase.co';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Validate configuration
-if (!supabaseAnonKey) {
-  console.warn('⚠️ VITE_SUPABASE_ANON_KEY not found in environment. Supabase features may not work.');
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('⚠️ VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY not set. Supabase features are disabled.');
 }
 
-// Create and export Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Create and export Supabase client (null when not configured)
+export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true
   }
-});
+}) : null;
 
 // Helper function to check if Supabase is properly configured
 export const isSupabaseConfigured = () => {
-  return !!supabaseAnonKey;
+  return !!supabase;
 };
 
 // Export for use in other services

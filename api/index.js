@@ -1,6 +1,6 @@
 /**
  * Vercel Serverless Function Entry Point
- * Uses dynamic import to capture and report startup errors.
+ * Uses dynamic import so a startup failure is logged instead of crashing the function.
  */
 
 let app = null;
@@ -14,14 +14,9 @@ export default async function handler(req, res) {
   // Wait for the app to load on first request
   await appPromise;
 
-  // If the app failed to load, return the error details
+  // If the app failed to load, log the details and return a generic error
   if (startupError) {
-    return res.status(500).json({
-      error: 'Function startup failed',
-      message: startupError.message,
-      code: startupError.code,
-      stack: startupError.stack?.split('\n').slice(0, 10)
-    });
+    return res.status(500).json({ error: 'Service unavailable' });
   }
 
   if (!app) {

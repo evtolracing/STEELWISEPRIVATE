@@ -9,24 +9,30 @@
 
 ```bash
 # 1. Install dependencies
-npm install
+npm run install:all
 
-# 2. Start database
+# 2. Configure environment (then edit both files)
+cp src/backend/.env.example src/backend/.env
+cp src/frontend/.env.example src/frontend/.env.local
+
+# 3. Start database
 docker compose up -d postgres
 
-# 3. Run migrations
-cd src/backend
-npx prisma migrate dev
+# 4. Run migrations
+cd src/backend && npx prisma migrate dev && cd ../..
 
-# 4. Start development servers
-cd ../..
-npm run dev
+# 5. Start development servers (two terminals)
+npm run dev:backend
+npm run dev:frontend
 ```
 
 **Access URLs:**
-- Frontend: http://localhost:5174
+- Frontend: http://localhost:5173
 - Backend API: http://localhost:3001
-- Production Workflow: http://localhost:5174/production
+- Production Workflow: http://localhost:5173/production
+
+To try the app without a database login, set `VITE_DEMO_MODE="true"` in
+`src/frontend/.env.local`. Never enable demo mode on a deployment with real data.
 
 ---
 
@@ -98,7 +104,7 @@ SteelWise is a comprehensive ERP platform designed specifically for steel servic
 
 **Infrastructure**
 - Docker Compose
-- pnpm workspaces
+- npm (separate installs for backend and frontend)
 - ESLint
 
 ### Project Structure
@@ -253,94 +259,72 @@ The platform includes a unified AI provider system supporting:
 
 ### Prerequisites
 
-- **Node.js** 18+ (v24.12.0 recommended)
-- **pnpm** 8+
-- **Docker Desktop** (for PostgreSQL)
+- **Node.js** 22+
+- **npm** 10+
+- **Docker Desktop** (for local PostgreSQL)
 - **Git**
 
 ### Environment Setup
 
-1. **Clone repository**
+1. **Install dependencies** (root tooling, backend and frontend)
 ```bash
-git clone <repository-url>
-cd STEELWISEPRIVATE
+npm run install:all
 ```
 
-2. **Install dependencies**
+2. **Configure environment**
 ```bash
-npm install
+cp src/backend/.env.example src/backend/.env
+cp src/frontend/.env.example src/frontend/.env.local
+# Edit both files. See the comments in each for what every setting does.
 ```
 
-3. **Configure environment**
-```bash
-cd src/backend
-cp .env.example .env
-# Edit .env with your settings
-```
+`JWT_SECRET` must be at least 32 characters in production (the server refuses
+to start otherwise). Generate one with `openssl rand -hex 48`. In development a
+random secret is used if it is missing.
 
-Required variables:
-```env
-DATABASE_URL="postgresql://postgres:password@localhost:5432/steelwise"
-JWT_SECRET="your-secret-key"
-
-# AI Providers
-DEEPSEEK_API_KEY="sk-..."
-OPENAI_API_KEY="sk-..."
-ANTHROPIC_API_KEY="sk-..."
-AI_DEFAULT_PROVIDER="deepseek"
-AI_ENABLED="true"
-```
-
-4. **Start database**
+3. **Start database**
 ```bash
 docker compose up -d postgres
 ```
 
-5. **Run migrations**
+4. **Run migrations and generate the Prisma client**
 ```bash
 cd src/backend
 npx prisma migrate dev
 ```
 
-6. **Seed database (optional)**
+5. **Seed database (optional)**
 ```bash
 npx prisma db seed
 ```
 
-7. **Start dev servers**
+6. **Start dev servers** (two terminals)
 ```bash
-cd ../..
-npm run dev
+npm run dev:backend    # API on http://localhost:3001
+npm run dev:frontend   # App on http://localhost:5173 (proxies /api to the backend)
 ```
+
+### First admin user
+
+`POST /api/auth/register` is open only while the database has no users, so the
+first account can be created. After that, only admins can create accounts.
 
 ### Available Scripts
 
+Run from the repository root:
+
 ```bash
-# Development
-npm run dev              # Start all services
-npm run dev:backend      # Backend only
-npm run dev:frontend     # Frontend only
-
-# Database
-npm run db:migrate       # Run migrations
-npm run db:studio        # Open Prisma Studio
-npm run db:seed          # Seed test data
-npm run db:reset         # Reset database
-
-# Build
-npm run build            # Build all
-npm run build:backend    # Build backend
-npm run build:frontend   # Build frontend
-
-# Testing
-npm test                 # Run all tests
-npm run test:backend     # Backend tests
-npm run test:frontend    # Frontend tests
-
-# Lint
-npm run lint             # Lint all
-npm run lint:fix         # Fix lint issues
+npm run install:all      # Install root, backend and frontend dependencies
+npm run dev:backend      # Start the API with auto-reload
+npm run dev:frontend     # Start the frontend dev server
+npm run build            # Generate Prisma client and build the frontend
+npm run prisma:migrate   # Run database migrations (dev)
+npm run lint             # Lint the whole repo
+npm run lint:fix         # Lint and auto-fix
+npm run format           # Format code with Prettier
 ```
+
+There is no automated test suite yet; it is planned for Phase 4 of the completion plan.
 
 ---
 
@@ -460,32 +444,25 @@ For detailed documentation, see:
 
 ## 🔒 Security
 
-- JWT-based authentication
-- Role-based access control (RBAC)
-- API rate limiting
-- CORS protection
-- SQL injection prevention (Prisma)
-- XSS protection
-- Environment variable encryption
+In place:
+- JWT authentication for staff accounts, required secret with no fallback
+- Admin-only account creation after the first user
+- Security headers (Helmet), CORS allowlist, request size limits
+- Rate limiting on the API and on login
+- Partner API with its own token signing key, scopes and per-partner rate limits
+- No secrets in the repository: all keys come from environment variables
+
+Not yet in place (see the completion plan):
+- Authentication and role checks on every internal API route
+- Location and division scoping of data
+- Shared rate-limit store across serverless instances
 
 ---
 
 ## 🧪 Testing
 
-```bash
-# Run all tests
-npm test
-
-# Run specific test suites
-npm run test:backend
-npm run test:frontend
-
-# Run with coverage
-npm run test:coverage
-
-# E2E tests
-npm run test:e2e
-```
+No automated tests exist yet. Phase 4 of the completion plan adds API, permission
+and end-to-end tests with CI on every pull request.
 
 ---
 
@@ -562,6 +539,5 @@ Proprietary - Internal use only
 
 ---
 
-**Status**: ✅ Production Ready  
-**Version**: 1.0.0  
-**Last Updated**: January 18, 2026
+**Status**: In development: completing for production (Phase 0 of the completion plan)  
+**Version**: 1.0.0

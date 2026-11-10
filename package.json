@@ -5,19 +5,37 @@
   "type": "module",
   "description": "SteelWise Steel Manufacturing & Distribution Platform",
   "scripts": {
+    "install:all": "npm install && npm --prefix src/backend install --legacy-peer-deps && npm --prefix src/frontend install --include=dev --legacy-peer-deps",
     "dev": "npm --prefix src/backend run dev",
+    "dev:backend": "npm --prefix src/backend run dev",
     "dev:frontend": "npm --prefix src/frontend run dev",
     "vercel-install": "cd src/backend && npm install --legacy-peer-deps && cd ../frontend && npm install --include=dev --legacy-peer-deps",
     "vercel-build": "node scripts/build.cjs",
     "build": "node scripts/build.cjs",
     "start": "npm --prefix src/backend run start",
     "prisma:generate": "npm --prefix src/backend run db:generate",
-    "prisma:migrate": "npm --prefix src/backend run db:migrate"
+    "prisma:migrate": "npm --prefix src/backend run db:migrate",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\" \"api/**/*.js\" \"scripts/**/*.cjs\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,json,css}\" \"api/**/*.js\" \"scripts/**/*.cjs\""
   },
-  "keywords": ["steel", "erp", "manufacturing"],
+  "keywords": [
+    "steel",
+    "erp",
+    "manufacturing"
+  ],
   "author": "SteelWise",
   "license": "UNLICENSED",
   "engines": {
     "node": ">=22.x"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^15.15.0",
+    "prettier": "^3.9.10"
   }
 }

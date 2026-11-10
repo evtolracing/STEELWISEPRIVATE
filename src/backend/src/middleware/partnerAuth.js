@@ -7,8 +7,9 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import prisma from '../lib/db.js';
+import config from '../config/index.js';
 
-const JWT_SECRET = process.env.PARTNER_JWT_SECRET || process.env.JWT_SECRET || 'partner-api-secret';
+const JWT_SECRET = config.partnerJwtSecret;
 const TOKEN_EXPIRY = '1h';
 
 // ─── Scope Definitions by Partner Type ─────────────────────────────────────────

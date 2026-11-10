@@ -280,7 +280,7 @@ const RouteOptimizationScreen = () => {
           <Tooltip title="Print">
             <span>
               <IconButton onClick={() => window.print()} disabled={!routeStats}>
-                <PrintIcon />
+                <Print />
               </IconButton>
             </span>
           </Tooltip>

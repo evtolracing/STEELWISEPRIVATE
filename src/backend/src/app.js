@@ -125,8 +125,26 @@ try {
 }
 
 // Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+// Health check, including whether the database answers. Returns 503 when the
+// database is configured but unreachable. Error details stay in the logs.
+app.get('/api/health', async (req, res) => {
+  const timestamp = new Date().toISOString();
+
+  if (!prisma) {
+    return res.status(503).json({ status: 'degraded', database: 'not configured', timestamp });
+  }
+
+  const started = Date.now();
+  try {
+    await Promise.race([
+      prisma.$queryRaw`SELECT 1`,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Database check timed out')), 5000)),
+    ]);
+    res.json({ status: 'ok', database: 'connected', databaseLatencyMs: Date.now() - started, timestamp });
+  } catch (error) {
+    console.error('Health check database error:', error.message);
+    res.status(503).json({ status: 'degraded', database: 'unreachable', timestamp });
+  }
 });
 
 // API Routes

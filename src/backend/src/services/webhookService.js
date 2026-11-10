@@ -23,17 +23,18 @@ export async function dispatchWebhookEvent(eventType, data, partnerIds = []) {
     // Find all active webhooks subscribed to this event type
     const whereClause = {
       status: 'ACTIVE',
-      events: { has: eventType },
     };
 
     if (partnerIds.length > 0) {
       whereClause.partnerId = { in: partnerIds };
     }
 
-    const webhooks = await prisma.partnerWebhook.findMany({
+    // Event lists are stored as JSON arrays (portable across Postgres and
+    // MySQL), so the subscription match happens here rather than in SQL.
+    const webhooks = (await prisma.partnerWebhook.findMany({
       where: whereClause,
       include: { partner: true },
-    });
+    })).filter(webhook => Array.isArray(webhook.events) && webhook.events.includes(eventType));
 
     if (webhooks.length === 0) return;
 

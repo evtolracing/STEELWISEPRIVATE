@@ -6,6 +6,7 @@
  */
 
 import prisma from '../../lib/db.js';
+import { ci } from '../../lib/dbText.js';
 
 // ============================================
 // ENUMS
@@ -99,7 +100,7 @@ class QuickSaleService {
       // Try partial match
       product = await prisma.product.findFirst({
         where: {
-          sku: { contains: barcode, mode: 'insensitive' },
+          sku: { contains: barcode, ...ci },
           isActive: true
         },
         include: {

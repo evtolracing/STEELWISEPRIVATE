@@ -10,106 +10,106 @@ datasource db {
 }
 
 model Organization {
-  id             String     @id @default(uuid())
-  code           String     @unique
-  name           String
-  type           OrgType
-  address        String?
-  city           String?
-  state          String?
-  postalCode     String?
-  country        String     @default("USA")
-  phone          String?
-  email          String?
-  isActive       Boolean    @default(true)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  coils          Coil[]
-  documents      Document[]
-  heats          Heat[]
-  locations      Location[]
-  ordersAsBuyer  Order[]    @relation("BuyerOrders")
-  ordersAsSeller Order[]    @relation("SellerOrders")
-  rfqs           RFQ[]      @relation("CustomerRFQs")
-  users          User[]
-  pricingTier    CustomerPricingTier? @relation("CustomerPricingTier")
-  dropTags       DropTag[]  @relation("DropTagCustomer")
+  id              String                   @id @default(uuid())
+  code            String                   @unique
+  name            String
+  type            OrgType
+  address         String?
+  city            String?
+  state           String?
+  postalCode      String?
+  country         String                   @default("USA")
+  phone           String?
+  email           String?
+  isActive        Boolean                  @default(true)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  coils           Coil[]
+  documents       Document[]
+  heats           Heat[]
+  locations       Location[]
+  ordersAsBuyer   Order[]                  @relation("BuyerOrders")
+  ordersAsSeller  Order[]                  @relation("SellerOrders")
+  rfqs            RFQ[]                    @relation("CustomerRFQs")
+  users           User[]
+  pricingTier     CustomerPricingTier?     @relation("CustomerPricingTier")
+  dropTags        DropTag[]                @relation("DropTagCustomer")
   tagRequirements CustomerTagRequirement[] @relation("CustomerTagRequirements")
-  partners       Partner[]  @relation("PartnerOrganization")
-  preferences    CustomerPreference?  @relation("CustomerPreferences")
+  partners        Partner[]                @relation("PartnerOrganization")
+  preferences     CustomerPreference?      @relation("CustomerPreferences")
 }
 
 // Customer preferences — per-customer defaults for orders, shipping, specs, packaging
 model CustomerPreference {
-  id                   String    @id @default(uuid())
-  customerId           String    @unique
-  customer             Organization @relation("CustomerPreferences", fields: [customerId], references: [id])
+  id         String       @id @default(uuid())
+  customerId String       @unique
+  customer   Organization @relation("CustomerPreferences", fields: [customerId], references: [id])
 
   // Location & Shipping
-  preferredBranch      String?   // branch code e.g. JACKSON
-  preferredShipMethod  String?   // DELIVERY, WILL_CALL, SHIP_CARRIER, LTL, FLATBED
-  defaultDivision      String?   // METALS, PLASTICS, SUPPLIES
-  preferredCarrier     String?   // e.g. XPO, FedEx Freight
-  freightTerms         String?   // FOB_ORIGIN, FOB_DEST, PREPAID, COLLECT
-  deliveryWindow       String?   // e.g. "Tue/Thu 7am-2pm"
-  shipToAddress        Json?     // { label, address, city, state, zip }
+  preferredBranch     String? // branch code e.g. JACKSON
+  preferredShipMethod String? // DELIVERY, WILL_CALL, SHIP_CARRIER, LTL, FLATBED
+  defaultDivision     String? // METALS, PLASTICS, SUPPLIES
+  preferredCarrier    String? // e.g. XPO, FedEx Freight
+  freightTerms        String? // FOB_ORIGIN, FOB_DEST, PREPAID, COLLECT
+  deliveryWindow      String? // e.g. "Tue/Thu 7am-2pm"
+  shipToAddress       Json? // { label, address, city, state, zip }
 
   // Priority & Order Rules
-  defaultPriority      String    @default("STANDARD") // STANDARD, RUSH, HOT, EMERGENCY
-  rushDefault           Boolean  @default(false)
-  defaultOwnership     String    @default("HOUSE")     // HOUSE, CUSTOMER_MATERIAL
-  requirePONumber      Boolean   @default(false)
-  autoApplyContract    Boolean   @default(true)
-  autoApproveOrders    Boolean   @default(false)
-  minOrderQty          Decimal?
-  minOrderValue        Decimal?
+  defaultPriority   String   @default("STANDARD") // STANDARD, RUSH, HOT, EMERGENCY
+  rushDefault       Boolean  @default(false)
+  defaultOwnership  String   @default("HOUSE") // HOUSE, CUSTOMER_MATERIAL
+  requirePONumber   Boolean  @default(false)
+  autoApplyContract Boolean  @default(true)
+  autoApproveOrders Boolean  @default(false)
+  minOrderQty       Decimal?
+  minOrderValue     Decimal?
 
   // Pricing
-  pricingTier          String?   // A, B, C, D
-  discountPct          Decimal?  // default discount %
-  fuelSurchargeExempt  Boolean   @default(false)
-  paymentTerms         String?   // Net 30, Net 60, COD
-  creditLimit          Decimal?
-  contractNotes        String?
+  pricingTier         String? // A, B, C, D
+  discountPct         Decimal? // default discount %
+  fuelSurchargeExempt Boolean  @default(false)
+  paymentTerms        String? // Net 30, Net 60, COD
+  creditLimit         Decimal?
+  contractNotes       String?
 
   // Material Specs
-  tolerancePreset          String    @default("STANDARD")
+  tolerancePreset   String  @default("STANDARD")
   // Thickness tolerances
-  thkTolerancePlus         Decimal   @default(0.010)
-  thkToleranceMinus        Decimal   @default(0.010)
+  thkTolerancePlus  Decimal @default(0.010)
+  thkToleranceMinus Decimal @default(0.010)
   // Length tolerances
-  lenTolerancePlus         Decimal   @default(0.125)
-  lenToleranceMinus        Decimal   @default(0.000)
+  lenTolerancePlus  Decimal @default(0.125)
+  lenToleranceMinus Decimal @default(0.000)
   // Width tolerances
-  widTolerancePlus         Decimal   @default(0.063)
-  widToleranceMinus        Decimal   @default(0.031)
-  approvedGrades           Json?     // ["A36", "A572-50", ...]
-  surfaceFinish        String?   // MILL, PICKLED, OILED, BLASTED
-  specialSpecs         String?   // free-text spec notes
+  widTolerancePlus  Decimal @default(0.063)
+  widToleranceMinus Decimal @default(0.031)
+  approvedGrades    Json? // ["A36", "A572-50", ...]
+  surfaceFinish     String? // MILL, PICKLED, OILED, BLASTED
+  specialSpecs      String? // free-text spec notes
 
   // Certifications
-  certRequirements     Json?     // ["MTR", "COC", "FIRST_ARTICLE", ...]
-  autoSendMTR          Boolean   @default(false)
-  autoSendInvoice      Boolean   @default(false)
-  mtrEmail             String?
-  invoiceEmail         String?
+  certRequirements Json? // ["MTR", "COC", "FIRST_ARTICLE", ...]
+  autoSendMTR      Boolean @default(false)
+  autoSendInvoice  Boolean @default(false)
+  mtrEmail         String?
+  invoiceEmail     String?
 
   // Packaging & Labeling
-  bundleMaxWeight      Decimal?  // max lbs per bundle
-  bundleMaxPieces      Int?
-  packagingType        String?   // BANDED, CRATED, PALLETIZED, LOOSE
-  labelTemplate        String?   // customer-specific tag template code
-  packagingNotes       String?
+  bundleMaxWeight Decimal? // max lbs per bundle
+  bundleMaxPieces Int?
+  packagingType   String? // BANDED, CRATED, PALLETIZED, LOOSE
+  labelTemplate   String? // customer-specific tag template code
+  packagingNotes  String?
 
   // Notes
-  specialInstructions  String?
-  internalNotes        String?
+  specialInstructions String?
+  internalNotes       String?
 
   // Audit
-  updatedBy            String?
-  isActive             Boolean   @default(true)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  updatedBy String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([customerId])
 }
@@ -429,40 +429,40 @@ model Coil {
 }
 
 model Location {
-  id            String             @id @default(uuid())
-  code          String             @unique
-  name          String
-  type          LocationType
-  parentId      String?
-  ownerId       String
-  addressLine1  String?
-  city          String?
-  state         String?
-  postalCode    String?
-  country       String?
-  lat           Decimal?
-  lng           Decimal?
-  maxWeightLb   Decimal?
-  isOutdoor     Boolean            @default(false)
-  hasCrane      Boolean            @default(false)
-  isActive      Boolean            @default(true)
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  coils         Coil[]
-  inventories   Inventory[]
-  owner         Organization       @relation(fields: [ownerId], references: [id])
-  parent        Location?          @relation("LocationHierarchy", fields: [parentId], references: [id])
-  children      Location[]         @relation("LocationHierarchy")
-  movementsFrom MaterialMovement[] @relation("MovementFrom")
-  movementsTo   MaterialMovement[] @relation("MovementTo")
-  shipments     Shipment[]
-  workCenters   WorkCenter[]
-  usersHome     User[]             @relation("UserHomeLocation")
-  userLocations UserLocation[]
-  assets        Asset[]            @relation("AssetSite")
-  packages      Package[]          @relation("PackageLocation")
-  dropTagListings DropTagListing[] @relation("ListingOrigin")
-  operatorsHome Operator[]         @relation("OperatorHomeLocation")
+  id              String             @id @default(uuid())
+  code            String             @unique
+  name            String
+  type            LocationType
+  parentId        String?
+  ownerId         String
+  addressLine1    String?
+  city            String?
+  state           String?
+  postalCode      String?
+  country         String?
+  lat             Decimal?
+  lng             Decimal?
+  maxWeightLb     Decimal?
+  isOutdoor       Boolean            @default(false)
+  hasCrane        Boolean            @default(false)
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  coils           Coil[]
+  inventories     Inventory[]
+  owner           Organization       @relation(fields: [ownerId], references: [id])
+  parent          Location?          @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children        Location[]         @relation("LocationHierarchy")
+  movementsFrom   MaterialMovement[] @relation("MovementFrom")
+  movementsTo     MaterialMovement[] @relation("MovementTo")
+  shipments       Shipment[]
+  workCenters     WorkCenter[]
+  usersHome       User[]             @relation("UserHomeLocation")
+  userLocations   UserLocation[]
+  assets          Asset[]            @relation("AssetSite")
+  packages        Package[]          @relation("PackageLocation")
+  dropTagListings DropTagListing[]   @relation("ListingOrigin")
+  operatorsHome   Operator[]         @relation("OperatorHomeLocation")
 }
 
 model Inventory {
@@ -633,24 +633,24 @@ model QuoteLine {
   notes         String?
 
   // Dimensions & Specs (override customer defaults)
-  thicknessIn          Decimal?
-  widthIn              Decimal?
-  lengthIn             Decimal?
-  gradeOverride        String?
-  surfaceFinish        String?
-  tolerancePreset      String?
-  thkTolerancePlus     Decimal?
-  thkToleranceMinus    Decimal?
-  lenTolerancePlus     Decimal?
-  lenToleranceMinus    Decimal?
-  widTolerancePlus     Decimal?
-  widToleranceMinus    Decimal?
-  certRequirements     Json?       // ["MTR", "COC", ...]
-  specNotes            String?
+  thicknessIn       Decimal?
+  widthIn           Decimal?
+  lengthIn          Decimal?
+  gradeOverride     String?
+  surfaceFinish     String?
+  tolerancePreset   String?
+  thkTolerancePlus  Decimal?
+  thkToleranceMinus Decimal?
+  lenTolerancePlus  Decimal?
+  lenToleranceMinus Decimal?
+  widTolerancePlus  Decimal?
+  widToleranceMinus Decimal?
+  certRequirements  Json? // ["MTR", "COC", ...]
+  specNotes         String?
 
-  createdAt     DateTime @default(now())
-  quote         Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
-  rfqLine       RFQLine? @relation(fields: [rfqLineId], references: [id])
+  createdAt DateTime @default(now())
+  quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  rfqLine   RFQLine? @relation(fields: [rfqLineId], references: [id])
 }
 
 // ============================================================================
@@ -658,73 +658,73 @@ model QuoteLine {
 // ============================================================================
 
 model Operator {
-  id                       String          @id @default(uuid())
-  userId                   String?         @unique
-  employeeCode             String          @unique
-  firstName                String
-  lastName                 String
-  email                    String?
-  phone                    String?
-  homeLocationId           String?
-  homeWorkCenterId         String?
-  hireDate                 DateTime?
-  status                   OperatorStatus  @default(ACTIVE)
-  maxThicknessInches       Decimal?
-  hourlyRate               Decimal?
-  overtimeMultiplier       Decimal?        @default(1.5)
-  notes                    String?
-  avatarUrl                String?
-  emergencyContactName     String?
-  emergencyContactPhone    String?
-  isActive                 Boolean         @default(true)
-  createdAt                DateTime        @default(now())
-  updatedAt                DateTime        @updatedAt
+  id                    String         @id @default(uuid())
+  userId                String?        @unique
+  employeeCode          String         @unique
+  firstName             String
+  lastName              String
+  email                 String?
+  phone                 String?
+  homeLocationId        String?
+  homeWorkCenterId      String?
+  hireDate              DateTime?
+  status                OperatorStatus @default(ACTIVE)
+  maxThicknessInches    Decimal?
+  hourlyRate            Decimal?
+  overtimeMultiplier    Decimal?       @default(1.5)
+  notes                 String?
+  avatarUrl             String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  isActive              Boolean        @default(true)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
 
-  user                     User?           @relation(fields: [userId], references: [id])
-  homeLocation             Location?       @relation("OperatorHomeLocation", fields: [homeLocationId], references: [id])
-  homeWorkCenter           WorkCenter?     @relation("OperatorHomeWorkCenter", fields: [homeWorkCenterId], references: [id])
-  skills                   OperatorSkill[]
-  shifts                   Shift[]
-  inspections              JobInspection[] @relation("InspectorInspections")
+  user           User?           @relation(fields: [userId], references: [id])
+  homeLocation   Location?       @relation("OperatorHomeLocation", fields: [homeLocationId], references: [id])
+  homeWorkCenter WorkCenter?     @relation("OperatorHomeWorkCenter", fields: [homeWorkCenterId], references: [id])
+  skills         OperatorSkill[]
+  shifts         Shift[]
+  inspections    JobInspection[] @relation("InspectorInspections")
 
   @@index([homeLocationId])
   @@index([status])
 }
 
 model OperatorSkill {
-  id                String      @id @default(uuid())
-  operatorId        String
-  workCenterTypeId  String
-  skillLevel        SkillLevel  @default(STANDARD)
-  certifiedDate     DateTime    @default(now())
-  expiresAt         DateTime?
-  certificationRef  String?
-  isActive          Boolean     @default(true)
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  id               String     @id @default(uuid())
+  operatorId       String
+  workCenterTypeId String
+  skillLevel       SkillLevel @default(STANDARD)
+  certifiedDate    DateTime   @default(now())
+  expiresAt        DateTime?
+  certificationRef String?
+  isActive         Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
-  operator          Operator    @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  operator Operator @relation(fields: [operatorId], references: [id], onDelete: Cascade)
 
   @@unique([operatorId, workCenterTypeId])
   @@index([workCenterTypeId])
 }
 
 model Shift {
-  id              String     @id @default(uuid())
-  operatorId      String
-  locationId      String?
-  workCenterId    String?
-  shiftDate       DateTime
-  startTime       DateTime
-  endTime         DateTime
-  shiftType       ShiftType  @default(DAY)
-  breakMinutes    Int        @default(30)
-  status          ShiftStatus @default(SCHEDULED)
-  notes           String?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id           String      @id @default(uuid())
+  operatorId   String
+  locationId   String?
+  workCenterId String?
+  shiftDate    DateTime
+  startTime    DateTime
+  endTime      DateTime
+  shiftType    ShiftType   @default(DAY)
+  breakMinutes Int         @default(30)
+  status       ShiftStatus @default(SCHEDULED)
+  notes        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  operator        Operator   @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  operator Operator @relation(fields: [operatorId], references: [id], onDelete: Cascade)
 
   @@index([operatorId, shiftDate])
   @@index([locationId, shiftDate])
@@ -766,74 +766,74 @@ enum ShiftStatus {
 // ============================================================================
 
 model DispatchJob {
-  id                String              @id @default(uuid())
-  jobId             String              @unique
-  jobNumber         String
-  orderId           String?
-  materialCode      String?
-  commodity         String              @default("METALS")
-  form              String              @default("PLATE")
-  grade             String?
-  thickness         Decimal             @default(0.5)
-  division          String              @default("METALS")
-  locationId        String              @default("FWA")
-  dueDate           DateTime?
-  priority          String              @default("NORMAL")
-  customerName      String?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  id           String    @id @default(uuid())
+  jobId        String    @unique
+  jobNumber    String
+  orderId      String?
+  materialCode String?
+  commodity    String    @default("METALS")
+  form         String    @default("PLATE")
+  grade        String?
+  thickness    Decimal   @default(0.5)
+  division     String    @default("METALS")
+  locationId   String    @default("FWA")
+  dueDate      DateTime?
+  priority     String    @default("NORMAL")
+  customerName String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  job               Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  operations        DispatchOperation[]
+  job        Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  operations DispatchOperation[]
 
   @@index([locationId])
   @@index([jobNumber])
 }
 
 model DispatchOperation {
-  id                      String       @id @default(uuid())
-  dispatchJobId           String
-  sequence                Int
-  name                    String
-  requiredWorkCenterType  String
-  requiredDivision        String       @default("METALS")
-  requiredSkillLevel      String       @default("STANDARD")
-  specialization          String?
-  thickness               Decimal      @default(0.5)
-  materialCode            String?
-  status                  String       @default("PENDING")
-  assignedWorkCenterId    String?
-  assignedOperatorId      String?
-  scheduledStart          DateTime?
-  scheduledEnd            DateTime?
-  actualStart             DateTime?
-  actualEnd               DateTime?
-  createdAt               DateTime     @default(now())
-  updatedAt               DateTime     @updatedAt
+  id                     String    @id @default(uuid())
+  dispatchJobId          String
+  sequence               Int
+  name                   String
+  requiredWorkCenterType String
+  requiredDivision       String    @default("METALS")
+  requiredSkillLevel     String    @default("STANDARD")
+  specialization         String?
+  thickness              Decimal   @default(0.5)
+  materialCode           String?
+  status                 String    @default("PENDING")
+  assignedWorkCenterId   String?
+  assignedOperatorId     String?
+  scheduledStart         DateTime?
+  scheduledEnd           DateTime?
+  actualStart            DateTime?
+  actualEnd              DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
-  dispatchJob             DispatchJob  @relation(fields: [dispatchJobId], references: [id], onDelete: Cascade)
-  timeLogs                DispatchTimeLog[]
+  dispatchJob DispatchJob       @relation(fields: [dispatchJobId], references: [id], onDelete: Cascade)
+  timeLogs    DispatchTimeLog[]
 
+  @@unique([dispatchJobId, sequence])
   @@index([dispatchJobId])
   @@index([assignedWorkCenterId])
   @@index([status])
-  @@unique([dispatchJobId, sequence])
 }
 
 model DispatchTimeLog {
-  id                    String            @id @default(uuid())
-  dispatchOperationId   String
-  jobId                 String?
-  operatorId            String?
-  workCenterId          String?
-  status                String            @default("RUNNING")    // RUNNING, PAUSED, COMPLETE
-  startAt               DateTime          @default(now())
-  endAt                 DateTime?
-  downtimeReason        String?
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
+  id                  String    @id @default(uuid())
+  dispatchOperationId String
+  jobId               String?
+  operatorId          String?
+  workCenterId        String?
+  status              String    @default("RUNNING") // RUNNING, PAUSED, COMPLETE
+  startAt             DateTime  @default(now())
+  endAt               DateTime?
+  downtimeReason      String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  dispatchOperation     DispatchOperation @relation(fields: [dispatchOperationId], references: [id], onDelete: Cascade)
+  dispatchOperation DispatchOperation @relation(fields: [dispatchOperationId], references: [id], onDelete: Cascade)
 
   @@index([dispatchOperationId])
   @@index([operatorId])
@@ -842,27 +842,27 @@ model DispatchTimeLog {
 
 // ── Job-Level QC Inspection ─────────────────────────────────────────────────────
 model JobInspection {
-  id                  String       @id @default(uuid())
-  inspectionNumber    String       @unique
-  jobId               String
-  inspectorId         String?
-  status              String       @default("PENDING")    // PENDING, IN_PROGRESS, PASSED, FAILED, CONDITIONAL
-  overallResult       String?                              // PASS, FAIL, CONDITIONAL
-  disposition         String?                              // USE_AS_IS, REWORK, SCRAP, RETURN, SELL_SECONDARY, PENDING
-  inspectionType      String       @default("FINAL")      // FINAL, IN_PROCESS, FIRST_ARTICLE, RECEIVING
-  checklist           Json?                                // Array of {item, required, result, notes}
-  dimensionalChecks   Json?                                // Array of {dimension, nominal, tolerance, actual, pass}
-  visualNotes         String?
-  defects             Json?                                // Array of {type, severity, description, location, photo}
-  reworkInstructions  String?
-  notes               String?
-  startedAt           DateTime?
-  completedAt         DateTime?
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
+  id                 String    @id @default(uuid())
+  inspectionNumber   String    @unique
+  jobId              String
+  inspectorId        String?
+  status             String    @default("PENDING") // PENDING, IN_PROGRESS, PASSED, FAILED, CONDITIONAL
+  overallResult      String? // PASS, FAIL, CONDITIONAL
+  disposition        String? // USE_AS_IS, REWORK, SCRAP, RETURN, SELL_SECONDARY, PENDING
+  inspectionType     String    @default("FINAL") // FINAL, IN_PROCESS, FIRST_ARTICLE, RECEIVING
+  checklist          Json? // Array of {item, required, result, notes}
+  dimensionalChecks  Json? // Array of {dimension, nominal, tolerance, actual, pass}
+  visualNotes        String?
+  defects            Json? // Array of {type, severity, description, location, photo}
+  reworkInstructions String?
+  notes              String?
+  startedAt          DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  job                 Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  inspector           Operator?    @relation("InspectorInspections", fields: [inspectorId], references: [id])
+  job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  inspector Operator? @relation("InspectorInspections", fields: [inspectorId], references: [id])
 
   @@index([jobId])
   @@index([inspectorId])
@@ -875,41 +875,41 @@ model WorkCenterType {
   icon        String   @default("Build")
   color       String   @default("#1976d2")
   description String?
-  divisions   String[]
+  divisions   Json     @default("[]")
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model WorkCenter {
-  id           String   @id @default(uuid())
-  code         String   @unique
-  name         String
-  locationId   String
-  type         String?
-  capabilities String[]
-  capacity     Json?
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  jobs         Job[]
-  location     Location @relation(fields: [locationId], references: [id])
-  assets       Asset[]  @relation("AssetWorkCenter")
+  id            String     @id @default(uuid())
+  code          String     @unique
+  name          String
+  locationId    String
+  type          String?
+  capabilities  Json       @default("[]")
+  capacity      Json?
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  jobs          Job[]
+  location      Location   @relation(fields: [locationId], references: [id])
+  assets        Asset[]    @relation("AssetWorkCenter")
   operatorsHome Operator[] @relation("OperatorHomeWorkCenter")
 }
 
 model Job {
-  id               String      @id @default(uuid())
-  jobNumber        String      @unique
+  id               String    @id @default(uuid())
+  jobNumber        String    @unique
   orderId          String?
   orderLineId      String?
   workCenterId     String?
   workOrderId      String?
   assignedToId     String?
   createdById      String?
-  status           JobStatus   @default(SCHEDULED)
+  status           JobStatus @default(SCHEDULED)
   operationType    String?
-  priority         Int         @default(3)
+  priority         Int       @default(3)
   scheduledStart   DateTime?
   scheduledEnd     DateTime?
   actualStart      DateTime?
@@ -923,38 +923,38 @@ model Job {
   shippingCarrier  String?
   trackingNumber   String?
   shippedAt        DateTime?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
-  hasCustomRouting Boolean     @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  hasCustomRouting Boolean   @default(false)
   recipeId         String?
   recipeVersion    Int?
 
   // Spec overrides (inherit from OrderLine → QuoteLine → CustomerPreference)
-  thicknessIn          Decimal?
-  widthIn              Decimal?
-  lengthIn             Decimal?
-  gradeOverride        String?
-  surfaceFinish        String?
-  tolerancePreset      String?
-  thkTolerancePlus     Decimal?
-  thkToleranceMinus    Decimal?
-  lenTolerancePlus     Decimal?
-  lenToleranceMinus    Decimal?
-  widTolerancePlus     Decimal?
-  widToleranceMinus    Decimal?
-  certRequirements     Json?       // ["MTR", "COC", ...]
-  specNotes            String?
-  specsInherited       Boolean     @default(true) // false = manually overridden
+  thicknessIn       Decimal?
+  widthIn           Decimal?
+  lengthIn          Decimal?
+  gradeOverride     String?
+  surfaceFinish     String?
+  tolerancePreset   String?
+  thkTolerancePlus  Decimal?
+  thkToleranceMinus Decimal?
+  lenTolerancePlus  Decimal?
+  lenToleranceMinus Decimal?
+  widTolerancePlus  Decimal?
+  widToleranceMinus Decimal?
+  certRequirements  Json? // ["MTR", "COC", ...]
+  specNotes         String?
+  specsInherited    Boolean  @default(true) // false = manually overridden
 
-  assignedTo       User?       @relation("JobAssignee", fields: [assignedToId], references: [id])
-  createdBy        User?       @relation("JobCreator", fields: [createdById], references: [id])
-  order            Order?      @relation(fields: [orderId], references: [id])
-  recipe           BomRecipe?  @relation("JobRecipe", fields: [recipeId], references: [id])
-  workCenter       WorkCenter? @relation(fields: [workCenterId], references: [id])
-  dropTags         DropTag[]
-  packages         Package[]
-  dispatchJob      DispatchJob?
-  inspections      JobInspection[]
+  assignedTo  User?           @relation("JobAssignee", fields: [assignedToId], references: [id])
+  createdBy   User?           @relation("JobCreator", fields: [createdById], references: [id])
+  order       Order?          @relation(fields: [orderId], references: [id])
+  recipe      BomRecipe?      @relation("JobRecipe", fields: [recipeId], references: [id])
+  workCenter  WorkCenter?     @relation(fields: [workCenterId], references: [id])
+  dropTags    DropTag[]
+  packages    Package[]
+  dispatchJob DispatchJob?
+  inspections JobInspection[]
 
   @@index([recipeId])
 }
@@ -1001,7 +1001,7 @@ model Order {
 }
 
 model OrderLine {
-  id            String                @id @default(uuid())
+  id            String     @id @default(uuid())
   orderId       String
   lineNumber    Int
   productId     String?
@@ -1013,28 +1013,28 @@ model OrderLine {
   finish        String?
   coating       String?
   qtyOrdered    Decimal
-  qtyShipped    Decimal               @default(0)
-  qtyReceived   Decimal               @default(0)
-  unit          String                @default("LB")
+  qtyShipped    Decimal    @default(0)
+  qtyReceived   Decimal    @default(0)
+  unit          String     @default("LB")
   unitPrice     Decimal?
-  priceUnit     PriceUnit             @default(CWT)
+  priceUnit     PriceUnit  @default(CWT)
   discountPct   Decimal?
   extendedPrice Decimal?
-  lineStatus    LineStatus            @default(OPEN)
+  lineStatus    LineStatus @default(OPEN)
   notes         String?
 
   // Spec overrides (inherit from QuoteLine → CustomerPreference)
-  gradeOverride        String?
-  surfaceFinish        String?
-  tolerancePreset      String?
-  thkTolerancePlus     Decimal?
-  thkToleranceMinus    Decimal?
-  lenTolerancePlus     Decimal?
-  lenToleranceMinus    Decimal?
-  widTolerancePlus     Decimal?
-  widToleranceMinus    Decimal?
-  certRequirements     Json?       // ["MTR", "COC", ...]
-  specNotes            String?
+  gradeOverride     String?
+  surfaceFinish     String?
+  tolerancePreset   String?
+  thkTolerancePlus  Decimal?
+  thkToleranceMinus Decimal?
+  lenTolerancePlus  Decimal?
+  lenToleranceMinus Decimal?
+  widTolerancePlus  Decimal?
+  widToleranceMinus Decimal?
+  certRequirements  Json? // ["MTR", "COC", ...]
+  specNotes         String?
 
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
@@ -1097,33 +1097,33 @@ model WorkOrderOutput {
 }
 
 model Shipment {
-  id             String             @id @default(uuid())
-  shipmentNumber String             @unique
-  orderId        String
-  fromLocationId String
-  carrierId      String?
-  carrierName    String?
-  truckNumber    String?
-  driverName     String?
-  driverPhone    String?
-  status         ShipmentStatus     @default(PENDING)
-  scheduledDate  DateTime?
-  shippedAt      DateTime?
-  deliveredAt    DateTime?
-  totalWeightLb  Decimal?
-  bolNumber      String?
-  podCaptured    Boolean            @default(false)
-  podImageUrl    String?
-  podSignature   String?
-  notes          String?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  movements      MaterialMovement[]
-  fromLocation   Location           @relation(fields: [fromLocationId], references: [id])
-  order          Order              @relation(fields: [orderId], references: [id])
-  items          ShipmentItem[]
-  stops          ShipmentStop[]
-  dropTags       DropTag[]
+  id              String             @id @default(uuid())
+  shipmentNumber  String             @unique
+  orderId         String
+  fromLocationId  String
+  carrierId       String?
+  carrierName     String?
+  truckNumber     String?
+  driverName      String?
+  driverPhone     String?
+  status          ShipmentStatus     @default(PENDING)
+  scheduledDate   DateTime?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  totalWeightLb   Decimal?
+  bolNumber       String?
+  podCaptured     Boolean            @default(false)
+  podImageUrl     String?
+  podSignature    String?
+  notes           String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  movements       MaterialMovement[]
+  fromLocation    Location           @relation(fields: [fromLocationId], references: [id])
+  order           Order              @relation(fields: [orderId], references: [id])
+  items           ShipmentItem[]
+  stops           ShipmentStop[]
+  dropTags        DropTag[]
   dropTagListings DropTagListing[]
 }
 
@@ -2010,7 +2010,7 @@ model DowntimeRecord {
   reasonDescription String?
 
   // Impact
-  impactedJobs        String[] // Array of job IDs
+  impactedJobs        Json     @default("[]") // Array of job IDs
   productionLossUnits Decimal?
   estimatedCost       Decimal?
 
@@ -2107,7 +2107,7 @@ model MaintenanceAuditLog {
   // Before/After
   previousState Json?
   newState      Json?
-  changedFields String[]
+  changedFields Json  @default("[]")
 
   // Who
   userId   String
@@ -2263,137 +2263,137 @@ enum PartTransactionType {
 
 // Customer pricing tier & margin settings
 model CustomerPricingTier {
-  id               String    @id @default(uuid())
-  customerId       String    @unique
-  tierCode         String    // A, B, C, D
-  marginFloor      Decimal   // Minimum margin % allowed
-  marginTarget     Decimal   // Target margin %
-  discountMaxPct   Decimal?  // Max discount from list
-  paymentTerms     String?   // Net 30, etc.
-  freightTerms     String?   // FOB, Prepaid, etc.
-  creditLimit      Decimal?
-  creditRating     String?
-  isActive         Boolean   @default(true)
-  effectiveFrom    DateTime  @default(now())
-  effectiveUntil   DateTime?
-  notes            String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  customer         Organization @relation("CustomerPricingTier", fields: [customerId], references: [id])
+  id             String       @id @default(uuid())
+  customerId     String       @unique
+  tierCode       String // A, B, C, D
+  marginFloor    Decimal // Minimum margin % allowed
+  marginTarget   Decimal // Target margin %
+  discountMaxPct Decimal? // Max discount from list
+  paymentTerms   String? // Net 30, etc.
+  freightTerms   String? // FOB, Prepaid, etc.
+  creditLimit    Decimal?
+  creditRating   String?
+  isActive       Boolean      @default(true)
+  effectiveFrom  DateTime     @default(now())
+  effectiveUntil DateTime?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  customer       Organization @relation("CustomerPricingTier", fields: [customerId], references: [id])
 }
 
 // Pricing recommendation record (audit trail)
 model PricingRecommendation {
-  id                String    @id @default(uuid())
-  quoteLineId       String?
-  rfqLineId         String?
-  productCode       String?
-  grade             String?
-  form              String?
-  dimensions        Json?     // { thickness, width, length }
-  quantity          Decimal
-  unit              String    @default("LB")
-  
+  id          String  @id @default(uuid())
+  quoteLineId String?
+  rfqLineId   String?
+  productCode String?
+  grade       String?
+  form        String?
+  dimensions  Json? // { thickness, width, length }
+  quantity    Decimal
+  unit        String  @default("LB")
+
   // Cost components
-  materialCost      Decimal?
-  processingCost    Decimal?
-  laborCost         Decimal?
-  freightCost       Decimal?
-  yieldLossCost     Decimal?
-  packagingCost     Decimal?
-  overheadCost      Decimal?
-  totalCost         Decimal?
-  
+  materialCost   Decimal?
+  processingCost Decimal?
+  laborCost      Decimal?
+  freightCost    Decimal?
+  yieldLossCost  Decimal?
+  packagingCost  Decimal?
+  overheadCost   Decimal?
+  totalCost      Decimal?
+
   // Pricing output
-  recommendedPrice  Decimal
-  minimumPrice      Decimal?  // Floor based on margin
-  listPrice         Decimal?
-  marginPct         Decimal?
-  confidenceScore   Decimal?  // 0-100
-  
+  recommendedPrice Decimal
+  minimumPrice     Decimal? // Floor based on margin
+  listPrice        Decimal?
+  marginPct        Decimal?
+  confidenceScore  Decimal? // 0-100
+
   // Context
-  customerId        String?
-  customerTier      String?
-  locationId        String?
-  inventorySource   String?   // Stock, Mill, Transfer
-  leadTimeDays      Int?
-  
+  customerId      String?
+  customerTier    String?
+  locationId      String?
+  inventorySource String? // Stock, Mill, Transfer
+  leadTimeDays    Int?
+
   // Alternatives
-  alternatives      Json?     // [{ type, price, leadTime, description }]
-  
+  alternatives Json? // [{ type, price, leadTime, description }]
+
   // Model info
-  pricingModel      String?   // V1, V2, etc.
-  modelInputs       Json?     // Full inputs for audit
-  createdAt         DateTime  @default(now())
+  pricingModel String? // V1, V2, etc.
+  modelInputs  Json? // Full inputs for audit
+  createdAt    DateTime @default(now())
 }
 
 // Pricing override record
 model PricingOverride {
-  id               String    @id @default(uuid())
-  quoteLineId      String?
-  quoteId          String?
-  originalPrice    Decimal
-  overridePrice    Decimal
-  originalMargin   Decimal?
-  overrideMargin   Decimal?
-  reason           String
-  justification    String?
-  
+  id             String   @id @default(uuid())
+  quoteLineId    String?
+  quoteId        String?
+  originalPrice  Decimal
+  overridePrice  Decimal
+  originalMargin Decimal?
+  overrideMargin Decimal?
+  reason         String
+  justification  String?
+
   // Approval
-  requestedById    String
-  approvedById     String?
-  approvalStatus   ApprovalStatus @default(PENDING)
-  approvedAt       DateTime?
-  rejectedAt       DateTime?
-  rejectionReason  String?
-  
+  requestedById   String
+  approvedById    String?
+  approvalStatus  ApprovalStatus @default(PENDING)
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+
   // Audit
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Quote acceptance record
 model QuoteAcceptance {
-  id               String    @id @default(uuid())
-  quoteId          String    @unique
-  acceptedAt       DateTime  @default(now())
-  acceptedBy       String?   // Customer contact name
-  acceptedByEmail  String?
-  customerPO       String?
-  termsAccepted    Boolean   @default(true)
-  signatureData    String?   // Base64 or URL
-  ipAddress        String?
-  notes            String?
-  createdAt        DateTime  @default(now())
+  id              String   @id @default(uuid())
+  quoteId         String   @unique
+  acceptedAt      DateTime @default(now())
+  acceptedBy      String? // Customer contact name
+  acceptedByEmail String?
+  customerPO      String?
+  termsAccepted   Boolean  @default(true)
+  signatureData   String? // Base64 or URL
+  ipAddress       String?
+  notes           String?
+  createdAt       DateTime @default(now())
 }
 
 // RFQ source tracking
 model RFQSource {
-  id               String    @id @default(uuid())
-  rfqId            String    @unique
-  sourceType       RFQSourceType
-  sourceChannel    String?   // Email, Phone, Portal, EDI
-  rawContent       String?   // Original email body, etc.
-  parsedData       Json?     // AI-parsed structure
+  id                String        @id @default(uuid())
+  rfqId             String        @unique
+  sourceType        RFQSourceType
+  sourceChannel     String? // Email, Phone, Portal, EDI
+  rawContent        String? // Original email body, etc.
+  parsedData        Json? // AI-parsed structure
   parsingConfidence Decimal? // 0-100
-  parseErrors      Json?     // Any parsing issues
-  receivedAt       DateTime  @default(now())
-  processedAt      DateTime?
-  createdAt        DateTime  @default(now())
+  parseErrors       Json? // Any parsing issues
+  receivedAt        DateTime      @default(now())
+  processedAt       DateTime?
+  createdAt         DateTime      @default(now())
 }
 
 // Pricing analytics snapshot
 model PricingAnalytics {
-  id               String    @id @default(uuid())
-  period           String    // YYYY-MM or YYYY-WW
-  customerId       String?
-  productCategory  String?
-  locationId       String?
-  
+  id              String  @id @default(uuid())
+  period          String // YYYY-MM or YYYY-WW
+  customerId      String?
+  productCategory String?
+  locationId      String?
+
   // Metrics
-  quotesCreated    Int       @default(0)
-  quotesWon        Int       @default(0)
-  quotesLost       Int       @default(0)
+  quotesCreated    Int      @default(0)
+  quotesWon        Int      @default(0)
+  quotesLost       Int      @default(0)
   winRate          Decimal?
   avgMarginQuoted  Decimal?
   avgMarginWon     Decimal?
@@ -2401,10 +2401,10 @@ model PricingAnalytics {
   avgCycleTimeDays Decimal?
   totalValueQuoted Decimal?
   totalValueWon    Decimal?
-  
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([period, customerId, productCategory, locationId])
 }
 
@@ -2423,97 +2423,97 @@ enum RFQSourceType {
 
 // Drop Tag - Material Identity Tag
 model DropTag {
-  id                String          @id @default(uuid())
-  dropTagId         String          @unique  // Human-friendly: DT-2026-001234
-  tenantId          String?
+  id        String  @id @default(uuid())
+  dropTagId String  @unique // Human-friendly: DT-2026-001234
+  tenantId  String?
 
   // Package Association (required)
-  packageId         String
-  package           Package         @relation(fields: [packageId], references: [id])
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id])
 
   // Shipment Association (assigned later)
-  shipmentId        String?
-  shipment          Shipment?       @relation(fields: [shipmentId], references: [id])
-  listingId         String?
-  listing           DropTagListing? @relation(fields: [listingId], references: [id])
+  shipmentId String?
+  shipment   Shipment?       @relation(fields: [shipmentId], references: [id])
+  listingId  String?
+  listing    DropTagListing? @relation(fields: [listingId], references: [id])
 
   // Order Context
-  orderId           String
-  order             Order           @relation(fields: [orderId], references: [id])
-  orderLineId       String
-  orderLine         OrderLine       @relation(fields: [orderLineId], references: [id])
-  jobId             String?
-  job               Job?            @relation(fields: [jobId], references: [id])
+  orderId     String
+  order       Order     @relation(fields: [orderId], references: [id])
+  orderLineId String
+  orderLine   OrderLine @relation(fields: [orderLineId], references: [id])
+  jobId       String?
+  job         Job?      @relation(fields: [jobId], references: [id])
 
   // Customer Context
-  customerId        String
-  customer          Organization    @relation("DropTagCustomer", fields: [customerId], references: [id])
-  customerPO        String?
-  customerPartNo    String?
+  customerId     String
+  customer       Organization @relation("DropTagCustomer", fields: [customerId], references: [id])
+  customerPO     String?
+  customerPartNo String?
 
   // Material Identity (denormalized from inventory for immutability)
-  division          String          // STEEL, ALUMINUM, PLASTICS, STAINLESS
-  form              String          // ROUND_BAR, FLAT_BAR, PLATE, TUBE, SHEET
-  grade             String          // 4140, 1018, 6061-T6, etc.
-  specification     String?         // ASTM A108, AMS 2759, etc.
-  condition         String?         // HR, CF, Q&T, ANNEALED
-  dimensions        Json            // {od, id, width, thickness, etc.}
-  lengthInches      Decimal?
-  lengthFeet        Decimal?
+  division      String // STEEL, ALUMINUM, PLASTICS, STAINLESS
+  form          String // ROUND_BAR, FLAT_BAR, PLATE, TUBE, SHEET
+  grade         String // 4140, 1018, 6061-T6, etc.
+  specification String? // ASTM A108, AMS 2759, etc.
+  condition     String? // HR, CF, Q&T, ANNEALED
+  dimensions    Json // {od, id, width, thickness, etc.}
+  lengthInches  Decimal?
+  lengthFeet    Decimal?
 
   // Trace Identity
-  heatNumber        String?
-  lotId             String?
-  inventoryLotId    String?
-  supplierId        String?
-  mtrDocId          String?         // Mill Test Report document ID
-  cocDocId          String?         // Certificate of Conformance document ID
+  heatNumber     String?
+  lotId          String?
+  inventoryLotId String?
+  supplierId     String?
+  mtrDocId       String? // Mill Test Report document ID
+  cocDocId       String? // Certificate of Conformance document ID
 
   // Quantity
-  pieces            Int
-  weightLbs         Decimal
-  uom               String          @default("EA")  // EA, LB, FT, etc.
+  pieces    Int
+  weightLbs Decimal
+  uom       String  @default("EA") // EA, LB, FT, etc.
 
   // Processing Summary
-  workCenters       String[]        // Work centers that processed this material
-  operationsSummary String?         // Brief text summary of operations
+  workCenters       Json      @default("[]") // Work centers that processed this material
+  operationsSummary String? // Brief text summary of operations
   completedAt       DateTime?
-  operatorIds       String[]        // User IDs of operators who processed
+  operatorIds       Json      @default("[]") // User IDs of operators who processed
 
   // Handling Instructions
-  bundleType        String?         // BANDED, BOXED, WRAPPED, CRATED
-  packagingNotes    String?
+  bundleType          String? // BANDED, BOXED, WRAPPED, CRATED
+  packagingNotes      String?
   specialInstructions String?
 
   // Destination
-  shipToAddress     Json?           // {name, line1, line2, city, state, zip}
-  routeStop         Int?            // Stop sequence number
-  requiredDate      DateTime?
+  shipToAddress Json? // {name, line1, line2, city, state, zip}
+  routeStop     Int? // Stop sequence number
+  requiredDate  DateTime?
 
   // Status & Lifecycle
-  status            DropTagStatus   @default(DRAFT)
-  version           Int             @default(1)
-  reprintCount      Int             @default(0)
+  status            DropTagStatus @default(DRAFT)
+  version           Int           @default(1)
+  reprintCount      Int           @default(0)
   lastReprintReason String?
 
   // Identifier Bindings (for RFID/etch future)
-  identifiers       TagIdentifier[]
+  identifiers TagIdentifier[]
 
   // Timestamps & Audit
-  createdBy         String
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  printedBy         String?
-  printedAt         DateTime?
-  appliedBy         String?
-  appliedAt         DateTime?
-  sealedAt          DateTime?
-  voidedBy          String?
-  voidedAt          DateTime?
-  voidReason        String?
+  createdBy  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  printedBy  String?
+  printedAt  DateTime?
+  appliedBy  String?
+  appliedAt  DateTime?
+  sealedAt   DateTime?
+  voidedBy   String?
+  voidedAt   DateTime?
+  voidReason String?
 
   // Trace Events
-  traceEvents       TraceEvent[]
+  traceEvents TraceEvent[]
 
   @@index([packageId])
   @@index([shipmentId])
@@ -2525,68 +2525,68 @@ model DropTag {
 }
 
 enum DropTagStatus {
-  DRAFT             // Just created, not yet ready
-  READY_TO_PRINT    // All validations passed, ready for printing
-  PRINTED           // Tag printed but not yet applied
-  APPLIED           // Tag physically applied to package
-  SEALED            // Package sealed, identity immutable
-  STAGED            // Package in staging area
-  LOADED            // Package loaded on truck
-  SHIPPED           // Truck departed
-  DELIVERED         // Delivery confirmed
-  VOID              // Voided (before ship only without escalation)
+  DRAFT // Just created, not yet ready
+  READY_TO_PRINT // All validations passed, ready for printing
+  PRINTED // Tag printed but not yet applied
+  APPLIED // Tag physically applied to package
+  SEALED // Package sealed, identity immutable
+  STAGED // Package in staging area
+  LOADED // Package loaded on truck
+  SHIPPED // Truck departed
+  DELIVERED // Delivery confirmed
+  VOID // Voided (before ship only without escalation)
 }
 
 // Drop Tag Listing - Shipment Manifest
 model DropTagListing {
-  id                String              @id @default(uuid())
-  listingId         String              @unique  // Human-friendly: DTL-2026-001234
-  tenantId          String?
+  id        String  @id @default(uuid())
+  listingId String  @unique // Human-friendly: DTL-2026-001234
+  tenantId  String?
 
   // Shipment Association
-  shipmentId        String
-  shipment          Shipment            @relation(fields: [shipmentId], references: [id])
+  shipmentId String
+  shipment   Shipment @relation(fields: [shipmentId], references: [id])
 
   // Location & Route
-  originLocationId  String
-  originLocation    Location            @relation("ListingOrigin", fields: [originLocationId], references: [id])
-  routeId           String?
-  loadId            String?
+  originLocationId String
+  originLocation   Location @relation("ListingOrigin", fields: [originLocationId], references: [id])
+  routeId          String?
+  loadId           String?
 
   // Stop Sequence
-  stopSequence      Json                // [{stop: 1, customerId, shipTo, dropTagIds: [...]}]
+  stopSequence Json // [{stop: 1, customerId, shipTo, dropTagIds: [...]}]
 
   // Drop Tags
-  dropTags          DropTag[]
+  dropTags DropTag[]
 
   // Aggregated Totals (computed)
-  totalPackages     Int                 @default(0)
-  totalPieces       Int                 @default(0)
-  totalWeightLbs    Decimal             @default(0)
+  totalPackages  Int     @default(0)
+  totalPieces    Int     @default(0)
+  totalWeightLbs Decimal @default(0)
 
   // Linked Documents
-  cocBundleId       String?             // Combined CoC document bundle
-  mtrBundleId       String?             // Combined MTR document bundle
-  packingListDocId  String?             // Generated packing list
+  cocBundleId      String? // Combined CoC document bundle
+  mtrBundleId      String? // Combined MTR document bundle
+  packingListDocId String? // Generated packing list
 
   // Status
-  status            DropTagListingStatus @default(DRAFT)
-  lockedAt          DateTime?
-  lockedBy          String?
+  status   DropTagListingStatus @default(DRAFT)
+  lockedAt DateTime?
+  lockedBy String?
 
   // Timestamps
-  createdBy         String
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  departedAt        DateTime?
-  deliveredAt       DateTime?
-  closedAt          DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  departedAt  DateTime?
+  deliveredAt DateTime?
+  closedAt    DateTime?
 
   // Proof of Delivery
-  podDocId          String?
-  podSignature      String?
-  podSignedBy       String?
-  podSignedAt       DateTime?
+  podDocId     String?
+  podSignature String?
+  podSignedBy  String?
+  podSignedAt  DateTime?
 
   @@index([shipmentId])
   @@index([originLocationId])
@@ -2594,69 +2594,69 @@ model DropTagListing {
 }
 
 enum DropTagListingStatus {
-  DRAFT             // Being assembled
-  READY             // All tags assigned, ready for print
-  PRINTED           // Manifest printed
-  LOADED            // All packages loaded
-  DEPARTED          // Truck left
-  DELIVERED         // All stops confirmed
-  CLOSED            // Custody chain closed
+  DRAFT // Being assembled
+  READY // All tags assigned, ready for print
+  PRINTED // Manifest printed
+  LOADED // All packages loaded
+  DEPARTED // Truck left
+  DELIVERED // All stops confirmed
+  CLOSED // Custody chain closed
 }
 
 // Package - Container for material with drop tags
 model Package {
-  id                String          @id @default(uuid())
-  packageId         String          @unique  // Human-friendly: PKG-2026-001234
-  tenantId          String?
+  id        String  @id @default(uuid())
+  packageId String  @unique // Human-friendly: PKG-2026-001234
+  tenantId  String?
 
   // Status
-  status            PackageStatus   @default(OPEN)
+  status PackageStatus @default(OPEN)
 
   // Seal (required after SEALED)
-  sealId            String?
-  sealType          String?         // BAND, STRAP, SHRINK, LOCK
-  sealAppliedBy     String?
-  sealAppliedAt     DateTime?
+  sealId        String?
+  sealType      String? // BAND, STRAP, SHRINK, LOCK
+  sealAppliedBy String?
+  sealAppliedAt DateTime?
 
   // Package Specification
-  packageType       String          // BUNDLE, SKID, BOX, CRATE, DRUM
-  dimensions        Json?           // {length, width, height, unit}
-  tareWeightLbs     Decimal?
-  grossWeightLbs    Decimal?
-  netWeightLbs      Decimal?
+  packageType    String // BUNDLE, SKID, BOX, CRATE, DRUM
+  dimensions     Json? // {length, width, height, unit}
+  tareWeightLbs  Decimal?
+  grossWeightLbs Decimal?
+  netWeightLbs   Decimal?
 
   // Contents
-  packageItems      PackageItem[]
-  dropTags          DropTag[]
+  packageItems PackageItem[]
+  dropTags     DropTag[]
 
   // Location Tracking
   currentLocationId String?
-  currentLocation   Location?       @relation("PackageLocation", fields: [currentLocationId], references: [id])
+  currentLocation   Location? @relation("PackageLocation", fields: [currentLocationId], references: [id])
   currentBinId      String?
 
   // Order/Job Context
-  orderId           String?
-  order             Order?          @relation(fields: [orderId], references: [id])
-  orderLineId       String?
-  orderLine         OrderLine?      @relation(fields: [orderLineId], references: [id])
-  jobId             String?
-  job               Job?            @relation(fields: [jobId], references: [id])
+  orderId     String?
+  order       Order?     @relation(fields: [orderId], references: [id])
+  orderLineId String?
+  orderLine   OrderLine? @relation(fields: [orderLineId], references: [id])
+  jobId       String?
+  job         Job?       @relation(fields: [jobId], references: [id])
 
   // QC Status
-  qcStatus          PackageQCStatus @default(PENDING)
-  qcReleasedBy      String?
-  qcReleasedAt      DateTime?
-  qcNotes           String?
+  qcStatus     PackageQCStatus @default(PENDING)
+  qcReleasedBy String?
+  qcReleasedAt DateTime?
+  qcNotes      String?
 
   // Timestamps
-  createdBy         String
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  packedAt          DateTime?
-  stagedAt          DateTime?
-  loadedAt          DateTime?
-  shippedAt         DateTime?
-  deliveredAt       DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  packedAt    DateTime?
+  stagedAt    DateTime?
+  loadedAt    DateTime?
+  shippedAt   DateTime?
+  deliveredAt DateTime?
 
   @@index([status])
   @@index([orderId])
@@ -2665,53 +2665,53 @@ model Package {
 }
 
 enum PackageStatus {
-  OPEN              // Being created
-  PACKING           // Items being added
-  READY_FOR_QC      // Awaiting QC inspection
-  QC_RELEASED       // QC approved, ready for tagging
-  QC_HOLD           // QC hold
-  SEALED            // Sealed with tamper-evident seal
-  STAGED            // In staging area
-  LOADED            // On truck
-  SHIPPED           // In transit
-  DELIVERED         // At customer
+  OPEN // Being created
+  PACKING // Items being added
+  READY_FOR_QC // Awaiting QC inspection
+  QC_RELEASED // QC approved, ready for tagging
+  QC_HOLD // QC hold
+  SEALED // Sealed with tamper-evident seal
+  STAGED // In staging area
+  LOADED // On truck
+  SHIPPED // In transit
+  DELIVERED // At customer
 }
 
 enum PackageQCStatus {
-  PENDING           // Not yet reviewed
-  RELEASED          // Full release
-  CONDITIONAL       // Released with conditions (needs approval)
-  HOLD              // On hold, cannot proceed
-  REJECTED          // Failed inspection
+  PENDING // Not yet reviewed
+  RELEASED // Full release
+  CONDITIONAL // Released with conditions (needs approval)
+  HOLD // On hold, cannot proceed
+  REJECTED // Failed inspection
 }
 
 // Package Item - Individual material in a package
 model PackageItem {
-  id                String      @id @default(uuid())
-  packageId         String
-  package           Package     @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
 
   // Material Reference
-  inventoryLotId    String?
-  coilId            String?
-  heatNumber        String?
+  inventoryLotId String?
+  coilId         String?
+  heatNumber     String?
 
   // Material Details (snapshot)
-  grade             String
-  form              String
-  dimensions        Json
-  specification     String?
-  condition         String?
+  grade         String
+  form          String
+  dimensions    Json
+  specification String?
+  condition     String?
 
   // Quantity
-  pieces            Int
-  weightLbs         Decimal
-  lengthFeet        Decimal?
+  pieces     Int
+  weightLbs  Decimal
+  lengthFeet Decimal?
 
   // Piece Marks (if applicable)
-  pieceMarks        String[]
+  pieceMarks Json @default("[]")
 
-  createdAt         DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([packageId])
   @@index([inventoryLotId])
@@ -2720,61 +2720,61 @@ model PackageItem {
 
 // Tag Identifier - For RFID/Etch future support
 model TagIdentifier {
-  id                String          @id @default(uuid())
-  dropTagId         String
-  dropTag           DropTag         @relation(fields: [dropTagId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
+  dropTagId String
+  dropTag   DropTag @relation(fields: [dropTagId], references: [id], onDelete: Cascade)
 
-  identifierType    IdentifierType
-  identifierValue   String
-  isPrimary         Boolean         @default(false)
+  identifierType  IdentifierType
+  identifierValue String
+  isPrimary       Boolean        @default(false)
 
-  createdAt         DateTime        @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([identifierType, identifierValue])
   @@index([dropTagId])
 }
 
 enum IdentifierType {
-  BARCODE           // 1D barcode
-  QR                // QR code
-  RFID              // RFID tag
-  ETCH              // Steel etching
-  DATAMATRIX        // DataMatrix code
+  BARCODE // 1D barcode
+  QR // QR code
+  RFID // RFID tag
+  ETCH // Steel etching
+  DATAMATRIX // DataMatrix code
 }
 
 // Label Template - For printing drop tags
 model LabelTemplate {
-  id                String      @id @default(uuid())
-  tenantId          String?
+  id       String  @id @default(uuid())
+  tenantId String?
 
-  name              String
-  code              String      @unique  // BUNDLE_TAG, PIECE_TAG, etc.
-  description       String?
+  name        String
+  code        String  @unique // BUNDLE_TAG, PIECE_TAG, etc.
+  description String?
 
   // Template Type
-  templateType      String      // BUNDLE_TAG, PIECE_TAG, SKID_LABEL
-  mediaType         String      // PAPER, PLASTIC, METAL_PLATE
+  templateType String // BUNDLE_TAG, PIECE_TAG, SKID_LABEL
+  mediaType    String // PAPER, PLASTIC, METAL_PLATE
 
   // Dimensions
-  widthInches       Decimal
-  heightInches      Decimal
+  widthInches  Decimal
+  heightInches Decimal
 
   // Template Content (HTML or structured layout)
-  templateContent   String
+  templateContent String
 
   // Barcode Settings
-  barcodeType       String      @default("QR")  // QR, CODE128, CODE39
-  barcodePosition   Json        // {x, y, width, height}
+  barcodeType     String @default("QR") // QR, CODE128, CODE39
+  barcodePosition Json // {x, y, width, height}
 
   // Customer Specific
-  customerId        String?     // If specific to a customer
+  customerId String? // If specific to a customer
 
   // Status
-  isActive          Boolean     @default(true)
-  isDefault         Boolean     @default(false)
+  isActive  Boolean @default(true)
+  isDefault Boolean @default(false)
 
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([code])
   @@index([customerId])
@@ -2783,50 +2783,50 @@ model LabelTemplate {
 
 // Trace Event - Immutable audit trail for drop tags
 model TraceEvent {
-  id                String      @id @default(uuid())
-  eventId           String      @unique @default(uuid())
+  id      String @id @default(uuid())
+  eventId String @unique @default(uuid())
 
   // Event Classification
-  eventType         String      // DROP_TAG_GENERATED, DROP_TAG_PRINTED, etc.
-  eventCategory     String      // DROP_TAG, PACKAGE, SHIPMENT, LISTING
+  eventType     String // DROP_TAG_GENERATED, DROP_TAG_PRINTED, etc.
+  eventCategory String // DROP_TAG, PACKAGE, SHIPMENT, LISTING
 
   // Actor
-  actorUserId       String
-  actorRole         String
-  actorName         String?
+  actorUserId String
+  actorRole   String
+  actorName   String?
 
   // Resource
-  resourceType      String      // DropTag, Package, DropTagListing, Shipment
-  resourceId        String
+  resourceType String // DropTag, Package, DropTagListing, Shipment
+  resourceId   String
 
   // State Change
-  previousState     String?
-  newState          String?
+  previousState String?
+  newState      String?
 
   // Context
-  locationId        String?
-  stationId         String?     // Print station, scan station, etc.
+  locationId String?
+  stationId  String? // Print station, scan station, etc.
 
   // Payload (full before/after snapshots)
-  beforeSnapshot    Json?
-  afterSnapshot     Json?
-  metadata          Json?       // Additional context
+  beforeSnapshot Json?
+  afterSnapshot  Json?
+  metadata       Json? // Additional context
 
   // Correlation
-  correlationId     String?     // Links related events
-  orderId           String?
-  shipmentId        String?
+  correlationId String? // Links related events
+  orderId       String?
+  shipmentId    String?
 
   // Drop Tag Reference
-  dropTagId         String?
-  dropTag           DropTag?    @relation(fields: [dropTagId], references: [id])
+  dropTagId String?
+  dropTag   DropTag? @relation(fields: [dropTagId], references: [id])
 
   // Timestamp (immutable)
-  occurredAt        DateTime    @default(now())
+  occurredAt DateTime @default(now())
 
   // Immutability hash
-  eventHash         String?     // SHA-256 of event content
-  previousHash      String?     // Chain to previous event
+  eventHash    String? // SHA-256 of event content
+  previousHash String? // Chain to previous event
 
   @@index([resourceType, resourceId])
   @@index([eventType])
@@ -2840,33 +2840,33 @@ model TraceEvent {
 
 // Customer Tag Requirements - Customer-specific tagging rules
 model CustomerTagRequirement {
-  id                String      @id @default(uuid())
-  customerId        String
-  customer          Organization @relation("CustomerTagRequirements", fields: [customerId], references: [id])
+  id         String       @id @default(uuid())
+  customerId String
+  customer   Organization @relation("CustomerTagRequirements", fields: [customerId], references: [id])
 
   // Mandatory Fields
-  requireHeatNumber     Boolean @default(true)
-  requireMtrReference   Boolean @default(true)
-  requireCocReference   Boolean @default(true)
-  requirePieceMarks     Boolean @default(false)
-  requireCustomerPartNo Boolean @default(false)
-  requireCustomerPO     Boolean @default(true)
-  requireSpecification  Boolean @default(true)
+  requireHeatNumber      Boolean @default(true)
+  requireMtrReference    Boolean @default(true)
+  requireCocReference    Boolean @default(true)
+  requirePieceMarks      Boolean @default(false)
+  requireCustomerPartNo  Boolean @default(false)
+  requireCustomerPO      Boolean @default(true)
+  requireSpecification   Boolean @default(true)
   requireCountryOfOrigin Boolean @default(false)
 
   // Label Format
-  templateCode      String?     // Customer-specific template code
-  barcodeType       String?     // Customer-required symbology
-  includeQRCode     Boolean     @default(true)
+  templateCode  String? // Customer-specific template code
+  barcodeType   String? // Customer-required symbology
+  includeQRCode Boolean @default(true)
 
   // Mixed Material Rules
-  allowMixedHeat    Boolean     @default(false)
-  allowMixedLength  Boolean     @default(false)
-  requireCertPerHeat Boolean    @default(false)
+  allowMixedHeat     Boolean @default(false)
+  allowMixedLength   Boolean @default(false)
+  requireCertPerHeat Boolean @default(false)
 
-  isActive          Boolean     @default(true)
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([customerId])
   @@index([customerId])
@@ -2918,42 +2918,42 @@ enum WebhookDeliveryStatus {
 
 // Partner - External organization integration profile
 model Partner {
-  id              String        @id @default(uuid())
-  organizationId  String
-  organization    Organization  @relation("PartnerOrganization", fields: [organizationId], references: [id])
-  
-  partnerType     PartnerType
-  status          PartnerStatus @default(PENDING)
-  tier            PartnerTier   @default(STANDARD)
-  
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation("PartnerOrganization", fields: [organizationId], references: [id])
+
+  partnerType PartnerType
+  status      PartnerStatus @default(PENDING)
+  tier        PartnerTier   @default(STANDARD)
+
   // Contact info
-  contactName     String?
-  contactEmail    String?
-  contactPhone    String?
-  
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+
   // Security
-  ipAllowList     String[]      @default([])  // Empty = no restriction
-  sandboxEnabled  Boolean       @default(true)
-  productionEnabled Boolean     @default(false)
-  
+  ipAllowList       Json    @default("[]") // Empty = no restriction
+  sandboxEnabled    Boolean @default(true)
+  productionEnabled Boolean @default(false)
+
   // Rate limits (override defaults if set)
-  rateLimitPerMin    Int?
-  rateLimitPerHour   Int?
-  burstLimit         Int?
-  
+  rateLimitPerMin  Int?
+  rateLimitPerHour Int?
+  burstLimit       Int?
+
   // Metadata
-  notes           String?
-  onboardedAt     DateTime?
-  lastActiveAt    DateTime?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
+  notes        String?
+  onboardedAt  DateTime?
+  lastActiveAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  apiKeys         PartnerApiKey[]
-  webhooks        PartnerWebhook[]
-  apiLogs         PartnerApiLog[]
-  
+  apiKeys  PartnerApiKey[]
+  webhooks PartnerWebhook[]
+  apiLogs  PartnerApiLog[]
+
   @@unique([organizationId, partnerType])
   @@index([partnerType])
   @@index([status])
@@ -2962,33 +2962,33 @@ model Partner {
 
 // PartnerApiKey - OAuth2 client credentials for partner authentication
 model PartnerApiKey {
-  id              String        @id @default(uuid())
-  partnerId       String
-  partner         Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(uuid())
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
   // Credentials (client_id is the key id, client_secret stored as hash)
-  keyName         String        // Human-readable label, e.g. "Production Key"
-  clientSecret    String        // bcrypt hashed secret
-  
+  keyName      String // Human-readable label, e.g. "Production Key"
+  clientSecret String // bcrypt hashed secret
+
   // Scopes
-  scopes          String[]      // e.g. ["rfq:write", "orders:read", "documents:read"]
-  
+  scopes Json @default("[]") // e.g. ["rfq:write", "orders:read", "documents:read"]
+
   // Status
-  status          ApiKeyStatus  @default(ACTIVE)
-  environment     String        @default("sandbox")  // "sandbox" | "production"
-  
+  status      ApiKeyStatus @default(ACTIVE)
+  environment String       @default("sandbox") // "sandbox" | "production"
+
   // Expiry
-  expiresAt       DateTime?
-  lastUsedAt      DateTime?
-  
+  expiresAt  DateTime?
+  lastUsedAt DateTime?
+
   // Security
-  revokedAt       DateTime?
-  revokedBy       String?       // User ID who revoked
-  revokeReason    String?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
+  revokedAt    DateTime?
+  revokedBy    String? // User ID who revoked
+  revokeReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([partnerId])
   @@index([status])
   @@index([environment])
@@ -2996,65 +2996,65 @@ model PartnerApiKey {
 
 // PartnerWebhook - Webhook subscription for event notifications
 model PartnerWebhook {
-  id              String         @id @default(uuid())
-  partnerId       String
-  partner         Partner        @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(uuid())
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
   // Endpoint
-  url             String
-  secret          String         // HMAC signing secret (encrypted at rest)
-  
+  url    String
+  secret String // HMAC signing secret (encrypted at rest)
+
   // Subscription
-  events          String[]       // e.g. ["order.confirmed", "shipment.dispatched"]
-  
+  events Json @default("[]") // e.g. ["order.confirmed", "shipment.dispatched"]
+
   // Status
-  status          WebhookStatus  @default(ACTIVE)
-  
+  status WebhookStatus @default(ACTIVE)
+
   // Health tracking
-  consecutiveFailures Int        @default(0)
+  consecutiveFailures Int       @default(0)
   lastDeliveredAt     DateTime?
   lastFailedAt        DateTime?
   disabledAt          DateTime?
   disableReason       String?
-  
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  deliveries      WebhookDelivery[]
-  
+  deliveries WebhookDelivery[]
+
   @@index([partnerId])
   @@index([status])
 }
 
 // WebhookDelivery - Individual webhook delivery attempt log
 model WebhookDelivery {
-  id              String                @id @default(uuid())
-  webhookId       String
-  webhook         PartnerWebhook        @relation(fields: [webhookId], references: [id], onDelete: Cascade)
-  
+  id        String         @id @default(uuid())
+  webhookId String
+  webhook   PartnerWebhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
   // Event
-  eventType       String
-  eventId         String                // Unique event ID
-  payload         Json
-  
+  eventType String
+  eventId   String // Unique event ID
+  payload   Json
+
   // Delivery
-  status          WebhookDeliveryStatus @default(PENDING)
-  attempts        Int                   @default(0)
-  maxAttempts     Int                   @default(5)
-  
+  status      WebhookDeliveryStatus @default(PENDING)
+  attempts    Int                   @default(0)
+  maxAttempts Int                   @default(5)
+
   // Response
-  httpStatus      Int?
-  responseBody    String?
-  responseTimeMs  Int?
-  errorMessage    String?
-  
+  httpStatus     Int?
+  responseBody   String?
+  responseTimeMs Int?
+  errorMessage   String?
+
   // Timing
-  nextRetryAt     DateTime?
-  deliveredAt     DateTime?
-  
-  createdAt       DateTime              @default(now())
-  
+  nextRetryAt DateTime?
+  deliveredAt DateTime?
+
+  createdAt DateTime @default(now())
+
   @@index([webhookId])
   @@index([eventId])
   @@index([status])
@@ -3063,37 +3063,1394 @@ model WebhookDelivery {
 
 // PartnerApiLog - Audit log for every partner API call
 model PartnerApiLog {
-  id              String        @id @default(uuid())
-  partnerId       String
-  partner         Partner       @relation(fields: [partnerId], references: [id])
-  
+  id        String  @id @default(uuid())
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id])
+
   // Request
-  method          String        // GET, POST, PUT, DELETE
-  endpoint        String        // /api/v1/partner/customer/orders
-  statusCode      Int
-  
+  method     String // GET, POST, PUT, DELETE
+  endpoint   String // /api/v1/partner/customer/orders
+  statusCode Int
+
   // Metadata
-  apiKeyId        String?
-  ipAddress       String?
-  userAgent       String?
-  requestBody     Json?         // Sanitized, no secrets
-  
+  apiKeyId    String?
+  ipAddress   String?
+  userAgent   String?
+  requestBody Json? // Sanitized, no secrets
+
   // Performance
-  responseTimeMs  Int?
-  
+  responseTimeMs Int?
+
   // Error detail
-  errorCode       String?
-  errorMessage    String?
-  
+  errorCode    String?
+  errorMessage String?
+
   // Data access tracking
-  resourceType    String?       // "Order", "RFQ", "Shipment"
-  resourceId      String?       // ID of accessed resource
-  
-  createdAt       DateTime      @default(now())
-  
+  resourceType String? // "Order", "RFQ", "Shipment"
+  resourceId   String? // ID of accessed resource
+
+  createdAt DateTime @default(now())
+
   @@index([partnerId])
   @@index([endpoint])
   @@index([statusCode])
   @@index([createdAt])
   @@index([apiKeyId])
+}
+
+// ============================================================================
+// SAFETY MODULE SCHEMA EXTENSIONS
+// ============================================================================
+// This file contains Prisma schema definitions for the Safety/EHS module.
+// These should be merged into the main schema.prisma file.
+// Version: 1.0.0
+// ============================================================================
+
+// ============================================================================
+// ENUMS - Safety Module
+// ============================================================================
+
+enum PolicyStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  PUBLISHED
+  SUPERSEDED
+  ARCHIVED
+}
+
+enum PolicyType {
+  SAFETY_PROGRAM
+  LOTO_PROGRAM
+  HOT_WORK
+  ELECTRICAL_SAFETY
+  CONFINED_SPACE
+  CHEMICAL_SAFETY
+  EMERGENCY_RESPONSE
+  PPE_POLICY
+  GENERAL_SAFETY
+  CONTRACTOR_SAFETY
+  ENVIRONMENTAL
+  OTHER
+}
+
+enum TrainingCategory {
+  ONBOARDING
+  LOTO
+  FORKLIFT
+  CRANE_RIGGING
+  HOT_WORK
+  ELECTRICAL
+  CONFINED_SPACE
+  CHEMICAL_HAZMAT
+  PPE
+  ERGONOMICS
+  FALL_PROTECTION
+  MACHINE_GUARDING
+  EMERGENCY_RESPONSE
+  FIRST_AID
+  SUPERVISOR
+  ANNUAL_REFRESHER
+  OTHER
+}
+
+enum TrainingDeliveryMethod {
+  IN_PERSON
+  VIRTUAL_LIVE
+  E_LEARNING
+  ON_THE_JOB
+  BLENDED
+  SELF_STUDY
+  EXTERNAL
+}
+
+enum TrainingAssignmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  ESCALATED
+  WAIVED
+  CANCELLED
+}
+
+enum IncidentType {
+  INJURY
+  ILLNESS
+  NEAR_MISS
+  PROPERTY_DAMAGE
+  ENVIRONMENTAL
+  VEHICLE
+  SECURITY
+  FIRE
+  OTHER
+}
+
+enum IncidentSeverity {
+  NEAR_MISS
+  FIRST_AID
+  MINOR
+  MODERATE
+  SERIOUS
+  SEVERE
+  FATALITY
+}
+
+enum IncidentStatus {
+  DRAFT
+  SUBMITTED
+  TRIAGED
+  INVESTIGATING
+  CAPA_ASSIGNED
+  VERIFICATION
+  CLOSED
+  REOPENED
+}
+
+enum OshaClassification {
+  NOT_RECORDABLE
+  RECORDABLE_OTHER
+  RECORDABLE_RESTRICTED
+  RECORDABLE_DAW
+  FATALITY
+}
+
+enum AffectedPersonType {
+  EMPLOYEE
+  CONTRACTOR
+  VISITOR
+  CUSTOMER
+  OTHER
+}
+
+enum CapaStatus {
+  DRAFT
+  ASSIGNED
+  IN_PROGRESS
+  PENDING_VERIFICATION
+  VERIFIED
+  CLOSED
+  OVERDUE
+  ESCALATED
+}
+
+enum CapaType {
+  CORRECTIVE
+  PREVENTIVE
+}
+
+enum CapaSourceType {
+  INCIDENT
+  INSPECTION
+  AUDIT
+  OBSERVATION
+  MANAGEMENT_REVIEW
+  REGULATORY
+  OTHER
+}
+
+enum CapaPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum VerificationResult {
+  EFFECTIVE
+  PARTIALLY_EFFECTIVE
+  NOT_EFFECTIVE
+  NOT_VERIFIED
+}
+
+enum InspectionType {
+  FORKLIFT_DAILY
+  FORKLIFT_MONTHLY
+  CRANE_DAILY
+  CRANE_MONTHLY
+  CRANE_ANNUAL
+  FIRE_EXTINGUISHER
+  EYEWASH_SHOWER
+  GUARD_CHECK
+  HOUSEKEEPING
+  PPE_STATION
+  FIRST_AID
+  AED
+  GENERAL_AREA
+  ELECTRICAL_EQUIPMENT
+  LADDER
+  DOCK_LEVELER
+  OTHER
+}
+
+enum InspectionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  PENDING_REVIEW
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}
+
+enum DefectSeverity {
+  MINOR
+  MODERATE
+  MAJOR
+  CRITICAL
+}
+
+enum DefectStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  DEFERRED
+}
+
+enum PermitType {
+  LOTO
+  HOT_WORK
+  ELECTRICAL
+  CONFINED_SPACE
+  EXCAVATION
+  ELEVATED_WORK
+  CRANE_LIFT
+  OTHER
+}
+
+enum PermitStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  ACTIVE
+  SUSPENDED
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum ElectricalWorkType {
+  DE_ENERGIZED
+  ENERGIZED
+}
+
+enum ConfinedSpaceType {
+  PERMIT_REQUIRED
+  NON_PERMIT
+}
+
+enum StopWorkStatus {
+  ISSUED
+  ACKNOWLEDGED
+  MITIGATION
+  RESUME_AUTHORIZED
+  CLOSED
+}
+
+enum SafetyObservationType {
+  SAFE_BEHAVIOR
+  AT_RISK_BEHAVIOR
+  HAZARD
+  POSITIVE_RECOGNITION
+}
+
+enum ObservationCategory {
+  PPE
+  BODY_MECHANICS
+  HOUSEKEEPING
+  TOOLS_EQUIPMENT
+  PROCEDURE_COMPLIANCE
+  COMMUNICATION
+  LINE_OF_FIRE
+  EYES_ON_TASK
+  OTHER
+}
+
+enum EquipmentSafetyStatus {
+  SAFE
+  REQUIRES_INSPECTION
+  DEFECT_REPORTED
+  OUT_OF_SERVICE_SAFETY
+  LOCKED_OUT
+}
+
+enum AuditType {
+  INTERNAL
+  EXTERNAL
+  REGULATORY
+  INSURANCE
+  CORPORATE
+}
+
+enum AuditStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AuditFindingSeverity {
+  OBSERVATION
+  MINOR
+  MAJOR
+  CRITICAL
+}
+
+enum AuditFindingStatus {
+  OPEN
+  CAPA_ASSIGNED
+  CLOSED
+}
+
+// ============================================================================
+// POLICIES & PROCEDURES
+// ============================================================================
+
+model SafetyPolicyDocument {
+  id                 String                        @id @default(uuid())
+  tenantId           String
+  code               String
+  title              String
+  type               PolicyType
+  version            Int                           @default(1)
+  status             PolicyStatus                  @default(DRAFT)
+  contentUrl         String?
+  contentMarkdown    String?
+  summary            String?
+  scope              String?
+  effectiveDate      DateTime?
+  expiresAt          DateTime?
+  supersededById     String?
+  appliesToRoles     Json                          @default("[]")
+  appliesToLocations Json                          @default("[]")
+  requiresAck        Boolean                       @default(true)
+  ackDueDays         Int                           @default(30)
+  createdById        String
+  approvedById       String?
+  approvedAt         DateTime?
+  publishedAt        DateTime?
+  createdAt          DateTime                      @default(now())
+  updatedAt          DateTime                      @updatedAt
+  supersededBy       SafetyPolicyDocument?         @relation("PolicySupersession", fields: [supersededById], references: [id])
+  supersedes         SafetyPolicyDocument[]        @relation("PolicySupersession")
+  acknowledgements   SafetyPolicyAcknowledgement[]
+
+  @@unique([tenantId, code, version])
+  @@index([tenantId, status])
+  @@index([type])
+}
+
+model SafetyPolicyAcknowledgement {
+  id             String               @id @default(uuid())
+  policyId       String
+  userId         String
+  acknowledgedAt DateTime             @default(now())
+  signatureData  String?
+  ipAddress      String?
+  userAgent      String?
+  policy         SafetyPolicyDocument @relation(fields: [policyId], references: [id])
+
+  @@unique([policyId, userId])
+  @@index([userId])
+}
+
+// ============================================================================
+// TRAINING
+// ============================================================================
+
+model SafetyTrainingCourse {
+  id                  String                     @id @default(uuid())
+  tenantId            String
+  code                String
+  title               String
+  description         String?
+  category            TrainingCategory
+  deliveryMethod      TrainingDeliveryMethod
+  durationMinutes     Int                        @default(60)
+  validityMonths      Int?
+  passingScore        Int?
+  hasAssessment       Boolean                    @default(false)
+  assessmentQuestions Json?
+  contentUrl          String?
+  version             Int                        @default(1)
+  isActive            Boolean                    @default(true)
+  requiredForRoles    Json                       @default("[]")
+  prerequisites       Json                       @default("[]")
+  externalCourseId    String?
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+  assignments         SafetyTrainingAssignment[]
+  completions         SafetyTrainingCompletion[]
+
+  @@unique([tenantId, code, version])
+  @@index([tenantId, category])
+  @@index([isActive])
+}
+
+model SafetyTrainingAssignment {
+  id              String                    @id @default(uuid())
+  tenantId        String
+  courseId        String
+  userId          String
+  status          TrainingAssignmentStatus  @default(ASSIGNED)
+  assignedById    String
+  assignedAt      DateTime                  @default(now())
+  dueDate         DateTime
+  escalationLevel Int                       @default(0)
+  notes           String?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  course          SafetyTrainingCourse      @relation(fields: [courseId], references: [id])
+  completion      SafetyTrainingCompletion?
+
+  @@unique([courseId, userId, dueDate])
+  @@index([tenantId, status])
+  @@index([userId, status])
+  @@index([dueDate])
+}
+
+model SafetyTrainingCompletion {
+  id                String                   @id @default(uuid())
+  assignmentId      String                   @unique
+  courseId          String
+  userId            String
+  completedAt       DateTime                 @default(now())
+  expiresAt         DateTime?
+  score             Int?
+  passed            Boolean                  @default(true)
+  instructorId      String?
+  instructorName    String?
+  certificateUrl    String?
+  certificateNumber String?
+  externalRecordId  String?
+  signatureData     String?
+  notes             String?
+  createdAt         DateTime                 @default(now())
+  assignment        SafetyTrainingAssignment @relation(fields: [assignmentId], references: [id])
+  course            SafetyTrainingCourse     @relation(fields: [courseId], references: [id])
+
+  @@index([userId, courseId])
+  @@index([expiresAt])
+}
+
+// ============================================================================
+// INCIDENTS
+// ============================================================================
+
+model SafetyIncident {
+  id                    String                       @id @default(uuid())
+  tenantId              String
+  incidentNumber        String                       @unique
+  type                  IncidentType
+  severity              IncidentSeverity?
+  status                IncidentStatus               @default(DRAFT)
+  title                 String?
+  description           String
+  occurredAt            DateTime
+  reportedAt            DateTime                     @default(now())
+  locationId            String
+  workCenterId          String?
+  exactLocation         String?
+  shiftId               String?
+  reportedById          String
+  affectedPersonType    AffectedPersonType?
+  affectedPersonId      String?
+  affectedPersonName    String?
+  affectedPersonCompany String?
+  witnessNames          Json                         @default("[]")
+  immediateActions      String?
+  rootCauseDescription  String?
+  oshaRecordable        Boolean?
+  oshaClassification    OshaClassification?
+  daysAwayFromWork      Int?
+  daysRestricted        Int?
+  estimatedCost         Decimal?
+  workersCompClaimId    String?
+  triageNotes           String?
+  triagedById           String?
+  triagedAt             DateTime?
+  closedById            String?
+  closedAt              DateTime?
+  closureNotes          String?
+  reopenedAt            DateTime?
+  reopenReason          String?
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
+  investigation         SafetyIncidentInvestigation?
+  injuryDetails         SafetyInjuryDetails?
+  attachments           SafetyAttachment[]
+  capas                 SafetyCorrectiveAction[]     @relation("IncidentCapas")
+
+  @@index([tenantId, status])
+  @@index([locationId])
+  @@index([occurredAt])
+  @@index([oshaRecordable])
+  @@index([type])
+}
+
+model SafetyIncidentInvestigation {
+  id                   String         @id @default(uuid())
+  incidentId           String         @unique
+  leadInvestigatorId   String
+  teamMemberIds        Json           @default("[]")
+  startedAt            DateTime       @default(now())
+  dueDate              DateTime
+  completedAt          DateTime?
+  escalationLevel      Int            @default(0)
+  methodology          String?
+  fiveWhysAnalysis     Json?
+  fishboneAnalysis     Json?
+  rootCauseCategories  Json           @default("[]")
+  rootCauseDescription String?
+  contributingFactors  Json           @default("[]")
+  findings             Json?
+  recommendations      Json           @default("[]")
+  lessonsLearned       String?
+  preventabilityRating String?
+  signoffUserId        String?
+  signoffAt            DateTime?
+  signatureData        String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  incident             SafetyIncident @relation(fields: [incidentId], references: [id])
+
+  @@index([leadInvestigatorId])
+  @@index([dueDate])
+}
+
+model SafetyInjuryDetails {
+  id                    String         @id @default(uuid())
+  incidentId            String         @unique
+  bodyPartAffected      Json           @default("[]")
+  injuryNature          Json           @default("[]")
+  treatmentType         String
+  treatedOnsite         Boolean        @default(false)
+  medicalFacility       String?
+  physicianName         String?
+  returnToWorkDate      DateTime?
+  restrictionsNotes     String?
+  hospitalizedOvernight Boolean        @default(false)
+  deathDate             DateTime?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  incident              SafetyIncident @relation(fields: [incidentId], references: [id])
+}
+
+// ============================================================================
+// CORRECTIVE ACTIONS (CAPA)
+// ============================================================================
+
+model SafetyCorrectiveAction {
+  id                     String              @id @default(uuid())
+  tenantId               String
+  capaNumber             String              @unique
+  type                   CapaType            @default(CORRECTIVE)
+  sourceType             CapaSourceType
+  sourceId               String?
+  incidentId             String?
+  inspectionId           String?
+  auditId                String?
+  observationId          String?
+  title                  String
+  description            String
+  priority               CapaPriority        @default(MEDIUM)
+  status                 CapaStatus          @default(DRAFT)
+  assignedToId           String
+  assignedById           String
+  assignedAt             DateTime            @default(now())
+  dueDate                DateTime
+  escalationLevel        Int                 @default(0)
+  implementationNotes    String?
+  implementedAt          DateTime?
+  implementedById        String?
+  verifiedById           String?
+  verifiedAt             DateTime?
+  verificationResult     VerificationResult?
+  verificationNotes      String?
+  effectivenessCheckDate DateTime?
+  closedById             String?
+  closedAt               DateTime?
+  closureNotes           String?
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+  incident               SafetyIncident?     @relation("IncidentCapas", fields: [incidentId], references: [id])
+  inspection             SafetyInspection?   @relation("InspectionCapas", fields: [inspectionId], references: [id])
+  audit                  SafetyAudit?        @relation("AuditCapas", fields: [auditId], references: [id])
+  observation            SafetyObservation?  @relation("ObservationCapas", fields: [observationId], references: [id])
+  attachments            SafetyAttachment[]
+
+  @@index([tenantId, status])
+  @@index([assignedToId, status])
+  @@index([dueDate])
+  @@index([priority])
+}
+
+// ============================================================================
+// INSPECTIONS
+// ============================================================================
+
+model SafetyInspectionTemplate {
+  id                  String             @id @default(uuid())
+  tenantId            String
+  code                String
+  name                String
+  type                InspectionType
+  description         String?
+  frequency           String?
+  estimatedMinutes    Int                @default(15)
+  sections            Json
+  scoringMethod       String?
+  passingThreshold    Int?
+  version             Int                @default(1)
+  isActive            Boolean            @default(true)
+  appliesToAssetTypes Json               @default("[]")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  inspections         SafetyInspection[]
+
+  @@unique([tenantId, code, version])
+  @@index([tenantId, type])
+  @@index([isActive])
+}
+
+model SafetyInspection {
+  id               String                   @id @default(uuid())
+  tenantId         String
+  inspectionNumber String                   @unique
+  templateId       String
+  type             InspectionType
+  status           InspectionStatus         @default(SCHEDULED)
+  scheduledDate    DateTime
+  scheduledById    String?
+  assignedToId     String?
+  locationId       String
+  workCenterId     String?
+  assetId          String?
+  assetNumber      String?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  completedById    String?
+  responses        Json?
+  score            Int?
+  passed           Boolean?
+  findings         String?
+  notes            String?
+  reviewedById     String?
+  reviewedAt       DateTime?
+  signatureData    String?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  template         SafetyInspectionTemplate @relation(fields: [templateId], references: [id])
+  defects          SafetyInspectionDefect[]
+  capas            SafetyCorrectiveAction[] @relation("InspectionCapas")
+  attachments      SafetyAttachment[]
+
+  @@index([tenantId, status])
+  @@index([scheduledDate])
+  @@index([locationId])
+  @@index([assetId])
+  @@index([type])
+}
+
+model SafetyInspectionDefect {
+  id               String           @id @default(uuid())
+  inspectionId     String
+  questionRef      String?
+  severity         DefectSeverity
+  status           DefectStatus     @default(OPEN)
+  description      String
+  photoUrls        Json             @default("[]")
+  locationNotes    String?
+  correctiveAction String?
+  resolvedById     String?
+  resolvedAt       DateTime?
+  resolutionNotes  String?
+  causedAssetOOS   Boolean          @default(false)
+  capaId           String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  inspection       SafetyInspection @relation(fields: [inspectionId], references: [id])
+
+  @@index([inspectionId])
+  @@index([severity, status])
+}
+
+// ============================================================================
+// PERMITS
+// ============================================================================
+
+model SafetyPermit {
+  id                 String                     @id @default(uuid())
+  tenantId           String
+  permitNumber       String                     @unique
+  type               PermitType
+  status             PermitStatus               @default(DRAFT)
+  title              String
+  description        String?
+  locationId         String
+  workCenterId       String?
+  exactLocation      String?
+  equipmentAssetIds  Json                       @default("[]")
+  requestedById      String
+  requestedAt        DateTime                   @default(now())
+  validFrom          DateTime?
+  validTo            DateTime?
+  activatedAt        DateTime?
+  activatedById      String?
+  completedAt        DateTime?
+  completedById      String?
+  suspendedAt        DateTime?
+  suspendedById      String?
+  suspendReason      String?
+  cancelledAt        DateTime?
+  cancelledById      String?
+  cancelReason       String?
+  hazardsIdentified  Json                       @default("[]")
+  controlMeasures    Json                       @default("[]")
+  ppeRequired        Json                       @default("[]")
+  emergencyProcedure String?
+  workerIds          Json                       @default("[]")
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  lotoData           SafetyPermitLoto?
+  hotWorkData        SafetyPermitHotWork?
+  electricalData     SafetyPermitElectrical?
+  confinedSpaceData  SafetyPermitConfinedSpace?
+  signoffs           SafetyPermitSignoff[]
+  attachments        SafetyAttachment[]
+
+  @@index([tenantId, status])
+  @@index([type])
+  @@index([locationId])
+  @@index([validTo])
+}
+
+model SafetyPermitLoto {
+  id                 String       @id @default(uuid())
+  permitId           String       @unique
+  procedureId        String?
+  energySources      Json         @default("[]")
+  verificationMethod String?
+  verificationNotes  String?
+  locks              Json         @default("[]")
+  groupLockboxId     String?
+  tryStartCompleted  Boolean      @default(false)
+  tryStartById       String?
+  tryStartAt         DateTime?
+  allLocksRemoved    Boolean      @default(false)
+  permit             SafetyPermit @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitHotWork {
+  id                       String       @id @default(uuid())
+  permitId                 String       @unique
+  workType                 String
+  ignitionSources          Json         @default("[]")
+  combustiblesCleared      Boolean      @default(false)
+  clearanceRadius          Int?
+  fireWatchRequired        Boolean      @default(true)
+  fireWatchDuration        Int?
+  fireWatcherId            String?
+  fireWatcherName          String?
+  fireExtinguisherLocation String?
+  fireExtinguisherType     String?
+  sprinklerStatus          String?
+  monitoringRequired       Boolean      @default(false)
+  atmosphereTestedAt       DateTime?
+  atmosphereTestResults    Json?
+  permit                   SafetyPermit @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitElectrical {
+  id                   String             @id @default(uuid())
+  permitId             String             @unique
+  workType             ElectricalWorkType
+  voltage              Int?
+  arcFlashBoundary     Decimal?
+  shockBoundary        Decimal?
+  arcFlashPPELevel     Int?
+  arcFlashPPE          Json               @default("[]")
+  arcFlashEnergy       Decimal?
+  equipmentInfo        String?
+  secondPersonRequired Boolean            @default(false)
+  secondPersonId       String?
+  testingRequired      Boolean            @default(true)
+  testEquipment        String?
+  permit               SafetyPermit       @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitConfinedSpace {
+  id                          String            @id @default(uuid())
+  permitId                    String            @unique
+  spaceType                   ConfinedSpaceType
+  spaceName                   String?
+  knownHazards                Json              @default("[]")
+  atmosphereTestResults       Json              @default("[]")
+  atmosphereContinuousMonitor Boolean           @default(false)
+  ventilationType             String?
+  ventilationVerified         Boolean           @default(false)
+  entryAttendantId            String?
+  entryAttendantName          String?
+  rescuePlanType              String?
+  rescueTeamContact           String?
+  communicationMethod         String?
+  entrantIds                  Json              @default("[]")
+  permit                      SafetyPermit      @relation(fields: [permitId], references: [id])
+}
+
+model SafetyPermitSignoff {
+  id              String       @id @default(uuid())
+  permitId        String
+  signoffType     String
+  userId          String
+  signedAt        DateTime     @default(now())
+  signatureData   String?
+  attestationText String?
+  ipAddress       String?
+  comments        String?
+  permit          SafetyPermit @relation(fields: [permitId], references: [id])
+
+  @@index([permitId])
+  @@index([userId])
+}
+
+// ============================================================================
+// LOTO PROCEDURES
+// ============================================================================
+
+model SafetyLotoProcedure {
+  id                  String       @id @default(uuid())
+  tenantId            String
+  procedureNumber     String
+  equipmentAssetId    String
+  equipmentName       String
+  title               String
+  description         String?
+  version             Int          @default(1)
+  status              PolicyStatus @default(DRAFT)
+  energySources       Json         @default("[]")
+  isolationSteps      Json         @default("[]")
+  verificationSteps   Json         @default("[]")
+  restorationSteps    Json         @default("[]")
+  specialInstructions String?
+  estimatedMinutes    Int?
+  requiredTraining    Json         @default("[]")
+  ppeRequired         Json         @default("[]")
+  authorizedByIds     Json         @default("[]")
+  photoUrls           Json         @default("[]")
+  reviewDate          DateTime?
+  expiresAt           DateTime?
+  createdById         String
+  approvedById        String?
+  approvedAt          DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@unique([tenantId, procedureNumber, version])
+  @@index([equipmentAssetId])
+  @@index([tenantId, status])
+}
+
+// ============================================================================
+// SAFETY OBSERVATIONS
+// ============================================================================
+
+model SafetyObservation {
+  id                String                   @id @default(uuid())
+  tenantId          String
+  observationNumber String                   @unique
+  type              SafetyObservationType
+  category          ObservationCategory
+  locationId        String
+  workCenterId      String?
+  exactLocation     String?
+  observedAt        DateTime                 @default(now())
+  observedById      String
+  observedPersonId  String?
+  description       String
+  atRiskBehavior    String?
+  safeBehavior      String?
+  immediateDanger   Boolean                  @default(false)
+  coachingProvided  Boolean                  @default(false)
+  coachingNotes     String?
+  requiresFollowUp  Boolean                  @default(false)
+  photoUrls         Json                     @default("[]")
+  isAnonymous       Boolean                  @default(false)
+  status            String                   @default("OPEN")
+  closedAt          DateTime?
+  closureNotes      String?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  capas             SafetyCorrectiveAction[] @relation("ObservationCapas")
+
+  @@index([tenantId, type])
+  @@index([locationId])
+  @@index([observedAt])
+  @@index([category])
+}
+
+// ============================================================================
+// STOP WORK AUTHORITY
+// ============================================================================
+
+model SafetyStopWorkEvent {
+  id                   String         @id @default(uuid())
+  tenantId             String
+  stopWorkNumber       String         @unique
+  status               StopWorkStatus @default(ISSUED)
+  issuedById           String
+  issuedAt             DateTime       @default(now())
+  locationId           String
+  workCenterId         String?
+  equipmentAssetIds    Json           @default("[]")
+  affectedJobIds       Json           @default("[]")
+  hazardDescription    String
+  immediateDanger      Boolean        @default(false)
+  immediateActions     String?
+  acknowledgedById     String?
+  acknowledgedAt       DateTime?
+  mitigationPlan       String?
+  mitigationById       String?
+  mitigationAt         DateTime?
+  resumeAuthorizedById String?
+  resumeAuthorizedAt   DateTime?
+  resumeConditions     String?
+  closedById           String?
+  closedAt             DateTime?
+  closureNotes         String?
+  duration             Int?
+  rootCauseId          String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  @@index([tenantId, status])
+  @@index([locationId])
+  @@index([issuedAt])
+}
+
+// ============================================================================
+// EQUIPMENT SAFETY
+// ============================================================================
+
+model SafetyEquipmentAsset {
+  id                  String                 @id @default(uuid())
+  tenantId            String
+  assetNumber         String
+  name                String
+  assetType           String
+  locationId          String
+  workCenterId        String?
+  manufacturer        String?
+  model               String?
+  serialNumber        String?
+  installDate         DateTime?
+  safetyStatus        EquipmentSafetyStatus  @default(SAFE)
+  lastInspectionDate  DateTime?
+  nextInspectionDue   DateTime?
+  inspectionFrequency String?
+  lotoProcedureId     String?
+  requiredTraining    Json                   @default("[]")
+  ppeRequired         Json                   @default("[]")
+  hazards             Json                   @default("[]")
+  safetyFeatures      Json                   @default("[]")
+  guardingStatus      String?
+  notes               String?
+  isActive            Boolean                @default(true)
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  guards              SafetyEquipmentGuard[]
+
+  @@unique([tenantId, assetNumber])
+  @@index([locationId])
+  @@index([safetyStatus])
+  @@index([nextInspectionDue])
+}
+
+model SafetyEquipmentGuard {
+  id              String               @id @default(uuid())
+  assetId         String
+  guardType       String
+  location        String?
+  status          String               @default("INSTALLED")
+  interlocked     Boolean              @default(false)
+  interlockType   String?
+  lastCheckedAt   DateTime?
+  lastCheckedById String?
+  notes           String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  asset           SafetyEquipmentAsset @relation(fields: [assetId], references: [id])
+
+  @@index([assetId])
+}
+
+// ============================================================================
+// SDS (SAFETY DATA SHEETS)
+// ============================================================================
+
+model SafetySDSRecord {
+  id                      String              @id @default(uuid())
+  tenantId                String
+  productName             String
+  manufacturer            String
+  casNumber               String?
+  unNumber                String?
+  signalWord              String?
+  hazardStatements        Json                @default("[]")
+  precautionaryStatements Json                @default("[]")
+  pictogramCodes          Json                @default("[]")
+  ghs_classification      Json?
+  storageClass            String?
+  storageConditions       String?
+  ppeRequired             Json                @default("[]")
+  firstAidMeasures        Json?
+  firefightingMeasures    Json?
+  spillProcedures         String?
+  disposalInfo            String?
+  emergencyPhone          String?
+  locations               Json                @default("[]")
+  isActive                Boolean             @default(true)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  revisions               SafetySDSRevision[]
+
+  @@index([tenantId, productName])
+  @@index([casNumber])
+  @@index([isActive])
+}
+
+model SafetySDSRevision {
+  id            String          @id @default(uuid())
+  sdsId         String
+  version       Int
+  effectiveDate DateTime
+  expiresAt     DateTime?
+  documentUrl   String
+  uploadedById  String
+  reviewedById  String?
+  reviewedAt    DateTime?
+  notes         String?
+  createdAt     DateTime        @default(now())
+  sds           SafetySDSRecord @relation(fields: [sdsId], references: [id])
+
+  @@unique([sdsId, version])
+  @@index([effectiveDate])
+}
+
+// ============================================================================
+// SAFETY MEETINGS (TOOLBOX TALKS)
+// ============================================================================
+
+model SafetyMeeting {
+  id              String                  @id @default(uuid())
+  tenantId        String
+  meetingNumber   String                  @unique
+  type            String
+  title           String
+  topic           String?
+  agenda          String?
+  presenterId     String
+  locationId      String
+  scheduledAt     DateTime
+  startedAt       DateTime?
+  endedAt         DateTime?
+  durationMinutes Int?
+  discussionNotes String?
+  actionItems     Json                    @default("[]")
+  materialsUrl    String?
+  status          String                  @default("SCHEDULED")
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  attendees       SafetyMeetingAttendee[]
+
+  @@index([tenantId, scheduledAt])
+  @@index([locationId])
+  @@index([type])
+}
+
+model SafetyMeetingAttendee {
+  id            String        @id @default(uuid())
+  meetingId     String
+  userId        String?
+  attendeeName  String?
+  attended      Boolean       @default(false)
+  signedAt      DateTime?
+  signatureData String?
+  meeting       SafetyMeeting @relation(fields: [meetingId], references: [id])
+
+  @@unique([meetingId, userId])
+  @@index([userId])
+}
+
+// ============================================================================
+// AUDITS
+// ============================================================================
+
+model SafetyAudit {
+  id               String                   @id @default(uuid())
+  tenantId         String
+  auditNumber      String                   @unique
+  type             AuditType
+  status           AuditStatus              @default(PLANNED)
+  title            String
+  scope            String?
+  standard         String?
+  locationIds      Json                     @default("[]")
+  leadAuditorId    String?
+  leadAuditorName  String?
+  auditTeam        Json                     @default("[]")
+  scheduledDate    DateTime?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  reportUrl        String?
+  executiveSummary String?
+  overallRating    String?
+  nextAuditDate    DateTime?
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  findings         SafetyAuditFinding[]
+  capas            SafetyCorrectiveAction[] @relation("AuditCapas")
+
+  @@index([tenantId, status])
+  @@index([type])
+  @@index([scheduledDate])
+}
+
+model SafetyAuditFinding {
+  id             String               @id @default(uuid())
+  auditId        String
+  findingNumber  Int
+  severity       AuditFindingSeverity
+  status         AuditFindingStatus   @default(OPEN)
+  clause         String?
+  description    String
+  evidence       String?
+  recommendation String?
+  capaId         String?
+  closedAt       DateTime?
+  closureNotes   String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  audit          SafetyAudit          @relation(fields: [auditId], references: [id])
+
+  @@index([auditId])
+  @@index([severity, status])
+}
+
+// ============================================================================
+// CONTRACTORS & VISITORS
+// ============================================================================
+
+model SafetyContractorCompany {
+  id                    String                   @id @default(uuid())
+  tenantId              String
+  companyName           String
+  contactName           String?
+  contactEmail          String?
+  contactPhone          String?
+  insuranceExpiresAt    DateTime?
+  insuranceVerified     Boolean                  @default(false)
+  safetyProgramVerified Boolean                  @default(false)
+  approvalStatus        String                   @default("PENDING")
+  approvedById          String?
+  approvedAt            DateTime?
+  notes                 String?
+  isActive              Boolean                  @default(true)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  workers               SafetyContractorWorker[]
+
+  @@unique([tenantId, companyName])
+  @@index([tenantId, approvalStatus])
+  @@index([insuranceExpiresAt])
+}
+
+model SafetyContractorWorker {
+  id                     String                  @id @default(uuid())
+  companyId              String
+  firstName              String
+  lastName               String
+  email                  String?
+  phone                  String?
+  badgeNumber            String?
+  photoUrl               String?
+  orientationCompletedAt DateTime?
+  siteTrainingExpires    DateTime?
+  siteAccessApproved     Boolean                 @default(false)
+  isActive               Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  company                SafetyContractorCompany @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
+  @@index([siteTrainingExpires])
+}
+
+model SafetyVisitorSignIn {
+  id                   String    @id @default(uuid())
+  tenantId             String
+  locationId           String
+  visitorName          String
+  company              String?
+  hostEmployeeId       String?
+  hostName             String?
+  purpose              String?
+  badgeNumber          String?
+  signedInAt           DateTime  @default(now())
+  signedOutAt          DateTime?
+  orientationConfirmed Boolean   @default(false)
+  nda_signed           Boolean   @default(false)
+  photoUrl             String?
+  createdAt            DateTime  @default(now())
+
+  @@index([tenantId, locationId, signedInAt])
+  @@index([signedOutAt])
+}
+
+// ============================================================================
+// PPE MATRIX
+// ============================================================================
+
+model SafetyPPEMatrix {
+  id            String    @id @default(uuid())
+  tenantId      String
+  name          String
+  version       Int       @default(1)
+  isActive      Boolean   @default(true)
+  entries       Json
+  effectiveDate DateTime?
+  createdById   String
+  approvedById  String?
+  approvedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([tenantId, name, version])
+}
+
+// ============================================================================
+// ATTACHMENTS & EVIDENCE
+// ============================================================================
+
+model SafetyAttachment {
+  id            String                  @id @default(uuid())
+  tenantId      String
+  entityType    String
+  entityId      String
+  fileName      String
+  fileType      String?
+  fileSizeBytes Int?
+  storageUrl    String
+  storagePath   String?
+  checksum      String?
+  uploadedById  String
+  uploadedAt    DateTime                @default(now())
+  description   String?
+  isEvidence    Boolean                 @default(false)
+  retainUntil   DateTime?
+  incident      SafetyIncident?         @relation(fields: [entityId], references: [id], map: "attachment_incident")
+  capa          SafetyCorrectiveAction? @relation(fields: [entityId], references: [id], map: "attachment_capa")
+  inspection    SafetyInspection?       @relation(fields: [entityId], references: [id], map: "attachment_inspection")
+  permit        SafetyPermit?           @relation(fields: [entityId], references: [id], map: "attachment_permit")
+
+  @@index([entityType, entityId])
+  @@index([tenantId])
+  @@index([retainUntil])
+}
+
+// ============================================================================
+// IMMUTABLE AUDIT LOG
+// ============================================================================
+
+model SafetyAuditEvent {
+  id                String   @id @default(uuid())
+  tenantId          String
+  sequenceNumber    BigInt   @default(autoincrement())
+  timestamp         DateTime @default(now())
+  eventType         String
+  action            String
+  resourceType      String
+  resourceId        String
+  actorId           String
+  actorType         String   @default("USER")
+  actorIpAddress    String?
+  actorUserAgent    String?
+  changes           Json?
+  previousState     Json?
+  newState          Json?
+  metadata          Json?
+  signatureData     String?
+  previousHash      String?
+  eventHash         String
+  integrityVerified Boolean  @default(true)
+
+  @@index([tenantId, timestamp])
+  @@index([resourceType, resourceId])
+  @@index([actorId])
+  @@index([eventType])
+  @@index([sequenceNumber])
+}
+
+// ============================================================================
+// ELECTRONIC SIGNATURES
+// ============================================================================
+
+model SafetyElectronicSignature {
+  id              String   @id @default(uuid())
+  tenantId        String
+  signerId        String
+  signerName      String
+  signerTitle     String?
+  signedAt        DateTime @default(now())
+  resourceType    String
+  resourceId      String
+  signatureType   String
+  attestationText String
+  signatureMethod String   @default("PASSWORD")
+  signatureData   String?
+  biometricHash   String?
+  ipAddress       String
+  userAgent       String?
+  deviceId        String?
+  signatureHash   String
+  verified        Boolean  @default(true)
+
+  @@index([resourceType, resourceId])
+  @@index([signerId])
+  @@index([signedAt])
+}
+
+// ============================================================================
+// JOB HAZARD ANALYSIS (JHA)
+// ============================================================================
+
+model SafetyJobHazardAnalysis {
+  id                 String       @id @default(uuid())
+  tenantId           String
+  jhaNumber          String       @unique
+  title              String
+  taskDescription    String?
+  locationId         String?
+  workCenterId       String?
+  equipmentAssetIds  Json         @default("[]")
+  status             PolicyStatus @default(DRAFT)
+  version            Int          @default(1)
+  steps              Json         @default("[]")
+  overallRiskLevel   String?
+  ppeRequired        Json         @default("[]")
+  trainingRequired   Json         @default("[]")
+  permitsRequired    Json         @default("[]")
+  emergencyProcedure String?
+  reviewDate         DateTime?
+  expiresAt          DateTime?
+  createdById        String
+  reviewedById       String?
+  reviewedAt         DateTime?
+  approvedById       String?
+  approvedAt         DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@unique([tenantId, jhaNumber, version])
+  @@index([tenantId, status])
+  @@index([workCenterId])
 }

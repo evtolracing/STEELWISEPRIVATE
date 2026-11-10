@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { ci } from '../lib/dbText.js';
 
 const router = Router();
 
@@ -125,7 +126,7 @@ router.post('/bulk-upload', async (req, res) => {
             where: { 
               OR: [
                 { code: locCode },
-                { name: { contains: locCode, mode: 'insensitive' } }
+                { name: { contains: locCode, ...ci } }
               ]
             }
           });

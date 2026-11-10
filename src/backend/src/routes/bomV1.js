@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { randomUUID } from 'crypto';
+import { ci } from '../lib/dbText.js';
 
 const generateId = (prefix) => `${prefix}-${randomUUID().slice(0, 8)}`;
 
@@ -93,7 +94,7 @@ router.get('/recipes', async (req, res) => {
     const where = {};
     
     if (materialCode) {
-      where.materialCode = { contains: materialCode, mode: 'insensitive' };
+      where.materialCode = { contains: materialCode, ...ci };
     }
     if (commodity) {
       where.commodity = commodity;
@@ -102,7 +103,7 @@ router.get('/recipes', async (req, res) => {
       where.form = form;
     }
     if (grade) {
-      where.grade = { contains: grade, mode: 'insensitive' };
+      where.grade = { contains: grade, ...ci };
     }
     if (division) {
       where.division = division;

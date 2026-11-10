@@ -33,6 +33,20 @@ are made and how to bring the existing Supabase database onto migrations.
 The Supabase database was created with `prisma db push`, so it has no
 migration history, and its list columns are Postgres arrays. Do this once.
 
+### Easiest: Supabase SQL Editor (no terminal needed)
+
+1. Back up: Supabase → Database → Backups.
+2. Open `src/backend/prisma/upgrades/supabase-sql-editor-upgrade.sql`, copy
+   all of it, paste it into Supabase → SQL Editor → New query, and click Run.
+   It runs as one transaction, so if anything fails nothing is changed.
+3. Check it worked: run `select migration_name from "_prisma_migrations";`
+   and you should see `0_init`.
+
+If it fails with "already exists", the database is not in the state the file
+expects; use the terminal steps below instead.
+
+### Terminal steps
+
 1. **Back up.** In Supabase, Database → Backups, or
    `pg_dump "$DIRECT_URL" > steelwise-before-migrations.sql`.
 2. **Convert list columns to JSON** (keeps the data, safe to re-run):

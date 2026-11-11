@@ -4988,3 +4988,41 @@ model StoreListing {
   updatedAt        DateTime @updatedAt
   product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
+/// Time and price standard for one processing operation (used for quoting and promise dates).
+model ProcessingRecipe {
+  id                  String   @id @default(uuid())
+  code                String   @unique
+  name                String
+  description         String?
+  operationType       String // CUT | FORM | MACHINE | FINISH | HEAT_TREAT | INSPECT
+  division            String   @default("METALS")
+  workCenter          String?
+  setupMinutes        Float    @default(0)
+  runMinutesPerUnit   Float    @default(0)
+  minRunMinutes       Float    @default(0)
+  applicableMaterials Json     @default("[]")
+  applicableForms     Json     @default("[]")
+  thicknessMin        Float    @default(0)
+  thicknessMax        Float    @default(99)
+  toleranceClass      String   @default("STANDARD")
+  pricePerUnit        Decimal  @default(0)
+  priceUnit           String   @default("EA")
+  status              String   @default("DRAFT") // DRAFT | ACTIVE | DEPRECATED
+  version             Int      @default(1)
+  createdBy           String?
+  notes               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([division, operationType, status])
+}
+
+/// Ordered list of processing recipes for a common job type.
+model RecipeRoutingTemplate {
+  id        String   @id
+  name      String
+  division  String   @default("METALS")
+  steps     Json     @default("[]") // [{ seq, recipeId }]
+  updatedAt DateTime @updatedAt
+}

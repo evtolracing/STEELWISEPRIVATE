@@ -24,6 +24,7 @@ import { demoOnlineOrders } from './onlineOrders.js';
 import { demoRemnants } from './remnants.js';
 import { demoStoreListings } from './storeListings.js';
 import { portalTier, portalOrders, portalWebOrders } from './portal.js';
+import { demoRecipes, demoRoutingTemplates } from './processingRecipes.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -415,6 +416,17 @@ async function seedPortal() {
   return { orders: portalOrders.length, shipments, webOrders: portalWebOrders.length };
 }
 
+/** Processing recipes and routing templates (re-running restores the demo values). */
+async function seedProcessingRecipes() {
+  for (const { id, ...r } of demoRecipes) {
+    await prisma.processingRecipe.upsert({ where: { id }, update: r, create: { id, ...r } });
+  }
+  for (const { id, ...t } of demoRoutingTemplates) {
+    await prisma.recipeRoutingTemplate.upsert({ where: { id }, update: t, create: { id, ...t } });
+  }
+  return { recipes: demoRecipes.length, routingTemplates: demoRoutingTemplates.length };
+}
+
 export const DEMO_PARTS = {
   customers: async () => { await seedCustomers(); return customers.length; },
   executive: async () => { await seedExecutive(); return { executiveDecisions: executiveDecisions.length, scenarios: 1 }; },
@@ -428,6 +440,7 @@ export const DEMO_PARTS = {
   remnants: seedRemnants,
   'store-listings': seedStoreListings,
   portal: seedPortal,
+  'processing-recipes': seedProcessingRecipes,
 };
 
 /**

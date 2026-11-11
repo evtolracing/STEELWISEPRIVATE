@@ -17,7 +17,7 @@ const range = (min, max) => {
 };
 
 /** Price per pound (or per each) from the stored base price. */
-function unitPrice(product) {
+export function unitPrice(product) {
   const base = num(product.basePriceCwt);
   if (base == null) return { basePrice: null, priceUnit: product.priceUnit === 'EACH' ? 'EA' : 'LB' };
   switch (product.priceUnit) {

@@ -4857,3 +4857,53 @@ model PrintQueueJob {
   @@index([status, createdAt])
   @@index([jobId, type, status])
 }
+
+// ---------------------------------------------------------------------------
+// Order-intake pricing and processing menus
+// ---------------------------------------------------------------------------
+
+/// Price levels applied to list price (RETAIL = list, CONTRACT_A = 8% off …).
+model PriceLevel {
+  code       String   @id
+  label      String
+  multiplier Decimal  @default(1)
+  isActive   Boolean  @default(true)
+  updatedAt  DateTime @updatedAt
+}
+
+/// Sales tax rate by ship-to state (decimal, 0.06 = 6%).
+model SalesTaxRate {
+  state     String   @id
+  rate      Decimal
+  updatedAt DateTime @updatedAt
+}
+
+/// A processing operation the counter or CSR can add to a line (saw, shear, bend…).
+model ProcessingOperation {
+  id               String   @id
+  code             String   @unique
+  name             String
+  division         String
+  type             String
+  estimatedMinutes Int      @default(0)
+  pricePerOp       Decimal  @default(0)
+  priceUnit        String   @default("EA")
+  machines         Json     @default("[]")
+  params           Json     @default("[]")
+  isActive         Boolean  @default(true)
+  updatedAt        DateTime @updatedAt
+
+  @@index([division, type])
+}
+
+/// A reusable sequence of processing operations. steps: [{ processId, seq }].
+model ProcessingTemplate {
+  id        String   @id
+  name      String
+  division  String
+  steps     Json     @default("[]")
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  @@index([division])
+}

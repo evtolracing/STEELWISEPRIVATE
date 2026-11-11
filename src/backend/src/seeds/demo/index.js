@@ -21,6 +21,7 @@ import {
 import { demoPriceLevels, demoTaxRates, demoProcesses, demoTemplates } from './intakeSetup.js';
 import { demoGrades, demoProducts, demoStock } from './catalog.js';
 import { demoOnlineOrders } from './onlineOrders.js';
+import { demoRemnants } from './remnants.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -304,6 +305,16 @@ async function seedOnlineOrders() {
   return demoOnlineOrders.length;
 }
 
+/** Remnant pieces; re-running resets their age, reservations and quantities. */
+async function seedRemnants() {
+  for (const { id, ageDays, ...r } of demoRemnants) {
+    const cut = new Date(Date.now() - ageDays * 86400000);
+    const data = { ...r, cutDate: cut, receivedDate: cut, reserved: false, reservedFor: null, reservedAt: null };
+    await prisma.remnant.upsert({ where: { id }, update: data, create: { id, ...data } });
+  }
+  return demoRemnants.length;
+}
+
 export const DEMO_PARTS = {
   customers: async () => { await seedCustomers(); return customers.length; },
   executive: async () => { await seedExecutive(); return { executiveDecisions: executiveDecisions.length, scenarios: 1 }; },
@@ -314,6 +325,7 @@ export const DEMO_PARTS = {
   catalog: seedCatalog,
   'intake-setup': seedIntakeSetup,
   'online-orders': seedOnlineOrders,
+  remnants: seedRemnants,
 };
 
 /**

@@ -4930,3 +4930,41 @@ model OnlineOrder {
 
   @@index([status, receivedAt])
 }
+
+/// Remnant pieces (drops, offcuts, overruns, returns, skeletons) sold through the outlet.
+model Remnant {
+  id              String    @id @default(uuid())
+  sku             String    @unique
+  name            String
+  grade           String
+  spec            String?
+  form            String // PLATE | SHEET | BAR | ...
+  family          String // Carbon Steel, Stainless Steel, Aluminum, ...
+  type            String    @default("DROP") // DROP | OFFCUT | OVERRUN | RETURN | SKELETON
+  condition       String    @default("A") // A | B | C
+  thickness       Float     @default(0)
+  width           Float     @default(0)
+  length          Float     @default(0)
+  uom             String    @default("IN")
+  estimatedWeight Float     @default(0) // lbs per piece
+  pricePerLb      Decimal   @default(0)
+  location        String
+  locationName    String?
+  heatNumber      String?
+  parentJobId     String?
+  cutDate         DateTime?
+  receivedDate    DateTime?
+  qtyAvailable    Int       @default(1)
+  reserved        Boolean   @default(false)
+  reservedFor     String?
+  reservedAt      DateTime?
+  imageUrl        String?
+  notes           String?
+  division        String    @default("OUTLET")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([grade, form])
+  @@index([location])
+  @@index([cutDate])
+}

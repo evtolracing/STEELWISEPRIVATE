@@ -4664,3 +4664,56 @@ model PosSession {
 
   @@index([status, updatedAt])
 }
+
+// ============================================================================
+// STOP-WORK AUTHORITY (SWA) EVENTS
+// Used by /api/safety/stop-work. Filterable fields are columns; the rest of
+// each record, in the shape the API returns, is kept in data.
+// ============================================================================
+
+model StopWorkEvent {
+  id          String   @id
+  eventNumber String   @unique
+  status      String
+  scopeType   String
+  scopeId     String
+  severity    String
+  initiatedAt DateTime
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([initiatedAt])
+}
+
+model StopWorkAudit {
+  id          String   @id
+  eventId     String
+  performedAt DateTime
+  data        Json
+  createdAt   DateTime @default(now())
+
+  @@index([eventId, performedAt])
+}
+
+model StopWorkStep {
+  id         String   @id
+  eventId    String
+  stepNumber Int
+  status     String
+  data       Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([eventId])
+}
+
+model StopWorkEvidence {
+  id        String   @id
+  eventId   String
+  data      Json
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
+}

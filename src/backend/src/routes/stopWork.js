@@ -6,6 +6,7 @@
 import express from 'express';
 import prisma from '../lib/db.js';
 import crypto from 'crypto';
+import { stopWorkEvents, auditEntries, clearanceSteps, evidence, nextEventNumber } from './stopWorkStore.js';
 
 const router = express.Router();
 
@@ -89,13 +90,6 @@ const DEFAULT_CLEARANCE_STEPS = {
 // HELPER FUNCTIONS
 // ============================================
 
-// Generate unique SWA event number
-function generateEventNumber() {
-  const year = new Date().getFullYear();
-  const random = Math.floor(Math.random() * 9000) + 1000;
-  return `SWA-${year}-${random}`;
-}
-
 // Calculate hash for audit chain
 function calculateAuditHash(entry, previousHash = '') {
   const content = JSON.stringify({
@@ -125,14 +119,6 @@ function getDefaultClearanceSteps(reasonCode) {
   ];
 }
 
-// ============================================
-// IN-MEMORY STORE (Replace with Prisma when models are added)
-// ============================================
-
-const stopWorkEvents = new Map();
-const auditEntries = new Map();
-const clearanceSteps = new Map();
-const evidence = new Map();
 
 // ============================================
 // ROUTES
@@ -146,7 +132,7 @@ router.get('/', async (req, res) => {
   try {
     const { status, scopeType, severity, limit = 50 } = req.query;
     
-    let events = Array.from(stopWorkEvents.values());
+    let events = (await stopWorkEvents.all());
     
     if (status) {
       events = events.filter(e => e.status === status);
@@ -180,7 +166,7 @@ router.get('/active', async (req, res) => {
   try {
     const activeStatuses = ['ACTIVE', 'UNDER_INVESTIGATION', 'MITIGATION_IN_PROGRESS', 'PENDING_VERIFICATION', 'PENDING_APPROVAL'];
     
-    let events = Array.from(stopWorkEvents.values())
+    let events = (await stopWorkEvents.all())
       .filter(e => activeStatuses.includes(e.status));
     
     res.json({
@@ -202,7 +188,7 @@ router.get('/blocked-resources', async (req, res) => {
   try {
     const activeStatuses = ['ACTIVE', 'UNDER_INVESTIGATION', 'MITIGATION_IN_PROGRESS', 'PENDING_VERIFICATION', 'PENDING_APPROVAL'];
     
-    const activeEvents = Array.from(stopWorkEvents.values())
+    const activeEvents = (await stopWorkEvents.all())
       .filter(e => activeStatuses.includes(e.status));
     
     const blocked = {
@@ -261,23 +247,23 @@ router.get('/blocked-resources', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const event = stopWorkEvents.get(id);
+    const event = await stopWorkEvents.get(id);
     
     if (!event) {
       return res.status(404).json({ success: false, error: 'Stop-work event not found' });
     }
     
     // Get related data
-    const eventAudit = Array.from(auditEntries.values())
-      .filter(a => a.stopWorkEventId === id)
+    const eventAudit = (await auditEntries.forEvent(id))
+      
       .sort((a, b) => new Date(a.performedAt) - new Date(b.performedAt));
     
-    const eventSteps = Array.from(clearanceSteps.values())
-      .filter(s => s.stopWorkEventId === id)
+    const eventSteps = (await clearanceSteps.forEvent(id))
+      
       .sort((a, b) => a.stepNumber - b.stepNumber);
     
-    const eventEvidence = Array.from(evidence.values())
-      .filter(e => e.stopWorkEventId === id);
+    const eventEvidence = (await evidence.forEvent(id))
+      ;
     
     res.json({
       success: true,
@@ -334,7 +320,7 @@ router.post('/', async (req, res) => {
     
     // Create the event
     const eventId = crypto.randomUUID();
-    const eventNumber = generateEventNumber();
+    const eventNumber = await nextEventNumber();
     const now = new Date().toISOString();
     
     // TODO: Get actual user from auth context
@@ -367,13 +353,13 @@ router.post('/', async (req, res) => {
       updatedAt: now,
     };
     
-    stopWorkEvents.set(eventId, event);
+    await stopWorkEvents.set(eventId, event);
     
     // Create default clearance steps
     const steps = getDefaultClearanceSteps(reasonCode);
     for (const step of steps) {
       const stepId = crypto.randomUUID();
-      clearanceSteps.set(stepId, {
+      await clearanceSteps.set(stepId, {
         id: stepId,
         stopWorkEventId: eventId,
         ...step,
@@ -397,7 +383,7 @@ router.post('/', async (req, res) => {
       previousHash: '',
     };
     auditEntry.hash = calculateAuditHash(auditEntry, '');
-    auditEntries.set(auditId, auditEntry);
+    await auditEntries.set(auditId, auditEntry);
     
     // TODO: Send notifications based on severity
     // - CRITICAL/HIGH: Immediate notification to EHS and Ops Manager
@@ -424,7 +410,7 @@ router.patch('/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status, notes } = req.body;
     
-    const event = stopWorkEvents.get(id);
+    const event = await stopWorkEvents.get(id);
     if (!event) {
       return res.status(404).json({ success: false, error: 'Stop-work event not found' });
     }
@@ -448,8 +434,8 @@ router.patch('/:id/status', async (req, res) => {
       }
       
       // Check all clearance steps are complete
-      const steps = Array.from(clearanceSteps.values())
-        .filter(s => s.stopWorkEventId === id);
+      const steps = (await clearanceSteps.forEvent(id))
+        ;
       const incompleteSteps = steps.filter(s => s.status !== 'COMPLETED' && s.status !== 'SKIPPED');
       
       if (incompleteSteps.length > 0) {
@@ -474,11 +460,11 @@ router.patch('/:id/status', async (req, res) => {
       event.clearanceNotes = notes;
     }
     
-    stopWorkEvents.set(id, event);
+    await stopWorkEvents.set(id, event);
     
     // Create audit entry
-    const lastAudit = Array.from(auditEntries.values())
-      .filter(a => a.stopWorkEventId === id)
+    const lastAudit = (await auditEntries.forEvent(id))
+      
       .sort((a, b) => new Date(b.performedAt) - new Date(a.performedAt))[0];
     
     const auditId = crypto.randomUUID();
@@ -495,7 +481,7 @@ router.patch('/:id/status', async (req, res) => {
       previousHash: lastAudit?.hash || '',
     };
     auditEntry.hash = calculateAuditHash(auditEntry, lastAudit?.hash || '');
-    auditEntries.set(auditId, auditEntry);
+    await auditEntries.set(auditId, auditEntry);
     
     res.json({
       success: true,
@@ -517,12 +503,12 @@ router.post('/:id/steps/:stepId/complete', async (req, res) => {
     const { id, stepId } = req.params;
     const { notes, evidenceIds = [] } = req.body;
     
-    const event = stopWorkEvents.get(id);
+    const event = await stopWorkEvents.get(id);
     if (!event) {
       return res.status(404).json({ success: false, error: 'Stop-work event not found' });
     }
     
-    const step = clearanceSteps.get(stepId);
+    const step = await clearanceSteps.get(stepId);
     if (!step || step.stopWorkEventId !== id) {
       return res.status(404).json({ success: false, error: 'Clearance step not found' });
     }
@@ -539,12 +525,12 @@ router.post('/:id/steps/:stepId/complete', async (req, res) => {
     step.notes = notes;
     step.evidenceIds = evidenceIds;
     
-    clearanceSteps.set(stepId, step);
+    await clearanceSteps.set(stepId, step);
     
     // Create audit entry
     const auditId = crypto.randomUUID();
-    const lastAudit = Array.from(auditEntries.values())
-      .filter(a => a.stopWorkEventId === id)
+    const lastAudit = (await auditEntries.forEvent(id))
+      
       .sort((a, b) => new Date(b.performedAt) - new Date(a.performedAt))[0];
     
     const auditEntry = {
@@ -560,11 +546,11 @@ router.post('/:id/steps/:stepId/complete', async (req, res) => {
       previousHash: lastAudit?.hash || '',
     };
     auditEntry.hash = calculateAuditHash(auditEntry, lastAudit?.hash || '');
-    auditEntries.set(auditId, auditEntry);
+    await auditEntries.set(auditId, auditEntry);
     
     // Check if all steps are complete
-    const allSteps = Array.from(clearanceSteps.values())
-      .filter(s => s.stopWorkEventId === id);
+    const allSteps = (await clearanceSteps.forEvent(id))
+      ;
     const allComplete = allSteps.every(s => s.status === 'COMPLETED' || s.status === 'SKIPPED');
     
     res.json({
@@ -590,7 +576,7 @@ router.post('/:id/evidence', async (req, res) => {
     const { id } = req.params;
     const { evidenceType, description, fileUrl, fileName, mimeType } = req.body;
     
-    const event = stopWorkEvents.get(id);
+    const event = await stopWorkEvents.get(id);
     if (!event) {
       return res.status(404).json({ success: false, error: 'Stop-work event not found' });
     }
@@ -614,12 +600,12 @@ router.post('/:id/evidence', async (req, res) => {
       verified: false,
     };
     
-    evidence.set(evidenceId, newEvidence);
+    await evidence.set(evidenceId, newEvidence);
     
     // Create audit entry
     const auditId = crypto.randomUUID();
-    const lastAudit = Array.from(auditEntries.values())
-      .filter(a => a.stopWorkEventId === id)
+    const lastAudit = (await auditEntries.forEvent(id))
+      
       .sort((a, b) => new Date(b.performedAt) - new Date(a.performedAt))[0];
     
     const auditEntry = {
@@ -635,7 +621,7 @@ router.post('/:id/evidence', async (req, res) => {
       previousHash: lastAudit?.hash || '',
     };
     auditEntry.hash = calculateAuditHash(auditEntry, lastAudit?.hash || '');
-    auditEntries.set(auditId, auditEntry);
+    await auditEntries.set(auditId, auditEntry);
     
     res.status(201).json({
       success: true,
@@ -657,7 +643,7 @@ router.post('/:id/clearance', async (req, res) => {
     const { id } = req.params;
     const { action, notes } = req.body;
     
-    const event = stopWorkEvents.get(id);
+    const event = await stopWorkEvents.get(id);
     if (!event) {
       return res.status(404).json({ success: false, error: 'Stop-work event not found' });
     }
@@ -684,8 +670,8 @@ router.post('/:id/clearance', async (req, res) => {
     
     if (action === 'APPROVE') {
       // Verify all steps complete
-      const steps = Array.from(clearanceSteps.values())
-        .filter(s => s.stopWorkEventId === id);
+      const steps = (await clearanceSteps.forEvent(id))
+        ;
       const incompleteSteps = steps.filter(s => s.status !== 'COMPLETED' && s.status !== 'SKIPPED');
       
       if (incompleteSteps.length > 0) {
@@ -706,12 +692,12 @@ router.post('/:id/clearance', async (req, res) => {
     }
     
     event.updatedAt = now;
-    stopWorkEvents.set(id, event);
+    await stopWorkEvents.set(id, event);
     
     // Create audit entry
     const auditId = crypto.randomUUID();
-    const lastAudit = Array.from(auditEntries.values())
-      .filter(a => a.stopWorkEventId === id)
+    const lastAudit = (await auditEntries.forEvent(id))
+      
       .sort((a, b) => new Date(b.performedAt) - new Date(a.performedAt))[0];
     
     const auditEntry = {
@@ -727,7 +713,7 @@ router.post('/:id/clearance', async (req, res) => {
       previousHash: lastAudit?.hash || '',
     };
     auditEntry.hash = calculateAuditHash(auditEntry, lastAudit?.hash || '');
-    auditEntries.set(auditId, auditEntry);
+    await auditEntries.set(auditId, auditEntry);
     
     res.json({
       success: true,
@@ -750,13 +736,13 @@ router.get('/:id/audit', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const event = stopWorkEvents.get(id);
+    const event = await stopWorkEvents.get(id);
     if (!event) {
       return res.status(404).json({ success: false, error: 'Stop-work event not found' });
     }
     
-    const eventAudit = Array.from(auditEntries.values())
-      .filter(a => a.stopWorkEventId === id)
+    const eventAudit = (await auditEntries.forEvent(id))
+      
       .sort((a, b) => new Date(a.performedAt) - new Date(b.performedAt));
     
     // Verify audit chain integrity
@@ -791,7 +777,7 @@ router.post('/validate-assignment', async (req, res) => {
     const { jobId, workCenterId, operatorId, assetId } = req.body;
     
     const activeStatuses = ['ACTIVE', 'UNDER_INVESTIGATION', 'MITIGATION_IN_PROGRESS', 'PENDING_VERIFICATION', 'PENDING_APPROVAL'];
-    const activeEvents = Array.from(stopWorkEvents.values())
+    const activeEvents = (await stopWorkEvents.all())
       .filter(e => activeStatuses.includes(e.status));
     
     const blocks = [];
@@ -886,11 +872,11 @@ router.post('/check-override', async (req, res) => {
     
     // Log the override attempt
     if (swaId) {
-      const event = stopWorkEvents.get(swaId);
+      const event = await stopWorkEvents.get(swaId);
       if (event) {
         const auditId = crypto.randomUUID();
-        const lastAudit = Array.from(auditEntries.values())
-          .filter(a => a.stopWorkEventId === swaId)
+        const lastAudit = (await auditEntries.forEvent(swaId))
+          
           .sort((a, b) => new Date(b.performedAt) - new Date(a.performedAt))[0];
         
         const auditEntry = {
@@ -906,7 +892,7 @@ router.post('/check-override', async (req, res) => {
           previousHash: lastAudit?.hash || '',
         };
         auditEntry.hash = calculateAuditHash(auditEntry, lastAudit?.hash || '');
-        auditEntries.set(auditId, auditEntry);
+        await auditEntries.set(auditId, auditEntry);
         
         // TODO: Send alert to EHS
         console.warn(`⚠️ OVERRIDE ATTEMPT on SWA ${event.eventNumber} by ${userId} - REJECTED`);
@@ -930,7 +916,7 @@ router.post('/check-override', async (req, res) => {
  */
 router.get('/stats/summary', async (req, res) => {
   try {
-    const events = Array.from(stopWorkEvents.values());
+    const events = (await stopWorkEvents.all());
     const now = new Date();
     const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
     

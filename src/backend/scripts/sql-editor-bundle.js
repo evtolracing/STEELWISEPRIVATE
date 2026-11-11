@@ -91,6 +91,30 @@ BEGIN
 END $rls$;
 `;
 
+// Tables created here belong to the SQL Editor's role, not the role the app
+// connects as, and with RLS on the app could then not write to them. Give
+// every public table the owner of "User" (a table the app already owns);
+// where that is not allowed, add a policy for the app's role instead.
+out += `
+-- Same owner as "User" for every table, so the app can use the new ones.
+DO $owner$
+DECLARE
+  app_role text;
+  t record;
+BEGIN
+  SELECT tableowner INTO app_role FROM pg_tables WHERE schemaname = 'public' AND tablename = 'User';
+  IF app_role IS NULL THEN RETURN; END IF;
+  FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tableowner <> app_role LOOP
+    BEGIN
+      EXECUTE format('ALTER TABLE public.%I OWNER TO %I', t.tablename, app_role);
+    EXCEPTION WHEN OTHERS THEN
+      EXECUTE format('DROP POLICY IF EXISTS steelwise_app ON public.%I', t.tablename);
+      EXECUTE format('CREATE POLICY steelwise_app ON public.%I FOR ALL TO %I USING (true) WITH CHECK (true)', t.tablename, app_role);
+    END;
+  END LOOP;
+END $owner$;
+`;
+
 out += '\nCOMMIT;\n';
 
 fs.mkdirSync(outDir, { recursive: true });

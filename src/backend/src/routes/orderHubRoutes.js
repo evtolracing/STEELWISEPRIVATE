@@ -1,11 +1,6 @@
 import { Router } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import prisma from '../lib/db.js';
 import {
-  contacts,
-  rfqs,
-  quotes,
-  orders,
-  jobs,
   findContactById,
   createContact,
   searchContacts,
@@ -15,23 +10,35 @@ import {
   updateRfqStatus,
   createQuote,
   findQuoteById,
+  listQuotes,
   acceptQuote,
   createOrder,
   findOrderById,
   listOrders,
+  updateOrder,
   planOrder,
-  listJobs
+  listJobs,
+  findJobById,
+  saveJob,
 } from './orderHubStore.js';
 
 const router = Router();
 
-// Helper for backward compatibility
-function findOrCreateContact(contactData) {
-  if (contactData.id) {
-    const existing = findContactById(contactData.id);
-    if (existing) return existing;
+// Wraps an async handler so a thrown error becomes a JSON response.
+const handle = (fn, status = 500) => async (req, res) => {
+  try {
+    await fn(req, res);
+  } catch (error) {
+    res.status(status).json({ error: error.message });
   }
-  return createContact(contactData);
+};
+
+// Attaches each item's contact with one query instead of one per item.
+async function withContacts(items) {
+  const ids = [...new Set(items.map(i => i.contactId).filter(Boolean))];
+  const contacts = await Promise.all(ids.map(findContactById));
+  const byId = new Map(contacts.filter(Boolean).map(c => [c.id, c]));
+  return items.map(item => ({ ...item, contact: byId.get(item.contactId) || null }));
 }
 
 // ============================================================================
@@ -39,268 +46,160 @@ function findOrCreateContact(contactData) {
 // ============================================================================
 
 // POST /v1/contacts - Create a new contact
-router.post('/contacts', (req, res) => {
-  try {
-    const contact = createContact(req.body);
-    res.status(201).json(contact);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.post('/contacts', handle(async (req, res) => {
+  res.status(201).json(await createContact(req.body || {}));
+}));
 
 // GET /v1/contacts - List/search contacts
-router.get('/contacts', (req, res) => {
-  try {
-    const { email, companyName } = req.query;
-    const result = searchContacts({ email, companyName });
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/contacts', handle(async (req, res) => {
+  const { email, companyName } = req.query;
+  res.json(await searchContacts({ email, companyName }));
+}));
 
 // GET /v1/contacts/:id - Get contact by ID
-router.get('/contacts/:id', (req, res) => {
-  try {
-    const contact = findContactById(req.params.id);
-    if (!contact) {
-      return res.status(404).json({ error: 'Contact not found' });
-    }
-    res.json(contact);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/contacts/:id', handle(async (req, res) => {
+  const contact = await findContactById(req.params.id);
+  if (!contact) return res.status(404).json({ error: 'Contact not found' });
+  res.json(contact);
+}));
 
 // ============================================================================
 // RFQ ENDPOINTS
 // ============================================================================
 
 // POST /v1/rfq - Create a new RFQ
-router.post('/rfq', (req, res) => {
-  try {
-    const rfq = createRfq(req.body);
-    const contact = findContactById(rfq.contactId);
-    res.status(201).json({ ...rfq, contact });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.post('/rfq', handle(async (req, res) => {
+  const rfq = await createRfq(req.body || {});
+  res.status(201).json({ ...rfq, contact: await findContactById(rfq.contactId) });
+}, 400));
 
 // GET /v1/rfq - List all RFQs
-router.get('/rfq', (req, res) => {
-  try {
-    const { status, channel } = req.query;
-    const result = listRfqs({ status, channel });
-    const enriched = result.map(rfq => ({
-      ...rfq,
-      contact: findContactById(rfq.contactId)
-    }));
-    res.json(enriched);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/rfq', handle(async (req, res) => {
+  const { status, channel } = req.query;
+  res.json(await withContacts(await listRfqs({ status, channel })));
+}));
 
 // GET /v1/rfq/:id - Get single RFQ
-router.get('/rfq/:id', (req, res) => {
-  try {
-    const rfq = findRfqById(req.params.id);
-    if (!rfq) {
-      return res.status(404).json({ error: 'RFQ not found' });
-    }
-    const contact = findContactById(rfq.contactId);
-    res.json({ ...rfq, contact });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/rfq/:id', handle(async (req, res) => {
+  const rfq = await findRfqById(req.params.id);
+  if (!rfq) return res.status(404).json({ error: 'RFQ not found' });
+  res.json({ ...rfq, contact: await findContactById(rfq.contactId) });
+}));
 
 // PATCH /v1/rfq/:id/status - Update RFQ status
-router.patch('/rfq/:id/status', (req, res) => {
-  try {
-    const { status } = req.body;
-    const rfq = updateRfqStatus(req.params.id, status);
-    if (!rfq) {
-      return res.status(404).json({ error: 'RFQ not found' });
-    }
-    res.json(rfq);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.patch('/rfq/:id/status', handle(async (req, res) => {
+  const rfq = await updateRfqStatus(req.params.id, req.body?.status);
+  if (!rfq) return res.status(404).json({ error: 'RFQ not found' });
+  res.json(rfq);
+}, 400));
 
 // ============================================================================
 // QUOTE ENDPOINTS
 // ============================================================================
 
 // POST /v1/quotes - Create a new quote
-router.post('/quotes', (req, res) => {
-  try {
-    const quote = createQuote(req.body);
-    
-    // Update RFQ status if linked
-    if (quote.rfqId) {
-      updateRfqStatus(quote.rfqId, 'QUOTED');
-    }
-    
-    res.status(201).json(quote);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.post('/quotes', handle(async (req, res) => {
+  const quote = await createQuote(req.body || {});
+  // Update RFQ status if linked
+  if (quote.rfqId) await updateRfqStatus(quote.rfqId, 'QUOTED');
+  res.status(201).json(quote);
+}, 400));
 
 // GET /v1/quotes - List all quotes
-router.get('/quotes', (req, res) => {
-  try {
-    const result = quotes.map(q => {
-      const contact = findContactById(q.contactId);
-      const rfq = q.rfqId ? findRfqById(q.rfqId) : null;
-      return { ...q, contact, rfq };
-    });
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/quotes', handle(async (req, res) => {
+  const quotes = await withContacts(await listQuotes());
+  const result = await Promise.all(
+    quotes.map(async q => ({ ...q, rfq: q.rfqId ? await findRfqById(q.rfqId) : null }))
+  );
+  res.json(result);
+}));
 
 // GET /v1/quotes/:id - Get single quote
-router.get('/quotes/:id', (req, res) => {
-  try {
-    const quote = findQuoteById(req.params.id);
-    if (!quote) {
-      return res.status(404).json({ error: 'Quote not found' });
-    }
-    const contact = findContactById(quote.contactId);
-    const rfq = quote.rfqId ? findRfqById(quote.rfqId) : null;
-    res.json({ ...quote, contact, rfq });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/quotes/:id', handle(async (req, res) => {
+  const quote = await findQuoteById(req.params.id);
+  if (!quote) return res.status(404).json({ error: 'Quote not found' });
+  const [contact, rfq] = await Promise.all([
+    findContactById(quote.contactId),
+    quote.rfqId ? findRfqById(quote.rfqId) : null,
+  ]);
+  res.json({ ...quote, contact, rfq });
+}));
 
 // POST /v1/quotes/:id/accept - Accept quote and create order
-router.post('/quotes/:id/accept', (req, res) => {
-  try {
-    const order = acceptQuote(req.params.id);
-    const contact = findContactById(order.contactId);
-    res.status(201).json({ order: { ...order, contact } });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.post('/quotes/:id/accept', handle(async (req, res) => {
+  const order = await acceptQuote(req.params.id);
+  res.status(201).json({ order: { ...order, contact: await findContactById(order.contactId) } });
+}, 400));
 
 // ============================================================================
 // ORDER ENDPOINTS
 // ============================================================================
 
 // POST /v1/orders - Create a direct order (web/CSR)
-router.post('/orders', (req, res) => {
-  try {
-    const order = createOrder(req.body);
-    const contact = findContactById(order.contactId);
-    res.status(201).json({ ...order, contact });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.post('/orders', handle(async (req, res) => {
+  const order = await createOrder(req.body || {});
+  res.status(201).json({ ...order, contact: await findContactById(order.contactId) });
+}, 400));
 
 // GET /v1/orders - List all orders
-router.get('/orders', (req, res) => {
-  try {
-    const { status, channel } = req.query;
-    const result = listOrders({ status, channel });
-    const enriched = result.map(order => ({
-      ...order,
-      contact: findContactById(order.contactId)
-    }));
-    res.json(enriched);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/orders', handle(async (req, res) => {
+  const { status } = req.query;
+  res.json(await withContacts(await listOrders({ status })));
+}));
 
 // GET /v1/orders/:id - Get single order
-router.get('/orders/:id', (req, res) => {
-  try {
-    const order = findOrderById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-    const contact = findContactById(order.contactId);
-    const quote = order.quoteId ? findQuoteById(order.quoteId) : null;
-    const orderJobs = listJobs({ orderId: order.id });
-    res.json({ ...order, contact, quote, jobs: orderJobs });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/orders/:id', handle(async (req, res) => {
+  const order = await findOrderById(req.params.id);
+  if (!order) return res.status(404).json({ error: 'Order not found' });
+  const [contact, quote, jobs] = await Promise.all([
+    findContactById(order.contactId),
+    order.quoteId ? findQuoteById(order.quoteId) : null,
+    listJobs({ orderId: order.id }),
+  ]);
+  res.json({ ...order, contact, quote, jobs });
+}));
 
 // POST /v1/orders/:id/plan - Plan jobs for order
-router.post('/orders/:id/plan', (req, res) => {
-  try {
-    const result = planOrder(req.params.id);
-    const contact = findContactById(result.order.contactId);
-    res.json({ order: { ...result.order, contact }, jobs: result.jobs });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.post('/orders/:id/plan', handle(async (req, res) => {
+  const result = await planOrder(req.params.id);
+  const contact = await findContactById(result.order.contactId);
+  res.json({ order: { ...result.order, contact }, jobs: result.jobs });
+}, 400));
 
 // POST /v1/orders/:id/mark-packaging - Mark order ready for packaging
-router.post('/orders/:id/mark-packaging', (req, res) => {
-  try {
-    const order = findOrderById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
+router.post('/orders/:id/mark-packaging', handle(async (req, res) => {
+  const order = await findOrderById(req.params.id);
+  if (!order) return res.status(404).json({ error: 'Order not found' });
 
-    // Check if all jobs are complete
-    const orderJobs = listJobs({ orderId: order.id });
-    const allComplete = orderJobs.length > 0 && orderJobs.every(j => j.status === 'COMPLETE');
+  // For the demo flow, finishing packaging also completes any open jobs.
+  await prisma.intakeJob.updateMany({
+    where: { orderId: order.id, status: { not: 'COMPLETE' } },
+    data: { status: 'COMPLETE' },
+  });
 
-    if (!allComplete && orderJobs.length > 0) {
-      // For demo, mark all jobs as complete
-      orderJobs.forEach(j => { j.status = 'COMPLETE'; });
-    }
-
-    order.status = 'PACKAGING';
-    order.lines.forEach(line => { line.status = 'COMPLETE'; });
-
-    const contact = findContactById(order.contactId);
-    res.json({ ...order, contact, jobs: orderJobs });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+  const updated = await updateOrder(order.id, {
+    status: 'PACKAGING',
+    lines: order.lines.map(line => ({ ...line, status: 'COMPLETE' })),
+  });
+  const [contact, jobs] = await Promise.all([
+    findContactById(order.contactId),
+    listJobs({ orderId: order.id }),
+  ]);
+  res.json({ ...updated, contact, jobs });
+}, 400));
 
 // GET /v1/jobs - List all jobs
-router.get('/jobs', (req, res) => {
-  try {
-    const { orderId, status } = req.query;
-    const result = listJobs({ orderId, status });
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+router.get('/jobs', handle(async (req, res) => {
+  const { orderId, status } = req.query;
+  res.json(await listJobs({ orderId, status }));
+}));
 
 // POST /v1/jobs/:id/complete - Mark job complete
-router.post('/jobs/:id/complete', (req, res) => {
-  try {
-    const job = jobs.find(j => j.id === req.params.id);
-    if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
-    }
-    job.status = 'COMPLETE';
-    job.completedAt = new Date().toISOString();
-    res.json(job);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.post('/jobs/:id/complete', handle(async (req, res) => {
+  const job = await findJobById(req.params.id);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  res.json(await saveJob({ ...job, status: 'COMPLETE', completedAt: new Date().toISOString() }));
+}, 400));
 
 export default router;
-
-// Re-export stores for other modules
-export { contacts, rfqs, quotes, orders, jobs };

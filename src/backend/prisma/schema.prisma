@@ -4546,3 +4546,100 @@ model ExecutiveDecision {
   @@index([type, decidedAt])
   @@index([status])
 }
+
+// ============================================================================
+// ORDERHUB INTAKE: contacts, RFQs, quotes, orders and jobs captured by the
+// intake pipeline (email, phone, web, AI parsing). Lines are kept as JSON in
+// the shape the OrderHub API returns.
+// ============================================================================
+
+model IntakeContact {
+  id              String        @id @default(uuid())
+  companyName     String?
+  contactName     String?
+  email           String?       @unique
+  phone           String?
+  billingAddress  String?
+  shippingAddress String?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  rfqs            IntakeRfq[]
+  quotes          IntakeQuote[]
+  orders          IntakeOrder[]
+
+  @@index([companyName])
+}
+
+model IntakeRfq {
+  id               String        @id @default(uuid())
+  contactId        String
+  channel          String        @default("EMAIL")
+  sourceRef        String?
+  status           String        @default("NEW")
+  requestedByName  String?
+  requestedByEmail String?
+  requestedDueDate String?
+  lines            Json          @default("[]")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  contact          IntakeContact @relation(fields: [contactId], references: [id])
+  quotes           IntakeQuote[]
+
+  @@index([status, createdAt])
+}
+
+model IntakeQuote {
+  id         String        @id @default(uuid())
+  rfqId      String?
+  contactId  String
+  status     String        @default("DRAFT")
+  validUntil String?
+  currency   String        @default("USD")
+  lines      Json          @default("[]")
+  totalPrice Decimal       @default(0) @db.Decimal(14, 2)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  rfq        IntakeRfq?    @relation(fields: [rfqId], references: [id])
+  contact    IntakeContact @relation(fields: [contactId], references: [id])
+  orders     IntakeOrder[]
+
+  @@index([status])
+}
+
+model IntakeOrder {
+  id                String         @id @default(uuid())
+  contactId         String?
+  quoteId           String?
+  channel           String         @default("PHONE")
+  status            String         @default("NEW")
+  locationId        String         @default("LOC-001")
+  division          String?
+  requestedShipDate String?
+  promiseDate       String?
+  lines             Json           @default("[]")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  contact           IntakeContact? @relation(fields: [contactId], references: [id])
+  quote             IntakeQuote?   @relation(fields: [quoteId], references: [id])
+  jobs              IntakeJob[]
+
+  @@index([status, createdAt])
+}
+
+model IntakeJob {
+  id          String      @id @default(uuid())
+  orderId     String
+  orderLineId String
+  locationId  String
+  division    String
+  status      String      @default("PLANNING")
+  // Material, dimensions and inherited specs, in the API's job shape.
+  details     Json        @default("{}")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  order       IntakeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+}

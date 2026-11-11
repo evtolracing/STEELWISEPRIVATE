@@ -1,402 +1,427 @@
 // ============================================================================
-// OrderHub In-Memory Store
-// Centralized data store for all OrderHub entities
+// OrderHub store
+// Contacts, RFQs, quotes, orders and jobs for the intake pipeline, kept in the
+// database (Intake* tables). Every function is async and returns plain
+// objects in the shape the OrderHub API has always returned.
 // ============================================================================
 
-import { v4 as uuidv4 } from 'uuid';
+import prisma from '../lib/db.js';
+import { ci } from '../lib/dbText.js';
+import { randomUUID } from 'crypto';
+
+function db() {
+  if (!prisma) throw new Error('Database is not configured');
+  return prisma;
+}
+
+const iso = value => (value instanceof Date ? value.toISOString() : value);
+const asArray = value => (Array.isArray(value) ? value : []);
+const newId = () => randomUUID();
+const round2 = n => Math.round(n * 100) / 100;
 
 // ============================================================================
-// DATA STORES
+// SHAPES
 // ============================================================================
 
-export const contacts = [];
-export const rfqs = [];
-export const quotes = [];
-export const orders = [];
-export const jobs = [];
+function contactOut(row) {
+  if (!row) return null;
+  const { updatedAt, ...rest } = row;
+  return { ...rest, createdAt: iso(row.createdAt) };
+}
+
+function rfqOut(row) {
+  if (!row) return null;
+  const { updatedAt, contact, quotes, ...rest } = row;
+  return { ...rest, createdAt: iso(row.createdAt), lines: asArray(row.lines) };
+}
+
+function quoteOut(row) {
+  if (!row) return null;
+  const { updatedAt, rfq, contact, orders, ...rest } = row;
+  return {
+    ...rest,
+    createdAt: iso(row.createdAt),
+    lines: asArray(row.lines),
+    totalPrice: Number(row.totalPrice),
+  };
+}
+
+function orderOut(row) {
+  if (!row) return null;
+  const { updatedAt, contact, quote, jobs, ...rest } = row;
+  return { ...rest, createdAt: iso(row.createdAt), lines: asArray(row.lines) };
+}
+
+function jobOut(row) {
+  if (!row) return null;
+  const { details, updatedAt, order, ...rest } = row;
+  return { ...(details || {}), ...rest, createdAt: iso(row.createdAt) };
+}
+
+// Spec overrides carried from quote line to order line to job.
+function specFields(src = {}) {
+  return {
+    surfaceFinish: src.surfaceFinish || null,
+    tolerancePreset: src.tolerancePreset || null,
+    thkTolerancePlus: src.thkTolerancePlus ?? null,
+    thkToleranceMinus: src.thkToleranceMinus ?? null,
+    lenTolerancePlus: src.lenTolerancePlus ?? null,
+    lenToleranceMinus: src.lenToleranceMinus ?? null,
+    widTolerancePlus: src.widTolerancePlus ?? null,
+    widToleranceMinus: src.widToleranceMinus ?? null,
+    certRequirements: src.certRequirements || [],
+    specNotes: src.specNotes || null,
+  };
+}
 
 // ============================================================================
 // CONTACT HELPERS
 // ============================================================================
 
-export function findContactByEmail(email) {
+export async function findContactByEmail(email) {
   if (!email) return null;
-  return contacts.find(c => c.email?.toLowerCase() === email.toLowerCase());
+  return contactOut(await db().intakeContact.findFirst({ where: { email: { equals: email, ...ci } } }));
 }
 
-export function findContactById(id) {
-  return contacts.find(c => c.id === id);
+export async function findContactById(id) {
+  if (!id) return null;
+  return contactOut(await db().intakeContact.findUnique({ where: { id } }));
 }
 
-export function createContact(data) {
-  // Check if contact with same email exists
+export async function createContact(data) {
+  // Reuse the contact when one with the same email exists
   if (data.email) {
-    const existing = findContactByEmail(data.email);
+    const existing = await findContactByEmail(data.email);
     if (existing) return existing;
   }
 
-  const contact = {
-    id: uuidv4(),
-    companyName: data.companyName || null,
-    contactName: data.contactName || null,
-    email: data.email || null,
-    phone: data.phone || null,
-    billingAddress: data.billingAddress || null,
-    shippingAddress: data.shippingAddress || null,
-    notes: data.notes || null
-  };
-  contacts.push(contact);
-  return contact;
+  const row = await db().intakeContact.create({
+    data: {
+      ...(data.id ? { id: data.id } : {}),
+      companyName: data.companyName || null,
+      contactName: data.contactName || null,
+      email: data.email || null,
+      phone: data.phone || null,
+      billingAddress: data.billingAddress || null,
+      shippingAddress: data.shippingAddress || null,
+      notes: data.notes || null,
+    },
+  });
+  return contactOut(row);
 }
 
-export function searchContacts(params = {}) {
-  let result = [...contacts];
-  
-  if (params.email) {
-    result = result.filter(c => 
-      c.email?.toLowerCase().includes(params.email.toLowerCase())
-    );
-  }
-  
-  if (params.companyName) {
-    result = result.filter(c => 
-      c.companyName?.toLowerCase().includes(params.companyName.toLowerCase())
-    );
-  }
-  
-  return result;
+export async function searchContacts(params = {}) {
+  const where = {};
+  if (params.email) where.email = { contains: params.email, ...ci };
+  if (params.companyName) where.companyName = { contains: params.companyName, ...ci };
+  const rows = await db().intakeContact.findMany({ where, orderBy: { companyName: 'asc' }, take: 500 });
+  return rows.map(contactOut);
+}
+
+export async function listContacts() {
+  return searchContacts();
 }
 
 // ============================================================================
 // RFQ HELPERS
 // ============================================================================
 
-export function findRfqById(id) {
-  return rfqs.find(r => r.id === id);
+export async function findRfqById(id) {
+  if (!id) return null;
+  return rfqOut(await db().intakeRfq.findUnique({ where: { id } }));
 }
 
-export function createRfq(data) {
+export async function createRfq(data) {
   // Handle contact - either find existing or create new
   let contactId = data.contactId;
-  
+
   if (!contactId && data.contact) {
-    const contact = createContact(data.contact);
+    const contact = await createContact(data.contact);
     contactId = contact.id;
   }
-  
+
   if (!contactId) {
     throw new Error('Contact or contactId is required');
   }
 
-  const rfq = {
-    id: uuidv4(),
-    contactId,
-    channel: data.channel || 'EMAIL',
-    sourceRef: data.sourceRef || null,
-    createdAt: new Date().toISOString(),
-    status: 'NEW',
-    requestedByName: data.requestedByName || null,
-    requestedByEmail: data.requestedByEmail || null,
-    requestedDueDate: data.requestedDueDate || null,
-    lines: (data.lines || []).map((line, idx) => ({
-      id: uuidv4(),
-      materialCode: line.materialCode || null,
-      commodity: line.commodity || null,
-      form: line.form || null,
-      grade: line.grade || null,
-      thickness: line.thickness || null,
-      width: line.width || null,
-      length: line.length || null,
-      quantity: line.quantity || 1,
-      notes: line.notes || null
-    }))
-  };
-  
-  rfqs.push(rfq);
-  return rfq;
+  const row = await db().intakeRfq.create({
+    data: {
+      contactId,
+      channel: data.channel || 'EMAIL',
+      sourceRef: data.sourceRef || null,
+      status: 'NEW',
+      requestedByName: data.requestedByName || null,
+      requestedByEmail: data.requestedByEmail || null,
+      requestedDueDate: data.requestedDueDate || null,
+      lines: asArray(data.lines).map(line => ({
+        id: newId(),
+        materialCode: line.materialCode || null,
+        commodity: line.commodity || null,
+        form: line.form || null,
+        grade: line.grade || null,
+        thickness: line.thickness || null,
+        width: line.width || null,
+        length: line.length || null,
+        quantity: line.quantity || 1,
+        notes: line.notes || null,
+      })),
+    },
+  });
+  return rfqOut(row);
 }
 
-export function listRfqs(params = {}) {
-  let result = [...rfqs];
-  
-  if (params.status) {
-    result = result.filter(r => r.status === params.status);
-  }
-  
-  if (params.channel) {
-    result = result.filter(r => r.channel === params.channel);
-  }
-  
-  // Sort by createdAt descending
-  result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
-  return result;
+export async function listRfqs(params = {}) {
+  const where = {};
+  if (params.status) where.status = params.status;
+  if (params.channel) where.channel = params.channel;
+  const rows = await db().intakeRfq.findMany({ where, orderBy: { createdAt: 'desc' }, take: 500 });
+  return rows.map(rfqOut);
 }
 
-export function updateRfqStatus(id, status) {
-  const rfq = findRfqById(id);
-  if (rfq) {
-    rfq.status = status;
-  }
-  return rfq;
+export async function updateRfqStatus(id, status) {
+  const result = await db().intakeRfq.updateMany({ where: { id }, data: { status } });
+  return result.count ? findRfqById(id) : null;
 }
 
 // ============================================================================
 // QUOTE HELPERS
 // ============================================================================
 
-export function findQuoteById(id) {
-  return quotes.find(q => q.id === id);
+export async function findQuoteById(id) {
+  if (!id) return null;
+  return quoteOut(await db().intakeQuote.findUnique({ where: { id } }));
 }
 
-export function createQuote(data) {
-  const lines = (data.lines || []).map(line => {
+export async function createQuote(data) {
+  const lines = asArray(data.lines).map(line => {
     const quantity = line.quantity || 1;
     const unitPrice = line.unitPrice || 0;
     return {
-      id: uuidv4(),
+      id: newId(),
       rfqLineId: line.rfqLineId || null,
       materialCode: line.materialCode || null,
       description: line.description || null,
       quantity,
       unitPrice,
-      extendedPrice: Math.round(quantity * unitPrice * 100) / 100,
+      extendedPrice: round2(quantity * unitPrice),
       notes: line.notes || null,
-      // Spec overrides from quote pricing form
-      surfaceFinish: line.surfaceFinish || null,
-      tolerancePreset: line.tolerancePreset || null,
-      thkTolerancePlus: line.thkTolerancePlus ?? null,
-      thkToleranceMinus: line.thkToleranceMinus ?? null,
-      lenTolerancePlus: line.lenTolerancePlus ?? null,
-      lenToleranceMinus: line.lenToleranceMinus ?? null,
-      widTolerancePlus: line.widTolerancePlus ?? null,
-      widToleranceMinus: line.widToleranceMinus ?? null,
-      certRequirements: line.certRequirements || [],
-      specNotes: line.specNotes || null,
+      ...specFields(line),
       gradeOverride: line.gradeOverride || null,
     };
   });
 
-  const totalPrice = lines.reduce((sum, l) => sum + l.extendedPrice, 0);
+  const totalPrice = round2(lines.reduce((sum, l) => sum + l.extendedPrice, 0));
 
-  const quote = {
-    id: uuidv4(),
-    rfqId: data.rfqId || null,
-    contactId: data.contactId,
-    createdAt: new Date().toISOString(),
-    status: 'DRAFT',
-    validUntil: data.validUntil || null,
-    currency: data.currency || 'USD',
-    lines,
-    totalPrice: Math.round(totalPrice * 100) / 100
-  };
-
-  quotes.push(quote);
-  return quote;
+  const row = await db().intakeQuote.create({
+    data: {
+      rfqId: data.rfqId || null,
+      contactId: data.contactId,
+      status: 'DRAFT',
+      validUntil: data.validUntil || null,
+      currency: data.currency || 'USD',
+      lines,
+      totalPrice,
+    },
+  });
+  return quoteOut(row);
 }
 
-export function acceptQuote(quoteId) {
-  const quote = findQuoteById(quoteId);
+export async function listQuotes(params = {}) {
+  const where = {};
+  if (params.status) where.status = params.status;
+  if (params.rfqId) where.rfqId = params.rfqId;
+  const rows = await db().intakeQuote.findMany({ where, orderBy: { createdAt: 'desc' }, take: 500 });
+  return rows.map(quoteOut);
+}
+
+export async function updateQuote(id, data) {
+  const result = await db().intakeQuote.updateMany({ where: { id }, data });
+  return result.count ? findQuoteById(id) : null;
+}
+
+export async function acceptQuote(quoteId) {
+  const quote = await findQuoteById(quoteId);
   if (!quote) {
     throw new Error('Quote not found');
   }
 
-  quote.status = 'ACCEPTED';
+  return db().$transaction(async tx => {
+    await tx.intakeQuote.update({ where: { id: quote.id }, data: { status: 'ACCEPTED' } });
 
-  // Update linked RFQ if exists
-  if (quote.rfqId) {
-    updateRfqStatus(quote.rfqId, 'ACCEPTED');
-  }
+    // Update linked RFQ if exists
+    if (quote.rfqId) {
+      await tx.intakeRfq.updateMany({ where: { id: quote.rfqId }, data: { status: 'ACCEPTED' } });
+    }
 
-  // Create Order from Quote
-  const order = {
-    id: uuidv4(),
-    contactId: quote.contactId,
-    quoteId: quote.id,
-    channel: 'EMAIL', // Default, could be derived
-    createdAt: new Date().toISOString(),
-    status: 'NEW',
-    locationId: 'LOC-001',
-    division: null,
-    requestedShipDate: null,
-    promiseDate: null,
-    lines: quote.lines.map(ql => ({
-      id: uuidv4(),
-      rfqLineId: ql.rfqLineId || null,
-      quoteLineId: ql.id,
-      materialCode: ql.materialCode || null,
-      commodity: null,
-      form: null,
-      grade: ql.gradeOverride || null,
-      thickness: null,
-      width: null,
-      length: null,
-      quantity: ql.quantity,
-      division: null,
-      status: 'NEW',
-      jobId: null,
-      // Inherit spec overrides from quote line
-      surfaceFinish: ql.surfaceFinish || null,
-      tolerancePreset: ql.tolerancePreset || null,
-      thkTolerancePlus: ql.thkTolerancePlus ?? null,
-      thkToleranceMinus: ql.thkToleranceMinus ?? null,
-      lenTolerancePlus: ql.lenTolerancePlus ?? null,
-      lenToleranceMinus: ql.lenToleranceMinus ?? null,
-      widTolerancePlus: ql.widTolerancePlus ?? null,
-      widToleranceMinus: ql.widToleranceMinus ?? null,
-      certRequirements: ql.certRequirements || [],
-      specNotes: ql.specNotes || null,
-    }))
-  };
-
-  orders.push(order);
-  return order;
+    // Create Order from Quote
+    const order = await tx.intakeOrder.create({
+      data: {
+        contactId: quote.contactId,
+        quoteId: quote.id,
+        channel: 'EMAIL',
+        status: 'NEW',
+        locationId: 'LOC-001',
+        lines: quote.lines.map(ql => ({
+          id: newId(),
+          rfqLineId: ql.rfqLineId || null,
+          quoteLineId: ql.id,
+          materialCode: ql.materialCode || null,
+          commodity: null,
+          form: null,
+          grade: ql.gradeOverride || null,
+          thickness: null,
+          width: null,
+          length: null,
+          quantity: ql.quantity,
+          division: null,
+          status: 'NEW',
+          jobId: null,
+          ...specFields(ql),
+        })),
+      },
+    });
+    return orderOut(order);
+  });
 }
 
 // ============================================================================
 // ORDER HELPERS
 // ============================================================================
 
-export function findOrderById(id) {
-  return orders.find(o => o.id === id);
+export async function findOrderById(id) {
+  if (!id) return null;
+  return orderOut(await db().intakeOrder.findUnique({ where: { id } }));
 }
 
-export function createOrder(data) {
+export async function createOrder(data) {
   // Handle contact
   let contactId = data.contactId;
-  
+
   if (!contactId && data.contact) {
-    const contact = createContact(data.contact);
+    const contact = await createContact(data.contact);
     contactId = contact.id;
   }
 
-  const order = {
-    id: uuidv4(),
-    contactId,
-    quoteId: data.quoteId || null,
-    channel: data.channel || 'PHONE',
-    createdAt: new Date().toISOString(),
-    status: 'NEW',
-    locationId: data.locationId || 'LOC-001',
-    division: data.division || null,
-    requestedShipDate: data.requestedShipDate || null,
-    promiseDate: data.promiseDate || null,
-    lines: (data.lines || []).map(line => ({
-      id: uuidv4(),
-      rfqLineId: line.rfqLineId || null,
-      quoteLineId: line.quoteLineId || null,
-      materialCode: line.materialCode || null,
-      commodity: line.commodity || null,
-      form: line.form || null,
-      grade: line.grade || null,
-      thickness: line.thickness || null,
-      width: line.width || null,
-      length: line.length || null,
-      quantity: line.quantity || 1,
-      division: line.division || null,
+  const row = await db().intakeOrder.create({
+    data: {
+      contactId: contactId || null,
+      quoteId: data.quoteId || null,
+      channel: data.channel || 'PHONE',
       status: 'NEW',
-      jobId: null,
-      // Spec overrides
-      surfaceFinish: line.surfaceFinish || null,
-      tolerancePreset: line.tolerancePreset || null,
-      thkTolerancePlus: line.thkTolerancePlus ?? null,
-      thkToleranceMinus: line.thkToleranceMinus ?? null,
-      lenTolerancePlus: line.lenTolerancePlus ?? null,
-      lenToleranceMinus: line.lenToleranceMinus ?? null,
-      widTolerancePlus: line.widTolerancePlus ?? null,
-      widToleranceMinus: line.widToleranceMinus ?? null,
-      certRequirements: line.certRequirements || [],
-      specNotes: line.specNotes || null,
-    }))
-  };
-
-  orders.push(order);
-  return order;
+      locationId: data.locationId || 'LOC-001',
+      division: data.division || null,
+      requestedShipDate: data.requestedShipDate || null,
+      promiseDate: data.promiseDate || null,
+      lines: asArray(data.lines).map(line => ({
+        id: newId(),
+        rfqLineId: line.rfqLineId || null,
+        quoteLineId: line.quoteLineId || null,
+        materialCode: line.materialCode || null,
+        commodity: line.commodity || null,
+        form: line.form || null,
+        grade: line.grade || null,
+        thickness: line.thickness || null,
+        width: line.width || null,
+        length: line.length || null,
+        quantity: line.quantity || 1,
+        division: line.division || null,
+        status: 'NEW',
+        jobId: null,
+        ...specFields(line),
+      })),
+    },
+  });
+  return orderOut(row);
 }
 
-export function planOrder(orderId) {
-  const order = findOrderById(orderId);
+export async function updateOrder(id, data) {
+  const result = await db().intakeOrder.updateMany({ where: { id }, data });
+  return result.count ? findOrderById(id) : null;
+}
+
+export async function planOrder(orderId) {
+  const order = await findOrderById(orderId);
   if (!order) {
     throw new Error('Order not found');
   }
 
-  order.status = 'PLANNING';
-  const createdJobs = [];
+  return db().$transaction(async tx => {
+    const createdJobs = [];
+    const lines = [];
 
-  for (const line of order.lines) {
-    const job = {
-      id: uuidv4(),
-      orderId: order.id,
-      orderLineId: line.id,
-      locationId: order.locationId,
-      division: line.division || order.division || 'METALS',
-      materialCode: line.materialCode || 'UNKNOWN',
-      thickness: line.thickness,
-      width: line.width,
-      length: line.length,
-      grade: line.grade,
-      status: 'PLANNING',
-      // Inherit specs from order line
-      surfaceFinish: line.surfaceFinish || null,
-      tolerancePreset: line.tolerancePreset || null,
-      thkTolerancePlus: line.thkTolerancePlus ?? null,
-      thkToleranceMinus: line.thkToleranceMinus ?? null,
-      lenTolerancePlus: line.lenTolerancePlus ?? null,
-      lenToleranceMinus: line.lenToleranceMinus ?? null,
-      widTolerancePlus: line.widTolerancePlus ?? null,
-      widToleranceMinus: line.widToleranceMinus ?? null,
-      certRequirements: line.certRequirements || [],
-      specNotes: line.specNotes || null,
-      specsInherited: true,
-    };
-    jobs.push(job);
-    createdJobs.push(job);
-    
-    // Link job to order line
-    line.jobId = job.id;
-    line.status = 'PLANNING';
-  }
+    for (const line of order.lines) {
+      const details = {
+        orderLineId: line.id,
+        materialCode: line.materialCode || 'UNKNOWN',
+        thickness: line.thickness,
+        width: line.width,
+        length: line.length,
+        grade: line.grade,
+        ...specFields(line),
+        specsInherited: true,
+      };
+      const job = await tx.intakeJob.create({
+        data: {
+          orderId: order.id,
+          orderLineId: line.id,
+          locationId: order.locationId,
+          division: line.division || order.division || 'METALS',
+          status: 'PLANNING',
+          details,
+        },
+      });
+      createdJobs.push(jobOut(job));
+      lines.push({ ...line, jobId: job.id, status: 'PLANNING' });
+    }
 
-  return { order, jobs: createdJobs };
+    const updated = await tx.intakeOrder.update({
+      where: { id: order.id },
+      data: { status: 'PLANNING', lines },
+    });
+    return { order: orderOut(updated), jobs: createdJobs };
+  });
 }
 
-export function listOrders(params = {}) {
-  let result = [...orders];
-  
-  if (params.status) {
-    result = result.filter(o => o.status === params.status);
-  }
-  
-  result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  return result;
+export async function listOrders(params = {}) {
+  const where = {};
+  if (params.status) where.status = params.status;
+  const rows = await db().intakeOrder.findMany({ where, orderBy: { createdAt: 'desc' }, take: 500 });
+  return rows.map(orderOut);
 }
 
 // ============================================================================
 // JOB HELPERS
 // ============================================================================
 
-export function findJobById(id) {
-  return jobs.find(j => j.id === id);
+export async function findJobById(id) {
+  if (!id) return null;
+  return jobOut(await db().intakeJob.findUnique({ where: { id } }));
 }
 
-export function listJobs(params = {}) {
-  let result = [...jobs];
-  
-  if (params.orderId) {
-    result = result.filter(j => j.orderId === params.orderId);
-  }
-  
-  if (params.status) {
-    result = result.filter(j => j.status === params.status);
-  }
-  
-  return result;
+export async function listJobs(params = {}) {
+  const where = {};
+  if (params.orderId) where.orderId = params.orderId;
+  if (params.status) where.status = params.status;
+  const rows = await db().intakeJob.findMany({ where, orderBy: { createdAt: 'desc' }, take: 1000 });
+  return rows.map(jobOut);
 }
 
-export function updateJobStatus(jobId, status) {
-  const job = findJobById(jobId);
-  if (job) {
-    job.status = status;
-  }
-  return job;
+// Saves a whole job as the API returns it: known columns go to their
+// columns, everything else (recipe, schedule, QC result, ...) to details.
+const JOB_COLUMNS = ['id', 'orderId', 'orderLineId', 'locationId', 'division', 'status', 'createdAt', 'updatedAt'];
+
+export async function saveJob(job) {
+  if (!job?.id) return null;
+  const details = Object.fromEntries(Object.entries(job).filter(([key]) => !JOB_COLUMNS.includes(key)));
+  const data = { details: JSON.parse(JSON.stringify(details)) };
+  if (job.status) data.status = job.status;
+  if (job.division) data.division = job.division;
+  if (job.locationId) data.locationId = job.locationId;
+  const result = await db().intakeJob.updateMany({ where: { id: job.id }, data });
+  return result.count ? findJobById(job.id) : null;
+}
+
+export async function updateJobStatus(jobId, status) {
+  const result = await db().intakeJob.updateMany({ where: { id: jobId }, data: { status } });
+  return result.count ? findJobById(jobId) : null;
 }

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { rfqs, contacts } from './orderHubRoutes.js';
+import { findRfqById } from './orderHubStore.js';
 
 const router = Router();
 
@@ -529,7 +529,7 @@ router.post('/parse-email-rfq', (req, res) => {
 // ============================================================================
 // AI QUOTE ASSISTANT - Suggest pricing for RFQ/Quote
 // ============================================================================
-router.post('/quote-assistant', (req, res) => {
+router.post('/quote-assistant', async (req, res) => {
   try {
     const { rfqId, quoteDraft } = req.body;
 
@@ -539,7 +539,7 @@ router.post('/quote-assistant', (req, res) => {
 
     // Get lines from RFQ if provided
     if (rfqId) {
-      const rfq = rfqs.find(r => r.id === rfqId);
+      const rfq = await findRfqById(rfqId);
       if (rfq) {
         lines = rfq.lines;
       }

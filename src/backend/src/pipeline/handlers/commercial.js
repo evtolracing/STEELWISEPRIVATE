@@ -14,6 +14,7 @@ import {
   updateRfqStatus,
   acceptQuote,
   findQuoteById,
+  updateQuote,
 } from '../../routes/orderHubStore.js';
 
 // ============================================================================
@@ -29,7 +30,7 @@ export async function handleLeadCapture(ctx, payload) {
   }
   
   // Create or find contact
-  const created = createContact({
+  const created = await createContact({
     companyName: contact.companyName,
     contactName: contact.contactName,
     email: contact.email,
@@ -67,7 +68,7 @@ export async function handleRfqReceived(ctx, payload) {
     return;
   }
   
-  const rfq = createRfq({
+  const rfq = await createRfq({
     contactId: ctx.contactId,
     contact: rfqData?.contact,
     channel: channel || ctx.channel,
@@ -168,7 +169,7 @@ export async function handleCsrReview(ctx, payload) {
   }
   
   // Update RFQ status
-  updateRfqStatus(ctx.rfqId, 'REVIEWED');
+  await updateRfqStatus(ctx.rfqId, 'REVIEWED');
   
   // Clear human approval flag if approved
   if (approved) {
@@ -226,7 +227,7 @@ export async function handleQuoteBuilding(ctx, payload) {
     });
   }
   
-  const quote = createQuote({
+  const quote = await createQuote({
     rfqId: ctx.rfqId,
     contactId: ctx.contactId,
     lines: quoteLines,
@@ -240,7 +241,7 @@ export async function handleQuoteBuilding(ctx, payload) {
   ctx.metrics.marginPercent = (marginStrategy?.percent || 0.25) * 100;
   
   // Update RFQ status
-  updateRfqStatus(ctx.rfqId, 'QUOTED');
+  await updateRfqStatus(ctx.rfqId, 'QUOTED');
   
   ctx.addAiRecommendation({
     type: 'QUOTE_BUILT',
@@ -292,6 +293,7 @@ export async function handleQuotePricing(ctx, payload) {
   
   ctx.quote.totalPrice = Math.round(adjustedTotal * 100) / 100;
   ctx.quote.status = 'PRICED';
+  await updateQuote(ctx.quote.id, { status: 'PRICED', totalPrice: ctx.quote.totalPrice });
   ctx.metrics.totalValue = ctx.quote.totalPrice;
 }
 
@@ -306,7 +308,7 @@ export async function handleQuoteAcceptance(ctx, payload) {
   }
   
   // Accept quote and create order
-  const order = acceptQuote(ctx.quoteId);
+  const order = await acceptQuote(ctx.quoteId);
   
   ctx.orderId = order.id;
   ctx.order = order;

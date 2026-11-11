@@ -2,8 +2,10 @@
  * Demo data loader. Safe to run more than once: every record is upserted by
  * a stable key, so re-running updates instead of duplicating.
  *
- *   npm run db:seed:demo            (terminal)
- *   POST /api/admin/seed-demo        (signed in as an owner or super admin)
+ *   npm run db:seed:demo                    (terminal, all parts)
+ *   POST /api/admin/seed-demo?part=<name>    (signed in as an owner or super
+ *                                            admin; GET /api/admin/seed-demo
+ *                                            lists the parts)
  *
  * This grows as modules move off in-memory data; Phase 1 ends with one
  * realistic seed for the whole system.
@@ -16,6 +18,7 @@ import { buildInventoryV1DemoData } from './inventoryV1Data.js';
 import {
   saveCatalogItem, saveSite, saveUnit, saveTransfer, saveRfidEvent,
 } from '../../routes/inventoryV1Store.js';
+import { demoGrades, demoProducts, demoStock } from './catalog.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -217,18 +220,84 @@ async function seedInventoryV1() {
   return { materials: catalogItems.length, sites: locations.length, units: inventoryUnits.length, transfers: transfers.length, rfidScans: rfidEvents.length };
 }
 
+async function seedCatalog() {
+  const grades = {};
+  for (const g of demoGrades) {
+    // Keep a grade that already exists as it is; only fill in missing ones.
+    grades[g.code] = await prisma.grade.upsert({ where: { code: g.code }, update: {}, create: g });
+  }
+
+  const products = {};
+  for (const { grade, price, priceUnit = 'CWT', ...p } of demoProducts) {
+    const data = {
+      ...p,
+      gradeId: grade ? grades[grade].id : null,
+      specStandard: grade ? grades[grade].specStandard : null,
+      priceUnit,
+      basePriceCwt: priceUnit === 'CWT' ? Math.round(price * 100 * 100) / 100 : price,
+      isRemnant: Boolean(p.isRemnant),
+      isActive: true,
+    };
+    products[p.sku] = await prisma.product.upsert({ where: { sku: p.sku }, update: data, create: data });
+  }
+
+  // Stock needs a location, a mill/owner and a creating user.
+  const creator = await prisma.user.findFirst({ orderBy: { createdAt: 'asc' }, select: { id: true } });
+  const location = await prisma.location.findUnique({ where: { code: demoLocation.code } });
+  const owner = await prisma.organization.findUnique({ where: { code: demoOwner.code } });
+  let stocked = 0;
+  if (creator && location && owner) {
+    for (const s of demoStock) {
+      const product = products[s.sku];
+      const heatNumber = `DEMO-H-${s.coilNumber.slice(-4)}`;
+      const heatData = { millId: owner.id, gradeId: product.gradeId, castDate: new Date('2026-06-01'), createdById: creator.id };
+      const heat = await prisma.heat.upsert({ where: { heatNumber }, update: heatData, create: { heatNumber, ...heatData } });
+      const coilData = {
+        heatId: heat.id, productId: product.id, gradeId: product.gradeId, ownerId: owner.id, form: s.form,
+        thicknessIn: s.thicknessIn, widthIn: s.widthIn, lengthIn: s.lengthIn,
+        grossWeightLb: s.weight, netWeightLb: s.weight, status: 'AVAILABLE', qcStatus: 'PASSED',
+        locationId: location.id, unitCost: s.unitCost, createdById: creator.id,
+      };
+      const coil = await prisma.coil.upsert({ where: { coilNumber: s.coilNumber }, update: coilData, create: { coilNumber: s.coilNumber, ...coilData } });
+      const invData = { locationId: location.id, qtyOnHand: s.weight, qtyAvailable: s.weight, qtyAllocated: 0, qtyOnHold: 0, unit: 'LB', unitCost: s.unitCost, status: 'ACTIVE' };
+      await prisma.inventory.upsert({ where: { coilId: coil.id }, update: invData, create: { coilId: coil.id, ...invData } });
+      stocked++;
+    }
+  }
+  console.log(`  catalog: ${demoGrades.length} grades, ${demoProducts.length} products, ${stocked} stock items`);
+  return { grades: demoGrades.length, products: demoProducts.length, stock: stocked };
+}
+
 /**
  * Loads all demo data. Returns a summary of what was loaded.
  */
-export async function seedDemo() {
+/**
+ * The demo data set in parts. Each part is safe to re-run on its own, and the
+ * parts are small enough to finish inside one serverless request. Order
+ * matters only for "catalog", which stocks the location "shop-floor" creates.
+ */
+export const DEMO_PARTS = {
+  customers: async () => { await seedCustomers(); return customers.length; },
+  executive: async () => { await seedExecutive(); return { executiveDecisions: executiveDecisions.length, scenarios: 1 }; },
+  orderhub: seedOrderHub,
+  exceptions: seedExceptions,
+  'shop-floor': seedShopFloor,
+  'inventory-v1': seedInventoryV1,
+  catalog: seedCatalog,
+};
+
+/**
+ * Loads demo data: every part, or only the named one. Returns what was loaded.
+ */
+export async function seedDemo(part) {
   if (!prisma) throw new Error('DATABASE_URL is not set');
+  const names = part ? [part] : Object.keys(DEMO_PARTS);
+  for (const name of names) {
+    if (!DEMO_PARTS[name]) throw new Error(`Unknown demo part "${name}". Parts: ${Object.keys(DEMO_PARTS).join(', ')}`);
+  }
   console.log('Seeding demo data…');
-  await seedCustomers();
-  await seedExecutive();
-  const orderHub = await seedOrderHub();
-  const exceptions = await seedExceptions();
-  const shopFloor = await seedShopFloor();
-  const inventoryV1 = await seedInventoryV1();
+  const loaded = {};
+  for (const name of names) loaded[name] = await DEMO_PARTS[name]();
   console.log('Done.');
-  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub, exceptions, shopFloor, inventoryV1 };
+  return loaded;
 }

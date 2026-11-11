@@ -53,9 +53,26 @@ additive, so the old code keeps working against the new tables).
 
 ## Loading demo data
 
-`npm run db:seed:demo` from `src/backend`, or, without a terminal, sign in as
-an owner or super admin and call `POST /api/admin/seed-demo`. Both are safe
-to repeat. Set `DEMO_SEED_ENABLED=false` on real production servers.
+`npm run db:seed:demo` from `src/backend` loads everything. Without a
+terminal, sign in as an owner or super admin and call
+`POST /api/admin/seed-demo?part=<name>` once per part (`GET
+/api/admin/seed-demo` lists them). One request for everything can outlast
+Vercel's 30-second function limit, so load it part by part. From the
+browser console on the signed-in app:
+
+```js
+(async () => {
+  const h = { Authorization: 'Bearer ' + localStorage.getItem('token') }
+  const { parts } = await (await fetch('/api/admin/seed-demo', { headers: h })).json()
+  for (const p of parts) {
+    const r = await fetch('/api/admin/seed-demo?part=' + p, { method: 'POST', headers: h })
+    console.log(p, r.status, await r.text())
+  }
+})()
+```
+
+Every part is safe to repeat. Set `DEMO_SEED_ENABLED=false` on real
+production servers.
 
 ## Bringing the existing Supabase database onto migrations (one time)
 

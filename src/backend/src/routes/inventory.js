@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
+import { searchStock } from '../services/intakeCatalogService.js';
 
 const router = Router();
 
@@ -22,6 +23,24 @@ router.get('/', async (req, res) => {
     res.json(inventory);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch inventory' });
+  }
+});
+
+// GET /api/inventory/search?search=&locationId=&division=&isRemnant=&limit=
+// Order-intake shape: { data: [...], meta: { total } }
+router.get('/search', async (req, res) => {
+  try {
+    const { search, locationId, division, isRemnant, limit } = req.query;
+    res.json(await searchStock({
+      search,
+      locationId,
+      division,
+      isRemnant: isRemnant === undefined ? undefined : isRemnant === 'true',
+      limit,
+    }));
+  } catch (error) {
+    console.error('Stock search failed:', error);
+    res.status(500).json({ error: 'Stock search failed' });
   }
 });
 

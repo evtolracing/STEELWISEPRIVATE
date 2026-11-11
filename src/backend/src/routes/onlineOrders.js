@@ -106,7 +106,9 @@ router.post('/:id/accept', async (req, res) => {
             create: items.map((item, idx) => {
               const product = bySku.get(item.sku);
               const qty = Number(item.qty) || 1;
-              const price = Number(item.unitPrice) || 0;
+              // Store checkouts carry the line's extended price (weight-priced items).
+              const ext = item.extended != null ? Number(item.extended) : null;
+              const price = ext != null ? ext / qty : Number(item.unitPrice) || 0;
               return {
                 lineNumber: idx + 1,
                 description: item.description || item.sku || 'Material',
@@ -115,7 +117,7 @@ router.post('/:id/accept', async (req, res) => {
                 qtyOrdered: qty,
                 unit: 'EA',
                 unitPrice: price,
-                extendedPrice: Math.round(qty * price * 100) / 100,
+                extendedPrice: ext != null ? Math.round(ext * 100) / 100 : Math.round(qty * price * 100) / 100,
               };
             }),
           },

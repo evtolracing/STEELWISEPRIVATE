@@ -22,6 +22,7 @@ import { demoPriceLevels, demoTaxRates, demoProcesses, demoTemplates } from './i
 import { demoGrades, demoProducts, demoStock } from './catalog.js';
 import { demoOnlineOrders } from './onlineOrders.js';
 import { demoRemnants } from './remnants.js';
+import { demoStoreListings } from './storeListings.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -315,6 +316,19 @@ async function seedRemnants() {
   return demoRemnants.length;
 }
 
+/** Online-store listing details for the demo catalog products (run the catalog part first). */
+async function seedStoreListings() {
+  let n = 0;
+  for (const { sku, ...l } of demoStoreListings) {
+    const product = await prisma.product.findUnique({ where: { sku }, select: { id: true } });
+    if (!product) continue;
+    const data = { visible: true, featured: false, ...l };
+    await prisma.storeListing.upsert({ where: { productId: product.id }, update: data, create: { productId: product.id, ...data } });
+    n += 1;
+  }
+  return n;
+}
+
 export const DEMO_PARTS = {
   customers: async () => { await seedCustomers(); return customers.length; },
   executive: async () => { await seedExecutive(); return { executiveDecisions: executiveDecisions.length, scenarios: 1 }; },
@@ -326,6 +340,7 @@ export const DEMO_PARTS = {
   'intake-setup': seedIntakeSetup,
   'online-orders': seedOnlineOrders,
   remnants: seedRemnants,
+  'store-listings': seedStoreListings,
 };
 
 /**

@@ -76,12 +76,10 @@ END ${block};
 }
 
 // Supabase exposes the public schema through its REST API to anyone with
-// the anon key. The app talks to the database directly as the table owner,
-// which Row Level Security does not restrict, so turning RLS on for every
-// table (with no policies) closes the REST API without affecting the app.
+// the anon key. Turning RLS on for every table closes that API; the
+// steelwise_app policy below lets the app's own connection back in.
 out += `
--- Row Level Security on every table (blocks Supabase's public API keys;
--- the app connects as the table owner and is not affected).
+-- Row Level Security on every table (blocks Supabase's public API keys).
 DO $rls$
 DECLARE t record;
 BEGIN
@@ -91,28 +89,24 @@ BEGIN
 END $rls$;
 `;
 
-// Tables created here belong to the SQL Editor's role, not the role the app
-// connects as, and with RLS on the app could then not write to them. Give
-// every public table the owner of "User" (a table the app already owns);
-// where that is not allowed, add a policy for the app's role instead.
+// RLS with no policy also blocks the app when its database role is not the
+// table owner (the case for tables created here). One policy per table lets
+// every role in except Supabase's public API roles, whatever the app's role
+// is called; requests made with the anon key still see nothing.
 out += `
--- Same owner as "User" for every table, so the app can use the new ones.
-DO $owner$
-DECLARE
-  app_role text;
-  t record;
+-- Let the app in on every table; keep Supabase's anon/authenticated out.
+DO $app$
+DECLARE t record;
 BEGIN
-  SELECT tableowner INTO app_role FROM pg_tables WHERE schemaname = 'public' AND tablename = 'User';
-  IF app_role IS NULL THEN RETURN; END IF;
-  FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tableowner <> app_role LOOP
-    BEGIN
-      EXECUTE format('ALTER TABLE public.%I OWNER TO %I', t.tablename, app_role);
-    EXCEPTION WHEN OTHERS THEN
-      EXECUTE format('DROP POLICY IF EXISTS steelwise_app ON public.%I', t.tablename);
-      EXECUTE format('CREATE POLICY steelwise_app ON public.%I FOR ALL TO %I USING (true) WITH CHECK (true)', t.tablename, app_role);
-    END;
+  FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' LOOP
+    EXECUTE format('DROP POLICY IF EXISTS steelwise_app ON public.%I', t.tablename);
+    EXECUTE format(
+      'CREATE POLICY steelwise_app ON public.%I FOR ALL TO PUBLIC '
+      'USING (current_user NOT IN (''anon'', ''authenticated'')) '
+      'WITH CHECK (current_user NOT IN (''anon'', ''authenticated''))',
+      t.tablename);
   END LOOP;
-END $owner$;
+END $app$;
 `;
 
 out += '\nCOMMIT;\n';

@@ -37,16 +37,16 @@ one transaction, skips anything already applied, and records the migration
 the same way `prisma migrate deploy` does, so you can mix the two.
 
 The file also turns on Row Level Security for every table. Supabase serves
-the public schema through its REST API to anyone with the anon key; with RLS
-on and no policies, that API returns nothing. The app connects directly as
-the table owner, which RLS does not restrict. If Supabase asks whether to
-run with RLS, choose to enable it.
+the public schema through its REST API to anyone with the anon key; with
+RLS on, that API returns nothing. If Supabase asks whether to run with RLS,
+choose to enable it.
 
-Tables created in the SQL Editor belong to the editor's role, so the file
-also gives every table the same owner as `User` (the role the app connects
-as). Without that, RLS blocks the app from writing to the new tables. If
-an older update left tables with the wrong owner, run
-`prisma/upgrades/sql-editor/fix-table-owner.sql` once.
+RLS with no policy also blocks the app itself when its database role is
+not the table's owner, which is the case for tables created in the SQL
+Editor. So the file also adds a `steelwise_app` policy on every table that
+lets any role in except Supabase's `anon` and `authenticated`. If an older
+update left tables without it, run
+`prisma/upgrades/sql-editor/fix-rls-app-access.sql` once.
 
 Apply the database update before merging the PR that needs it (the change is
 additive, so the old code keeps working against the new tables).

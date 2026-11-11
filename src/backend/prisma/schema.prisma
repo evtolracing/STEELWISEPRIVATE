@@ -353,6 +353,8 @@ model Product {
   widthMax     Decimal?
   basePriceCwt Decimal?
   priceUnit    PriceUnit   @default(CWT)
+  division     String      @default("METALS") // METALS | PLASTICS | SUPPLIES | OUTLET
+  isRemnant    Boolean     @default(false)
   isActive     Boolean     @default(true)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -1368,6 +1370,10 @@ enum GradeFamily {
   STAINLESS
   TOOL
   HSLA
+  ALUMINUM
+  NONFERROUS
+  PLASTIC
+  OTHER
 }
 
 enum ProductType {
@@ -1375,6 +1381,7 @@ enum ProductType {
   LONG
   TUBE
   STRUCTURAL
+  OTHER
 }
 
 enum ProductForm {
@@ -1386,6 +1393,8 @@ enum ProductForm {
   BEAM
   REBAR
   WIRE
+  ROD
+  SUPPLY
 }
 
 enum PriceUnit {

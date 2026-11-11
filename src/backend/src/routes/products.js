@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { searchProducts, productCategories } from '../services/intakeCatalogService.js';
 
 const router = Router();
 
@@ -13,6 +14,27 @@ router.get('/', async (req, res) => {
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
+// GET /api/products/search?search=&division=&category=&limit=
+// Order-intake shape: { data: [...], meta: { total } }
+router.get('/search', async (req, res) => {
+  try {
+    const { search, division, category, limit } = req.query;
+    res.json(await searchProducts({ search, division, category, limit }));
+  } catch (error) {
+    console.error('Product search failed:', error);
+    res.status(500).json({ error: 'Product search failed' });
+  }
+});
+
+// GET /api/products/categories?division=
+router.get('/categories', async (req, res) => {
+  try {
+    res.json(await productCategories(req.query.division));
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch categories' });
   }
 });
 

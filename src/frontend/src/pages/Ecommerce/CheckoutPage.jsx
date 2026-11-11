@@ -17,7 +17,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import CheckoutForm from '../../components/ecommerce/CheckoutForm'
 import PromiseSummaryPanel from '../../components/ecommerce/PromiseSummaryPanel'
 import FulfillmentSuggestionPanel from '../../components/orders/FulfillmentSuggestionPanel'
-import { useCart } from '../../contexts/CartContext'
+import { useCart, lineTotal } from '../../contexts/CartContext'
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
 import { submitOrder, requestQuote } from '../../services/checkoutApi'
 import { estimateTax } from '../../services/ecomPricingApi'
@@ -122,7 +122,7 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           unit: item.unit,
           unitPrice: item.unitPrice,
-          extended: item.extended || (item.unitPrice * item.quantity),
+          extended: lineTotal(item),
           priceSource: item.priceSource,
           estimatedWeight: item.estimatedWeight,
         })),
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
                     sx={{ ml: 0.5, height: 16, fontSize: '0.6rem' }} />
                 </Box>
                 <Typography variant="body2" fontWeight={600} sx={{ flexShrink: 0 }}>
-                  ${(item.extended || (item.unitPrice * item.quantity)).toFixed(2)}
+                  ${lineTotal(item).toFixed(2)}
                 </Typography>
               </Box>
             ))}

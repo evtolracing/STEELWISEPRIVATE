@@ -15,7 +15,7 @@ import {
 } from '@mui/icons-material'
 import { useNavigate, Link } from 'react-router-dom'
 
-import { useCart } from '../../contexts/CartContext'
+import { useCart, lineTotal } from '../../contexts/CartContext'
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
 import { validateCart } from '../../services/cartApi'
 import { evaluatePromise } from '../../services/promiseApi'
@@ -164,7 +164,7 @@ export default function CartPage() {
               </TableHead>
               <TableBody>
                 {items.map(item => {
-                  const lineTotal = (item.extended || (item.unitPrice * (item.quantity || 1)))
+                  const itemTotal = lineTotal(item)
                   return (
                     <TableRow key={item._cartId} hover>
                       <TableCell>
@@ -215,7 +215,7 @@ export default function CartPage() {
                         <Typography variant="caption" color="text.secondary">/{item.unit || 'ea'}</Typography>
                       </TableCell>
                       <TableCell align="right">
-                        <Typography variant="body2" fontWeight={600}>${lineTotal.toFixed(2)}</Typography>
+                        <Typography variant="body2" fontWeight={600}>${itemTotal.toFixed(2)}</Typography>
                       </TableCell>
                       <TableCell>
                         <IconButton size="small" color="error" onClick={() => removeItem(item._cartId)}>

@@ -94,10 +94,16 @@ export function CustomerSessionProvider({ children }) {
       .catch(() => { /* preferences are optional */ })
   }, [session.customerId])
 
-  const value = useMemo(() => ({
-    ...session, locations: LOCATIONS, preferences, prefBadges,
-    setLocation, setDivision, setShipTo, addRecentConfig,
-  }), [session, setLocation, setDivision, setShipTo, addRecentConfig, preferences, prefBadges])
+  const value = useMemo(() => {
+    const v = {
+      ...session, locations: LOCATIONS, preferences, prefBadges,
+      setLocation, setDivision, setShipTo, addRecentConfig,
+    }
+    // Most store pages read `const { session } = useCustomerSession()`, so expose
+    // the same object under `session` as well as flat.
+    v.session = v
+    return v
+  }, [session, setLocation, setDivision, setShipTo, addRecentConfig, preferences, prefBadges])
 
   return <CustomerSessionContext.Provider value={value}>{children}</CustomerSessionContext.Provider>
 }

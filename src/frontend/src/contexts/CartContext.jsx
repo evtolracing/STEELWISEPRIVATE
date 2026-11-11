@@ -14,6 +14,26 @@ function loadCart() {
   } catch { return [] }
 }
 
+/** Identifies a cart line: same product, size and processing. */
+function lineKey(i) {
+  return `${i.productId}_${JSON.stringify(i.dimensions || {})}_${JSON.stringify((i.processing || []).map(p => p.code || p.processId))}`
+}
+
+/**
+ * Line total for the current quantity. Configured items carry an `extended`
+ * price for the quantity they were priced at (pricedQuantity), which scales
+ * with the quantity; simple items are unit price × quantity.
+ */
+export function lineTotal(i) {
+  const qty = Number(i.quantity) || 1
+  const extended = Number(i.extended)
+  if (i.extended != null && Number.isFinite(extended)) {
+    const base = Number(i.pricedQuantity) || qty
+    return Math.round((extended * qty / base) * 100) / 100
+  }
+  return Math.round((Number(i.unitPrice) || 0) * qty * 100) / 100
+}
+
 function saveCart(items) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)) } catch { /* ignore */ }
 }
@@ -24,21 +44,18 @@ export function CartProvider({ children }) {
   useEffect(() => { saveCart(items) }, [items])
 
   const addItem = useCallback((item) => {
+    const quantity = Math.max(1, Number(item.quantity) || 1)
+    // extended was priced for this quantity; remember it so qty changes scale it.
+    const incoming = { ...item, quantity, pricedQuantity: item.extended != null ? quantity : undefined }
     setItems(prev => {
-      // If same productId + same config key, update qty instead of duplicating
-      const key = `${item.productId}_${JSON.stringify(item.config?.dimensions || {})}`
-      const idx = prev.findIndex(i =>
-        `${i.productId}_${JSON.stringify(i.config?.dimensions || {})}` === key
-      )
+      // Same product with the same size and processing: add to that line instead of duplicating
+      const idx = prev.findIndex(i => lineKey(i) === lineKey(incoming))
       if (idx >= 0) {
         const next = [...prev]
-        next[idx] = {
-          ...next[idx],
-          config: { ...next[idx].config, qty: (next[idx].config?.qty || 1) + (item.config?.qty || 1) },
-        }
+        next[idx] = { ...next[idx], quantity: (Number(next[idx].quantity) || 1) + quantity }
         return next
       }
-      return [...prev, { ...item, _cartId: `ci_${Date.now()}_${Math.random().toString(36).slice(2, 6)}` }]
+      return [...prev, { ...incoming, _cartId: `ci_${Date.now()}_${Math.random().toString(36).slice(2, 6)}` }]
     })
   }, [])
 
@@ -53,20 +70,20 @@ export function CartProvider({ children }) {
   const updateItemQty = useCallback((cartId, qty) => {
     setItems(prev => prev.map(i => {
       if (i._cartId !== cartId) return i
-      return { ...i, config: { ...i.config, qty: Math.max(1, qty) } }
+      return { ...i, quantity: Math.max(1, Number(qty) || 1) }
     }))
   }, [])
 
   const clearCart = useCallback(() => { setItems([]) }, [])
 
-  const itemCount = useMemo(() => items.reduce((s, i) => s + (i.config?.qty || 1), 0), [items])
+  const itemCount = useMemo(() => items.reduce((s, i) => s + (Number(i.quantity) || 1), 0), [items])
 
   const subtotal = useMemo(() =>
-    items.reduce((s, i) => s + (i.pricingPreview?.extended || 0), 0), [items]
+    Math.round(items.reduce((s, i) => s + lineTotal(i), 0) * 100) / 100, [items]
   )
 
   const hasReviewRequired = useMemo(() =>
-    items.some(i => i.pricingPreview?.priceSource === 'REVIEW_REQUIRED'), [items]
+    items.some(i => i.priceSource === 'REVIEW_REQUIRED'), [items]
   )
 
   const value = useMemo(() => ({

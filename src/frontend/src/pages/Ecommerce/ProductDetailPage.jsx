@@ -127,14 +127,17 @@ export default function ProductDetailPage() {
       spec: product.spec,
       dimensions: { ...dimensions },
       processing: processingSteps.map(s => ({ processId: s.processId, code: s.code, name: s.name, params: s.params })),
-      unitPrice: pricing.unitPrice,
+      // The cart shows a price per piece; pricing.unitPrice is per pound for weight-priced items.
+      unitPrice: pricing.extended > 0 ? Math.round((pricing.extended / (dimensions.quantity || 1)) * 100) / 100 : pricing.unitPrice,
+      pricePerUnit: pricing.unitPrice,
+      priceUnit: pricing.priceUnit,
       extended: pricing.extended,
       materialCost: pricing.materialCost,
       processingCost: pricing.processingCost,
       priceSource: pricing.priceSource,
       estimatedWeight: pricing.estimatedWeight,
       quantity: dimensions.quantity || 1,
-      unit: product.unit || 'ea',
+      unit: pricing.extended > 0 ? 'ea' : (product.unit || 'ea'),
       warnings: pricing.warnings,
     })
     setSnack({ open: true, msg: `${product.name} added to cart`, severity: 'success' })
@@ -284,8 +287,9 @@ export default function ProductDetailPage() {
             {product.allowCutToSize && (
               <CutToSizeConfigurator
                 product={product}
-                config={dimensions}
-                onChange={setDimensions}
+                // The configurator works on { dimensions, qty }; this page keeps one flat object.
+                config={{ dimensions, qty: dimensions.quantity }}
+                onChange={(c) => setDimensions(prev => ({ ...prev, ...(c.dimensions || {}), quantity: c.qty ?? prev.quantity }))}
               />
             )}
 

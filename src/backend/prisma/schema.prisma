@@ -361,6 +361,7 @@ model Product {
   coils        Coil[]
   orderLines   OrderLine[]
   grade        Grade?      @relation(fields: [gradeId], references: [id])
+  storeListing StoreListing?
 }
 
 model Heat {
@@ -4967,4 +4968,23 @@ model Remnant {
   @@index([grade, form])
   @@index([location])
   @@index([cutDate])
+}
+
+/// How a product appears in the online store. A product without a row is shown with defaults.
+model StoreListing {
+  productId        String   @id
+  visible          Boolean  @default(true)
+  featured         Boolean  @default(false)
+  sortOrder        Int      @default(0)
+  family           String?
+  tags             Json     @default("[]")
+  leadTimeDays     Int?
+  minOrderQty      Int      @default(1)
+  thicknessOptions Json? // ["0.25", "0.5", ...]; null = standard sizes in the product's range
+  widthOptions     Json?
+  lengthOptions    Json?
+  allowCutToSize   Boolean?
+  allowProcessing  Boolean?
+  updatedAt        DateTime @updatedAt
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

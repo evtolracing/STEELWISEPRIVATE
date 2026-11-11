@@ -1,89 +1,32 @@
 /**
  * Inventory API v1 Routes
  * RESTful inventory management with RFID + Etched ID support
- * In-memory data for development
+ * Stored in the InventoryUnit, InventoryTransfer, RfidScanEvent,
+ * InventoryAdjustment, InventoryCatalogItem and InventorySite tables.
  */
 
 import { Router } from 'express';
+import { randomUUID } from 'crypto';
+import {
+  loadInventoryState, saveUnit, saveTransfer, saveRfidEvent, saveAdjustment,
+} from './inventoryV1Store.js';
 
 const router = Router();
 
 // ============================================
-// IN-MEMORY DATABASE
+// DATA
 // ============================================
 
-// Catalog Items (materials available)
-const catalogItems = [
-  { materialCode: 'HR-0125-48', description: 'Hot Rolled 0.125" x 48"', commodity: 'STEEL', form: 'COIL', grade: 'A36', thickness: 0.125, unit: 'LBS' },
-  { materialCode: 'CR-0060-36', description: 'Cold Rolled 0.060" x 36"', commodity: 'STEEL', form: 'SHEET', grade: 'CQ', thickness: 0.060, unit: 'LBS' },
-  { materialCode: 'SS-304-0048-48', description: 'Stainless 304 0.048" x 48"', commodity: 'STAINLESS', form: 'COIL', grade: '304', thickness: 0.048, unit: 'LBS' },
-  { materialCode: 'AL-6061-100', description: 'Aluminum 6061 1.00" Plate', commodity: 'ALUMINUM', form: 'PLATE', grade: '6061-T6', thickness: 1.0, unit: 'LBS' },
-  { materialCode: 'GALV-0060-48', description: 'Galvanized 0.060" x 48"', commodity: 'STEEL', form: 'COIL', grade: 'G90', thickness: 0.060, unit: 'LBS' },
-  { materialCode: 'POLY-HDPE-0500', description: 'HDPE Sheet 0.500"', commodity: 'PLASTICS', form: 'SHEET', grade: 'HDPE', thickness: 0.500, unit: 'LBS' },
-  { materialCode: 'ACRY-CLR-0250', description: 'Acrylic Clear 0.250"', commodity: 'PLASTICS', form: 'SHEET', grade: 'ACRYLIC', thickness: 0.250, unit: 'SQFT' },
-  { materialCode: 'BR-C260-0125', description: 'Brass C260 0.125" Sheet', commodity: 'BRASS', form: 'SHEET', grade: 'C260', thickness: 0.125, unit: 'LBS' },
-];
+// Loaded from the database at the start of each request (see refresh()).
+let catalogItems = [];
+let locations = [];
+let inventoryUnits = [];
+let transfers = [];
+let rfidEvents = [];
 
-// Locations (including work centers, docks, racks)
-const locations = [
-  { id: 'LOC-JACKSON', name: 'Jackson Main', code: 'JAX', address: 'Jackson, MI', type: 'WAREHOUSE' },
-  { id: 'LOC-DETROIT', name: 'Detroit Branch', code: 'DET', address: 'Detroit, MI', type: 'BRANCH' },
-  { id: 'LOC-CHICAGO', name: 'Chicago Hub', code: 'CHI', address: 'Chicago, IL', type: 'HUB' },
-  { id: 'LOC-CLEVELAND', name: 'Cleveland Branch', code: 'CLE', address: 'Cleveland, OH', type: 'BRANCH' },
-  { id: 'LOC-INDIANAPOLIS', name: 'Indianapolis Branch', code: 'IND', address: 'Indianapolis, IN', type: 'BRANCH' },
-  // Work Centers / Racks / Docks within Jackson
-  { id: 'WC-SAW-01', name: 'Saw Station 1', code: 'SAW1', address: 'Jackson, MI', type: 'WORK_CENTER', parentId: 'LOC-JACKSON' },
-  { id: 'WC-SHEAR-02', name: 'Shear Station 2', code: 'SHR2', address: 'Jackson, MI', type: 'WORK_CENTER', parentId: 'LOC-JACKSON' },
-  { id: 'WC-ROUTER-01', name: 'Router Station 1', code: 'RTR1', address: 'Jackson, MI', type: 'WORK_CENTER', parentId: 'LOC-JACKSON' },
-  { id: 'RACK-A12', name: 'Rack A-12', code: 'A12', address: 'Jackson, MI', type: 'RACK', parentId: 'LOC-JACKSON' },
-  { id: 'RACK-B05', name: 'Rack B-05', code: 'B05', address: 'Jackson, MI', type: 'RACK', parentId: 'LOC-JACKSON' },
-  { id: 'DOCK-RECV-01', name: 'Receiving Dock 1', code: 'RD1', address: 'Jackson, MI', type: 'DOCK', parentId: 'LOC-JACKSON' },
-  { id: 'DOCK-SHIP-02', name: 'Shipping Dock 2', code: 'SD2', address: 'Jackson, MI', type: 'DOCK', parentId: 'LOC-JACKSON' },
-  { id: 'STAGE-01', name: 'Staging Area 1', code: 'STG1', address: 'Jackson, MI', type: 'STAGING', parentId: 'LOC-JACKSON' },
-];
-
-// Inventory Units with RFID + Etched IDs
-let inventoryUnits = [
-  // Units WITH RFID + Etched IDs
-  { id: 'INV-001', materialCode: 'HR-0125-48', locationId: 'LOC-JACKSON', division: 'METALS', quantity: 45000, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-HR-001-A7F3', etchedId: 'JAX-HR-2024-00147', lastScanLocationId: 'RACK-A12', lastScanAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-002', materialCode: 'HR-0125-48', locationId: 'LOC-DETROIT', division: 'METALS', quantity: 32000, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-HR-002-B8E4', etchedId: 'DET-HR-2024-00089', lastScanLocationId: 'LOC-DETROIT', lastScanAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-003', materialCode: 'CR-0060-36', locationId: 'LOC-JACKSON', division: 'METALS', quantity: 18500, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-CR-003-C9D5', etchedId: 'JAX-CR-2024-00203', lastScanLocationId: 'RACK-B05', lastScanAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-004', materialCode: 'SS-304-0048-48', locationId: 'LOC-JACKSON', division: 'METALS', quantity: 8200, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-SS-004-D1A6', etchedId: 'JAX-SS-2024-00056', lastScanLocationId: 'WC-SAW-01', lastScanAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-005', materialCode: 'SS-304-0048-48', locationId: 'LOC-CHICAGO', division: 'METALS', quantity: 12400, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-SS-005-E2B7', etchedId: 'CHI-SS-2024-00078', lastScanLocationId: 'LOC-CHICAGO', lastScanAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-006', materialCode: 'AL-6061-100', locationId: 'LOC-DETROIT', division: 'METALS', quantity: 5600, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-AL-006-F3C8', etchedId: 'DET-AL-2024-00034', lastScanLocationId: 'LOC-DETROIT', lastScanAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-007', materialCode: 'GALV-0060-48', locationId: 'LOC-JACKSON', division: 'METALS', quantity: 28000, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-GA-007-G4D9', etchedId: 'JAX-GA-2024-00112', lastScanLocationId: 'DOCK-RECV-01', lastScanAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  // Remnants with RFID
-  { id: 'INV-008', materialCode: 'HR-0125-48', locationId: 'LOC-JACKSON', division: 'METALS', quantity: 1250, unit: 'LBS', isRemnant: true, status: 'AVAILABLE', rfidTagId: 'RFID-HR-008-H5E0', etchedId: 'JAX-HR-2024-00147-R1', lastScanLocationId: 'WC-SHEAR-02', lastScanAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-009', materialCode: 'SS-304-0048-48', locationId: 'LOC-DETROIT', division: 'METALS', quantity: 450, unit: 'LBS', isRemnant: true, status: 'AVAILABLE', rfidTagId: 'RFID-SS-009-I6F1', etchedId: 'DET-SS-2024-00023-R1', lastScanLocationId: 'LOC-DETROIT', lastScanAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  // Plastics
-  { id: 'INV-010', materialCode: 'POLY-HDPE-0500', locationId: 'LOC-JACKSON', division: 'PLASTICS', quantity: 2400, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-PL-010-J7G2', etchedId: 'JAX-PL-2024-00089', lastScanLocationId: 'RACK-A12', lastScanAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-011', materialCode: 'ACRY-CLR-0250', locationId: 'LOC-CHICAGO', division: 'PLASTICS', quantity: 850, unit: 'SQFT', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-AC-011-K8H3', etchedId: 'CHI-AC-2024-00045', lastScanLocationId: 'LOC-CHICAGO', lastScanAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-012', materialCode: 'BR-C260-0125', locationId: 'LOC-JACKSON', division: 'METALS', quantity: 1800, unit: 'LBS', isRemnant: false, status: 'AVAILABLE', rfidTagId: 'RFID-BR-012-L9I4', etchedId: 'JAX-BR-2024-00021', lastScanLocationId: 'STAGE-01', lastScanAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  // Allocated/Hold status
-  { id: 'INV-013', materialCode: 'HR-0125-48', locationId: 'LOC-CHICAGO', division: 'METALS', quantity: 22000, unit: 'LBS', isRemnant: false, status: 'ALLOCATED', rfidTagId: 'RFID-HR-013-M0J5', etchedId: 'CHI-HR-2024-00156', lastScanLocationId: 'LOC-CHICAGO', lastScanAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  { id: 'INV-014', materialCode: 'CR-0060-36', locationId: 'LOC-DETROIT', division: 'METALS', quantity: 9800, unit: 'LBS', isRemnant: false, status: 'ON_HOLD', rfidTagId: 'RFID-CR-014-N1K6', etchedId: 'DET-CR-2024-00067', lastScanLocationId: 'LOC-DETROIT', lastScanAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-  // In-process at work center
-  { id: 'INV-015', materialCode: 'SS-304-0048-48', locationId: 'LOC-JACKSON', division: 'METALS', quantity: 3200, unit: 'LBS', isRemnant: false, status: 'IN_PROCESS', rfidTagId: 'RFID-SS-015-O2L7', etchedId: 'JAX-SS-2024-00099', lastScanLocationId: 'WC-ROUTER-01', lastScanAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), lastUpdated: new Date().toISOString() },
-];
-
-// Transfers
-let transfers = [
-  { id: 'TRF-001', fromLocationId: 'LOC-JACKSON', toLocationId: 'LOC-DETROIT', materialCode: 'SS-304-0048-48', quantity: 2000, status: 'IN_TRANSIT', eta: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
-  { id: 'TRF-002', fromLocationId: 'LOC-CHICAGO', toLocationId: 'LOC-JACKSON', materialCode: 'HR-0125-48', quantity: 15000, status: 'REQUESTED', eta: null, createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString() },
-  { id: 'TRF-003', fromLocationId: 'LOC-DETROIT', toLocationId: 'LOC-CLEVELAND', materialCode: 'AL-6061-100', quantity: 800, status: 'COMPLETED', eta: null, createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
-];
-
-// RFID Events log
-let rfidEvents = [
-  { id: 'EVT-001', rfidTagId: 'RFID-HR-001-A7F3', inventoryId: 'INV-001', locationId: 'DOCK-RECV-01', eventType: 'SEEN', createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
-  { id: 'EVT-002', rfidTagId: 'RFID-HR-001-A7F3', inventoryId: 'INV-001', locationId: 'RACK-A12', eventType: 'SEEN', createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
-  { id: 'EVT-003', rfidTagId: 'RFID-SS-004-D1A6', inventoryId: 'INV-004', locationId: 'RACK-A12', eventType: 'SEEN', createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
-  { id: 'EVT-004', rfidTagId: 'RFID-SS-004-D1A6', inventoryId: 'INV-004', locationId: 'WC-SAW-01', eventType: 'SEEN', createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString() },
-  { id: 'EVT-005', rfidTagId: 'RFID-GA-007-G4D9', inventoryId: 'INV-007', locationId: 'DOCK-RECV-01', eventType: 'ATTACHED', createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString() },
-];
-
-// Adjustment History
-let adjustments = [];
+async function refresh() {
+  ({ catalogItems, locations, inventoryUnits, transfers, rfidEvents } = await loadInventoryState());
+}
 
 // ============================================
 // HELPER FUNCTIONS
@@ -98,7 +41,7 @@ function getLocation(locationId) {
 }
 
 function generateId(prefix) {
-  return `${prefix}-${Date.now().toString(36).toUpperCase()}`;
+  return `${prefix}-${randomUUID().slice(0, 8).toUpperCase()}`;
 }
 
 // ============================================
@@ -106,8 +49,9 @@ function generateId(prefix) {
 // ============================================
 
 // GET /v1/inventory - List inventory units with filters (including RFID/etchedId)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
+    await refresh();
     const { materialCode, locationId, division, isRemnant, status, rfidTagId, etchedId } = req.query;
     
     let filtered = [...inventoryUnits];
@@ -155,18 +99,29 @@ router.get('/', (req, res) => {
 });
 
 // GET /v1/inventory/locations - Get all locations
-router.get('/locations', (req, res) => {
-  res.json(locations);
+router.get('/locations', async (req, res) => {
+  try {
+    await refresh();
+    res.json(locations);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch locations' });
+  }
 });
 
 // GET /v1/inventory/catalog - Get catalog items
-router.get('/catalog', (req, res) => {
-  res.json(catalogItems);
+router.get('/catalog', async (req, res) => {
+  try {
+    await refresh();
+    res.json(catalogItems);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch catalog' });
+  }
 });
 
 // GET /v1/inventory/summary - Inventory summary stats
-router.get('/summary', (req, res) => {
+router.get('/summary', async (req, res) => {
   try {
+    await refresh();
     const totalUnits = inventoryUnits.length;
     const totalQuantity = inventoryUnits.reduce((sum, inv) => sum + inv.quantity, 0);
     const remnantCount = inventoryUnits.filter(inv => inv.isRemnant).length;
@@ -212,8 +167,9 @@ router.get('/summary', (req, res) => {
 });
 
 // GET /v1/inventory/transfers - List all transfers
-router.get('/transfers', (req, res) => {
+router.get('/transfers', async (req, res) => {
   try {
+    await refresh();
     const { status } = req.query;
     let filtered = [...transfers];
     
@@ -236,8 +192,9 @@ router.get('/transfers', (req, res) => {
 });
 
 // GET /v1/inventory/:id - Get single inventory unit
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
+    await refresh();
     const { id } = req.params;
     const inventoryUnit = inventoryUnits.find(inv => inv.id === id);
     
@@ -270,8 +227,9 @@ router.get('/:id', (req, res) => {
 });
 
 // POST /v1/inventory/adjust - Adjust inventory quantity
-router.post('/adjust', (req, res) => {
+router.post('/adjust', async (req, res) => {
   try {
+    await refresh();
     const { inventoryId, deltaQuantity, reason } = req.body;
     
     if (!inventoryId || deltaQuantity === undefined) {
@@ -303,7 +261,8 @@ router.post('/adjust', (req, res) => {
       reason: reason || 'Manual adjustment',
       timestamp: new Date().toISOString(),
     };
-    adjustments.push(adjustment);
+    await saveUnit(inventoryUnits[index]);
+    await saveAdjustment(adjustment);
     
     res.json({
       ...inventoryUnits[index],
@@ -322,8 +281,9 @@ router.post('/adjust', (req, res) => {
 // ============================================
 
 // POST /v1/inventory/rfid-scan - Record an RFID scan event
-router.post('/rfid-scan', (req, res) => {
+router.post('/rfid-scan', async (req, res) => {
   try {
+    await refresh();
     const { rfidTagId, locationId, timestamp, eventType = 'SEEN' } = req.body;
     
     if (!rfidTagId || !locationId) {
@@ -340,6 +300,7 @@ router.post('/rfid-scan', (req, res) => {
       inventoryUnits[inventoryIndex].lastScanAt = timestamp || new Date().toISOString();
       inventoryUnits[inventoryIndex].lastUpdated = new Date().toISOString();
       inventoryUnit = inventoryUnits[inventoryIndex];
+      await saveUnit(inventoryUnit);
     }
     
     // Create RFID event
@@ -352,6 +313,7 @@ router.post('/rfid-scan', (req, res) => {
       createdAt: timestamp || new Date().toISOString(),
     };
     rfidEvents.push(event);
+    await saveRfidEvent(event);
     
     res.json({
       inventory: inventoryUnit ? {
@@ -373,8 +335,9 @@ router.post('/rfid-scan', (req, res) => {
 });
 
 // GET /v1/inventory/rfid/:rfidTagId - Lookup inventory by RFID tag
-router.get('/rfid/:rfidTagId', (req, res) => {
+router.get('/rfid/:rfidTagId', async (req, res) => {
   try {
+    await refresh();
     const { rfidTagId } = req.params;
     
     const inventoryUnit = inventoryUnits.find(inv => inv.rfidTagId === rfidTagId);
@@ -419,8 +382,9 @@ router.get('/rfid/:rfidTagId', (req, res) => {
 });
 
 // GET /v1/inventory/etched/:etchedId - Lookup inventory by etched ID
-router.get('/etched/:etchedId', (req, res) => {
+router.get('/etched/:etchedId', async (req, res) => {
   try {
+    await refresh();
     const { etchedId } = req.params;
     
     const inventoryUnit = inventoryUnits.find(inv => 
@@ -465,8 +429,9 @@ router.get('/etched/:etchedId', (req, res) => {
 // ============================================
 
 // POST /v1/inventory/transfers - Create new transfer
-router.post('/transfers', (req, res) => {
+router.post('/transfers', async (req, res) => {
   try {
+    await refresh();
     const { fromLocationId, toLocationId, materialCode, quantity } = req.body;
     
     if (!fromLocationId || !toLocationId || !materialCode || !quantity) {
@@ -498,6 +463,7 @@ router.post('/transfers', (req, res) => {
     };
     
     transfers.push(transfer);
+    await saveTransfer(transfer);
     
     res.status(201).json({
       ...transfer,
@@ -511,8 +477,9 @@ router.post('/transfers', (req, res) => {
 });
 
 // POST /v1/inventory/transfers/:id/status - Update transfer status
-router.post('/transfers/:id/status', (req, res) => {
+router.post('/transfers/:id/status', async (req, res) => {
   try {
+    await refresh();
     const { id } = req.params;
     const { status, eta } = req.body;
     
@@ -524,6 +491,9 @@ router.post('/transfers/:id/status', (req, res) => {
     const validStatuses = ['REQUESTED', 'APPROVED', 'IN_TRANSIT', 'COMPLETED', 'CANCELLED'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+    if (['COMPLETED', 'CANCELLED'].includes(transfers[index].status)) {
+      return res.status(409).json({ error: `Transfer is already ${transfers[index].status}` });
     }
     
     transfers[index].status = status;
@@ -542,6 +512,7 @@ router.post('/transfers/:id/status', (req, res) => {
       if (sourceIdx !== -1) {
         inventoryUnits[sourceIdx].quantity -= transfer.quantity;
         inventoryUnits[sourceIdx].lastUpdated = new Date().toISOString();
+        await saveUnit(inventoryUnits[sourceIdx]);
       }
       
       // Increase destination inventory (or create new)
@@ -551,10 +522,11 @@ router.post('/transfers/:id/status', (req, res) => {
       if (destIdx !== -1) {
         inventoryUnits[destIdx].quantity += transfer.quantity;
         inventoryUnits[destIdx].lastUpdated = new Date().toISOString();
+        await saveUnit(inventoryUnits[destIdx]);
       } else {
         // Create new inventory at destination
         const catalogItem = getCatalogItem(transfer.materialCode);
-        inventoryUnits.push({
+        const newUnit = {
           id: generateId('INV'),
           materialCode: transfer.materialCode,
           locationId: transfer.toLocationId,
@@ -568,9 +540,12 @@ router.post('/transfers/:id/status', (req, res) => {
           lastScanLocationId: null,
           lastScanAt: null,
           lastUpdated: new Date().toISOString(),
-        });
+        };
+        inventoryUnits.push(newUnit);
+        await saveUnit(newUnit);
       }
     }
+    await saveTransfer(transfers[index]);
     
     res.json({
       ...transfers[index],
@@ -587,8 +562,9 @@ router.post('/transfers/:id/status', (req, res) => {
 // AI INVENTORY ASSISTANT ENDPOINT
 // ============================================
 
-router.post('/ai-assistant', (req, res) => {
+router.post('/ai-assistant', async (req, res) => {
   try {
+    await refresh();
     const { user, query, context } = req.body;
     
     if (!query) {

@@ -12,6 +12,10 @@ import prisma from '../../lib/db.js';
 import { executiveDecisions } from './executiveDecisions.js';
 import { buildOrderHubDemoData } from './orderHubData.js';
 import { exceptionEvents } from './exceptionEvents.js';
+import { buildInventoryV1DemoData } from './inventoryV1Data.js';
+import {
+  saveCatalogItem, saveSite, saveUnit, saveTransfer, saveRfidEvent,
+} from '../../routes/inventoryV1Store.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -202,6 +206,17 @@ async function seedShopFloor() {
   return { workCenters: demoWorkCenters.length, orders: orderIds.size, jobs: demoJobs.length };
 }
 
+async function seedInventoryV1() {
+  const { catalogItems, locations, inventoryUnits, transfers, rfidEvents } = buildInventoryV1DemoData();
+  for (const item of catalogItems) await saveCatalogItem(item);
+  for (const site of locations) await saveSite(site);
+  for (const unit of inventoryUnits) await saveUnit(unit);
+  for (const transfer of transfers) await saveTransfer(transfer);
+  for (const event of rfidEvents) await saveRfidEvent(event);
+  console.log(`  v1 inventory: ${catalogItems.length} materials, ${locations.length} sites, ${inventoryUnits.length} units, ${transfers.length} transfers, ${rfidEvents.length} RFID scans`);
+  return { materials: catalogItems.length, sites: locations.length, units: inventoryUnits.length, transfers: transfers.length, rfidScans: rfidEvents.length };
+}
+
 /**
  * Loads all demo data. Returns a summary of what was loaded.
  */
@@ -213,6 +228,7 @@ export async function seedDemo() {
   const orderHub = await seedOrderHub();
   const exceptions = await seedExceptions();
   const shopFloor = await seedShopFloor();
+  const inventoryV1 = await seedInventoryV1();
   console.log('Done.');
-  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub, exceptions, shopFloor };
+  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub, exceptions, shopFloor, inventoryV1 };
 }

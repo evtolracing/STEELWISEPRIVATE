@@ -4765,3 +4765,68 @@ model ExceptionEvent {
   @@index([locationId, occurredAt])
   @@index([acknowledged, occurredAt])
 }
+
+// ---------------------------------------------------------------------------
+// v1 inventory (RFID / etched-ID tracking). `data` holds the full API record;
+// the columns are the fields the routes look up by.
+// ---------------------------------------------------------------------------
+
+model InventoryCatalogItem {
+  materialCode String   @id
+  data         Json
+  updatedAt    DateTime @updatedAt
+}
+
+model InventorySite {
+  id        String   @id
+  type      String
+  parentId  String?
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+model InventoryUnit {
+  id           String   @id
+  materialCode String
+  locationId   String
+  status       String
+  rfidTagId    String?
+  etchedId     String?
+  data         Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([locationId, materialCode])
+  @@index([rfidTagId])
+  @@index([etchedId])
+}
+
+model InventoryTransfer {
+  id        String   @id
+  status    String
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model RfidScanEvent {
+  id          String   @id
+  rfidTagId   String
+  inventoryId String?
+  occurredAt  DateTime
+  data        Json
+
+  @@index([rfidTagId, occurredAt])
+  @@index([inventoryId])
+}
+
+model InventoryAdjustment {
+  id          String   @id
+  inventoryId String
+  data        Json
+  createdAt   DateTime @default(now())
+
+  @@index([inventoryId])
+}

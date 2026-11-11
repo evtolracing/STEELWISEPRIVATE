@@ -20,6 +20,7 @@ import {
 } from '../../routes/inventoryV1Store.js';
 import { demoPriceLevels, demoTaxRates, demoProcesses, demoTemplates } from './intakeSetup.js';
 import { demoGrades, demoProducts, demoStock } from './catalog.js';
+import { demoOnlineOrders } from './onlineOrders.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -294,6 +295,15 @@ async function seedIntakeSetup() {
  * parts are small enough to finish inside one serverless request. Order
  * matters only for "catalog", which stocks the location "shop-floor" creates.
  */
+/** Reset the demo web orders to their starting state (re-running reopens them). */
+async function seedOnlineOrders() {
+  for (const { id, ...o } of demoOnlineOrders) {
+    const data = { ...o, holdReason: o.holdReason || null, rejectReason: null, internalOrderId: null, decidedAt: null, customerId: null };
+    await prisma.onlineOrder.upsert({ where: { id }, update: data, create: { id, ...data } });
+  }
+  return demoOnlineOrders.length;
+}
+
 export const DEMO_PARTS = {
   customers: async () => { await seedCustomers(); return customers.length; },
   executive: async () => { await seedExecutive(); return { executiveDecisions: executiveDecisions.length, scenarios: 1 }; },
@@ -303,6 +313,7 @@ export const DEMO_PARTS = {
   'inventory-v1': seedInventoryV1,
   catalog: seedCatalog,
   'intake-setup': seedIntakeSetup,
+  'online-orders': seedOnlineOrders,
 };
 
 /**

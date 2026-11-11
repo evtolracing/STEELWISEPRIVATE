@@ -12,6 +12,7 @@ import prisma from '../../lib/db.js';
 import { executiveDecisions } from './executiveDecisions.js';
 import { buildOrderHubDemoData } from './orderHubData.js';
 import { exceptionEvents } from './exceptionEvents.js';
+import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
   {
@@ -162,6 +163,45 @@ async function seedExceptions() {
   return exceptionEvents.length;
 }
 
+async function seedShopFloor() {
+  const now = Date.now();
+  const hours = (h) => new Date(now + h * 60 * 60 * 1000);
+  const owner = await prisma.organization.upsert({ where: { code: demoOwner.code }, update: demoOwner, create: demoOwner });
+  const locData = { ...demoLocation, ownerId: owner.id };
+  const location = await prisma.location.upsert({ where: { code: demoLocation.code }, update: locData, create: locData });
+
+  for (const { id, division, ...wc } of demoWorkCenters) {
+    const data = { ...wc, locationId: location.id, isActive: true, capacity: { division, shiftCapacityMinutesPerDay: 480 } };
+    await prisma.workCenter.upsert({ where: { id }, update: data, create: { id, ...data } });
+  }
+
+  // Sales orders need a creator; use the oldest user. Without one, jobs get no due date.
+  const creator = await prisma.user.findFirst({ orderBy: { createdAt: 'asc' }, select: { id: true } });
+  const orderIds = new Set();
+  if (creator) {
+    for (const { id, dueInHours, ...o } of demoOrders) {
+      const data = { ...o, orderType: 'SO', status: 'CONFIRMED', sellerId: owner.id, promisedDate: hours(dueInHours), requiredDate: hours(dueInHours), createdById: creator.id };
+      await prisma.order.upsert({ where: { id }, update: data, create: { id, ...data } });
+      orderIds.add(id);
+    }
+  }
+
+  // Jobs go back to the unplanned queue on every run; start/end only carry the run time.
+  for (const { id, minutes, orderId, ...job } of demoJobs) {
+    const data = {
+      ...job,
+      orderId: orderIds.has(orderId) ? orderId : null,
+      status: 'SCHEDULED',
+      workCenterId: null,
+      scheduledStart: hours(0),
+      scheduledEnd: hours(minutes / 60),
+    };
+    await prisma.job.upsert({ where: { id }, update: data, create: { id, ...data } });
+  }
+  console.log(`  shop floor: ${demoWorkCenters.length} work centers, ${orderIds.size} orders, ${demoJobs.length} jobs`);
+  return { workCenters: demoWorkCenters.length, orders: orderIds.size, jobs: demoJobs.length };
+}
+
 /**
  * Loads all demo data. Returns a summary of what was loaded.
  */
@@ -172,6 +212,7 @@ export async function seedDemo() {
   await seedExecutive();
   const orderHub = await seedOrderHub();
   const exceptions = await seedExceptions();
+  const shopFloor = await seedShopFloor();
   console.log('Done.');
-  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub, exceptions };
+  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub, exceptions, shopFloor };
 }

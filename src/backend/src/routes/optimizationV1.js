@@ -4,127 +4,96 @@
  */
 
 import { Router } from 'express';
+import prisma from '../lib/db.js';
 
 const router = Router();
 
 // ============================================
-// IN-MEMORY SAMPLE DATA
+// DATA (Job and WorkCenter tables)
 // ============================================
 
-// Sample jobs for optimization
-let sampleJobs = [
-  {
-    id: 'JOB-001',
-    jobNumber: 'J-2026-001',
-    orderId: 'ORD-001',
-    orderLineId: 'OL-001',
-    materialCode: 'AL-6061-100',
-    commodity: 'ALUMINUM',
-    form: 'PLATE',
-    grade: '6061-T6',
-    thickness: 1.0,
-    division: 'METALS',
-    locationId: 'LOC-JACKSON',
-    workCenterType: 'SAW',
-    workCenterId: null,
-    status: 'SCHEDULED',
-    scheduledStart: null,
-    scheduledEnd: null,
-    estimatedMinutes: 25,
-    priority: 'HOT',
-    dueDate: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
-    recipeId: 'BOM-001',
-    recipeVersion: 1,
-    hasCustomRouting: false,
-  },
-  {
-    id: 'JOB-002',
-    jobNumber: 'J-2026-002',
-    orderId: 'ORD-002',
-    orderLineId: 'OL-002',
-    materialCode: 'HR-0125-48',
-    commodity: 'STEEL',
-    form: 'SHEET',
-    grade: 'A36',
-    thickness: 0.125,
-    division: 'METALS',
-    locationId: 'LOC-JACKSON',
-    workCenterType: 'SHEAR',
-    workCenterId: null,
-    status: 'SCHEDULED',
-    scheduledStart: null,
-    scheduledEnd: null,
-    estimatedMinutes: 18,
-    priority: 'NORMAL',
-    dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    recipeId: 'BOM-002',
-    recipeVersion: 1,
-    hasCustomRouting: false,
-  },
-  {
-    id: 'JOB-003',
-    jobNumber: 'J-2026-003',
-    orderId: 'ORD-003',
-    orderLineId: 'OL-003',
-    materialCode: 'ACRY-CLR-0250',
-    commodity: 'PLASTICS',
-    form: 'SHEET',
-    grade: 'ACRYLIC',
-    thickness: 0.250,
-    division: 'PLASTICS',
-    locationId: 'LOC-JACKSON',
-    workCenterType: 'ROUTER',
-    workCenterId: null,
-    status: 'SCHEDULED',
-    scheduledStart: null,
-    scheduledEnd: null,
-    estimatedMinutes: 35,
-    priority: 'RUSH',
-    dueDate: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
-    recipeId: 'BOM-004',
-    recipeVersion: 1,
-    hasCustomRouting: false,
-  },
-];
+const PRIORITY_INT_TO_STRING = { 1: 'LOW', 2: 'LOW', 3: 'NORMAL', 4: 'RUSH', 5: 'HOT' };
+const DEFAULT_SHIFT_MINUTES = 480;
+const DEFAULT_JOB_MINUTES = 60;
+const MAX_JOBS = 1000;
 
-let sampleWorkCenters = [
-  {
-    id: 'WC-SAW-01',
-    name: 'Saw #1',
-    locationId: 'LOC-JACKSON',
-    division: 'METALS',
-    workCenterType: 'SAW',
-    shiftCapacityMinutesPerDay: 480,
-    isOnline: true,
-  },
-  {
-    id: 'WC-SAW-02',
-    name: 'Saw #2',
-    locationId: 'LOC-JACKSON',
-    division: 'METALS',
-    workCenterType: 'SAW',
-    shiftCapacityMinutesPerDay: 480,
-    isOnline: true,
-  },
-  {
-    id: 'WC-SHEAR-01',
-    name: 'Shear #1',
-    locationId: 'LOC-JACKSON',
-    division: 'METALS',
-    workCenterType: 'SHEAR',
-    shiftCapacityMinutesPerDay: 480,
-    isOnline: true,
-  },
-  {
-    id: 'WC-ROUTER-01',
-    name: 'Router #1',
-    locationId: 'LOC-JACKSON',
-    division: 'PLASTICS',
-    workCenterType: 'ROUTER',
-    shiftCapacityMinutesPerDay: 480,
-    isOnline: true,
-  },
-];
+const upper = (v) => (v ? String(v).toUpperCase() : null);
+
+function toWorkCenter(wc) {
+  const capacity = wc.capacity && typeof wc.capacity === 'object' ? wc.capacity : {};
+  return {
+    id: wc.id,
+    name: wc.name,
+    locationId: wc.locationId,
+    division: capacity.division || null,
+    workCenterType: upper(wc.type),
+    shiftCapacityMinutesPerDay: Number(capacity.shiftCapacityMinutesPerDay) || DEFAULT_SHIFT_MINUTES,
+    isOnline: wc.isActive,
+  };
+}
+
+function toJob(job) {
+  const start = job.scheduledStart ? job.scheduledStart.getTime() : null;
+  const end = job.scheduledEnd ? job.scheduledEnd.getTime() : null;
+  const minutes = start && end && end > start ? Math.round((end - start) / 60000) : DEFAULT_JOB_MINUTES;
+  const due = job.order?.promisedDate || job.order?.requiredDate || null;
+  const wcCapacity = job.workCenter?.capacity && typeof job.workCenter.capacity === 'object' ? job.workCenter.capacity : {};
+  return {
+    id: job.id,
+    jobNumber: job.jobNumber,
+    orderId: job.orderId,
+    orderLineId: job.orderLineId,
+    grade: job.gradeOverride,
+    thickness: job.thicknessIn != null ? Number(job.thicknessIn) : null,
+    division: wcCapacity.division || null,
+    locationId: job.workCenter?.locationId || null,
+    workCenterType: upper(job.operationType) || upper(job.workCenter?.type),
+    workCenterId: job.workCenterId,
+    status: job.status,
+    scheduledStart: job.scheduledStart ? job.scheduledStart.toISOString() : null,
+    scheduledEnd: job.scheduledEnd ? job.scheduledEnd.toISOString() : null,
+    estimatedMinutes: minutes,
+    priority: PRIORITY_INT_TO_STRING[job.priority] || 'NORMAL',
+    dueDate: due ? due.toISOString() : null,
+    recipeId: job.recipeId,
+    recipeVersion: job.recipeVersion,
+    hasCustomRouting: job.hasCustomRouting,
+  };
+}
+
+/** Open jobs (scheduled or ordered) and all work centers, in optimizer shape. */
+async function loadPlanningData(jobIds) {
+  const where = { status: { in: ['SCHEDULED', 'ORDERED'] } };
+  if (Array.isArray(jobIds) && jobIds.length > 0) where.id = { in: jobIds };
+  const [jobs, workCenters] = await Promise.all([
+    prisma.job.findMany({
+      where,
+      take: MAX_JOBS,
+      orderBy: [{ priority: 'desc' }, { createdAt: 'asc' }],
+      include: {
+        order: { select: { promisedDate: true, requiredDate: true } },
+        workCenter: { select: { type: true, locationId: true, capacity: true } },
+      },
+    }),
+    prisma.workCenter.findMany({ orderBy: { name: 'asc' } }),
+  ]);
+  const wcs = workCenters.map(toWorkCenter);
+
+  // A job not yet on a work center takes the division and location that every
+  // work center of its type shares, so division/location filters still apply.
+  const byType = {};
+  for (const wc of wcs) (byType[wc.workCenterType] ||= []).push(wc);
+  const shared = (list, key) => {
+    const values = new Set((list || []).map(w => w[key]));
+    return values.size === 1 ? [...values][0] : null;
+  };
+  const planned = jobs.map(toJob).map(j => ({
+    ...j,
+    division: j.division ?? shared(byType[j.workCenterType], 'division'),
+    locationId: j.locationId ?? shared(byType[j.workCenterType], 'locationId'),
+  }));
+  return { jobs: planned, workCenters: wcs };
+}
 
 // ============================================
 // OPTIMIZATION LOGIC (SIMULATED AI)
@@ -141,8 +110,9 @@ function calculatePriorityScore(job) {
   };
   
   const now = Date.now();
-  const dueDate = new Date(job.dueDate).getTime();
-  const hoursUntilDue = (dueDate - now) / (1000 * 60 * 60);
+  const hoursUntilDue = job.dueDate
+    ? (new Date(job.dueDate).getTime() - now) / (1000 * 60 * 60)
+    : Infinity; // no due date: lowest urgency
   
   // Urgency score (higher = more urgent)
   const urgencyScore = hoursUntilDue < 8 ? 100 : 
@@ -159,13 +129,13 @@ function optimizeSchedule(jobs, workCenters, options = {}) {
   
   // Filter jobs
   let filteredJobs = jobs.filter(j => j.status === 'SCHEDULED' || j.status === 'ORDERED');
-  if (locationId) filteredJobs = filteredJobs.filter(j => j.locationId === locationId);
-  if (division) filteredJobs = filteredJobs.filter(j => j.division === division);
+  if (locationId) filteredJobs = filteredJobs.filter(j => !j.locationId || j.locationId === locationId);
+  if (division) filteredJobs = filteredJobs.filter(j => !j.division || j.division === division);
   
   // Filter work centers
   let filteredWCs = workCenters.filter(wc => wc.isOnline);
   if (locationId) filteredWCs = filteredWCs.filter(wc => wc.locationId === locationId);
-  if (division) filteredWCs = filteredWCs.filter(wc => wc.division === division);
+  if (division) filteredWCs = filteredWCs.filter(wc => !wc.division || wc.division === division);
   
   // Calculate priority scores
   const scoredJobs = filteredJobs.map(job => ({
@@ -250,9 +220,10 @@ function optimizeSchedule(jobs, workCenters, options = {}) {
   // Calculate metrics
   const totalCapacityMinutes = filteredWCs.reduce((sum, wc) => sum + wc.shiftCapacityMinutesPerDay, 0);
   const totalScheduledMinutes = optimizedJobs.reduce((sum, job) => sum + job.estimatedMinutes, 0);
-  const overallUtilization = (totalScheduledMinutes / totalCapacityMinutes) * 100;
+  const overallUtilization = totalCapacityMinutes > 0 ? (totalScheduledMinutes / totalCapacityMinutes) * 100 : 0;
   
   const jobsAtRisk = optimizedJobs.filter(job => {
+    if (!job.dueDate) return false;
     const dueDate = new Date(job.dueDate);
     const scheduledEnd = new Date(job.scheduledEnd);
     return scheduledEnd > dueDate;
@@ -320,17 +291,12 @@ function generateRecommendations(bottlenecks, jobsAtRisk, unassignedJobs) {
 // ============================================
 
 // POST /v1/ai/work-order-optimize/preview
-router.post('/preview', (req, res) => {
+router.post('/preview', async (req, res) => {
   try {
-    const { locationId, division, horizonHours, jobIds } = req.body;
-    
-    // Use provided jobs or sample data
-    let jobsToOptimize = sampleJobs;
-    if (jobIds && jobIds.length > 0) {
-      jobsToOptimize = sampleJobs.filter(j => jobIds.includes(j.id));
-    }
-    
-    const result = optimizeSchedule(jobsToOptimize, sampleWorkCenters, {
+    const { locationId, division, horizonHours, jobIds } = req.body || {};
+    const { jobs, workCenters } = await loadPlanningData(jobIds);
+
+    const result = optimizeSchedule(jobs, workCenters, {
       locationId,
       division,
       horizonHours: horizonHours || 72,
@@ -348,21 +314,46 @@ router.post('/preview', (req, res) => {
 });
 
 // POST /v1/ai/work-order-optimize/apply
-router.post('/apply', (req, res) => {
+// Writes the previewed work center and start/end times onto each job.
+router.post('/apply', async (req, res) => {
   try {
-    const { optimizedJobs } = req.body;
+    const { optimizedJobs } = req.body || {};
     
     if (!optimizedJobs || !Array.isArray(optimizedJobs)) {
       return res.status(400).json({ error: 'optimizedJobs array is required' });
     }
-    
-    // In a real system, this would update the database
-    // For now, just acknowledge the apply
+
+    const ids = optimizedJobs.map(j => j?.id).filter(Boolean);
+    const wcIds = [...new Set(optimizedJobs.map(j => j?.workCenterId).filter(Boolean))];
+    const [existingJobs, existingWcs] = await Promise.all([
+      prisma.job.findMany({ where: { id: { in: ids } }, select: { id: true } }),
+      prisma.workCenter.findMany({ where: { id: { in: wcIds } }, select: { id: true } }),
+    ]);
+    const jobSet = new Set(existingJobs.map(j => j.id));
+    const wcSet = new Set(existingWcs.map(w => w.id));
+    const validDate = (v) => (v && !Number.isNaN(new Date(v).getTime()) ? new Date(v) : undefined);
+
+    const updates = [];
+    const skipped = [];
+    for (const j of optimizedJobs) {
+      if (!j?.id || !jobSet.has(j.id)) { skipped.push({ id: j?.id ?? null, reason: 'Job not found' }); continue; }
+      if (j.workCenterId && !wcSet.has(j.workCenterId)) { skipped.push({ id: j.id, reason: 'Work center not found' }); continue; }
+      updates.push(prisma.job.update({
+        where: { id: j.id },
+        data: {
+          workCenterId: j.workCenterId || null,
+          scheduledStart: validDate(j.scheduledStart),
+          scheduledEnd: validDate(j.scheduledEnd),
+        },
+      }));
+    }
+    if (updates.length) await prisma.$transaction(updates);
     
     res.json({
       success: true,
-      message: `Applied schedule to ${optimizedJobs.length} jobs`,
-      appliedCount: optimizedJobs.length,
+      message: `Applied schedule to ${updates.length} jobs`,
+      appliedCount: updates.length,
+      skipped,
     });
   } catch (error) {
     console.error('Error applying optimization:', error);
@@ -371,11 +362,12 @@ router.post('/apply', (req, res) => {
 });
 
 // GET /v1/ai/work-order-optimize/analysis
-router.get('/analysis', (req, res) => {
+router.get('/analysis', async (req, res) => {
   try {
     const { locationId, division } = req.query;
+    const { jobs, workCenters } = await loadPlanningData();
     
-    const result = optimizeSchedule(sampleJobs, sampleWorkCenters, {
+    const result = optimizeSchedule(jobs, workCenters, {
       locationId,
       division,
     });
@@ -400,13 +392,14 @@ router.get('/analysis', (req, res) => {
 });
 
 // POST /v1/ai/work-order-optimize/simulate
-router.post('/simulate', (req, res) => {
+router.post('/simulate', async (req, res) => {
   try {
-    const { scenario, modifications } = req.body;
+    const { scenario, modifications } = req.body || {};
+    const { jobs, workCenters } = await loadPlanningData();
     
-    // Simulate what-if scenarios
-    let modifiedJobs = [...sampleJobs];
-    let modifiedWorkCenters = [...sampleWorkCenters];
+    // Simulate what-if scenarios on copies; nothing is saved
+    const modifiedJobs = jobs.map(j => ({ ...j }));
+    const modifiedWorkCenters = [...workCenters];
     
     if (modifications?.addWorkCenter) {
       modifiedWorkCenters.push(modifications.addWorkCenter);
@@ -419,7 +412,7 @@ router.post('/simulate', (req, res) => {
       });
     }
     
-    const baseline = optimizeSchedule(sampleJobs, sampleWorkCenters);
+    const baseline = optimizeSchedule(jobs, workCenters);
     const simulated = optimizeSchedule(modifiedJobs, modifiedWorkCenters);
     
     res.json({

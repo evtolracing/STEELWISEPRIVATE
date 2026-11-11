@@ -1,13 +1,18 @@
-import { v4 as uuidv4 } from 'uuid';
-import { contacts, rfqs, quotes, orders, jobs } from './orderHubStore.js';
+/**
+ * Demo OrderHub data (contacts, RFQs, quotes, orders, jobs), loaded by the
+ * demo seed. Ids are fixed so re-running the seed updates instead of
+ * duplicating.
+ */
+let counter = 0;
+const uuidv4 = () => `00000000-0000-4000-8000-${String(++counter).padStart(12, '0')}`;
 
-export function initOrderHubData() {
-  // Clear existing data
-  contacts.length = 0;
-  rfqs.length = 0;
-  quotes.length = 0;
-  orders.length = 0;
-  jobs.length = 0;
+export function buildOrderHubDemoData() {
+  counter = 0;
+  const contacts = [];
+  const rfqs = [];
+  const quotes = [];
+  const orders = [];
+  const jobs = [];
 
   // ============================================================================
   // SEED CONTACTS
@@ -303,13 +308,7 @@ export function initOrderHubData() {
 
   jobs.push(job1);
 
-  console.log('✅ OrderHub seed data initialized:', {
-    contacts: contacts.length,
-    rfqs: rfqs.length,
-    quotes: quotes.length,
-    orders: orders.length,
-    jobs: jobs.length
-  });
+  return { contacts, rfqs, quotes, orders, jobs };
 }
 
-export default initOrderHubData;
+export default buildOrderHubDemoData;

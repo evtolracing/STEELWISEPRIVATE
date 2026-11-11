@@ -7,7 +7,24 @@
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../../lib/db.js';
 import { PIPELINE_STAGES, PRIORITY } from '../orchestrator.js';
-import { planOrder, findOrderById, findJobById, listJobs } from '../../routes/orderHubStore.js';
+import { planOrder, findOrderById, findJobById, listJobs, updateOrder, saveJob } from '../../routes/orderHubStore.js';
+
+// The pipeline works on copies held in its context; these write the
+// changes that matter back to the OrderHub tables.
+async function saveOrder(ctx) {
+  if (!ctx.order?.id) return;
+  const { status, lines, requestedShipDate, promiseDate } = ctx.order;
+  await updateOrder(ctx.order.id, {
+    status,
+    lines,
+    requestedShipDate: requestedShipDate ?? null,
+    promiseDate: promiseDate ? String(promiseDate) : null,
+  });
+}
+
+async function saveJobs(ctx) {
+  for (const job of ctx.jobs || []) await saveJob(job);
+}
 
 // ============================================================================
 // INVENTORY LOOKUP DATA (In-memory for now)
@@ -81,6 +98,7 @@ export async function handleOrderPlanning(ctx, payload) {
     line.division = division;
     divisions.add(division);
   });
+  await saveOrder(ctx);
   
   ctx.addAiRecommendation({
     type: 'ORDER_PLANNED',
@@ -230,6 +248,7 @@ export async function handleOrderAllocation(ctx, payload) {
   });
   
   ctx.order.status = 'ALLOCATED';
+  await saveOrder(ctx);
   
   ctx.addAiRecommendation({
     type: 'ALLOCATION_COMPLETE',
@@ -253,6 +272,7 @@ export async function handleOrderConfirmation(ctx, payload) {
   }
   
   ctx.order.status = 'CONFIRMED';
+  await saveOrder(ctx);
   
   ctx.addAiRecommendation({
     type: 'ORDER_CONFIRMED',
@@ -271,7 +291,7 @@ export async function handleJobCreation(ctx, payload) {
     return;
   }
   
-  const result = planOrder(ctx.orderId);
+  const result = await planOrder(ctx.orderId);
   
   ctx.jobs = result.jobs;
   ctx.jobIds = result.jobs.map(j => j.id);
@@ -349,6 +369,7 @@ export async function handleBomMatching(ctx, payload) {
       matchedRecipes: ctx.bomRecipes.map(r => r.recipeName),
     },
   });
+  await saveJobs(ctx);
 }
 
 // ============================================================================
@@ -414,6 +435,7 @@ export async function handleJobScheduling(ctx, payload) {
       estimatedCompletion: scheduledDate.toISOString(),
     },
   });
+  await saveJobs(ctx);
 }
 
 // ============================================================================
@@ -457,6 +479,7 @@ export async function handleJobDispatch(ctx, payload) {
       operators: [...new Set(ctx.operatorAssignments.map(a => a.operatorName))],
     },
   });
+  await saveJobs(ctx);
 }
 
 // ============================================================================
@@ -511,6 +534,7 @@ export async function handleJobInProgress(ctx, payload) {
       rfidTracked: !!rfidScan,
     },
   });
+  await saveJobs(ctx);
 }
 
 // ============================================================================
@@ -549,6 +573,7 @@ export async function handleQcCheck(ctx, payload) {
       measurements: measurements?.length || 0,
     },
   });
+  await saveJobs(ctx);
 }
 
 // ============================================================================
@@ -580,6 +605,7 @@ export async function handleJobCompletion(ctx, payload) {
     message: `${completedCount}/${ctx.jobs.length} jobs completed`,
     confidence: 1.0,
   });
+  await saveJobs(ctx);
 }
 
 // ============================================================================

@@ -3,8 +3,7 @@
 // ============================================================================
 
 import { Router } from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import { contacts, rfqs } from './orderHubRoutes.js';
+import { createContact, createRfq, findContactById } from './orderHubStore.js';
 
 const router = Router();
 
@@ -395,63 +394,27 @@ function parseEmailRfqInternal(emailSubject, emailBody, attachmentsText, emailFr
 }
 
 /**
- * Internal RFQ creation function (no HTTP call)
+ * Internal RFQ creation (no HTTP call). Reuses the contact with the same
+ * email, otherwise creates one.
  */
-function createRfqInternal(parsedData) {
-  // Find or create contact
-  let contactId = null;
-  const contactData = parsedData.contact;
+async function createRfqInternal(parsedData) {
+  const contactData = parsedData.contact || {};
+  const contact = await createContact({
+    companyName: contactData.companyName || '',
+    contactName: contactData.contactName || '',
+    email: contactData.email || null,
+    phone: contactData.phone || '',
+  });
 
-  if (contactData?.email) {
-    const existing = contacts.find(c => c.email?.toLowerCase() === contactData.email.toLowerCase());
-    if (existing) {
-      contactId = existing.id;
-    }
-  }
-
-  if (!contactId) {
-    const newContact = {
-      id: uuidv4(),
-      companyName: contactData?.companyName || '',
-      contactName: contactData?.contactName || '',
-      email: contactData?.email || '',
-      phone: contactData?.phone || '',
-      billingAddress: '',
-      shippingAddress: '',
-      notes: '',
-      createdAt: new Date().toISOString()
-    };
-    contacts.push(newContact);
-    contactId = newContact.id;
-  }
-
-  // Create RFQ
-  const rfq = {
-    id: uuidv4(),
-    contactId,
+  return createRfq({
+    contactId: contact.id,
     channel: parsedData.channel || 'EMAIL',
     sourceRef: parsedData.sourceRef || null,
-    createdAt: new Date().toISOString(),
-    status: 'NEW',
-    requestedByName: contactData?.contactName || null,
-    requestedByEmail: contactData?.email || null,
+    requestedByName: contactData.contactName || null,
+    requestedByEmail: contactData.email || null,
     requestedDueDate: parsedData.requestedDueDate || null,
-    lines: (parsedData.lines || []).map(line => ({
-      id: uuidv4(),
-      materialCode: line.materialCode || null,
-      commodity: line.commodity || 'METALS',
-      form: line.form || null,
-      grade: line.grade || null,
-      thickness: line.thickness || null,
-      width: line.width || null,
-      length: line.length || null,
-      quantity: line.quantity || 1,
-      notes: line.notes || null
-    }))
-  };
-
-  rfqs.push(rfq);
-  return rfq;
+    lines: (parsedData.lines || []).map(line => ({ ...line, commodity: line.commodity || 'METALS' })),
+  });
 }
 
 // ============================================================================
@@ -463,7 +426,7 @@ function createRfqInternal(parsedData) {
  * Ingest raw email and create RFQ
  * Designed for n8n and other automation workflows
  */
-router.post('/email-rfq', (req, res) => {
+router.post('/email-rfq', async (req, res) => {
   try {
     const { emailMessageId, emailSubject, emailBody, attachmentsText, emailFrom } = req.body;
 
@@ -480,10 +443,10 @@ router.post('/email-rfq', (req, res) => {
     }
 
     // Step 2: Create RFQ using internal function
-    const rfq = createRfqInternal(parseResult);
+    const rfq = await createRfqInternal(parseResult);
 
     // Step 3: Enrich with contact info
-    const contact = contacts.find(c => c.id === rfq.contactId);
+    const contact = await findContactById(rfq.contactId);
 
     res.status(201).json({
       rfq: { ...rfq, contact },

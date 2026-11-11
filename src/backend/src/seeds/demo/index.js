@@ -10,6 +10,7 @@
  */
 import prisma from '../../lib/db.js';
 import { executiveDecisions } from './executiveDecisions.js';
+import { buildOrderHubDemoData } from './orderHubData.js';
 
 const customers = [
   {
@@ -118,6 +119,33 @@ async function seedExecutive() {
   console.log(`  executive: ${executiveDecisions.length} decisions, 1 scenario`);
 }
 
+async function seedOrderHub() {
+  const { contacts, rfqs, quotes, orders, jobs } = buildOrderHubDemoData();
+  const upsert = (model, id, data) =>
+    prisma[model].upsert({ where: { id }, update: data, create: { id, ...data } });
+  const when = value => (value ? new Date(value) : undefined);
+
+  for (const { id, createdAt, ...c } of contacts) {
+    await upsert('intakeContact', id, { ...c, createdAt: when(createdAt) });
+  }
+  for (const { id, createdAt, contact, ...r } of rfqs) {
+    await upsert('intakeRfq', id, { ...r, createdAt: when(createdAt) });
+  }
+  for (const { id, createdAt, contact, rfq, ...q } of quotes) {
+    await upsert('intakeQuote', id, { ...q, createdAt: when(createdAt) });
+  }
+  for (const { id, createdAt, contact, quote, ...o } of orders) {
+    await upsert('intakeOrder', id, { ...o, createdAt: when(createdAt) });
+  }
+  for (const { id, orderId, orderLineId, locationId, division, status, createdAt, ...details } of jobs) {
+    await upsert('intakeJob', id, {
+      orderId, orderLineId, locationId, division, status, details, createdAt: when(createdAt),
+    });
+  }
+  console.log(`  orderhub: ${contacts.length} contacts, ${rfqs.length} RFQs, ${quotes.length} quotes, ${orders.length} orders, ${jobs.length} jobs`);
+  return { contacts: contacts.length, rfqs: rfqs.length, quotes: quotes.length, orders: orders.length, jobs: jobs.length };
+}
+
 /**
  * Loads all demo data. Returns a summary of what was loaded.
  */
@@ -126,6 +154,7 @@ export async function seedDemo() {
   console.log('Seeding demo data…');
   await seedCustomers();
   await seedExecutive();
+  const orderHub = await seedOrderHub();
   console.log('Done.');
-  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1 };
+  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub };
 }

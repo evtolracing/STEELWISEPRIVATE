@@ -64,7 +64,6 @@ import ttsRoutes from './routes/tts.js';
 import aiAssistantRoutes from './routes/aiAssistant.js';
 import opsCockpitRoutes from './routes/opsCockpit.js';
 import printQueueRoutes from './routes/printQueue.js';
-import { initOrderHubData } from './routes/initOrderHubData.js';
 import prisma from './lib/db.js';
 import config from './config/index.js';
 
@@ -235,9 +234,6 @@ app.use('/api/v1/partner/supplier', partnerSupplierRoutes);
 app.use('/api/v1/partner/carrier', partnerCarrierRoutes);
 app.use('/api/v1/partner/webhooks', partnerWebhookRoutes);
 app.use('/api/v1/admin/partners', partnerAdminRoutes);
-
-// Initialize OrderHub seed data (in-memory store)
-initOrderHubData();
 
 // Error handler
 app.use((err, req, res, next) => {

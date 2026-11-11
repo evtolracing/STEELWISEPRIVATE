@@ -4717,3 +4717,33 @@ model StopWorkEvidence {
 
   @@index([eventId])
 }
+
+// Dispatch division registry (METALS, PLASTICS, ...) used by work-center
+// types and the dispatch screens.
+model DispatchDivision {
+  id        String   @id
+  label     String
+  color     String   @default("#666")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================================
+// ORDER PIPELINE RUNS
+// One run of the lead-to-cash pipeline (/api/v1/pipeline). The full
+// context (stage history, linked contact/RFQ/quote/order/jobs, AI
+// recommendations) is kept in data.
+// ============================================================================
+
+model PipelineRun {
+  id           String   @id
+  currentStage String
+  channel      String
+  data         Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([currentStage])
+  @@index([updatedAt])
+}

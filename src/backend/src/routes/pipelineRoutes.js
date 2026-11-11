@@ -79,7 +79,7 @@ router.post('/simulate', async (req, res) => {
       simulationMode: true,
     });
     
-    const finalCtx = pipeline.getPipeline(ctx.id);
+    const finalCtx = await pipeline.getPipeline(ctx.id);
     
     res.json({
       success: true,
@@ -175,10 +175,10 @@ router.post('/', async (req, res) => {
  * GET /v1/pipeline/:id
  * Get current pipeline status and context
  */
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const ctx = pipeline.getPipeline(id);
+    const ctx = await pipeline.getPipeline(id);
     
     if (!ctx) {
       return res.status(404).json({ error: 'Pipeline not found' });
@@ -187,7 +187,7 @@ router.get('/:id', (req, res) => {
     res.json({
       success: true,
       pipeline: ctx.toJSON(),
-      status: pipeline.getStatus(id),
+      status: await pipeline.getStatus(id),
       output: formatPipelineOutput(ctx, 'STATUS'),
     });
   } catch (error) {
@@ -222,7 +222,7 @@ router.post('/:id/advance', async (req, res) => {
       });
     }
     
-    const ctx = pipeline.getPipeline(id);
+    const ctx = await pipeline.getPipeline(id);
     
     res.json({
       success: true,
@@ -271,10 +271,10 @@ router.post('/:id/auto-advance', async (req, res) => {
  * GET /v1/pipelines
  * List all active pipelines with optional filters
  */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { stage, channel } = req.query;
-    const pipelines = pipeline.listPipelines({ stage, channel });
+    const pipelines = await pipeline.listPipelines({ stage, channel });
     
     res.json({
       success: true,
@@ -299,7 +299,7 @@ router.post('/:id/approve', async (req, res) => {
     const { id } = req.params;
     const { approved, notes, edits } = req.body;
     
-    const ctx = pipeline.getPipeline(id);
+    const ctx = await pipeline.getPipeline(id);
     if (!ctx) {
       return res.status(404).json({ error: 'Pipeline not found' });
     }
@@ -325,6 +325,7 @@ router.post('/:id/approve', async (req, res) => {
         confidence: 1.0,
         details: { notes },
       });
+      await pipeline.savePipeline(ctx);
       
       res.json({
         success: true,
@@ -334,6 +335,7 @@ router.post('/:id/approve', async (req, res) => {
       });
     } else {
       ctx.addError('Rejected by human operator: ' + (notes || 'No reason given'));
+      await pipeline.savePipeline(ctx);
       
       res.json({
         success: true,
@@ -354,10 +356,10 @@ router.post('/:id/approve', async (req, res) => {
  * GET /v1/pipeline/:id/analysis
  * Get AI analysis and recommendations for pipeline
  */
-router.get('/:id/analysis', (req, res) => {
+router.get('/:id/analysis', async (req, res) => {
   try {
     const { id } = req.params;
-    const ctx = pipeline.getPipeline(id);
+    const ctx = await pipeline.getPipeline(id);
     
     if (!ctx) {
       return res.status(404).json({ error: 'Pipeline not found' });
@@ -385,12 +387,12 @@ router.get('/:id/analysis', (req, res) => {
  * POST /v1/pipeline/:id/pricing-recommendation
  * Get AI pricing recommendations
  */
-router.post('/:id/pricing-recommendation', (req, res) => {
+router.post('/:id/pricing-recommendation', async (req, res) => {
   try {
     const { id } = req.params;
     const { targetMargin, competitorPrice, customerType, volume } = req.body;
     
-    const ctx = pipeline.getPipeline(id);
+    const ctx = await pipeline.getPipeline(id);
     if (!ctx) {
       return res.status(404).json({ error: 'Pipeline not found' });
     }

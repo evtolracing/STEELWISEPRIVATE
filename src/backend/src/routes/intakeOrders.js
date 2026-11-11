@@ -38,7 +38,7 @@ async function resolveGradeId(val) {
 }
 
 /** Pack user-visible notes + intake metadata into a single notes string */
-function packNotes(userNotes, meta) {
+export function packNotes(userNotes, meta) {
   const blob = { __intakeMeta__: meta, userNotes: userNotes || '' };
   return JSON.stringify(blob);
 }
@@ -56,7 +56,7 @@ function unpackNotes(raw) {
 }
 
 /** Get the default system / CSR user id so we can satisfy the required createdById */
-async function getSystemUserId() {
+export async function getSystemUserId() {
   const user = await prisma.user.findFirst({
     where: { OR: [{ role: 'CSR' }, { role: 'SUPER_ADMIN' }] },
     orderBy: { role: 'asc' },
@@ -65,7 +65,7 @@ async function getSystemUserId() {
 }
 
 /** Generate the next order number */
-async function nextOrderNumber() {
+export async function nextOrderNumber() {
   const count = await prisma.order.count();
   return `SO-${String(count + 1).padStart(5, '0')}`;
 }

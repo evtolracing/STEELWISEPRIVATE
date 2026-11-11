@@ -4907,3 +4907,26 @@ model ProcessingTemplate {
 
   @@index([division])
 }
+
+/// Orders placed on the web store, waiting for a CSR to accept, hold or reject.
+model OnlineOrder {
+  id              String    @id
+  externalOrderId String    @unique
+  source          String    @default("ONLINE")
+  status          String    @default("NEEDS_REVIEW") // NEEDS_REVIEW | HOLD | ACCEPTED | REJECTED
+  customerName    String
+  customerEmail   String?
+  customerId      String?
+  items           Json      @default("[]") // [{ sku, description, qty, unitPrice }]
+  subtotal        Decimal   @default(0)
+  shippingMethod  String?
+  notes           String?
+  holdReason      String?
+  rejectReason    String?
+  internalOrderId String?
+  receivedAt      DateTime  @default(now())
+  decidedAt       DateTime?
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, receivedAt])
+}

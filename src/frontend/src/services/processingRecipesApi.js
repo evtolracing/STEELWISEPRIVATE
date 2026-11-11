@@ -20,11 +20,10 @@
  *   MANAGER  — full CRUD on recipes
  *   ADMIN    — full CRUD + publish/deprecate
  *
- * Mock-first pattern.
+ * Backed by /api/processing-recipes.
  */
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
-const USE_MOCK = true
 
 // ─── ENUMS ───────────────────────────────────────────────────────────────────
 
@@ -93,505 +92,87 @@ export const THICKNESS_BANDS = [
   { min: 4.0,  max: 99,    label: 'Plate (4"+)',        factor: 2.0 },
 ]
 
-// ─── MOCK RECIPES ────────────────────────────────────────────────────────────
+// ─── RECIPE CACHE ────────────────────────────────────────────────────────────
+// The time estimators below are synchronous, so they read active recipes from
+// a cache that loads from the backend when this module is first used and is
+// refreshed by every recipe list or change. Until it loads, estimates fall
+// back to defaults.
 
-const MOCK_RECIPES = [
-  {
-    id: 'recipe-001',
-    code: 'SAW-STD',
-    name: 'Standard Saw Cut',
-    description: 'Bandsaw cut to length — single straight cut',
-    operationType: OPERATION_TYPE.CUT,
-    division: 'METALS',
-    workCenter: 'SAW',
-    setupMinutes: 8,
-    runMinutesPerUnit: 5,
-    minRunMinutes: 3,
-    applicableMaterials: ['A36', 'A572-50', 'A588', 'AR400', 'AR500'],
-    applicableForms: ['BAR', 'PLATE', 'BEAM', 'TUBE'],
-    thicknessMin: 0,
-    thicknessMax: 12,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 12.00,
-    priceUnit: 'CUT',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-10T14:30:00Z',
-    notes: 'Default saw cut recipe. Covers most bar/plate work.',
-  },
-  {
-    id: 'recipe-002',
-    code: 'SHEAR-STD',
-    name: 'Standard Shear Cut',
-    description: 'Hydraulic shear — rectangular blanks up to 1" thick',
-    operationType: OPERATION_TYPE.CUT,
-    division: 'METALS',
-    workCenter: 'SHEAR',
-    setupMinutes: 5,
-    runMinutesPerUnit: 3,
-    minRunMinutes: 2,
-    applicableMaterials: ['A36', 'A572-50', 'A588'],
-    applicableForms: ['PLATE', 'SHEET'],
-    thicknessMin: 0,
-    thicknessMax: 1.0,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 8.50,
-    priceUnit: 'CUT',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-10T14:30:00Z',
-    notes: 'Max 1" thickness for shear. Thicker goes to saw or plasma.',
-  },
-  {
-    id: 'recipe-003',
-    code: 'PLASMA-STD',
-    name: 'Plasma Profile Cut',
-    description: 'CNC plasma — contour/shape cutting on plate',
-    operationType: OPERATION_TYPE.CUT,
-    division: 'METALS',
-    workCenter: 'PLASMA',
-    setupMinutes: 15,
-    runMinutesPerUnit: 8,
-    minRunMinutes: 5,
-    applicableMaterials: ['A36', 'A572-50', 'A514', 'AR400', 'AR500', 'T-1'],
-    applicableForms: ['PLATE'],
-    thicknessMin: 0.125,
-    thicknessMax: 6.0,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 0.45,
-    priceUnit: 'IN',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 2,
-    createdBy: 'admin',
-    updatedAt: '2025-12-02T09:15:00Z',
-    notes: 'Per-inch pricing. Pierce count adds ~30s each.',
-  },
-  {
-    id: 'recipe-004',
-    code: 'BRAKE-STD',
-    name: 'Press Brake Bend',
-    description: 'Standard V-die bending on press brake',
-    operationType: OPERATION_TYPE.FORM,
-    division: 'METALS',
-    workCenter: 'BRAKE',
-    setupMinutes: 12,
-    runMinutesPerUnit: 6,
-    minRunMinutes: 4,
-    applicableMaterials: ['A36', 'A572-50', 'A588', '304-SS', '316-SS'],
-    applicableForms: ['PLATE', 'SHEET'],
-    thicknessMin: 0.0625,
-    thicknessMax: 2.0,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 18.00,
-    priceUnit: 'BEND',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-15T10:00:00Z',
-    notes: 'Thicker material requires tonnage check before accepting.',
-  },
-  {
-    id: 'recipe-005',
-    code: 'ROLL-STD',
-    name: 'Plate Rolling',
-    description: 'Three-roll bending for cylinders and cones',
-    operationType: OPERATION_TYPE.FORM,
-    division: 'METALS',
-    workCenter: 'ROLL',
-    setupMinutes: 20,
-    runMinutesPerUnit: 15,
-    minRunMinutes: 10,
-    applicableMaterials: ['A36', 'A572-50', 'A514'],
-    applicableForms: ['PLATE'],
-    thicknessMin: 0.125,
-    thicknessMax: 3.0,
-    toleranceClass: TOLERANCE_CLASS.CLOSE,
-    pricePerUnit: 35.00,
-    priceUnit: 'EA',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-20T08:00:00Z',
-    notes: 'Diameter and material determine passes required.',
-  },
-  {
-    id: 'recipe-006',
-    code: 'DRILL-STD',
-    name: 'Drill Holes',
-    description: 'Radial or mag drill — bolt holes, mounting patterns',
-    operationType: OPERATION_TYPE.MACHINE,
-    division: 'METALS',
-    workCenter: 'DRILL',
-    setupMinutes: 10,
-    runMinutesPerUnit: 4,
-    minRunMinutes: 2,
-    applicableMaterials: ['A36', 'A572-50', 'A588', 'AR400', '304-SS', '316-SS'],
-    applicableForms: ['PLATE', 'BAR', 'BEAM', 'ANGLE'],
-    thicknessMin: 0,
-    thicknessMax: 6.0,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 4.50,
-    priceUnit: 'HOLE',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-10T14:30:00Z',
-    notes: 'Add 2 min per hole for AR/stainless grades.',
-  },
-  {
-    id: 'recipe-007',
-    code: 'GRIND-STD',
-    name: 'Surface Grind',
-    description: 'Flat grind to specified surface finish',
-    operationType: OPERATION_TYPE.FINISH,
-    division: 'METALS',
-    workCenter: 'GRINDER',
-    setupMinutes: 15,
-    runMinutesPerUnit: 20,
-    minRunMinutes: 10,
-    applicableMaterials: ['A36', 'A572-50', 'A514', 'T-1', '304-SS', '316-SS'],
-    applicableForms: ['PLATE', 'BAR'],
-    thicknessMin: 0.25,
-    thicknessMax: 8.0,
-    toleranceClass: TOLERANCE_CLASS.CLOSE,
-    pricePerUnit: 55.00,
-    priceUnit: 'SQFT',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-10T14:30:00Z',
-    notes: 'Price is per sq ft of ground area.',
-  },
-  {
-    id: 'recipe-008',
-    code: 'DEBURR-STD',
-    name: 'Deburr / Edge Finish',
-    description: 'Remove burrs and sharp edges after cutting or machining',
-    operationType: OPERATION_TYPE.FINISH,
-    division: 'METALS',
-    workCenter: 'DEBURR',
-    setupMinutes: 3,
-    runMinutesPerUnit: 5,
-    minRunMinutes: 3,
-    applicableMaterials: ['A36', 'A572-50', 'A588', 'AR400', 'AR500', '304-SS', '316-SS'],
-    applicableForms: ['PLATE', 'BAR', 'SHEET', 'BEAM', 'ANGLE'],
-    thicknessMin: 0,
-    thicknessMax: 99,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 6.00,
-    priceUnit: 'EA',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-10T14:30:00Z',
-    notes: '',
-  },
-  {
-    id: 'recipe-009',
-    code: 'PLAS-SAW-STD',
-    name: 'Plastic Saw Cut',
-    description: 'Precision saw cut for plastic sheet, rod, tube',
-    operationType: OPERATION_TYPE.CUT,
-    division: 'PLASTICS',
-    workCenter: 'PLAS-SAW',
-    setupMinutes: 5,
-    runMinutesPerUnit: 4,
-    minRunMinutes: 2,
-    applicableMaterials: ['HDPE', 'UHMW', 'ACETAL', 'NYLON-6', 'POLYCARBONATE'],
-    applicableForms: ['SHEET', 'ROD', 'TUBE', 'BAR'],
-    thicknessMin: 0,
-    thicknessMax: 12,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 8.00,
-    priceUnit: 'CUT',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-10T14:30:00Z',
-    notes: 'Slower blade speed for plastics to avoid melting.',
-  },
-  {
-    id: 'recipe-010',
-    code: 'PLAS-CNC-STD',
-    name: 'Plastic CNC Route',
-    description: 'CNC router for contour cutting and pocketing on plastic',
-    operationType: OPERATION_TYPE.MACHINE,
-    division: 'PLASTICS',
-    workCenter: 'CNC-ROUTER',
-    setupMinutes: 12,
-    runMinutesPerUnit: 10,
-    minRunMinutes: 5,
-    applicableMaterials: ['HDPE', 'UHMW', 'ACETAL', 'NYLON-6', 'POLYCARBONATE'],
-    applicableForms: ['SHEET', 'PLATE'],
-    thicknessMin: 0.125,
-    thicknessMax: 4.0,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 1.20,
-    priceUnit: 'MIN',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2025-11-10T14:30:00Z',
-    notes: 'Time-based pricing. Program setup not included.',
-  },
-  {
-    id: 'recipe-011',
-    code: 'STRESS-REL',
-    name: 'Stress Relief',
-    description: 'Furnace stress-relief heat treatment',
-    operationType: OPERATION_TYPE.HEAT_TREAT,
-    division: 'METALS',
-    workCenter: 'FURNACE',
-    setupMinutes: 30,
-    runMinutesPerUnit: 0,
-    minRunMinutes: 120,
-    applicableMaterials: ['A36', 'A572-50', 'A514', 'T-1'],
-    applicableForms: ['PLATE', 'FABRICATION'],
-    thicknessMin: 0,
-    thicknessMax: 99,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 185.00,
-    priceUnit: 'EA',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2026-01-05T11:00:00Z',
-    notes: 'Batch operation. 120 min minimum soak time regardless of unit count.',
-  },
-  {
-    id: 'recipe-012',
-    code: 'VIS-INSPECT',
-    name: 'Visual Inspection + MTR Verify',
-    description: 'Dimensional check, visual inspection, MTR match',
-    operationType: OPERATION_TYPE.INSPECT,
-    division: 'METALS',
-    workCenter: 'QA-BENCH',
-    setupMinutes: 2,
-    runMinutesPerUnit: 5,
-    minRunMinutes: 5,
-    applicableMaterials: [],
-    applicableForms: [],
-    thicknessMin: 0,
-    thicknessMax: 99,
-    toleranceClass: TOLERANCE_CLASS.STANDARD,
-    pricePerUnit: 0,
-    priceUnit: 'EA',
-    status: RECIPE_STATUS.ACTIVE,
-    version: 1,
-    createdBy: 'admin',
-    updatedAt: '2026-01-05T11:00:00Z',
-    notes: 'No charge — included in processing. Required for certified orders.',
-  },
-]
+let recipeCache = []
+let cachePromise = null
 
-// ─── RECIPE ROUTING TEMPLATES ────────────────────────────────────────────────
+async function fetchJson(url, options, message) {
+  const res = await fetch(url, options)
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || message)
+  return res.json()
+}
 
-const MOCK_ROUTING_TEMPLATES = [
-  {
-    id: 'rt-001',
-    name: 'Plate – Cut to Size',
-    division: 'METALS',
-    steps: [
-      { seq: 1, recipeId: 'recipe-002' },
-      { seq: 2, recipeId: 'recipe-008' },
-    ],
-  },
-  {
-    id: 'rt-002',
-    name: 'Plate – Cut + Bend',
-    division: 'METALS',
-    steps: [
-      { seq: 1, recipeId: 'recipe-002' },
-      { seq: 2, recipeId: 'recipe-004' },
-      { seq: 3, recipeId: 'recipe-008' },
-    ],
-  },
-  {
-    id: 'rt-003',
-    name: 'Plate – Plasma Profile + Drill',
-    division: 'METALS',
-    steps: [
-      { seq: 1, recipeId: 'recipe-003' },
-      { seq: 2, recipeId: 'recipe-006' },
-      { seq: 3, recipeId: 'recipe-008' },
-      { seq: 4, recipeId: 'recipe-012' },
-    ],
-  },
-  {
-    id: 'rt-004',
-    name: 'Plate – Full Treatment',
-    division: 'METALS',
-    steps: [
-      { seq: 1, recipeId: 'recipe-003' },
-      { seq: 2, recipeId: 'recipe-006' },
-      { seq: 3, recipeId: 'recipe-007' },
-      { seq: 4, recipeId: 'recipe-011' },
-      { seq: 5, recipeId: 'recipe-012' },
-    ],
-  },
-  {
-    id: 'rt-005',
-    name: 'Plastic – Cut to Length',
-    division: 'PLASTICS',
-    steps: [
-      { seq: 1, recipeId: 'recipe-009' },
-    ],
-  },
-  {
-    id: 'rt-006',
-    name: 'Plastic – CNC Profile',
-    division: 'PLASTICS',
-    steps: [
-      { seq: 1, recipeId: 'recipe-010' },
-    ],
-  },
-]
+/** Reload the active-recipe cache used by the estimators. */
+export function refreshRecipeCache() {
+  cachePromise = fetchJson(`${API_BASE}/processing-recipes?status=ACTIVE`, undefined, 'Failed to load recipes')
+    .then(res => { recipeCache = res.data || []; return recipeCache })
+    .catch(() => recipeCache)
+  return cachePromise
+}
 
-let mockRecipes = [...MOCK_RECIPES]
-let nextId = 13
+/** Resolves once the recipe cache has loaded (for callers that can wait). */
+export function recipesReady() {
+  return cachePromise || refreshRecipeCache()
+}
+
+if (typeof window !== 'undefined') refreshRecipeCache()
+
+const json = (method, body) => ({ method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
 // ─── CRUD ────────────────────────────────────────────────────────────────────
 
 /** List all recipes with optional filters */
 export async function listRecipes({ division, operationType, status, search } = {}) {
-  if (USE_MOCK) {
-    await _delay(200)
-    let list = [...mockRecipes]
-    if (division) list = list.filter(r => r.division === division)
-    if (operationType) list = list.filter(r => r.operationType === operationType)
-    if (status) list = list.filter(r => r.status === status)
-    if (search) {
-      const q = search.toLowerCase()
-      list = list.filter(r =>
-        r.name.toLowerCase().includes(q) ||
-        r.code.toLowerCase().includes(q) ||
-        r.description.toLowerCase().includes(q)
-      )
-    }
-    return { data: list, total: list.length }
-  }
   const params = new URLSearchParams()
   if (division) params.set('division', division)
   if (operationType) params.set('operationType', operationType)
   if (status) params.set('status', status)
   if (search) params.set('search', search)
-  const res = await fetch(`${API_BASE}/processing-recipes?${params}`)
-  if (!res.ok) throw new Error('Failed to list recipes')
-  return res.json()
+  return fetchJson(`${API_BASE}/processing-recipes?${params}`, undefined, 'Failed to list recipes')
 }
 
 /** Get a single recipe by ID */
 export async function getRecipe(id) {
-  if (USE_MOCK) {
-    await _delay(100)
-    const recipe = mockRecipes.find(r => r.id === id)
-    if (!recipe) throw new Error('Recipe not found')
-    return { data: { ...recipe } }
-  }
-  const res = await fetch(`${API_BASE}/processing-recipes/${id}`)
-  if (!res.ok) throw new Error('Failed to get recipe')
-  return res.json()
+  return fetchJson(`${API_BASE}/processing-recipes/${encodeURIComponent(id)}`, undefined, 'Failed to get recipe')
 }
 
-/** Create a new recipe */
+/** Create a new recipe (starts as DRAFT) */
 export async function createRecipe(payload) {
-  if (USE_MOCK) {
-    await _delay(300)
-    const recipe = {
-      ...payload,
-      id: `recipe-${String(nextId++).padStart(3, '0')}`,
-      version: 1,
-      status: RECIPE_STATUS.DRAFT,
-      createdBy: 'current-user',
-      updatedAt: new Date().toISOString(),
-    }
-    mockRecipes.push(recipe)
-    return { data: recipe }
-  }
-  const res = await fetch(`${API_BASE}/processing-recipes`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-  if (!res.ok) throw new Error('Failed to create recipe')
-  return res.json()
+  const res = await fetchJson(`${API_BASE}/processing-recipes`, json('POST', payload), 'Failed to create recipe')
+  refreshRecipeCache()
+  return res
 }
 
-/** Update an existing recipe */
+/** Update an existing recipe (bumps its version) */
 export async function updateRecipe(id, payload) {
-  if (USE_MOCK) {
-    await _delay(300)
-    const idx = mockRecipes.findIndex(r => r.id === id)
-    if (idx === -1) throw new Error('Recipe not found')
-    mockRecipes[idx] = {
-      ...mockRecipes[idx],
-      ...payload,
-      version: mockRecipes[idx].version + 1,
-      updatedAt: new Date().toISOString(),
-    }
-    return { data: { ...mockRecipes[idx] } }
-  }
-  const res = await fetch(`${API_BASE}/processing-recipes/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-  if (!res.ok) throw new Error('Failed to update recipe')
-  return res.json()
+  const res = await fetchJson(`${API_BASE}/processing-recipes/${encodeURIComponent(id)}`, json('PUT', payload), 'Failed to update recipe')
+  refreshRecipeCache()
+  return res
 }
 
 /** Delete a recipe (soft — sets status to DEPRECATED) */
 export async function deleteRecipe(id) {
-  if (USE_MOCK) {
-    await _delay(200)
-    const idx = mockRecipes.findIndex(r => r.id === id)
-    if (idx === -1) throw new Error('Recipe not found')
-    mockRecipes[idx].status = RECIPE_STATUS.DEPRECATED
-    mockRecipes[idx].updatedAt = new Date().toISOString()
-    return { data: { success: true } }
-  }
-  const res = await fetch(`${API_BASE}/processing-recipes/${id}`, { method: 'DELETE' })
-  if (!res.ok) throw new Error('Failed to delete recipe')
-  return res.json()
+  const res = await fetchJson(`${API_BASE}/processing-recipes/${encodeURIComponent(id)}`, { method: 'DELETE' }, 'Failed to delete recipe')
+  refreshRecipeCache()
+  return res
 }
 
 /** Activate a draft recipe */
 export async function activateRecipe(id) {
-  if (USE_MOCK) {
-    await _delay(200)
-    const idx = mockRecipes.findIndex(r => r.id === id)
-    if (idx === -1) throw new Error('Recipe not found')
-    mockRecipes[idx].status = RECIPE_STATUS.ACTIVE
-    mockRecipes[idx].updatedAt = new Date().toISOString()
-    return { data: { ...mockRecipes[idx] } }
-  }
-  const res = await fetch(`${API_BASE}/processing-recipes/${id}/activate`, { method: 'POST' })
-  if (!res.ok) throw new Error('Failed to activate recipe')
-  return res.json()
+  const res = await fetchJson(`${API_BASE}/processing-recipes/${encodeURIComponent(id)}/activate`, { method: 'POST' }, 'Failed to activate recipe')
+  refreshRecipeCache()
+  return res
 }
 
-/** List routing templates */
+/** List routing templates (each step carries its recipe) */
 export async function listRoutingTemplates({ division } = {}) {
-  if (USE_MOCK) {
-    await _delay(150)
-    let list = [...MOCK_ROUTING_TEMPLATES]
-    if (division) list = list.filter(t => t.division === division)
-    // Resolve recipe references
-    const resolved = list.map(t => ({
-      ...t,
-      steps: t.steps.map(s => ({
-        ...s,
-        recipe: mockRecipes.find(r => r.id === s.recipeId) || null,
-      })),
-    }))
-    return { data: resolved }
-  }
-  const params = division ? `?division=${division}` : ''
-  const res = await fetch(`${API_BASE}/processing-recipes/routing-templates${params}`)
-  if (!res.ok) throw new Error('Failed to list routing templates')
-  return res.json()
+  const params = division ? `?division=${encodeURIComponent(division)}` : ''
+  return fetchJson(`${API_BASE}/processing-recipes/routing-templates${params}`, undefined, 'Failed to list routing templates')
 }
 
 // ─── TIME ESTIMATION ENGINE ──────────────────────────────────────────────────
@@ -695,7 +276,7 @@ export function estimateRoutingTime(steps = []) {
  * @returns {Object|null} Best matching active recipe, or null
  */
 export function findMatchingRecipe({ operationType, division, materialGrade, form, thickness }) {
-  const active = mockRecipes.filter(r =>
+  const active = recipeCache.filter(r =>
     r.status === RECIPE_STATUS.ACTIVE &&
     r.operationType === operationType &&
     r.division === division
@@ -770,6 +351,3 @@ export function formatMinutes(minutes) {
   return m > 0 ? `${h}h ${m}m` : `${h}h`
 }
 
-function _delay(ms) {
-  return new Promise(r => setTimeout(r, ms))
-}

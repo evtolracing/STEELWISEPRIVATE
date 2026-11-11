@@ -4830,3 +4830,21 @@ model InventoryAdjustment {
 
   @@index([inventoryId])
 }
+
+/// Automated print queue: tags, labels and shipping documents to print.
+model PrintQueueJob {
+  id         String    @id
+  type       String
+  label      String
+  priority   String    @default("NORMAL")
+  status     String    @default("PENDING")
+  jobId      String?
+  payload    Json
+  skipReason String?
+  createdAt  DateTime  @default(now())
+  printedAt  DateTime?
+  skippedAt  DateTime?
+
+  @@index([status, createdAt])
+  @@index([jobId, type, status])
+}

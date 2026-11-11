@@ -14,8 +14,30 @@
 import prisma from '../lib/db.js';
 import crypto from 'crypto';
 
-// ── In-memory queue (augmented by AuditLog persistence) ──────────────────────
-const printQueue = new Map(); // key: printJobId, value: PrintJob
+// ── Queue (PrintQueueJob table; events also go to AuditLog) ─────────────────
+const iso = (d) => (d ? d.toISOString() : null);
+
+/** Row → API shape (dates as ISO strings, as before). */
+function toJob(row) {
+  if (!row) return null;
+  const job = {
+    id: row.id,
+    type: row.type,
+    label: row.label,
+    priority: row.priority,
+    status: row.status,
+    payload: row.payload,
+    createdAt: iso(row.createdAt),
+    printedAt: iso(row.printedAt),
+    skippedAt: iso(row.skippedAt),
+  };
+  if (row.skipReason != null) job.skipReason = row.skipReason;
+  return job;
+}
+
+async function findJob(printJobId) {
+  return toJob(await prisma.printQueueJob.findUnique({ where: { id: printJobId } }));
+}
 
 function generatePrintJobId() {
   return `PJ-${Date.now()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
@@ -26,19 +48,18 @@ function generatePrintJobId() {
  */
 async function enqueue(type, label, payload, priority = 'NORMAL') {
   const id = generatePrintJobId();
-  const job = {
-    id,
-    type,            // DTL_TAG | BUNDLE_TAG | SHIPPING_LABEL | BOL | PACKING_LIST
-    label,           // Human-readable description e.g. "DTL Tag – JOB-00003"
-    priority,        // HIGH | NORMAL
-    status: 'PENDING',
-    payload,         // All data needed to render the tag/doc
-    createdAt: new Date().toISOString(),
-    printedAt: null,
-    skippedAt: null,
-  };
-
-  printQueue.set(id, job);
+  const row = await prisma.printQueueJob.create({
+    data: {
+      id,
+      type,            // DTL_TAG | BUNDLE_TAG | SHIPPING_LABEL | BOL | PACKING_LIST
+      label,           // Human-readable description e.g. "DTL Tag – JOB-00003"
+      priority,        // HIGH | NORMAL
+      status: 'PENDING',
+      jobId: payload.jobId || null,
+      payload,         // All data needed to render the tag/doc
+    },
+  });
+  const job = toJob(row);
 
   // Persist to AuditLog so queue survives across nav
   try {
@@ -63,12 +84,13 @@ async function enqueue(type, label, payload, priority = 'NORMAL') {
  * Mark a print job as printed (removes from active queue)
  */
 export async function markPrinted(printJobId) {
-  const job = printQueue.get(printJobId);
-  if (!job) throw new Error(`Print job ${printJobId} not found`);
+  if (!(await findJob(printJobId))) throw new Error(`Print job ${printJobId} not found`);
 
-  job.status = 'PRINTED';
-  job.printedAt = new Date().toISOString();
-  // Keep in map for history but consider it done
+  // Kept for history, but no longer pending
+  const job = toJob(await prisma.printQueueJob.update({
+    where: { id: printJobId },
+    data: { status: 'PRINTED', printedAt: new Date() },
+  }));
 
   try {
     await prisma.auditLog.create({
@@ -91,12 +113,12 @@ export async function markPrinted(printJobId) {
  * Mark a print job as skipped
  */
 export async function markSkipped(printJobId, reason = '') {
-  const job = printQueue.get(printJobId);
-  if (!job) throw new Error(`Print job ${printJobId} not found`);
+  if (!(await findJob(printJobId))) throw new Error(`Print job ${printJobId} not found`);
 
-  job.status = 'SKIPPED';
-  job.skippedAt = new Date().toISOString();
-  job.skipReason = reason;
+  const job = toJob(await prisma.printQueueJob.update({
+    where: { id: printJobId },
+    data: { status: 'SKIPPED', skippedAt: new Date(), skipReason: reason },
+  }));
 
   try {
     await prisma.auditLog.create({
@@ -118,9 +140,13 @@ export async function markSkipped(printJobId, reason = '') {
 /**
  * Get all PENDING print jobs (for frontend display)
  */
-export function getPendingQueue() {
-  return Array.from(printQueue.values())
-    .filter((j) => j.status === 'PENDING')
+export async function getPendingQueue() {
+  const rows = await prisma.printQueueJob.findMany({
+    where: { status: 'PENDING' },
+    orderBy: { createdAt: 'asc' },
+    take: 1000,
+  });
+  return rows.map(toJob)
     .sort((a, b) => {
       const priorityOrder = { HIGH: 0, NORMAL: 1 };
       return (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2);
@@ -130,10 +156,17 @@ export function getPendingQueue() {
 /**
  * Get recent queue history (last 50, all statuses)
  */
-export function getQueueHistory(limit = 50) {
-  return Array.from(printQueue.values())
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, limit);
+export async function getQueueHistory(limit = 50) {
+  const rows = await prisma.printQueueJob.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: Math.min(Math.max(limit, 1), 500),
+  });
+  return rows.map(toJob);
+}
+
+/** One queue entry by id, any status. */
+export async function getPrintJob(printJobId) {
+  return findJob(printJobId);
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -154,9 +187,9 @@ export async function onJobStatusChange(job, newStatus, oldStatus) {
       case 'SCHEDULED':
       case 'IN_PROCESS': {
         // Avoid duplicate: skip if we already queued a DTL for this job
-        const alreadyQueued = Array.from(printQueue.values()).some(
-          (p) => p.status === 'PENDING' && p.type === 'DTL_TAG' && p.payload.jobId === job.id
-        );
+        const alreadyQueued = await prisma.printQueueJob.count({
+          where: { status: 'PENDING', type: 'DTL_TAG', jobId: job.id },
+        }) > 0;
         if (alreadyQueued) break;
 
         await enqueue(
@@ -248,7 +281,7 @@ export async function manualEnqueue(type, job) {
  * Reprint from an existing history item — re-enqueues the same payload.
  */
 export async function reprintById(printJobId) {
-  const original = Array.from(printQueue.values()).find((j) => j.id === printJobId);
+  const original = await findJob(printJobId);
   if (!original) throw new Error(`Print job ${printJobId} not found in history`);
 
   return enqueue(
@@ -389,6 +422,7 @@ export default {
   markSkipped,
   getPendingQueue,
   getQueueHistory,
+  getPrintJob,
   enqueue,
   manualEnqueue,
   reprintById,

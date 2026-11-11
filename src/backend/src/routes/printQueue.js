@@ -16,6 +16,7 @@ import printAutomation, {
   markSkipped,
   getPendingQueue,
   getQueueHistory,
+  getPrintJob,
   onJobStatusChange,
   onShipmentCreated,
   manualEnqueue,
@@ -26,32 +27,37 @@ import { renderTagHTML } from '../services/tagRenderer.js';
 const router = Router();
 
 // ── GET /api/print-queue ──────────────────────────────────────────────────────
-router.get('/', (req, res) => {
-  const pending = getPendingQueue();
-  res.json({
-    pendingCount: pending.length,
-    queue: pending,
-  });
+router.get('/', async (req, res) => {
+  try {
+    const pending = await getPendingQueue();
+    res.json({
+      pendingCount: pending.length,
+      queue: pending,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load print queue' });
+  }
 });
 
 // ── GET /api/print-queue/history ─────────────────────────────────────────────
-router.get('/history', (req, res) => {
-  const limit = parseInt(req.query.limit) || 50;
-  res.json({ history: getQueueHistory(limit) });
+router.get('/history', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    res.json({ history: await getQueueHistory(limit) });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load print history' });
+  }
 });
 
 // ── GET /api/print-queue/:id/render ──────────────────────────────────────────
 // Returns complete, print-ready HTML for a given queue entry
-router.get('/:id/render', (req, res) => {
-  const { id } = req.params;
-  const allJobs = getQueueHistory(500);
-  const job = allJobs.find((j) => j.id === id);
-
-  if (!job) {
-    return res.status(404).json({ error: 'Print job not found' });
-  }
-
+router.get('/:id/render', async (req, res) => {
   try {
+    const job = await getPrintJob(req.params.id);
+    if (!job) {
+      return res.status(404).json({ error: 'Print job not found' });
+    }
+
     const html = renderTagHTML(job.type, job.payload);
     res.setHeader('Content-Type', 'text/html');
     res.send(html);

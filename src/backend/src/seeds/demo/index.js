@@ -18,6 +18,7 @@ import { buildInventoryV1DemoData } from './inventoryV1Data.js';
 import {
   saveCatalogItem, saveSite, saveUnit, saveTransfer, saveRfidEvent,
 } from '../../routes/inventoryV1Store.js';
+import { demoPriceLevels, demoTaxRates, demoProcesses, demoTemplates } from './intakeSetup.js';
 import { demoGrades, demoProducts, demoStock } from './catalog.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
@@ -271,6 +272,23 @@ async function seedCatalog() {
 /**
  * Loads all demo data. Returns a summary of what was loaded.
  */
+async function seedIntakeSetup() {
+  for (const { code, ...l } of demoPriceLevels) {
+    await prisma.priceLevel.upsert({ where: { code }, update: l, create: { code, ...l } });
+  }
+  for (const { state, rate } of demoTaxRates) {
+    await prisma.salesTaxRate.upsert({ where: { state }, update: { rate }, create: { state, rate } });
+  }
+  for (const { id, ...op } of demoProcesses) {
+    await prisma.processingOperation.upsert({ where: { id }, update: op, create: { id, ...op } });
+  }
+  for (const { id, ...t } of demoTemplates) {
+    await prisma.processingTemplate.upsert({ where: { id }, update: t, create: { id, ...t } });
+  }
+  console.log(`  intake set-up: ${demoPriceLevels.length} price levels, ${demoTaxRates.length} tax rates, ${demoProcesses.length} operations, ${demoTemplates.length} templates`);
+  return { priceLevels: demoPriceLevels.length, taxRates: demoTaxRates.length, operations: demoProcesses.length, templates: demoTemplates.length };
+}
+
 /**
  * The demo data set in parts. Each part is safe to re-run on its own, and the
  * parts are small enough to finish inside one serverless request. Order
@@ -284,6 +302,7 @@ export const DEMO_PARTS = {
   'shop-floor': seedShopFloor,
   'inventory-v1': seedInventoryV1,
   catalog: seedCatalog,
+  'intake-setup': seedIntakeSetup,
 };
 
 /**

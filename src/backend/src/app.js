@@ -43,6 +43,7 @@ import remnantRoutes from './routes/remnants.js';
 import ecomRoutes, { adminCatalogRouter } from './routes/ecom.js';
 import { enterpriseRouter, myOrdersRouter } from './routes/portal.js';
 import processingRecipeRoutes from './routes/processingRecipes.js';
+import { apiGate } from './middleware/apiGate.js';
 import onlineSettingsRoutes from './routes/onlineSettings.js';
 import demandShapingRoutes from './routes/demandShaping.js';
 import compressionMetricsRoutes from './routes/compressionMetrics.js';
@@ -156,6 +157,9 @@ app.get('/api/health', async (req, res) => {
     res.status(503).json({ status: 'degraded', database: 'unreachable', timestamp });
   }
 });
+
+// Every API route below needs a signed-in user unless apiGate lists it as public.
+app.use('/api', apiGate);
 
 // API Routes
 app.use('/api/auth', authRoutes);

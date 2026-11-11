@@ -50,8 +50,15 @@ export function getRenderUrl(printJobId) {
  * Open the print dialog for a tag in a new window
  */
 export function openPrintWindow(printJobId) {
-  const url = getRenderUrl(printJobId);
-  const win = window.open(url, `print-${printJobId}`, 'width=700,height=900,toolbar=0,menubar=0');
+  // The render route needs the sign-in token, which a plain window.open can't
+  // send, so open a blank window and write the fetched tag into it.
+  const win = window.open('', `print-${printJobId}`, 'width=700,height=900,toolbar=0,menubar=0');
+  if (win) {
+    fetch(getRenderUrl(printJobId))
+      .then((res) => (res.ok ? res.text() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then((html) => { win.document.open(); win.document.write(html); win.document.close(); })
+      .catch((err) => { win.document.body.textContent = `Could not load the tag: ${err.message}`; });
+  }
   return win;
 }
 

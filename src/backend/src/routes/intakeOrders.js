@@ -44,7 +44,7 @@ export function packNotes(userNotes, meta) {
 }
 
 /** Unpack notes string → { userNotes, meta } */
-function unpackNotes(raw) {
+export function unpackNotes(raw) {
   if (!raw) return { userNotes: '', meta: {} };
   try {
     const parsed = JSON.parse(raw);

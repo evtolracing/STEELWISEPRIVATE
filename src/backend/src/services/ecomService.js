@@ -274,7 +274,8 @@ export async function taxEstimate({ subtotal = 0, shipToState = 'MI', customerId
   let rate = 0;
   let exempt = false;
   if (customerId) {
-    const c = await prisma.organization.findUnique({ where: { id: String(customerId) }, select: { taxExempt: true } }).catch(() => null);
+    const key = String(customerId);
+    const c = await prisma.organization.findFirst({ where: { OR: [{ id: key }, { code: key }] }, select: { taxExempt: true } });
     exempt = Boolean(c?.taxExempt);
   }
   if (!exempt) {
@@ -365,7 +366,8 @@ export async function checkout(payload = {}, { quote = false } = {}) {
 
   let customerId = null;
   if (payload.customerId) {
-    const org = await prisma.organization.findUnique({ where: { id: String(payload.customerId) }, select: { id: true } }).catch(() => null);
+    const key = String(payload.customerId);
+    const org = await prisma.organization.findFirst({ where: { OR: [{ id: key }, { code: key }] }, select: { id: true } });
     customerId = org?.id || null;
   }
 

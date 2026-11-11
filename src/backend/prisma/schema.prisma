@@ -5026,3 +5026,27 @@ model RecipeRoutingTemplate {
   steps     Json     @default("[]") // [{ seq, recipeId }]
   updatedAt DateTime @updatedAt
 }
+
+/// Small named settings documents (online checkout rules, cutoffs, demand-shaping tables, ...).
+model AppSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+/// Demand-shaping suggestions shown to CSRs or store customers, and what they did with them.
+model DemandSuggestionEvent {
+  id            String   @id @default(uuid())
+  suggestionId  String
+  action        String // SHOWN | ACCEPTED | DISMISSED
+  type          String // ALT_DATE | ALT_BRANCH | NON_RUSH | CONSOLIDATE | OFF_PEAK
+  savingsAmount Decimal  @default(0)
+  source        String? // CSR | ECOMMERCE
+  branchKey     String?
+  orderId       String?
+  reason        String?
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([suggestionId])
+}

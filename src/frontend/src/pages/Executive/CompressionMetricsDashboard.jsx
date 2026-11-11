@@ -81,9 +81,8 @@ import {
   METRIC_STAGE_LABELS,
   METRIC_STAGE_COLORS,
   SLA_TARGETS,
-  BRANCHES,
   DIVISIONS,
-  MOCK_CSRS,
+  getCompressionFilters,
   TIME_RANGE,
   formatHours,
   slaColor,
@@ -106,6 +105,13 @@ const CompressionMetricsDashboard = () => {
   const [division, setDivision] = useState('');
   const [csrId, setCsrId] = useState('');
   const [timeRange, setTimeRange] = useState(TIME_RANGE.LAST_30);
+  const [filterOptions, setFilterOptions] = useState({ branches: [], csrs: [], divisions: DIVISIONS });
+
+  useEffect(() => {
+    getCompressionFilters()
+      .then(({ data }) => setFilterOptions({ branches: data.branches || [], csrs: data.csrs || [], divisions: data.divisions || DIVISIONS }))
+      .catch(() => {});
+  }, []);
 
   // Data
   const [overview, setOverview] = useState(null);
@@ -259,21 +265,21 @@ const CompressionMetricsDashboard = () => {
             <InputLabel>Branch</InputLabel>
             <Select value={branchId} label="Branch" onChange={e => setBranchId(e.target.value)}>
               <MenuItem value="">All Branches</MenuItem>
-              {BRANCHES.map(b => <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>)}
+              {filterOptions.branches.map(b => <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>)}
             </Select>
           </FormControl>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>Division</InputLabel>
             <Select value={division} label="Division" onChange={e => setDivision(e.target.value)}>
               <MenuItem value="">All Divisions</MenuItem>
-              {DIVISIONS.map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
+              {filterOptions.divisions.map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
             </Select>
           </FormControl>
           <FormControl size="small" sx={{ minWidth: 130 }}>
             <InputLabel>CSR</InputLabel>
             <Select value={csrId} label="CSR" onChange={e => setCsrId(e.target.value)}>
               <MenuItem value="">All CSRs</MenuItem>
-              {MOCK_CSRS.map(c => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
+              {filterOptions.csrs.map(c => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
             </Select>
           </FormControl>
           <FormControl size="small" sx={{ minWidth: 130 }}>

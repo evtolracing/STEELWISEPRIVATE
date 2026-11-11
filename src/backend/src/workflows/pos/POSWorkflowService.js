@@ -12,13 +12,9 @@ import { executeEffect, recalculatePricing } from './effects.js';
 import { getPricingService } from './POSPricingService.js';
 import { divisionService, DivisionFlowResult } from './DivisionService.js';
 import { ci } from '../../lib/dbText.js';
+import { getMachine, createMachine, saveMachine, endMachine, listActiveMachines } from './sessionStore.js';
 const pricingService = getPricingService();
 
-// ============================================
-// SESSION STORE (In-Memory - Replace with Redis for production)
-// ============================================
-
-const sessionStore = new Map();
 
 // ============================================
 // POS WORKFLOW SERVICE
@@ -62,7 +58,7 @@ class POSWorkflowService {
     const machine = new POSWorkflowStateMachine(sessionId, initialContext);
     
     // Store session
-    sessionStore.set(sessionId, machine);
+    await createMachine(machine, { userId: user.id, terminalId });
     
     // Log session creation
     console.log(`[POS] Session created: ${sessionId} by ${user.email}`);
@@ -79,8 +75,8 @@ class POSWorkflowService {
   /**
    * Get an existing session
    */
-  getSession(sessionId) {
-    const machine = sessionStore.get(sessionId);
+  async getSession(sessionId) {
+    const machine = await getMachine(sessionId);
     
     if (!machine) {
       return null;
@@ -104,10 +100,11 @@ class POSWorkflowService {
   /**
    * Get all active sessions (for admin/monitoring)
    */
-  getAllSessions() {
+  async getAllSessions() {
     const sessions = [];
     
-    for (const [sessionId, machine] of sessionStore.entries()) {
+    for (const machine of await listActiveMachines()) {
+      const sessionId = machine.sessionId;
       sessions.push({
         sessionId,
         currentState: machine.currentState,
@@ -126,14 +123,11 @@ class POSWorkflowService {
   /**
    * Delete/end a session
    */
-  endSession(sessionId) {
-    const machine = sessionStore.get(sessionId);
-    
-    if (!machine) {
+  async endSession(sessionId) {
+    if (!await endMachine(sessionId)) {
       return { success: false, error: 'Session not found' };
     }
-    
-    sessionStore.delete(sessionId);
+
     console.log(`[POS] Session ended: ${sessionId}`);
     
     return { success: true, sessionId };
@@ -143,7 +137,7 @@ class POSWorkflowService {
    * Suspend session (for timeout)
    */
   async suspendSession(sessionId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     
     if (!machine) {
       return { success: false, error: 'Session not found' };
@@ -169,7 +163,7 @@ class POSWorkflowService {
    * Execute a workflow transition
    */
   async transition(sessionId, trigger, payload = {}) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     
     if (!machine) {
       return { success: false, error: 'Session not found' };
@@ -211,8 +205,8 @@ class POSWorkflowService {
   /**
    * Get available actions for current state
    */
-  getAvailableActions(sessionId) {
-    const machine = sessionStore.get(sessionId);
+  async getAvailableActions(sessionId) {
+    const machine = await getMachine(sessionId);
     
     if (!machine) {
       return { error: 'Session not found' };
@@ -246,7 +240,7 @@ class POSWorkflowService {
    * Search for customers
    */
   async searchCustomers(sessionId, query) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     // Search organizations that are customers
@@ -284,7 +278,7 @@ class POSWorkflowService {
    * Select a customer for the order
    */
   async selectCustomer(sessionId, customerId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const customer = await prisma.organization.findUnique({
@@ -331,7 +325,7 @@ class POSWorkflowService {
    * Create a new quick customer
    */
   async createQuickCustomer(sessionId, customerData) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     // Create the organization
@@ -384,7 +378,7 @@ class POSWorkflowService {
    * Determine division selection flow for current session
    */
   async getDivisionFlow(sessionId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const customer = machine.context.customer;
@@ -403,7 +397,7 @@ class POSWorkflowService {
    * Select division and ship-to for the order
    */
   async selectDivision(sessionId, divisionId, shipToId = null, jobId = null) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const customer = machine.context.customer;
@@ -444,7 +438,7 @@ class POSWorkflowService {
    * Get ship-to addresses for a division
    */
   async getDivisionShipTos(sessionId, divisionId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const customer = machine.context.customer;
@@ -462,7 +456,7 @@ class POSWorkflowService {
    * Search for products
    */
   async searchProducts(sessionId, query, filters = {}) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const products = await prisma.product.findMany({
@@ -508,7 +502,7 @@ class POSWorkflowService {
    * Get product details with availability
    */
   async getProductDetails(sessionId, productId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const product = await prisma.product.findUnique({
@@ -571,7 +565,7 @@ class POSWorkflowService {
    * Add a product to the order
    */
   async addProduct(sessionId, productData) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     // Get current pricing for the product
@@ -592,7 +586,7 @@ class POSWorkflowService {
    * Add a processed item to the order
    */
   async addProcessedItem(sessionId, productData, processingConfig) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     // Calculate pricing including processing
@@ -617,7 +611,7 @@ class POSWorkflowService {
    * Update a line item
    */
   async updateLine(sessionId, lineId, updates) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const lines = machine.context.lines || [];
@@ -663,7 +657,7 @@ class POSWorkflowService {
    * Remove a line item
    */
   async removeLine(sessionId, lineId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const lines = machine.context.lines || [];
@@ -696,7 +690,7 @@ class POSWorkflowService {
    * Calculate line price using the pricing service
    */
   async calculateLinePrice(sessionId, lineData) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     
     // Get customer context for pricing
     const customer = machine?.context?.customer || null;
@@ -827,7 +821,7 @@ class POSWorkflowService {
    * Apply a discount
    */
   async applyDiscount(sessionId, discountData) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const discount = {
@@ -866,7 +860,7 @@ class POSWorkflowService {
    * Remove a discount
    */
   async removeDiscount(sessionId, discountId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const discounts = (machine.context.pricing.discounts || []).filter(d => d.id !== discountId);
@@ -890,7 +884,7 @@ class POSWorkflowService {
    * Approve a discount (manager approval)
    */
   async approveDiscount(sessionId, discountId, credentials) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     // Find the discount
@@ -932,7 +926,7 @@ class POSWorkflowService {
    * Recalculate all order pricing
    */
   async recalculateOrderPricing(sessionId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const pricing = recalculatePricing(machine.context.lines, machine.context.pricing);
@@ -950,7 +944,7 @@ class POSWorkflowService {
    * Get pricing summary
    */
   async getPricingSummary(sessionId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const pricing = machine.context.pricing || {};
@@ -984,7 +978,7 @@ class POSWorkflowService {
    * Submit the order
    */
   async submitOrder(sessionId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return { error: 'Session not found' };
     
     const ctx = machine.context;
@@ -1117,7 +1111,7 @@ class POSWorkflowService {
    * Check inventory for a line item
    */
   async checkInventoryForLine(sessionId, lineId, productId = null) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return;
     
     const line = machine.context.lines?.find(l => l.id === lineId);
@@ -1156,7 +1150,7 @@ class POSWorkflowService {
    * Check processing availability
    */
   async checkProcessingAvailability(sessionId, lineId, operationType) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return;
     
     const line = machine.context.lines?.find(l => l.id === lineId);
@@ -1181,7 +1175,7 @@ class POSWorkflowService {
    * Reprice a line and check inventory
    */
   async repriceAndCheckLine(sessionId, lineId) {
-    const machine = sessionStore.get(sessionId);
+    const machine = await getMachine(sessionId);
     if (!machine) return;
     
     const line = machine.context.lines?.find(l => l.id === lineId);
@@ -1201,6 +1195,24 @@ class POSWorkflowService {
     machine.context.pricing = recalculatePricing(machine.context.lines, machine.context.pricing);
     machine.context.lastActivity = new Date();
   }
+}
+
+// Save the session after every method that can change it. Nested calls
+// (selectCustomer -> transition) work on the same cached machine and each
+// save; the last save holds the final state.
+const READ_ONLY = new Set([
+  'constructor', 'createSession', 'getSession', 'getAllSessions', 'endSession',
+  'getAvailableActions', 'getDivisionFlow', 'getDivisionShipTos', 'searchProducts',
+  'getProductDetails', 'getPricingSummary', 'searchCustomers', 'calculateProcessingPrice',
+]);
+for (const name of Object.getOwnPropertyNames(POSWorkflowService.prototype)) {
+  const original = POSWorkflowService.prototype[name];
+  if (READ_ONLY.has(name) || typeof original !== 'function') continue;
+  POSWorkflowService.prototype[name] = async function (sessionId, ...args) {
+    const result = await original.call(this, sessionId, ...args);
+    if (typeof sessionId === 'string') await saveMachine(sessionId);
+    return result;
+  };
 }
 
 // Export singleton instance

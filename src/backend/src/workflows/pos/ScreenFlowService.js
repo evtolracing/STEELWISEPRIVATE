@@ -70,8 +70,8 @@ class ScreenFlowManager {
   /**
    * Initialize screen flow for a session
    */
-  initializeFlow(sessionId, flowId) {
-    const session = posWorkflowService.getSession(sessionId);
+  async initializeFlow(sessionId, flowId) {
+    const session = await posWorkflowService.getSession(sessionId);
     if (!session) {
       return { error: 'Session not found' };
     }
@@ -111,8 +111,8 @@ class ScreenFlowManager {
   /**
    * Get current screen for a session based on workflow state
    */
-  getCurrentScreen(sessionId, flowId) {
-    const session = posWorkflowService.getSession(sessionId);
+  async getCurrentScreen(sessionId, flowId) {
+    const session = await posWorkflowService.getSession(sessionId);
     if (!session) {
       return { error: 'Session not found' };
     }
@@ -234,8 +234,8 @@ class ScreenFlowManager {
   /**
    * Validate current screen data
    */
-  validateScreen(sessionId, flowId, screenId = null) {
-    const session = posWorkflowService.getSession(sessionId);
+  async validateScreen(sessionId, flowId, screenId = null) {
+    const session = await posWorkflowService.getSession(sessionId);
     if (!session) {
       return { valid: false, errors: [{ message: 'Session not found' }] };
     }
@@ -308,8 +308,8 @@ class ScreenFlowManager {
   /**
    * Get next screen in flow (accounting for skip/show conditions)
    */
-  getNextScreen(sessionId, flowId) {
-    const session = posWorkflowService.getSession(sessionId);
+  async getNextScreen(sessionId, flowId) {
+    const session = await posWorkflowService.getSession(sessionId);
     if (!session) {
       return { error: 'Session not found' };
     }
@@ -350,8 +350,8 @@ class ScreenFlowManager {
   /**
    * Get previous screen in flow
    */
-  getPreviousScreen(sessionId, flowId) {
-    const session = posWorkflowService.getSession(sessionId);
+  async getPreviousScreen(sessionId, flowId) {
+    const session = await posWorkflowService.getSession(sessionId);
     if (!session) {
       return { error: 'Session not found' };
     }
@@ -390,7 +390,7 @@ class ScreenFlowManager {
    */
   async navigateNext(sessionId, flowId) {
     // Validate current screen first
-    const validation = this.validateScreen(sessionId, flowId);
+    const validation = await this.validateScreen(sessionId, flowId);
     if (!validation.valid) {
       return {
         success: false,
@@ -399,7 +399,7 @@ class ScreenFlowManager {
       };
     }
     
-    const nextScreen = this.getNextScreen(sessionId, flowId);
+    const nextScreen = await this.getNextScreen(sessionId, flowId);
     
     if (nextScreen.error) {
       return { success: false, error: nextScreen.error };
@@ -410,8 +410,8 @@ class ScreenFlowManager {
     }
     
     // Find the trigger to transition to next screen's state
-    const session = posWorkflowService.getSession(sessionId);
-    const availableActions = posWorkflowService.getAvailableActions(sessionId);
+    const session = await posWorkflowService.getSession(sessionId);
+    const availableActions = await posWorkflowService.getAvailableActions(sessionId);
     
     // Find action that leads to the next screen's state
     const transitionAction = availableActions.actions?.find(
@@ -439,7 +439,7 @@ class ScreenFlowManager {
    * Navigate to previous screen
    */
   async navigatePrevious(sessionId, flowId) {
-    const prevScreen = this.getPreviousScreen(sessionId, flowId);
+    const prevScreen = await this.getPreviousScreen(sessionId, flowId);
     
     if (prevScreen.error) {
       return { success: false, error: prevScreen.error };
@@ -450,7 +450,7 @@ class ScreenFlowManager {
     }
     
     // Find the back trigger
-    const availableActions = posWorkflowService.getAvailableActions(sessionId);
+    const availableActions = await posWorkflowService.getAvailableActions(sessionId);
     const backAction = availableActions.actions?.find(a => a.trigger === 'back');
     
     if (backAction) {
@@ -472,8 +472,8 @@ class ScreenFlowManager {
   /**
    * Get flow progress summary
    */
-  getFlowProgress(sessionId, flowId) {
-    const session = posWorkflowService.getSession(sessionId);
+  async getFlowProgress(sessionId, flowId) {
+    const session = await posWorkflowService.getSession(sessionId);
     if (!session) {
       return { error: 'Session not found' };
     }

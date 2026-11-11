@@ -4747,3 +4747,21 @@ model PipelineRun {
   @@index([currentStage])
   @@index([updatedAt])
 }
+
+/// Shop-floor and operations exception feed (scrap, QC holds, downtime, …).
+model ExceptionEvent {
+  id             String    @id
+  type           String
+  message        String
+  severity       String    @default("INFO")
+  locationId     String?
+  workCenterId   String?
+  acknowledged   Boolean   @default(false)
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
+  occurredAt     DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+
+  @@index([locationId, occurredAt])
+  @@index([acknowledged, occurredAt])
+}

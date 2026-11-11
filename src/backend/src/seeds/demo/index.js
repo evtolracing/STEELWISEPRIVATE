@@ -11,6 +11,7 @@
 import prisma from '../../lib/db.js';
 import { executiveDecisions } from './executiveDecisions.js';
 import { buildOrderHubDemoData } from './orderHubData.js';
+import { exceptionEvents } from './exceptionEvents.js';
 
 const customers = [
   {
@@ -146,6 +147,21 @@ async function seedOrderHub() {
   return { contacts: contacts.length, rfqs: rfqs.length, quotes: quotes.length, orders: orders.length, jobs: jobs.length };
 }
 
+async function seedExceptions() {
+  const now = Date.now();
+  for (const { id, minutesAgo, ...fields } of exceptionEvents) {
+    const data = {
+      ...fields,
+      occurredAt: new Date(now - minutesAgo * 60 * 1000),
+      acknowledgedAt: fields.acknowledged ? new Date(now - (minutesAgo - 5) * 60 * 1000) : null,
+      acknowledgedBy: fields.acknowledged ? 'demo' : null,
+    };
+    await prisma.exceptionEvent.upsert({ where: { id }, update: data, create: { id, ...data } });
+  }
+  console.log(`  exceptions: ${exceptionEvents.length}`);
+  return exceptionEvents.length;
+}
+
 /**
  * Loads all demo data. Returns a summary of what was loaded.
  */
@@ -155,6 +171,7 @@ export async function seedDemo() {
   await seedCustomers();
   await seedExecutive();
   const orderHub = await seedOrderHub();
+  const exceptions = await seedExceptions();
   console.log('Done.');
-  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub };
+  return { customers: customers.length, executiveDecisions: executiveDecisions.length, scenarios: 1, orderHub, exceptions };
 }

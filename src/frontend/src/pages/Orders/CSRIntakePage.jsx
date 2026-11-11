@@ -101,7 +101,7 @@ export default function CSRIntakePage() {
   const { loadDefaults: loadCustomerDefaults, badges: prefBadges, hasPreferences: hasCustPrefs, applied: prefsApplied, applyDefaults, prefs: custPrefs } = useCustomerDefaults()
 
   // ── demand shaping suggestions ──
-  const demandCtx = { branchKey: location, priority, division, requestedDate, lines, source: 'CSR' }
+  const demandCtx = { branchKey: location, priority, division, requestedDate, lines, source: 'CSR', customerId: customer?.id || customer?.code }
   const { suggestions: shapingSuggestions, loading: shapingLoading, handleAccept: handleShapingAccept, handleDismiss: handleShapingDismiss } = useDemandShaping(demandCtx, {
     onApply: ({ field, value }) => {
       if (field === 'requestedDate') setRequestedDate(value)

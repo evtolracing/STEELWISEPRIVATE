@@ -43,6 +43,9 @@ import remnantRoutes from './routes/remnants.js';
 import ecomRoutes, { adminCatalogRouter } from './routes/ecom.js';
 import { enterpriseRouter, myOrdersRouter } from './routes/portal.js';
 import processingRecipeRoutes from './routes/processingRecipes.js';
+import onlineSettingsRoutes from './routes/onlineSettings.js';
+import demandShapingRoutes from './routes/demandShaping.js';
+import compressionMetricsRoutes from './routes/compressionMetrics.js';
 import dispatchRoutes from './routes/dispatchRoutes.js';
 import operationsRoutes from './routes/operationsRoutes.js';
 import orderHubRoutes from './routes/orderHubRoutes.js';
@@ -169,6 +172,8 @@ app.use('/api/ecom/my-orders', myOrdersRouter);
 app.use('/api/ecom', ecomRoutes);
 app.use('/api/enterprise', enterpriseRouter);
 app.use('/api/processing-recipes', processingRecipeRoutes);
+app.use('/api/demand-shaping', demandShapingRoutes);
+app.use('/api/metrics/compression', compressionMetricsRoutes);
 app.use('/api/pricing', intakePricingRoutes);
 app.use('/api/processing', intakeProcessingRoutes);
 app.use('/api/orders', orderRoutes);
@@ -214,6 +219,7 @@ app.use('/api/sales', salesRoutes);
 // Executive Ops Cockpit
 app.use('/api/executive', executiveRoutes);
 app.use('/api/admin/catalog', adminCatalogRouter);
+app.use('/api/admin/online-settings', onlineSettingsRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Drop Tag Engine

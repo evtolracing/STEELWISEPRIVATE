@@ -25,6 +25,7 @@ import { demoRemnants } from './remnants.js';
 import { demoStoreListings } from './storeListings.js';
 import { portalTier, portalOrders, portalWebOrders } from './portal.js';
 import { demoRecipes, demoRoutingTemplates } from './processingRecipes.js';
+import { analyticsBranches, analyticsCsrs, buildAnalyticsOrders, buildDemandEvents } from './analytics.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -427,6 +428,100 @@ async function seedProcessingRecipes() {
   return { recipes: demoRecipes.length, routingTemplates: demoRoutingTemplates.length };
 }
 
+/**
+ * Analytics history: branches, CSRs, 90 days of order timelines for the
+ * compression dashboard, and 12 weeks of demand-shaping events. Uses bulk
+ * inserts so it fits in one serverless request.
+ */
+async function seedAnalytics() {
+  const HOUR = 3600000;
+  const now = Date.now();
+  const ago = (h) => (h == null ? null : new Date(now - h * HOUR));
+  const owner = await prisma.organization.upsert({ where: { code: demoOwner.code }, update: demoOwner, create: demoOwner });
+  const loc = {};
+  for (const b of analyticsBranches) {
+    const data = { code: b.code, name: b.name, type: 'WAREHOUSE', city: b.city, state: 'MI', ownerId: owner.id };
+    loc[b.code] = await prisma.location.upsert({ where: { code: b.code }, update: { name: b.name, city: b.city }, create: data });
+  }
+  for (const { branch, pace, ...u } of analyticsCsrs) {
+    const data = { ...u, role: 'CSR', title: 'Customer Service Rep', organizationId: owner.id, homeLocationId: loc[branch].id };
+    await prisma.user.upsert({ where: { id: u.id }, update: data, create: { ...data, passwordHash: '!' } });
+  }
+  const buyers = await prisma.organization.findMany({ where: { code: { in: ['ACME', 'ACME-AUTO', 'ACME-AERO'] } }, select: { id: true } });
+  const buyerIds = buyers.length ? buyers.map((b) => b.id) : [owner.id];
+  const products = await prisma.product.findMany({ select: { id: true, sku: true, gradeId: true } });
+  const bySku = new Map(products.map((p) => [p.sku, p]));
+
+  const orders = buildAnalyticsOrders();
+  const ids = orders.map((o) => `cmp-so-${o.n}`);
+  await prisma.shipment.deleteMany({ where: { orderId: { in: ids } } });
+  await prisma.job.deleteMany({ where: { orderId: { in: ids } } });
+  await prisma.onlineOrder.deleteMany({ where: { id: { in: orders.map((o) => `cmp-web-${o.n}`) } } });
+  await prisma.quote.deleteMany({ where: { id: { in: orders.map((o) => `cmp-q-${o.n}`) } } });
+  await prisma.rFQ.deleteMany({ where: { id: { in: orders.map((o) => `cmp-rfq-${o.n}`) } } });
+  await prisma.orderLine.deleteMany({ where: { orderId: { in: ids } } });
+  await prisma.order.deleteMany({ where: { id: { in: ids } } });
+
+  const total = (o) => Math.round(o.qty * o.price * 100) / 100;
+  await prisma.order.createMany({
+    data: orders.map((o, i) => ({
+      id: `cmp-so-${o.n}`, orderNumber: `SO-C20${o.n}`, orderType: 'SO', status: o.shippedAgo ? 'COMPLETE' : 'CONFIRMED',
+      buyerId: buyerIds[i % buyerIds.length], sellerId: owner.id, orderDate: ago(o.orderAgo), createdAt: ago(o.orderAgo),
+      subtotal: total(o), totalAmount: total(o), createdById: o.csrId, poReference: `PO-C${7100 + i}`,
+    })),
+  });
+  await prisma.orderLine.createMany({
+    data: orders.map((o) => {
+      const p = bySku.get(o.sku);
+      return {
+        id: `cmp-so-${o.n}-L1`, orderId: `cmp-so-${o.n}`, lineNumber: 1, productId: p?.id || null, gradeId: p?.gradeId || null,
+        description: o.description, qtyOrdered: o.qty, qtyShipped: o.shippedAgo ? o.qty : 0, unit: 'EA', unitPrice: o.price,
+        priceUnit: 'EACH', extendedPrice: total(o), lineStatus: o.shippedAgo ? 'COMPLETE' : 'OPEN',
+      };
+    }),
+  });
+  const quoted = orders.filter((o) => o.quoteAgo != null);
+  await prisma.rFQ.createMany({
+    data: quoted.map((o, i) => ({ id: `cmp-rfq-${o.n}`, rfqNumber: `RFQ-C30${o.n}`, customerId: buyerIds[i % buyerIds.length], status: 'ACCEPTED', createdAt: ago(o.quoteAgo + 4), submittedAt: ago(o.quoteAgo + 4) })),
+  });
+  await prisma.quote.createMany({
+    data: quoted.map((o) => ({
+      id: `cmp-q-${o.n}`, quoteNumber: `Q-C50${o.n}`, rfqId: `cmp-rfq-${o.n}`, status: 'ACCEPTED', subtotal: total(o), totalAmount: total(o),
+      createdAt: ago(o.quoteAgo), sentAt: ago(o.quoteAgo), acceptedAt: ago(o.orderAgo), convertedOrderId: `cmp-so-${o.n}`, createdById: o.csrId,
+    })),
+  });
+  const web = orders.filter((o) => o.webReceivedAgo != null);
+  await prisma.onlineOrder.createMany({
+    data: web.map((o) => ({
+      id: `cmp-web-${o.n}`, externalOrderId: `WEB-C60${o.n}`, source: 'ONLINE', status: 'ACCEPTED', customerName: 'Acme Manufacturing',
+      items: [{ lineNumber: 1, sku: o.sku, description: o.description, qty: o.qty, unitPrice: o.price, extended: total(o) }],
+      subtotal: total(o), receivedAt: ago(o.webReceivedAgo), decidedAt: ago(o.orderAgo), internalOrderId: `cmp-so-${o.n}`,
+    })),
+  });
+  const scheduled = orders.filter((o) => o.scheduledAgo != null);
+  await prisma.job.createMany({
+    data: scheduled.map((o) => ({
+      id: `cmp-job-${o.n}`, jobNumber: `J-C20${o.n}`, orderId: `cmp-so-${o.n}`, status: o.shippedAgo ? 'SHIPPED' : 'SCHEDULED',
+      operationType: 'SAW', createdAt: ago(o.scheduledAgo), scheduledStart: ago(o.scheduledAgo), createdById: o.csrId,
+      shippedAt: ago(o.shippedAgo),
+    })),
+  });
+  const shipped = orders.filter((o) => o.shippedAgo != null);
+  await prisma.shipment.createMany({
+    data: shipped.map((o) => ({
+      id: `cmp-shp-${o.n}`, shipmentNumber: `SHP-C20${o.n}`, orderId: `cmp-so-${o.n}`, fromLocationId: loc[o.branchCode].id,
+      status: 'DELIVERED', scheduledDate: ago(o.shippedAgo), shippedAt: ago(o.shippedAgo), deliveredAt: ago(Math.max(0, o.shippedAgo - 20)),
+      carrierName: 'Company Truck', createdAt: ago(o.scheduledAgo),
+    })),
+  });
+
+  await prisma.demandSuggestionEvent.deleteMany({ where: { suggestionId: { startsWith: 'seed-ds-' } } });
+  const events = buildDemandEvents();
+  await prisma.demandSuggestionEvent.createMany({ data: events });
+
+  return { branches: analyticsBranches.length, csrs: analyticsCsrs.length, orders: orders.length, quotes: quoted.length, webOrders: web.length, shipments: shipped.length, demandEvents: events.length };
+}
+
 export const DEMO_PARTS = {
   customers: async () => { await seedCustomers(); return customers.length; },
   executive: async () => { await seedExecutive(); return { executiveDecisions: executiveDecisions.length, scenarios: 1 }; },
@@ -441,6 +536,7 @@ export const DEMO_PARTS = {
   'store-listings': seedStoreListings,
   portal: seedPortal,
   'processing-recipes': seedProcessingRecipes,
+  analytics: seedAnalytics,
 };
 
 /**

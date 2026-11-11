@@ -50,6 +50,7 @@ export default function useDemandShaping(ctx = {}, options = {}) {
       d: ctx.division,
       dt: ctx.requestedDate,
       n: ctx.lines?.length,
+      c: ctx.customerId,
     })
     if (ctxKey === lastCtxRef.current) return
     lastCtxRef.current = ctxKey
@@ -60,7 +61,7 @@ export default function useDemandShaping(ctx = {}, options = {}) {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [ctx.branchKey, ctx.priority, ctx.division, ctx.requestedDate, ctx.lines?.length, fetchSuggestions])
+  }, [ctx.branchKey, ctx.priority, ctx.division, ctx.requestedDate, ctx.lines?.length, ctx.customerId, fetchSuggestions])
 
   // Accept handler — apply suggestion to form + record analytics
   const handleAccept = useCallback(async (suggestion) => {

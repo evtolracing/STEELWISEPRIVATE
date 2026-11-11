@@ -11,7 +11,7 @@ import express from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import prisma from '../lib/db.js'
 import {
-  divisions,
+  divisions as DEFAULT_DIVISIONS,
   compareSkillLevel,
 } from '../data/dispatchData.js'
 
@@ -293,25 +293,45 @@ router.delete('/work-center-types/:id', async (req, res) => {
 /**
  * GET /v1/dispatch/divisions
  */
-router.get('/divisions', (req, res) => {
-  res.json({ success: true, data: divisions })
+// The two built-in divisions are created on first use.
+async function listDivisions() {
+  if ((await prisma.dispatchDivision.count()) === 0) {
+    await prisma.dispatchDivision.createMany({ data: DEFAULT_DIVISIONS, skipDuplicates: true })
+  }
+  const rows = await prisma.dispatchDivision.findMany({ orderBy: { createdAt: 'asc' } })
+  return rows.map(({ id, label, color, isActive }) => ({ id, label, color, isActive }))
+}
+
+router.get('/divisions', async (req, res) => {
+  try {
+    res.json({ success: true, data: await listDivisions() })
+  } catch (error) {
+    console.error('Error fetching divisions:', error)
+    res.status(500).json({ success: false, error: 'Failed to fetch divisions' })
+  }
 })
 
 /**
  * POST /v1/dispatch/divisions
  */
-router.post('/divisions', (req, res) => {
-  const { id, label, color } = req.body
-  if (!id || !label) {
-    return res.status(400).json({ success: false, error: 'id and label are required' })
+router.post('/divisions', async (req, res) => {
+  try {
+    const { id, label, color } = req.body || {}
+    if (!id || !label) {
+      return res.status(400).json({ success: false, error: 'id and label are required' })
+    }
+    const normalizedId = id.toUpperCase().replace(/[^A-Z0-9_]/g, '_')
+    const existing = (await listDivisions()).find((d) => d.id === normalizedId)
+    if (existing) {
+      return res.status(409).json({ success: false, error: `Division '${normalizedId}' already exists` })
+    }
+    const newDiv = { id: normalizedId, label: label.trim(), color: color || '#666', isActive: true }
+    await prisma.dispatchDivision.create({ data: newDiv })
+    res.status(201).json({ success: true, data: newDiv })
+  } catch (error) {
+    console.error('Error creating division:', error)
+    res.status(500).json({ success: false, error: 'Failed to create division' })
   }
-  const normalizedId = id.toUpperCase().replace(/[^A-Z0-9_]/g, '_')
-  if (divisions.find((d) => d.id === normalizedId)) {
-    return res.status(409).json({ success: false, error: `Division '${normalizedId}' already exists` })
-  }
-  const newDiv = { id: normalizedId, label: label.trim(), color: color || '#666', isActive: true }
-  divisions.push(newDiv)
-  res.status(201).json({ success: true, data: newDiv })
 })
 
 // ──────────────────────────────────────────────────────────────────────────────

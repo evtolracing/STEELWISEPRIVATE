@@ -298,10 +298,38 @@ export class PipelineContext {
 // PIPELINE ORCHESTRATOR (MAIN ENGINE)
 // ============================================================================
 
+// Pipelines are kept in the PipelineRun table. A context is saved whole
+// (its own fields, not the toJSON summary) and rebuilt as a PipelineContext.
+function snapshot(ctx) {
+  return JSON.parse(JSON.stringify({ ...ctx }));
+}
+
+function restore(data) {
+  return Object.assign(Object.create(PipelineContext.prototype), data);
+}
+
 export class PipelineOrchestrator {
   constructor() {
-    this.activePipelines = new Map();
     this.domainHandlers = {};
+  }
+
+  db() {
+    if (!prisma) throw new Error('Database is not configured');
+    return prisma;
+  }
+
+  /**
+   * Save a pipeline after changing it
+   */
+  async savePipeline(ctx) {
+    const data = snapshot(ctx);
+    const cols = { currentStage: String(ctx.currentStage), channel: String(ctx.channel || '') };
+    await this.db().pipelineRun.upsert({
+      where: { id: ctx.id },
+      create: { id: ctx.id, ...cols, data },
+      update: { ...cols, data },
+    });
+    return ctx;
   }
   
   /**
@@ -316,22 +344,24 @@ export class PipelineOrchestrator {
    */
   async createPipeline(input) {
     const ctx = new PipelineContext(input);
-    this.activePipelines.set(ctx.id, ctx);
+    await this.savePipeline(ctx);
     return ctx;
   }
   
   /**
    * Get pipeline by ID
    */
-  getPipeline(id) {
-    return this.activePipelines.get(id);
+  async getPipeline(id) {
+    if (!id) return null;
+    const row = await this.db().pipelineRun.findUnique({ where: { id } });
+    return row ? restore(row.data) : null;
   }
   
   /**
    * Advance pipeline to next stage
    */
   async advancePipeline(pipelineId, targetStage = null, payload = {}) {
-    const ctx = this.activePipelines.get(pipelineId);
+    const ctx = await this.getPipeline(pipelineId);
     if (!ctx) {
       throw new Error(`Pipeline ${pipelineId} not found`);
     }
@@ -355,6 +385,7 @@ export class PipelineOrchestrator {
         await handler(ctx, payload);
       } catch (error) {
         ctx.addError(error.message);
+        await this.savePipeline(ctx);
         return {
           success: false,
           error: error.message,
@@ -365,6 +396,7 @@ export class PipelineOrchestrator {
     
     // Transition
     ctx.transitionTo(nextStage, payload.reason || 'Auto-advance');
+    await this.savePipeline(ctx);
     
     return {
       success: true,
@@ -384,7 +416,7 @@ export class PipelineOrchestrator {
     let maxIterations = 50; // Safety limit
     
     while (continueAdvancing && maxIterations > 0) {
-      const ctx = this.activePipelines.get(pipelineId);
+      const ctx = await this.getPipeline(pipelineId);
       if (!ctx) break;
       
       const validNextStages = STAGE_TRANSITIONS[ctx.currentStage] || [];
@@ -408,15 +440,18 @@ export class PipelineOrchestrator {
     return {
       stagesProcessed: results.length,
       results,
-      finalContext: this.activePipelines.get(pipelineId)?.toJSON(),
+      finalContext: (await this.getPipeline(pipelineId))?.toJSON(),
     };
   }
   
   /**
    * Get pipeline status summary
    */
-  getStatus(pipelineId) {
-    const ctx = this.activePipelines.get(pipelineId);
+  async getStatus(pipelineId) {
+    return this.statusOf(await this.getPipeline(pipelineId));
+  }
+
+  statusOf(ctx) {
     if (!ctx) return null;
     
     return {
@@ -441,16 +476,12 @@ export class PipelineOrchestrator {
   /**
    * List all active pipelines
    */
-  listPipelines(filters = {}) {
-    const pipelines = Array.from(this.activePipelines.values());
-    
-    return pipelines
-      .filter(p => {
-        if (filters.stage && p.currentStage !== filters.stage) return false;
-        if (filters.channel && p.channel !== filters.channel) return false;
-        return true;
-      })
-      .map(p => this.getStatus(p.id));
+  async listPipelines(filters = {}) {
+    const where = {};
+    if (filters.stage) where.currentStage = filters.stage;
+    if (filters.channel) where.channel = filters.channel;
+    const rows = await this.db().pipelineRun.findMany({ where, orderBy: { updatedAt: 'desc' }, take: 500 });
+    return rows.map(row => this.statusOf(restore(row.data)));
   }
 }
 

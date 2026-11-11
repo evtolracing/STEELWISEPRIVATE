@@ -13,7 +13,6 @@ const aiService = new AIProviderService();
 
 // ── In-memory store for dismissed/accepted recommendations ──────────
 // In production this would be a DB table; for now, in-memory per server lifecycle
-const recommendationActions = new Map(); // key = recKey, value = { action, timestamp, ... }
 
 // ── Helper: time difference in hours from now ────────────────────────
 function hoursFromNow(date) {
@@ -577,7 +576,6 @@ router.post('/recommendations/accept', async (req, res) => {
       return res.status(400).json({ error: 'Recommendation payload required' });
     }
 
-    const recKey = `rec-${recommendation.id}-${recommendation.title}`;
     const actionToExecute = modifications?.action || recommendation.action;
     const results = [];
 
@@ -671,13 +669,6 @@ router.post('/recommendations/accept', async (req, res) => {
       },
     });
 
-    // Track dismissal so it doesn't re-appear this session
-    recommendationActions.set(recKey, {
-      action: 'accepted',
-      timestamp: new Date().toISOString(),
-      results,
-    });
-
     res.json({
       success: true,
       message: `Recommendation "${recommendation.title}" accepted and executed`,
@@ -698,7 +689,6 @@ router.post('/recommendations/dismiss', async (req, res) => {
       return res.status(400).json({ error: 'Recommendation payload required' });
     }
 
-    const recKey = `rec-${recommendation.id}-${recommendation.title}`;
 
     // Log dismissal
     await prisma.auditLog.create({
@@ -715,12 +705,6 @@ router.post('/recommendations/dismiss', async (req, res) => {
           timestamp: new Date().toISOString(),
         },
       },
-    });
-
-    recommendationActions.set(recKey, {
-      action: 'dismissed',
-      reason: reason || null,
-      timestamp: new Date().toISOString(),
     });
 
     res.json({

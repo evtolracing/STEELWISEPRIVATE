@@ -42,6 +42,12 @@ on and no policies, that API returns nothing. The app connects directly as
 the table owner, which RLS does not restrict. If Supabase asks whether to
 run with RLS, choose to enable it.
 
+Tables created in the SQL Editor belong to the editor's role, so the file
+also gives every table the same owner as `User` (the role the app connects
+as). Without that, RLS blocks the app from writing to the new tables. If
+an older update left tables with the wrong owner, run
+`prisma/upgrades/sql-editor/fix-table-owner.sql` once.
+
 Apply the database update before merging the PR that needs it (the change is
 additive, so the old code keeps working against the new tables).
 

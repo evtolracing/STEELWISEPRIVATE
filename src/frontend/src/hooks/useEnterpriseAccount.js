@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   getAccountProfile,
   getAccountKPIs,
+  currentAccountId,
   hasPermission,
   ACCOUNT_PERMISSIONS,
 } from '../services/customerAccountApi'
@@ -25,8 +26,8 @@ export default function useEnterpriseAccount(accountId) {
     setError(null)
     try {
       const [acctRes, kpiRes] = await Promise.all([
-        getAccountProfile(accountId || 'acct-enterprise-001'),
-        getAccountKPIs(accountId || 'acct-enterprise-001'),
+        getAccountProfile(accountId || currentAccountId()),
+        getAccountKPIs(accountId || currentAccountId()),
       ])
       setAccount(acctRes.data)
       setKpis(kpiRes.data)

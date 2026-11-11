@@ -23,6 +23,7 @@ import { demoGrades, demoProducts, demoStock } from './catalog.js';
 import { demoOnlineOrders } from './onlineOrders.js';
 import { demoRemnants } from './remnants.js';
 import { demoStoreListings } from './storeListings.js';
+import { portalTier, portalOrders, portalWebOrders } from './portal.js';
 import { demoOwner, demoLocation, demoWorkCenters, demoOrders, demoJobs } from './shopFloor.js';
 
 const customers = [
@@ -329,6 +330,91 @@ async function seedStoreListings() {
   return n;
 }
 
+/** Customer-portal history for ACME (run customers and catalog first). Re-running resets it. */
+async function seedPortal() {
+  const days = (d) => new Date(Date.now() + d * 86400000);
+  const orgs = await prisma.organization.findMany({ where: { code: { in: ['ACME', 'ACME-AUTO', 'ACME-AERO'] } } });
+  const org = Object.fromEntries(orgs.map((o) => [o.code, o]));
+  if (!org.ACME) throw new Error('Run the customers part first (ACME account missing)');
+  const creator = await prisma.user.findFirst({ orderBy: { createdAt: 'asc' }, select: { id: true } });
+  if (!creator) throw new Error('No user to own the demo orders');
+  const location = await prisma.location.findFirst({ orderBy: { createdAt: 'asc' }, select: { id: true } });
+  const products = await prisma.product.findMany({ select: { id: true, sku: true, gradeId: true } });
+  const bySku = new Map(products.map((p) => [p.sku, p]));
+
+  await prisma.customerPricingTier.upsert({ where: { customerId: org.ACME.id }, update: portalTier, create: { customerId: org.ACME.id, ...portalTier } });
+
+  const ids = portalOrders.map((o) => o.id);
+  await prisma.onlineOrder.deleteMany({ where: { id: { in: portalWebOrders.map((w) => w.id) } } });
+  await prisma.shipmentItem.deleteMany({ where: { shipment: { orderId: { in: ids } } } });
+  await prisma.shipment.deleteMany({ where: { orderId: { in: ids } } });
+  await prisma.invoice.deleteMany({ where: { orderId: { in: ids } } });
+  await prisma.orderLine.deleteMany({ where: { orderId: { in: ids } } });
+
+  let shipments = 0;
+  for (const o of portalOrders) {
+    const buyer = org[o.buyer] || org.ACME;
+    const subtotal = o.lines.reduce((s, l) => s + l.qty * l.price, 0);
+    const tax = buyer.taxExempt ? 0 : Math.round(subtotal * 0.06 * 100) / 100;
+    const data = {
+      orderNumber: o.orderNumber, orderType: 'SO', status: o.status, buyerId: buyer.id,
+      orderDate: days(o.placedDays), requiredDate: days(o.requiredDays), promisedDate: days(o.requiredDays),
+      subtotal, taxAmount: tax, totalAmount: Math.round((subtotal + tax) * 100) / 100,
+      poReference: o.po, paymentTerms: 'Net 30', createdById: creator.id,
+      shipToAddress: buyer.address || null, shipToCity: buyer.city || null, shipToState: buyer.state || null, shipToZip: buyer.postalCode || null,
+    };
+    await prisma.order.upsert({ where: { id: o.id }, update: data, create: { id: o.id, ...data } });
+    const lineIds = [];
+    for (const [i, l] of o.lines.entries()) {
+      const p = bySku.get(l.sku);
+      const shipped = o.shipments.reduce((s, sh) => s + (sh.status === 'PENDING' ? 0 : sh.ship[i] || 0), 0);
+      const line = await prisma.orderLine.create({
+        data: {
+          id: `${o.id}-L${i + 1}`, orderId: o.id, lineNumber: i + 1, productId: p?.id || null, gradeId: p?.gradeId || null,
+          description: l.description, qtyOrdered: l.qty, qtyShipped: shipped, unit: l.unit, unitPrice: l.price, priceUnit: 'EACH',
+          extendedPrice: Math.round(l.qty * l.price * 100) / 100,
+          lineStatus: shipped >= l.qty ? 'COMPLETE' : shipped > 0 ? 'PARTIAL' : 'OPEN',
+        },
+      });
+      lineIds.push(line.id);
+    }
+    if (location) {
+      for (const sh of o.shipments) {
+        const weight = sh.weight.reduce((s, w) => s + w, 0);
+        await prisma.shipment.create({
+          data: {
+            id: `${o.id}-${sh.n}`, shipmentNumber: sh.n, orderId: o.id, fromLocationId: location.id, carrierName: sh.carrier, status: sh.status,
+            scheduledDate: sh.scheduledDays != null ? days(sh.scheduledDays) : sh.deliveredDays != null ? days(sh.deliveredDays) : null,
+            shippedAt: sh.shippedDays != null ? days(sh.shippedDays) : null, deliveredAt: sh.deliveredDays != null ? days(sh.deliveredDays) : null,
+            totalWeightLb: weight, bolNumber: sh.bol, podCaptured: sh.status === 'DELIVERED',
+            items: { create: sh.ship.map((q, i) => ({ orderLineId: lineIds[i], qtyShipped: q, weightLb: sh.weight[i] })).filter((it) => Number(it.qtyShipped) > 0) },
+          },
+        });
+        shipments += 1;
+      }
+    }
+    if (o.invoice) {
+      await prisma.invoice.create({
+        data: {
+          id: `${o.id}-inv`, invoiceNumber: o.invoice.n, orderId: o.id, invoiceDate: days(o.invoice.days), dueDate: days(o.invoice.days + 30),
+          subtotal, taxAmount: tax, totalAmount: data.totalAmount, paidAmount: o.invoice.status === 'PAID' ? data.totalAmount : 0, status: o.invoice.status,
+        },
+      });
+    }
+  }
+
+  for (const { id, receivedDays, orderId, source, ...w } of portalWebOrders) {
+    const subtotal = w.items.reduce((s, i) => s + i.extended, 0);
+    await prisma.onlineOrder.create({
+      data: {
+        id, ...w, source: source || 'ONLINE', customerName: org.ACME.name, customerEmail: 'purchasing@acme.example', customerId: org.ACME.id,
+        subtotal, receivedAt: days(receivedDays), internalOrderId: orderId || null, decidedAt: orderId ? days(receivedDays) : null,
+      },
+    });
+  }
+  return { orders: portalOrders.length, shipments, webOrders: portalWebOrders.length };
+}
+
 export const DEMO_PARTS = {
   customers: async () => { await seedCustomers(); return customers.length; },
   executive: async () => { await seedExecutive(); return { executiveDecisions: executiveDecisions.length, scenarios: 1 }; },
@@ -341,6 +427,7 @@ export const DEMO_PARTS = {
   'online-orders': seedOnlineOrders,
   remnants: seedRemnants,
   'store-listings': seedStoreListings,
+  portal: seedPortal,
 };
 
 /**

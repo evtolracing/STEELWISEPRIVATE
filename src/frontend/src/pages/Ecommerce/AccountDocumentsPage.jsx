@@ -89,7 +89,7 @@ export default function AccountDocumentsPage() {
     try {
       const res = await downloadDocument(docId)
       // Trigger download
-      const blob = new Blob([res.data], { type: 'application/pdf' })
+      const blob = new Blob([res.data], { type: res.data?.type || 'application/pdf' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url

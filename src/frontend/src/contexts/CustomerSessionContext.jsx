@@ -20,8 +20,8 @@ const DEFAULT_SESSION = {
   locationName: 'Jackson',
   division: 'METALS',
   shipTo: null,
-  customerId: 'cust-001',
-  customerName: 'Acme Fabrication',
+  customerId: 'ACME', // organization code or id; demo account until customer logins exist
+  customerName: 'Acme Manufacturing',
   accountType: 'ACCOUNT',
   priceLevel: 'CONTRACT_A',
   recentConfigs: [],
@@ -30,7 +30,11 @@ const DEFAULT_SESSION = {
 function loadSession() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? { ...DEFAULT_SESSION, ...JSON.parse(raw) } : DEFAULT_SESSION
+    if (!raw) return DEFAULT_SESSION
+    const saved = JSON.parse(raw)
+    // Sessions saved before the store used real accounts point at a placeholder customer.
+    if (saved.customerId === 'cust-001') { saved.customerId = DEFAULT_SESSION.customerId; saved.customerName = DEFAULT_SESSION.customerName }
+    return { ...DEFAULT_SESSION, ...saved }
   } catch { return DEFAULT_SESSION }
 }
 

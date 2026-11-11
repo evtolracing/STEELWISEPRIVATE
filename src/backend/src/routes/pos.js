@@ -601,7 +601,7 @@ router.post('/pricing/quantity-breaks', async (req, res) => {
  * GET /api/pos/sessions/:sessionId/screen
  * Get current screen for a session
  */
-router.get('/sessions/:sessionId/screen', (req, res) => {
+router.get('/sessions/:sessionId/screen', async (req, res) => {
   try {
     const { flowId } = req.query;
     
@@ -609,7 +609,7 @@ router.get('/sessions/:sessionId/screen', (req, res) => {
       return res.status(400).json({ error: 'flowId query parameter is required' });
     }
     
-    const screen = screenFlowManager.getCurrentScreen(req.params.sessionId, flowId);
+    const screen = await screenFlowManager.getCurrentScreen(req.params.sessionId, flowId);
     
     if (screen.error) {
       return res.status(404).json({ error: screen.error });
@@ -625,7 +625,7 @@ router.get('/sessions/:sessionId/screen', (req, res) => {
  * GET /api/pos/sessions/:sessionId/screen/validate
  * Validate current screen data
  */
-router.get('/sessions/:sessionId/screen/validate', (req, res) => {
+router.get('/sessions/:sessionId/screen/validate', async (req, res) => {
   try {
     const { flowId, screenId } = req.query;
     
@@ -633,7 +633,7 @@ router.get('/sessions/:sessionId/screen/validate', (req, res) => {
       return res.status(400).json({ error: 'flowId query parameter is required' });
     }
     
-    const validation = screenFlowManager.validateScreen(req.params.sessionId, flowId, screenId);
+    const validation = await screenFlowManager.validateScreen(req.params.sessionId, flowId, screenId);
     res.json(validation);
   } catch (error) {
     res.status(500).json({ error: 'Failed to validate screen' });
@@ -692,7 +692,7 @@ router.post('/sessions/:sessionId/screen/previous', async (req, res) => {
  * GET /api/pos/sessions/:sessionId/progress
  * Get flow progress for a session
  */
-router.get('/sessions/:sessionId/progress', (req, res) => {
+router.get('/sessions/:sessionId/progress', async (req, res) => {
   try {
     const { flowId } = req.query;
     
@@ -700,7 +700,7 @@ router.get('/sessions/:sessionId/progress', (req, res) => {
       return res.status(400).json({ error: 'flowId query parameter is required' });
     }
     
-    const progress = screenFlowManager.getFlowProgress(req.params.sessionId, flowId);
+    const progress = await screenFlowManager.getFlowProgress(req.params.sessionId, flowId);
     
     if (progress.error) {
       return res.status(404).json({ error: progress.error });
@@ -740,9 +740,9 @@ router.post('/sessions', async (req, res) => {
  * GET /api/pos/sessions
  * List all active sessions (admin/monitoring)
  */
-router.get('/sessions', (req, res) => {
+router.get('/sessions', async (req, res) => {
   try {
-    const sessions = posWorkflowService.getAllSessions();
+    const sessions = await posWorkflowService.getAllSessions();
     res.json({ sessions, count: sessions.length });
   } catch (error) {
     res.status(500).json({ error: 'Failed to list sessions' });
@@ -753,9 +753,9 @@ router.get('/sessions', (req, res) => {
  * GET /api/pos/sessions/:sessionId
  * Get a specific session
  */
-router.get('/sessions/:sessionId', (req, res) => {
+router.get('/sessions/:sessionId', async (req, res) => {
   try {
-    const session = posWorkflowService.getSession(req.params.sessionId);
+    const session = await posWorkflowService.getSession(req.params.sessionId);
     
     if (!session) {
       return res.status(404).json({ error: 'Session not found' });
@@ -771,9 +771,9 @@ router.get('/sessions/:sessionId', (req, res) => {
  * DELETE /api/pos/sessions/:sessionId
  * End a session
  */
-router.delete('/sessions/:sessionId', (req, res) => {
+router.delete('/sessions/:sessionId', async (req, res) => {
   try {
-    const result = posWorkflowService.endSession(req.params.sessionId);
+    const result = await posWorkflowService.endSession(req.params.sessionId);
     
     if (!result.success) {
       return res.status(404).json({ error: result.error });
@@ -840,9 +840,9 @@ router.post('/sessions/:sessionId/transition', async (req, res) => {
  * GET /api/pos/sessions/:sessionId/actions
  * Get available actions for current state
  */
-router.get('/sessions/:sessionId/actions', (req, res) => {
+router.get('/sessions/:sessionId/actions', async (req, res) => {
   try {
-    const actions = posWorkflowService.getAvailableActions(req.params.sessionId);
+    const actions = await posWorkflowService.getAvailableActions(req.params.sessionId);
     
     if (actions.error) {
       return res.status(404).json({ error: actions.error });
@@ -1030,7 +1030,7 @@ router.post('/sessions/:sessionId/division', async (req, res) => {
  */
 router.get('/sessions/:sessionId/tax-jurisdiction', async (req, res) => {
   try {
-    const session = posWorkflowService.getSession(req.params.sessionId);
+    const session = await posWorkflowService.getSession(req.params.sessionId);
     
     if (!session) {
       return res.status(404).json({ error: 'Session not found' });
@@ -1397,7 +1397,7 @@ router.post('/sessions/:sessionId/quick-sale/scan', async (req, res) => {
     }
     
     // Look up product by barcode/SKU
-    const session = posWorkflowService.getSession(req.params.sessionId);
+    const session = await posWorkflowService.getSession(req.params.sessionId);
     if (!session) {
       return res.status(404).json({ error: 'Session not found' });
     }

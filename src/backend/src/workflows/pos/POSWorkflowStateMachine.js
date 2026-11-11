@@ -803,11 +803,13 @@ export class POSWorkflowStateMachine {
       };
     }
     
-    // Find the first transition that passes guard (if any)
+    // Find the first transition that passes guard (if any). Guards see the
+    // payload too, so "customer_found" can check the customer being selected.
+    const guardContext = { ...this.context, ...(payload || {}) };
     let selectedTransition = null;
     for (const transition of matchingTransitions) {
       if (transition.guard) {
-        if (guardEvaluator && guardEvaluator(transition.guard, this.context)) {
+        if (guardEvaluator && guardEvaluator(transition.guard, guardContext)) {
           selectedTransition = transition;
           break;
         }

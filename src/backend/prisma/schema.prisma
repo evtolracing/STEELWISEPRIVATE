@@ -4643,3 +4643,24 @@ model IntakeJob {
   @@index([orderId])
   @@index([status])
 }
+
+// ============================================================================
+// POS SESSIONS
+// A counter session's state machine (current state, context, history),
+// saved after every action so a session survives restarts and serverless
+// cold starts.
+// ============================================================================
+
+model PosSession {
+  id           String   @id
+  userId       String?
+  terminalId   String?
+  currentState String
+  status       String   @default("ACTIVE") // ACTIVE, ENDED
+  version      Int      @default(1)
+  data         Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status, updatedAt])
+}

@@ -19,7 +19,9 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(DEMO_MODE ? DEMO_USER : null)
   const [token, setToken] = useState(() => DEMO_MODE ? 'demo-token' : localStorage.getItem('token'))
-  const [loading, setLoading] = useState(false)
+  // Start loading when a saved token exists, so a page refresh waits for /auth/me
+  // instead of bouncing to the login page.
+  const [loading, setLoading] = useState(() => !DEMO_MODE && !!localStorage.getItem('token'))
   const [error, setError] = useState(null)
 
   // Load user on mount if token exists (skip in demo mode)
@@ -48,7 +50,8 @@ export function AuthProvider({ children }) {
       setLoading(true)
       const { apiClient } = await import('../api/client')
       const response = await apiClient.get('/auth/me')
-      setUser(response.data.user)
+      // /auth/me returns the user itself
+      setUser(response.data?.user || response.data)
       setError(null)
     } catch (err) {
       console.error('Failed to fetch user:', err)

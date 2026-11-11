@@ -89,7 +89,9 @@ export default function RemnantCategoryPage() {
       division: 'OUTLET',
       form: remnant.form,
       grade: remnant.grade,
-      unitPrice: price?.remnantPricePerLb || remnant.pricePerLb,
+      // One piece: its price is the per-lb remnant price × the piece's weight.
+      unitPrice: price?.lineTotal ?? Math.round((remnant.pricePerLb || 0) * (remnant.estimatedWeight || 0) * 100) / 100,
+      extended: price?.lineTotal ?? Math.round((remnant.pricePerLb || 0) * (remnant.estimatedWeight || 0) * 100) / 100,
       priceSource: 'REMNANT',
       quantity: 1,
       unit: 'EA',

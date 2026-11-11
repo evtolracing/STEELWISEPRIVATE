@@ -118,6 +118,11 @@ export default function SearchResultsPage() {
   }
 
   const handleAddToCart = (product) => {
+    // Priced by weight: the price depends on the size, so pick it on the product page.
+    if (product.priceUnit && product.priceUnit !== 'EA') {
+      navigate(`/shop/products/${product.id}`)
+      return
+    }
     addItem({
       productId: product.id,
       name: product.name,

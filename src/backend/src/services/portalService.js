@@ -363,7 +363,15 @@ export async function listAccountDocuments(params = {}) {
 const pad = (s, n) => String(s ?? '').padEnd(n);
 
 /** Render a generated document as plain text. Returns { name, content } or null. */
-export async function renderDocument(docId) {
+/** True when an organization belongs to the account (or no account limit is given). */
+async function inAccount(orgId, accountId) {
+  if (accountId === undefined) return true;
+  const tree = await accountTree(accountId);
+  return !!tree && !!orgId && tree.ids.includes(orgId);
+}
+
+/** `accountId`, when given, limits the lookup to that account's documents. */
+export async function renderDocument(docId, accountId) {
   const [kind, ...rest] = String(docId).split('-');
   const id = rest.join('-');
   if (kind === 'pl' || kind === 'bol') {
@@ -371,7 +379,7 @@ export async function renderDocument(docId) {
       where: { id },
       include: { items: { include: { orderLine: true } }, order: { include: { buyer: true } }, fromLocation: true },
     });
-    if (!s) return null;
+    if (!s || !(await inAccount(s.order?.buyerId, accountId))) return null;
     const title = kind === 'pl' ? 'PACKING LIST' : 'BILL OF LADING';
     const lines = [
       `${title}`, '',
@@ -388,7 +396,7 @@ export async function renderDocument(docId) {
   }
   if (kind === 'inv') {
     const inv = await prisma.invoice.findUnique({ where: { id }, include: { order: { include: { buyer: true, lines: { orderBy: { lineNumber: 'asc' } } } } } });
-    if (!inv) return null;
+    if (!inv || !(await inAccount(inv.order?.buyerId, accountId))) return null;
     const lines = [
       'INVOICE', '', `Invoice:  ${inv.invoiceNumber}`, `Date:     ${day(inv.invoiceDate)}`, `Due:      ${day(inv.dueDate) || ''}`,
       `Customer: ${inv.order.buyer?.name || ''}`, `Order:    ${inv.order.orderNumber}`, inv.order.poReference ? `PO:       ${inv.order.poReference}` : null, '',
@@ -401,7 +409,7 @@ export async function renderDocument(docId) {
   }
   if (kind === 'doc') {
     const d = await prisma.document.findUnique({ where: { id } });
-    if (!d) return null;
+    if (!d || !(await inAccount(d.ownerId, accountId))) return null;
     const content = [d.title || d.fileName, '', `Type: ${d.documentType}`, d.documentNumber ? `Number: ${d.documentNumber}` : null,
       `Issued: ${day(d.issueDate || d.createdAt)}`, '', 'The original file is held by your account rep; ask them for a copy.']
       .filter((l) => l !== null).join('\n');
@@ -492,16 +500,16 @@ export async function listMyOrders({ customerId, status, search } = {}) {
   return { data, meta: { total: data.length } };
 }
 
-export async function getMyOrder(id) {
+export async function getMyOrder(id, accountId) {
   const o = await prisma.onlineOrder.findUnique({ where: { id } });
-  if (!o) return null;
+  if (!o || !(await inAccount(o.customerId, accountId))) return null;
   const sos = await salesOrdersFor([o]);
   return toMyOrder(o, sos.get(o.internalOrderId));
 }
 
-export async function myOrderDocuments(id) {
+export async function myOrderDocuments(id, accountId) {
   const o = await prisma.onlineOrder.findUnique({ where: { id }, select: { internalOrderId: true, customerId: true } });
-  if (!o?.internalOrderId || !o.customerId) return [];
+  if (!o?.internalOrderId || !o.customerId || !(await inAccount(o.customerId, accountId))) return [];
   const tree = await accountTree(o.customerId);
   return tree ? accountDocuments(tree, { orderId: o.internalOrderId }) : [];
 }

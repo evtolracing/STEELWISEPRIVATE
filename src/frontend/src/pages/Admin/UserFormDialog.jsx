@@ -27,6 +27,9 @@ import {
   Edit as EditIcon,
 } from '@mui/icons-material';
 import { createUser, updateUser, getUserLocations, getUserDivisions, getRoleCategory } from '../../api/users';
+import client from '../../api/client';
+
+const isCustomerRole = (role) => String(role || '').startsWith('CUSTOMER_');
 
 export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) {
   const isEdit = Boolean(user);
@@ -42,9 +45,11 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
     homeLocationId: '',
     locationIds: [],
     divisionIds: [],
+    customerId: '',
     isActive: true,
   });
   
+  const [customers, setCustomers] = useState([]);
   const [locations, setLocations] = useState([]);
   const [divisions, setDivisions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -66,6 +71,7 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
           homeLocationId: user.homeLocationId || '',
           locationIds: user.userLocations?.map(ul => ul.locationId) || [],
           divisionIds: user.userDivisions?.map(ud => ud.divisionId) || [],
+          customerId: user.customerId || '',
           isActive: user.isActive !== false,
         });
       } else {
@@ -80,6 +86,7 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
           homeLocationId: '',
           locationIds: [],
           divisionIds: [],
+          customerId: '',
           isActive: true,
         });
       }
@@ -96,6 +103,8 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
       ]);
       setLocations(locs || []);
       setDivisions(divs || []);
+      const custRes = await client.get('/customers', { params: { limit: 1000 } }).catch(() => null);
+      setCustomers(custRes?.data?.data || []);
     } catch (err) {
       console.error('Failed to load options:', err);
     } finally {
@@ -116,6 +125,10 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
       setError('Please fill in all required fields');
       return;
     }
+    if (isCustomerRole(formData.role) && !formData.customerId) {
+      setError('Pick the customer account this login buys for');
+      return;
+    }
     if (!isEdit && !formData.password) {
       setError('Password is required for new users');
       return;
@@ -131,6 +144,7 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
     try {
       const payload = {
         ...formData,
+        customerId: isCustomerRole(formData.role) ? formData.customerId : null,
       };
       
       // Don't send empty password on edit
@@ -282,6 +296,22 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
               Category: {getRoleCategory(formData.role)}
             </Typography>
           </Grid>
+
+          {isCustomerRole(formData.role) && (
+            <Grid item xs={12}>
+              <Autocomplete
+                size="small"
+                options={customers}
+                getOptionLabel={(c) => `${c.name} (${c.code})`}
+                isOptionEqualToValue={(a, b) => a.id === b.id}
+                value={customers.find(c => c.id === formData.customerId) || null}
+                onChange={(_, c) => setFormData(prev => ({ ...prev, customerId: c?.id || '' }))}
+                renderInput={(params) => (
+                  <TextField {...params} required label="Customer account" helperText="This login can only see and order for this customer." />
+                )}
+              />
+            </Grid>
+          )}
           
           <Grid item xs={12} sm={6}>
             <FormControlLabel

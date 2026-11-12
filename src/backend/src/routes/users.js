@@ -3,6 +3,20 @@ import prisma from '../lib/db.js';
 import bcrypt from 'bcryptjs';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { ci } from '../lib/dbText.js';
+import { CUSTOMER_ROLES } from '../lib/customerScope.js';
+
+/**
+ * The customer account for a login: required for customer roles (an
+ * organization id or code), cleared for everyone else.
+ * Returns { customerId } or { error }.
+ */
+async function resolveLoginCustomer(role, customerId) {
+  if (!CUSTOMER_ROLES.has(role)) return { customerId: null };
+  if (!customerId) return { error: 'Pick the customer account this login buys for' };
+  const key = String(customerId);
+  const org = await prisma.organization.findFirst({ where: { OR: [{ id: key }, { code: key }] }, select: { id: true } });
+  return org ? { customerId: org.id } : { error: 'Customer account not found' };
+}
 
 const router = Router();
 
@@ -49,6 +63,7 @@ router.get('/', authenticate, async (req, res) => {
         where,
         include: {
           organization: { select: { id: true, name: true, code: true } },
+          customer: { select: { id: true, name: true, code: true } },
           homeLocation: { select: { id: true, name: true, code: true } },
           userRoles: {
             include: {
@@ -140,13 +155,16 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
       homeLocationId,
       locationIds = [],
       divisionIds = [],
-      roleIds = []
+      roleIds = [],
+      customerId
     } = req.body;
 
     // Validate required fields
     if (!email || !password || !firstName || !lastName || !role) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+    const link = await resolveLoginCustomer(role, customerId);
+    if (link.error) return res.status(400).json({ error: link.error });
 
     // Check if email already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -166,6 +184,7 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
         title,
         phone,
         organizationId: req.user.organizationId,
+        customerId: link.customerId,
         homeLocationId,
         userLocations: locationIds.length > 0 ? {
           create: locationIds.map((locationId, idx) => ({
@@ -185,6 +204,7 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
       },
       include: {
         organization: true,
+        customer: { select: { id: true, name: true, code: true } },
         homeLocation: true,
         userLocations: { include: { location: true } },
         userDivisions: { include: { division: true } },
@@ -228,7 +248,8 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
       isActive,
       locationIds,
       divisionIds,
-      roleIds
+      roleIds,
+      customerId
     } = req.body;
 
     // Verify user exists and belongs to same org
@@ -249,6 +270,11 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
     if (phone !== undefined) updateData.phone = phone;
     if (homeLocationId !== undefined) updateData.homeLocationId = homeLocationId;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (role !== undefined || customerId !== undefined) {
+      const link = await resolveLoginCustomer(role ?? existingUser.role, customerId !== undefined ? customerId : existingUser.customerId);
+      if (link.error) return res.status(400).json({ error: link.error });
+      updateData.customerId = link.customerId;
+    }
 
     // Update user
     const user = await prisma.user.update({
@@ -256,6 +282,7 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
       data: updateData,
       include: {
         organization: true,
+        customer: { select: { id: true, name: true, code: true } },
         homeLocation: true,
         userLocations: { include: { location: true } },
         userDivisions: { include: { division: true } },
@@ -323,6 +350,7 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
       where: { id },
       include: {
         organization: true,
+        customer: { select: { id: true, name: true, code: true } },
         homeLocation: true,
         userLocations: { include: { location: true } },
         userDivisions: { include: { division: true } },

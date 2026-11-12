@@ -19,6 +19,20 @@
  */
 import { Router } from 'express';
 import * as store from '../services/ecomService.js';
+import { isCustomerLogin, requireLinkedCustomer } from '../lib/customerScope.js';
+
+// A customer login always orders for its own account, under its own name.
+const checkoutPayload = (req) => {
+  const body = req.body || {};
+  if (!isCustomerLogin(req.user)) return body;
+  const name = [req.user.firstName, req.user.lastName].filter(Boolean).join(' ');
+  return {
+    ...body,
+    customerId: req.user.customerId,
+    customerName: req.user.customer?.name || name || body.customerName,
+    customerEmail: req.user.email,
+  };
+};
 
 const wrap = (label, fn) => async (req, res) => {
   try {
@@ -49,8 +63,8 @@ router.get('/catalog/:id', wrap('load product', async (req) => {
 router.post('/pricing/config', wrap('price item', (req) => store.priceConfig(req.body || {})));
 router.post('/pricing/tax', wrap('estimate tax', (req) => store.taxEstimate(req.body || {})));
 router.post('/cart/validate', wrap('validate cart', (req) => store.validateCart(req.body || {})));
-router.post('/checkout/submit', wrap('submit order', (req) => store.checkout(req.body || {})));
-router.post('/checkout/quote', wrap('request quote', (req) => store.checkout(req.body || {}, { quote: true })));
+router.post('/checkout/submit', requireLinkedCustomer, wrap('submit order', (req) => store.checkout(checkoutPayload(req))));
+router.post('/checkout/quote', requireLinkedCustomer, wrap('request quote', (req) => store.checkout(checkoutPayload(req), { quote: true })));
 
 export const adminCatalogRouter = Router();
 adminCatalogRouter.get('/', wrap('list catalog', (req) => store.listCatalogItems(req.query)));

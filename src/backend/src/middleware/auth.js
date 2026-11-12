@@ -39,7 +39,7 @@ export async function authenticate(req, res, next) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      include: { organization: true },
+      include: { organization: true, customer: { select: { id: true, code: true, name: true } } },
     });
 
     if (!user) return res.status(401).json({ error: 'User not found' });

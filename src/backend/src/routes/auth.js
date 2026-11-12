@@ -13,6 +13,8 @@ function publicUser(user) {
     lastName: user.lastName,
     role: user.role,
     organization: user.organization,
+    customerId: user.customerId || null,
+    customer: user.customer || null,
   };
 }
 
@@ -26,7 +28,7 @@ router.post('/login', async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { organization: true }
+      include: { organization: true, customer: { select: { id: true, code: true, name: true } } }
     });
 
     if (!user || !user.passwordHash || !await bcrypt.compare(password, user.passwordHash)) {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   Box,
@@ -123,6 +123,8 @@ import {
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
+import { useAuth } from '../../hooks/useAuth'
+import { canAccessPath } from '../../config/roleAccess'
 
 const navSections = [
   // ─── OVERVIEW ─────────────────────────────────────────
@@ -323,6 +325,19 @@ const navSections = [
 export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
   const location = useLocation()
   const { isActive, startDemo, stopDemo } = useDemo()
+  const { user } = useAuth()
+  const role = user?.role
+
+  // Only show the pages this user's role can open.
+  const visibleSections = useMemo(
+    () => navSections
+      .map((section) => ({ ...section, items: section.items.filter((item) => canAccessPath(role, item.path)) }))
+      .filter((section) => section.items.length > 0),
+    [role],
+  )
+  const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || 'Signed in'
+  const initials = displayName.split(/[\s@.]+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('')
+  const roleLabel = String(role || '').toLowerCase().split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
   
   // Initialize all sections as expanded
   const [openSections, setOpenSections] = useState(() => {
@@ -417,7 +432,7 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
 
       {/* Navigation */}
       <Box sx={{ flex: 1, overflowY: 'auto', py: 1 }}>
-        {navSections.map((section) => (
+        {visibleSections.map((section) => (
           <Box key={section.title} sx={{ mb: 0.5 }}>
             <ListItemButton
               onClick={() => handleToggleSection(section.title)}
@@ -497,13 +512,13 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
       {/* User */}
       <Box sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ bgcolor: 'secondary.main', width: 36, height: 36 }}>JD</Avatar>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              John Doe
+          <Avatar sx={{ bgcolor: 'secondary.main', width: 36, height: 36 }}>{initials}</Avatar>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+              {displayName}
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Administrator
+              {roleLabel}
             </Typography>
           </Box>
           <IconButton size="small">

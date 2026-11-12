@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate, useLocation } from 'react-router-dom'
+import { canAccessPath } from '../config/roleAccess'
 import { Box, CircularProgress } from '@mui/material'
 import { AppLayout } from '../components/layout'
 import { RouteErrorPage } from '../components/common'
@@ -213,8 +214,11 @@ function PageLoader() {
 }
 
 // Protected route wrapper
-function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth()
+// `checkRole` is for full-screen pages outside the main layout (the main
+// layout checks roles itself and shows a "No access" page).
+function ProtectedRoute({ children, checkRole = false }) {
+  const { isAuthenticated, loading, user } = useAuth()
+  const location = useLocation()
 
   if (loading) {
     return <PageLoader />
@@ -222,6 +226,10 @@ function ProtectedRoute({ children }) {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
+  }
+
+  if (checkRole && !canAccessPath(user?.role, location.pathname)) {
+    return <Navigate to="/" replace />
   }
 
   return children
@@ -244,7 +252,7 @@ const router = createBrowserRouter([
   {
     path: '/shop-floor',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute checkRole>
         <Suspense fallback={<PageLoader />}>
           <ShopFloorPage />
         </Suspense>
@@ -257,7 +265,7 @@ const router = createBrowserRouter([
   {
     path: '/mobile-rep',
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute checkRole>
         <Suspense fallback={<PageLoader />}>
           <MobileRepLayout />
         </Suspense>

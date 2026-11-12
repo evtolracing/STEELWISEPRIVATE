@@ -4,6 +4,7 @@
  */
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
 import { getCustomerPreferences, buildSmartDefaults, summarizePreferences } from '../services/customerPreferencesApi'
+import { useAuth } from '../hooks/useAuth'
 
 const CustomerSessionContext = createContext(null)
 const STORAGE_KEY = 'steelwise_customer_session'
@@ -44,6 +45,15 @@ function persistSession(s) {
 
 export function CustomerSessionProvider({ children }) {
   const [session, setSession] = useState(loadSession)
+  const { user } = useAuth()
+
+  // A customer login always shops as its own account (the server enforces this too).
+  const linkedCustomer = String(user?.role || '').startsWith('CUSTOMER_') ? user?.customer || null : null
+  useEffect(() => {
+    if (!linkedCustomer) return
+    setSession(prev => (prev.customerId === linkedCustomer.id ? prev
+      : { ...prev, customerId: linkedCustomer.id, customerName: linkedCustomer.name, shipTo: null, recentConfigs: [] }))
+  }, [linkedCustomer?.id, linkedCustomer?.name])
 
   useEffect(() => { persistSession(session) }, [session])
 

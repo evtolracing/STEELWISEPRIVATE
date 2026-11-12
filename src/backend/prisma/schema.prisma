@@ -39,6 +39,8 @@ model Organization {
   ordersAsSeller  Order[]                  @relation("SellerOrders")
   rfqs            RFQ[]                    @relation("CustomerRFQs")
   users           User[]
+  // Store logins that belong to this customer (User.customerId).
+  customerLogins  User[]                   @relation("CustomerLogins")
   pricingTier     CustomerPricingTier?     @relation("CustomerPricingTier")
   dropTags        DropTag[]                @relation("DropTagCustomer")
   tagRequirements CustomerTagRequirement[] @relation("CustomerTagRequirements")
@@ -132,6 +134,8 @@ model User {
   role             UserRole
   organizationId   String
   homeLocationId   String?
+  // For customer logins (CUSTOMER_* roles): the customer account they buy for.
+  customerId       String?
   title            String?
   phone            String?
   avatarUrl        String?
@@ -151,6 +155,7 @@ model User {
   approvedTests    TestResult[]         @relation("ApprovedBy")
   testResults      TestResult[]         @relation("TestedBy")
   organization     Organization         @relation(fields: [organizationId], references: [id])
+  customer         Organization?        @relation("CustomerLogins", fields: [customerId], references: [id])
   homeLocation     Location?            @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
   userRoles        UserRoleAssignment[]
   userLocations    UserLocation[]
@@ -159,6 +164,8 @@ model User {
   approvalRequests ApprovalRequest[]    @relation("ApprovalRequester")
   approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
   operator         Operator?
+
+  @@index([customerId])
 }
 
 // Role definition with permissions

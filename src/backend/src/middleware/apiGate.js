@@ -38,7 +38,7 @@ export function apiGate(req, res, next) {
   authenticate(req, res, (err) => {
     if (err) return next(err);
     const path = normalize(req.originalUrl);
-    const denial = apiRoleDenial(req.user?.role, path);
+    const denial = apiRoleDenial(req.user, path, req.method);
     if (denial) return res.status(403).json({ error: denial });
     if (!READ_METHODS.has(req.method) && ADMIN_PREFIXES.some((p) => under(path, p))) return adminOnly(req, res, next);
     next();

@@ -20,6 +20,18 @@
 import { Router } from 'express';
 import * as portal from '../services/portalService.js';
 import { buildZip } from '../lib/zip.js';
+import { isCustomerLogin, requireLinkedCustomer, scopedCustomerId } from '../lib/customerScope.js';
+
+// Customer logins only ever see their own account: these replace whatever
+// account the request named with the login's own (staff are unchanged).
+const accountParam = (req) => scopedCustomerId(req, req.params.accountId);
+const accountQuery = (req) => {
+  if (!isCustomerLogin(req.user)) return req.query;
+  const id = scopedCustomerId(req);
+  return { ...req.query, accountId: id, customerId: id };
+};
+// For lookups by order or document id: a customer login must own it.
+const ownerScope = (req) => (isCustomerLogin(req.user) ? scopedCustomerId(req) : undefined);
 
 const wrap = (label, fn) => async (req, res) => {
   try {
@@ -37,17 +49,18 @@ const wrap = (label, fn) => async (req, res) => {
 const safeName = (s) => s.replace(/[^\w .()-]+/g, '_');
 
 export const enterpriseRouter = Router();
+enterpriseRouter.use(requireLinkedCustomer);
 enterpriseRouter.get('/accounts/:accountId', wrap('load account', async (req) => {
-  const data = await portal.accountProfile(req.params.accountId);
+  const data = await portal.accountProfile(accountParam(req));
   return data && { data };
 }));
 enterpriseRouter.get('/accounts/:accountId/kpis', wrap('load account KPIs', async (req) => {
-  const data = await portal.accountKpis(req.params.accountId);
+  const data = await portal.accountKpis(accountParam(req));
   return data && { data };
 }));
-enterpriseRouter.get('/orders', wrap('list orders', (req) => portal.listAccountOrders(req.query)));
+enterpriseRouter.get('/orders', wrap('list orders', (req) => portal.listAccountOrders(accountQuery(req))));
 enterpriseRouter.get('/orders/export', wrap('export orders', async (req, res) => {
-  const csv = await portal.exportOrdersCsv(req.query);
+  const csv = await portal.exportOrdersCsv(accountQuery(req));
   if (csv === null) return null;
   res.set('Content-Type', 'text/csv; charset=utf-8');
   res.set('Content-Disposition', `attachment; filename="orders-export-${new Date().toISOString().slice(0, 10)}.csv"`);
@@ -55,13 +68,13 @@ enterpriseRouter.get('/orders/export', wrap('export orders', async (req, res) =>
   return undefined;
 }));
 enterpriseRouter.get('/orders/:orderId', wrap('load order', async (req) => {
-  const data = await portal.accountOrderDetail(req.params.orderId, req.query.accountId);
+  const data = await portal.accountOrderDetail(req.params.orderId, isCustomerLogin(req.user) ? scopedCustomerId(req) : req.query.accountId);
   return data ? { data } : { status: 404, error: 'Order not found' };
 }));
-enterpriseRouter.get('/shipments', wrap('list shipments', (req) => portal.listAccountShipments(req.query)));
-enterpriseRouter.get('/documents', wrap('list documents', (req) => portal.listAccountDocuments(req.query)));
+enterpriseRouter.get('/shipments', wrap('list shipments', (req) => portal.listAccountShipments(accountQuery(req))));
+enterpriseRouter.get('/documents', wrap('list documents', (req) => portal.listAccountDocuments(accountQuery(req))));
 enterpriseRouter.get('/documents/:docId/download', wrap('download document', async (req, res) => {
-  const doc = await portal.renderDocument(req.params.docId);
+  const doc = await portal.renderDocument(req.params.docId, ownerScope(req));
   if (!doc) return { status: 404, error: 'Document not found' };
   res.set('Content-Type', 'text/plain; charset=utf-8');
   res.set('Content-Disposition', `attachment; filename="${safeName(doc.name)}"`);
@@ -74,7 +87,7 @@ enterpriseRouter.post('/documents/bulk-download', wrap('download documents', asy
   const files = [];
   const used = new Set();
   for (const id of ids) {
-    const doc = await portal.renderDocument(id);
+    const doc = await portal.renderDocument(id, ownerScope(req));
     if (!doc) continue;
     let name = safeName(doc.name);
     for (let n = 2; used.has(name); n++) name = safeName(doc.name.replace(/(\.\w+)?$/, ` (${n})$1`));
@@ -89,9 +102,10 @@ enterpriseRouter.post('/documents/bulk-download', wrap('download documents', asy
 }));
 
 export const myOrdersRouter = Router();
-myOrdersRouter.get('/', wrap('list orders', (req) => portal.listMyOrders(req.query)));
+myOrdersRouter.use(requireLinkedCustomer);
+myOrdersRouter.get('/', wrap('list orders', (req) => portal.listMyOrders(accountQuery(req))));
 myOrdersRouter.get('/:id', wrap('load order', async (req) => {
-  const data = await portal.getMyOrder(req.params.id);
+  const data = await portal.getMyOrder(req.params.id, ownerScope(req));
   return data ? { data } : { status: 404, error: 'Order not found' };
 }));
-myOrdersRouter.get('/:id/documents', wrap('load documents', async (req) => ({ data: await portal.myOrderDocuments(req.params.id) })));
+myOrdersRouter.get('/:id/documents', wrap('load documents', async (req) => ({ data: await portal.myOrderDocuments(req.params.id, ownerScope(req)) })));

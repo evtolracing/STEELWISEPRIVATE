@@ -21,9 +21,13 @@ export const LEADERSHIP_ROLES = new Set([
 const under = (path, prefix) => path === prefix || path.startsWith(`${prefix}/`);
 
 /** null when allowed, otherwise the reason for a 403. */
-export function apiRoleDenial(role, path) {
+export function apiRoleDenial(user, path, method = 'GET') {
+  const role = user?.role;
   if (EXTERNAL_ROLES.has(role)) {
-    return EXTERNAL_PREFIXES.some((p) => under(path, p)) ? null : 'Customer and partner accounts can only use the online store.';
+    if (EXTERNAL_PREFIXES.some((p) => under(path, p))) return null;
+    // A customer login may read its own account's saved store preferences.
+    if (method === 'GET' && user.customerId && path === `/api/customers/${user.customerId}/preferences`) return null;
+    return 'Customer and partner accounts can only use the online store.';
   }
   if (LEADERSHIP_PREFIXES.some((p) => under(path, p)) && !LEADERSHIP_ROLES.has(role)) {
     return 'Executive pages are limited to leadership roles.';

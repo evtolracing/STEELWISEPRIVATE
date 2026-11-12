@@ -97,13 +97,14 @@ export default function UserFormDialog({ open, onClose, user, roleEnums = [] }) 
   const loadOptions = async () => {
     setLoadingOptions(true);
     try {
-      const [locs, divs] = await Promise.all([
-        getUserLocations(),
-        getUserDivisions()
+      // Load each list on its own, so one failing doesn't empty the others.
+      const [locs, divs, custRes] = await Promise.all([
+        getUserLocations().catch(() => []),
+        getUserDivisions().catch(() => []),
+        client.get('/customers', { params: { limit: 1000 } }).catch(() => null),
       ]);
-      setLocations(locs || []);
-      setDivisions(divs || []);
-      const custRes = await client.get('/customers', { params: { limit: 1000 } }).catch(() => null);
+      setLocations(Array.isArray(locs) ? locs : locs?.data || []);
+      setDivisions(Array.isArray(divs) ? divs : divs?.data || []);
       setCustomers(custRes?.data?.data || []);
     } catch (err) {
       console.error('Failed to load options:', err);

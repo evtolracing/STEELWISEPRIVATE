@@ -3,6 +3,8 @@
  *
  * Each module exports:
  *   moduleId, title, shortDescription, icon, roles, divisions, routes,
+ *   audience ('customer' for chapters written for customer logins; staff
+ *   chapters leave it out — see help/helpAccess.js getModulesForUser),
  *   sections: [{ id, title, blocks }]
  *
  * Block types:
@@ -3469,6 +3471,88 @@ const manualModules = [
             { problem: 'Capacity shows overloaded', solution: 'Too many jobs are scheduled for the available hours. Options: move jobs to another shift, extend the schedule to overtime, or re-negotiate delivery dates with customers.' },
             { problem: 'Schedule doesn\'t show on shop floor', solution: 'Make sure you clicked "Publish Schedule." Unpublished schedules are in draft mode and not visible to operators.' },
           ]},
+        ],
+      },
+    ],
+  },
+  // ─── CUSTOMER GUIDE (shown to customer logins) ─────────────────────────
+  {
+    moduleId: 'customer-shop-guide',
+    audience: 'customer',
+    title: 'Shopping Online — Customer Guide',
+    shortDescription: 'How to find products, get prices, place orders or request quotes, and track your orders and documents.',
+    icon: 'Storefront',
+    roles: [],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/shop'],
+    sections: [
+      {
+        id: 'find-products',
+        title: 'Finding Products',
+        blocks: [
+          { type: 'steps', items: [
+            'Open the Shop from the menu.',
+            'Pick a division (Metals, Plastics, Supplies) or type a grade, size or product name in the search box.',
+            'On the search results, use the filters to narrow by product family, form or grade, or to show only items in stock.',
+            'Click a product to see its details, stock and pricing.',
+          ]},
+          { type: 'tip', value: 'The Steel Outlet sells remnants (drops and offcuts) at a discount. Stock there is limited, so order soon when you find a fit.' },
+        ],
+      },
+      {
+        id: 'price-and-cut',
+        title: 'Getting a Price and Cut-to-Size',
+        blocks: [
+          { type: 'steps', items: [
+            'On the product page, enter the size you need (thickness, width, length) and the quantity.',
+            'Add any processing you need, such as cutting.',
+            'The price updates as you change the size and quantity.',
+            'Click Add to Cart.',
+          ]},
+          { type: 'text', value: 'Some items need a person to review the price, for example unusual sizes or processing. Those lines are marked for review, and your order is sent as a quote request instead of an order.' },
+        ],
+      },
+      {
+        id: 'checkout',
+        title: 'Placing an Order or Requesting a Quote',
+        blocks: [
+          { type: 'steps', items: [
+            'Open the cart and check the quantities and line totals.',
+            'Click Checkout (or Request Quote if any line needs review).',
+            'Choose delivery, and enter your ship-to address, or choose pickup and the pickup location.',
+            'Enter your PO number and a requested ship date if you have them, and any notes for our team.',
+            'Pick a payment method, accept the terms, and submit.',
+          ]},
+          { type: 'text', value: 'You get an order number right away. Our team reviews every online order before it is confirmed, and quote requests come back with a price from your sales rep.' },
+        ],
+      },
+      {
+        id: 'track-orders',
+        title: 'Tracking Your Orders',
+        blocks: [
+          { type: 'bullets', items: [
+            'My Orders lists the orders you placed online and shows where each one is: in review, confirmed, in production, shipped or delivered.',
+            'Account → Orders shows every order on your company account, including ones placed by phone or email.',
+            'Account → Shipments shows what has shipped and the carrier.',
+          ]},
+        ],
+      },
+      {
+        id: 'documents',
+        title: 'Downloading Documents',
+        blocks: [
+          { type: 'steps', items: [
+            'Open Account → Documents.',
+            'Filter by type (invoice, packing list, bill of lading, certificate) or search by order number.',
+            'Click a document to download it, or select several and download them together as a ZIP file.',
+          ]},
+        ],
+      },
+      {
+        id: 'help',
+        title: 'Getting Help',
+        blocks: [
+          { type: 'text', value: 'Your login only shows your own company\'s orders and documents. If something is missing, or you need a login for a colleague, contact your sales rep.' },
         ],
       },
     ],

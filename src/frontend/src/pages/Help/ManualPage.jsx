@@ -25,8 +25,8 @@ import { Link as RouterLink } from 'react-router-dom'
 
 import HelpSearchBar from '../../components/help/HelpSearchBar'
 import HelpAccordion from '../../components/help/HelpAccordion'
-import manualModules from '../../help/manualContent'
-import { searchModules } from '../../help/helpAccess'
+import { searchModules, getModulesForUser } from '../../help/helpAccess'
+import { useAuth } from '../../hooks/useAuth'
 
 // Icon mapping — keeps the content file from importing MUI icons directly
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk'
@@ -119,20 +119,25 @@ export default function ManualPage() {
   const topRef = useRef(null)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const { user } = useAuth()
+
+  // Only the chapters for pages this user's role can open.
+  const allowedModules = useMemo(() => getModulesForUser(user?.role), [user?.role])
+  const allowedIds = useMemo(() => new Set(allowedModules.map((m) => m.moduleId)), [allowedModules])
 
   // Determine which modules to show
   const displayModules = useMemo(() => {
     // If there's a search query, use search
     if (searchQuery.trim().length >= 2) {
-      return searchModules(searchQuery)
+      return searchModules(searchQuery).filter((m) => allowedIds.has(m.moduleId))
     }
     // If there's an active filter, show just that module
     if (activeFilter) {
-      return manualModules.filter((m) => m.moduleId === activeFilter)
+      return allowedModules.filter((m) => m.moduleId === activeFilter)
     }
-    // Otherwise show all
-    return manualModules
-  }, [searchQuery, activeFilter])
+    // Otherwise show every chapter this user can read
+    return allowedModules
+  }, [searchQuery, activeFilter, allowedModules, allowedIds])
 
   const handleModuleAccordionChange = (moduleId) => (_event, isExpanded) => {
     setExpandedModule(isExpanded ? moduleId : null)
@@ -198,6 +203,7 @@ export default function ManualPage() {
           setExpandedModule(f)
         }}
         resultCount={searchQuery.trim().length >= 2 ? displayModules.length : undefined}
+        allowedModuleIds={allowedIds}
       />
 
       <Divider sx={{ mb: 3 }} />

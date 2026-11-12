@@ -17,6 +17,7 @@ const DEFAULT_FILTERS = [
   { label: 'Order Board', moduleId: 'order-board' },
   { label: 'Order Intake', moduleId: 'order-intake' },
   { label: 'POS', moduleId: 'pos-retail' },
+  { label: 'Shopping Guide', moduleId: 'customer-shop-guide' },
   { label: 'E-Commerce', moduleId: 'ecommerce-shop' },
   { label: 'E-Com Admin', moduleId: 'ecommerce-admin' },
   { label: 'Online Inbox', moduleId: 'online-inbox' },
@@ -67,7 +68,9 @@ export default function HelpSearchBar({
   activeFilter = null,
   onFilterChange,
   resultCount,
+  allowedModuleIds = null, // Set of module ids this user can read; null shows every chip
 }) {
+  const filters = allowedModuleIds ? DEFAULT_FILTERS.filter((f) => allowedModuleIds.has(f.moduleId)) : DEFAULT_FILTERS
   return (
     <Box sx={{ mb: 3 }}>
       {/* Search input */}
@@ -101,7 +104,7 @@ export default function HelpSearchBar({
 
       {/* Quick-filter chips */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-        {DEFAULT_FILTERS.map((f) => (
+        {filters.map((f) => (
           <Chip
             key={f.moduleId}
             label={f.label}

@@ -4,6 +4,21 @@
  * Filters modules based on the current user's role and division.
  */
 import manualModules from './manualContent'
+import { canAccessPath, isExternalRole } from '../config/roleAccess'
+
+/**
+ * Modules a signed-in user can read: those whose main page (first route) their
+ * role can open, using the same rules as the sidebar (config/roleAccess.js).
+ * Customer and partner logins only get chapters written for customers
+ * (`audience: 'customer'`); the rest of the manual is for staff.
+ */
+export function getModulesForUser(role) {
+  const external = isExternalRole(role)
+  return manualModules.filter((m) => {
+    if (external && m.audience !== 'customer') return false
+    return !m.routes?.length || canAccessPath(role, m.routes[0])
+  })
+}
 
 /**
  * Returns all modules accessible to the given role.

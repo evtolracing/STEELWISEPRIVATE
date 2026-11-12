@@ -106,8 +106,11 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// GET /api/users/:id - Get single user
-router.get('/:id', authenticate, async (req, res) => {
+// GET /api/users/:id - Get single user. The lists below (/locations,
+// /divisions) are declared later, so pass those names on to them.
+const LIST_PATHS = new Set(['locations', 'divisions']);
+router.get('/:id', authenticate, async (req, res, next) => {
+  if (LIST_PATHS.has(req.params.id)) return next();
   try {
     const user = await prisma.user.findFirst({
       where: {

@@ -26,9 +26,9 @@ const ok2xx = (s) => s >= 200 && s < 300;
 
 // ── Scenario mix (directive §7, adapted to what the app supports) ──
 const MIX = [
-  ['standard-metals', 8], ['multi-step-metals', 6], ['plastics', 6], ['pos-ecommerce', 5],
+  ['standard-metals', 7], ['multi-step-metals', 5], ['plastics', 6], ['pos-ecommerce', 5],
   ['multi-location', 6], ['transfers-receiving', 5], ['rush-backorder-exception', 5],
-  ['partial-rework-return', 5], ['mixed-division', 4],
+  ['partial-rework-return', 5], ['mixed-division', 4], ['quick-sale', 1], ['quote-to-order', 1],
 ];
 
 let ctx;
@@ -231,8 +231,13 @@ async function standardFlow(sc, { plastics = false, multiStep = false, priority 
 }
 
 async function multiLocation(sc) {
-  const [home, remote] = [pickLoc(['METALS', 'MIXED']), pickLoc(['METALS', 'MIXED'])];
-  const stock = R.pick(await stockAt(remote.id));
+  const home = pickLoc(['METALS', 'MIXED']);
+  // The other branch must be a different one that still has stock.
+  let remote; let stock;
+  for (let tries = 0; tries < 12 && !stock; tries++) {
+    remote = pickLoc(['METALS', 'MIXED']);
+    if (remote.id !== home.id) stock = R.pick(await stockAt(remote.id));
+  }
   if (!stock || home.id === remote.id) { sc.result = 'BLOCKED'; sc.notes.push('no remote stock'); return; }
   const qty = Math.min(500, Math.floor(num(stock.qtyAvailable) / 2));
   const order = await createOrder(sc, R.pick(ctx.customers), [lineFor(stock, qty)]);
@@ -262,7 +267,9 @@ async function multiLocation(sc) {
 }
 
 async function transfersReceiving(sc, variant) {
-  const [a, b] = [pickLoc(['METALS', 'MIXED', 'OUTLET']), pickLoc(['METALS', 'MIXED', 'OUTLET'])];
+  const a = pickLoc(['METALS', 'MIXED', 'OUTLET']);
+  let b = pickLoc(['METALS', 'MIXED', 'OUTLET']);
+  while (b.id === a.id) b = pickLoc(['METALS', 'MIXED', 'OUTLET']); // a transfer needs two different branches
   const stock = R.pick(await stockAt(a.id, { minAvail: 1000 }));
   if (!stock) { sc.result = 'BLOCKED'; return; }
   const before = num(stock.qtyOnHand);
@@ -488,22 +495,81 @@ async function posEcommerce(sc, variant) {
   await checkOrderBooks(sc, orderId, { createdBy: csr.id });
 }
 
-/**
- * Known open defects that need a business decision before they can be fixed.
- * Each probe re-checks that the defect is still there, so the report never
- * goes quiet about it. These do not count as scenarios.
- */
-async function openDefectProbes(report) {
-  const probes = [];
-  const sale = await A.post('/api/pos/quick-sale/create', { customerType: 'CASH', locationId: ctx.locs[0].id }, 'csr');
-  const saleId = sale.body?.id || sale.body?.saleId;
-  const add = saleId ? await A.post(`/api/pos/quick-sale/${saleId}/add-item`, { product: { id: 'QA-SKU', sku: 'CUT-DISC-9', name: 'Cut-Off Disc', price: 6.49, unitPrice: 6.49 }, quantity: 3 }, 'csr') : sale;
-  probes.push({ id: 'D-014', what: 'Counter quick sale cannot add an item or take payment', stillPresent: !ok2xx(add.status), evidence: `${add.status} ${JSON.stringify(add.body).slice(0, 120)}` });
-  const ret = await A.post('/api/returns', {}, 'csr');
-  probes.push({ id: 'D-015', what: 'No way to record a customer return', stillPresent: ret.status === 404, evidence: `POST /api/returns → ${ret.status}` });
-  const inv = await A.post('/api/invoices', {}, 'csr');
-  probes.push({ id: 'D-016', what: 'No way to create an invoice or record a payment', stillPresent: inv.status === 404, evidence: `POST /api/invoices → ${inv.status}` });
-  report.openDefectProbes = probes;
+/** Counter quick sale: priced by the server, taxed by branch, paid, saved once, voided by a manager only. */
+async function quickSale(sc) {
+  const each = ctx.products.filter((p) => p.priceUnit === 'EACH' && num(p.basePriceCwt) > 0);
+  const byWeight = ctx.products.find((p) => p.priceUnit === 'CWT');
+  if (!each.length) { sc.result = 'BLOCKED'; sc.notes.push('no each-priced product in the catalog'); return; }
+  const branch = ctx.locs.find((l) => l.state === 'OH') || ctx.locs[0];
+  const rateRow = await prisma.salesTaxRate.findUnique({ where: { state: branch.state } });
+  const p = R.pick(each);
+  const qty = R.int(1, 12);
+  const sale = { id: `QA-${sc.id}-${Date.now()}`, locationId: branch.id, items: [{ productId: p.id, quantity: qty, unitPrice: 0.01, price: 0.01 }] };
+  const priced = await step(sc, 'quick sale: price the sale', () => A.post('/api/pos/quick-sale/price', { sale }, 'csr'));
+  const subtotal = Math.round(num(p.basePriceCwt) * qty * 100) / 100;
+  const tax = Math.round(subtotal * num(rateRow?.rate) * 100) / 100;
+  check(sc, 'quick sale uses the system price, not the price the screen sent', Math.abs(num(priced.body?.subtotal) - subtotal) < 0.005, `subtotal ${priced.body?.subtotal} vs ${subtotal}`);
+  check(sc, 'quick sale tax is the branch state rate', Math.abs(num(priced.body?.tax) - tax) < 0.005, `tax ${priced.body?.tax} vs ${tax}`);
+  const total = num(priced.body?.total);
+  if (byWeight) await step(sc, 'quick sale: material priced by weight is refused', () => A.post('/api/pos/quick-sale/price', { sale: { ...sale, items: [{ productId: byWeight.id, quantity: 1 }] } }, 'csr'), 409);
+  await step(sc, 'quick sale: cash that does not cover the total is refused', () => A.post('/api/pos/quick-sale/process-payment', { sale, payment: { method: 'CASH', amountTendered: +(total - 0.5).toFixed(2) } }, 'csr'), 400);
+  await step(sc, 'quick sale: a card with no approval code is refused', () => A.post('/api/pos/quick-sale/process-payment', { sale, payment: { method: 'CARD' } }, 'csr'), 400);
+  const tendered = Math.ceil(total) + 5;
+  const paid = await step(sc, 'quick sale: take cash payment', () => A.post('/api/pos/quick-sale/process-payment', { sale, payment: { method: 'CASH', amountTendered: tendered } }, 'csr'));
+  if (!paid.body?.orderId) return;
+  check(sc, 'quick sale change is tendered minus total', Math.abs(num(paid.body.change) - (tendered - total)) < 0.005, `change ${paid.body.change}`);
+  const again = await step(sc, 'quick sale: the same sale sent again is not charged twice', () => A.post('/api/pos/quick-sale/process-payment', { sale, payment: { method: 'CASH', amountTendered: tendered } }, 'csr'));
+  check(sc, 'repeat returns the first sale', again.body?.duplicate === true && again.body?.orderId === paid.body.orderId, JSON.stringify(again.body).slice(0, 160));
+  const saved = await prisma.order.findMany({ where: { poReference: `QS:${sale.id}` }, include: { lines: true, invoices: { include: { payments: true } } } });
+  check(sc, 'quick sale saved exactly one order', saved.length === 1, `${saved.length} orders`);
+  const o = saved[0];
+  const inv = o?.invoices.find((i) => i.kind === 'INVOICE');
+  check(sc, 'quick sale order total = subtotal + tax', o && Math.abs(num(o.totalAmount) - total) < 0.005 && Math.abs(num(o.subtotal) - subtotal) < 0.005, `total ${o?.totalAmount}`);
+  check(sc, 'quick sale has one paid invoice for the total', inv && inv.status === 'PAID' && Math.abs(num(inv.paidAmount) - total) < 0.005 && inv.payments.length === 1 && Math.abs(num(inv.payments[0].amount) - total) < 0.005, `invoice ${inv?.status} paid ${inv?.paidAmount}`);
+  await step(sc, 'quick sale: receipt can be reprinted', () => A.get(`/api/pos/quick-sale/${sale.id}/receipt`, 'csr'));
+  await step(sc, 'quick sale: emailing a receipt says it is not set up', () => A.post('/api/pos/quick-sale/email-receipt', { saleId: sale.id, email: 'nobody@qa.test' }, 'csr'), 501);
+  await step(sc, 'quick sale: a counter clerk cannot void', () => A.post(`/api/pos/quick-sale/${sale.id}/void`, { reason: 'QA' }, 'csr'), 403);
+  await step(sc, 'quick sale: a void needs a reason', () => A.post(`/api/pos/quick-sale/${sale.id}/void`, {}), '4xx');
+  const voided = await step(sc, 'quick sale: manager voids the sale', () => A.post(`/api/pos/quick-sale/${sale.id}/void`, { reason: 'QA void' }));
+  check(sc, 'void refunds the whole sale', Math.abs(num(voided.body?.refunded) - total) < 0.005, `refunded ${voided.body?.refunded}`);
+  await step(sc, 'quick sale: a voided sale cannot be voided again', () => A.post(`/api/pos/quick-sale/${sale.id}/void`, { reason: 'QA void' }), '4xx');
+  const after = await prisma.invoice.findMany({ where: { orderId: o.id }, include: { payments: true } });
+  const net = after.reduce((t, i) => t + i.payments.filter((x) => x.paymentMethod !== 'CREDIT').reduce((u, x) => u + Math.round(num(x.amount) * 100), 0), 0);
+  check(sc, 'after the void the money taken nets to zero', net === 0, `net cents ${net}`);
+}
+
+/** RFQ to quote to sales order. */
+async function quoteToOrder(sc) {
+  const customer = R.pick(ctx.customers.slice(2));
+  const product = R.pick(ctx.products.filter((p) => p.priceUnit === 'CWT'));
+  const qty = R.int(4, 40) * 50;
+  await step(sc, 'RFQ with no lines is refused', () => A.post('/api/rfqs', { customerId: customer.id, lines: [] }, 'csr'), 400);
+  const rfq = await step(sc, 'log an RFQ', () => A.post('/api/rfqs', { customerId: customer.id, contactName: 'QA Buyer', lines: [{ productId: product.id, description: product.name, requestedQty: qty, unit: 'LB' }] }, 'csr'));
+  if (!rfq.body?.id) return;
+  const rl = rfq.body.lines[0];
+  await step(sc, 'a quote with a negative price is refused', () => A.post(`/api/rfqs/${rfq.body.id}/quotes`, { lines: [{ rfqLineId: rl.id, unitPrice: -5, priceUnit: 'CWT' }] }, 'csr'), 400);
+  const price1 = R.int(40, 90);
+  const q1 = await step(sc, 'quote the RFQ', () => A.post(`/api/rfqs/${rfq.body.id}/quotes`, { lines: [{ rfqLineId: rl.id, unitPrice: price1, priceUnit: 'CWT' }] }, 'csr'));
+  const q2 = await step(sc, 'quote it again at a lower price', () => A.post(`/api/rfqs/${rfq.body.id}/quotes`, { lines: [{ rfqLineId: rl.id, unitPrice: price1 - 2, priceUnit: 'CWT' }] }, 'csr'));
+  if (!q1.body?.id || !q2.body?.id) return;
+  const want = Math.round((qty / 100) * (price1 - 2) * 100) / 100;
+  check(sc, 'quote total = quantity x price', Math.abs(num(q2.body.totalAmount) - want) < 0.005, `total ${q2.body.totalAmount} vs ${want}`);
+  await step(sc, 'a customer login cannot accept a quote through the staff route', () => A.post(`/api/quotes/${q2.body.id}/accept`, {}, 'custA'), '4xx');
+  await step(sc, 'mark the quote sent', () => A.post(`/api/quotes/${q2.body.id}/send`, {}, 'csr'));
+  const two = await Promise.all([1, 2].map(() => A.post(`/api/quotes/${q2.body.id}/accept`, { poReference: `QA-${sc.id}` }, 'csr')));
+  check(sc, 'a quote accepted twice at once makes one order', two.filter((r) => ok2xx(r.status)).length === 1, `statuses ${two.map((r) => r.status).join(',')}`);
+  const orderId = two.find((r) => ok2xx(r.status))?.body?.order?.id;
+  const orders = await prisma.order.findMany({ where: { poReference: `QA-${sc.id}`, buyerId: customer.id }, include: { lines: true } });
+  check(sc, 'exactly one sales order came from the quote', orders.length === 1 && orders[0].id === orderId, `${orders.length} orders`);
+  if (orders[0]) {
+    check(sc, 'the order carries the quoted quantity and price', Math.abs(num(orders[0].lines[0].qtyOrdered) - qty) < 0.001 && Math.abs(num(orders[0].totalAmount) - want) < 0.005 && orders[0].status === 'CONFIRMED', `qty ${orders[0].lines[0].qtyOrdered} total ${orders[0].totalAmount} ${orders[0].status}`);
+    await checkOrderBooks(sc, orders[0].id, { createdBy: (await prisma.user.findUnique({ where: { email: 'qa-csr@qa.test' } })).id });
+  }
+  const first = await prisma.quote.findUnique({ where: { id: q1.body.id } });
+  const done = await prisma.rFQ.findUnique({ where: { id: rfq.body.id } });
+  check(sc, 'the other quote on the RFQ was closed', first.status === 'REJECTED', first.status);
+  check(sc, 'the RFQ is marked accepted', done.status === 'ACCEPTED', done.status);
+  await step(sc, 'a closed RFQ cannot be quoted again', () => A.post(`/api/rfqs/${rfq.body.id}/quotes`, { lines: [{ rfqLineId: rl.id, unitPrice: 50, priceUnit: 'CWT' }] }, 'csr'), 409);
 }
 
 async function runScenario(category, i, id) {
@@ -519,6 +585,8 @@ async function runScenario(category, i, id) {
     else if (category === 'rush-backorder-exception') await exceptionFlow(sc, i % 5);
     else if (category === 'partial-rework-return') await partialRework(sc, i % 5);
     else if (category === 'mixed-division') await standardFlow(sc, { mixed: true });
+    else if (category === 'quick-sale') await quickSale(sc);
+    else if (category === 'quote-to-order') await quoteToOrder(sc);
   } catch (e) {
     sc.result = 'ERROR'; sc.notes.push(e.stack?.split('\n').slice(0, 3).join(' | '));
   }
@@ -577,6 +645,31 @@ async function concurrency(report) {
   // 5. Ten jobs created at once get distinct numbers.
   const jobs = await Promise.all(Array.from({ length: 10 }, () => A.post('/api/jobs', { workCenterId: loc.workCenters[0].id, operationType: 'SAW', instructions: 'QA concurrency' })));
   record('10 simultaneous jobs all saved with distinct numbers', jobs.every((r) => ok2xx(r.status)) && new Set(jobs.map((r) => r.body?.jobNumber)).size === 10, `statuses ${jobs.map((r) => r.status).join(',')}`);
+
+  // 6. Billing races on the order shipped above.
+  const bills = await Promise.all([1, 2, 3].map(() => A.post('/api/invoices', { orderId: winner.id })));
+  const invs = await prisma.invoice.findMany({ where: { orderId: winner.id, kind: 'INVOICE', status: { not: 'CANCELLED' } }, include: { lines: true } });
+  const billedQty = invs.reduce((t, i) => t + i.lines.reduce((u, l) => u + num(l.quantity), 0), 0);
+  record('one shipment invoiced three more times at once: billed once', invs.length === 1 && Math.abs(billedQty - want) < 0.001, `statuses ${bills.map((r) => r.status).join(',')}; ${invs.length} invoice(s), ${billedQty} billed of ${want} shipped`);
+  if (invs[0]) {
+    const inv = invs[0];
+    const full = num(inv.totalAmount);
+    const pays = await Promise.all([1, 2, 3].map(() => A.post(`/api/invoices/${inv.id}/payments`, { amount: full, paymentMethod: 'CHECK', referenceNumber: 'QA-race' })));
+    const paidNow = await prisma.invoice.findUnique({ where: { id: inv.id }, include: { payments: true } });
+    record('three full payments at once on one invoice: taken once', pays.filter((r) => ok2xx(r.status)).length === 1 && Math.abs(num(paidNow.paidAmount) - full) < 0.005 && paidNow.payments.length === 1, `statuses ${pays.map((r) => r.status).join(',')}; paid ${num(paidNow.paidAmount)} of ${full}`);
+
+    // 7. The same return received twice at once: stock comes back once, one credit.
+    const back = Math.max(1, Math.floor(want / 4));
+    const ret = await A.post('/api/returns', { orderId: winner.id, reason: 'QA concurrency', lines: [{ orderLineId: winner.lines[0].id, quantity: back, disposition: 'RESTOCK' }] });
+    if (ok2xx(ret.status)) {
+      const before = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
+      const recv = await Promise.all([1, 2, 3].map(() => A.post(`/api/returns/${ret.body.id}/receive`, {})));
+      const now = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
+      const credits = await prisma.invoice.findMany({ where: { creditOfInvoiceId: inv.id } });
+      record('one return received three times at once: counted once, one credit', recv.filter((r) => ok2xx(r.status)).length === 1 && credits.length === 1 && Math.abs(num(now.qtyOnHand) - num(before.qtyOnHand) - back) < 0.001,
+        `statuses ${recv.map((r) => r.status).join(',')}; ${credits.length} credit memo(s); source coil on hand ${num(before.qtyOnHand)} → ${num(now.qtyOnHand)}`);
+    } else record('one return received three times at once: counted once, one credit', false, `return did not open: ${ret.status} ${JSON.stringify(ret.body).slice(0, 160)}`);
+  }
 
   report.concurrency = { pass: out.every((x) => x.pass), probes: out };
 }
@@ -673,7 +766,6 @@ async function main() {
   }
   const report = { seed: SEED, base: BASE, at: new Date().toISOString(), scenarios };
   await concurrency(report);
-  await openDefectProbes(report);
   await reconcile(report);
   const tally = scenarios.reduce((t, s) => ({ ...t, [s.result]: (t[s.result] || 0) + 1 }), {});
   const failedSteps = {}; const failedChecks = {};
@@ -690,7 +782,6 @@ async function main() {
   for (const c of report.concurrency.probes) console.log(`concurrency ${c.pass ? '✓' : '✗'} ${c.name} — ${c.detail}`);
   console.log(`reconciliation ${report.reconciliation.pass ? '✓' : '✗'} ${report.reconciliation.stockItems} stock items, ${report.reconciliation.ordersFromThisQaRun} orders, ${report.reconciliation.problemCount} problems (plus ${report.reconciliation.demoSeedDataProblems.count} in demo seed data)`);
   for (const x of report.reconciliation.problems.slice(0, 12)) console.log('  recon ✗', x);
-  for (const d of report.openDefectProbes) console.log(`open defect ${d.id} ${d.stillPresent ? 'still present' : 'NO LONGER REPRODUCES'}: ${d.what}`);
   for (const [k, v] of Object.entries(failedSteps)) console.log(`STEP ✗ ${k} ×${v.length}  e.g. ${v[0]}`);
   for (const [k, v] of Object.entries(failedChecks)) console.log(`CHECK ✗ ${k} ×${v.length}  e.g. ${v[0]}`);
 }

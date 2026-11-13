@@ -541,6 +541,18 @@
    "file": "src/backend/src/routes/returns.js"
   },
   {
+   "ep": "GET /api/tax-rates",
+   "file": "src/backend/src/routes/taxRates.js"
+  },
+  {
+   "ep": "PUT /api/tax-rates/:state",
+   "file": "src/backend/src/routes/taxRates.js"
+  },
+  {
+   "ep": "DELETE /api/tax-rates/:state",
+   "file": "src/backend/src/routes/taxRates.js"
+  },
+  {
    "ep": "GET /api/dashboard",
    "file": "src/backend/src/routes/dashboard.js"
   },
@@ -4134,6 +4146,7 @@
   "customers/preferences",
   "admin/users",
   "admin/partners",
+  "admin/tax-rates",
   "admin/audit-log",
   "admin/processing-recipes",
   "admin/staff",

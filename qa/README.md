@@ -32,7 +32,7 @@ cd ../.. && node qa/sim/fixtures.mjs
 # every time
 qa/tools/start-qa-server.sh &                       # backend on port 3011, QA database only
 (cd src/backend && npm test)                        # unit tests
-node qa/sim/run.mjs --seed 4001 --out qa/results/my-run.json
+node qa/sim/run.mjs --seed 7001 --out qa/results/my-run.json
 node qa/sim/security.mjs
 node qa/tools/report.mjs                            # rebuild test-execution-results.md
 ```
@@ -44,4 +44,4 @@ A cycle can be replayed exactly by passing the same `--seed` on a freshly built 
 - `PASS`: every step answered as expected and every check on the database held.
 - `FAIL`: a step or check did not.
 - `BLOCKED`: the app has no way to do that job at all. It is not a pass.
-- A cycle is "clean" when no job failed, all five simultaneous-request probes passed and the whole-database reconciliation found nothing.
+- A cycle is "clean" when no job failed, all eight simultaneous-request probes passed and the whole-database reconciliation found nothing.

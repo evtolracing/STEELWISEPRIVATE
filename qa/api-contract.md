@@ -2,9 +2,9 @@
 
 Generated 2026-11-13 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
 
-- Distinct API calls found in the screens: **332**
-- Matched to a server route: **180**
-- No matching server route (the call would get a 404): **152**
+- Distinct API calls found in the screens: **352**
+- Matched to a server route: **197**
+- No matching server route (the call would get a 404): **155**
 
 Calls built from variables (a base URL constant plus a suffix) are not seen by this scan, so the real number of calls is higher.
 
@@ -245,14 +245,22 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `GET /api/logistics/routes` | api/logistics.js |
 | `POST /api/logistics/routes/calculate` | api/logistics.js |
 
+### /api/pos (3)
+
+| Call | Used in |
+|---|---|
+| `POST /api/pos/will-call/:x/complete` | components/pos/screens/WillCallLoadScreen.jsx |
+| `POST /api/pos/will-call/:x/verify` | components/pos/screens/WillCallVerifyScreen.jsx |
+| `GET /api/pos/will-call/queue` | components/pos/screens/WillCallQueueScreen.jsx |
+
 ### /api/auth (1)
 
 | Call | Used in |
 |---|---|
 | `PUT /api/auth/profile` | hooks/useAuth.jsx |
 
-### /api/pos (1)
+### /api/returns (1)
 
 | Call | Used in |
 |---|---|
-| `GET /api/pos/quick-sale/lookup` | components/pos/screens/QuickSaleScreen.jsx |
+| `POST /api/returns/:x/:x` | pages/Orders/ReturnsPage.jsx |

@@ -51,6 +51,7 @@ const SHIPPING_EXTRA = new Set(['PRODUCTION_MANAGER', 'PACKAGING_LEAD', 'MATERIA
 const MANAGER_ONLY = [
   /^\/api\/invoices\/[^/]+\/(credit|refund|cancel)$/,
   /^\/api\/pos\/quick-sale\/[^/]+\/void$/,
+  /^\/api\/tax-rates(\/|$)/,
 ];
 // First match wins. [test, groups allowed, what to tell everyone else]
 const WRITE_RULES = [
@@ -70,7 +71,7 @@ export function staffWriteDenial(role, path, method) {
   const group = staffGroupOf(role);
   if (group === 'admin' || group === 'leadership') return null;
   if (MANAGER_ONLY.some((re) => re.test(path))) {
-    return MONEY_MANAGERS.has(role) ? null : 'Credits, refunds, cancelling an invoice and voiding a sale need a manager.';
+    return MONEY_MANAGERS.has(role) ? null : 'Credits, refunds, cancelling an invoice, voiding a sale and changing tax rates need a manager.';
   }
   const rule = WRITE_RULES.find(([test]) => test(path));
   if (!rule) return null;

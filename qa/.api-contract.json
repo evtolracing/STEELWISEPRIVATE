@@ -1,5 +1,5 @@
 {
- "total": 332,
+ "total": 352,
  "missing": [
   {
    "call": "PUT /api/auth/profile",
@@ -387,9 +387,21 @@
    ]
   },
   {
-   "call": "GET /api/pos/quick-sale/lookup",
+   "call": "POST /api/pos/will-call/:x/complete",
    "files": [
-    "src/frontend/src/components/pos/screens/QuickSaleScreen.jsx"
+    "src/frontend/src/components/pos/screens/WillCallLoadScreen.jsx"
+   ]
+  },
+  {
+   "call": "POST /api/pos/will-call/:x/verify",
+   "files": [
+    "src/frontend/src/components/pos/screens/WillCallVerifyScreen.jsx"
+   ]
+  },
+  {
+   "call": "GET /api/pos/will-call/queue",
+   "files": [
+    "src/frontend/src/components/pos/screens/WillCallQueueScreen.jsx"
    ]
   },
   {
@@ -642,6 +654,12 @@
    "call": "POST /api/qaqc/test-types",
    "files": [
     "src/frontend/src/api/qaqc.js"
+   ]
+  },
+  {
+   "call": "POST /api/returns/:x/:x",
+   "files": [
+    "src/frontend/src/pages/Orders/ReturnsPage.jsx"
    ]
   },
   {

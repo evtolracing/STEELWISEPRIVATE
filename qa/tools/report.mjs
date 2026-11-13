@@ -35,8 +35,6 @@ if (finals.length) {
   const last = finals.at(-1).r;
   L.push('', '### Simultaneous-request probes (last final cycle)', '');
   for (const p of last.concurrency.probes) L.push(`- ${p.pass ? 'Pass' : 'FAIL'}: ${p.name}. ${p.detail}`);
-  L.push('', '### Known open defects re-checked every cycle', '');
-  for (const d of last.openDefectProbes || []) L.push(`- ${d.id}: ${d.what}. ${d.stillPresent ? 'Still present' : 'No longer reproduces'} (${d.evidence}).`);
   if (last.reconciliation?.demoSeedDataProblems?.count) L.push('', `The reconciliation also found ${last.reconciliation.demoSeedDataProblems.count} inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: ${last.reconciliation.demoSeedDataProblems.examples.slice(0, 3).join('; ')}.`);
 }
 const base = cycles.find((c) => c.f.startsWith('baseline'));

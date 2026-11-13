@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T05:13:15.067Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T06:07:55.944Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -18,47 +18,43 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 | `r6-3001.json` | 3001 | 50 | 49 | 0 | 0 | 1 | 590 | 489 | 5 of 5 pass | 0 problems in 323 stock items and 423 orders |
 | `r6-3002.json` | 3002 | 50 | 49 | 0 | 0 | 1 | 594 | 493 | 5 of 5 pass | 0 problems in 323 stock items and 479 orders |
 | `r6-3003.json` | 3003 | 50 | 49 | 0 | 0 | 1 | 586 | 484 | 5 of 5 pass | 0 problems in 323 stock items and 535 orders |
-| `final-4001.json` | 4001 | 50 | 49 | 0 | 0 | 1 | 593 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 56 orders |
-| `final-4002.json` | 4002 | 50 | 49 | 0 | 0 | 1 | 583 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 112 orders |
-| `final-4003.json` | 4003 | 50 | 49 | 0 | 0 | 1 | 595 | 494 | 5 of 5 pass | 0 problems in 323 stock items and 168 orders |
+| `r7-4001.json` | 4001 | 50 | 49 | 0 | 0 | 1 | 593 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 56 orders |
+| `r7-4002.json` | 4002 | 50 | 49 | 0 | 0 | 1 | 583 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 112 orders |
+| `r7-4003.json` | 4003 | 50 | 49 | 0 | 0 | 1 | 595 | 494 | 5 of 5 pass | 0 problems in 323 stock items and 168 orders |
+| `final-7001.json` | 7001 | 50 | 50 | 0 | 0 | 0 | 712 | 776 | 8 of 8 pass | 0 problems in 323 stock items and 59 orders |
+| `final-7002.json` | 7002 | 50 | 50 | 0 | 0 | 0 | 708 | 771 | 8 of 8 pass | 0 problems in 323 stock items and 118 orders |
+| `final-7003.json` | 7003 | 50 | 50 | 0 | 0 | 0 | 700 | 769 | 8 of 8 pass | 0 problems in 323 stock items and 177 orders |
 
-**Final consecutive cycles:** 3 cycles, 150 jobs: 147 passed, 0 failed, 3 blocked. 1771 API steps and 1478 checks. Seeds 4001, 4002, 4003.
-
-Blocked jobs are not passes. They are jobs the app has no way to perform:
-
-- S4001-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
-- S4002-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
-- S4003-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
+**Final consecutive cycles:** 3 cycles, 150 jobs: 150 passed, 0 failed, 0 blocked. 2120 API steps and 2316 checks. Seeds 7001, 7002, 7003.
 
 ### By category across the final cycles
 
 | Category | Jobs | Pass | Fail | Blocked |
 |---|---|---|---|---|
-| standard-metals | 24 | 24 | 0 | 0 |
-| multi-step-metals | 18 | 18 | 0 | 0 |
+| standard-metals | 21 | 21 | 0 | 0 |
+| multi-step-metals | 15 | 15 | 0 | 0 |
 | plastics | 18 | 18 | 0 | 0 |
 | pos-ecommerce | 15 | 15 | 0 | 0 |
 | multi-location | 18 | 18 | 0 | 0 |
 | transfers-receiving | 15 | 15 | 0 | 0 |
 | rush-backorder-exception | 15 | 15 | 0 | 0 |
-| partial-rework-return | 15 | 12 | 0 | 3 |
+| partial-rework-return | 15 | 15 | 0 | 0 |
 | mixed-division | 12 | 12 | 0 | 0 |
+| quick-sale | 3 | 3 | 0 | 0 |
+| quote-to-order | 3 | 3 | 0 | 0 |
 
 ### Simultaneous-request probes (last final cycle)
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
-- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 6400
+- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
 - Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 9600 of 9600; on hand 16000 → 6400
+- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
+- Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
+- Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
+- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
 
-### Known open defects re-checked every cycle
-
-- D-014: Counter quick sale cannot add an item or take payment. Still present (500 {"error":"Failed to add item"}).
-- D-015: No way to record a customer return. Still present (POST /api/returns → 404).
-- D-016: No way to create an invoice or record a payment. Still present (POST /api/invoices → 404).
-
-The reconciliation also found 49 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
+The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
 ## What the baseline run found before any repair
 
@@ -76,42 +72,28 @@ The reconciliation also found 49 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T05:12:57.333Z. 581 of 581 routes swept.
+Run 2026-11-13T06:03:03.088Z. 574 of 574 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
-| No access without signing in | Pass | 542 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
+| No access without signing in | Pass | 535 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
 | Partner API needs a partner token | Pass | 60 calls, 0 let in |
 | Forged and invalid sign-ins are refused | Pass | 5 cases, 0 problems |
-| Customer logins are held to the store | Pass | 519 staff routes tried as a customer, 0 not refused |
-| Customers cannot see each other | Pass | 7 checks, 0 problems |
-| Staff roles | Pass | 0 problems, 1 observation(s) needing a policy decision |
-| Read routes do not crash on bad input | FINDINGS | 753 reads, 7 server errors |
+| Customer logins are held to the store | Pass | 512 staff routes tried as a customer, 0 not refused |
+| Customers and divisions cannot see each other | Pass | 31 checks, 0 problems |
+| Staff roles and departments | Pass | 18 checks, 0 problems |
+| Read routes do not crash on bad input | Pass | 750 reads, 0 server errors |
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
-| Web checkout prices are checked against the system price | Pass | 3 checks, 0 problems |
+| Web checkout uses the system price, not the browser's | Pass | 4 checks, 0 problems |
 | Error replies do not expose internals | Pass | 0 replies exposed internal detail |
-
-### Staff roles
-
-- Observation: A saw-operator login edited a sales order through the API → 200. Screens are limited by role, but the API lets any signed-in staff member use any staff route.
-
-### Read routes do not crash on bad input
-
-- /api/rfqs/:id → 500 {"error":"Failed to fetch RFQ"} [rfqs.js]
-- /api/rfqs/:id (hostile filter) → 500 {"error":"Failed to fetch RFQ"} [rfqs.js]
-- /api/quotes → 500 {"error":"Failed to fetch quotes"} [quotes.js]
-- /api/quotes/:id → 500 {"error":"Failed to fetch quote"} [quotes.js]
-- /api/quotes/:id (hostile filter) → 500 {"error":"Failed to fetch quote"} [quotes.js]
-- /api/pos/quick-sale/:saleId/receipt → 500 {"error":"Failed to get receipt"} [pos.js]
-- /api/pos/quick-sale/:saleId/receipt (hostile filter) → 500 {"error":"Failed to get receipt"} [pos.js]
 
 ## Screen check
 
-Run 2026-11-13T03:19:54.640Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T06:07:55.844Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
-- Screens opened: 120
-- OK: 120
+- Screens opened: 123
+- OK: 123
 - Screens that made at least one failing API call: 7
 
 ### API calls that failed while screens loaded

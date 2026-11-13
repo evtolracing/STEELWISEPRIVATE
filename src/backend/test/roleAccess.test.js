@@ -61,7 +61,7 @@ test('staff can only change records their department owns', async () => {
   ok('OPERATOR_SAW', 'POST', '/api/jobs/abc/status'); ok('CSR', 'POST', '/api/jobs'); ok('QC_INSPECTOR', 'PATCH', '/api/jobs/abc/status');
   no('MAINTENANCE_MANAGER', 'POST', '/api/jobs');
   // Money decisions need a manager.
-  for (const path of ['/api/invoices/abc/credit', '/api/invoices/abc/refund', '/api/invoices/abc/cancel', '/api/pos/quick-sale/abc/void']) {
+  for (const path of ['/api/invoices/abc/credit', '/api/invoices/abc/refund', '/api/invoices/abc/cancel', '/api/pos/quick-sale/abc/void', '/api/tax-rates/OH']) {
     no('CSR', 'POST', path); no('SALES_REP', 'POST', path); no('OPERATOR_SAW', 'POST', path);
     ok('CREDIT_MANAGER', 'POST', path); ok('SALES_DIRECTOR', 'POST', path); ok('BRANCH_MANAGER', 'POST', path); ok('CFO', 'POST', path);
   }

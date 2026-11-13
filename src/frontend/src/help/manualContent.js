@@ -1925,7 +1925,7 @@ const manualModules = [
         title: 'Troubleshooting',
         blocks: [
           { type: 'troubleshoot', items: [
-            { problem: 'MTR upload fails', solution: 'Check the file format — only PDF is supported. Maximum file size is 25 MB. If the file is a scan, make sure it\'s legible.' },
+            { problem: 'MTR upload fails', solution: 'Check the file format — PDF, images, Word, Excel, CSV and text files are accepted. Maximum file size is 4 MB on the hosted site. If the file is a scan, make sure it\'s legible.' },
             { problem: 'Unit shows wrong location', solution: 'The location was likely not updated after a physical move. Edit the unit and update the location, or use the Inventory Transfer feature to move it properly.' },
             { problem: 'Can\'t find a heat', solution: 'Search by partial heat number. Also check if the heat was entered under a slightly different format (dashes vs. no dashes, leading zeros).' },
           ]},
@@ -2155,25 +2155,44 @@ const manualModules = [
         id: 'what-it-does',
         title: 'What This Module Does',
         blocks: [
-          { type: 'text', value: 'Sales & Quoting covers the pre-order pipeline: receiving RFQs (Requests for Quote), building quotes with accurate pricing, tracking quote conversion rates, and monitoring overall sales performance. The RFQ Inbox collects incoming quote requests from email, web forms, and phone calls in one place. The Sales Dashboard shows KPIs like revenue, quote win rate, and pipeline value.' },
+          { type: 'text', value: 'Sales & Quoting covers the pre-order pipeline: receiving RFQs (Requests for Quote), building quotes with accurate pricing, tracking quote conversion rates, and monitoring overall sales performance. RFQs & Quotes holds every quote request and the quotes sent for it. The Sales Dashboard shows KPIs like revenue, quote win rate, and pipeline value.' },
         ],
       },
       {
         id: 'rfq-inbox',
-        title: 'RFQ Inbox',
+        title: 'RFQs & Quotes',
         blocks: [
           { type: 'steps', items: [
-            'Click "RFQ Inbox" under Sales & Pricing in the sidebar.',
-            'The inbox shows all incoming quote requests with requester name, date, product summary, and status (New, In Progress, Quoted, Won, Lost).',
-            'New RFQs appear at the top with a "New" badge. Click one to open it.',
-            'Review the customer\'s request: products, quantities, specifications, and any special requirements.',
-            'Click "Build Quote" to open the quote builder pre-filled with the RFQ details.',
-            'In the quote builder, add products, set pricing (list, contract, or manual), add processing charges, and set validity period.',
-            'Click "Preview" to see the customer-facing quote PDF. Review for accuracy.',
-            'Click "Send Quote" to email the quote to the customer. The RFQ status changes to "Quoted."',
-            'When the customer accepts, click "Convert to Order" to create an order from the quote.',
+            'Click "RFQs & Quotes" under Sales & Pricing in the sidebar.',
+            'Click "New RFQ" when a customer asks for a price. Pick the customer and list what they want with quantities.',
+            'Open the RFQ and click "Price this RFQ". Enter a price for each line. The total is worked out for you. A quote is valid for 30 days unless you set another date.',
+            'Send the quote to the customer yourself, then click "Mark as sent". The system does not email quotes.',
+            'When the customer says yes, click "Customer accepted: create order". This creates a confirmed sales order with the quoted prices and closes any other quotes on that RFQ.',
+            'If the customer says no, click "Lost". You can quote the same RFQ again while it is still open.',
           ]},
-          { type: 'tip', value: 'Set follow-up reminders on quotes. Click the calendar icon on a quoted RFQ to schedule a follow-up call with the customer.' },
+          { type: 'tip', value: 'A quote past its valid-until date cannot be accepted. Create a new quote with current prices.' },
+        ],
+      },
+      {
+        id: 'invoices-payments',
+        title: 'Invoices, Payments and Credits',
+        blocks: [
+          { type: 'steps', items: [
+            'An invoice is created automatically when a shipment is dispatched, for what was shipped.',
+            'Click "Invoices" under Orders to see them. Open one and click "Record payment" when the customer pays. Part payments are fine.',
+            'A manager can issue a credit, record a refund, or cancel an invoice that has no payments.',
+          ]},
+        ],
+      },
+      {
+        id: 'returns',
+        title: 'Customer Returns',
+        blocks: [
+          { type: 'steps', items: [
+            'Click "Returns" under Orders, then "New return". Enter the sales order number.',
+            'Enter how much is coming back on each line and choose "Put back in stock" or "Scrap". Give the reason.',
+            'When the material is on the dock, click "Receive". Restocked material goes back on hand and the customer is credited for what was invoiced.',
+          ]},
         ],
       },
       {
@@ -2196,8 +2215,8 @@ const manualModules = [
         title: 'Troubleshooting',
         blocks: [
           { type: 'troubleshoot', items: [
-            { problem: 'RFQ not appearing in inbox', solution: 'Check if the RFQ email integration is active (Admin > Partner API > Email Integration). Also check spam filters on the RFQ email address.' },
-            { problem: 'Quote pricing seems wrong', solution: 'Check the customer\'s pricing tier in their profile. Also verify the product base price and any active price overrides. The quote builder uses real-time pricing from the pricing engine.' },
+            { problem: 'RFQ not in the list', solution: 'RFQs are entered by hand with "New RFQ". They are not read from email.' },
+            { problem: 'Quote pricing seems wrong', solution: 'Check the customer\'s pricing tier in their profile. Also verify the product base price and any active price overrides. Quote prices are typed in by the person quoting.' },
             { problem: 'Can\'t convert quote to order', solution: 'The quote may have expired. Check the validity date. If expired, you\'ll need to re-quote. Also check customer credit status — orders won\'t create if the customer is on credit hold.' },
           ]},
         ],

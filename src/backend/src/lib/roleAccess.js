@@ -50,6 +50,11 @@ export const MONEY_MANAGERS = new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.le
 export const COST_VIEWERS = new Set([...MONEY_MANAGERS, 'INVENTORY_MANAGER', 'BUYER']);
 const SHIPPING_EXTRA = new Set(['PRODUCTION_MANAGER', 'PACKAGING_LEAD', 'MATERIAL_HANDLER', 'WORKCENTER_LEAD']);
 
+// The manager of each department, for changes that need one but not a branch manager.
+const DEPARTMENT_MANAGERS = ['PRODUCTION_MANAGER', 'INVENTORY_MANAGER', 'QC_MANAGER', 'MAINTENANCE_MANAGER', 'SALES_DIRECTOR', 'CREDIT_MANAGER'];
+// Every department that does work (not the view-only roles, not integrations).
+const EVERY_DEPARTMENT = ['sales', 'production', 'warehouse', 'quality', 'maintenance'];
+
 const MANAGER_ONLY = [
   /^\/api\/invoices\/[^/]+\/(credit|refund|cancel)$/,
   /^\/api\/pos\/quick-sale\/[^/]+\/void$/,
@@ -64,6 +69,34 @@ const WRITE_RULES = [
   [(p) => ['/api/inventory', '/api/coils', '/api/heats'].some((x) => under(p, x)), ['warehouse', 'production', 'quality'], 'Stock records'],
   [(p) => under(p, '/api/shipments'), ['warehouse', 'sales'], 'Shipments'],
   [(p) => ['/api/jobs', '/api/work-orders'].some((x) => under(p, x)), ['production', 'sales', 'warehouse', 'quality'], 'Jobs'],
+  // ── The areas that had no department until Phase 2 (finding B-004). The owner asked for the best
+  // logical assignment (decision 3, 13 November 2026). An entry is a department or a single role;
+  // managers and leadership may always change these. `m` is the request method.
+  [(p, m) => under(p, '/api/documents') && m === 'DELETE', [...DEPARTMENT_MANAGERS], 'Deleting a document', 'a department manager'],
+  [(p) => ['/api/processing-recipes', '/api/v1/bom'].some((x) => under(p, x)), ['PRODUCTION_MANAGER', 'SCHEDULER', 'QC_MANAGER'], 'Processing recipes and bills of material', 'the production manager, a scheduler or the quality manager'],
+  [(p) => under(p, '/api/work-centers'), ['PRODUCTION_MANAGER', 'SCHEDULER', 'MAINTENANCE_MANAGER'], 'Work centers', 'the production manager, a scheduler or the maintenance manager'],
+  [(p) => under(p, '/api/v1/dispatch'), ['PRODUCTION_MANAGER', 'SCHEDULER', 'WORKCENTER_LEAD'], 'Dispatch set-up and scheduling runs', 'the production manager, a scheduler or a work center lead'],
+  [(p) => under(p, '/api/staff'), ['PRODUCTION_MANAGER', 'SCHEDULER', 'WORKCENTER_LEAD'], 'Operators, skills and shifts', 'the production manager, a scheduler or a work center lead'],
+  [(p) => under(p, '/api/assets'), ['maintenance', 'PRODUCTION_MANAGER'], 'Equipment records', 'maintenance or the production manager'],
+  [(p, m) => under(p, '/api/maintenance-orders') && m === 'DELETE', ['MAINTENANCE_MANAGER', 'PRODUCTION_MANAGER'], 'Deleting a maintenance order', 'the maintenance or production manager'],
+  [(p) => under(p, '/api/maintenance-orders'), ['maintenance', 'production'], 'Maintenance orders', 'maintenance or production staff'],
+  [(p) => under(p, '/api/drop-tags/templates'), ['PRODUCTION_MANAGER', 'INVENTORY_MANAGER', 'PACKAGING_LEAD'], 'Tag templates', 'the production manager, the inventory manager or the packaging lead'],
+  [(p) => under(p, '/api/drop-tags'), ['production', 'warehouse'], 'Drop tags and packages', 'production or warehouse staff'],
+  [(p) => under(p, '/api/print-queue'), ['production', 'warehouse', 'sales', 'quality'], 'The print queue', 'production, warehouse, sales or quality staff'],
+  // Anyone may stop work for safety. Moving it on and clearing it is for a supervisor.
+  [(p) => /^\/api\/safety\/stop-work\/[^/]+\/(status|clearance|steps\/[^/]+\/complete)$/.test(p), ['PRODUCTION_MANAGER', 'MAINTENANCE_MANAGER', 'QC_MANAGER', 'WORKCENTER_LEAD'], 'Clearing a stop-work', 'a production, maintenance or quality manager, or a work center lead'],
+  [(p) => under(p, '/api/safety/stop-work'), EVERY_DEPARTMENT, 'Stop-work records', 'staff'],
+  [(p) => under(p, '/api/v1/inventory'), ['warehouse', 'production', 'quality'], 'Stock records', 'warehouse, production or quality staff'],
+  [(p) => /^\/api\/v1\/orders\/[^/]+\/(plan|mark-packaging)$/.test(p), ['production', 'sales', 'warehouse'], 'Planning and packaging an order', 'production, sales or warehouse staff'],
+  [(p) => ['/api/v1/contacts', '/api/v1/rfq', '/api/v1/quotes', '/api/v1/orders'].some((x) => under(p, x)), ['sales'], 'Order hub contacts, requests, quotes and orders', 'sales staff'],
+  [(p) => p === '/api/demand-shaping/config', ['SALES_DIRECTOR'], 'Demand shaping settings', 'the sales director'],
+  [(p) => under(p, '/api/demand-shaping'), ['sales'], 'Demand shaping suggestions', 'sales staff'],
+  [(p) => under(p, '/api/v1/events'), EVERY_DEPARTMENT, 'Exception events', 'staff'],
+  [(p) => under(p, '/api/material-tracking'), ['warehouse', 'production', 'quality'], 'Material tracking', 'warehouse, production or quality staff'],
+  [(p) => under(p, '/api/v1/operations'), ['production'], 'Shop-floor operations', 'production staff'],
+  [(p) => under(p, '/api/qc'), ['quality', 'PRODUCTION_MANAGER'], 'Inspections', 'quality staff or the production manager'],
+  [(p) => ['/api/v1/pipeline', '/api/v1/ingest'].some((x) => under(p, x)), ['sales'], 'The order pipeline', 'sales staff'],
+  [(p) => under(p, '/api/ops-cockpit') && !p.endsWith('/explain'), ['PRODUCTION_MANAGER', 'SCHEDULER', 'INVENTORY_MANAGER'], 'Operations recommendations', 'the production manager, a scheduler or the inventory manager'],
 ];
 const READ_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
@@ -77,8 +110,11 @@ export const ruledPath = (path) => SAME_RECORDS.reduce((p, [from, to]) => p.repl
 export const ASK_ONLY_PREFIXES = [
   '/api/auth', '/api/ai', '/api/v1/ai', '/api/pricing', '/api/pos/validation',
   '/api/pos/quick-sale/lookup', '/api/pos/quick-sale/price',
-  '/api/v1/bom/recipes/match', '/api/v1/bom/ai-suggest', '/api/v1/pipeline/simulate',
+  '/api/v1/bom/recipes/match', '/api/v1/bom/ai-suggest', '/api/v1/pipeline/simulate', '/api/ops-cockpit/recommendations/explain',
 ];
+
+/** The department rule a changing request falls under, or null when the area has none. Used by the coverage check. */
+export const writeRuleFor = (rawPath, method) => { const path = ruledPath(rawPath); if (MANAGER_ONLY.some((re) => re.test(path))) return 'manager only'; const r = WRITE_RULES.find(([test]) => test(path, method)); return r ? r[2] : null; };
 
 /** null when allowed, otherwise the reason for a 403. Only for staff roles and requests that change something. */
 export function staffWriteDenial(role, rawPath, method) {
@@ -92,12 +128,12 @@ export function staffWriteDenial(role, rawPath, method) {
   if (MANAGER_ONLY.some((re) => re.test(path))) {
     return MONEY_MANAGERS.has(role) ? null : 'Credits, refunds, cancelling an invoice, voiding a sale and changing tax rates need a manager.';
   }
-  const rule = WRITE_RULES.find(([test]) => test(path));
+  const rule = WRITE_RULES.find(([test]) => test(path, method));
   if (!rule) return null;
-  const [, groups, what] = rule;
-  if (groups.includes(group)) return null;
+  const [, allowed, what, who] = rule;
+  if (allowed.includes(group) || allowed.includes(role)) return null;
   if (under(path, '/api/shipments') && SHIPPING_EXTRA.has(role)) return null;
-  return `${what} can only be changed by ${groups.join(', ')} staff or a manager. Your role (${role || 'none'}) can view them.`;
+  return `${what} can only be changed by ${who || `${allowed.join(', ')} staff`} or a manager. Your role (${role || 'none'}) can view them.`;
 }
 
 /** null when allowed, otherwise the reason for a 403. */

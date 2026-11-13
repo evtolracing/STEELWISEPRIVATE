@@ -1,13 +1,12 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T18:25:05.927Z",
+ "at": "2026-11-13T18:40:32.877Z",
  "who": "qa-admin@qa.test",
  "screens": 125,
  "tally": {
-  "OK": 90,
-  "SENT_TO_LOGIN": 35
+  "OK": 125
  },
- "screensWithFailedApiCalls": 42,
+ "screensWithFailedApiCalls": 10,
  "failedApiCalls": {
   "GET /api/heats/:id → 404": [
    "/heats/:id"
@@ -34,83 +33,14 @@
   "GET /api/jobs/:id/history → 404": [
    "/jobs/:id"
   ],
-  "GET /api/auth/me → 500": [
-   "/logistics/tracking"
+  "GET /api/orders/intake/:id → 404": [
+   "/orders/:id"
   ],
-  "GET /api/customers/ACME/preferences → 500": [
-   "/logistics/tracking"
+  "GET /api/ecom/catalog/:id → 404": [
+   "/shop/products/:id"
   ],
-  "GET /api/customers/ACME/preferences → 401": [
-   "/logistics/dispatch",
-   "/orders/invoices",
-   "/orders/returns",
-   "/orders",
-   "/boms",
-   "/orders/intake",
-   "/orders/online-inbox",
-   "/orders/credit-holds",
-   "/orders/:id",
-   "/pos",
-   "/pos/retail",
-   "/customers",
-   "/customers/preferences",
-   "/admin/users",
-   "/admin/partners",
-   "/admin/tax-rates",
-   "/admin/audit-log",
-   "/admin/processing-recipes",
-   "/admin/staff",
-   "/shop",
-   "/shop/search",
-   "/shop/remnants",
-   "/shop/products/:id",
-   "/shop/cart",
-   "/shop/checkout",
-   "/shop/orders",
-   "/shop/orders/:id",
-   "/account/dashboard",
-   "/account/orders",
-   "/account/shipments",
-   "/account/documents",
-   "/admin/catalog",
-   "/admin/online-settings",
-   "/help/manual"
-  ],
-  "GET /api/auth/me → 401": [
-   "/logistics/dispatch",
-   "/orders/invoices",
-   "/orders/returns",
-   "/orders",
-   "/boms",
-   "/orders/intake",
-   "/orders/online-inbox",
-   "/orders/credit-holds",
-   "/orders/:id",
-   "/pos",
-   "/pos/retail",
-   "/customers",
-   "/customers/preferences",
-   "/admin/users",
-   "/admin/partners",
-   "/admin/tax-rates",
-   "/admin/audit-log",
-   "/admin/processing-recipes",
-   "/admin/staff",
-   "/shop",
-   "/shop/search",
-   "/shop/remnants",
-   "/shop/products/:id",
-   "/shop/cart",
-   "/shop/checkout",
-   "/shop/orders",
-   "/shop/orders/:id",
-   "/account/dashboard",
-   "/account/orders",
-   "/account/shipments",
-   "/account/documents",
-   "/admin/catalog",
-   "/admin/online-settings",
-   "/help/manual"
+  "GET /api/ecom/my-orders/:id → 404": [
+   "/shop/orders/:id"
   ]
  },
  "results": [
@@ -121,7 +51,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shopfloor",
-   "textLength": 2053,
+   "textLength": 2060,
    "hasParam": false
   },
   {
@@ -151,7 +81,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/units",
-   "textLength": 4583,
+   "textLength": 4497,
    "hasParam": false
   },
   {
@@ -191,7 +121,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/ops-cockpit",
-   "textLength": 15887,
+   "textLength": 16302,
    "hasParam": false
   },
   {
@@ -227,7 +157,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/units",
-   "textLength": 4583,
+   "textLength": 4497,
    "hasParam": false
   },
   {
@@ -257,7 +187,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/work-orders",
-   "textLength": 1915,
+   "textLength": 2982,
    "hasParam": false
   },
   {
@@ -267,7 +197,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/work-orders/new",
-   "textLength": 1847,
+   "textLength": 1848,
    "hasParam": false
   },
   {
@@ -283,7 +213,7 @@
    ],
    "status": "OK",
    "landedOn": "/work-orders/00000000-0000-4000-8000-000000000000",
-   "textLength": 1654,
+   "textLength": 1655,
    "hasParam": true
   },
   {
@@ -293,7 +223,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shipping",
-   "textLength": 10810,
+   "textLength": 10820,
    "hasParam": false
   },
   {
@@ -309,7 +239,7 @@
    ],
    "status": "OK",
    "landedOn": "/shipping/00000000-0000-4000-8000-000000000000",
-   "textLength": 1649,
+   "textLength": 1650,
    "hasParam": true
   },
   {
@@ -319,7 +249,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/pricing",
-   "textLength": 3611,
+   "textLength": 3612,
    "hasParam": false
   },
   {
@@ -329,7 +259,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1827,
+   "textLength": 1828,
    "hasParam": false
   },
   {
@@ -339,7 +269,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/commercial/demand-shaping",
-   "textLength": 2529,
+   "textLength": 2530,
    "hasParam": false
   },
   {
@@ -349,7 +279,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/qaqc",
-   "textLength": 2703,
+   "textLength": 2704,
    "hasParam": false
   },
   {
@@ -359,7 +289,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/qaqc/test-entry",
-   "textLength": 2012,
+   "textLength": 2013,
    "hasParam": false
   },
   {
@@ -369,7 +299,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/receiving",
-   "textLength": 2777,
+   "textLength": 2778,
    "hasParam": false
   },
   {
@@ -379,7 +309,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/inspections",
-   "textLength": 2433,
+   "textLength": 2434,
    "hasParam": false
   },
   {
@@ -389,7 +319,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/snc",
-   "textLength": 2926,
+   "textLength": 2927,
    "hasParam": false
   },
   {
@@ -399,7 +329,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/scar",
-   "textLength": 2664,
+   "textLength": 2665,
    "hasParam": false
   },
   {
@@ -409,7 +339,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/scorecards",
-   "textLength": 2611,
+   "textLength": 2612,
    "hasParam": false
   },
   {
@@ -419,7 +349,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/suppliers",
-   "textLength": 2839,
+   "textLength": 2840,
    "hasParam": false
   },
   {
@@ -429,7 +359,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/claims",
-   "textLength": 2853,
+   "textLength": 2854,
    "hasParam": false
   },
   {
@@ -439,7 +369,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/rma",
-   "textLength": 2724,
+   "textLength": 2725,
    "hasParam": false
   },
   {
@@ -449,7 +379,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/car",
-   "textLength": 2694,
+   "textLength": 2695,
    "hasParam": false
   },
   {
@@ -459,7 +389,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/credits",
-   "textLength": 2724,
+   "textLength": 2725,
    "hasParam": false
   },
   {
@@ -469,7 +399,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/active",
-   "textLength": 2837,
+   "textLength": 2838,
    "hasParam": false
   },
   {
@@ -479,7 +409,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/registry",
-   "textLength": 2792,
+   "textLength": 2793,
    "hasParam": false
   },
   {
@@ -489,7 +419,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/invitations",
-   "textLength": 2822,
+   "textLength": 2823,
    "hasParam": false
   },
   {
@@ -499,7 +429,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/kiosk",
-   "textLength": 2319,
+   "textLength": 2320,
    "hasParam": false
   },
   {
@@ -509,7 +439,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/dashboard",
-   "textLength": 2852,
+   "textLength": 2853,
    "hasParam": false
   },
   {
@@ -519,7 +449,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/courses",
-   "textLength": 3620,
+   "textLength": 3621,
    "hasParam": false
   },
   {
@@ -529,7 +459,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/my-certs",
-   "textLength": 2982,
+   "textLength": 2983,
    "hasParam": false
   },
   {
@@ -539,7 +469,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/matrix",
-   "textLength": 3505,
+   "textLength": 3506,
    "hasParam": false
   },
   {
@@ -549,7 +479,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/qc",
-   "textLength": 1917,
+   "textLength": 6055,
    "hasParam": false
   },
   {
@@ -565,7 +495,7 @@
    ],
    "status": "OK",
    "landedOn": "/qc/inspect/00000000-0000-4000-8000-000000000000",
-   "textLength": 1652,
+   "textLength": 1653,
    "hasParam": true
   },
   {
@@ -575,7 +505,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/dashboard",
-   "textLength": 3843,
+   "textLength": 3844,
    "hasParam": false
   },
   {
@@ -585,7 +515,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/inspections",
-   "textLength": 2624,
+   "textLength": 2625,
    "hasParam": false
   },
   {
@@ -595,7 +525,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/ncr",
-   "textLength": 2566,
+   "textLength": 2567,
    "hasParam": false
   },
   {
@@ -605,7 +535,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/spc",
-   "textLength": 2661,
+   "textLength": 2662,
    "hasParam": false
   },
   {
@@ -615,7 +545,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/trace",
-   "textLength": 2256,
+   "textLength": 2257,
    "hasParam": false
   },
   {
@@ -625,7 +555,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/dashboard",
-   "textLength": 3801,
+   "textLength": 3802,
    "hasParam": false
   },
   {
@@ -635,7 +565,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/work-orders",
-   "textLength": 2000,
+   "textLength": 2048,
    "hasParam": false
   },
   {
@@ -645,7 +575,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/assets",
-   "textLength": 2108,
+   "textLength": 36724,
    "hasParam": false
   },
   {
@@ -655,7 +585,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/pm-schedules",
-   "textLength": 3014,
+   "textLength": 3015,
    "hasParam": false
   },
   {
@@ -665,7 +595,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/parts",
-   "textLength": 2911,
+   "textLength": 2912,
    "hasParam": false
   },
   {
@@ -675,7 +605,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/provenance",
-   "textLength": 2144,
+   "textLength": 2145,
    "hasParam": false
   },
   {
@@ -685,7 +615,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production",
-   "textLength": 16901,
+   "textLength": 18133,
    "hasParam": false
   },
   {
@@ -695,7 +625,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production/shop-floor",
-   "textLength": 4684,
+   "textLength": 8617,
    "hasParam": false
   },
   {
@@ -705,7 +635,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production/shipping",
-   "textLength": 12873,
+   "textLength": 10054,
    "hasParam": false
   },
   {
@@ -715,7 +645,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/order-board",
-   "textLength": 20762,
+   "textLength": 29442,
    "hasParam": false
   },
   {
@@ -725,7 +655,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/schedule",
-   "textLength": 16885,
+   "textLength": 17216,
    "hasParam": false
   },
   {
@@ -745,7 +675,7 @@
    ],
    "status": "OK",
    "landedOn": "/jobs/00000000-0000-4000-8000-000000000000",
-   "textLength": 1647,
+   "textLength": 1648,
    "hasParam": true
   },
   {
@@ -755,7 +685,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/receiving",
-   "textLength": 3057,
+   "textLength": 3712,
    "hasParam": false
   },
   {
@@ -765,7 +695,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking",
-   "textLength": 2753,
+   "textLength": 2755,
    "hasParam": false
   },
   {
@@ -775,7 +705,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/packaging",
-   "textLength": 12616,
+   "textLength": 16335,
    "hasParam": false
   },
   {
@@ -785,7 +715,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/tags",
-   "textLength": 1891,
+   "textLength": 1892,
    "hasParam": false
   },
   {
@@ -795,7 +725,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/staging",
-   "textLength": 12690,
+   "textLength": 12692,
    "hasParam": false
   },
   {
@@ -805,7 +735,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/traceability",
-   "textLength": 1962,
+   "textLength": 1963,
    "hasParam": false
   },
   {
@@ -815,7 +745,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/traceability/00000000-0000-4000-8000-000000000000",
-   "textLength": 1962,
+   "textLength": 1963,
    "hasParam": true
   },
   {
@@ -825,7 +755,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/planner",
-   "textLength": 2913,
+   "textLength": 2914,
    "hasParam": false
   },
   {
@@ -835,7 +765,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/comparison",
-   "textLength": 3210,
+   "textLength": 3211,
    "hasParam": false
   },
   {
@@ -845,7 +775,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/comparison/00000000-0000-4000-8000-000000000000",
-   "textLength": 3210,
+   "textLength": 3211,
    "hasParam": true
   },
   {
@@ -855,7 +785,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/route/00000000-0000-4000-8000-000000000000",
-   "textLength": 2994,
+   "textLength": 2995,
    "hasParam": true
   },
   {
@@ -865,7 +795,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/tracking",
-   "textLength": 3317,
+   "textLength": 3318,
    "hasParam": false
   },
   {
@@ -878,7 +808,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/exceptions",
-   "textLength": 3168,
+   "textLength": 3169,
    "hasParam": false
   },
   {
@@ -888,7 +818,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/pod/00000000-0000-4000-8000-000000000000",
-   "textLength": 2763,
+   "textLength": 2764,
    "hasParam": true
   },
   {
@@ -898,7 +828,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1827,
+   "textLength": 1828,
    "hasParam": false
   },
   {
@@ -908,7 +838,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1827,
+   "textLength": 1828,
    "hasParam": false
   },
   {
@@ -918,7 +848,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1827,
+   "textLength": 1828,
    "hasParam": true
   },
   {
@@ -928,7 +858,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/dashboard",
-   "textLength": 2804,
+   "textLength": 2805,
    "hasParam": false
   },
   {
@@ -938,7 +868,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1827,
+   "textLength": 1828,
    "hasParam": true
   },
   {
@@ -948,7 +878,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/cockpit",
-   "textLength": 3085,
+   "textLength": 3086,
    "hasParam": false
   },
   {
@@ -958,7 +888,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/simulation",
-   "textLength": 2295,
+   "textLength": 2296,
    "hasParam": false
   },
   {
@@ -968,7 +898,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/forecast",
-   "textLength": 2688,
+   "textLength": 2689,
    "hasParam": false
   },
   {
@@ -978,7 +908,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/decisions",
-   "textLength": 3037,
+   "textLength": 3038,
    "hasParam": false
   },
   {
@@ -988,7 +918,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/digital-twin",
-   "textLength": 2659,
+   "textLength": 2660,
    "hasParam": false
   },
   {
@@ -998,7 +928,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/compression-metrics",
-   "textLength": 6581,
+   "textLength": 6584,
    "hasParam": false
   },
   {
@@ -1008,7 +938,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shipping",
-   "textLength": 10810,
+   "textLength": 10820,
    "hasParam": false
   },
   {
@@ -1024,7 +954,7 @@
    ],
    "status": "OK",
    "landedOn": "/shipping/00000000-0000-4000-8000-000000000000",
-   "textLength": 1649,
+   "textLength": 1650,
    "hasParam": true
   },
   {
@@ -1034,7 +964,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/time-tracking",
-   "textLength": 2094,
+   "textLength": 2095,
    "hasParam": false
   },
   {
@@ -1044,7 +974,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shopfloor",
-   "textLength": 2052,
+   "textLength": 2060,
    "hasParam": false
   },
   {
@@ -1054,7 +984,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shopfloor/00000000-0000-4000-8000-000000000000",
-   "textLength": 1837,
+   "textLength": 1850,
    "hasParam": true
   },
   {
@@ -1064,971 +994,377 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/route-optimization",
-   "textLength": 2278,
+   "textLength": 2279,
    "hasParam": false
   },
   {
    "route": "/logistics/tracking",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to fetch user: AxiosError: Request failed with status code 500\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-    "Failed to fetch user: AxiosError: Request failed with status code 500\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
-   ],
-   "apiFailures": [
-    "GET /api/auth/me → 500",
-    "GET /api/customers/ACME/preferences → 500",
-    "GET /api/auth/me → 500",
-    "GET /api/customers/ACME/preferences → 500"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/logistics/tracking",
+   "textLength": 3058,
    "hasParam": false
   },
   {
    "route": "/logistics/dispatch",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/logistics/dispatch",
+   "textLength": 2462,
    "hasParam": false
   },
   {
    "route": "/orders/invoices",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/invoices",
+   "textLength": 7182,
    "hasParam": false
   },
   {
    "route": "/orders/returns",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/returns",
+   "textLength": 2609,
    "hasParam": false
   },
   {
    "route": "/orders",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders",
+   "textLength": 5665,
    "hasParam": false
   },
   {
    "route": "/boms",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/boms",
+   "textLength": 3200,
    "hasParam": false
   },
   {
    "route": "/orders/intake",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/intake",
+   "textLength": 2683,
    "hasParam": false
   },
   {
    "route": "/orders/online-inbox",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/online-inbox",
+   "textLength": 4095,
    "hasParam": false
   },
   {
    "route": "/orders/credit-holds",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/credit-holds",
+   "textLength": 1856,
    "hasParam": false
   },
   {
    "route": "/orders/:id",
    "pageErrors": [],
    "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
    ],
    "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
+    "GET /api/orders/intake/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/orders/intake/00000000-0000-4000-8000-000000000000 → 404"
    ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "status": "OK",
+   "landedOn": "/orders/00000000-0000-4000-8000-000000000000",
+   "textLength": 1635,
    "hasParam": true
   },
   {
    "route": "/pos",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/pos",
+   "textLength": 2134,
    "hasParam": false
   },
   {
    "route": "/pos/retail",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/pos/retail",
+   "textLength": 2376,
    "hasParam": false
   },
   {
    "route": "/customers",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customers",
+   "textLength": 3975,
    "hasParam": false
   },
   {
    "route": "/customers/preferences",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customers/preferences",
+   "textLength": 2938,
    "hasParam": false
   },
   {
    "route": "/admin/users",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/users",
+   "textLength": 3892,
    "hasParam": false
   },
   {
    "route": "/admin/partners",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/partners",
+   "textLength": 1998,
    "hasParam": false
   },
   {
    "route": "/admin/tax-rates",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/tax-rates",
+   "textLength": 2086,
    "hasParam": false
   },
   {
    "route": "/admin/audit-log",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/audit-log",
+   "textLength": 2104,
    "hasParam": false
   },
   {
    "route": "/admin/processing-recipes",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/processing-recipes",
+   "textLength": 3666,
    "hasParam": false
   },
   {
    "route": "/admin/staff",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/staff",
+   "textLength": 2124,
    "hasParam": false
   },
   {
    "route": "/shop",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop",
+   "textLength": 2848,
    "hasParam": false
   },
   {
    "route": "/shop/search",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/search",
+   "textLength": 2659,
    "hasParam": false
   },
   {
    "route": "/shop/remnants",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/remnants",
+   "textLength": 4433,
    "hasParam": false
   },
   {
    "route": "/shop/products/:id",
    "pageErrors": [],
    "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
    ],
    "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
+    "GET /api/ecom/catalog/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/ecom/catalog/00000000-0000-4000-8000-000000000000 → 404"
    ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "status": "OK",
+   "landedOn": "/shop/products/00000000-0000-4000-8000-000000000000",
+   "textLength": 1642,
    "hasParam": true
   },
   {
    "route": "/shop/cart",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/cart",
+   "textLength": 1720,
    "hasParam": false
   },
   {
    "route": "/shop/checkout",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/checkout",
+   "textLength": 1644,
    "hasParam": false
   },
   {
    "route": "/shop/orders",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/orders",
+   "textLength": 1913,
    "hasParam": false
   },
   {
    "route": "/shop/orders/:id",
    "pageErrors": [],
    "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
    ],
    "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
+    "GET /api/ecom/my-orders/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/ecom/my-orders/00000000-0000-4000-8000-000000000000 → 404"
    ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "status": "OK",
+   "landedOn": "/shop/orders/00000000-0000-4000-8000-000000000000",
+   "textLength": 1642,
    "hasParam": true
   },
   {
    "route": "/account/dashboard",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/dashboard",
+   "textLength": 2186,
    "hasParam": false
   },
   {
    "route": "/account/orders",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/orders",
+   "textLength": 10366,
    "hasParam": false
   },
   {
    "route": "/account/shipments",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/shipments",
+   "textLength": 13859,
    "hasParam": false
   },
   {
    "route": "/account/documents",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/documents",
+   "textLength": 9184,
    "hasParam": false
   },
   {
    "route": "/admin/catalog",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/catalog",
+   "textLength": 3127,
    "hasParam": false
   },
   {
    "route": "/admin/online-settings",
    "pageErrors": [],
    "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
+    "Warning: Each child in a list should have a unique \"key\" prop.%s%s See https://reactjs.org/link/warning-keys for more information.%s \n\nCheck the render method of `OnlineSettingsPage`.  \n    at Chip2 ("
    ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/online-settings",
+   "textLength": 3499,
    "hasParam": false
   },
   {
    "route": "/help/manual",
    "pageErrors": [],
-   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
-    "Failed to fetch user: AxiosError: Request failed with status code 401\n    at settle (http://localhost:5199/node_modules/.vite/deps/axios.js?v=1526c549:1884:12)\n    at XMLHttpRequest.onloadend (http://"
-   ],
-   "apiFailures": [
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401",
-    "GET /api/customers/ACME/preferences → 401",
-    "GET /api/auth/me → 401"
-   ],
-   "status": "SENT_TO_LOGIN",
-   "landedOn": "/login",
-   "textLength": 184,
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/help/manual",
+   "textLength": 1611,
    "hasParam": false
   }
  ]

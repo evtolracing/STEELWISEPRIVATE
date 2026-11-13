@@ -29,9 +29,11 @@ curl -s -m2 -o /dev/null http://localhost:5199 || { (cd src/frontend && nohup np
 for t in ui-experience ui-shipping ui-shop ui-sales ui-inventory; do echo "== $t"; node qa/sim/$t.cjs 2>&1 | grep "✗\|checks,"; done
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8
 echo "== calls the tests made"; node qa/tools/exercised.mjs "$LOGS/server-3011.log" "$LOGS/server-3001.log" | sed -n '/"distinct"/,$p'
-echo "== baseline probe"; node qa/tools/discover.mjs > /dev/null; node qa/sim/baseline-probe.mjs --base http://localhost:3011 --max-crash 3 2>&1 | tail -12
+echo "== baseline probe"; node qa/tools/discover.mjs > /dev/null; node qa/sim/baseline-probe.mjs --base http://localhost:3011 --max-crash 0 2>&1 | tail -12
+echo "== department rule coverage"; node qa/tools/access-coverage.mjs
 echo "== screen audit"; node qa/tools/screen-audit.mjs | head -2
 echo "== lint, frontend"; (cd src/frontend && npx eslint src && echo LINT-OK)
+echo "== screen ratchets"; node qa/tools/frontend-checks.mjs
 echo "== lint, whole repository"; npx eslint . 2>&1 | tail -3
 echo "== build"; (cd src/frontend && npx vite build 2>&1 | tail -1)
 echo "== documents"; node qa/tools/inventory.mjs | tail -1; node qa/tools/api-contract.mjs > /dev/null; node qa/tools/report.mjs > /dev/null 2>&1; node qa/tools/discover.mjs > /dev/null; node qa/tools/excellence-docs.mjs

@@ -120,6 +120,54 @@ async function priceSale(req, raw = {}) {
   };
 }
 
+// ── Stock (owner's decision 6: a counter sale reduces stock, and a void puts it back) ──
+// Shelf stock is a stock item linked to the product and counted in pieces (unit EA) at the selling
+// branch. A product with no such stock item at the branch is not stock-tracked there, and the sale
+// goes through with a note; a tracked product cannot be sold beyond what is on the shelf.
+const PIECES = ['EA', 'EACH'];
+const SOLD = 'COUNTER_SALE';
+const RETURNED = 'COUNTER_VOID';
+
+async function takeShelfStock(tx, { sale, orderId, userId }) {
+  const untracked = [];
+  if (!sale.branch) return sale.items.map((it) => it.sku);
+  for (const it of sale.items) {
+    const shelf = await tx.inventory.findMany({
+      where: { locationId: sale.branch.id, unit: { in: PIECES }, coil: { productId: it.productId } },
+      orderBy: { createdAt: 'asc' }, select: { id: true, coilId: true, qtyAvailable: true },
+    });
+    if (!shelf.length) { untracked.push(it.sku); continue; }
+    let left = it.quantity;
+    for (const row of shelf) {
+      if (left <= 0) break;
+      const take = Math.min(left, Math.floor(num(row.qtyAvailable)));
+      if (take <= 0) continue;
+      // Conditional: two sales at once cannot both take the last piece.
+      const moved = await tx.inventory.updateMany({
+        where: { id: row.id, qtyAvailable: { gte: take }, qtyOnHand: { gte: take } },
+        data: { qtyOnHand: { decrement: take }, qtyAvailable: { decrement: take }, lastMovement: new Date() },
+      });
+      if (!moved.count) continue;
+      await tx.materialMovement.create({ data: { coilId: row.coilId, movementType: 'SHIP', fromLocationId: sale.branch.id, qtyMoved: take, unit: 'EA', orderId, reasonCode: SOLD, createdById: userId } });
+      const now = await tx.inventory.findUnique({ where: { id: row.id }, select: { qtyOnHand: true } });
+      if (num(now.qtyOnHand) <= 1e-9) await tx.coil.updateMany({ where: { id: row.coilId, status: 'AVAILABLE' }, data: { status: 'SHIPPED' } });
+      left -= take;
+    }
+    if (left > 0) refuse(409, `Only ${it.quantity - left} of ${it.description} on the shelf at ${sale.branch.code}. Change the quantity, or correct the stock record first.`);
+  }
+  return untracked;
+}
+
+async function returnShelfStock(tx, { orderId, userId }) {
+  const sold = await tx.materialMovement.findMany({ where: { orderId, movementType: 'SHIP', reasonCode: SOLD } });
+  for (const m of sold) {
+    await tx.inventory.update({ where: { coilId: m.coilId }, data: { qtyOnHand: { increment: m.qtyMoved }, qtyAvailable: { increment: m.qtyMoved }, lastMovement: new Date() } });
+    await tx.coil.updateMany({ where: { id: m.coilId, status: 'SHIPPED' }, data: { status: 'AVAILABLE' } });
+    await tx.materialMovement.create({ data: { coilId: m.coilId, movementType: 'RECEIVE', toLocationId: m.fromLocationId, qtyMoved: m.qtyMoved, unit: m.unit, orderId, reasonCode: RETURNED, createdById: userId } });
+  }
+  return sold.length;
+}
+
 function receiptFrom(order, invoice) {
   const payment = invoice?.payments?.find((p) => num(p.amount) > 0);
   const tender = (order.notes || '').match(/tendered ([\d.]+), change ([\d.]+)/);
@@ -204,13 +252,17 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
   const buyer = sale.customer || await walkInAccount();
   const now = new Date();
 
-  const order = await createNumbered({
+  let untracked = [];
+  let order;
+  try {
+  order = await createNumbered({
       count: () => prisma.order.count(),
       format: padded('SO'),
       create: (orderNumber) => prisma.$transaction(async (tx) => {
         const created = await tx.order.create({
           data: {
             orderNumber, orderType: 'SO', status: 'COMPLETE', buyerId: buyer.id, poReference: `QS:${saleId}`,
+            ...(sale.branch && { locationId: sale.branch.id }),
             subtotal: sale.subtotal, taxAmount: sale.tax, freightAmount: 0, totalAmount: sale.total, paymentTerms: 'COD',
             notes: `Counter quick sale${sale.branch ? ` at ${sale.branch.code}` : ''} · ${method}${method === 'CASH' ? ` tendered ${tendered.toFixed(2)}, change ${change.toFixed(2)}` : ''}`,
             createdById: req.user.id,
@@ -237,13 +289,21 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
         // The cashier is on record for the invoice and for the money taken, like every other invoice.
         await recordMoney(tx, { invoice, eventType: 'INVOICE_ISSUED', userId: req.user.id, details: { amount: sale.total, note: 'Counter quick sale' } });
         await recordMoney(tx, { invoice, eventType: 'PAYMENT_RECORDED', userId: req.user.id, details: { amount: sale.total, method, reference: reference || null } });
+        untracked = await takeShelfStock(tx, { sale, orderId: created.id, userId: req.user.id });
         return created;
     }),
   });
+  } catch (error) {
+    // The same sale sent twice at once: the other copy may have taken the last pieces. It is still one sale.
+    const first = error instanceof Refuse && error.status === 409 ? await findSale(saleId) : null;
+    if (!first) throw error;
+    return res.json({ success: true, duplicate: true, receipt: receiptFrom(first, first.invoices[0]), orderId: first.id, orderNumber: first.orderNumber });
+  }
   // Two submissions of the same sale id at once: keep the first, drop this one.
   const all = await prisma.order.findMany({ where: { poReference: `QS:${saleId}` }, orderBy: { createdAt: 'asc' }, select: { id: true } });
   if (all.length > 1 && all[0].id !== order.id) {
     const dropped = (await prisma.invoice.findMany({ where: { orderId: order.id }, select: { id: true } })).map((i) => i.id);
+    await prisma.$transaction(async (tx) => { await returnShelfStock(tx, { orderId: order.id, userId: req.user.id }); await tx.materialMovement.deleteMany({ where: { orderId: order.id } }); });
     await prisma.$transaction([
       prisma.auditLog.deleteMany({ where: { resourceType: 'Invoice', resourceId: { in: dropped }, category: 'FINANCIAL' } }),
       prisma.payment.deleteMany({ where: { invoice: { orderId: order.id } } }),
@@ -252,7 +312,7 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
     ]);
   }
   const saved = await findSale(saleId);
-  res.status(201).json({ success: true, change, receipt: receiptFrom(saved, saved.invoices[0]), orderId: saved.id, orderNumber: saved.orderNumber, ...(sale.taxNote && { taxNote: sale.taxNote }) });
+  res.status(201).json({ success: true, change, receipt: receiptFrom(saved, saved.invoices[0]), orderId: saved.id, orderNumber: saved.orderNumber, ...(sale.taxNote && { taxNote: sale.taxNote }), ...(untracked.length && { stockNote: `No shelf stock is on file at this branch for ${untracked.join(', ')}, so no stock was reduced for ${untracked.length === 1 ? 'it' : 'them'}.` }) });
 }));
 
 router.get('/daily-stats', handle('get daily stats', async (req, res) => {
@@ -289,7 +349,12 @@ router.post('/:saleId/void', handle('void sale', async (req, res) => {
   const invoice = sale.invoices[0];
   const paid = invoice.payments.find((p) => num(p.amount) > 0);
   // Claim the void first so two people cannot both refund it.
-  const claimed = await prisma.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
+  // The claim and the stock going back on the shelf are one step.
+  const claimed = await prisma.$transaction(async (tx) => {
+    const got = await tx.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
+    if (got.count) await returnShelfStock(tx, { orderId: sale.id, userId: req.user?.id });
+    return got;
+  });
   if (!claimed.count) refuse(409, 'This sale was just changed by someone else. Reload and try again.');
   const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: (await prisma.invoiceLine.findMany({ where: { invoiceId: invoice.id } })).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) })) }, req.user?.id);
   const owed = money(-credit.totalAmount + credit.paidAmount);

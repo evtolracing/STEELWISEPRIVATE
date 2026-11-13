@@ -50,7 +50,7 @@ const writes = discovery.backend.endpoints.filter((e) => e.method !== 'GET' && !
 const urlOf = (e) => e.full.replace(/:[A-Za-z_]+\??/g, FAKE);
 const PARTNER = ['/api/v1/partner'];
 // Asking the assistant, pricing a basket or checking a form changes no record. These stay open to read-only roles.
-const ASK_ONLY = ['/api/auth', '/api/ai', '/api/v1/ai', '/api/pricing', '/api/pos/validation', '/api/v1/bom/recipes/match', '/api/v1/bom/ai-suggest', '/api/pos/quick-sale/lookup', '/api/pos/quick-sale/price', '/api/v1/pipeline/simulate'];
+const ASK_ONLY = ['/api/auth', '/api/ai', '/api/v1/ai', '/api/pricing', '/api/pos/validation', '/api/ops-cockpit/recommendations/explain', '/api/v1/bom/recipes/match', '/api/v1/bom/ai-suggest', '/api/pos/quick-sale/lookup', '/api/pos/quick-sale/price', '/api/v1/pipeline/simulate'];
 
 // 1 ─ Read-only roles change nothing
 {
@@ -98,7 +98,8 @@ const ASK_ONLY = ['/api/auth', '/api/ai', '/api/v1/ai', '/api/pricing', '/api/po
     tested += 1;
     const r = await send(e.method, urlOf(e), admin);
     byStatus[r.status] = (byStatus[r.status] || 0) + 1;
-    if (r.status >= 500 || r.status === 0) crashes.push(`${e.key} → ${r.status}  (${e.file.split('/').pop()}:${e.line})`);
+    // 501 is a deliberate answer ("not available"), not a crash.
+    if ((r.status >= 500 && r.status !== 501) || r.status === 0) crashes.push(`${e.key} → ${r.status}  (${e.file.split('/').pop()}:${e.line})`);
     else if (r.status === 201 || (r.status === 200 && e.method === 'POST' && !e.full.includes(':') && e.writes > 0)) saved.push(`${e.key} → ${r.status}`);
   }
   section('Write routes sent an empty body do not crash', { pass: crashes.length <= MAX_CRASH, summary: `${tested} write routes, ${crashes.length} answered with a server error (allowed: ${MAX_CRASH}), ${saved.length} saved a record from nothing`, tested, byStatus, findings: crashes, savedFromNothing: saved });

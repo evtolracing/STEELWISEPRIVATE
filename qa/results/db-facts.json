@@ -1,5 +1,5 @@
 {
- "at": "2026-11-13T18:17:09.226Z",
+ "at": "2026-11-13T18:33:10.168Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 158,
  "totalRows": 5727,
@@ -977,7 +977,7 @@
   "order lines shipped more than ordered": 0,
   "order line shipped quantity differs from its dispatched shipment items": 47,
   "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
-  "counter quick sale lines marked shipped with no shipment and no stock movement (B-025)": 3,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 3,
   "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
   "invoices paid more than their total": 0,
   "invoice total differs from subtotal + tax + freight": 0,

@@ -296,17 +296,6 @@ export default function CSRIntakePage() {
     })
   }, [])
 
-  const handleOverrideConfirm = useCallback((newOverride) => {
-    setOverrides(prev => [newOverride, ...prev])
-    setOverrideDialog({ open: false, type: null, warning: '', originalValue: '', overrideValue: '' })
-    setSnack({ open: true, msg: `Override recorded — ${newOverride.reasonLabel}`, severity: 'info' })
-    // If this was blocking a submit, continue the submit
-    if (pendingSubmit) {
-      setPendingSubmit(false)
-      doSubmit()
-    }
-  }, [pendingSubmit])
-
   const handleOverrideClose = useCallback(() => {
     setOverrideDialog({ open: false, type: null, warning: '', originalValue: '', overrideValue: '' })
     if (pendingSubmit) {
@@ -336,6 +325,18 @@ export default function CSRIntakePage() {
     }
     setSaving(false)
   }, [source, division, location, priority, ownership, poNumber, notes, requestedDate, customer, lines, orderId, navigate])
+
+  // Declared after doSubmit so it always submits what is on the screen now, not an earlier copy.
+  const handleOverrideConfirm = useCallback((newOverride) => {
+    setOverrides(prev => [newOverride, ...prev])
+    setOverrideDialog({ open: false, type: null, warning: '', originalValue: '', overrideValue: '' })
+    setSnack({ open: true, msg: `Override recorded — ${newOverride.reasonLabel}`, severity: 'info' })
+    // If this was blocking a submit, continue the submit
+    if (pendingSubmit) {
+      setPendingSubmit(false)
+      doSubmit()
+    }
+  }, [pendingSubmit, doSubmit])
 
   const handleSubmit = useCallback(async () => {
     // Check for warnings that need overrides before submitting

@@ -107,3 +107,37 @@ test('the second address for jobs and work centers is judged by the same rule as
     assert.equal(staffWriteDenial('OPERATOR_SAW', `/api/v1/jobs${tail}`, method), null);
   }
 });
+
+test('the areas that had no department now have one (B-004)', async () => {
+  const { staffWriteDenial } = await import('../src/lib/roleAccess.js');
+  const ok = (role, method, path) => assert.equal(staffWriteDenial(role, path, method), null, `${role} ${method} ${path} should be allowed`);
+  const no = (role, method, path) => assert.ok(staffWriteDenial(role, path, method), `${role} ${method} ${path} should be refused`);
+  // Set-up of the shop is not an operator's or a sales login's to change.
+  for (const [method, path] of [['PATCH', '/api/work-centers/1'], ['POST', '/api/v1/work-centers'], ['DELETE', '/api/processing-recipes/1'], ['PUT', '/api/v1/bom/recipes/1'],
+    ['DELETE', '/api/v1/dispatch/work-center-types/SAW'], ['DELETE', '/api/staff/operators/1'], ['POST', '/api/staff/shifts'], ['DELETE', '/api/assets/1'], ['DELETE', '/api/maintenance-orders/1'],
+    ['POST', '/api/drop-tags/templates'], ['DELETE', '/api/documents/1'], ['PUT', '/api/demand-shaping/config'], ['POST', '/api/ops-cockpit/recommendations/accept']]) {
+    no('OPERATOR_SAW', method, path); no('RECEIVING_CLERK', method, path); ok('BRANCH_MANAGER', method, path); ok('COO', method, path); no('AUDITOR', method, path);
+  }
+  for (const path of ['/api/work-centers/1', '/api/staff/operators/1', '/api/v1/dispatch/work-centers/1']) ok('PRODUCTION_MANAGER', 'PATCH', path);
+  ok('SCHEDULER', 'POST', '/api/v1/dispatch/run'); ok('WORKCENTER_LEAD', 'POST', '/api/staff/shifts'); no('WORKCENTER_LEAD', 'PATCH', '/api/work-centers/1');
+  ok('MAINTENANCE_MANAGER', 'PATCH', '/api/assets/1'); ok('MAINTENANCE_MANAGER', 'DELETE', '/api/maintenance-orders/1'); ok('OPERATOR_SAW', 'POST', '/api/maintenance-orders'); no('CSR', 'POST', '/api/maintenance-orders');
+  // Documents: anyone attaches, a department manager deletes.
+  ok('OPERATOR_SAW', 'POST', '/api/documents/upload'); ok('QC_MANAGER', 'DELETE', '/api/documents/1'); no('QC_INSPECTOR', 'DELETE', '/api/documents/1'); no('CSR', 'DELETE', '/api/documents/1');
+  // Safety: anyone stops work; a supervisor clears it.
+  for (const role of ['OPERATOR_SAW', 'CSR', 'RECEIVING_CLERK', 'QC_INSPECTOR', 'MAINTENANCE_MANAGER']) ok(role, 'POST', '/api/safety/stop-work');
+  no('OPERATOR_SAW', 'POST', '/api/safety/stop-work/1/clearance'); no('CSR', 'PATCH', '/api/safety/stop-work/1/status'); ok('WORKCENTER_LEAD', 'POST', '/api/safety/stop-work/1/clearance'); ok('QC_MANAGER', 'POST', '/api/safety/stop-work/1/steps/2/complete');
+  // The second stock list, material tracking, tags.
+  for (const path of ['/api/v1/inventory/adjust', '/api/material-tracking/custody-log', '/api/drop-tags']) { no('CSR', 'POST', path); ok('RECEIVING_CLERK', 'POST', path); ok('OPERATOR_SAW', 'POST', path); }
+  ok('CSR', 'POST', '/api/print-queue/trigger'); no('MAINTENANCE_MANAGER', 'POST', '/api/print-queue/trigger');
+  // The order hub and pipeline are sales records; planning an order is also production's.
+  for (const path of ['/api/v1/contacts', '/api/v1/rfq', '/api/v1/quotes', '/api/v1/orders', '/api/v1/pipeline', '/api/v1/ingest/email-rfq', '/api/demand-shaping/accept']) { ok('CSR', 'POST', path); no('OPERATOR_SAW', 'POST', path); no('RECEIVING_CLERK', 'POST', path); }
+  ok('SCHEDULER', 'POST', '/api/v1/orders/1/plan'); ok('PACKAGING_LEAD', 'POST', '/api/v1/orders/1/mark-packaging'); no('QC_INSPECTOR', 'POST', '/api/v1/orders/1/plan');
+  no('CSR', 'PUT', '/api/demand-shaping/config'); ok('SALES_DIRECTOR', 'PUT', '/api/demand-shaping/config');
+  // Shop-floor operations and inspections.
+  ok('OPERATOR_SAW', 'POST', '/api/v1/operations/1/start'); no('CSR', 'POST', '/api/v1/operations/1/complete'); no('RECEIVING_CLERK', 'POST', '/api/v1/operations/1/start');
+  ok('QC_INSPECTOR', 'POST', '/api/qc/inspections/1/pass'); ok('PRODUCTION_MANAGER', 'POST', '/api/qc/inspections'); no('OPERATOR_SAW', 'POST', '/api/qc/inspections/1/pass'); no('CSR', 'POST', '/api/qc/inspections');
+  // Asking for an explanation changes nothing.
+  ok('OPERATOR_SAW', 'POST', '/api/ops-cockpit/recommendations/explain'); ok('AUDITOR', 'POST', '/api/ops-cockpit/recommendations/explain');
+  // Anyone reports an exception.
+  ok('OPERATOR_SAW', 'POST', '/api/v1/events/exceptions'); no('DATA_ANALYST', 'POST', '/api/v1/events/exceptions');
+});

@@ -534,69 +534,14 @@ router.post('/pricing/estimate', async (req, res) => {
   }
 });
 
-/**
- * POST /api/pos/pricing/margin/validate
- * Validate margin for a line or order
- */
-router.post('/pricing/margin/validate', async (req, res) => {
-  try {
-    const { posPricingService } = await import('../workflows/pos/POSPricingService.js');
-    
-    const { productId, productCategory, extendedPrice, quantity, unit } = req.body;
-    
-    const margin = await posPricingService.calculateMargin({
-      productId,
-      productCategory,
-      extendedPrice,
-      quantity,
-      unit
-    });
-    
-    res.json(margin);
-  } catch (error) {
-    console.error('Failed to validate margin:', error);
-    res.status(500).json({ error: 'Failed to validate margin' });
-  }
-});
-
-/**
- * POST /api/pos/pricing/processing
- * Calculate processing charges
- */
-router.post('/pricing/processing', async (req, res) => {
-  try {
-    const { posPricingService } = await import('../workflows/pos/POSPricingService.js');
-    
-    const result = await posPricingService.calculateProcessingCharge(req.body);
-    res.json(result);
-  } catch (error) {
-    console.error('Failed to calculate processing:', error);
-    res.status(500).json({ error: 'Failed to calculate processing charges' });
-  }
-});
-
-/**
- * POST /api/pos/pricing/quantity-breaks
- * Get quantity break pricing
- */
-router.post('/pricing/quantity-breaks', async (req, res) => {
-  try {
-    const { posPricingService } = await import('../workflows/pos/POSPricingService.js');
-    
-    const { customerId, productId, currentQuantity } = req.body;
-    
-    const breaks = await posPricingService.getQuantityBreaks({
-      customerId,
-      productId,
-      currentQuantity
-    });
-    
-    res.json(breaks);
-  } catch (error) {
-    console.error('Failed to get quantity breaks:', error);
-    res.status(500).json({ error: 'Failed to get quantity breaks' });
-  }
-});
+// Three pricing questions from the earlier counter design (finding B-006): margin check, processing
+// charge and quantity breaks. The pricing module never had the functions they called, so each one
+// crashed on every request, and no screen calls them. They now say plainly that they are not
+// available. Whether the session counter flow is finished or retired is finding X-008.
+const notBuilt = (what) => (req, res) => res.status(501).json({ error: `${what} is not available at the counter yet.` });
+router.post('/pricing/margin/validate', notBuilt('The margin check'));
+router.post('/pricing/processing', notBuilt('The processing charge calculation'));
+router.post('/pricing/quantity-breaks', notBuilt('Quantity break pricing'));
 
 /**
  * GET /api/pos/sessions/:sessionId/screen

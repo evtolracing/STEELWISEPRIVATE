@@ -14,6 +14,7 @@ const A = api(BASE);
 const findings = []; let checks = 0;
 const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}${detail ? ` — ${detail}` : ''}`); };
 const run = Date.now().toString(36).toUpperCase();
+const testStart = new Date();
 
 for (const who of ['admin', 'csr', 'operator', 'branchA', 'regional']) await A.login(who);
 const loc = Object.fromEntries((await prisma.location.findMany({ where: { code: { in: ['QA-L01', 'QA-L02', 'QA-L04'] } } })).map((l) => [l.code, l.id]));
@@ -193,6 +194,142 @@ if (wcRow) {
 const session = await A.post('/api/pos/sessions', { userId: boss.id, entryPoint: 'COUNTER' }, 'csr');
 const csrUser = await prisma.user.findUnique({ where: { email: 'qa-csr@qa.test' } });
 check('a counter session belongs to the person signed in, whatever user id the browser sends', session.status === 201 && JSON.stringify(session.body).includes(csrUser.id) && !JSON.stringify(session.body).includes(boss.id), `${session.status} ${JSON.stringify(session.body).slice(0, 160)}`);
+
+// ── Counter sale and stock (B-025, owner's decision 6) ──
+const csrHome = csrUser.homeLocationId;
+const [disc, gloves] = await Promise.all(['CUT-DISC-9', 'WG-25'].map((sku) => prisma.product.findFirst({ where: { sku } })));
+const like = await prisma.coil.findFirst({ where: { locationId: csrHome } });
+const shelfCoil = await prisma.coil.create({ data: { coilNumber: `QA-SHELF-${run}`, form: like.form, heatId: like.heatId, gradeId: like.gradeId, ownerId: like.ownerId, productId: disc.id, locationId: csrHome, netWeightLb: 250, grossWeightLb: 250, createdById: boss.id } });
+await prisma.inventory.create({ data: { coilId: shelfCoil.id, locationId: csrHome, qtyOnHand: 10, qtyAvailable: 10, unit: 'EA' } });
+// Any other shelf stock of this product at the branch (from an earlier run) is emptied so the counts below are exact.
+await prisma.inventory.updateMany({ where: { locationId: csrHome, unit: 'EA', coilId: { not: shelfCoil.id }, coil: { productId: disc.id } }, data: { qtyOnHand: 0, qtyAvailable: 0 } });
+const shelf = async () => { const i = await prisma.inventory.findUnique({ where: { coilId: shelfCoil.id } }); return [Number(i.qtyOnHand), Number(i.qtyAvailable)].join('/'); };
+const sell = (id, productId, quantity) => A.post('/api/pos/quick-sale/process-payment', { sale: { id, items: [{ productId, quantity }] }, payment: { method: 'CASH', amountTendered: 100000 } }, 'csr');
+const sold = (orderId, reason = 'COUNTER_SALE') => prisma.materialMovement.findMany({ where: { orderId, reasonCode: reason } });
+
+const s1 = await sell(`P2-${run}-1`, disc.id, 3);
+const s1Moves = s1.body?.orderId ? await sold(s1.body.orderId) : [];
+check('a counter sale takes the pieces off the shelf and records the movement', s1.status === 201 && (await shelf()) === '7/7' && s1Moves.length === 1 && Number(s1Moves[0].qtyMoved) === 3 && s1Moves[0].movementType === 'SHIP' && !s1.body.stockNote, `${s1.status} ${await shelf()} ${JSON.stringify(s1.body).slice(0, 140)}`);
+check('the sale belongs to the selling branch', (await prisma.order.findUnique({ where: { id: s1.body.orderId } }))?.locationId === csrHome);
+const s1Again = await sell(`P2-${run}-1`, disc.id, 3);
+check('sending the same sale again takes nothing more', s1Again.status === 200 && s1Again.body.duplicate === true && (await shelf()) === '7/7', `${s1Again.status} ${await shelf()}`);
+const ordersBefore = await prisma.order.count();
+const tooMany = await sell(`P2-${run}-2`, disc.id, 8);
+check('selling more than is on the shelf is refused, with no sale and no stock change', tooMany.status === 409 && (await shelf()) === '7/7' && (await prisma.order.count()) === ordersBefore, `${tooMany.status} ${await shelf()}`);
+const three = await Promise.all([3, 4, 5].map((n) => sell(`P2-${run}-${n}`, disc.id, 3)));
+check('three sales of three at once from a shelf of seven: two succeed, one is refused, one piece is left', three.filter((r) => r.status === 201).length === 2 && three.filter((r) => r.status === 409).length === 1 && (await shelf()) === '1/1', `${three.map((r) => r.status)} ${await shelf()}`);
+const twin = await Promise.all([1, 2, 3].map(() => sell(`P2-${run}-TWIN`, disc.id, 1)));
+check('one sale sent three times at once for the last piece is one sale, and every copy is answered as that sale', twin.every((r) => [200, 201].includes(r.status)) && new Set(twin.map((r) => r.body.orderNumber)).size === 1 && (await prisma.order.count({ where: { poReference: `QS:P2-${run}-TWIN` } })) === 1 && (await shelf()) === '0/0', `${twin.map((r) => r.status)} ${await shelf()}`);
+check('an empty shelf marks the stock item as gone', (await prisma.coil.findUnique({ where: { id: shelfCoil.id } })).status === 'SHIPPED');
+const v1 = await A.post(`/api/pos/quick-sale/P2-${run}-1/void`, { reason: 'QA void' }, 'admin');
+check('voiding a sale puts its pieces back on the shelf and records it', v1.status === 200 && (await shelf()) === '3/3' && (await sold(s1.body.orderId, 'COUNTER_VOID')).length === 1 && (await prisma.coil.findUnique({ where: { id: shelfCoil.id } })).status === 'AVAILABLE', `${v1.status} ${await shelf()}`);
+const v1Again = await Promise.all([1, 2].map(() => A.post(`/api/pos/quick-sale/P2-${run}-1/void`, { reason: 'QA void again' }, 'admin')));
+check('voiding it again puts nothing more back', v1Again.every((r) => r.status === 409) && (await shelf()) === '3/3', `${v1Again.map((r) => r.status)} ${await shelf()}`);
+const twin2 = await Promise.all([1, 2, 3].map(() => sell(`P2-${run}-TWIN2`, disc.id, 1)));
+check('one sale sent three times at once with stock to spare is still one sale and takes one piece', twin2.every((r) => [200, 201].includes(r.status)) && (await prisma.order.count({ where: { poReference: `QS:P2-${run}-TWIN2` } })) === 1 && (await shelf()) === '2/2', `${twin2.map((r) => r.status)} ${await shelf()}`);
+const csrVoid = await A.post(`/api/pos/quick-sale/P2-${run}-TWIN2/void`, { reason: 'QA' }, 'csr');
+check('a sales login cannot void a counter sale', csrVoid.status === 403 && (await shelf()) === '2/2', `${csrVoid.status}`);
+await prisma.inventory.updateMany({ where: { locationId: csrHome, unit: 'EA', coil: { productId: gloves.id } }, data: { unit: 'EA-OLD' } });
+const loose = await sell(`P2-${run}-G`, gloves.id, 1);
+check('a product with no shelf stock on file still sells, and the answer says no stock was reduced', loose.status === 201 && /no stock was reduced/.test(loose.body.stockNote || ''), `${loose.status} ${JSON.stringify(loose.body).slice(0, 200)}`);
+const facts = await prisma.$queryRaw`SELECT count(*)::int AS n FROM "Inventory" WHERE abs("qtyOnHand" - ("qtyAvailable" + "qtyAllocated" + "qtyOnHold")) > 0.0001 OR "qtyOnHand" < 0`;
+check('stock still adds up everywhere', facts[0].n === 0, `${facts[0].n}`);
+
+// ── Work order: completed and cancelled at the same moment ──
+let woBroken = 0;
+for (let i = 0; i < 4; i++) {
+  const src = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', qcStatus: 'PASSED', inventory: { is: { unit: 'LB', qtyAvailable: { gt: 100 } } } }, skip: i });
+  const wo = await A.post('/api/work-orders', { woType: 'SLIT', sourceCoilId: src.id, priority: 3, notes: `QA phase 2 ${run}` });
+  await A.put(`/api/work-orders/${wo.body.id}/release`, {}); await A.put(`/api/work-orders/${wo.body.id}/start`, {});
+  const [done, stop] = await Promise.all([A.put(`/api/work-orders/${wo.body.id}/complete`, { outputWeightLb: 10, scrapWeightLb: 0 }), A.put(`/api/work-orders/${wo.body.id}/cancel`, { reason: 'QA' })]);
+  const row = await prisma.workOrder.findUnique({ where: { id: wo.body.id } });
+  const hist = await prisma.auditLog.count({ where: { resourceType: 'WorkOrder', resourceId: wo.body.id, eventType: 'WORK_ORDER_STATUS_CHANGED', details: { path: ['to'], string_contains: 'C' } } });
+  const wins = [done, stop].filter((r) => r.status === 200).length;
+  if (wins !== 1 || ![done, stop].every((r) => [200, 409].includes(r.status)) || row.status !== (done.status === 200 ? 'COMPLETE' : 'CANCELLED') || hist !== 1) woBroken++;
+}
+check('a work order completed and cancelled at the same moment: exactly one wins and the record matches the answer (4 rounds)', woBroken === 0, `${woBroken} rounds`);
+
+// ── Two transfers of the same stock item at once ──
+const mover = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyOnHand: { gt: 0 } } }, workOrderInputs: { none: {} } } });
+const [toA, toB] = [L1, loc['QA-L02'], L4].filter((b) => b !== mover.locationId);
+const twoMoves = await Promise.all([A.post('/api/inventory/transfer', { coilId: mover.id, toLocationId: toA }), A.post('/api/inventory/transfer', { coilId: mover.id, toLocationId: toB })]);
+const trail = await prisma.materialMovement.findMany({ where: { coilId: mover.id, movementType: 'TRANSFER', createdAt: { gte: testStart } }, orderBy: { createdAt: 'asc' } });
+const moverNow = await prisma.coil.findUnique({ where: { id: mover.id }, include: { inventory: true } });
+check('two transfers of one stock item at once: each accepted transfer is recorded, in order, and the item is where the last one put it',
+  twoMoves.every((r) => [200, 201, 409].includes(r.status)) && trail.length === twoMoves.filter((r) => r.status < 300).length && trail.length >= 1
+  && trail.every((m, k) => m.fromLocationId === (k === 0 ? mover.locationId : trail[k - 1].toLocationId)) && moverNow.locationId === trail[trail.length - 1].toLocationId && moverNow.inventory.locationId === moverNow.locationId,
+  `${twoMoves.map((r) => r.status)} ${trail.length} movements`);
+
+// ── Two holds on the same stock item at once ──
+const held = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', id: { not: mover.id }, inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyOnHand: { gt: 0 } } } }, include: { inventory: true } });
+const holds = await Promise.all([1, 2, 3].map((n) => A.post(`/api/coils/${held.id}/hold`, { holdType: 'OTHER', holdReason: `QA phase 2 hold ${n}` })));
+const heldNow = await prisma.inventory.findUnique({ where: { coilId: held.id } });
+check('three holds on one stock item at once: the quantity is held once and the balance adds up',
+  holds.filter((r) => r.status < 300).length >= 1 && Number(heldNow.qtyOnHold) === Number(held.inventory.qtyOnHand) && Number(heldNow.qtyAvailable) === 0 && Number(heldNow.qtyOnHand) === Number(held.inventory.qtyOnHand),
+  `${holds.map((r) => r.status)} hold ${heldNow.qtyOnHold} of ${heldNow.qtyOnHand}`);
+await A.post(`/api/coils/${held.id}/release`, { releaseNote: 'QA' });
+
+// ── Steps sent out of order ──
+const early = await A.post('/api/jobs', { workCenterId: wc.id, instructions: `QA phase 2 order ${run}`, status: 'SCHEDULED' });
+const skipDone = await A.post(`/api/jobs/${early.body.id}/status`, { status: 'COMPLETED' });
+check('a job that has not started cannot be marked completed', skipDone.status === 409 && (await jobOf(early.body.id)).status === 'SCHEDULED', `${skipDone.status}`);
+const pendingShipment = await prisma.shipment.findFirst({ where: { status: 'PENDING' } });
+if (pendingShipment) {
+  const earlyDeliver = await A.put(`/api/shipments/${pendingShipment.id}/deliver`, { receivedBy: 'QA' });
+  check('a shipment that has not left cannot be marked delivered', earlyDeliver.status === 409 && (await prisma.shipment.findUnique({ where: { id: pendingShipment.id } })).status === 'PENDING', `${earlyDeliver.status}`);
+}
+const openInvoice = await prisma.invoice.findFirst({ where: { kind: 'INVOICE', status: 'PAID' } });
+if (openInvoice) {
+  const overpay = await A.post(`/api/invoices/${openInvoice.id}/payments`, { amount: 1, paymentMethod: 'CHECK', referenceNumber: 'QA' });
+  check('a payment sent after the invoice is paid in full is refused', overpay.status >= 400 && overpay.status < 500 && Number((await prisma.invoice.findUnique({ where: { id: openInvoice.id } })).paidAmount) === Number(openInvoice.paidAmount), `${overpay.status}`);
+}
+
+// ── Equipment and maintenance field lists (B-007) ──
+if (!(await prisma.asset.count())) await A.post('/api/assets/seed-from-work-centers', {});
+const asset = await prisma.asset.findFirst();
+if (asset) {
+  const forged = await A.patch(`/api/assets/${asset.id}`, { id: '22222222-2222-2222-2222-222222222222', assetNumber: 'FORGED', createdAt: '2000-01-01T00:00:00Z' });
+  const assetSame = await prisma.asset.findUnique({ where: { id: asset.id } });
+  check('equipment: changing only fields the browser may not set is refused and nothing changes', forged.status === 400 && assetSame && assetSame.assetNumber === asset.assetNumber && assetSame.createdAt.getTime() === asset.createdAt.getTime(), `${forged.status}`);
+  const named = await A.patch(`/api/assets/${asset.id}`, { manufacturer: 'QA Phase 2', assetNumber: 'FORGED' });
+  const assetNow = await prisma.asset.findUnique({ where: { id: asset.id } });
+  check('equipment: a listed field is saved and an unlisted one sent with it is ignored', named.status === 200 && assetNow.manufacturer === 'QA Phase 2' && assetNow.assetNumber === asset.assetNumber, `${named.status}`);
+  const mo = await A.post('/api/maintenance-orders', { assetId: asset.id, type: 'CORRECTIVE', priority: 'NORMAL', title: `QA phase 2 ${run}` });
+  check('a maintenance order can be raised', mo.status === 201, `${mo.status} ${JSON.stringify(mo.body).slice(0, 160)}`);
+  if (mo.status === 201) {
+    const moId = mo.body.id || mo.body.data?.id;
+    const before2 = await prisma.maintenanceOrder.findUnique({ where: { id: moId } });
+    const moForged = await A.patch(`/api/maintenance-orders/${moId}`, { woNumber: 'FORGED', orderNumber: 'FORGED', createdAt: '2000-01-01T00:00:00Z', assetId: '22222222-2222-2222-2222-222222222222' });
+    const after2 = await prisma.maintenanceOrder.findUnique({ where: { id: moId } });
+    check('maintenance order: changing only fields the browser may not set is refused and nothing changes', moForged.status === 400 && JSON.stringify(after2) === JSON.stringify(before2), `${moForged.status}`);
+    const moEdit = await A.patch(`/api/maintenance-orders/${moId}`, { title: 'QA phase 2 changed', assetId: '22222222-2222-2222-2222-222222222222' });
+    const after3 = await prisma.maintenanceOrder.findUnique({ where: { id: moId } });
+    check('maintenance order: a listed field is saved and the equipment it belongs to cannot be swapped', moEdit.status === 200 && after3.title === 'QA phase 2 changed' && after3.assetId === asset.id, `${moEdit.status}`);
+    const opDelete = await A.call('DELETE', `/api/maintenance-orders/${moId}`, undefined, 'operator');
+    check('an operator cannot delete a maintenance order', opDelete.status === 403 && (await prisma.maintenanceOrder.count({ where: { id: moId } })) === 1, `${opDelete.status}`);
+  }
+}
+
+// ── Department rules through the API (B-004) ──
+const wcAny = await prisma.workCenter.findFirst({ where: { locationId: L1 } });
+const denied = [
+  ['operator', 'PATCH', `/api/work-centers/${wcAny.id}`, { name: 'changed by an operator' }, 'an operator cannot change a work center'],
+  ['operator', 'PATCH', `/api/v1/work-centers/${wcAny.id}`, { name: 'changed by an operator' }, 'nor at its second address'],
+  ['operator', 'POST', '/api/staff/operators', { firstName: 'QA', lastName: 'Forged' }, 'an operator cannot add an operator record'],
+  ['operator', 'DELETE', `/api/v1/dispatch/work-center-types/${TYPE}`, undefined, 'an operator cannot delete a work center type'],
+  ['operator', 'POST', '/api/v1/contacts', { name: 'QA forged contact' }, 'an operator cannot add an order hub contact'],
+  ['csr', 'POST', '/api/v1/inventory/adjust', { itemId: 'x', quantity: 1 }, 'a sales login cannot adjust the second stock list'],
+  ['csr', 'POST', `/api/v1/operations/${j1.ops[0].id}/start`, { operatorId: operators[0].id }, 'a sales login cannot start a shop-floor operation'],
+  ['csr', 'POST', '/api/processing-recipes', { name: 'QA forged recipe' }, 'a sales login cannot add a processing recipe'],
+  ['csr', 'DELETE', '/api/documents/00000000-0000-0000-0000-000000000000', undefined, 'a sales login cannot delete a document'],
+];
+for (const [who, method, url, body, name] of denied) {
+  const r = await A.call(method, url, body, who);
+  check(name, r.status === 403, `${r.status}`);
+}
+check('and the work center and its type are unchanged', (await prisma.workCenter.findUnique({ where: { id: wcAny.id } })).name === wcAny.name && (await prisma.workCenterType.count({ where: { id: TYPE } })) === 1 && (await prisma.operator.count({ where: { lastName: 'Forged' } })) === 0);
+const stop = await A.post('/api/safety/stop-work', {}, 'operator');
+check('an operator is not refused for their role when raising a stop-work', stop.status !== 403, `${stop.status}`);
 
 fs.writeFileSync(OUT, JSON.stringify({ at: new Date().toISOString(), base: BASE, checks, problems: findings }, null, 2));
 console.log(`${findings.length ? '✗' : '✓'} Phase 2 integrity: ${checks} checks, ${findings.length} problems`);

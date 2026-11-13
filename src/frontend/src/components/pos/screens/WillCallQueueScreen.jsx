@@ -225,49 +225,10 @@ export function WillCallQueueScreen({ screen, onNext, onBack }) {
       }
     } catch (err) {
       console.error('Failed to load will-call queue:', err);
-      // Use mock data
-      setQueue([
-        {
-          id: 'wc-001',
-          orderNumber: 'SO-100234',
-          customer: { id: 'c1', name: 'ABC Fabrication', phone: '555-0101' },
-          status: 'READY',
-          scheduledDate: new Date().toLocaleDateString(),
-          scheduledTime: '10:00 AM',
-          totalLines: 3,
-          totalWeight: 2500,
-          poNumber: 'PO-9876',
-          priority: 'NORMAL',
-          waitingMinutes: 0
-        },
-        {
-          id: 'wc-002',
-          orderNumber: 'SO-100235',
-          customer: { id: 'c2', name: 'Steel Solutions Inc', phone: '555-0102' },
-          status: 'READY',
-          scheduledDate: new Date().toLocaleDateString(),
-          scheduledTime: '11:30 AM',
-          totalLines: 5,
-          totalWeight: 8750,
-          poNumber: 'PO-4532',
-          priority: 'HIGH',
-          waitingMinutes: 15
-        },
-        {
-          id: 'wc-003',
-          orderNumber: 'SO-100228',
-          customer: { id: 'c3', name: 'Industrial Metal Works', phone: '555-0103' },
-          status: 'SCHEDULED',
-          scheduledDate: new Date().toLocaleDateString(),
-          scheduledTime: '2:00 PM',
-          totalLines: 2,
-          totalWeight: 1200,
-          poNumber: null,
-          priority: 'NORMAL',
-          waitingMinutes: 0
-        }
-      ]);
-      setStats({ ready: 2, scheduled: 1, waiting: 1, avgWaitTime: 8, inProgress: 0 });
+      // No made-up orders: an empty queue and the reason, so nobody hands over material for an order that does not exist.
+      setQueue([]);
+      setStats({ ready: 0, scheduled: 0, waiting: 0, avgWaitTime: 0 });
+      setError('The will-call queue could not be loaded. Check the connection and refresh.');
     } finally {
       setLoading(false);
     }

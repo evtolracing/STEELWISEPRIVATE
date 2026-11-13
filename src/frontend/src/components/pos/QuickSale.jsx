@@ -17,7 +17,7 @@ const newSaleId = () => `qs-${Date.now()}-${Math.random().toString(36).slice(2, 
 const errorText = (e, fallback) => e?.response?.data?.error || fallback
 const BRANCH_KEY = 'quickSaleBranchId'
 
-function Receipt({ receipt, change, taxNote, onNew }) {
+function Receipt({ receipt, change, taxNote, stockNote, onNew }) {
   return (
     <Paper sx={{ p: 3, maxWidth: 480, mx: 'auto' }} id="quick-sale-receipt">
       <Typography variant="h6" fontWeight={700} align="center">Sale complete</Typography>
@@ -46,6 +46,7 @@ function Receipt({ receipt, change, taxNote, onNew }) {
         </Box>
       )}
       {taxNote && <Alert severity="warning" sx={{ mt: 2 }}>{taxNote}</Alert>}
+      {stockNote && <Alert severity="info" sx={{ mt: 2 }}>{stockNote}</Alert>}
       <Stack direction="row" spacing={1} sx={{ mt: 3, '@media print': { display: 'none' } }}>
         <Button fullWidth variant="outlined" startIcon={<PrintIcon />} onClick={() => window.print()}>Print receipt</Button>
         <Button fullWidth variant="contained" onClick={onNew}>New sale</Button>
@@ -145,7 +146,7 @@ export default function QuickSale({ onClose }) {
   if (done) {
     return (
       <Box sx={{ p: 3 }}>
-        <Receipt receipt={done.receipt} change={done.change || 0} taxNote={done.taxNote} onNew={reset} />
+        <Receipt receipt={done.receipt} change={done.change || 0} taxNote={done.taxNote} stockNote={done.stockNote} onNew={reset} />
       </Box>
     )
   }

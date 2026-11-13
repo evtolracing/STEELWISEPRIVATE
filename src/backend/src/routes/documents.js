@@ -52,10 +52,14 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// With no writable disk the file is kept in the database, and the host caps a
+// request at about 4.5 MB, so the limit there is 4 MB.
+const MAX_BYTES = (isVercel ? 4 : 25) * 1024 * 1024;
+const MAX_LABEL = `${MAX_BYTES / 1024 / 1024} MB`;
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB
+  limits: { fileSize: MAX_BYTES },
 });
 
 const router = Router();
@@ -64,7 +68,7 @@ const router = Router();
 const accept = (uploader) => (req, res, next) => uploader(req, res, (err) => {
   if (!err) return next();
   const tooBig = err.code === 'LIMIT_FILE_SIZE';
-  res.status(tooBig ? 413 : 400).json({ error: tooBig ? 'That file is larger than the 25 MB limit' : err.message || 'That file could not be accepted' });
+  res.status(tooBig ? 413 : 400).json({ error: tooBig ? `That file is larger than the ${MAX_LABEL} limit` : err.message || 'That file could not be accepted' });
 });
 
 // The screens use `type`, `mimeType`, `sizeBytes` and `organizationId`; the
@@ -89,8 +93,10 @@ function toApi(doc) {
   };
 }
 const NOT_LINKABLE = 'Documents cannot be attached to this kind of record until the pending database update has been applied.';
-const NO_STORAGE = 'File storage is not set up on this deployment, so files cannot be uploaded here yet.';
-const sha256 = (file) => crypto.createHash('sha256').update(fs.readFileSync(file.path)).digest('hex');
+const NO_STORAGE = 'Files cannot be stored until the pending database update has been applied.';
+const IN_DATABASE = 'database';
+const bytesOf = (file) => file.buffer || fs.readFileSync(file.path);
+const sha256 = (file) => crypto.createHash('sha256').update(bytesOf(file)).digest('hex');
 const removeFile = (file) => { if (file?.path && fs.existsSync(file.path)) fs.unlinkSync(file.path); };
 
 async function saveUpload(file, body) {
@@ -102,9 +108,11 @@ async function saveUpload(file, body) {
       fileName: file.originalname,
       fileType: file.mimetype,
       fileSizeBytes: file.size,
-      storagePath: file.path,
+      storagePath: file.path || IN_DATABASE,
       checksum: sha256(file),
       ownerId: organizationId || undefined,
+      // No disk on this host: the file itself is kept in the database.
+      ...(file.path ? {} : { blob: { create: { data: file.buffer } } }),
     },
   });
   if (entityType && entityId) {
@@ -182,11 +190,14 @@ router.get('/:id/download', async (req, res) => {
   try {
     const document = await prisma.document.findUnique({ where: { id: req.params.id } });
     if (!document) return res.status(404).json({ error: 'Document not found' });
-    if (!document.storagePath || !fs.existsSync(document.storagePath)) {
+    const onDisk = document.storagePath && document.storagePath !== IN_DATABASE && fs.existsSync(document.storagePath);
+    const stored = onDisk ? null : await prisma.documentBlob.findUnique({ where: { documentId: document.id } }).catch(() => null);
+    if (!onDisk && !stored) {
       return res.status(404).json({ error: 'The file for this document is not available', fileName: document.fileName });
     }
     res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
     res.setHeader('Content-Disposition', `attachment; filename="${String(document.fileName).replace(/["\r\n]/g, '')}"`);
+    if (stored) return res.end(Buffer.from(stored.data));
     if (document.fileSizeBytes) res.setHeader('Content-Length', document.fileSizeBytes);
     fs.createReadStream(document.storagePath).pipe(res);
   } catch (error) {
@@ -199,11 +210,11 @@ router.get('/:id/download', async (req, res) => {
 router.post('/upload', accept(upload.single('file')), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file provided' });
-    if (!req.file.path) return res.status(501).json({ error: NO_STORAGE });
     res.status(201).json(toApi(await saveUpload(req.file, req.body || {})));
   } catch (error) {
     removeFile(req.file);
     if (error?.notLinkable) return res.status(409).json({ error: NOT_LINKABLE });
+    if (error?.code === 'P2021') return res.status(409).json({ error: NO_STORAGE });
     if (error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The upload has a field that is not valid' });
     console.error('Error uploading document:', error);
     res.status(500).json({ error: 'Failed to upload document' });
@@ -214,13 +225,13 @@ router.post('/upload', accept(upload.single('file')), async (req, res) => {
 router.post('/upload-multiple', accept(upload.array('files', 10)), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No files provided' });
-    if (req.files.some((f) => !f.path)) return res.status(501).json({ error: NO_STORAGE });
     const documents = [];
     for (const file of req.files) documents.push(toApi(await saveUpload(file, req.body || {})));
     res.status(201).json({ data: documents, count: documents.length });
   } catch (error) {
     for (const file of req.files || []) removeFile(file);
     if (error?.notLinkable) return res.status(409).json({ error: NOT_LINKABLE });
+    if (error?.code === 'P2021') return res.status(409).json({ error: NO_STORAGE });
     console.error('Error uploading documents:', error);
     res.status(500).json({ error: 'Failed to upload documents' });
   }

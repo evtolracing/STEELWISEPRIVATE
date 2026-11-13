@@ -1,3 +1,4 @@
+import { userChangeDenial } from '../lib/userAdminRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import bcrypt from 'bcryptjs';
@@ -166,6 +167,8 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
     if (!email || !password || !firstName || !lastName || !role) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+    const denial = userChangeDenial(req.user, null, { role, homeLocationId, locationIds, roleIds });
+    if (denial) return res.status(403).json({ error: denial });
     const link = await resolveLoginCustomer(role, customerId);
     if (link.error) return res.status(400).json({ error: link.error });
 
@@ -257,12 +260,15 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
 
     // Verify user exists and belongs to same org
     const existingUser = await prisma.user.findFirst({
-      where: { id, organizationId: req.user.organizationId }
+      where: { id, organizationId: req.user.organizationId },
+      include: { userLocations: { select: { locationId: true } } }
     });
 
     if (!existingUser) {
       return res.status(404).json({ error: 'User not found' });
     }
+    const denial = userChangeDenial(req.user, existingUser, { role, homeLocationId, locationIds, roleIds });
+    if (denial) return res.status(403).json({ error: denial });
 
     // Build update data
     const updateData = {};
@@ -279,25 +285,19 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
       updateData.customerId = link.customerId;
     }
 
-    // Update user
-    const user = await prisma.user.update({
+    // One step (B-010): the user, their branches, divisions and roles, and the audit record change
+    // together or not at all. A half-saved change here would leave a login with the wrong branches.
+    const user = await prisma.$transaction(async (tx) => {
+    await tx.user.update({
       where: { id },
       data: updateData,
-      include: {
-        organization: true,
-        customer: { select: { id: true, name: true, code: true } },
-        homeLocation: true,
-        userLocations: { include: { location: true } },
-        userDivisions: { include: { division: true } },
-        userRoles: { include: { role: true } }
-      }
     });
 
     // Update location assignments if provided
     if (locationIds !== undefined) {
-      await prisma.userLocation.deleteMany({ where: { userId: id } });
+      await tx.userLocation.deleteMany({ where: { userId: id } });
       if (locationIds.length > 0) {
-        await prisma.userLocation.createMany({
+        await tx.userLocation.createMany({
           data: locationIds.map((locationId, idx) => ({
             userId: id,
             locationId,
@@ -309,9 +309,9 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
 
     // Update division assignments if provided
     if (divisionIds !== undefined) {
-      await prisma.userDivision.deleteMany({ where: { userId: id } });
+      await tx.userDivision.deleteMany({ where: { userId: id } });
       if (divisionIds.length > 0) {
-        await prisma.userDivision.createMany({
+        await tx.userDivision.createMany({
           data: divisionIds.map(divisionId => ({
             userId: id,
             divisionId
@@ -322,9 +322,9 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
 
     // Update role assignments if provided
     if (roleIds !== undefined) {
-      await prisma.userRoleAssignment.deleteMany({ where: { userId: id } });
+      await tx.userRoleAssignment.deleteMany({ where: { userId: id } });
       if (roleIds.length > 0) {
-        await prisma.userRoleAssignment.createMany({
+        await tx.userRoleAssignment.createMany({
           data: roleIds.map(roleId => ({
             userId: id,
             roleId,
@@ -335,7 +335,7 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
     }
 
     // Log audit event
-    await prisma.auditLog.create({
+    await tx.auditLog.create({
       data: {
         tenantId: req.user.organizationId,
         category: 'DATA',
@@ -346,6 +346,19 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
         action: 'user.update',
         details: updateData
       }
+    });
+    // Read back after the assignments, so the reply shows what was saved.
+    return tx.user.findUnique({
+      where: { id },
+      include: {
+        organization: true,
+        customer: { select: { id: true, name: true, code: true } },
+        homeLocation: true,
+        userLocations: { include: { location: true } },
+        userDivisions: { include: { division: true } },
+        userRoles: { include: { role: true } }
+      }
+    });
     });
 
     // Re-fetch with all relations
@@ -383,19 +396,21 @@ router.delete('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', '
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const refusal = userChangeDenial(req.user, existingUser, {});
+    if (refusal) return res.status(403).json({ error: refusal });
     // Prevent self-deletion
     if (id === req.user.id) {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
 
     // Soft delete - just deactivate
-    await prisma.user.update({
+    // The change and its audit record are one step (B-010).
+    await prisma.$transaction([
+      prisma.user.update({
       where: { id },
       data: { isActive: false }
-    });
-
-    // Log audit event
-    await prisma.auditLog.create({
+    }),
+      prisma.auditLog.create({
       data: {
         tenantId: req.user.organizationId,
         category: 'DATA',
@@ -406,7 +421,8 @@ router.delete('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', '
         action: 'user.delete',
         details: { email: existingUser.email }
       }
-    });
+    }),
+    ]);
 
     res.json({ success: true, message: 'User deactivated' });
   } catch (error) {
@@ -433,14 +449,16 @@ router.post('/:id/reset-password', authenticate, requireRole('SUPER_ADMIN', 'TEN
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const refusal = userChangeDenial(req.user, existingUser, {});
+    if (refusal) return res.status(403).json({ error: refusal });
     const passwordHash = await bcrypt.hash(newPassword, 10);
-    await prisma.user.update({
+    // The change and its audit record are one step (B-010).
+    await prisma.$transaction([
+      prisma.user.update({
       where: { id },
       data: { passwordHash }
-    });
-
-    // Log audit event
-    await prisma.auditLog.create({
+    }),
+      prisma.auditLog.create({
       data: {
         tenantId: req.user.organizationId,
         category: 'AUTH',
@@ -451,7 +469,8 @@ router.post('/:id/reset-password', authenticate, requireRole('SUPER_ADMIN', 'TEN
         resourceId: id,
         action: 'user.password_reset'
       }
-    });
+    }),
+    ]);
 
     res.json({ success: true, message: 'Password reset successfully' });
   } catch (error) {

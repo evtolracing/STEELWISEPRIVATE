@@ -77,7 +77,7 @@ export default function UnitDetailPage() {
     if (name === 'release') setForm({ notes: '' })
     if (name === 'move') {
       setForm({ toLocationId: '' })
-      call('/api/inventory/locations').then((l) => setLocations(Array.isArray(l) ? l : [])).catch(() => setDialogError('The locations could not be loaded.'))
+      call('/api/inventory/locations?all=true').then((l) => setLocations(Array.isArray(l) ? l : [])).catch(() => setDialogError('The locations could not be loaded.'))
     }
     if (name === 'edit') setForm(Object.fromEntries([...EDIT_FIELDS.map(([k]) => [k, unit[k] ?? '']), ['edgeCondition', unit.edgeCondition || '']]))
     setDialog(name)

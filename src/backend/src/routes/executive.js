@@ -348,8 +348,9 @@ router.post('/decisions', async (req, res) => {
   try {
     const decisionData = {
       ...req.body,
-      decisionMaker: req.user?.name || req.body.decisionMaker,
-      role: req.user?.role || req.body.role,
+      // The signed-in person, never a name typed into the request.
+      decisionMaker: [req.user?.firstName, req.user?.lastName].filter(Boolean).join(' ') || req.user?.email,
+      role: req.user?.role,
     };
     
     const decision = await decisionService.logDecision(decisionData);

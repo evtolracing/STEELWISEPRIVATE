@@ -1,8 +1,8 @@
 {
- "at": "2026-11-13T17:38:35.106Z",
+ "at": "2026-11-13T18:17:09.226Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 158,
- "totalRows": 5621,
+ "totalRows": 5727,
  "emptyTables": [
   "AppSetting",
   "ApprovalDecision",
@@ -15,6 +15,7 @@
   "CommodityPrice",
   "CustomerPreference",
   "CustomerTagRequirement",
+  "DispatchDivision",
   "DispatchJob",
   "DispatchOperation",
   "DispatchTimeLog",
@@ -50,6 +51,8 @@
   "PricingAnalytics",
   "PricingOverride",
   "PricingRecommendation",
+  "PrintQueueJob",
+  "QCHold",
   "QuoteAcceptance",
   "RFQSource",
   "SafetyAttachment",
@@ -101,10 +104,10 @@
   "TestResult",
   "TraceEvent",
   "UserDivision",
-  "UserLocation",
   "UserRoleAssignment",
   "WebhookDelivery",
   "WorkCenterType",
+  "WorkOrder",
   "WorkOrderOutput"
  ],
  "rows": [
@@ -138,7 +141,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 1382
+   "rows": 1336
   },
   {
    "table": "BomOperation",
@@ -174,7 +177,7 @@
   },
   {
    "table": "DispatchDivision",
-   "rows": 2
+   "rows": 0
   },
   {
    "table": "DispatchJob",
@@ -282,15 +285,15 @@
   },
   {
    "table": "Invoice",
-   "rows": 131
+   "rows": 125
   },
   {
    "table": "InvoiceLine",
-   "rows": 141
+   "rows": 135
   },
   {
    "table": "Job",
-   "rows": 244
+   "rows": 242
   },
   {
    "table": "JobInspection",
@@ -330,7 +333,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 143
+   "rows": 142
   },
   {
    "table": "MeterReading",
@@ -338,7 +341,7 @@
   },
   {
    "table": "OnlineOrder",
-   "rows": 39
+   "rows": 35
   },
   {
    "table": "Operator",
@@ -350,11 +353,11 @@
   },
   {
    "table": "Order",
-   "rows": 260
+   "rows": 236
   },
   {
    "table": "OrderLine",
-   "rows": 275
+   "rows": 248
   },
   {
    "table": "OrderLineAllocation",
@@ -362,7 +365,7 @@
   },
   {
    "table": "Organization",
-   "rows": 29
+   "rows": 27
   },
   {
    "table": "PMSchedule",
@@ -398,7 +401,7 @@
   },
   {
    "table": "Payment",
-   "rows": 91
+   "rows": 85
   },
   {
    "table": "PipelineRun",
@@ -406,7 +409,7 @@
   },
   {
    "table": "PosSession",
-   "rows": 8
+   "rows": 6
   },
   {
    "table": "PriceLevel",
@@ -426,7 +429,7 @@
   },
   {
    "table": "PrintQueueJob",
-   "rows": 2
+   "rows": 0
   },
   {
    "table": "ProcessingOperation",
@@ -446,7 +449,7 @@
   },
   {
    "table": "QCHold",
-   "rows": 2
+   "rows": 0
   },
   {
    "table": "Quote",
@@ -646,11 +649,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 175
+   "rows": 169
   },
   {
    "table": "ShipmentItem",
-   "rows": 143
+   "rows": 137
   },
   {
    "table": "ShipmentStop",
@@ -702,7 +705,7 @@
   },
   {
    "table": "User",
-   "rows": 13
+   "rows": 17
   },
   {
    "table": "UserDivision",
@@ -710,7 +713,7 @@
   },
   {
    "table": "UserLocation",
-   "rows": 0
+   "rows": 246
   },
   {
    "table": "UserRoleAssignment",
@@ -730,7 +733,7 @@
   },
   {
    "table": "WorkOrder",
-   "rows": 1
+   "rows": 0
   },
   {
    "table": "WorkOrderOutput",
@@ -738,10 +741,10 @@
   },
   {
    "table": "_prisma_migrations",
-   "rows": 22
+   "rows": 23
   }
  ],
- "indexes": 577,
+ "indexes": 578,
  "views": [],
  "triggers": [],
  "jsonCols": [
@@ -908,7 +911,7 @@
  ],
  "fkNoIndex": [],
  "constraintCounts": {
-  "foreign key": 170,
+  "foreign key": 171,
   "primary key": 158,
   "check": 9
  },
@@ -974,17 +977,17 @@
   "order lines shipped more than ordered": 0,
   "order line shipped quantity differs from its dispatched shipment items": 47,
   "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
-  "counter quick sale lines marked shipped with no shipment and no stock movement (B-025)": 4,
+  "counter quick sale lines marked shipped with no shipment and no stock movement (B-025)": 3,
   "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
   "invoices paid more than their total": 0,
   "invoice total differs from subtotal + tax + freight": 0,
   "invoice paid amount differs from its payments": 1,
   "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
-  "jobs with no order and no order line": 32,
+  "jobs with no order and no order line": 31,
   "stock items (coils) with no heat": 0,
   "stock items with no location": 0,
   "shipments delivered with no proof of delivery name": 47,
-  "users with no home branch": 6,
+  "users with no home branch": 2,
   "invoices and credit memos with no record of who raised them, outside the demo seed": 0
  }
 }

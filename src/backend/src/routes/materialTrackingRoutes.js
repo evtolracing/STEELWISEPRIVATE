@@ -439,7 +439,9 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
       throw error;
     }
 
-    const job = await prisma.job.update({
+    // The job, its history and the custody record are one step (B-010).
+    const job = await prisma.$transaction(async (tx) => {
+    const job = await tx.job.update({
       where: { id: jobId },
       data: {
         status: 'SHIPPED',
@@ -448,10 +450,10 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
         shippedAt: new Date(),
       },
     });
-    await recordJobMove(prisma, { job: staged, from: staged.status, to: 'SHIPPED', note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id });
+    await recordJobMove(tx, { job: staged, from: staged.status, to: 'SHIPPED', note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id });
 
     // Auto-log custody event
-    await prisma.traceEvent.create({
+    await tx.traceEvent.create({
       data: {
         eventType: 'JOB_SHIPPED',
         eventCategory: 'JOB',
@@ -464,6 +466,8 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
         metadata: { carrier, trackingNumber },
         occurredAt: new Date(),
       },
+    });
+    return job;
     });
 
     res.json(job);

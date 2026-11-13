@@ -325,9 +325,8 @@ router.post('/', async (req, res) => {
       priority,
       instructions,
       assignedToId,
-      createdById,
       status,
-    } = req.body;
+    } = req.body || {};
     
     if (status && !JOB_STATUSES.includes(status)) {
       return res.status(400).json({ error: `Invalid status. Must be one of: ${JOB_STATUSES.join(', ')}` });
@@ -337,6 +336,11 @@ router.post('/', async (req, res) => {
     }
     for (const [name, value] of [['scheduledStart', scheduledStart], ['scheduledEnd', scheduledEnd]]) {
       if (value && Number.isNaN(new Date(value).getTime())) return res.status(400).json({ error: `${name} is not a valid date` });
+    }
+
+    // A job has to say what it is: the order it is for, where it runs, or what to do (B-008).
+    if (!orderId && !req.body.orderLineId && !workCenterId && !(typeof instructions === 'string' && instructions.trim())) {
+      return res.status(400).json({ error: 'A job needs an order, a work center or instructions' });
     }
 
     // Build data object with only defined fields
@@ -359,7 +363,7 @@ router.post('/', async (req, res) => {
     if (operationType) data.operationType = operationType;
     if (instructions) data.instructions = instructions;
     if (assignedToId) data.assignedToId = assignedToId;
-    data.createdById = req.user?.id || createdById;
+    data.createdById = req.user.id; // the signed-in person, never an id sent in the request
     if (scheduledStart) data.scheduledStart = new Date(scheduledStart);
     if (scheduledEnd) data.scheduledEnd = new Date(scheduledEnd);
     
@@ -511,7 +515,16 @@ router.post('/:id/plan', async (req, res) => {
       updateData.scheduledEnd = new Date(dueDate);
     }
 
-    const updatedJob = await prisma.job.update({
+    // A dispatch job belongs to the branch the work is done at: the job's work center, else the order's
+    // branch, else the planner's home branch. (It used to default to the text 'FWA', which is not a branch.)
+    const planned = await prisma.job.findUnique({ where: { id }, select: { workCenter: { select: { locationId: true } }, order: { select: { locationId: true } } } });
+    const branchId = locationId || planned?.workCenter?.locationId || planned?.order?.locationId || req.user?.homeLocationId;
+    if (!branchId) return res.status(400).json({ error: 'Choose the branch this job will be worked at' });
+
+    // One step (B-010): the job, the old plan and the new plan change together or not at all.
+    const { updatedJob, newDispatchJob } = await prisma.$transaction(async (tx) => {
+    if (job.status !== 'SCHEDULED') await recordJobMove(tx, { job, from: job.status, to: 'SCHEDULED', note: 'Planned', via: 'plan', userId: req.user?.id });
+    const updatedJob = await tx.job.update({
       where: { id },
       data: updateData,
       include: {
@@ -530,9 +543,9 @@ router.post('/:id/plan', async (req, res) => {
     const priorityMap = { 1: 'NORMAL', 2: 'NORMAL', 3: 'NORMAL', 4: 'RUSH', 5: 'HOT' };
 
     // 2. Upsert dispatch job in database (delete old one if re-planning)
-    await prisma.dispatchJob.deleteMany({ where: { jobId: id } });
+    await tx.dispatchJob.deleteMany({ where: { jobId: id } });
 
-    const newDispatchJob = await prisma.dispatchJob.create({
+    const newDispatchJob = await tx.dispatchJob.create({
       data: {
         jobId: id,
         jobNumber: job.jobNumber,
@@ -543,7 +556,7 @@ router.post('/:id/plan', async (req, res) => {
         grade: grade || 'A36',
         thickness: thickness || 0.5,
         division: division || 'METALS',
-        locationId: locationId || 'FWA',
+        locationId: branchId,
         dueDate: dueDate ? new Date(dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         priority: priorityMap[job.priority] || 'NORMAL',
         customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : 'Customer'),
@@ -564,6 +577,8 @@ router.post('/:id/plan', async (req, res) => {
       include: {
         operations: { orderBy: { sequence: 'asc' } },
       },
+    });
+    return { updatedJob, newDispatchJob };
     });
 
     console.log(`Job ${job.jobNumber} planned: ${newDispatchJob.operations.length} operations persisted to database`);
@@ -617,16 +632,22 @@ router.post('/:id/status', async (req, res) => {
     }
     // The note says why the job moved. It belongs to the move, so it goes in the
     // job's history; the job's own notes are left as they were.
-    const updatedJob = await prisma.job.update({
-      where: { id },
-      data: updateData,
-      include: {
-        order: { select: { id: true, orderNumber: true, buyerId: true } },
-        workCenter: { select: { id: true, code: true, name: true, locationId: true } },
-        assignedTo: { select: { id: true, firstName: true, lastName: true } },
-      },
+    // The move applies only if the job is still in the status it was checked in, and it is saved
+    // together with its history line. Two people moving the same job cannot both succeed (C-005).
+    const updatedJob = await prisma.$transaction(async (tx) => {
+      const moved = await tx.job.updateMany({ where: { id, status: job.status }, data: updateData });
+      if (!moved.count) return null;
+      await recordJobMove(tx, { job, from: job.status, to: status, note, userId: req.user?.id });
+      return tx.job.findUnique({
+        where: { id },
+        include: {
+          order: { select: { id: true, orderNumber: true, buyerId: true } },
+          workCenter: { select: { id: true, code: true, name: true, locationId: true } },
+          assignedTo: { select: { id: true, firstName: true, lastName: true } },
+        },
+      });
     });
-    await recordJobMove(prisma, { job, from: job.status, to: status, note, userId: req.user?.id });
+    if (!updatedJob) return res.status(409).json({ error: 'This job was changed by someone else a moment ago. Reload it and try again.' });
     res.json(mapJobForFrontend(updatedJob));
   } catch (error) {
     console.error('Error updating job status:', error);
@@ -650,17 +671,21 @@ router.patch('/:id/status', async (req, res) => {
     if (why) return res.status(JOB_STATUSES.includes(status) ? 409 : 400).json({ error: why });
     const oldStatus = prevJob.status;
 
-    const job = await prisma.job.update({
-      where: { id },
-      data: { status, ...stampsFor(prevJob, status) },
-      include: {
-        order: { include: { buyer: true } },
-        workCenter: { select: { id: true, code: true, name: true } },
-        assignedTo: { select: { id: true, firstName: true, lastName: true } },
-      },
+    // Same rule as POST /:id/status: only if the job is still where it was checked, with its history line.
+    const job = await prisma.$transaction(async (tx) => {
+      const moved = await tx.job.updateMany({ where: { id, status: oldStatus }, data: { status, ...stampsFor(prevJob, status) } });
+      if (!moved.count) return null;
+      await recordJobMove(tx, { job: prevJob, from: oldStatus, to: status, note: req.body?.note, userId: req.user?.id });
+      return tx.job.findUnique({
+        where: { id },
+        include: {
+          order: { include: { buyer: true } },
+          workCenter: { select: { id: true, code: true, name: true } },
+          assignedTo: { select: { id: true, firstName: true, lastName: true } },
+        },
+      });
     });
-
-    await recordJobMove(prisma, { job: prevJob, from: oldStatus, to: status, note: req.body?.note, userId: req.user?.id });
+    if (!job) return res.status(409).json({ error: 'This job was changed by someone else a moment ago. Reload it and try again.' });
 
     // Auto-queue print jobs based on status transition
     if (oldStatus !== status) {

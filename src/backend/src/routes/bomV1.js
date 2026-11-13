@@ -300,9 +300,10 @@ router.put('/recipes/:id', async (req, res) => {
     if (division !== undefined) updateData.division = division;
     
     if (operations !== undefined) {
-      // Delete existing operations and create new ones
-      await prisma.bomOperation.deleteMany({ where: { recipeId: id } });
+      // Replace the operations in the same save as the recipe (B-010): if the new ones are refused,
+      // the old ones are still there.
       updateData.operations = {
+        deleteMany: {},
         create: operations.map((op, idx) => ({
           sequence: op.sequence || idx + 1,
           name: op.name,

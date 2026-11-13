@@ -22,6 +22,7 @@ for seed in 8001 8002 8003; do node qa/sim/run.mjs --base http://localhost:3011 
 echo "== database checks after the simulation"; node qa/tools/db-facts.mjs | sed -n '/"checks"/,$p'
 echo "== sweep"; node qa/sim/security.mjs --base http://localhost:3011 2>&1 | grep -v "^    " | tail -26
 echo "== branch boundary"; node qa/sim/branch-boundary.mjs --base http://localhost:3011 2>&1 | tail -8
+echo "== phase 2 integrity"; node qa/sim/phase2-integrity.mjs --base http://localhost:3011 2>&1 | tail -8
 echo "== unit"; (cd src/backend && npm test 2>&1 | grep -E "^not ok|^# (tests|pass|fail)")
 (PORT=3001 nohup qa/tools/start-qa-server.sh > "$LOGS/server-3001.log" 2>&1 &); wait_for http://localhost:3001/api/health || exit 1
 curl -s -m2 -o /dev/null http://localhost:5199 || { (cd src/frontend && nohup npx vite --port 5199 --strictPort > "$LOGS/vite.log" 2>&1 &); wait_for http://localhost:5199; }

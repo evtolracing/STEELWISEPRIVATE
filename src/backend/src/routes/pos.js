@@ -723,9 +723,9 @@ router.get('/sessions/:sessionId/progress', async (req, res) => {
  */
 router.post('/sessions', async (req, res) => {
   try {
-    const { entryPoint, terminalId } = req.body;
+    const { entryPoint, terminalId } = req.body || {};
     // A session belongs to whoever is signed in, not to a user id sent by the browser.
-    const userId = req.user?.id || req.body.userId;
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });

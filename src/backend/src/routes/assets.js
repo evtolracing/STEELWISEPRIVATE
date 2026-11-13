@@ -1,3 +1,4 @@
+import { readFields } from '../lib/fieldRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 
@@ -203,12 +204,26 @@ router.post('/', async (req, res) => {
   }
 });
 
+// What can be changed on an asset. Anything else in the request is ignored (B-007).
+const ASSET_FIELDS = {
+  name: { type: 'string', required: true, maxLength: 200 }, description: { type: 'string', maxLength: 2000 },
+  assetTypeId: { type: 'id', required: true }, siteId: { type: 'id', required: true }, workCenterId: { type: 'id' }, parentAssetId: { type: 'id' },
+  areaCode: { type: 'string', maxLength: 40 }, manufacturer: { type: 'string', maxLength: 120 }, model: { type: 'string', maxLength: 120 },
+  serialNumber: { type: 'string', maxLength: 120 }, purchaseDate: { type: 'date' }, installDate: { type: 'date' }, warrantyExpires: { type: 'date' },
+  expectedLifeYears: { type: 'number', min: 0, max: 200 }, replacementCost: { type: 'number', min: 0 },
+  criticality: { type: 'string', required: true, maxLength: 20 }, safetyRelated: { type: 'boolean' }, qualityRelated: { type: 'boolean' },
+  status: { type: 'string', required: true, maxLength: 30 }, statusReason: { type: 'string', maxLength: 500 },
+};
+
 // PATCH /api/assets/:id — Update an asset
 router.patch('/:id', async (req, res) => {
   try {
+    const { data, error } = readFields(req.body, ASSET_FIELDS);
+    if (error) return res.status(400).json({ error });
+    if (!Object.keys(data).length) return res.status(400).json({ error: 'Nothing to change' });
     const asset = await prisma.asset.update({
       where: { id: req.params.id },
-      data: req.body,
+      data,
       include: {
         assetType: true,
         site: true,

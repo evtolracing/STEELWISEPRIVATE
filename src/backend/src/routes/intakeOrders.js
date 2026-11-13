@@ -228,6 +228,8 @@ router.post('/', async (req, res) => {
     if (badCustomer) return res.status(400).json({ error: badCustomer });
     const built = await buildIntakeLines(lines);
     if (built.error) return res.status(built.status).json({ error: built.error });
+    // Even a draft has to hold something (B-008).
+    if (!customerId && !customerName && !built.lines.length) return res.status(400).json({ error: 'A draft needs a customer or at least one line' });
     const submitted = status === 'SUBMITTED' || status === 'PENDING';
     // A Retail POS sale with no account is sold to the walk-in account.
     const buyerId = customerId || (source === 'RETAIL' ? (await walkInAccount()).id : null);

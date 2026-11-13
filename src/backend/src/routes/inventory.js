@@ -1,4 +1,4 @@
-import { acrossBranches } from '../lib/branchScope.js';
+import { acrossBranches, currentScope } from '../lib/branchScope.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { positiveQty } from '../lib/workflowRules.js';
@@ -151,8 +151,11 @@ router.post('/transfer', async (req, res) => {
 
 router.get('/locations', async (req, res) => {
   try {
+    // The branches to offer in a "which branch" list: the user's own (lib/branchScope.js).
+    // ?all=true lists every branch, for choosing where a transfer goes.
+    const mine = req.query.all === 'true' ? null : currentScope()?.branches;
     const locations = await prisma.location.findMany({
-      where: { isActive: true },
+      where: { isActive: true, ...(mine && { id: { in: mine } }) },
       orderBy: { code: 'asc' }
     });
     res.json(locations);

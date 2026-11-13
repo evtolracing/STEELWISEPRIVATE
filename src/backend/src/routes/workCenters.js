@@ -1,3 +1,4 @@
+import { readFields } from '../lib/fieldRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 
@@ -59,21 +60,28 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// The fields a work center has. Anything else in the request is ignored (B-007). The form used to
+// send hourlyRate and setupMinutes, which a work center does not have, so creating one always failed.
+const WORK_CENTER_FIELDS = {
+  code: { type: 'string', required: true, maxLength: 40 },
+  name: { type: 'string', required: true, maxLength: 120 },
+  locationId: { type: 'id', required: true },
+  type: { type: 'string', maxLength: 40 },
+  capacity: { type: 'json' },
+  isActive: { type: 'boolean' },
+};
+const capabilitiesOf = (body) => (Array.isArray(body?.capabilities) && body.capabilities.every((c) => typeof c === 'string' && c.length <= 60) && body.capabilities.length <= 50 ? body.capabilities : undefined);
+
 // POST /work-centers - Create a new work center
 router.post('/', async (req, res) => {
   try {
-    const { code, name, locationId, capabilities, hourlyRate, setupMinutes, isActive } = req.body;
-    
+    const { data, error } = readFields(req.body, WORK_CENTER_FIELDS, { creating: true });
+    if (error) return res.status(400).json({ error });
+    if (!(await prisma.location.findUnique({ where: { id: data.locationId }, select: { id: true } }))) return res.status(400).json({ error: 'Branch not found' });
+    if (await prisma.workCenter.findUnique({ where: { code: data.code }, select: { id: true } })) return res.status(409).json({ error: 'A work center with that code already exists' });
+
     const workCenter = await prisma.workCenter.create({
-      data: {
-        code,
-        name,
-        locationId,
-        capabilities: capabilities || [],
-        hourlyRate: hourlyRate ? parseFloat(hourlyRate) : null,
-        setupMinutes: setupMinutes ? parseInt(setupMinutes) : null,
-        isActive: isActive !== false,
-      },
+      data: { ...data, capabilities: capabilitiesOf(req.body) || [] },
       include: {
         location: true,
       },
@@ -90,14 +98,11 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = { ...req.body };
-    
-    if (updateData.hourlyRate) {
-      updateData.hourlyRate = parseFloat(updateData.hourlyRate);
-    }
-    if (updateData.setupMinutes) {
-      updateData.setupMinutes = parseInt(updateData.setupMinutes);
-    }
+    const { data: updateData, error } = readFields(req.body, WORK_CENTER_FIELDS);
+    if (error) return res.status(400).json({ error });
+    const capabilities = capabilitiesOf(req.body);
+    if (capabilities) updateData.capabilities = capabilities;
+    if (!Object.keys(updateData).length) return res.status(400).json({ error: 'Nothing to change' });
     
     const workCenter = await prisma.workCenter.update({
       where: { id },

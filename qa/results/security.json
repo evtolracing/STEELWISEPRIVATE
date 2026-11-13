@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T08:22:56.484Z",
- "endpointsInInventory": 585,
- "endpointsSwept": 585,
+ "at": "2026-11-13T08:51:03.694Z",
+ "endpointsInInventory": 587,
+ "endpointsSwept": 587,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "546 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
-   "tested": 546,
+   "summary": "548 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 548,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "523 staff routes tried as a customer, 0 not refused",
-   "tested": 523,
+   "summary": "525 staff routes tried as a customer, 0 not refused",
+   "tested": 525,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -40,8 +40,8 @@
   },
   "Read routes do not crash on bad input": {
    "pass": true,
-   "summary": "774 reads, 0 server errors",
-   "tested": 774,
+   "summary": "777 reads, 0 server errors",
+   "tested": 777,
    "byFile": {},
    "findings": []
   },
@@ -79,6 +79,16 @@
   "Order entry screen follows the order rules": {
    "pass": true,
    "summary": "43 checks, 0 problems",
+   "findings": []
+  },
+  "Stock items: lists, cost, edits, holds": {
+   "pass": true,
+   "summary": "29 checks, 0 problems",
+   "findings": []
+  },
+  "Credit hold: over the limit waits for a manager": {
+   "pass": true,
+   "summary": "22 checks, 0 problems",
    "findings": []
   }
  },

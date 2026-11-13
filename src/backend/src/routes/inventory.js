@@ -3,6 +3,15 @@ import prisma from '../lib/db.js';
 import { positiveQty } from '../lib/workflowRules.js';
 import { ci } from '../lib/dbText.js';
 import { searchStock } from '../services/intakeCatalogService.js';
+import { COST_VIEWERS } from '../lib/roleAccess.js';
+
+/** Cost goes only to the roles that manage it. */
+const withoutCost = (req, row) => {
+  if (!row || COST_VIEWERS.has(req.user?.role)) return row;
+  const { unitCost, landedCost, avgCost, ...rest } = row;
+  if (rest.coil) { const { unitCost: c1, landedCost: c2, ...coil } = rest.coil; rest.coil = coil; }
+  return rest;
+};
 
 const router = Router();
 
@@ -21,7 +30,7 @@ router.get('/', async (req, res) => {
       orderBy: { updatedAt: 'desc' },
       take: 200
     });
-    res.json(inventory);
+    res.json(inventory.map((row) => withoutCost(req, row)));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch inventory' });
   }
@@ -32,13 +41,14 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
   try {
     const { search, locationId, division, isRemnant, limit } = req.query;
-    res.json(await searchStock({
+    const found = await searchStock({
       search,
       locationId,
       division,
       isRemnant: isRemnant === undefined ? undefined : isRemnant === 'true',
       limit,
-    }));
+    });
+    res.json({ ...found, data: (found.data || []).map((row) => withoutCost(req, row)) });
   } catch (error) {
     console.error('Stock search failed:', error);
     res.status(500).json({ error: 'Stock search failed' });

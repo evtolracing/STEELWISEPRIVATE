@@ -8,6 +8,7 @@
  *
  * Accepting creates a PENDING sales order (Order + OrderLines) and links it.
  */
+import { statusAfterCreditCheck, recordCreditHold } from '../lib/creditControl.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { packNotes, createSalesOrder } from './intakeOrders.js';
@@ -88,12 +89,14 @@ router.post('/:id/accept', async (req, res) => {
     });
     const bySku = new Map(products.map((p) => [p.sku, p]));
 
+    // Rule 32: an accepted web order waits on hold when it would pass the credit limit.
+    const gate = await statusAfterCreditCheck(prisma, { customerId: buyerId, orderTotal: online.subtotal, wanted: 'PENDING' });
     const order = await createSalesOrder((orderNumber) => prisma.$transaction(async (tx) => {
       const created = await tx.order.create({
         data: {
           orderNumber,
           orderType: 'SO',
-          status: 'PENDING',
+          status: gate.status,
           buyerId,
           poReference: online.externalOrderId,
           subtotal: online.subtotal,
@@ -124,6 +127,7 @@ router.post('/:id/accept', async (req, res) => {
         },
         select: { id: true, orderNumber: true },
       });
+      if (gate.creditHold) await recordCreditHold(tx, { orderId: created.id, orderNumber: created.orderNumber, creditHold: gate.creditHold, user: req.user });
       await tx.onlineOrder.update({
         where: { id: online.id },
         data: { status: 'ACCEPTED', customerId: buyerId, internalOrderId: created.id, decidedAt: new Date() },
@@ -132,7 +136,7 @@ router.post('/:id/accept', async (req, res) => {
     }));
 
     const updated = await prisma.onlineOrder.findUnique({ where: { id: online.id } });
-    res.json({ ...toApi(updated), internalOrderNumber: order.orderNumber });
+    res.json({ ...toApi(updated), internalOrderNumber: order.orderNumber, ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }) });
   } catch (error) {
     console.error('Failed to accept online order:', error);
     res.status(500).json({ error: 'Failed to accept online order' });

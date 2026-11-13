@@ -13,7 +13,7 @@ How it was examined: every sales screen read with its server routes; the journey
 | Is the price right in every channel? | Yes: one rule, tested in five channels (Sweep 13, 47 checks) |
 | Is tax right? | Saved on the order by rule 27 (selling branch state). A state with no rate charges none and says so (D-035) |
 | Who did it? | Orders, overrides, tier, credit, tax status and list price changes carry the signed-in person |
-| What stops a bad order? | Quantity, price and status checks on entry. Nothing stops an order over the credit limit (S-019) |
+| What stops a bad order? | Quantity, price and status checks on entry. An order over the credit limit is saved on hold for a manager to release (rule 32) |
 | Can the customer be given a date? | Not reliably. The promise date is not computed by the server (S-010) |
 | Are exceptions handled? | Overrides are recorded and listed on the order (S-011). Approval of an override is a manager action; there is no approval queue |
 | Is anything duplicated? | Order Hub duplicates RFQs & Quotes (S-021). The POS session API duplicates counter sale (S-022) |

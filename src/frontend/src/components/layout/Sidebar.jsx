@@ -155,6 +155,7 @@ const navSections = [
     items: [
       { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
       { path: '/orders', label: 'All Orders', icon: OrdersIcon },
+      { path: '/orders/credit-holds', label: 'Credit Holds', icon: PricingNavIcon },
       { path: '/orders/intake', label: 'CSR Intake', icon: CSRIntakeIcon, highlight: true },
       { path: '/orders/online-inbox', label: 'Online Inbox', icon: OnlineInboxIcon },
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },

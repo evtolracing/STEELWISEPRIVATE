@@ -85,6 +85,7 @@ export default function MobileRepIntakePage() {
   // ── Submission ───────────────────────────────────────────────────────
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [holdWarning, setHoldWarning] = useState('')
   const [orderNumber, setOrderNumber] = useState('')
 
   // ── Customer search handler ──────────────────────────────────────────
@@ -192,7 +193,8 @@ export default function MobileRepIntakePage() {
       const res = await createIntakeOrder(payload)
       const order = res.data
       if (!order?.id) throw new Error('The order was not saved')
-      await submitOrder(order.id)
+      const sent = await submitOrder(order.id)
+      setHoldWarning(sent?.warning || '')
       setOrderNumber(order.orderNumber)
       setSubmitted(true)
     } catch (e) {
@@ -210,7 +212,7 @@ export default function MobileRepIntakePage() {
     setPoNumber('')
     setNotes('')
     setPriority('STANDARD')
-    setSubmitted(false)
+    setSubmitted(false); setHoldWarning('')
     setOrderNumber('')
   }
 
@@ -223,11 +225,12 @@ export default function MobileRepIntakePage() {
   if (submitted) {
     return (
       <Box sx={{ textAlign: 'center', py: 6 }}>
-        <CheckIcon sx={{ fontSize: 72, color: 'success.main', mb: 2 }} />
-        <Typography variant="h5" fontWeight={700} gutterBottom>Order Submitted!</Typography>
+        <CheckIcon sx={{ fontSize: 72, color: holdWarning ? 'warning.main' : 'success.main', mb: 2 }} />
+        <Typography variant="h5" fontWeight={700} gutterBottom>{holdWarning ? 'Order saved on credit hold' : 'Order Submitted!'}</Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
-          Order <strong>{orderNumber}</strong> has been placed.
+          Order <strong>{orderNumber}</strong> has been {holdWarning ? 'saved' : 'placed'}.
         </Typography>
+        {holdWarning && <Alert severity="warning" sx={{ mb: 2, textAlign: 'left', borderRadius: 2 }}>{holdWarning}</Alert>}
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Customer: {customer?.name}
         </Typography>

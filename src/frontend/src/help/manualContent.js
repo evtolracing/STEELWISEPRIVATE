@@ -1156,6 +1156,45 @@ const manualModules = [
     ],
   },
 
+  // ─── CREDIT HOLDS ─────────────────────────────────────────────────
+  {
+    moduleId: 'credit-holds',
+    title: 'Credit Holds',
+    shortDescription: 'Orders that would put a customer over their credit limit wait for a manager.',
+    icon: 'AttachMoney',
+    roles: ['CSR', 'SALES_REP', 'CREDIT_MANAGER', 'BRANCH_MANAGER', 'ADMIN'],
+    divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
+    routes: ['/orders/credit-holds'],
+    sections: [
+      {
+        id: 'what-it-does',
+        title: 'What This Module Does',
+        blocks: [
+          { type: 'text', value: 'When you submit or confirm an order, the system adds up what the customer already owes on invoices, their other orders that are not invoiced yet, and this order. If the total is more than the credit limit on the account, the order is saved on hold and you see a warning with the figures. Nothing is lost: the order waits until a manager releases it.' },
+          { type: 'bullets', items: [
+            'A customer with no credit limit is never held',
+            'Divisions and branches of a customer share the limit of the main account',
+            'A draft is never held. The check happens when the order is submitted or confirmed',
+            'Work orders cannot be started while an order is on credit hold',
+          ]},
+        ],
+      },
+      {
+        id: 'release',
+        title: 'Releasing a Hold (Managers)',
+        blocks: [
+          { type: 'steps', items: [
+            'Open Orders, then Credit Holds. The list shows each held order, the credit limit, where the account would stand, and how much it is over',
+            'Click Release on the order, or open the order and click Release hold in the yellow bar',
+            'Add a note if you want, for example who approved it, and click Release hold',
+            'The order goes ahead as if it had never been held',
+          ]},
+          { type: 'text', value: 'Every release is recorded with your name, the time, the figures and your note. An order you have released is not held again. Raising the customer credit limit (Customers, then Preferences) lets new orders through but does not release orders already on hold.' },
+        ],
+      },
+    ],
+  },
+
   // ─── 10. PRICING ──────────────────────────────────────────────────
   {
     moduleId: 'pricing',

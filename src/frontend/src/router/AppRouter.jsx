@@ -123,6 +123,7 @@ const POSPage = lazy(() => import('../pages/POSPage'))
 const CSRIntakePage = lazy(() => import('../pages/Orders/CSRIntakePage'))
 const OnlineInboxPage = lazy(() => import('../pages/Orders/OnlineInboxPage'))
 const IntakeOrderDetailPage = lazy(() => import('../pages/Orders/OrderDetailPage'))
+const CreditHoldsPage = lazy(() => import('../pages/Orders/CreditHoldsPage'))
 const RetailPOSPage = lazy(() => import('../pages/Orders/RetailPOSPage'))
 
 // E-Commerce Customer Portal + Admin
@@ -1251,6 +1252,14 @@ const router = createBrowserRouter([
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'orders/credit-holds',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CreditHoldsPage />
+          </Suspense>
+        ),
       },
       {
         path: 'orders/:id',

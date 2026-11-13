@@ -129,11 +129,15 @@
    "file": "src/backend/src/routes/coils.js"
   },
   {
+   "ep": "GET /api/coils/number/:coilNumber",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
    "ep": "GET /api/coils/:id",
    "file": "src/backend/src/routes/coils.js"
   },
   {
-   "ep": "GET /api/coils/number/:coilNumber",
+   "ep": "GET /api/coils/:id/history",
    "file": "src/backend/src/routes/coils.js"
   },
   {
@@ -146,6 +150,10 @@
   },
   {
    "ep": "POST /api/coils/:id/hold",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "POST /api/coils/:id/release",
    "file": "src/backend/src/routes/coils.js"
   },
   {

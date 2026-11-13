@@ -762,6 +762,209 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   section('Order entry screen follows the order rules', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
 }
 
+// 15. Stock items (Phase 2 Workstream 3, findings I-001 to I-006). /api/coils is what the
+// Units screens and the order screen's stock picker call.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const [adminT, csrT, shipT] = await Promise.all(['admin', 'csr', 'shipping'].map(tokenFor));
+  const send = async (method, url, token, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
+    return { status: res.status, headers: res.headers, body: await res.json().catch(() => null) };
+  };
+  const adminUser = await prisma.user.findUnique({ where: { email: QA_USERS.admin } });
+  const csrUser = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
+  // Two QA items with stock and nothing reserved: one for the hold checks, one to ship.
+  const free = await prisma.inventory.findMany({ where: { coil: { coilNumber: { startsWith: 'QA-' }, status: 'AVAILABLE' }, qtyAllocated: 0, qtyOnHold: 0, qtyAvailable: { gte: 500 } }, include: { coil: true }, orderBy: { coil: { coilNumber: 'desc' } }, take: 2 });
+  if (free.length < 2) findings.push('fewer than two free QA stock items: rebuild the QA database');
+  else {
+    const [a, b] = free;
+    const original = await prisma.coil.findUnique({ where: { id: a.coilId } });
+    await prisma.coil.update({ where: { id: a.coilId }, data: { unitCost: 0.4321, landedCost: 0.4567 } });
+    try {
+      // I-001 list: bounded, counted, searched on the server
+      const total = await prisma.coil.count();
+      const list = await send('GET', '/api/coils?limit=5', csrT);
+      check('list is a capped list with the true total', list.status === 200 && Array.isArray(list.body) && list.body.length <= 5 && Number(list.headers.get('x-total-count')) === total, `status ${list.status}, ${list.body?.length} rows, total header ${list.headers.get('x-total-count')} vs ${total}`);
+      check('list limit has a ceiling', ((await send('GET', '/api/coils?limit=99999', csrT)).body?.length ?? 1e9) <= 500, 'more than 500 rows');
+      const found = await send('GET', `/api/coils?search=${encodeURIComponent(a.coil.coilNumber)}`, csrT);
+      check('search by item number runs on the server', found.status === 200 && found.body?.length === 1 && found.body[0].id === a.coilId, `${found.body?.length} rows`);
+      check('an unknown status filter is refused', (await send('GET', '/api/coils?status=NOPE', csrT)).status === 400, 'accepted');
+
+      // I-002 cost stays with the roles that manage it
+      const asClerk = JSON.stringify([(await send('GET', `/api/coils/${a.coilId}`, csrT)).body, found.body, (await send('GET', '/api/inventory', csrT)).body, (await send('GET', `/api/inventory/search?search=${encodeURIComponent(a.coil.coilNumber)}`, csrT)).body]);
+      check('a sales login is never sent cost', !/unitCost|landedCost|0\.4321|0\.4567/.test(asClerk), asClerk.match(/.{0,40}(unitCost|landedCost|0\.4321|0\.4567).{0,20}/)?.[0]);
+      const asManager = (await send('GET', `/api/coils/${a.coilId}`, adminT)).body;
+      check('a manager still sees cost', Number(asManager?.unitCost) === 0.4321 && Number(asManager?.landedCost) === 0.4567, `${asManager?.unitCost}, ${asManager?.landedCost}`);
+      const priced = await prisma.coil.findFirst({ where: { product: { basePriceCwt: { gt: 0 }, priceUnit: 'CWT' } }, include: { product: true } });
+      if (priced) {
+        const got = (await send('GET', `/api/coils/${priced.id}`, csrT)).body;
+        check('the item carries its product list price per pound', Math.abs(got?.listPrice - Number(priced.product.basePriceCwt) / 100) < 0.00006 && got?.listPriceUnit === 'LB', `${got?.listPrice} ${got?.listPriceUnit} vs ${Number(priced.product.basePriceCwt) / 100}`);
+      }
+
+      // I-003 edits and new items take only their own fields
+      const edit = await send('PUT', `/api/coils/${a.coilId}`, adminT, { status: 'SHIPPED', qcStatus: 'FAILED', coilNumber: 'HACKED', netWeightLb: 1, locationId: 'x', finish: 'QA finish' });
+      const afterEdit = await prisma.coil.findUnique({ where: { id: a.coilId } });
+      check('editing an item changes descriptive fields only', edit.status === 200 && afterEdit.finish === 'QA finish' && afterEdit.status === 'AVAILABLE' && afterEdit.coilNumber === a.coil.coilNumber && Number(afterEdit.netWeightLb) === Number(original.netWeightLb) && afterEdit.locationId === original.locationId, `status ${edit.status}, item status ${afterEdit.status}, number ${afterEdit.coilNumber}`);
+      check('an edit with nothing editable is refused', (await send('PUT', `/api/coils/${a.coilId}`, adminT, { status: 'SHIPPED' })).status === 400, 'accepted');
+      check('a negative size is refused', (await send('PUT', `/api/coils/${a.coilId}`, adminT, { widthIn: -4 })).status === 400, 'accepted');
+      check('an unknown item answers not found', (await send('PUT', '/api/coils/no-such-item', adminT, { finish: 'x' })).status === 404, 'not a 404');
+      const shipUser = await send('PUT', `/api/coils/${a.coilId}`, shipT, { unitCost: 9 });
+      check('cost cannot be changed by a role that cannot see it', shipUser.status === 403 && Number((await prisma.coil.findUnique({ where: { id: a.coilId } })).unitCost) === 0.4321, `status ${shipUser.status}`);
+      check('a new item needs a number, heat, grade, form and weight', (await send('POST', '/api/coils', adminT, { coilNumber: 'QA-SWEEP-NEW' })).status === 400, 'accepted');
+      check('an item number cannot be used twice', (await send('POST', '/api/coils', adminT, { coilNumber: a.coil.coilNumber, heatId: original.heatId, gradeId: original.gradeId, form: 'COIL', netWeightLb: 100 })).status === 409, 'accepted');
+
+      // I-004 holds
+      const before = await prisma.inventory.findUnique({ where: { coilId: a.coilId } });
+      check('a hold needs a known type', (await send('POST', `/api/coils/${a.coilId}/hold`, adminT, { holdType: 'NOPE', holdReason: 'x' })).status === 400, 'accepted');
+      check('a hold needs a reason', (await send('POST', `/api/coils/${a.coilId}/hold`, adminT, { holdType: 'QUALITY', holdReason: ' ' })).status === 400, 'accepted');
+      check('a hold on an unknown item answers not found', (await send('POST', '/api/coils/no-such-item/hold', adminT, { holdType: 'QUALITY', holdReason: 'x' })).status === 404, 'not a 404');
+      const hold = await send('POST', `/api/coils/${a.coilId}/hold`, adminT, { holdType: 'QUALITY', holdReason: 'QA sweep hold', holdById: csrUser.id });
+      const held = await prisma.inventory.findUnique({ where: { coilId: a.coilId }, include: { coil: { include: { qcHolds: true } } } });
+      check('a hold takes the available quantity out of sale', hold.status === 201 && held.coil.status === 'HOLD' && Number(held.qtyAvailable) === 0 && Number(held.qtyOnHold) === Number(before.qtyAvailable) && Number(held.qtyOnHand) === Number(before.qtyOnHand), `status ${hold.status}, available ${held.qtyAvailable}, on hold ${held.qtyOnHold}, was available ${before.qtyAvailable}`);
+      check('the hold is recorded under the signed-in person, not a name sent by the browser', held.coil.qcHolds.some((h) => h.status === 'ACTIVE' && h.holdById === adminUser.id), JSON.stringify(held.coil.qcHolds.map((h) => h.holdById)));
+      check('an item cannot be put on hold twice', (await send('POST', `/api/coils/${a.coilId}/hold`, adminT, { holdType: 'QUALITY', holdReason: 'again' })).status === 409, 'accepted');
+      const sum = await send('GET', '/api/inventory/summary', csrT);
+      check('held stock shows in the stock summary', Number(sum.body?.totalOnHold) >= Number(before.qtyAvailable), `totalOnHold ${sum.body?.totalOnHold}`);
+      const release = await send('POST', `/api/coils/${a.coilId}/release`, adminT, { notes: 'QA sweep release' });
+      const freed = await prisma.inventory.findUnique({ where: { coilId: a.coilId }, include: { coil: { include: { qcHolds: true } } } });
+      check('a release puts the held quantity back on sale', release.status === 200 && freed.coil.status === 'AVAILABLE' && Number(freed.qtyOnHold) === 0 && Number(freed.qtyAvailable) === Number(before.qtyAvailable), `status ${release.status}, item ${freed.coil.status}, available ${freed.qtyAvailable}, on hold ${freed.qtyOnHold}`);
+      check('the release is recorded with who released it', freed.coil.qcHolds.every((h) => h.status === 'RELEASED' && h.resolvedById === adminUser.id), JSON.stringify(freed.coil.qcHolds.map((h) => [h.status, h.resolvedById])));
+      check('an item that is not on hold cannot be released', (await send('POST', `/api/coils/${a.coilId}/release`, adminT, {})).status === 409, 'accepted');
+      const history = await send('GET', `/api/coils/${a.coilId}/history`, csrT);
+      check('the item history lists the hold and the release', history.status === 200 && ['HOLD', 'RELEASE', 'CREATED'].every((t) => history.body?.events?.some((e) => e.type === t)), `status ${history.status}, ${(history.body?.events || []).map((e) => e.type).join(',')}`);
+
+      // I-005 stock on hold cannot be shipped, even when it is already reserved for the order
+      const customer = await prisma.organization.findFirst({ where: { code: 'QA-C03' } });
+      const order = (await send('POST', '/api/orders', adminT, { orderType: 'SO', buyerId: customer.id, status: 'DRAFT', subtotal: 100, taxAmount: 0, freightAmount: 0, totalAmount: 100, poReference: 'QA-SWEEP-HOLD', lines: [{ lineNumber: 1, description: 'QA hold check', qtyOrdered: 200, unit: 'LB', unitPrice: 0.5, priceUnit: 'LB', extendedPrice: 100, gradeId: b.coil.gradeId }] })).body;
+      const line = order?.lines?.[0] || (order?.id ? await prisma.orderLine.findFirst({ where: { orderId: order.id } }) : null);
+      if (!order?.id || !line) findings.push(`could not create the test order: ${JSON.stringify(order).slice(0, 120)}`);
+      else {
+        await send('PUT', `/api/orders/${order.id}`, adminT, { status: 'CONFIRMED' });
+        const reserved = await send('POST', `/api/orders/${order.id}/allocate`, adminT, { lineId: line.id, coilId: b.coilId, qty: 200 });
+        const shipment = await send('POST', '/api/shipments', shipT, { orderId: order.id, fromLocationId: b.locationId, carrierName: 'Own Truck', items: [{ orderLineId: line.id, qtyShipped: 200, weightLb: 200 }] });
+        const bHold = await send('POST', `/api/coils/${b.coilId}/hold`, adminT, { holdType: 'DAMAGE', holdReason: 'QA sweep: damaged after it was reserved' });
+        const bHeld = await prisma.inventory.findUnique({ where: { coilId: b.coilId } });
+        check('holding a reserved item keeps the reservation and holds the rest', reserved.status < 300 && bHold.status === 201 && Number(bHeld.qtyAllocated) === 200 && Number(bHeld.qtyAvailable) === 0 && Math.abs(Number(bHeld.qtyOnHand) - (200 + Number(bHeld.qtyOnHold))) < 0.001, `reserve ${reserved.status}, hold ${bHold.status}, reserved ${bHeld.qtyAllocated}, on hold ${bHeld.qtyOnHold}, on hand ${bHeld.qtyOnHand}`);
+        const blocked = await send('PUT', `/api/shipments/${shipment.body?.id}/dispatch`, shipT, {});
+        const still = await prisma.inventory.findUnique({ where: { coilId: b.coilId } });
+        check('a shipment of stock that is on hold is refused and nothing moves', blocked.status === 409 && Number(still.qtyOnHand) === Number(bHeld.qtyOnHand) && (await prisma.shipment.findUnique({ where: { id: shipment.body?.id } }))?.status === 'PENDING', `status ${blocked.status}, on hand ${still.qtyOnHand}`);
+        const bRelease = await send('POST', `/api/coils/${b.coilId}/release`, adminT, {});
+        check('releasing a reserved item returns it to reserved, not available', bRelease.status === 200 && (await prisma.coil.findUnique({ where: { id: b.coilId } })).status === 'ALLOCATED', `status ${bRelease.status}`);
+        const sent = await send('PUT', `/api/shipments/${shipment.body?.id}/dispatch`, shipT, {});
+        check('once released, the shipment goes out', sent.status === 200, `status ${sent.status} ${JSON.stringify(sent.body).slice(0, 100)}`);
+      }
+    } finally {
+      await prisma.coil.update({ where: { id: a.coilId }, data: { unitCost: original.unitCost, landedCost: original.landedCost, finish: original.finish } });
+    }
+  }
+  section('Stock items: lists, cost, edits, holds', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
+// 16. Credit hold (rule 32, the owner's decision on finding S-019): an order that would put a
+// customer over their credit limit is saved on hold with a warning, and a manager releases it.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const [adminT, csrT] = await Promise.all(['admin', 'csr'].map(tokenFor));
+  const send = async (method, url, token, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
+    return { status: res.status, body: await res.json().catch(() => null) };
+  };
+  const adminUser = await prisma.user.findUnique({ where: { email: QA_USERS.admin } });
+  // QA-C09 with a division of its own, so the shared limit can be checked. Nothing else uses this account.
+  const account = await prisma.organization.findUnique({ where: { code: 'QA-C09' } });
+  const division = await prisma.organization.upsert({ where: { code: 'QA-C09-D1' }, update: { parentId: account.id }, create: { code: 'QA-C09-D1', name: 'QA Customer 09 Division 1', type: account.type, parentId: account.id, state: account.state } });
+  const family = [account.id, division.id];
+  const setLimit = (creditLimit) => prisma.customerPricingTier.upsert({ where: { customerId: account.id }, update: { creditLimit }, create: { customerId: account.id, tierCode: 'D', marginFloor: 0, marginTarget: 0, creditLimit } });
+  const owedNow = async () => {
+    const [inv, open] = await Promise.all([
+      prisma.invoice.findMany({ where: { status: { not: 'CANCELLED' }, order: { buyerId: { in: family } } } }),
+      prisma.order.findMany({ where: { orderType: 'SO', buyerId: { in: family }, status: { in: ['PENDING', 'CONFIRMED', 'PARTIAL'] } }, include: { invoices: { where: { status: { not: 'CANCELLED' }, kind: 'INVOICE' } } } }),
+    ]);
+    return inv.reduce((n, i) => n + Number(i.totalAmount) - Number(i.paidAmount), 0) + open.reduce((n, o) => n + Math.max(Number(o.totalAmount || 0) - o.invoices.reduce((m, i) => m + Number(i.totalAmount), 0), 0), 0);
+  };
+  const base = Math.round(await owedNow() * 100) / 100;
+  const plain = (buyerId, amount, status = 'CONFIRMED') => send('POST', '/api/orders', csrT, { orderType: 'SO', buyerId, status, subtotal: amount, taxAmount: 0, freightAmount: 0, totalAmount: amount, poReference: 'QA-SWEEP-CREDIT', lines: [{ lineNumber: 1, description: 'QA credit check', qtyOrdered: 100, unit: 'LB', unitPrice: amount / 100, priceUnit: 'LB', extendedPrice: amount }] });
+  const row = (id) => prisma.order.findUnique({ where: { id } });
+  const made = [];
+  try {
+    // No limit set: nothing is held.
+    await prisma.customerPricingTier.deleteMany({ where: { customerId: account.id } });
+    const free = await plain(account.id, 5000);
+    made.push(free.body?.id);
+    check('a customer with no credit limit is never held', free.status === 201 && free.body?.status === 'CONFIRMED' && !free.body?.creditHold, `status ${free.status}, order ${free.body?.status}`);
+
+    // Limit leaves room for 1,000 more.
+    await setLimit(base + 5000 + 1000);
+    const within = await plain(account.id, 1000);
+    made.push(within.body?.id);
+    check('an order that lands exactly on the limit goes through', within.status === 201 && within.body?.status === 'CONFIRMED', `order ${within.body?.status}`);
+    const draft = await plain(account.id, 800, 'DRAFT');
+    made.push(draft.body?.id);
+    check('a draft is not held: nothing is committed yet', draft.body?.status === 'DRAFT' && !draft.body?.creditHold, `order ${draft.body?.status}`);
+
+    const over = await plain(account.id, 250);
+    made.push(over.body?.id);
+    const hold = over.body?.creditHold;
+    check('an order that would pass the limit is saved on hold with a warning', over.status === 201 && over.body?.status === 'HOLD' && /credit hold/i.test(over.body?.warning || '') && (await row(over.body.id)).status === 'HOLD', `status ${over.status}, order ${over.body?.status}, warning ${over.body?.warning}`);
+    check('the warning carries the limit, the exposure and the amount over', hold && Math.abs(hold.limit - (base + 6000)) < 0.01 && Math.abs(hold.exposure - (base + 6250)) < 0.01 && Math.abs(hold.overBy - 250) < 0.01, JSON.stringify(hold ?? null));
+    const placed = await prisma.auditLog.findFirst({ where: { eventType: 'CREDIT_HOLD_PLACED', resourceId: over.body.id } });
+    check('the hold is in the audit log', Boolean(placed) && placed.details?.wantedStatus === 'CONFIRMED', JSON.stringify(placed?.details ?? null));
+
+    // A division shares its parent's limit.
+    const div = await plain(division.id, 10);
+    made.push(div.body?.id);
+    check('a division shares the limit of its parent account', div.body?.status === 'HOLD', `order ${div.body?.status}`);
+
+    // Confirming a draft is the same decision.
+    const confirmDraft = await send('PUT', `/api/orders/${draft.body.id}`, csrT, { status: 'CONFIRMED' });
+    check('confirming a draft that would pass the limit puts it on hold', confirmDraft.status === 200 && confirmDraft.body?.status === 'HOLD' && Boolean(confirmDraft.body?.creditHold), `status ${confirmDraft.status}, order ${confirmDraft.body?.status}`);
+
+    // Nobody but a manager moves a held order on.
+    const sneak = await send('PUT', `/api/orders/${over.body.id}`, csrT, { status: 'CONFIRMED' });
+    check('a held order cannot be confirmed around the hold', sneak.status === 409 && (await row(over.body.id)).status === 'HOLD', `status ${sneak.status}`);
+    const clerk = await send('POST', `/api/orders/${over.body.id}/credit-release`, csrT, {});
+    check('a clerk cannot release a credit hold', clerk.status === 403 && (await row(over.body.id)).status === 'HOLD', `status ${clerk.status}`);
+    const queue = await send('GET', '/api/orders/credit-holds', csrT);
+    check('held orders are listed for managers', queue.status === 200 && queue.body?.canRelease === false && [over.body.id, div.body.id, draft.body.id].every((id) => queue.body?.data?.some?.((r) => r.id === id)), `status ${queue.status}, ${queue.body?.data?.length} rows`);
+    const detail = await send('GET', `/api/orders/${over.body.id}`, csrT);
+    check('the order itself says it is on credit hold', /credit hold/i.test(detail.body?.creditHold?.message || ''), JSON.stringify(detail.body?.creditHold ?? null).slice(0, 120));
+
+    const release = await send('POST', `/api/orders/${over.body.id}/credit-release`, adminT, { note: 'QA sweep: approved by the credit manager' });
+    check('a manager releases the hold and the order goes ahead', release.status === 200 && release.body?.status === 'CONFIRMED' && (await row(over.body.id)).status === 'CONFIRMED', `status ${release.status}, order ${release.body?.status}`);
+    const released = await prisma.auditLog.findFirst({ where: { eventType: 'CREDIT_HOLD_RELEASED', resourceId: over.body.id } });
+    check('the release is recorded with who released it and their note', released?.userId === adminUser.id && released?.details?.note === 'QA sweep: approved by the credit manager', JSON.stringify([released?.userId, released?.details?.note]));
+    check('an order cannot be released twice', (await send('POST', `/api/orders/${over.body.id}/credit-release`, adminT, {})).status === 409, 'accepted');
+    check('an unknown order answers not found', (await send('POST', '/api/orders/no-such-order/credit-release', adminT, {})).status === 404, 'not a 404');
+    const after = await send('GET', '/api/orders/credit-holds', adminT);
+    check('a released order leaves the list', after.body?.canRelease === true && Array.isArray(after.body?.data) && !after.body.data.some((r) => r.id === over.body.id), 'still listed');
+
+    // The order entry screen's own API.
+    const entry = await send('POST', '/api/orders/intake', csrT, { source: 'PHONE', division: 'METALS', priority: 'STANDARD', customerId: account.id, customerName: account.name, status: 'SUBMITTED', lines: [{ description: 'QA credit check', qty: 100, uom: 'LB', unitPrice: 1, extPrice: 100, lineType: 'MATERIAL' }] });
+    made.push(entry.body?.data?.id);
+    check('the order entry screen saves an over-limit order on hold and says why', entry.status === 201 && entry.body?.data?.status === 'HOLD' && /credit hold/i.test(entry.body?.warning || ''), `status ${entry.status}, order ${entry.body?.data?.status}`);
+    const wo = await send('POST', `/api/orders/intake/${entry.body?.data?.id}/create-work-orders`, csrT, {});
+    check('work orders cannot be started for an order on credit hold', wo.status === 409 && /credit hold/i.test(wo.body?.error || '') && (await prisma.job.count({ where: { orderId: entry.body?.data?.id } })) === 0, `status ${wo.status} ${wo.body?.error}`);
+    const entryDraft = await send('POST', '/api/orders/intake', csrT, { source: 'PHONE', division: 'METALS', priority: 'STANDARD', customerId: account.id, customerName: account.name, status: 'DRAFT', lines: [{ description: 'QA credit check', qty: 100, uom: 'LB', unitPrice: 1, extPrice: 100, lineType: 'MATERIAL' }] });
+    made.push(entryDraft.body?.data?.id);
+    const submit = await send('POST', `/api/orders/intake/${entryDraft.body?.data?.id}/submit`, csrT, {});
+    check('submitting a draft from the entry screen is held the same way', submit.status === 200 && submit.body?.data?.status === 'HOLD' && Boolean(submit.body?.creditHold), `status ${submit.status}, order ${submit.body?.data?.status}`);
+
+    // Raising the limit lets new orders through; it does not release what is already held.
+    await setLimit(base + 1000000);
+    const roomy = await plain(account.id, 250);
+    made.push(roomy.body?.id);
+    check('after the limit is raised a new order goes through', roomy.body?.status === 'CONFIRMED', `order ${roomy.body?.status}`);
+    check('an order already on hold still waits for a manager', (await row(div.body.id)).status === 'HOLD', 'released by itself');
+  } finally {
+    // Leave the account as it was found: no limit, no test orders counted against it.
+    await prisma.order.updateMany({ where: { id: { in: made.filter(Boolean) } }, data: { status: 'CANCELLED' } });
+    await prisma.customerPricingTier.deleteMany({ where: { customerId: account.id } });
+  }
+  section('Credit hold: over the limit waits for a manager', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
 report.pass = Object.values(report.sections).every((s) => s.pass);
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(report, null, 1));

@@ -113,6 +113,63 @@ const OUT = arg('out', 'qa/results/ui-sales.json');
     check('pricing: no script errors', pricing.errors.length === 0, pricing.errors.join(' | '));
     await pricing.close();
   }
+  // Credit hold (rule 32): an over-limit order is saved on hold with a warning, and a manager releases it.
+  {
+    const boss = await fetch(`${API}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: 'qa-admin@qa.test', password: 'qa-password-1' }) }).then((r) => r.json());
+    const bossApi = (url, method = 'GET', data) => fetch(API + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${boss.token}` }, body: data ? JSON.stringify(data) : undefined }).then(async (r) => ({ status: r.status, body: await r.json().catch(() => null) }));
+    const found = (await bossApi('/api/customers?search=QA%20Customer%209&limit=50')).body;
+    const customer = (Array.isArray(found) ? found : found?.data || found?.customers || []).find((c) => c.code === 'QA-C09');
+    const prefsBefore = customer ? (await bossApi(`/api/customers/${customer.id}/preferences`)).body : null;
+    const prefs = prefsBefore?.data || prefsBefore;
+    const setLimit = (creditLimit) => bossApi(`/api/customers/${customer.id}/preferences`, 'PUT', { ...prefs, creditLimit });
+    try {
+      const set = customer ? await setLimit(0.01) : { status: 0 };
+      check('credit hold: a manager can set a credit limit on the customer', set.status === 200, `status ${set.status} ${JSON.stringify(set.body).slice(0, 200)}`);
+      const page = await open('/mobile-rep/intake');
+      await page.getByLabel('Search Customer').fill('QA Customer 9');
+      const hit = page.getByText('QA Customer 9', { exact: true }).first();
+      await hit.waitFor({ timeout: 8000 }).catch(() => {});
+      await hit.click().catch(() => {});
+      await page.getByRole('button', { name: 'Line Items' }).click({ timeout: 8000 }).catch(() => {});
+      await page.getByLabel('Search Products').fill('plate');
+      const chip = page.locator('.MuiChip-root', { hasText: '$' }).first();
+      await chip.waitFor({ timeout: 8000 }).catch(() => {});
+      await chip.click().catch(() => {});
+      await page.getByRole('button', { name: 'Review' }).click({ timeout: 8000 }).catch(() => {});
+      await page.getByRole('button', { name: /submit order/i }).click({ timeout: 8000 }).catch(() => {});
+      await page.getByText('Order saved on credit hold').waitFor({ timeout: 10000 }).catch(() => {});
+      const text = await body(page);
+      check('credit hold: the rep is told the order is on credit hold and why', /Order saved on credit hold/.test(text) && /credit limit of \$0\.01/.test(text) && /A manager can release it/.test(text), text);
+      const number = (text.match(/Order\s+(\S+)\s+has been saved/) || [])[1];
+      await page.close();
+
+      // The clerk sees the list but no Release button.
+      const clerkList = await open('/orders/credit-holds');
+      await clerkList.getByText(number || 'no order', { exact: true }).waitFor({ timeout: 10000 }).catch(() => {});
+      check('credit hold: the held order is on the Credit holds list', Boolean(number) && (await body(clerkList)).includes(number), await body(clerkList));
+      check('credit hold: a clerk is not offered Release', await clerkList.getByRole('button', { name: 'Release' }).count() === 0, 'a Release button is shown');
+      await clerkList.close();
+
+      // The manager releases it from the list.
+      const bossContext = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+      await bossContext.addInitScript(([t, u]) => { localStorage.setItem('token', t); if (u) localStorage.setItem('user', JSON.stringify(u)); }, [boss.token, boss.user]);
+      const list = await bossContext.newPage();
+      await list.goto(APP + '/orders/credit-holds', { waitUntil: 'domcontentloaded' });
+      const row = list.locator('tr', { hasText: number || 'no order' });
+      await row.waitFor({ timeout: 10000 }).catch(() => {});
+      await row.getByRole('button', { name: 'Release' }).click({ timeout: 5000 }).catch(() => {});
+      await list.getByLabel('Note (optional)').fill('QA browser check').catch(() => {});
+      await list.getByRole('button', { name: 'Release hold' }).click({ timeout: 5000 }).catch(() => {});
+      await list.getByText(`${number} was released and is going ahead.`).waitFor({ timeout: 10000 }).catch(() => {});
+      const after = await list.locator('body').innerText();
+      check('credit hold: a manager releases it and it leaves the list', after.includes(`${number} was released`) && (await list.locator('tr', { hasText: number || 'no order' }).count()) === 0, after);
+      const held = (await bossApi('/api/orders/credit-holds')).body?.data || [];
+      check('credit hold: the server agrees the order is no longer held', Boolean(number) && !held.some((r) => r.orderNumber === number), 'still held');
+      await bossContext.close();
+    } finally {
+      if (customer && prefs) await setLimit(prefs.creditLimit ?? null);
+    }
+  }
   await browser.close();
   const failed = checks.filter((c) => !c.ok);
   fs.mkdirSync(path.dirname(OUT), { recursive: true });

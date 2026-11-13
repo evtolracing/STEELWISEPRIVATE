@@ -327,9 +327,10 @@ export default function CSRIntakePage() {
         const res = await createIntakeOrder(payload)
         id = res.data?.id
       }
-      await submitOrder(id)
-      setSnack({ open: true, msg: 'Order submitted!', severity: 'success' })
-      setTimeout(() => navigate(`/orders/${id}`), 1200)
+      const sent = await submitOrder(id)
+      // Over the credit limit: the order is saved on hold for a manager (rule 32). Say so, then show the order.
+      setSnack(sent?.warning ? { open: true, msg: sent.warning, severity: 'warning' } : { open: true, msg: 'Order submitted!', severity: 'success' })
+      setTimeout(() => navigate(`/orders/${id}`), sent?.warning ? 3500 : 1200)
     } catch (e) {
       setSnack({ open: true, msg: e?.message || 'Submit failed', severity: 'error' })
     }
@@ -587,7 +588,7 @@ export default function CSRIntakePage() {
       />
 
       {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+      <Snackbar open={snack.open} autoHideDuration={snack.severity === 'warning' ? 8000 : 3000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} variant="filled" onClose={() => setSnack(s => ({ ...s, open: false }))}>{snack.msg}</Alert>
       </Snackbar>
     </Box>

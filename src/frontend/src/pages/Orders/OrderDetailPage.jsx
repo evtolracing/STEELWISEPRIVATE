@@ -32,9 +32,10 @@ import {
 import { getOverridesForOrder } from '../../services/overrideApi'
 import OverrideIndicator from '../../components/orders/OverrideIndicator'
 import AuditLogViewer from '../../components/orders/AuditLogViewer'
+import { ReleaseHoldDialog } from './CreditHoldsPage'
 
 const STATUS_COLOR = {
-  DRAFT: 'default', SUBMITTED: 'primary', CONFIRMED: 'info', IN_PRODUCTION: 'warning',
+  DRAFT: 'default', HOLD: 'warning', SUBMITTED: 'primary', CONFIRMED: 'info', IN_PRODUCTION: 'warning',
   READY: 'success', SHIPPED: 'secondary', INVOICED: 'default', CANCELLED: 'error',
 }
 
@@ -62,6 +63,7 @@ export default function OrderDetailPage() {
   const [processingIdx, setProcessingIdx] = useState(null)
   const [woDialogOpen, setWoDialogOpen] = useState(false)
   const [woResult, setWoResult] = useState(null)
+  const [releaseOpen, setReleaseOpen] = useState(false)
 
   // ── Override state ──
   const [overrides, setOverrides] = useState([])
@@ -110,8 +112,8 @@ export default function OrderDetailPage() {
   const handleSubmit = useCallback(async () => {
     setSaving(true)
     try {
-      await submitOrder(id)
-      setSnack({ open: true, msg: 'Order submitted', severity: 'success' })
+      const res = await submitOrder(id)
+      setSnack(res?.warning ? { open: true, msg: res.warning, severity: 'warning' } : { open: true, msg: 'Order submitted', severity: 'success' })
       loadOrder()
     } catch (e) {
       setSnack({ open: true, msg: e?.message || 'Submit failed', severity: 'error' })
@@ -206,6 +208,16 @@ export default function OrderDetailPage() {
         <MuiLink underline="hover" color="inherit" href="/orders" onClick={e => { e.preventDefault(); navigate('/orders') }}>Orders</MuiLink>
         <Typography color="text.primary">{order.orderNumber}</Typography>
       </Breadcrumbs>
+
+      {order.creditHold && order.status === 'HOLD' && (
+        <Alert severity="warning" sx={{ mb: 2 }} action={order.creditHold.canRelease
+          ? <Button color="inherit" size="small" onClick={() => setReleaseOpen(true)}>Release hold</Button>
+          : undefined}>
+          {order.creditHold.message}
+        </Alert>
+      )}
+      <ReleaseHoldDialog order={releaseOpen ? order : null} onClose={() => setReleaseOpen(false)}
+        onReleased={() => { setReleaseOpen(false); setSnack({ open: true, msg: 'Credit hold released. The order is going ahead.', severity: 'success' }); loadOrder() }} />
 
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>

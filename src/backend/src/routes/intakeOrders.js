@@ -13,6 +13,8 @@
  *   POST   /:id/submit    → submit (DRAFT → PENDING)
  *   POST   /:id/create-work-orders → generate Jobs from order lines
  */
+import { statusAfterCreditCheck, recordCreditHold, openCreditHold, creditHoldMessage } from '../lib/creditControl.js';
+import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded } from '../lib/numbering.js';
@@ -243,11 +245,16 @@ router.post('/', async (req, res) => {
     const totals = await totalsFor(req, { subtotal: built.subtotal, customerId: buyerId, meta });
     if (totals.tax) meta.tax = totals.tax;
 
+    // Rule 32: an order that would put the account over its credit limit is saved on hold.
+    const gate = submitted
+      ? await statusAfterCreditCheck(prisma, { customerId: buyerId, orderTotal: totals.data.totalAmount, wanted: 'PENDING' })
+      : { status: 'DRAFT', creditHold: null };
+
     const order = await createSalesOrder((orderNumber) => prisma.order.create({
       data: {
         orderNumber,
         orderType: 'SO',
-        status: submitted ? 'PENDING' : 'DRAFT',
+        status: gate.status,
         buyerId,
         sellerId: seller?.id || null,
         poReference: poNumber || null,
@@ -260,8 +267,9 @@ router.post('/', async (req, res) => {
       },
       include: ORDER_INCLUDE,
     }));
+    if (gate.creditHold) await recordCreditHold(prisma, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
 
-    res.status(201).json({ data: mapOrderForIntake(order) });
+    res.status(201).json({ data: mapOrderForIntake(order), ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }) });
   } catch (error) {
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') {
       return res.status(400).json({ error: 'The order has a field that is not valid' });
@@ -347,7 +355,8 @@ router.get('/:id', async (req, res) => {
       include: ORDER_INCLUDE,
     });
     if (!order) return res.status(404).json({ error: 'Order not found' });
-    res.json({ data: mapOrderForIntake(order) });
+    const hold = order.status === 'HOLD' ? await openCreditHold(prisma, order.id) : null;
+    res.json({ data: { ...mapOrderForIntake(order), ...(hold && { creditHold: { ...hold.details, placedAt: hold.timestamp, message: creditHoldMessage(hold.details), canRelease: MONEY_MANAGERS.has(req.user?.role) } }) } });
   } catch (error) {
     console.error('Error fetching intake order:', error);
     res.status(500).json({ error: 'Failed to fetch order' });
@@ -428,6 +437,16 @@ router.patch('/:id', async (req, res) => {
     if (totals.tax) newMeta.tax = totals.tax; else delete newMeta.tax;
     updateData.notes = packNotes(notes !== undefined ? notes : existingNotes, newMeta);
 
+    // Rule 32: a submitted order is checked against the credit limit with its new total.
+    const endsAs = updateData.status !== undefined ? updateData.status : existing.status;
+    const gate = await statusAfterCreditCheck(prisma, {
+      customerId: updateData.buyerId !== undefined ? updateData.buyerId : existing.buyerId,
+      orderId: existing.id,
+      orderTotal: updateData.totalAmount !== undefined ? updateData.totalAmount : existing.totalAmount,
+      wanted: endsAs,
+    });
+    if (gate.creditHold) updateData.status = 'HOLD';
+
     const order = await prisma.$transaction(async (tx) => {
       // Guard against the order being confirmed or cancelled by someone else meanwhile.
       const held = await tx.order.updateMany({ where: { id: existing.id, status: existing.status }, data: { updatedAt: new Date() } });
@@ -439,12 +458,14 @@ router.patch('/:id', async (req, res) => {
         await tx.orderLine.deleteMany({ where: { orderId: existing.id } });
         await tx.orderLine.createMany({ data: built.lines.map((l) => ({ ...l, orderId: existing.id })) });
       }
-      return tx.order.update({ where: { id: existing.id }, data: updateData, include: ORDER_INCLUDE });
+      const saved = await tx.order.update({ where: { id: existing.id }, data: updateData, include: ORDER_INCLUDE });
+      if (gate.creditHold) await recordCreditHold(tx, { orderId: saved.id, orderNumber: saved.orderNumber, creditHold: gate.creditHold, user: req.user });
+      return saved;
     });
     if (!order) return res.status(409).json({ error: 'This order was just changed by someone else. Reload and try again.' });
     if (order.blocked) return res.status(409).json({ error: order.blocked });
 
-    res.json({ data: mapOrderForIntake(order) });
+    res.json({ data: mapOrderForIntake(order), ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }) });
   } catch (error) {
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') {
       return res.status(400).json({ error: 'The order has a field that is not valid' });
@@ -473,14 +494,16 @@ router.post('/:id/submit', async (req, res) => {
     const { userNotes, meta } = unpackNotes(existing.notes);
     if (!meta.submittedAt) meta.submittedAt = new Date().toISOString();
 
+    const gate = await statusAfterCreditCheck(prisma, { customerId: existing.buyerId, orderId: existing.id, orderTotal: existing.totalAmount, wanted: 'PENDING' });
     const moved = await prisma.order.updateMany({
       where: { id: existing.id, status: existing.status },
-      data: { status: 'PENDING', notes: packNotes(userNotes, meta) },
+      data: { status: gate.status, notes: packNotes(userNotes, meta) },
     });
     if (!moved.count) return res.status(409).json({ error: 'This order was just changed by someone else. Reload and try again.' });
     const order = await prisma.order.findUnique({ where: { id: existing.id }, include: ORDER_INCLUDE });
+    if (gate.creditHold) await recordCreditHold(prisma, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
 
-    res.json({ data: mapOrderForIntake(order) });
+    res.json({ data: mapOrderForIntake(order), ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }) });
   } catch (error) {
     console.error('Error submitting intake order:', error);
     res.status(500).json({ error: 'Failed to submit order' });
@@ -496,6 +519,9 @@ router.post('/:id/create-work-orders', async (req, res) => {
       include: { lines: { orderBy: { lineNumber: 'asc' } }, buyer: true },
     });
     if (!order || order.orderType !== 'SO') return res.status(404).json({ error: 'Order not found' });
+    if (order.status === 'HOLD' && (await openCreditHold(prisma, order.id))) {
+      return res.status(409).json({ error: 'This order is on credit hold. A manager releases it before work orders can be created.' });
+    }
     if (!['DRAFT', 'PENDING', 'CONFIRMED'].includes(order.status)) {
       return res.status(409).json({ error: `Work orders cannot be created for a ${order.status.toLowerCase()} order` });
     }
@@ -510,8 +536,13 @@ router.post('/:id/create-work-orders', async (req, res) => {
     // Confirm the order first. Only one request can make this move, so pressing
     // the button twice cannot start two sets of work orders.
     if (order.status !== 'CONFIRMED') {
-      const moved = await prisma.order.updateMany({ where: { id: order.id, status: order.status }, data: { status: 'CONFIRMED' } });
+      const gate = await statusAfterCreditCheck(prisma, { customerId: order.buyerId, orderId: order.id, orderTotal: order.totalAmount, wanted: 'CONFIRMED' });
+      const moved = await prisma.order.updateMany({ where: { id: order.id, status: order.status }, data: { status: gate.status } });
       if (!moved.count) return res.status(409).json({ error: 'This order was just changed by someone else. Reload and try again.' });
+      if (gate.creditHold) {
+        await recordCreditHold(prisma, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
+        return res.status(409).json({ error: gate.creditHold.message, creditHold: gate.creditHold });
+      }
     }
 
     const jobs = [];

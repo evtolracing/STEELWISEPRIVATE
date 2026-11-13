@@ -46,6 +46,8 @@ export const STAFF_GROUPS = {
 };
 export const staffGroupOf = (role) => Object.keys(STAFF_GROUPS).find((g) => STAFF_GROUPS[g].includes(role)) || null;
 export const MONEY_MANAGERS = new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, 'CREDIT_MANAGER', 'SALES_DIRECTOR']);
+/** Who is sent what stock cost: managers, the inventory manager and buyers. Everyone else sees list price only. */
+export const COST_VIEWERS = new Set([...MONEY_MANAGERS, 'INVENTORY_MANAGER', 'BUYER']);
 const SHIPPING_EXTRA = new Set(['PRODUCTION_MANAGER', 'PACKAGING_LEAD', 'MATERIAL_HANDLER', 'WORKCENTER_LEAD']);
 
 const MANAGER_ONLY = [

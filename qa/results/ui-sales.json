@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T08:30:05.144Z",
- "checks": 18,
+ "at": "2026-11-13T08:49:58.674Z",
+ "checks": 24,
  "failed": 0,
  "results": [
   {
@@ -91,6 +91,36 @@
   },
   {
    "name": "pricing: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "credit hold: a manager can set a credit limit on the customer",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "credit hold: the rep is told the order is on credit hold and why",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "credit hold: the held order is on the Credit holds list",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "credit hold: a clerk is not offered Release",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "credit hold: a manager releases it and it leaves the list",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "credit hold: the server agrees the order is no longer held",
    "ok": true,
    "detail": ""
   }

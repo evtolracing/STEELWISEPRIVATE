@@ -8,6 +8,8 @@
  *                                     gives reserved stock back
  *   POST /api/orders/:id/allocate     reserve stock for a line { lineId, coilId, qty }
  */
+import { COMMITTED_STATUSES, HOLD_PLACED, statusAfterCreditCheck, recordCreditHold, openCreditHold, releaseCreditHold, creditHoldMessage } from '../lib/creditControl.js';
+import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded } from '../lib/numbering.js';
@@ -142,6 +144,45 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/orders/credit-holds: the orders waiting for a manager, oldest first.
+router.get('/credit-holds', async (req, res) => {
+  try {
+    const held = await prisma.order.findMany({
+      where: { orderType: 'SO', status: 'HOLD' },
+      select: { id: true, orderNumber: true, totalAmount: true, createdAt: true, buyer: { select: { id: true, code: true, name: true } }, createdBy: { select: { firstName: true, lastName: true } } },
+      orderBy: { updatedAt: 'asc' }, take: 500,
+    });
+    const rows = [];
+    for (const o of held) {
+      const hold = await openCreditHold(prisma, o.id);
+      if (!hold) continue;
+      rows.push({
+        id: o.id, orderNumber: o.orderNumber, customer: o.buyer?.name || null, customerCode: o.buyer?.code || null, total: Number(o.totalAmount || 0),
+        enteredBy: o.createdBy ? `${o.createdBy.firstName || ''} ${o.createdBy.lastName || ''}`.trim() : null,
+        heldAt: hold.timestamp, limit: hold.details?.limit ?? null, exposure: hold.details?.exposure ?? null, overBy: hold.details?.overBy ?? null,
+      });
+    }
+    res.json({ data: rows, canRelease: MONEY_MANAGERS.has(req.user?.role) });
+  } catch (error) {
+    console.error('Orders: credit holds failed:', error);
+    res.status(500).json({ error: 'The credit holds could not be loaded' });
+  }
+});
+
+// POST /api/orders/:id/credit-release { note? }: a manager lets a held order go ahead.
+router.post('/:id/credit-release', async (req, res) => {
+  try {
+    if (!MONEY_MANAGERS.has(req.user?.role)) return res.status(403).json({ error: 'Releasing a credit hold needs a manager.' });
+    const note = req.body?.note ? String(req.body.note).trim().slice(0, 500) : null;
+    const order = await releaseCreditHold({ orderId: req.params.id, user: req.user, note });
+    res.json(order);
+  } catch (error) {
+    if (error?.refuse) return res.status(error.status).json({ error: error.message });
+    console.error('Orders: credit release failed:', error);
+    res.status(500).json({ error: 'The credit hold could not be released' });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const order = await prisma.order.findUnique({
@@ -155,7 +196,8 @@ router.get('/:id', async (req, res) => {
       },
     });
     if (!order) return res.status(404).json({ error: 'Order not found' });
-    res.json(order);
+    const hold = order.status === 'HOLD' ? await openCreditHold(prisma, order.id) : null;
+    res.json(hold ? { ...order, creditHold: { ...hold.details, placedAt: hold.timestamp, message: creditHoldMessage(hold.details) } } : order);
   } catch (error) {
     console.error('Orders: load failed:', error);
     res.status(500).json({ error: 'Failed to fetch order' });
@@ -183,19 +225,25 @@ router.post('/', async (req, res) => {
     const refError = await checkRefs(header.data);
     if (refError) return res.status(400).json({ error: refError });
 
+    // Rule 32: a sales order that would put the account over its credit limit is saved on hold.
+    const gate = orderType === 'SO'
+      ? await statusAfterCreditCheck(prisma, { customerId: header.data.buyerId, orderTotal: totals.data.totalAmount, wanted: status })
+      : { status, creditHold: null };
+
     const order = await createNumbered({
       count: () => prisma.order.count(),
       format: padded(orderType),
       create: (orderNumber) => prisma.order.create({
         data: {
-          ...header.data, ...totals.data, orderType, status, orderNumber,
+          ...header.data, ...totals.data, orderType, status: gate.status, orderNumber,
           createdById: req.user.id,
           lines: { create: built.lines },
         },
         include: { lines: true, buyer: true },
       }),
     });
-    res.status(201).json(order);
+    if (gate.creditHold) await recordCreditHold(prisma, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
+    res.status(201).json(gate.creditHold ? { ...order, creditHold: gate.creditHold, warning: gate.creditHold.message } : order);
   } catch (error) {
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') {
       return res.status(400).json({ error: 'Order has a field that is not valid (check product, grade and unit values)' });
@@ -225,7 +273,7 @@ export async function releaseAllocations(tx, orderId) {
 router.put('/:id', async (req, res) => {
   try {
     const body = req.body || {};
-    const order = await prisma.order.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, orderType: true } });
+    const order = await prisma.order.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, orderType: true, orderNumber: true, buyerId: true, totalAmount: true } });
     if (!order) return res.status(404).json({ error: 'Order not found' });
     if (order.orderType === 'RETURN') return res.status(409).json({ error: 'Returns are received or cancelled on the returns page' });
 
@@ -247,6 +295,22 @@ router.put('/:id', async (req, res) => {
     }
     if (!Object.keys(data).length) return res.status(400).json({ error: 'Nothing to update' });
 
+    // Rule 32. An order on credit hold goes ahead only when a manager releases it.
+    let gate = { creditHold: null };
+    if (order.orderType === 'SO' && moving && COMMITTED_STATUSES.includes(data.status)) {
+      if (order.status === 'HOLD' && (await openCreditHold(prisma, order.id))) {
+        return res.status(409).json({ error: 'This order is on credit hold. A manager releases it.' });
+      }
+      gate = await statusAfterCreditCheck(prisma, {
+        customerId: data.buyerId !== undefined ? data.buyerId : order.buyerId, orderId: order.id,
+        orderTotal: data.totalAmount !== undefined ? data.totalAmount : order.totalAmount, wanted: data.status,
+      });
+      if (gate.creditHold) {
+        if (order.status === 'HOLD') return res.status(409).json({ error: gate.creditHold.message, creditHold: gate.creditHold });
+        data.status = 'HOLD';
+      }
+    }
+
     const updated = await prisma.$transaction(async (tx) => {
       // Guard against two people changing the status at once.
       const changed = await tx.order.updateMany({ where: { id: order.id, status: order.status }, data });
@@ -255,10 +319,11 @@ router.put('/:id', async (req, res) => {
         await releaseAllocations(tx, order.id);
         await tx.orderLine.updateMany({ where: { orderId: order.id }, data: { lineStatus: 'CANCELLED' } });
       }
+      if (gate.creditHold) await recordCreditHold(tx, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
       return tx.order.findUnique({ where: { id: order.id }, include: { lines: true } });
     });
     if (!updated) return res.status(409).json({ error: 'This order was just changed by someone else. Reload and try again.' });
-    res.json(updated);
+    res.json(gate.creditHold ? { ...updated, creditHold: gate.creditHold, warning: gate.creditHold.message } : updated);
   } catch (error) {
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'Order has a field that is not valid' });
     console.error('Orders: update failed:', error);

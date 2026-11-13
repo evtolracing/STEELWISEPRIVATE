@@ -40,7 +40,7 @@ Covers customers, pricing, RFQs and quotes, order entry, Retail POS and counter 
 | Data integrity | 40 | 82 | Order entry validated and transactional, tax saved, field allow-lists (S-006, S-007, S-016). 150 of 150 jobs, reconciliation 0 problems |
 | Reliability | 50 | 65 | A failed edit no longer destroys order lines. No retry or offline behaviour on mobile; says so |
 | Security | 55 | 82 | Server decides the price level; staff-only fields hidden from customer logins; tier, credit limit and list price need a manager and are audited (S-003, S-013, S-015, S-018). Cost still visible to sales roles (S-023) |
-| Operational efficiency | 45 | 62 | One price everywhere removes re-keying. Quotes still priced by hand (S-027); credit limits not enforced (S-019) |
+| Operational efficiency | 45 | 62 | One price everywhere removes re-keying. Quotes still priced by hand (S-027). Credit limits are now enforced with a manager release (rule 32) |
 | User experience | 45 | 68 | Screens show the server's own error text; sample data removed from four screen groups. Branch list on entry screens still fixed (S-008) |
 | Performance | Not measured | Not measured | New routes are counted or capped (200 rows). No benchmark of sales routes was run in this workstream |
 | Integration quality | 40 | 60 | Overrides, dashboard, mobile and pricing now have routes. 18 sales calls still have none (S-026). No card, email or text service (D-033, D-034) |
@@ -49,5 +49,5 @@ Covers customers, pricing, RFQs and quotes, order entry, Retail POS and counter 
 | Accessibility | Not measured | Not measured | New screens use labelled tables and controls. No keyboard or contrast audit was run |
 | **Weighted** | **45** | **73** | Performance and accessibility left out and the other weights rescaled to 100 |
 
-Target is 95. The module is not there. The largest gaps are the promise engine (S-010), credit control (S-019), quote pricing (S-027), outside services, and the fact that none of this is live.
+Target is 95. The module is not there. The largest gaps are the promise engine (S-010), quote pricing (S-027), outside services, and the fact that none of this is live.
 

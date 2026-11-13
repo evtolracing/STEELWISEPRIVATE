@@ -15,6 +15,7 @@
  *    and prices, closes the RFQ, and rejects the RFQ's other open quotes.
  *    A quote can be accepted once; an expired quote cannot be accepted.
  */
+import { statusAfterCreditCheck, recordCreditHold } from '../lib/creditControl.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
@@ -165,6 +166,8 @@ router.post('/:id/accept', handle('accept quote', async (req, res) => {
   if (why) refuse(409, why);
   if (!quote.lines.length) refuse(409, 'This quote has no lines');
 
+  // Rule 32: the quote is still accepted, but the order waits on hold when it would pass the credit limit.
+  const gate = await statusAfterCreditCheck(prisma, { customerId: quote.rfq.customerId, orderTotal: quote.totalAmount, wanted: 'CONFIRMED' });
   const order = await createNumbered({
     count: () => prisma.order.count(),
     format: padded('SO'),
@@ -172,7 +175,7 @@ router.post('/:id/accept', handle('accept quote', async (req, res) => {
       await move(tx, quote, 'ACCEPTED', { acceptedAt: new Date() });
       const created = await tx.order.create({
         data: {
-          orderNumber, orderType: 'SO', status: 'CONFIRMED', buyerId: quote.rfq.customerId,
+          orderNumber, orderType: 'SO', status: gate.status, buyerId: quote.rfq.customerId,
           shipToAddress: body.shipToAddress ? String(body.shipToAddress) : null, shipToCity: body.shipToCity ? String(body.shipToCity) : null,
           shipToState: body.shipToState ? String(body.shipToState) : null, shipToZip: body.shipToZip ? String(body.shipToZip) : null,
           subtotal: quote.subtotal, taxAmount: quote.taxAmount || 0, freightAmount: quote.freightAmount || 0, totalAmount: quote.totalAmount,
@@ -189,13 +192,14 @@ router.post('/:id/accept', handle('accept quote', async (req, res) => {
         },
         include: { lines: true, buyer: { select: { id: true, name: true } } },
       });
+      if (gate.creditHold) await recordCreditHold(tx, { orderId: created.id, orderNumber: created.orderNumber, creditHold: gate.creditHold, user: req.user });
       await tx.quote.update({ where: { id: quote.id }, data: { convertedOrderId: created.id } });
       await tx.quote.updateMany({ where: { rfqId: quote.rfqId, id: { not: quote.id }, status: { in: OPEN } }, data: { status: 'REJECTED' } });
       await tx.rFQ.update({ where: { id: quote.rfqId }, data: { status: 'ACCEPTED' } });
       return created;
     })),
   });
-  res.status(201).json({ message: 'Quote accepted and order created', order, quote: toApi(await prisma.quote.findUnique({ where: { id: quote.id }, include: INCLUDE })) });
+  res.status(201).json({ message: gate.creditHold ? 'Quote accepted. The order is on credit hold.' : 'Quote accepted and order created', ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }), order, quote: toApi(await prisma.quote.findUnique({ where: { id: quote.id }, include: INCLUDE })) });
 }));
 
 export default router;

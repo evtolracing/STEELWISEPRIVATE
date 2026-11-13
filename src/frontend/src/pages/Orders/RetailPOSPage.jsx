@@ -142,10 +142,10 @@ export default function RetailPOSPage() {
       }
       const res = await createIntakeOrder(payload)
       const id = res.data?.id
-      if (id) await submitOrder(id)
-      setSubmittedOrder(res.data)
+      const sent = id ? await submitOrder(id) : null
+      setSubmittedOrder(sent?.data ? { ...res.data, ...sent.data, creditHoldWarning: sent.warning || null } : res.data)
       setReceiptDialog(true)
-      setSnack({ open: true, msg: 'Order submitted!', severity: 'success' })
+      setSnack(sent?.warning ? { open: true, msg: sent.warning, severity: 'warning' } : { open: true, msg: 'Order submitted!', severity: 'success' })
     } catch (e) {
       setSnack({ open: true, msg: e?.message || 'Checkout failed', severity: 'error' })
     }
@@ -332,6 +332,7 @@ export default function RetailPOSPage() {
               <Divider sx={{ my: 2 }} />
               <Typography variant="h5" fontWeight={700}>{fmt(submittedOrder.totalAmount ?? total)}</Typography>
               <Typography variant="caption" color="text.secondary">incl. tax</Typography>
+              {submittedOrder.creditHoldWarning && <Alert severity="warning" sx={{ mt: 2, textAlign: 'left' }}>{submittedOrder.creditHoldWarning}</Alert>}
             </Box>
           )}
         </DialogContent>
@@ -342,7 +343,7 @@ export default function RetailPOSPage() {
       </Dialog>
 
       {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={2000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+      <Snackbar open={snack.open} autoHideDuration={snack.severity === 'warning' ? 10000 : 2000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert severity={snack.severity} variant="filled" onClose={() => setSnack(s => ({ ...s, open: false }))}>{snack.msg}</Alert>
       </Snackbar>
     </Box>

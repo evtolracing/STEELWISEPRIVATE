@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T06:50:25.588Z",
+ "at": "2026-11-13T07:19:09.906Z",
  "endpointsInInventory": 574,
  "endpointsSwept": 574,
  "sections": {
@@ -59,6 +59,11 @@
   "Web checkout uses the system price, not the browser's": {
    "pass": true,
    "summary": "4 checks, 0 problems",
+   "findings": []
+  },
+  "Platform safeguards: bounded lists, tracing, real figures, database rules": {
+   "pass": true,
+   "summary": "31 checks, 0 problems",
    "findings": []
   },
   "Error replies do not expose internals": {

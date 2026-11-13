@@ -317,6 +317,104 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
   section('Web checkout uses the system price, not the browser\'s', { pass: findings.length === 0, summary: `4 checks, ${findings.length} problems`, findings });
 }
 
+// 10. Platform safeguards (Phase 2 findings E-001 to E-011, E-023). Each check fails if its fix is undone.
+{
+  const token = await tokenFor('admin');
+  const findings = [];
+  let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const call = async (url, headers = {}) => {
+    const res = await fetch(BASE + url, { headers: { authorization: `Bearer ${token}`, ...headers }, signal: AbortSignal.timeout(20000) });
+    let body = null;
+    try { body = await res.json(); } catch { /* not JSON */ }
+    return { status: res.status, headers: res.headers, body };
+  };
+
+  // E-008 request tracing
+  const traced = await call('/api/grades');
+  check('E-008 every reply carries a request id', /^[0-9a-f-]{36}$/.test(traced.headers.get('x-request-id') || ''), traced.headers.get('x-request-id'));
+  const echoed = await call('/api/grades', { 'x-request-id': 'qa-trace-12345678' });
+  check('E-008 a well-formed incoming id is kept', echoed.headers.get('x-request-id') === 'qa-trace-12345678', echoed.headers.get('x-request-id'));
+  const hostile = await call('/api/grades', { 'x-request-id': 'bad id <script>' });
+  check('E-008 a malformed incoming id is replaced', /^[0-9a-f-]{36}$/.test(hostile.headers.get('x-request-id') || ''), hostile.headers.get('x-request-id'));
+
+  // E-001, E-002 job list is bounded, counted, and honours filters
+  const [jobTotal, openTotal] = await Promise.all([prisma.job.count(), prisma.job.count({ where: { status: { notIn: ['SHIPPED', 'COMPLETED', 'CANCELLED'] } } })]);
+  const jobs = await call('/api/jobs');
+  check('E-001 job list answers with a list', jobs.status === 200 && Array.isArray(jobs.body), `status ${jobs.status}`);
+  check('E-001 job list is capped', (jobs.body?.length ?? 1e9) <= 1000, `${jobs.body?.length} rows`);
+  check('E-001 job list reports the true total', Number(jobs.headers.get('x-total-count')) === jobTotal, `header ${jobs.headers.get('x-total-count')} vs ${jobTotal} in the database`);
+  check('E-001 every open job is in the default list (when under the cap)', openTotal > 1000 || (jobs.body || []).filter((j) => !['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status)).length === openTotal, `${openTotal} open in the database`);
+  const two = await call('/api/jobs?status=SHIPPED&limit=2');
+  check('E-001 limit is honoured', Array.isArray(two.body) && two.body.length <= 2, `${two.body?.length} rows for limit=2`);
+  const withOrder = await prisma.job.findFirst({ where: { orderId: { not: null } }, select: { orderId: true } });
+  if (withOrder) {
+    const forOrder = await call(`/api/jobs?orderId=${withOrder.orderId}`);
+    const want = await prisma.job.count({ where: { orderId: withOrder.orderId } });
+    check('E-002 the order filter returns only that order\'s jobs', Array.isArray(forOrder.body) && forOrder.body.length === want && forOrder.body.every((j) => (j.orderId || j.order?.id) === withOrder.orderId), `${forOrder.body?.length} rows, ${want} in the database`);
+    check('E-002 jobs come back with their order detail', forOrder.body?.[0]?.order !== undefined, 'no order on the job');
+  }
+
+  // E-005 staging list is bounded
+  const staging = await call('/api/material-tracking/staging');
+  check('E-005 staging list is capped', staging.status === 200 && Array.isArray(staging.body) && staging.body.length <= 1200, `status ${staging.status}, ${staging.body?.length} rows`);
+
+  // E-006 analytics report measured figures or say "not available"
+  const margin = await call('/api/v1/analytics/margin');
+  check('E-006 margin is reported as not available, not invented', margin.status === 200 && margin.body?.marginAvailable === false && margin.body?.avgMargin === null && margin.body?.topMarginCustomer === null && (margin.body?.byDivision || []).length === 0, JSON.stringify(margin.body).slice(0, 160));
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const revenue = await prisma.order.aggregate({ where: { orderType: 'SO', status: { not: 'CANCELLED' }, createdAt: { gte: today } }, _sum: { subtotal: true } });
+  check('E-006 revenue today matches the database', Math.abs((margin.body?.revenueToday ?? -1) - Math.round(Number(revenue._sum.subtotal || 0))) <= 1, `${margin.body?.revenueToday} vs ${Math.round(Number(revenue._sum.subtotal || 0))}`);
+  const funnel = await call('/api/v1/analytics/rfq-funnel');
+  const since = new Date(); since.setDate(since.getDate() - 30);
+  const rfqs = await prisma.rFQ.count({ where: { createdAt: { gte: since } } });
+  check('E-006 RFQ funnel count matches the database', funnel.status === 200 && Math.abs(funnel.body?.rfqCount - rfqs) <= 1, `${funnel.body?.rfqCount} vs ${rfqs}`);
+  check('E-006 response time is not invented', funnel.body?.avgResponseTime === null, String(funnel.body?.avgResponseTime));
+
+  // E-007 shipping summary counts real statuses
+  const ship = await call('/api/v1/shipping/summary');
+  const [waiting, loading] = await Promise.all(['PENDING', 'LOADING'].map((status) => prisma.shipment.count({ where: { status, createdAt: { gte: today } } })));
+  check('E-007 shipping summary matches the database', ship.status === 200 && Math.abs(ship.body.staged - waiting) <= 1 && Math.abs(ship.body.readyToShip - loading) <= 1, `staged ${ship.body?.staged} vs ${waiting}, ready ${ship.body?.readyToShip} vs ${loading}`);
+
+  // E-023 operations cockpit totals come from the database
+  // Make sure the QA data has a completed job, so the check below means something.
+  if (!(await prisma.job.count({ where: { status: 'COMPLETED' } }))) {
+    const done = await prisma.job.findFirst({ where: { status: 'SHIPPED' }, select: { id: true } });
+    if (done) await prisma.job.update({ where: { id: done.id }, data: { status: 'COMPLETED' } });
+  }
+  const completedJobs = await prisma.job.count({ where: { status: 'COMPLETED' } });
+  const cockpit = await call('/api/ops-cockpit');
+  const [orders, coils, shipments, finished] = await Promise.all([prisma.order.count(), prisma.coil.count(), prisma.shipment.count(), prisma.job.count({ where: { status: { in: ['SHIPPED', 'COMPLETED'] } } })]);
+  const sum = cockpit.body?.summary || {};
+  check('E-023 cockpit answers', cockpit.status === 200, `status ${cockpit.status}`);
+  check('E-023 cockpit totals match the database', Math.abs(sum.totalJobs - jobTotal) <= 2 && Math.abs(sum.totalOrders - orders) <= 2 && sum.totalCoils === coils && Math.abs(sum.totalShipments - shipments) <= 2, `jobs ${sum.totalJobs}/${jobTotal} orders ${sum.totalOrders}/${orders} stock ${sum.totalCoils}/${coils} shipments ${sum.totalShipments}/${shipments}`);
+  check('E-023 completed jobs count as finished', Math.abs((cockpit.body?.flowState?.shipped ?? -1) - finished) <= 2, `${cockpit.body?.flowState?.shipped} vs ${finished}`);
+  check('E-023 the QA data has a completed job to test with', completedJobs > 0, 'none');
+  check('E-023 cockpit lists only open jobs as active', Math.abs(sum.activeJobs - openTotal) <= 2, `${sum.activeJobs} vs ${openTotal}`);
+
+  // E-003, E-004 database structure
+  const [{ n: unindexed }] = await prisma.$queryRawUnsafe(`select count(*)::int n from pg_constraint c where c.contype = 'f' and c.connamespace = 'public'::regnamespace and not exists (select 1 from pg_index i where i.indrelid = c.conrelid and (i.indkey::int2[])[0:array_length(c.conkey, 1) - 1] = c.conkey)`);
+  check('E-003 every foreign key has an index', unindexed === 0, `${unindexed} without`);
+  const rules = (await prisma.$queryRawUnsafe(`select conname from pg_constraint where contype = 'c' and connamespace = 'public'::regnamespace`)).map((r) => r.conname);
+  for (const name of ['Inventory_qtyOnHand_not_negative', 'Inventory_qtyAvailable_not_negative', 'Inventory_qtyAllocated_not_negative', 'Inventory_qtyOnHold_not_negative', 'OrderLine_qtyOrdered_positive', 'OrderLine_qtyShipped_not_negative', 'ShipmentItem_qtyShipped_positive', 'Invoice_paid_within_total']) {
+    check(`E-004 database check ${name} exists`, rules.includes(name), 'missing');
+  }
+  const anyStock = await prisma.inventory.findFirst({ select: { id: true } });
+  if (anyStock) {
+    // Tried inside a transaction that is always rolled back, so no data changes.
+    let refused = false;
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`update "Inventory" set "qtyAvailable" = -1 where id = $1`, anyStock.id);
+        throw new Error('ROLLBACK_PROBE');
+      });
+    } catch (e) { refused = !String(e.message).includes('ROLLBACK_PROBE'); }
+    check('E-004 the database refuses negative stock', refused, 'the update was accepted');
+  }
+
+  section('Platform safeguards: bounded lists, tracing, real figures, database rules', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
 // 9. Nothing above may have answered with database or server internals.
 section('Error replies do not expose internals', { pass: leaks.size === 0, summary: `${leaks.size} replies exposed internal detail`, findings: [...leaks] });
 

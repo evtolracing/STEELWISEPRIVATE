@@ -25,7 +25,7 @@ Twelve findings fixed or fixed in part (E-001 to E-011 and E-023). See `engineer
 | 1 Code quality | Build and 47 unit tests pass. Lint cannot run: none configured (E-016) |
 | 2 Functional integrity | 150 of 150 simulated jobs pass (seeds 8001 to 8003) |
 | 3 Data integrity | Stock and billing reconcile with 0 problems; 8 database checks hold through all cycles |
-| 4 Security | Sweep passes all 11 sections; no high or critical package advisories |
+| 4 Security | Sweep passes all 12 sections; no high or critical package advisories |
 | 5 Performance | 137 of 138 measured read routes inside the target at 80-branch volume; the operations cockpit takes about 1 s (E-023) |
 | 6 User experience | Not assessed yet |
 | 7 Operational readiness | Fails: no restore test, no alerting, no runbook |

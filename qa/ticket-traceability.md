@@ -2,10 +2,13 @@
 
 There are no ticket files in the repository, so each commit is treated as one ticket. Commits #1–#28 are squashed pull requests; older commits came before the PR workflow. Requested scope is taken from the commit or PR title; "implemented" is what the diff touched.
 
-Commits: 190. Commits that changed the database schema: 55. Commits that added tests: 9.
+Commits: 193. Commits that changed the database schema: 56. Commits that added tests: 12.
 
 | Commit | Date | Ticket (title) | Files | Schema | API areas | UI areas | Tests added |
 |---|---|---|---:|:-:|---|---|---:|
+| 805bc0b | 2026-11-13 | Operations cockpit counts in the database instead of loading whole tables | 16 |  | api:opsCockpit |  | 15 |
+| ec86163 | 2026-11-13 | Phase 2 workstream 1: bounded lists, indexes, value checks, request tracing, dependency fixes, reports | 41 | yes | api:package-lock.json, api:app, api:requestLog, api:safeErrors, api:analyticsV1, api:jobs, api:materialTrackingRoutes, api:shippingV1 | ui:package-lock.json, ui:dashboard | 27 |
+| a775ff5 | 2026-11-13 | Sales tax rates screen, quick-sale and quote simulations, money race probes, QA documents | 29 |  | api:app, api:roleAccess, api:taxRates, api:roleAccess.test | ui:components, ui:help, ui:Admin, ui:router | 21 |
 | 35fb137 | 2026-11-13 | Uploaded files are kept in the database when the host has no disk | 1 |  | api:documents |  | 0 |
 | 55dd63a | 2026-11-13 | Jobs and shipments are tied; shop-floor Ship makes the shipment | 6 |  | api:workflowRules, api:jobs, api:materialTrackingRoutes, api:shipments, api:workflowRules.test |  | 2 |
 | a4fd843 | 2026-11-13 | Division logins see only their own division | 5 |  | api:portalService |  | 4 |

@@ -37,3 +37,34 @@ Evidence files are in `qa/results/`. "Bench" is `qa/perf/bench.mjs` on the scale
 24. Margin is shown as not available until cost is recorded on order lines.
 25. The staging list shows everything ready to ship (up to 1,000) and the 200 most recently shipped.
 26. On the operations cockpit a completed job counts as finished, and a shipment counts as shipped once it is in transit or delivered.
+
+## Disposition of every open or partly fixed finding (standard Rule 10)
+
+D-numbers are from Phase 1 (`defect-register.md`); E-numbers are from Phase 2. Nothing is dropped: an item leaves this table only when it is fixed and verified.
+
+| ID | Disposition | Owner | Depends on | Accepted as done when |
+|---|---|---|---|---|
+| E-004, E-020 | Assigned to Workstream 3 | Inventory | Review of every stock write path | The database refuses a row where on hand differs from available + reserved + on hold, and three cycles still pass |
+| E-009 | Fixed, awaiting verification | Platform | A standalone-server deployment | Server started against an empty non-local test database loads no demo data. Verified by reading the code only; no automated test |
+| E-010 | Fixed, awaiting verification | Platform | Same | A forced error makes the process exit with code 1 and close its pool. Not exercised |
+| E-011 | Requires a business decision | Owner | Approval for two major upgrades (uuid 14, react-router 7) | `npm audit --omit=dev` reports 0 in both packages and the full suite passes |
+| E-012 | Assigned to Workstream 6 | Enterprise experience | None | No route sends raw error text; sweep section "Error replies" still at 0 |
+| E-014 (D-027) | Blocked by a dependency | Owner | A shared store service | Login throttle holds across instances, shown by a test with two server processes |
+| E-015 | Blocked by a dependency | Owner | Database host backup settings and approval | One restore into a scratch database, timed, with the reconciliation run on the restored copy |
+| E-016 | Requires a business decision | Owner | Approval to add a linter as a development dependency | Lint runs in the pull-request workflow and passes |
+| E-017 | Requires a business decision | Owner | Choice of an error-tracking service | A forced server error raises an alert |
+| E-018 | Accepted risk proposed, awaiting approval | Owner | None | Owner agrees large files are split only when they are next changed for another reason |
+| E-019 | Assigned to Workstream 6 | Enterprise experience | None | Sweep section proving a login from one tenant cannot read another's rows on every route that carries a tenant id |
+| E-021 | Assigned to Workstreams 2 to 5, per module | Each workstream | Screen changes with each route | Every list route in the module answers `{ data, meta }` and its screens are updated; contract scan shows no mismatch |
+| E-023 | Fixed in part; remainder assigned to Workstream 4 | Manufacturing | Screen decision on how many hot jobs to list | Cockpit answers under 500 ms on the scaled database |
+| D-011b | Fixed, awaiting verification | Platform | Deploy | A file uploaded on the hosted site downloads byte for byte |
+| D-020 | Assigned to Workstreams 2 to 6, per module | Each workstream | None | `api-contract.md` shows 0 calls with no server route for that module |
+| D-023 | Assigned to Workstream 6 | Enterprise experience | None | Reconciliation reports 0 problems in demo seed data |
+| D-024 | Assigned to Workstream 3 (two stock systems) and 6 (mock services) | Inventory, Enterprise | A decision on which stock tables are authoritative | One stock system; `inventory.mjs` reports 0 mock services |
+| D-033 | Requires a business decision | Owner | Card processor choice | A test-mode charge and refund complete from the quick-sale screen |
+| D-034 | Requires a business decision | Owner | Email and text provider choice | A receipt reaches a test inbox |
+| D-035 | Requires a business decision | Owner | Tax rates per state | Admin > Sales Tax Rates shows no branch state without a rate |
+| D-036 | Assigned to Workstream 2 | Sales | None | Sales Dashboard and Order Hub RFQ pages read the database; sweep check compares their figures to it |
+| Rules 1 to 26 | Requires a business decision | Owner | None | Owner confirms or changes each rule |
+
+Fixed and verified in Workstream 1, each with an automated check that fails without the fix (sweep section "Platform safeguards", 31 checks; nine were shown failing against the code before this workstream): E-001, E-002, E-003, E-005, E-006, E-007, E-008, and the answering, totals and status parts of E-023. E-003 and E-004 are checked against the database catalog.

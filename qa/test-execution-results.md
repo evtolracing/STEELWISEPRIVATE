@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T06:55:02.399Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T07:20:06.073Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -75,7 +75,7 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T06:50:25.588Z. 574 of 574 routes swept.
+Run 2026-11-13T07:19:09.906Z. 574 of 574 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
@@ -89,6 +89,7 @@ Run 2026-11-13T06:50:25.588Z. 574 of 574 routes swept.
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
 | Web checkout uses the system price, not the browser's | Pass | 4 checks, 0 problems |
+| Platform safeguards: bounded lists, tracing, real figures, database rules | Pass | 31 checks, 0 problems |
 | Error replies do not expose internals | Pass | 0 replies exposed internal detail |
 
 ## Screen check

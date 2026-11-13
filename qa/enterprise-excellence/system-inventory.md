@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit b821398. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -14,10 +14,10 @@ Every figure here is counted from the code or measured in a test run. The module
 | API routes that change data | 319 |
 | Database tables in the schema | 157 |
 | Enumerations | 96 |
-| Migrations | 22 |
+| Migrations | 23 |
 | Screens (routes in the browser) | 143 |
-| Frontend source files | 387 (117,832 lines) |
-| Server route code | 25,273 lines |
+| Frontend source files | 387 (117,796 lines) |
+| Server route code | 25,414 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -50,7 +50,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Users
 - **Feeds:** Every module
-- **Findings:** B-003
+- **Findings:** none open
 - **Production concern:** Tokens last 8 hours and cannot be revoked early; the browser keeps the token in local storage
 
 ### Users, roles and branches
@@ -60,12 +60,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Create and edit users, assign role, home branch, divisions
 - **Screens:** 1 (1 real): /admin/users
 - **Server:** `src/backend/src/routes/users.js`; served at /api/users
-- **Routes:** 13, of which 6 change data. Returned a success in a test this session: 4 of 13; of the changing routes, 0 of 6
+- **Routes:** 13, of which 6 change data. Returned a success in a test this session: 6 of 13; of the changing routes, 2 of 6
 - **Tables:** User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Role, Location, Division
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
 - **Feeds:** Access control
-- **Findings:** B-003, B-010
+- **Findings:** none open
 - **Production concern:** User changes are several saves with no transaction
 
 ### Access control
@@ -80,7 +80,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
 - **Feeds:** Every module
-- **Findings:** B-003, B-004, F-009, B-020
+- **Findings:** F-009
 - **Production concern:** No branch, division or region boundary. 16 areas have no department rule
 
 ### Staff and operators
@@ -95,7 +95,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Users, work centers
 - **Feeds:** Dispatch, time tracking
-- **Findings:** B-004, B-012, B-014
+- **Findings:** B-012, B-014
 - **Production concern:** Any staff login can change operators and shifts
 
 ### Settings, tax rates and online settings
@@ -156,7 +156,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Customers, products, pricing, tax, credit
 - **Feeds:** Sales orders, jobs
-- **Findings:** X-007, B-008
+- **Findings:** X-007
 - **Production concern:** Promise date and branch suggestion on this screen are mock rules
 
 ### Sales orders
@@ -185,7 +185,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, customers
 - **Feeds:** Every sales channel
-- **Findings:** S-009, B-004
+- **Findings:** S-009
 - **Production concern:** Contract pricing does not exist; override approval is a record, not a workflow
 
 ### Credit control
@@ -210,7 +210,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 1 (1 real): /pos/retail
 - **Server:** `src/backend/src/routes/quickSale.js`; served at /api/pos/quick-sale
 - **Routes:** 10, of which 6 change data. Returned a success in a test this session: 6 of 10; of the changing routes, 3 of 6
-- **Tables:** Product, Order, Invoice, AuditLog, Payment, InvoiceLine
+- **Tables:** Product, Order, Invoice, MaterialMovement, AuditLog, Payment, InvoiceLine
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, pricing, tax
 - **Feeds:** Invoices, payments
@@ -229,7 +229,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, customers
 - **Feeds:** None found
-- **Findings:** X-008, B-006, B-014
+- **Findings:** X-008, B-014
 - **Production concern:** 1,391-line route file kept alive beside the quick sale
 
 ### Web store
@@ -289,7 +289,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** None
 - **Feeds:** None
-- **Findings:** S-021, B-009, B-008
+- **Findings:** S-021, B-009
 - **Production concern:** A second order pipeline that the rest of the system does not see
 
 ### Mobile rep
@@ -331,11 +331,11 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 4 (1 sample, labelled, 3 real): /boms, /bom//, /bom//new, /bom//:recipeId
 - **Server:** `src/backend/src/routes/processingRecipes.js`, `src/backend/src/routes/bomV1.js`; served at /api/processing-recipes, /api/v1/bom
 - **Routes:** 16, of which 11 change data. Returned a success in a test this session: 3 of 16; of the changing routes, 0 of 11
-- **Tables:** ProcessingRecipe, RecipeRoutingTemplate, BomRecipe, BomOperation
+- **Tables:** ProcessingRecipe, RecipeRoutingTemplate, BomRecipe
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, work centers
 - **Feeds:** Jobs, planning
-- **Findings:** B-004, I-011
+- **Findings:** I-011
 - **Production concern:** Any staff login can change a recipe
 
 ### Customer specifications
@@ -366,7 +366,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, receiving
 - **Feeds:** Reservation, shipping, returns
-- **Findings:** I-016, B-003
+- **Findings:** I-016
 - **Production concern:** No screen for adjustments or counts (I-016)
 
 ### Receiving
@@ -423,12 +423,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Shop jobs: create, plan, move through the shop, every move recorded against a person
 - **Screens:** 6 (6 real): /production, /production/shop-floor, /production/shipping, /order-board, /schedule, /jobs/:id
 - **Server:** `src/backend/src/routes/jobs.js`; served at /api/jobs, /api/v1/jobs
-- **Routes:** 32, of which 20 change data. Returned a success in a test this session: 18 of 32; of the changing routes, 8 of 20
+- **Routes:** 32, of which 20 change data. Returned a success in a test this session: 19 of 32; of the changing routes, 9 of 20
 - **Tables:** Job, OrderLine, DispatchJob, WorkCenterType, User
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders
 - **Feeds:** Shipping (unfinished jobs hold their lines)
-- **Findings:** M-017, B-008, B-010
+- **Findings:** M-017
 - **Production concern:** A job can be created with no order and no content
 
 ### Coil work orders
@@ -438,7 +438,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Release, start, complete a processing work order against a coil
 - **Screens:** 3 (3 real): /work-orders, /work-orders/new, /work-orders/:id
 - **Server:** `src/backend/src/routes/workOrders.js`; served at /api/work-orders
-- **Routes:** 7, of which 5 change data. Returned a success in a test this session: 5 of 7; of the changing routes, 3 of 5
+- **Routes:** 7, of which 5 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 5 of 5
 - **Tables:** WorkOrder, AuditLog, Coil
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Stock
@@ -453,12 +453,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Work-center types, queues, start, pause and complete an operation, time logs
 - **Screens:** 3 (3 real): /time-tracking, /shopfloor, /shopfloor/:workCenterId
 - **Server:** `src/backend/src/routes/dispatchRoutes.js`, `src/backend/src/routes/operationsRoutes.js`, `src/backend/src/routes/workCenters.js`; served at /api/work-centers, /api/v1/work-centers, /api/v1/dispatch, /api/v1/operations
-- **Routes:** 34, of which 17 change data. Returned a success in a test this session: 12 of 34; of the changing routes, 0 of 17
-- **Tables:** WorkCenter, Job, WorkCenterType, DispatchDivision, Location, DispatchOperation, Organization, Operator, DispatchJob, DispatchTimeLog
+- **Routes:** 34, of which 17 change data. Returned a success in a test this session: 18 of 34; of the changing routes, 6 of 17
+- **Tables:** WorkCenter, Location, Job, WorkCenterType, DispatchDivision, DispatchOperation, Organization, Operator, DispatchJob, DispatchTimeLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Jobs, staff
 - **Feeds:** Jobs, time and labor
-- **Findings:** B-004, B-010, B-011, B-007
+- **Findings:** B-011
 - **Production concern:** No move rules on operations; half-saved time logs possible
 
 ### Planning and optimization
@@ -488,7 +488,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Jobs
 - **Feeds:** Jobs (waiting on quality), shipping
-- **Findings:** B-004
+- **Findings:** none open
 - **Production concern:** Whether stock pending inspection may ship is not decided
 
 ### Material tracking, packages and drop tags
@@ -503,7 +503,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Jobs
 - **Feeds:** Shipping
-- **Findings:** B-004, F-011, B-010
+- **Findings:** F-011
 - **Production concern:** Tag and package life cycle has never been run end to end
 
 ### Maintenance and assets
@@ -513,12 +513,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Assets, maintenance orders
 - **Screens:** 5 (3 sample, labelled, 2 real): /maintenance/dashboard, /maintenance/work-orders, /maintenance/assets, /maintenance/pm-schedules, /maintenance/parts
 - **Server:** `src/backend/src/routes/maintenanceOrders.js`, `src/backend/src/routes/assets.js`; served at /api/maintenance-orders, /api/assets
-- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 6 of 17; of the changing routes, 0 of 9
+- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 10 of 17; of the changing routes, 4 of 9
 - **Tables:** MaintenanceOrder, Asset, AssetType, WorkCenter
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Work centers
 - **Feeds:** Scheduling (not connected)
-- **Findings:** X-009, B-007, B-004, B-017
+- **Findings:** X-009, B-017
 - **Production concern:** 11 maintenance tables have no code
 
 ## Shipping and logistics
@@ -535,7 +535,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders, jobs, stock
 - **Feeds:** Invoices, stock
-- **Findings:** F-011, F-007
+- **Findings:** F-011
 - **Production concern:** Shipping documents and printing not examined; no carrier rates or freight cost
 
 ### Returns
@@ -565,7 +565,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Heats, shipments
 - **Feeds:** Customer account pages, partner API
-- **Findings:** B-004, B-021
+- **Findings:** B-021
 - **Production concern:** Any staff login can delete a document
 
 ### Partner API
@@ -580,7 +580,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders, shipments, invoices
 - **Feeds:** Outside systems
-- **Findings:** B-018, B-010
+- **Findings:** B-018
 - **Production concern:** Failed webhook deliveries are never retried
 
 ### Freight and logistics planning
@@ -595,7 +595,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** nothing
 - **Feeds:** nothing
-- **Findings:** X-009, F-007
+- **Findings:** X-009
 
 ## Financial operations
 
@@ -643,7 +643,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** None
 - **Feeds:** Every module
-- **Findings:** E-014, E-017, B-005
+- **Findings:** E-014, E-017
 - **Production concern:** Rate limit counts per server instance; no alerting
 
 ### AI assistant and voice
@@ -718,7 +718,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** nothing
 - **Feeds:** nothing
-- **Findings:** X-009, B-007
+- **Findings:** X-009
 
 ## Safety, quality systems and other sample modules
 
@@ -859,17 +859,17 @@ Finding B-014.
 | src/frontend/src/apps/safety/PermitsPage.jsx | 786 | 13 |
 | src/frontend/src/screens/ShipmentTrackingScreen.jsx | 769 | 10 |
 | src/frontend/src/pages/Maintenance/PartsInventory.jsx | 762 | 5 |
-| src/backend/src/routes/pos.js | 1391 | |
+| src/backend/src/routes/pos.js | 1336 | |
 | src/backend/src/routes/dispatchRoutes.js | 1034 | |
 | src/backend/src/routes/stopWork.js | 985 | |
-| src/backend/src/routes/jobs.js | 923 | |
+| src/backend/src/routes/jobs.js | 948 | |
 | src/backend/src/routes/opsCockpit.js | 868 | |
 | src/backend/src/routes/inventoryV1.js | 864 | |
 | src/backend/src/routes/staff.js | 720 | |
 | src/backend/src/routes/partner/customerRoutes.js | 718 | |
 | src/backend/src/routes/dropTagRoutes.js | 716 | |
-| src/backend/src/routes/bomV1.js | 670 | |
-| src/backend/src/routes/users.js | 669 | |
+| src/backend/src/routes/users.js | 692 | |
+| src/backend/src/routes/bomV1.js | 671 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
 
 ## Other counts from the frontend

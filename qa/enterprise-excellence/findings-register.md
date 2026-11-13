@@ -1,8 +1,8 @@
 # Findings register
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit b821398. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
 
-Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
+Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
 Severity: P0 critical security, financial integrity, data corruption or outage risk. P1 essential workflow failure or significant operational risk. P2 functional, architectural, performance or maintainability deficiency. P3 minor.
 
@@ -11,108 +11,104 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 69 | 20 |
-| P2 | 63 | 37 |
-| P3 | 58 | 25 |
-| Total | 210 | 84 |
+| P1 | 71 | 17 |
+| P2 | 72 | 38 |
+| P3 | 60 | 23 |
+| Total | 223 | 80 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 126 |
-| OPEN | 55 |
-| REQUIRES BUSINESS DECISION | 20 |
-| DEFERRED WITH JUSTIFICATION | 4 |
-| IN PROGRESS | 4 |
+| VERIFIED FIXED | 142 |
+| DEFERRED TO SPECIFIC PHASE | 58 |
+| REQUIRES BUSINESS DECISION | 19 |
+| IN PROGRESS | 2 |
 | BLOCKED | 1 |
+| NOT APPLICABLE | 1 |
 
 ## Open findings, most severe first
 
 | ID | Sev | Status | Module | What is wrong | Assigned to |
 |---|---|---|---|---|---|
-| X-001 | P0 | OPEN | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
-| X-002 | P0 | OPEN | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
-| B-003 | P1 | OPEN | Access control | Branch, division and region are fields on records and filters on screens. They are not an access boundary: every staff login reads every branch, and changes any branch within its department. | Security and multi-location phase (extends E-019) |
-| B-004 | P1 | OPEN | Access control | 16 areas have no department rule. Any staff login that is not read-only can change them. | Security and multi-location phase |
-| B-009 | P1 | OPEN | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 2: architecture and code quality (after the decision) |
-| B-016 | P1 | OPEN | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
+| X-001 | P0 | DEFERRED TO SPECIFIC PHASE | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
+| X-002 | P0 | DEFERRED TO SPECIFIC PHASE | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
+| B-009 | P1 | DEFERRED TO SPECIFIC PHASE | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 2: architecture and code quality (after the decision) |
+| B-016 | P1 | DEFERRED TO SPECIFIC PHASE | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
 | B-019 | P1 | REQUIRES BUSINESS DECISION | Platform | Everything happens only when someone opens a screen or presses a button. | Integration phase |
-| E-004 | P1 | IN PROGRESS | Database | No check constraints anywhere | Phase 2: architecture and code quality |
+| E-004 | P1 | DEFERRED TO SPECIFIC PHASE | Database | No check constraints anywhere | Phase 2: architecture and code quality |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
-| E-014 | P1 | OPEN | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
+| E-014 | P1 | DEFERRED TO SPECIFIC PHASE | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
 | E-015 | P1 | REQUIRES BUSINESS DECISION | Platform | No evidence that a backup has ever been restored | Phase 2: architecture and code quality |
-| E-023 | P1 | IN PROGRESS | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
+| E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
 | I-007 | P1 | REQUIRES BUSINESS DECISION | Purchasing | There is no purchase order: nothing records what was ordered from a mill, what is due, or whether a receipt matches an order or a supplier invoice | Inventory and purchasing |
-| I-011 | P1 | OPEN | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
-| I-012 (D-024) | P1 | OPEN | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
+| I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
+| I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
 | I-016 | P1 | REQUIRES BUSINESS DECISION | Stock corrections | There is no way to correct a stock quantity: no count, adjustment or scrap on the real stock list | Inventory and purchasing |
-| I-018 | P1 | OPEN | Web orders | An accepted web order saves its subtotal and no tax or total (seen while adding the credit hold) | Inventory and purchasing |
-| M-011 | P1 | OPEN | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
+| M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | M-016 | P1 | REQUIRES BUSINESS DECISION | Work orders | Completing a work order changes no stock: the source item is not used up and the pieces made are not added | Manufacturing and processing |
 | S-010 | P1 | REQUIRES BUSINESS DECISION | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
-| X-009 | P1 | OPEN | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
-| B-007 | P2 | OPEN | Work centers, assets, maintenance orders, executive decisions | Any column can be set by the caller, including status, ids and timestamps. | Phase 2: architecture and code quality |
-| B-008 | P2 | OPEN | Jobs, order hub, counter sessions, demand shaping | Seven create routes save from nothing. | Phase 2: architecture and code quality |
-| B-010 | P2 | OPEN | Users, shop-floor operations, job planning, material tracking, cockpit, partner carrier | A failure between two changes leaves the first one saved. Example: an operation is marked started and its time log is not created. | Phase 2: architecture and code quality |
+| X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
 | B-011 | P2 | REQUIRES BUSINESS DECISION | Shop-floor operations | Any call is accepted. | Manufacturing phase |
-| B-012 | P2 | OPEN | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
-| B-014 | P2 | OPEN | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
-| B-015 | P2 | OPEN | Frontend | Most icon buttons have no name (some have tooltips, which were not counted). | Phase 9: user experience |
-| B-017 | P2 | OPEN | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
+| B-012 | P2 | DEFERRED TO SPECIFIC PHASE | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
+| B-014 | P2 | DEFERRED TO SPECIFIC PHASE | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
+| B-015 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend | Most icon buttons have no name (some have tooltips, which were not counted). | Phase 9: user experience |
+| B-017 | P2 | DEFERRED TO SPECIFIC PHASE | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
 | B-018 | P2 | BLOCKED | Partner API | It is marked for retry and never sent again. | Integration phase |
-| B-021 | P2 | OPEN | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
-| B-025 | P2 | OPEN | Counter quick sale | Shelf items sold at the counter never reduce stock. Any report that filters on order status counts a voided sale as a completed one; only the counter's own daily figures read the note. | Inventory and purchasing |
-| D-020 | P2 | OPEN |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
-| D-024 | P2 | OPEN |  | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`br | By subject (see the finding) |
+| B-021 | P2 | DEFERRED TO SPECIFIC PHASE | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
+| C-002 | P2 | DEFERRED TO SPECIFIC PHASE | Partner API: carriers | The carrier routes cannot work as written, and if repaired in place would skip those rules. | Integration phase |
+| C-006 | P2 | DEFERRED TO SPECIFIC PHASE | Orders | It creates two. Only the screens guard against it, by disabling the button while saving. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| C-009 | P2 | DEFERRED TO SPECIFIC PHASE | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| C-010 | P2 | DEFERRED TO SPECIFIC PHASE | Counter quick sale | A failure after the claim leaves a sale marked void, its stock returned, and no credit memo or refund. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| C-011 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | They cannot. The counter rule built in Phase 2 takes effect only where piece-counted stock exists; elsewhere the sale goes through and the receipt says no stock was reduced. | Inventory and purchasing |
+| C-013 | P2 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | Any text shaped like a recommendation moves jobs. | Manufacturing and processing |
+| D-020 | P2 | DEFERRED TO SPECIFIC PHASE |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
+| D-024 | P2 | DEFERRED TO SPECIFIC PHASE |  | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`br | By subject (see the finding) |
 | D-033 | P2 | REQUIRES BUSINESS DECISION |  | The app does not charge cards. A card sale is recorded with the approval code from a separate card terminal. | By subject (see the finding) |
-| D-034 | P2 | DEFERRED WITH JUSTIFICATION |  | Receipts, quotes and invoices are not emailed or texted. The buttons say so. | By subject (see the finding) |
-| D-036 | P2 | OPEN |  | Sales Dashboard fixed in Phase 2 Workstream 2 (S-012): it now counts from the database. The Order Hub RFQ pages remain a separate console, not in the menu. | By subject (see the finding) |
-| E-016 | P2 | REQUIRES BUSINESS DECISION | Platform | No lint configuration | Phase 2: architecture and code quality |
+| D-034 | P2 | DEFERRED TO SPECIFIC PHASE |  | Receipts, quotes and invoices are not emailed or texted. The buttons say so. | By subject (see the finding) |
+| D-036 | P2 | DEFERRED TO SPECIFIC PHASE |  | Sales Dashboard fixed in Phase 2 Workstream 2 (S-012): it now counts from the database. The Order Hub RFQ pages remain a separate console, not in the menu. | By subject (see the finding) |
 | E-017 | P2 | REQUIRES BUSINESS DECISION | Platform | No error tracking or alerting service; logs only | Phase 2: architecture and code quality |
-| E-019 | P2 | OPEN | Database | Some tables carry a tenant id; whether every query honours it has not been audited | Phase 2: architecture and code quality |
-| E-021 | P2 | OPEN | API | List routes answer in two shapes: a bare list, or `{ data, meta }` | Phase 2: architecture and code quality |
+| E-019 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Some tables carry a tenant id; whether every query honours it has not been audited | Phase 2: architecture and code quality |
+| E-021 | P2 | DEFERRED TO SPECIFIC PHASE | API | List routes answer in two shapes: a bare list, or `{ data, meta }` | Phase 2: architecture and code quality |
 | F-008 | P2 | REQUIRES BUSINESS DECISION | Web store checkout | The store shows the buyer an estimate of tax by the ship-to state. On acceptance the order is taxed by the selling branch (rule 27). The two can differ | Shipping and financial operations |
 | F-009 | P2 | REQUIRES BUSINESS DECISION | Invoices | Any staff login can read every invoice and its payments (reads are open to all staff by design; only changes are restricted) | Shipping and financial operations |
-| F-011 | P2 | OPEN | Shipping documents | Whether a bill of lading or packing list can be printed for a shipment was not examined. Print code exists in the server (`printQueue`, `printAutomationService`); the new Shipment screen has no print button | Shipping and financial operations |
-| F-012 | P2 | OPEN | Frontend build | A stray word left in `AppRouter.jsx` by a patch in this workstream passed the production build and broke every screen at run time. Caught by the browser check before commit | Shipping and financial operations |
-| I-017 | P2 | DEFERRED WITH JUSTIFICATION | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
+| F-011 | P2 | DEFERRED TO SPECIFIC PHASE | Shipping documents | Whether a bill of lading or packing list can be printed for a shipment was not examined. Print code exists in the server (`printQueue`, `printAutomationService`); the new Shipment screen has no print button | Shipping and financial operations |
+| F-012 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend build | A stray word left in `AppRouter.jsx` by a patch in this workstream passed the production build and broke every screen at run time. Caught by the browser check before commit | Shipping and financial operations |
+| I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Manufacturing and processing |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
-| S-008 | P2 | DEFERRED WITH JUSTIFICATION | Order entry | Two entry screens list four Michigan branches in code | Sales and customer operations |
+| S-008 | P2 | DEFERRED TO SPECIFIC PHASE | Order entry | Two entry screens list four Michigan branches in code | Sales and customer operations |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
-| S-021 | P2 | OPEN | Order Hub | A second RFQ console, not in the menu, beside RFQs & Quotes | Sales and customer operations |
-| S-022 | P2 | OPEN | Counter | The POS session API is called by no screen and saves no tax | Sales and customer operations |
+| S-021 | P2 | DEFERRED TO SPECIFIC PHASE | Order Hub | A second RFQ console, not in the menu, beside RFQs & Quotes | Sales and customer operations |
+| S-022 | P2 | DEFERRED TO SPECIFIC PHASE | Counter | The POS session API is called by no screen and saves no tax | Sales and customer operations |
 | S-024 | P2 | IN PROGRESS | Help manual | Pricing, Sales Dashboard, Sales Rep Mobile and customer pages described tabs, contracts, signatures, visit logs and offline use that do not exist | Sales and customer operations |
-| S-026 | P2 | OPEN | Sales screens | Screen code calls 18 sales routes that do not exist: 13 under `/api/pricing` in `api/pricing.js`, 3 will-call, 2 split-shipment | Sales and customer operations |
+| S-026 | P2 | DEFERRED TO SPECIFIC PHASE | Sales screens | Screen code calls 18 sales routes that do not exist: 13 under `/api/pricing` in `api/pricing.js`, 3 will-call, 2 split-shipment | Sales and customer operations |
 | S-027 | P2 | REQUIRES BUSINESS DECISION | Quotes | Quote lines are priced by hand; the screen offers no customer price because RFQ lines are free text, not products | Sales and customer operations |
-| X-008 | P2 | OPEN | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
-| X-010 | P2 | OPEN | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
-| B-006 | P3 | OPEN | Counter (older session flow) | Three routes cannot work. No screen reaches them. | Phase 2: architecture and code quality |
-| B-013 | P3 | OPEN | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
-| B-020 | P3 | OPEN | Access control | One name matches nothing. | Phase 2: architecture and code quality |
-| B-022 | P3 | OPEN | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
-| B-024 | P3 | OPEN | Code base | The 39 effect warnings are the ones that can be defects: an effect that reads a value it does not list can show stale data. They have not been read one by one. | Phase 2: architecture and code quality |
-| D-023 | P3 | OPEN |  | The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed). | By subject (see the finding) |
-| D-027 | P3 | OPEN |  | The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured. | By subject (see the finding) |
+| X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
+| X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
+| B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
+| B-022 | P3 | DEFERRED TO SPECIFIC PHASE | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
+| B-024 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | The 39 effect warnings are the ones that can be defects: an effect that reads a value it does not list can show stale data. They have not been read one by one. | Phase 2: architecture and code quality |
+| C-012 | P3 | DEFERRED TO SPECIFIC PHASE | Order intake | A fixed code. If the company record has another code the seller is left empty. | Sales and customer operations |
+| D-023 | P3 | DEFERRED TO SPECIFIC PHASE |  | The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed). | By subject (see the finding) |
+| D-027 | P3 | DEFERRED TO SPECIFIC PHASE |  | The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured. | By subject (see the finding) |
 | D-035 | P3 | REQUIRES BUSINESS DECISION |  | Sales tax is charged only for states that have a rate set. A sale at a branch in a state with no rate charges no tax and says so on the screen. A login with no home branch also charges no tax. A new screen, Admin > Sales | By subject (see the finding) |
-| E-012 | P3 | OPEN | API | 39 routes send the raw error text on a server error | Phase 2: architecture and code quality |
-| E-018 | P3 | DEFERRED WITH JUSTIFICATION | Code | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Phase 2: architecture and code quality |
-| U-002 | P3 | OPEN | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
-| U-004 | P3 | OPEN | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
-| U-008 | P3 | OPEN | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
-| U-011 | P3 | OPEN | Order entry, Retail POS | Branch list fixed at four Michigan branches | Phase 9: user experience |
+| E-018 | P3 | DEFERRED TO SPECIFIC PHASE | Code | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Phase 2: architecture and code quality |
+| U-002 | P3 | DEFERRED TO SPECIFIC PHASE | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
+| U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
+| U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
+| U-011 | P3 | DEFERRED TO SPECIFIC PHASE | Order entry, Retail POS | Branch list fixed at four Michigan branches | Phase 9: user experience |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
-| U-019 | P3 | OPEN | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
-| U-020 | P3 | OPEN | Menu | "Inventory" and "Units" were two different stock lists | Phase 9: user experience |
-| U-022 | P3 | OPEN | Receiving | A heat must be added before its stock, one at a time | Phase 9: user experience |
-| U-028 | P3 | OPEN | Old operator screen | Recorded output into nothing | Phase 9: user experience |
-| U-029 | P3 | OPEN | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
-| U-035 | P3 | OPEN | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
-| U-036 | P3 | OPEN | Shipment | No button to print a bill of lading or packing list | Phase 9: user experience |
-| U-037 | P3 | OPEN | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
-| U-040 | P3 | OPEN | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
-| U-041 | P3 | OPEN | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user experience |
+| U-019 | P3 | DEFERRED TO SPECIFIC PHASE | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
+| U-020 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | "Inventory" and "Units" were two different stock lists | Phase 9: user experience |
+| U-022 | P3 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be added before its stock, one at a time | Phase 9: user experience |
+| U-028 | P3 | DEFERRED TO SPECIFIC PHASE | Old operator screen | Recorded output into nothing | Phase 9: user experience |
+| U-029 | P3 | DEFERRED TO SPECIFIC PHASE | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
+| U-035 | P3 | DEFERRED TO SPECIFIC PHASE | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
+| U-036 | P3 | DEFERRED TO SPECIFIC PHASE | Shipment | No button to print a bill of lading or packing list | Phase 9: user experience |
+| U-037 | P3 | DEFERRED TO SPECIFIC PHASE | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
+| U-040 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
+| U-041 | P3 | DEFERRED TO SPECIFIC PHASE | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user experience |
 
 ## Every finding in full
 
@@ -154,7 +150,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Probe section 1: 290 not refused before, 0 after (542 calls). Unit test "read-only roles change nothing, and may still ask questions that change nothing".
 - **First recorded in:** Phase 1 discovery
 
-### B-003 · P1 · OPEN
+### B-003 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Access control
@@ -170,10 +166,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Needs the owner's rule first: which roles are held to their own branch or region for reading, and which for changing. Then one scoping helper used by every route, and a sweep section that proves it.
 - **Required tests:** A sweep section: a branch login cannot read or change another branch's rows on every route that carries a location.
 - **Assigned phase:** Security and multi-location phase (extends E-019)
-- **Status note:** Owner's decision 2, 2026-11-13: Read as: staff see and change only their own branch's records. Super admin and high-level management see every branch. Which roles count as high-level management, and how transfers and ship-from-another-branch work under this rule, will be proposed in the security and multi-location phase for the owner to confirm.
+- **Status note:** Owner's decision 2, 2026-11-13: Read as: staff see and change only their own branch's records. Super admin and high-level management see every branch. Which roles count as high-level management, and how transfers and ship-from-another-branch work under this rule, will be proposed in the security and multi-location phase for the owner to confirm. Phase 2: enforced in the database client (lib/branchScope.js, lib/db.js) for orders, order lines, invoices, invoice lines, payments, stock items, stock levels, shipments, shipment items, jobs, work orders, work centers, dispatch jobs, dispatch operations and stock movements. Roles that see every branch: super admin, tenant owner, admin, executive, CFO, COO, CIO, division director, operations manager, sales director, credit manager, data analyst, auditor, integration admin. What it does not yet cover is finding C-009.
+- **Verification evidence:** qa/sim/branch-boundary.mjs: 37 checks, 0 problems (25 fail with the boundary switched off). test/branchScope.test.js: 9 unit tests. Simulation 150 of 150 and sweep 20 of 20 with the boundary on.
 - **First recorded in:** Phase 1 discovery
 
-### B-004 · P1 · OPEN
+### B-004 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Access control
@@ -189,7 +186,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Needs the owner's matrix. Proposed: set-up records (work centers, recipes, BOMs, staff, assets, dispatch set-up) to production managers and admins; documents delete to quality, warehouse leads and managers; maintenance to maintenance and production managers; order hub to sales.
 - **Required tests:** Probe: one refused role per area, generated from the rule table.
 - **Assigned phase:** Security and multi-location phase
-- **Status note:** Owner's decision 3, 2026-11-13: The engineer assigns each area to the department that does that work, lists the assignment in permissions-matrix.md when it is implemented, and the owner can change any line.
+- **Status note:** Owner's decision 3, 2026-11-13: The engineer assigns each area to the department that does that work, lists the assignment in permissions-matrix.md when it is implemented, and the owner can change any line. Phase 2, under the owner's decision 3: every area now has a department or role (lib/roleAccess.js WRITE_RULES; the table is in phase-02-service-boundaries.md and permissions-matrix.md). The owner can change any line.
+- **Verification evidence:** test/roleAccess.test.js "the areas that had no department now have one"; qa/sim/phase2-integrity.mjs: 10 refusals through the API; qa/tools/access-coverage.mjs: 319 changing routes, 0 with no rule or stated reason (it fails the gates if one appears).
 - **First recorded in:** Phase 1 discovery
 
 ### B-005 · P2 · VERIFIED FIXED
@@ -211,7 +209,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Probe section 3: 19 server errors before, 3 after (the 3 are B-006). Unit test "a change aimed at a missing record…".
 - **First recorded in:** Phase 1 discovery
 
-### B-006 · P3 · OPEN
+### B-006 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter (older session flow)
@@ -227,9 +225,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Remove the three routes and the unreachable hook, or repair them if the session counter flow is kept (X-008 decides).
 - **Required tests:** Probe section 3 ceiling drops from 3 to 0.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Phase 2: the three routes answer 501 with a plain sentence instead of crashing. Nothing was removed; whether the session counter flow is finished or retired stays with X-008.
+- **Verification evidence:** Baseline probe section 3: 275 changing routes, 0 server errors (ceiling lowered from 3 to 0 in qa/tools/run-gates.sh).
 - **First recorded in:** Phase 1 discovery
 
-### B-007 · P2 · OPEN
+### B-007 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Work centers, assets, maintenance orders, executive decisions
@@ -245,9 +245,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Read these four through lib/fieldRules.js.
 - **Required tests:** Sweep: an unlisted field in the body is not saved.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Phase 2: work centers (create and change), equipment (change) and maintenance orders (change) read a field list (lib/fieldRules.js). Creating a work center used to fail every time because it named two columns that do not exist; it works now (C-004). The executive decision route was not mass assignment (its service picks the fields); only who made the decision was wrong, and that now comes from the signed-in user.
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: 9 checks on work centers, equipment and maintenance orders. The executive decision change has no automated check: FIXED, NOT VERIFIED for that one line.
 - **First recorded in:** Phase 1 discovery
 
-### B-008 · P2 · OPEN
+### B-008 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Jobs, order hub, counter sessions, demand shaping
@@ -263,9 +265,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Required fields per route. Which of the seven may legitimately start empty needs one line from the owner each (drafts).
 - **Required tests:** Probe section 3 reports "saved from nothing" as 0, or lists the allowed drafts.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Phase 2: jobs (both addresses), order hub contacts and orders, and intake drafts refuse a save with nothing in it. Two of the seven are by design and stay: a counter session needs only the signed-in user (it now ignores a user id sent by the browser), and demand-shaping suggestions log which suggestions were shown.
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: 6 checks. Baseline probe section 3: records saved from nothing fell from 7 routes to the 2 that are by design.
 - **First recorded in:** Phase 1 discovery
 
-### B-009 · P1 · OPEN
+### B-009 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Second stock list, order hub, stop work
@@ -279,12 +283,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Stock adjusted or transferred in the second list changes nothing the business ships from. At volume, each request to it reads every row.
 - **Affected dependencies:** D-024, S-021, I-011 and the open decision card "Choose which stock list is the real one".
 - **Recommended correction:** The owner chooses the real one of each pair. Then the other is removed or made a view of the first.
+- **Deferred: reason:** Connecting or retiring the second stock list and the order hub means moving or discarding the records they hold as JSON and changing nine screens. That is a data migration, which Phase 3 owns, and the owner applies database changes himself.
+- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Deferred: required correction:** For each of the two: either read and write the real tables through the existing routes, or switch its changing routes off and label its screens. Then remove the JSON stores.
+- **Deferred: dependencies:** Owner decision 1 (given). I-012, S-021, U-002, U-020. The JSON stores in AppSetting.
+- **Deferred: acceptance criteria:** No changing route writes stock or orders anywhere but the Inventory, Coil, Order and OrderLine tables; db-facts shows 0 rows in the JSON stores.
+- **Deferred: verification:** A sweep section that changes stock and an order through every remaining route and finds each change in the real tables; the 125-screen check.
 - **Required tests:** A two-requests-at-once test on whichever store is kept; the audit shows one stock list.
 - **Assigned phase:** Phase 2: architecture and code quality (after the decision)
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them.
 - **First recorded in:** Phase 1 discovery
 
-### B-010 · P2 · OPEN
+### B-010 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Users, shop-floor operations, job planning, material tracking, cockpit, partner carrier
@@ -300,6 +310,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Wrap each in one transaction.
 - **Required tests:** A test per handler that fails the second change and checks the first was not kept.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Phase 2: 10 of the 16 handlers now save in one transaction: users (create, edit, delete, reset password), job plan, operation start, complete and reassign, staging ship, recipe change. One was never a multi-step save (deleting a work center type is a single write). Three are separate findings: accepting a cockpit recommendation (C-013), the equipment seed and demand shaping (repeatable set-up writes, by design), and the carrier proof of delivery (C-002).
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: start, complete, reassign and plan checked against the database, including a refused reassign that leaves the clock running. 32 of the first 43 checks fail on the code before the change.
 - **First recorded in:** Phase 1 discovery
 
 ### B-011 · P2 · REQUIRES BUSINESS DECISION
@@ -320,7 +332,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Manufacturing phase
 - **First recorded in:** Phase 1 discovery
 
-### B-012 · P2 · OPEN
+### B-012 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Lists across the server
@@ -334,11 +346,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Response size and time grow with the data at 80 branches.
 - **Affected dependencies:** Screens that expect the whole list.
 - **Recommended correction:** Read each of the 58; give the growing ones a limit and paging, and record the fixed-size ones as accepted.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Performance phase.
+- **Deferred: target phase:** Performance phase: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Screens that expect the whole list.
+- **Deferred: acceptance criteria:** A list that grows with the business has a limit and paging.
+- **Deferred: verification:** The existing "bounded lists" sweep check extended to these routes.
 - **Required tests:** The existing "bounded lists" sweep check extended to these routes.
 - **Assigned phase:** Performance phase
 - **First recorded in:** Phase 1 discovery
 
-### B-013 · P3 · OPEN
+### B-013 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Code base
@@ -351,11 +368,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Slower builds and reviews; old mock code can be wired back in by mistake.
 - **Affected dependencies:** None by definition; confirm each before deleting.
 - **Recommended correction:** Delete after confirming each file; remove the packages.
+- **Deferred: reason:** The owner decided on 13 November that every sample module is to be built (decision 4). Most of the 45 unused screen files belong to those modules, so deleting them now would remove material the build will start from. The six unused packages are left for the same change, so the lock files change once.
+- **Deferred: target phase:** The phase the owner issues for each module that is built (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** When a module is built, delete the files it replaced. Remove the packages no file imports.
+- **Deferred: dependencies:** Decision 4. X-001, X-002.
+- **Deferred: acceptance criteria:** Discovery reports 0 files imported by nothing and 0 unused packages.
+- **Deferred: verification:** qa/tools/discover.mjs; build, lint and the 125-screen check after each removal.
 - **Required tests:** Build, lint and the 125-screen check after removal.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Reviewed in Phase 2. Not deleted.
 - **First recorded in:** Phase 1 discovery
 
-### B-014 · P2 · OPEN
+### B-014 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Code base
@@ -368,11 +392,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Changes are risky and slow; most rules can only be tested through the whole server.
 - **Affected dependencies:** Every phase that changes these files.
 - **Recommended correction:** Move rules out of the largest handlers into lib/ as they are touched (already done for prices, tax, credit, receiving, workflow moves). Split the five largest screens.
+- **Deferred: reason:** The remaining rules sit in 14 route files of 500 to 1,390 lines. Moving them is a refactor of working, tested code, and the Phase 2 instruction is not to refactor in bulk. Each move is safest when its module is being worked on anyway.
+- **Deferred: target phase:** The phase the owner issues for each module (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Per module: move the rule out of the handler into lib/ as a pure function with unit tests; the handler calls it.
+- **Deferred: dependencies:** E-018.
+- **Deferred: acceptance criteria:** Every rule in phase-02-business-rule-ownership.md has a named owner file and a unit test.
+- **Deferred: verification:** Unit tests per rule; the simulation and sweep unchanged.
 - **Required tests:** Unit tests for each rule moved; the browser suites before and after.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Phase 2 moved three rules into testable units: the branch boundary (lib/branchScope.js), who may change a login (lib/userAdminRules.js) and the department table (lib/roleAccess.js). phase-02-business-rule-ownership.md lists every critical rule, its owner file and whether a unit test reaches it.
 - **First recorded in:** Phase 1 discovery
 
-### B-015 · P2 · OPEN
+### B-015 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Frontend
@@ -386,11 +417,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Keyboard and screen-reader users; inconsistent confirmations.
 - **Affected dependencies:** None.
 - **Recommended correction:** Name every icon button; replace the 25 native boxes; add an automated accessibility check to the browser suites.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** Every control has a name a screen reader can say; confirmations use the application's own dialogs.
+- **Deferred: verification:** An accessibility scan in the browser suites.
 - **Required tests:** An accessibility scan in the browser suites.
 - **Assigned phase:** Phase 9: user experience
 - **First recorded in:** Phase 1 discovery
 
-### B-016 · P1 · OPEN
+### B-016 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Testing
@@ -404,11 +440,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A regression in dispatch, staff, quality records, drop tags, maintenance, the partner API or the order hub would not be seen.
 - **Affected dependencies:** Every later phase relies on these gates.
 - **Recommended correction:** Add success-path tests area by area as each phase reaches it; run the database-backed gates in the pull-request workflow with a Postgres service.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Testing phase; each phase for its own area.
+- **Deferred: target phase:** Testing phase; each phase for its own area: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Every later phase relies on these gates.
+- **Deferred: acceptance criteria:** Every route the business depends on has a test that makes it succeed and checks the result.
+- **Deferred: verification:** The measured number rises each phase; it is recorded in progress.json.
 - **Required tests:** The measured number rises each phase; it is recorded in progress.json.
 - **Assigned phase:** Testing phase; each phase for its own area
 - **First recorded in:** Phase 1 discovery
 
-### B-017 · P2 · OPEN
+### B-017 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -421,6 +462,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Migrations, backups and reviews carry tables that mean nothing; the schema overstates what the product does.
 - **Affected dependencies:** X-009 decides which modules are built.
 - **Recommended correction:** After the X-009 decisions, drop the tables of modules that will not be built. Dropping tables is a destructive change and needs the owner's approval and a SQL Editor file.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Data integrity phase (after X-009).
+- **Deferred: target phase:** Data integrity phase (after X-009): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** X-009 decides which modules are built.
+- **Deferred: acceptance criteria:** A table exists because something uses it.
+- **Deferred: verification:** The inventory shows no table without code.
 - **Required tests:** The inventory shows no table without code.
 - **Assigned phase:** Data integrity phase (after X-009)
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
@@ -462,7 +508,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Integration phase
 - **First recorded in:** Phase 1 discovery
 
-### B-020 · P3 · OPEN
+### B-020 · P3 · NOT APPLICABLE
 
 - **Discovered:** 2026-11-13
 - **Module:** Access control
@@ -477,9 +523,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Remove the name, or add the role if mills need it.
 - **Required tests:** A unit test that every role in the rule table exists in the schema.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Phase 2: the finding was wrong. MILL_OPERATOR is in the role list of the database schema (an older role kept for existing logins), so the name does match.
+- **Verification evidence:** Read prisma/schema.prisma, enum UserRole.
 - **First recorded in:** Phase 1 discovery
 
-### B-021 · P2 · OPEN
+### B-021 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Documents
@@ -493,12 +541,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** None on the current host. A move to a disk host would expose customer documents to anyone with the address.
 - **Affected dependencies:** Screens that link to /uploads directly, if any.
 - **Recommended correction:** Remove the static mount and serve only through the download route.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Security and multi-location phase.
+- **Deferred: target phase:** Security and multi-location phase: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Screens that link to /uploads directly, if any.
+- **Deferred: acceptance criteria:** A mill certificate or signed delivery note is served only to a signed-in user who may see it (GET /api/documents/:id/download does this).
+- **Deferred: verification:** Sweep: /uploads/… answers 401 or 404 with no token.
 - **Required tests:** Sweep: /uploads/… answers 401 or 404 with no token.
 - **Assigned phase:** Security and multi-location phase
 - **Status note:** NOT VERIFIED by a probe
 - **First recorded in:** Phase 1 discovery
 
-### B-022 · P3 · OPEN
+### B-022 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Demo and QA data
@@ -512,6 +565,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Reports on a demo database show mismatches; the same seed must never be run on the live database.
 - **Affected dependencies:** D-023.
 - **Recommended correction:** Rebuild the demo seed through the API, or delete it.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Data integrity phase.
+- **Deferred: target phase:** Data integrity phase: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** D-023.
+- **Deferred: acceptance criteria:** Seed data obeys the same rules as real data.
+- **Deferred: verification:** db-facts checks return 0 with no demo exclusion.
 - **Required tests:** db-facts checks return 0 with no demo exclusion.
 - **Assigned phase:** Data integrity phase
 - **First recorded in:** Phase 1 discovery
@@ -534,7 +592,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** npm run lint at the root: 201 errors before, 0 after (1,524 warnings remain, B-024).
 - **First recorded in:** Phase 1 discovery
 
-### B-024 · P3 · OPEN
+### B-024 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Code base
@@ -547,11 +605,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Possible stale data on screens; noise that hides new problems.
 - **Affected dependencies:** None.
 - **Recommended correction:** Read the 39 effect warnings and fix the real ones; remove unused imports; then make the root lint a pull-request check with a warning ceiling.
+- **Deferred: reason:** The other 38 change no saved data. Rewriting each effect is screen work with a visual check, which belongs to the screen phase.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** Rewrite each effect so it lists what it reads, screen by screen.
+- **Deferred: dependencies:** X-008 for the session counter files.
+- **Deferred: acceptance criteria:** qa/tools/frontend-checks.mjs reports 0.
+- **Deferred: verification:** The ratchet in the gates: the ceiling is 38 and can only go down.
 - **Required tests:** Root lint with a ceiling that can only go down.
 - **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Phase 2 read all 39. One was a defect and is fixed: on the order entry screen the override confirmation could submit through an older copy of the submit handler (C-008). 28 are the same harmless shape (load once when the screen opens). 10 are in the session counter flow, the map and the voice assistant.
 - **First recorded in:** Phase 1 discovery
 
-### B-025 · P2 · OPEN
+### B-025 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter quick sale
@@ -567,8 +632,285 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** After the decision: record a stock movement on sale and on void, and give a voided sale its own status or flag.
 - **Required tests:** Simulation: a counter sale reduces the shelf item and a void restores it; reports exclude voided sales.
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Owner's decision 6, 2026-11-13: A counter sale reduces stock, and a void puts it back.
+- **Status note:** Owner's decision 6, 2026-11-13: A counter sale reduces stock, and a void puts it back. Phase 2, owner's decision 6: a counter sale takes its pieces from the shelf stock of the selling branch and a void puts them back. What is still missing is a way to receive shelf items by the piece (C-011), so in practice a product has shelf stock only once that exists.
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: 13 checks, including three sales at once for the last pieces and one sale sent three times.
 - **First recorded in:** Phase 1 discovery
+
+### C-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** User administration
+- **Workflow:** Creating and changing logins
+- **Category:** Security: privilege escalation
+- **Source file or endpoint:** src/backend/src/routes/users.js (POST /, PUT /:id, DELETE /:id, POST /:id/reset-password)
+- **Evidence:** Code read, then qa/sim/phase2-integrity.mjs on the code before the fix: a branch manager created SUPER_ADMIN, ADMIN, EXECUTIVE and BRANCH_MANAGER logins (201 each), changed their own role to SUPER_ADMIN (200), added a branch to themselves (200) and changed the super admin's name (200).
+- **Expected:** Nobody can grant a role above their own or a branch they are not in.
+- **Actual:** The four routes checked only that the caller was a manager. A branch manager could make themselves super admin; an admin could reset a super admin's password or switch the account off.
+- **Root cause or suspected cause:** requireRole checked the caller and never the change.
+- **Operational impact:** Any branch manager could take over the system, and with it undo the branch boundary.
+- **Recommended correction:** lib/userAdminRules.js: one rule for who may give which role and which branches, used by all four routes.
+- **Required tests:** Unit tests for the rule; the same attempts through the API.
+- **Assigned phase:** Phase 2: architecture and code quality
+- **Verification evidence:** test/userAdminRules.test.js (5 tests). qa/sim/phase2-integrity.mjs: 14 checks through the API; 10 of them fail on the code before the fix.
+- **First recorded in:** Phase 2 architecture review
+
+### C-002 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API: carriers
+- **Workflow:** Carrier status and proof of delivery
+- **Category:** Broken code; rule bypass
+- **Source file or endpoint:** src/backend/src/routes/partner/carrierRoutes.js
+- **Evidence:** Code read against prisma/schema.prisma: the routes filter on Shipment.carrier and read order.buyerOrgId, neither of which exists; they set the statuses CONFIRMED and DELAYED, which are not shipment statuses; and they write the shipment directly instead of calling the dispatch and delivery steps in routes/shipments.js.
+- **Expected:** A carrier update goes through the same rules as a dispatch or delivery entered by staff (stock leaves, the invoice is raised, proof of delivery is checked).
+- **Actual:** The carrier routes cannot work as written, and if repaired in place would skip those rules.
+- **Root cause or suspected cause:** Written against an earlier schema.
+- **Operational impact:** None today: no carrier has a token and the sweep shows the partner API refuses every call without one. A risk the day a carrier is connected.
+- **Affected dependencies:** B-018, B-019 (partner messages and the scheduled trigger).
+- **Recommended correction:** Export the dispatch and deliver steps from routes/shipments.js and have the carrier routes call them.
+- **Deferred: reason:** It needs a carrier connection to test against, and the owner has deferred partner messaging (decision 5). Nothing reaches these routes today.
+- **Deferred: target phase:** The phase the owner issues for integrations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Call the core dispatch and deliver steps; remove the two statuses that do not exist.
+- **Deferred: dependencies:** Decision 5; B-018; B-019.
+- **Deferred: acceptance criteria:** A carrier update produces exactly the records a staff dispatch or delivery does.
+- **Deferred: verification:** A sweep section using a carrier token; reconciliation 0 problems.
+- **Required tests:** A carrier token dispatches and delivers a shipment and the simulation's reconciliation stays at zero problems.
+- **Assigned phase:** Integration phase
+- **First recorded in:** Phase 2 architecture review
+
+### C-003 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Jobs
+- **Workflow:** Planning a job
+- **Category:** Data integrity
+- **Source file or endpoint:** src/backend/src/routes/jobs.js (POST /:id/plan)
+- **Evidence:** qa/sim/phase2-integrity.mjs on the code before the fix: the dispatch job of a job at branch QA-L01 was saved with the branch "FWA", a piece of text that is no branch; and the job's move to SCHEDULED left no line in its history.
+- **Expected:** A plan belongs to the branch the work is done at, and every job move is in the history.
+- **Actual:** Every plan made without a branch in the request was filed under "FWA". Under the branch boundary those plans are invisible to branch staff, so operators got "not found" on their own operations.
+- **Root cause or suspected cause:** A hard-coded default from the first demo.
+- **Operational impact:** Shop-floor operations unusable for branch staff once the boundary is on; history incomplete.
+- **Recommended correction:** The branch comes from the job's work center, else the order, else the planner's home branch; the move is recorded in the same transaction.
+- **Required tests:** Plan a job and read its dispatch job and history from the database.
+- **Assigned phase:** Phase 2: architecture and code quality
+- **Status note:** Existing rows in the live database that hold "FWA" or other text are a data clean-up for Phase 3 (see the handoff).
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: "the plan belongs to the branch of the job's work center" and "planning moves the job to SCHEDULED and the history says so".
+- **First recorded in:** Phase 2 architecture review
+
+### C-004 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Work centers
+- **Workflow:** Set-up
+- **Category:** Broken code
+- **Source file or endpoint:** src/backend/src/routes/workCenters.js (POST /)
+- **Evidence:** qa/sim/phase2-integrity.mjs on the code before the fix: POST /api/work-centers answered 400 for a complete, valid work center.
+- **Expected:** A work center can be created.
+- **Actual:** The handler wrote hourlyRate and setupMinutes, which are not columns, so every create failed.
+- **Root cause or suspected cause:** Written against an earlier schema.
+- **Operational impact:** No work center could be added through the product.
+- **Recommended correction:** A field list for create and change; branch and duplicate-code checks.
+- **Required tests:** Create, duplicate, bad branch, change.
+- **Assigned phase:** Phase 2: architecture and code quality
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: 6 checks.
+- **First recorded in:** Phase 2 architecture review
+
+### C-005 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Shop-floor operations and jobs
+- **Workflow:** Starting and completing operations; moving a job
+- **Category:** Data integrity: simultaneous requests
+- **Source file or endpoint:** src/backend/src/routes/operationsRoutes.js (start, complete); src/backend/src/routes/jobs.js (POST and PATCH /:id/status)
+- **Evidence:** qa/sim/phase2-integrity.mjs on the code before the fix. Two operators completing the last two operations of a job at the same moment: in 8 of 8 rounds the job stayed IN_PROCESS for ever, because each request counted the other operation as still open. Completing an operation of a cancelled job moved the cancelled job to WAITING_QC. Two people moving one job at once both succeeded and the history did not match the job.
+- **Expected:** Whatever the timing, the job, its operations and its history agree, and a cancelled job stays cancelled.
+- **Actual:** Three ways for the shop-floor record to end up wrong under ordinary simultaneous use.
+- **Root cause or suspected cause:** Read, decide, write with no lock and no condition on the write.
+- **Operational impact:** Jobs stuck in process that are in fact finished; cancelled work reappearing in the inspection queue.
+- **Recommended correction:** Completing an operation locks the dispatch job and the job first. Operations of a finished or cancelled job are refused (409). A repeated completion changes nothing. A job status move applies only if the job is still in the status it was checked in, and is saved with its history line.
+- **Required tests:** Race rounds for each case, checked against the database.
+- **Assigned phase:** Phase 2: architecture and code quality
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: four race checks of 8 rounds each, plus the cancelled-job and repeated-completion checks. All fail on the code before the fix.
+- **First recorded in:** Phase 2 architecture review
+
+### C-006 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Orders
+- **Workflow:** Order entry and web checkout
+- **Category:** Reliability: duplicate requests
+- **Source file or endpoint:** POST /api/orders, POST /api/orders/intake, POST /api/ecom/checkout/submit
+- **Evidence:** Code read: none of the three accepts a request key. The simulation probe "10 simultaneous orders all saved with distinct numbers" shows identical bodies are each saved. The counter quick sale is the one sale route that recognises a repeat (by its sale id).
+- **Expected:** A request repeated after a timeout or a double press creates one order.
+- **Actual:** It creates two. Only the screens guard against it, by disabling the button while saving.
+- **Root cause or suspected cause:** No idempotency key.
+- **Operational impact:** A duplicate order on a slow connection, found later by a person.
+- **Affected dependencies:** A new table for request keys.
+- **Recommended correction:** An Idempotency-Key header on order creation, stored with a unique rule per user, answering a repeat with the first reply.
+- **Deferred: reason:** It needs a new table with a unique rule, and every database change is made in Phase 3 and applied by the owner.
+- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Deferred: required correction:** Table RequestKey (userId, key, route, reply, createdAt) with a unique rule on (userId, key); a small middleware on the three routes; the screens send a key per form.
+- **Deferred: dependencies:** None besides the migration.
+- **Deferred: acceptance criteria:** The same key twice creates one order and returns the same answer both times.
+- **Deferred: verification:** A check in qa/sim/phase2-integrity.mjs for each of the three routes, in sequence and simultaneous.
+- **Required tests:** The same key twice, in sequence and at once: one order, the same answer.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 2 architecture review
+
+### C-007 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Shop floor screen; counter will-call screen
+- **Workflow:** Work center queue; will-call queue
+- **Category:** Data honesty
+- **Source file or endpoint:** src/frontend/src/apps/shopfloor/WorkCenterQueuePage.jsx; src/frontend/src/components/pos/screens/WillCallQueueScreen.jsx
+- **Evidence:** Code read while triaging B-024: when the operator list failed to load, the work center queue showed an operator called "Default Operator" with the id OP-001; when the will-call queue failed to load, the screen showed three invented orders for invented customers.
+- **Expected:** A failed load shows an error and nothing else.
+- **Actual:** Two real screens showed made-up records as if they were real.
+- **Root cause or suspected cause:** Left from the prototype.
+- **Operational impact:** An operator could try to start work under a name that is not on file (the server refuses it); counter staff could look for material for an order that does not exist.
+- **Recommended correction:** Both show an empty list and the reason.
+- **Required tests:** A check that fails when a catch block sets a list holding a literal record.
+- **Assigned phase:** Phase 2: architecture and code quality
+- **Verification evidence:** qa/tools/frontend-checks.mjs: 0 (it reports 2 on the code before the fix). In the gates.
+- **First recorded in:** Phase 2 architecture review
+
+### C-008 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Order entry screen
+- **Workflow:** Submitting an order that needs an override
+- **Category:** Frontend state
+- **Source file or endpoint:** src/frontend/src/pages/Orders/CSRIntakePage.jsx (handleOverrideConfirm)
+- **Evidence:** The lint rule for effects: the handler called doSubmit without listing it, so it kept the copy of doSubmit from the render in which the override dialog opened.
+- **Expected:** The order submitted is the one on the screen.
+- **Actual:** A change made to the form between opening the dialog and confirming it would not have been in the order sent.
+- **Root cause or suspected cause:** A missing dependency.
+- **Operational impact:** Small: the dialog is modal, so the form cannot normally change underneath it.
+- **Recommended correction:** The handler is declared after doSubmit and lists it.
+- **Required tests:** The effect ratchet.
+- **Assigned phase:** Phase 2: architecture and code quality
+- **Verification evidence:** qa/tools/frontend-checks.mjs: 38, down from 39; the ceiling in the gates is 38. The order entry browser checks pass.
+- **First recorded in:** Phase 2 architecture review
+
+### C-009 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Access control
+- **Workflow:** Branch boundary
+- **Category:** Security: incomplete isolation
+- **Source file or endpoint:** src/backend/src/lib/branchScope.js (BRANCH_OWNED); prisma/schema.prisma
+- **Evidence:** Code read. The boundary covers 15 record types. It does not cover: quotes and requests for quotation (no branch column), customers and contacts (shared by design, not decided), packages, drop tags, documents, inspections, maintenance orders and equipment (reachable only through a branch-owned record today), the second stock list and order hub (JSON stores, B-009), records read through a nested include of a record of another type, and the 14 raw SQL statements. A login with no home branch and no all-branch role sees no branch records at all.
+- **Expected:** Every record that belongs to a branch is held to it, and every staff login has a branch.
+- **Actual:** The core order-to-cash and shop records are held; the rest are not.
+- **Root cause or suspected cause:** The tables have no branch column to filter on.
+- **Operational impact:** A branch login can still read another branch's quotes and the records listed. Stock, orders, invoices, shipments, jobs and work orders are held.
+- **Affected dependencies:** Branch columns on Quote, RFQ, Package, DropTag, Document; a home branch on every staff login in the live database.
+- **Recommended correction:** Add the columns (Phase 3), add the models to BRANCH_OWNED, extend qa/sim/branch-boundary.mjs with one refusal per model.
+- **Deferred: reason:** The missing piece is database columns and a backfill, which Phase 3 owns and the owner applies. None of the uncovered records carries stock or money.
+- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability for the columns and the home-branch backfill; Phase 10: security and infrastructure for the enforcement and its tests
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** The SQL Editor file 20261113190000_order_branch.sql applied first.
+- **Deferred: acceptance criteria:** Every table with a branch is in BRANCH_OWNED; every staff login has a home branch; branch-boundary.mjs has a refusal for each.
+- **Deferred: verification:** qa/sim/branch-boundary.mjs extended; a database check that counts staff logins with no home branch.
+- **Required tests:** One read and one change refused per added model.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 2 architecture review
+
+### C-010 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Counter quick sale
+- **Workflow:** Voiding a sale
+- **Category:** Data integrity: partial save
+- **Source file or endpoint:** src/backend/src/routes/quickSale.js (POST /:saleId/void)
+- **Evidence:** Code read: the void is claimed and the stock returned in one transaction (Phase 2). The credit memo and the refund are then made by two further calls, each its own transaction.
+- **Expected:** A void is all or nothing.
+- **Actual:** A failure after the claim leaves a sale marked void, its stock returned, and no credit memo or refund.
+- **Root cause or suspected cause:** creditInvoice and recordRefund open their own transactions and cannot be nested as written.
+- **Operational impact:** Rare (it needs a failure between two calls), and visible: the sale shows as void with money still taken.
+- **Affected dependencies:** F-series billing functions.
+- **Recommended correction:** Let creditInvoice and recordRefund accept an open transaction, and run the whole void in one.
+- **Deferred: reason:** The correction changes the two billing functions every credit and refund uses. Phase 3 is the transactional-correctness phase and will run the full money reconciliation around that change.
+- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** A forced failure at each step of a void leaves no partial record.
+- **Deferred: verification:** A unit test with a failing step, and the simulation's reconciliation.
+- **Required tests:** A failure forced after the claim leaves the sale exactly as it was.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 2 architecture review
+
+### C-011 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Receiving
+- **Workflow:** Shelf items
+- **Category:** Missing function
+- **Source file or endpoint:** src/backend/src/lib/receiving.js
+- **Evidence:** Code read: receiving creates stock by weight only (unit LB) and needs a heat and a grade. No route creates stock counted in pieces. The QA database holds 333 stock levels, all in LB.
+- **Expected:** Shelf items (discs, gloves) can be received by the piece, so the counter sale has stock to reduce.
+- **Actual:** They cannot. The counter rule built in Phase 2 takes effect only where piece-counted stock exists; elsewhere the sale goes through and the receipt says no stock was reduced.
+- **Root cause or suspected cause:** Receiving was built for metal by weight.
+- **Operational impact:** Shelf stock is still uncounted in practice until this is built.
+- **Affected dependencies:** I-016 (count and adjustment). The owner: may an item with no shelf stock on file be sold? Today it may, with the note.
+- **Recommended correction:** A receipt by the piece for products priced EACH, with no heat or grade.
+- **Deferred: reason:** It is a new receiving function with its own screen, and Coil.heatId and gradeId would have to allow empty values, which is a database change.
+- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability for the two columns; The phase the owner issues for inventory (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12 for the function and screen
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** I-016.
+- **Deferred: acceptance criteria:** A shelf item received by the piece is reduced by a counter sale and restored by a void, through the screens.
+- **Deferred: verification:** The counter checks in qa/sim/phase2-integrity.mjs run without a database fixture.
+- **Required tests:** Receive 10, sell 3, void 1 sale, count 7 then 10.
+- **Assigned phase:** Inventory and purchasing
+- **First recorded in:** Phase 2 architecture review
+
+### C-012 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Order intake
+- **Workflow:** Order entry
+- **Category:** Maintainability: hard-coded value
+- **Source file or endpoint:** src/backend/src/routes/intakeOrders.js (seller lookup by the code "ALRO")
+- **Evidence:** Code read: the seller on an intake order is found by the fixed code "ALRO".
+- **Expected:** The seller is the signed-in user's company.
+- **Actual:** A fixed code. If the company record has another code the seller is left empty.
+- **Root cause or suspected cause:** Left from the first customer set-up.
+- **Operational impact:** None while the code matches.
+- **Recommended correction:** Use the user's organization.
+- **Deferred: reason:** Changing it changes which company appears on existing order documents; it should be done with the sales module and checked against live data the engineer does not have.
+- **Deferred: target phase:** The phase the owner issues for sales and customer operations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** No company code in the source.
+- **Deferred: verification:** A sweep check.
+- **Required tests:** An intake order by a login of another company carries that company as seller.
+- **Assigned phase:** Sales and customer operations
+- **First recorded in:** Phase 2 architecture review
+
+### C-013 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Operations cockpit
+- **Workflow:** Accepting a recommendation
+- **Category:** Data integrity: trust in browser input
+- **Source file or endpoint:** src/backend/src/routes/opsCockpit.js (POST /recommendations/accept)
+- **Evidence:** Code read: the handler decides what to do from the words in the recommendation's title as sent by the browser (it looks for "bottleneck" or "Rebalance" and reads a work center code out of the text), then moves jobs between work centers in several separate writes.
+- **Expected:** The server acts on a recommendation it made and kept, identified by id, in one transaction.
+- **Actual:** Any text shaped like a recommendation moves jobs.
+- **Root cause or suspected cause:** Recommendations are generated on request and not stored.
+- **Operational impact:** Limited by Phase 2 to the production manager, schedulers and the inventory manager. A partial failure can leave some jobs moved.
+- **Affected dependencies:** M-series scheduling rules, which are not decided.
+- **Recommended correction:** Store recommendations; accept by id; one transaction.
+- **Deferred: reason:** What a recommendation may do is a scheduling rule the owner has not set, and inventing it is outside what Phase 2 may do.
+- **Deferred: target phase:** The phase the owner issues for manufacturing and processing (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** The owner's scheduling rules.
+- **Deferred: acceptance criteria:** Accepting acts only on a stored recommendation, once, all or nothing.
+- **Deferred: verification:** Checks in qa/sim/phase2-integrity.mjs.
+- **Required tests:** Accept twice; accept an id that does not exist; a forced failure.
+- **Assigned phase:** Manufacturing and processing
+- **First recorded in:** Phase 2 architecture review
 
 ### D-001 · P0 · VERIFIED FIXED
 
@@ -843,12 +1185,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Unit `quoteRules.test.js`. Sim quote-to-order job in every cycle, including a quote accepted twice at once making one order.
 - **First recorded in:** qa/defect-register.md
 
-### D-020 · P2 · OPEN
+### D-020 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
 - **Actual:** 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance.
 - **Recommended correction:** Many are helper functions no page uses. The screen check shows which pages actually hit a missing route when they open. Buttons inside pages were not clicked.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).
+- **Deferred: target phase:** By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
 - **Status note:** Open: engineering work
 - **First recorded in:** qa/defect-register.md
@@ -879,22 +1226,32 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Unit: paging test. Sweep: bad-paging variant on every read route.
 - **First recorded in:** qa/defect-register.md
 
-### D-023 · P3 · OPEN
+### D-023 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
 - **Actual:** The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed).
 - **Recommended correction:** Seed script, not app behaviour. Matters only because the demo site shows them.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).
+- **Deferred: target phase:** By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
 - **Status note:** Open: engineering work
 - **First recorded in:** qa/defect-register.md
 
-### D-024 · P2 · OPEN
+### D-024 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
 - **Actual:** Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`branchComparisonApi`, `cutoffRulesApi`, `intakeCustomersApi`, `overrideApi`, `splitShipmentApi`).
 - **Recommended correction:** Needs consolidation.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).
+- **Deferred: target phase:** By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
 - **Status note:** Open: engineering work
 - **First recorded in:** qa/defect-register.md
@@ -924,12 +1281,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep.
 - **First recorded in:** qa/defect-register.md
 
-### D-027 · P3 · OPEN
+### D-027 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
 - **Actual:** The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured.
 - **Recommended correction:** Already noted in the code.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).
+- **Deferred: target phase:** By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
 - **Status note:** Open: engineering work
 - **First recorded in:** qa/defect-register.md
@@ -1010,13 +1372,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs something from the business
 - **First recorded in:** qa/defect-register.md
 
-### D-034 · P2 · DEFERRED WITH JUSTIFICATION
+### D-034 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-12
 - **Category:** Missing function
 - **Actual:** Receipts, quotes and invoices are not emailed or texted. The buttons say so.
 - **Affected dependencies:** The email and text provider to connect.
 - **Recommended correction:** The email and text provider to connect.
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).
+- **Deferred: target phase:** By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** The email and text provider to connect.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
 - **Status note:** Owner's decision 5, 2026-11-13: Email and text are deferred by the owner. The scheduled trigger (a timer on the host that lets the system act without a person, for example to retry a failed partner message) was not decided and will be asked again, in plain terms, in the integration phase.
 - **First recorded in:** qa/defect-register.md
@@ -1032,12 +1399,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs something from the business
 - **First recorded in:** qa/defect-register.md
 
-### D-036 · P2 · OPEN
+### D-036 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
 - **Actual:** Sales Dashboard fixed in Phase 2 Workstream 2 (S-012): it now counts from the database. The Order Hub RFQ pages remain a separate console, not in the menu.
 - **Recommended correction:** Order Hub needs a decision (S-021).
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).
+- **Deferred: target phase:** By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
 - **Status note:** Open: engineering work
 - **First recorded in:** qa/defect-register.md
@@ -1087,7 +1459,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Migration `20261113062621`. Order detail 20 ms to 9 ms; jobs for an order 12 ms to 6 ms
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-004 · P1 · IN PROGRESS
+### E-004 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -1099,6 +1471,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A bug or a manual edit could leave negative stock
 - **Affected dependencies:** Owner applies the SQL file
 - **Recommended correction:** Fixed in Workstream 3
+- **Deferred: reason:** Database constraints are Phase 3 work and every database change is applied by the owner from a SQL Editor file.
+- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Deferred: required correction:** Add the remaining value checks listed in database-inventory.md.
+- **Deferred: dependencies:** The four SQL Editor files already waiting.
+- **Deferred: acceptance criteria:** Every money, quantity and status column the code relies on has a database rule.
+- **Deferred: verification:** Each constraint proven by an insert that it refuses; the migration run twice on a copy.
 - **Required tests:** The database refuses a row where on hand differs from available + reserved + on hold; three cycles pass with the rule on
 - **Assigned phase:** Phase 2: architecture and code quality
 - **Status note:** Fixed in part
@@ -1214,10 +1592,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** `npm audit --omit=dev` reports 0 in both packages and the full suite passes
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Fixed in part
+- **Status note:** Fixed in part Audited again in Phase 2 (13 November). Server: 1 moderate (uuid; the affected functions are not used, only v4 is). Screens: 1 high and 3 moderate (vite and esbuild, which run only on a developer machine; react-router, an open redirect through a crafted link). None is critical. Every fix is a major-version upgrade (uuid 14, vite 8, react-router-dom 7), which needs the owner's approval.
+- **Verification evidence:** npm audit in src/backend and src/frontend, this session.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-012 · P3 · OPEN
+### E-012 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** API
@@ -1231,10 +1610,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Assigned to Workstream 6
 - **Required tests:** No route sends raw error text; sweep section "Error replies" still at 0
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open
+- **Status note:** Open The reply layer (middleware/safeErrors.js) removes internal text from every error reply, whatever the route sent.
+- **Verification evidence:** Sweep section "Error replies do not expose internals": 0 replies exposed internal detail, this session.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-014 · P1 · OPEN
+### E-014 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -1244,6 +1624,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Expected:** Shared counter
 - **Actual:** The request rate limit counts per server instance
 - **Operational impact:** On the hosted site the real limit is several times the configured one
+- **Deferred: reason:** A shared counter needs a store on the host or a firewall rule, and host settings are the owner's.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** A shared rate counter (the database or the host's firewall).
+- **Deferred: dependencies:** Owner: host settings.
+- **Deferred: acceptance criteria:** The limit holds across server instances.
+- **Deferred: verification:** A burst test against two instances.
 - **Assigned phase:** Phase 2: architecture and code quality
 - **Status note:** Open: needs a shared store, which is a new service
 - **First recorded in:** qa/engineering-quality-findings.md
@@ -1265,7 +1651,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs the owner (see `production-readiness-checklist.md`)
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-016 · P2 · REQUIRES BUSINESS DECISION
+### E-016 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -1279,7 +1665,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** Lint runs in the pull-request workflow and passes
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: adding a linter is a new development dependency, so it needs approval
+- **Status note:** Open: adding a linter is a new development dependency, so it needs approval A lint configuration exists and runs on every pull request.
+- **Verification evidence:** Lint, frontend: passes. Lint, whole repository: 0 errors. Both run this session.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-017 · P2 · REQUIRES BUSINESS DECISION
@@ -1299,7 +1686,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs a provider choice
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-018 · P3 · DEFERRED WITH JUSTIFICATION
+### E-018 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Code
@@ -1311,12 +1698,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Harder to change safely
 - **Affected dependencies:** None
 - **Recommended correction:** Accepted risk proposed, awaiting approval
+- **Deferred: reason:** Splitting large working files is a refactor with no change in behaviour; Phase 2 is told not to refactor in bulk.
+- **Deferred: target phase:** The phase the owner issues for each module (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Split a file when its module is worked on.
+- **Deferred: dependencies:** B-014.
+- **Deferred: acceptance criteria:** No route file over 600 lines.
+- **Deferred: verification:** Simulation, sweep and unit tests unchanged after each split.
 - **Required tests:** Owner agrees large files are split only when they are next changed for another reason
 - **Assigned phase:** Phase 2: architecture and code quality
 - **Status note:** Open. Not refactored for style alone
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-019 · P2 · OPEN
+### E-019 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -1328,9 +1721,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Unknown
 - **Affected dependencies:** None
 - **Recommended correction:** Assigned to Workstream 6
+- **Deferred: reason:** The product runs one company. Whether a second tenant will ever share the database is not decided, and the audit is a per-table review.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** Decide whether more than one tenant will share a database; if so, scope every query the way the branch boundary does.
+- **Deferred: dependencies:** C-009.
+- **Deferred: acceptance criteria:** Every table with a tenant id is either scoped or documented as unused.
+- **Deferred: verification:** A sweep section with two tenants.
 - **Required tests:** Sweep section proving a login from one tenant cannot read another's rows on every route that carries a tenant id
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: audit in Workstream 6
+- **Status note:** Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-020 · P2 · VERIFIED FIXED
@@ -1351,7 +1750,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Migration `20261113150000_stock_balance_identity`; sweep: the check exists and a balance that does not add up is refused (both fail before the migration). Every write path reviewed: receive, reserve, release, ship, return, hold, release hold
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-021 · P2 · OPEN
+### E-021 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** API
@@ -1363,12 +1762,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Screens need per-route handling; totals unavailable on bare lists
 - **Affected dependencies:** Screen changes with each route
 - **Recommended correction:** Assigned to Workstreams 2 to 5, per module
+- **Deferred: reason:** Changing a list reply from a bare list to { data, meta } breaks every screen that reads it. Phase 2 may not introduce an incompatible contract.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** Move the screens to one reader that accepts both, then change the routes.
+- **Deferred: dependencies:** E-008 (paging).
+- **Deferred: acceptance criteria:** One list shape on every route.
+- **Deferred: verification:** qa/tools/api-contract.mjs extended to check the shape.
 - **Required tests:** Every list route in the module answers `{ data, meta }` and its screens are updated; contract scan shows no mismatch
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header
+- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-023 · P1 · IN PROGRESS
+### E-023 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Operations cockpit
@@ -1380,6 +1785,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** The cockpit page stops loading as history grows
 - **Affected dependencies:** Screen decision on how many hot jobs to list
 - **Recommended correction:** Fixed in part; remainder assigned to Workstream 4
+- **Deferred: reason:** It is a performance defect that needs measuring at volume.
+- **Deferred: target phase:** Phase 11: performance and full simulation cycles
+- **Deferred: required correction:** Load the cockpit from counted queries.
+- **Deferred: dependencies:** B-012.
+- **Deferred: acceptance criteria:** Measured under the target at 80-branch volume.
+- **Deferred: verification:** The benchmark with a stated environment.
 - **Required tests:** Cockpit answers under 500 ms on the scaled database
 - **Assigned phase:** Phase 2: architecture and code quality
 - **Status note:** Fixed in part
@@ -1542,7 +1953,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Rewritten from the screens as built
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### F-011 · P2 · OPEN
+### F-011 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Shipping documents
@@ -1554,12 +1965,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Unknown
 - **Affected dependencies:** None
 - **Recommended correction:** Not examined in this workstream either
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Shipping and financial operations.
+- **Deferred: target phase:** Shipping and financial operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None
+- **Deferred: acceptance criteria:** To be examined
+- **Deferred: verification:** The print path examined and either wired to the Shipment screen or recorded as a gap
 - **Required tests:** The print path examined and either wired to the Shipment screen or recorded as a gap
 - **Assigned phase:** Shipping and financial operations
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### F-012 · P2 · OPEN
+### F-012 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Frontend build
@@ -1571,6 +1987,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A broken release could pass the build
 - **Affected dependencies:** None
 - **Recommended correction:** Fixed in Workstream 6 (X-006)
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Shipping and financial operations.
+- **Deferred: target phase:** Shipping and financial operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None
+- **Deferred: acceptance criteria:** A build or lint step that rejects an undefined name
+- **Deferred: verification:** `npm run lint` fails on an undefined name; shown failing on the F-012 defect
 - **Required tests:** `npm run lint` fails on an undefined name; shown failing on the F-012 defect
 - **Assigned phase:** Shipping and financial operations
 - **Status note:** Open (see E-016)
@@ -1728,7 +2149,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** `routes/products.js` audits `LIST_PRICE_CHANGED`; Sweep 17
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-011 · P1 · OPEN
+### I-011 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Supplier quality (six screens)
@@ -1740,12 +2161,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Someone could act on an invented supplier score
 - **Affected dependencies:** Whether supplier quality is built, and on what records
 - **Recommended correction:** Requires a business decision, then a build
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Inventory and purchasing.
+- **Deferred: target phase:** Inventory and purchasing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Whether supplier quality is built, and on what records
+- **Deferred: acceptance criteria:** Real records, or a clear statement
+- **Deferred: verification:** The six screens read real data and the notice is removed
 - **Required tests:** The six screens read real data and the notice is removed
 - **Assigned phase:** Inventory and purchasing
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-012 (D-024) · P1 · OPEN
+### I-012 (D-024) · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Inventory
@@ -1755,6 +2181,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Expected:** One stock list
 - **Actual:** Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second
 - **Operational impact:** Stock received or shipped did not show under "Inventory"
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Inventory and purchasing.
+- **Deferred: target phase:** Inventory and purchasing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** One stock list
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Inventory and purchasing
 - **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/engineering-quality-findings.md
@@ -1821,7 +2253,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-017 · P2 · DEFERRED WITH JUSTIFICATION
+### I-017 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Receiving
@@ -1833,12 +2265,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Slow first load of a large delivery
 - **Affected dependencies:** None
 - **Recommended correction:** Deferred with justification: receiving works; this is speed of first load
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Inventory and purchasing.
+- **Deferred: target phase:** Inventory and purchasing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** None
+- **Deferred: acceptance criteria:** Heats can be loaded from a file with the stock
+- **Deferred: verification:** A heats upload template; sweep check
 - **Required tests:** A heats upload template; sweep check
 - **Assigned phase:** Inventory and purchasing
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-018 · P1 · OPEN
+### I-018 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Web orders
@@ -1852,7 +2289,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Fixed in Workstream 5 (F-001)
 - **Required tests:** Sweep 20
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Open: Workstream 5
+- **Status note:** Open: Workstream 5 Phase 2 register correction: this was fixed in Workstream 5 as F-001 and the Phase 1 import carried the older "open" line.
+- **Verification evidence:** Sweep section "Shipping and money records: web order tax, shipments and who did what": 37 checks, 0 problems, this session.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### M-001 · P0 · VERIFIED FIXED
@@ -2008,7 +2446,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** The address now opens the real shop floor (`/shopfloor`); the sample screen is deleted. Browser
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### M-011 · P1 · OPEN
+### M-011 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Production quality (5 screens), Bills of material
@@ -2020,6 +2458,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Decisions made on invented quality figures
 - **Affected dependencies:** Whether production quality (NCR, SPC, in-process inspection) and bills of material are built
 - **Recommended correction:** Requires a business decision, then a build
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Manufacturing and processing.
+- **Deferred: target phase:** Manufacturing and processing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Whether production quality (NCR, SPC, in-process inspection) and bills of material are built
+- **Deferred: acceptance criteria:** Real data, or a clear notice
+- **Deferred: verification:** The screens read real data and the notice is removed
 - **Required tests:** The screens read real data and the notice is removed
 - **Assigned phase:** Manufacturing and processing
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
@@ -2244,7 +2687,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Rule 27, decided by the owner 2026-11-13: selling branch state. Sweep 14, unit tests
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-008 · P2 · DEFERRED WITH JUSTIFICATION
+### S-008 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Order entry
@@ -2256,6 +2699,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** The other branches cannot be picked there
 - **Affected dependencies:** S-010
 - **Recommended correction:** Deferred with justification: the branch list belongs with the promise engine (S-010), which reads the same list
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
+- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** S-010
+- **Deferred: acceptance criteria:** Branches come from the database
+- **Deferred: verification:** Both entry screens list the branches in the database; Browser check
 - **Required tests:** Both entry screens list the branches in the database; Browser check
 - **Assigned phase:** Sales and customer operations
 - **Status note:** Open
@@ -2453,7 +2901,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-021 · P2 · OPEN
+### S-021 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Order Hub
@@ -2465,12 +2913,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Two lists of the same work
 - **Affected dependencies:** Retire Order Hub or merge it
 - **Recommended correction:** Requires a business decision
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
+- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Retire Order Hub or merge it
+- **Deferred: acceptance criteria:** One place for one job
+- **Deferred: verification:** One RFQ screen; route removed or linked
 - **Required tests:** One RFQ screen; route removed or linked
 - **Assigned phase:** Sales and customer operations
 - **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-022 · P2 · OPEN
+### S-022 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter
@@ -2482,6 +2935,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A second, untested way to sell
 - **Affected dependencies:** S-026
 - **Recommended correction:** Assigned to Workstream 6
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
+- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** S-026
+- **Deferred: acceptance criteria:** Unused paths are removed or finished
+- **Deferred: verification:** Contract scan and route inventory show no unused sales route
 - **Required tests:** Contract scan and route inventory show no unused sales route
 - **Assigned phase:** Sales and customer operations
 - **Status note:** Open
@@ -2540,7 +2998,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep section 17
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-026 · P2 · OPEN
+### S-026 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Sales screens
@@ -2552,6 +3010,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Buttons that fail when pressed
 - **Affected dependencies:** S-010
 - **Recommended correction:** Assigned to Workstream 5 (will-call, split shipment) and 6 (`api/pricing.js`)
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
+- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** S-010
+- **Deferred: acceptance criteria:** No call without a route
+- **Deferred: verification:** `api-contract.md` shows 0 sales calls without a route
 - **Required tests:** `api-contract.md` shows 0 sales calls without a route
 - **Assigned phase:** Sales and customer operations
 - **Status note:** Open
@@ -2586,13 +3049,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (S-012): counted figures, "Not available" where nothing is measured
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-002 · P3 · OPEN
+### U-002 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Order Hub RFQ pages
 - **Category:** User experience
 - **Source file or endpoint:** Order Hub RFQ pages
 - **Actual:** A second RFQ console beside RFQs & Quotes
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/ux-improvement-register.md
@@ -2609,13 +3078,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (E-006)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-004 · P3 · OPEN
+### U-004 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Several secondary screens
 - **Category:** User experience
 - **Source file or endpoint:** Several secondary screens
 - **Actual:** Call server routes that do not exist (D-020)
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Open; 18 are sales calls (S-026)
 - **First recorded in:** qa/ux-improvement-register.md
@@ -2656,13 +3131,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (S-005)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-008 · P3 · OPEN
+### U-008 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Sales Rep Mobile, delivery preview
 - **Category:** User experience
 - **Source file or endpoint:** Sales Rep Mobile, delivery preview
 - **Actual:** A date nobody computed
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Caution notice added; engine open (S-010)
 - **First recorded in:** qa/ux-improvement-register.md
@@ -2691,13 +3172,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (S-017, S-018): real price book, in the menu under Sales & Customers
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-011 · P3 · OPEN
+### U-011 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Order entry, Retail POS
 - **Category:** User experience
 - **Source file or endpoint:** Order entry, Retail POS
 - **Actual:** Branch list fixed at four Michigan branches
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Open (S-008)
 - **First recorded in:** qa/ux-improvement-register.md
@@ -2785,24 +3272,36 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (I-008, I-014): Release hold and Move
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-019 · P3 · OPEN
+### U-019 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Supplier quality, six screens
 - **Category:** User experience
 - **Source file or endpoint:** Supplier quality, six screens
 - **Actual:** Invented data presented as real
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-020 · P3 · OPEN
+### U-020 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Menu
 - **Category:** User experience
 - **Source file or endpoint:** Menu
 - **Actual:** "Inventory" and "Units" were two different stock lists
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/ux-improvement-register.md
@@ -2819,13 +3318,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (rule 32): warning on entry, a Credit Holds list, Release for managers
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-022 · P3 · OPEN
+### U-022 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Receiving
 - **Category:** User experience
 - **Source file or endpoint:** Receiving
 - **Actual:** A heat must be added before its stock, one at a time
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Open (I-017)
 - **First recorded in:** qa/ux-improvement-register.md
@@ -2890,24 +3395,36 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (M-007): list with server search, detail with Release, Start, Complete (weights) and Cancel, and history
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-028 · P3 · OPEN
+### U-028 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Old operator screen
 - **Category:** User experience
 - **Source file or endpoint:** Old operator screen
 - **Actual:** Recorded output into nothing
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Removed (M-010): opens the real shop floor
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-029 · P3 · OPEN
+### U-029 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Production quality, BOMs
 - **Category:** User experience
 - **Source file or endpoint:** Production quality, BOMs
 - **Actual:** Invented data presented as real
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
@@ -2972,35 +3489,53 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (F-007)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-035 · P3 · OPEN
+### U-035 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Freight and logistics
 - **Category:** User experience
 - **Source file or endpoint:** Freight and logistics
 - **Actual:** Invented routes, rates and tracking presented as real
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-036 · P3 · OPEN
+### U-036 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Shipment
 - **Category:** User experience
 - **Source file or endpoint:** Shipment
 - **Actual:** No button to print a bill of lading or packing list
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Open (F-011)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-037 · P3 · OPEN
+### U-037 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Safety, maintenance, training, contractors, customer quality, executive, provenance
 - **Category:** User experience
 - **Source file or endpoint:** Safety, maintenance, training, contractors, customer quality, executive, provenance
 - **Actual:** Invented data presented as real
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
@@ -3029,29 +3564,41 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (X-004)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-040 · P3 · OPEN
+### U-040 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Menu
 - **Category:** User experience
 - **Source file or endpoint:** Menu
 - **Actual:** Lists 58 sample screens beside the real ones
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Open (X-009)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-041 · P3 · OPEN
+### U-041 · P3 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Checkout, order entry
 - **Category:** User experience
 - **Source file or endpoint:** Checkout, order entry
 - **Actual:** Promise dates and branch suggestions from invented rules
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
+- **Deferred: target phase:** Phase 9: user experience
+- **Deferred: required correction:** See "Recommended correction".
+- **Deferred: dependencies:** None recorded.
+- **Deferred: acceptance criteria:** The behaviour under "Expected".
+- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Phase 9: user experience
 - **Status note:** Open (X-007)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### X-001 · P0 · OPEN
+### X-001 · P0 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Safety (13 screens, on the menu)
@@ -3063,12 +3610,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A safety incident or a stop-work order entered here is lost, and the lists shown are not the company's
 - **Affected dependencies:** Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance
 - **Recommended correction:** Mitigated; requires a business decision per module
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.
+- **Deferred: target phase:** Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance
+- **Deferred: acceptance criteria:** Real records, or a clear label
+- **Deferred: verification:** The audit shows the screen as REAL, or the route is gone
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-002 · P0 · OPEN
+### X-002 · P0 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup
@@ -3080,6 +3632,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Staff could act on, or show a customer, records that do not exist
 - **Affected dependencies:** Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance
 - **Recommended correction:** Mitigated; requires a business decision per module
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.
+- **Deferred: target phase:** Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance
+- **Deferred: acceptance criteria:** Real records, or a clear label
+- **Deferred: verification:** The audit shows the screen as REAL, or the route is gone
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
@@ -3162,7 +3719,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-008 · P2 · OPEN
+### X-008 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter (`/pos`), will-call screens
@@ -3174,12 +3731,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Low while it is off the menu
 - **Affected dependencies:** Whether will call is used
 - **Recommended correction:** Requires a business decision
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.
+- **Deferred: target phase:** Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Whether will call is used
+- **Deferred: acceptance criteria:** Real orders or removal
+- **Deferred: verification:** Built on real orders, or removed
 - **Required tests:** Built on real orders, or removed
 - **Assigned phase:** Enterprise experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-009 · P1 · OPEN
+### X-009 · P1 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Scale of sample screens
@@ -3191,12 +3753,17 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** The menu promises far more than the product does
 - **Affected dependencies:** Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance
 - **Recommended correction:** Mitigated; requires a business decision per module
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.
+- **Deferred: target phase:** Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance
+- **Deferred: acceptance criteria:** To be decided
+- **Deferred: verification:** The audit shows the screen as REAL, or the route is gone
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-010 · P2 · OPEN
+### X-010 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-13
 - **Module:** Help manual
@@ -3208,6 +3775,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Staff trained on features that are samples
 - **Affected dependencies:** The decisions above
 - **Recommended correction:** Assigned
+- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.
+- **Deferred: target phase:** Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: dependencies:** The decisions above
+- **Deferred: acceptance criteria:** The manual matches the screens
+- **Deferred: verification:** Every manual page read against its screen
 - **Required tests:** Every manual page read against its screen
 - **Assigned phase:** Enterprise experience
 - **Status note:** Open

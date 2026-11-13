@@ -20,7 +20,7 @@ None.
 | Address | On the menu | Where the made-up data is |
 |---|---|---|
 | /orders/intake | Yes | services/branchComparisonApi.js |
-| /pos | No | pages/POSPage.jsx, components/pos/screens/WillCallQueueScreen.jsx, components/pos/screens/WillCallCompleteScreen.jsx |
+| /pos | No | pages/POSPage.jsx, components/pos/screens/WillCallCompleteScreen.jsx |
 | /shop/checkout | No | services/branchComparisonApi.js |
 | /admin/online-settings | Yes | services/cutoffRulesApi.js |
 

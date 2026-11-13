@@ -1,12 +1,12 @@
 {
   "programVersion": "1.0",
   "program": "Enterprise Excellence Program",
-  "currentPhase": 1,
+  "currentPhase": 2,
   "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-13T18:00:19.727Z",
+  "updated": "2026-11-13T19:01:57.756Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "b8213987f170e7d376a9b0ee3d638096044b7bc4",
+    "commit": "bcba5a1917cc9ba3e104657cdf1423472fa01132",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 30,
     "merged": false
@@ -27,7 +27,7 @@
     "routeFiles": 72,
     "databaseTables": 157,
     "enumerations": 96,
-    "migrations": 22,
+    "migrations": 23,
     "screens": 143,
     "frontendFiles": 387,
     "roles": 48
@@ -40,155 +40,202 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 69,
-    "P2": 63,
-    "P3": 58,
+    "P1": 71,
+    "P2": 72,
+    "P3": 60,
     "P0": 20
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 126,
-    "OPEN": 55,
-    "REQUIRES BUSINESS DECISION": 20,
+    "VERIFIED FIXED": 142,
+    "DEFERRED TO SPECIFIC PHASE": 58,
+    "REQUIRES BUSINESS DECISION": 19,
     "BLOCKED": 1,
-    "DEFERRED WITH JUSTIFICATION": 4,
-    "IN PROGRESS": 4
+    "NOT APPLICABLE": 1,
+    "IN PROGRESS": 2
   },
   "openFindingsBySeverity": {
-    "P1": 20,
-    "P3": 25,
-    "P2": 37,
+    "P1": 17,
+    "P2": 38,
+    "P3": 23,
     "P0": 2
   },
-  "findingsTotal": 210,
-  "findingsAddedThisPhase": 25,
+  "findingsTotal": 223,
+  "findingsAddedThisPhase": 13,
   "testsExecuted": [
     {
-      "test": "Unit tests (src/backend, npm test)",
-      "result": "90 of 90 pass",
-      "before": "87 of 87 at the baseline commit"
-    },
-    {
       "test": "Order-to-cash simulation, seeds 8001 to 8003, rebuilt QA database",
-      "result": "150 of 150 jobs pass; reconciliation 0 problems"
+      "result": "150 of 150 jobs pass (50 per seed); 714, 709 and 711 steps; 784, 785 and 788 checks; 8 concurrency probes pass in each; reconciliation 0 problems",
+      "before": "150 of 150 at the Phase 2 baseline"
     },
     {
       "test": "Security and safeguards sweep",
-      "result": "20 of 20 sections pass"
+      "result": "20 of 20 sections pass",
+      "before": "20 of 20"
     },
     {
-      "test": "Baseline probe (new in Phase 1)",
-      "result": "4 of 4 sections pass: 542 write calls by view-only roles, 0 not refused; 275 write routes sent an empty body, 3 server errors (the ceiling, B-006)",
-      "before": "290 not refused; 19 server errors at the baseline commit"
+      "test": "Branch boundary (qa/sim/branch-boundary.mjs, new in Phase 2)",
+      "result": "37 of 37 checks pass",
+      "before": "Did not exist. 25 of the checks fail with the boundary switched off"
+    },
+    {
+      "test": "Phase 2 integrity and concurrency (qa/sim/phase2-integrity.mjs, new in Phase 2)",
+      "result": "80 of 80 checks pass",
+      "before": "Did not exist. 32 of the first 43 checks fail on the code before the corrections"
+    },
+    {
+      "test": "Unit tests (src/backend, npm test)",
+      "result": "105 of 105 pass",
+      "before": "90 of 90"
     },
     {
       "test": "Browser suites: experience, shipping, shop, sales, inventory",
-      "result": "22, 27, 30, 24 and 22 checks, 0 failed"
+      "result": "22, 27, 30, 24 and 22 checks, 0 failed",
+      "before": "Same counts, 0 failed"
     },
     {
       "test": "Every route opens in a browser",
-      "result": "125 routes open with no crash"
+      "result": "125 routes open with no crash",
+      "before": "125"
+    },
+    {
+      "test": "Baseline probe",
+      "result": "4 of 4 sections pass: 540 changing calls by view-only roles, 0 not refused; 275 changing routes sent an empty body, 0 server errors; 2 saved a record from nothing, both by design",
+      "before": "3 server errors and 7 saves from nothing at the Phase 2 baseline"
+    },
+    {
+      "test": "Department rule coverage (qa/tools/access-coverage.mjs, new in Phase 2)",
+      "result": "319 changing routes, 0 with no rule or stated reason",
+      "before": "Did not exist. 16 areas had no rule (B-004)"
     },
     {
       "test": "Screen audit",
-      "result": "143 screens, 0 show made-up data with no notice"
+      "result": "143 screens, 0 show made-up data with no notice (76 real, 58 labelled samples, 5 static, 4 mixed)",
+      "before": "Same"
     },
     {
-      "test": "Lint, frontend",
-      "result": "passes"
+      "test": "Screen ratchets (qa/tools/frontend-checks.mjs, new in Phase 2)",
+      "result": "38 effect-dependency warnings (ceiling 38), 0 screens that invent records on failure (ceiling 0)",
+      "before": "Did not exist. 2 inventing screens on the code before"
     },
     {
-      "test": "Lint, whole repository",
-      "result": "0 errors, 1,524 warnings",
-      "before": "201 errors at the baseline commit"
+      "test": "Lint, frontend and whole repository",
+      "result": "Frontend passes; repository 0 errors, 1,524 warnings",
+      "before": "Same"
     },
     {
       "test": "Frontend production build",
-      "result": "passes"
+      "result": "passes",
+      "before": "passes"
     },
     {
       "test": "Database consistency checks on the QA database after the simulation (read-only)",
-      "result": "0 problems outside the demo seed rows; counter-sale lines reported under B-025"
+      "result": "0 problems outside the demo seed rows; every counter-sale line of a stocked product has its stock movement",
+      "before": "Counter-sale lines moved no stock (B-025)"
     },
     {
-      "test": "Pull-request workflow on GitHub for the Phase 1 commit",
-      "result": "NOT VERIFIED at the time of writing: it runs after the push"
+      "test": "SQL Editor file 20261113190000_order_branch.sql, run twice on a populated copy",
+      "result": "First run gave 163 of 170 orders a branch; second run changed nothing",
+      "before": "Did not exist"
     },
     {
-      "test": "Performance benchmark, accessibility, tablet and mobile, restore from backup",
-      "result": "NOT RUN in Phase 1"
+      "test": "Package audit (npm audit, both packages)",
+      "result": "0 critical. Backend 1 moderate; frontend 1 high and 3 moderate, the high one in the development server only",
+      "before": "Not re-measured since Workstream 3"
+    },
+    {
+      "test": "Pull-request workflow on GitHub for the final Phase 2 commit",
+      "result": "NOT VERIFIED at the time of writing; see the pull request"
     }
   ],
   "testReach": {
-    "routesWithSuccess": 269,
+    "routesWithSuccess": 284,
     "routes": 611,
-    "changingRoutesWithSuccess": 72,
+    "changingRoutesWithSuccess": 87,
     "changingRoutes": 319
   },
   "correctionsCompleted": [
     "B-001",
     "B-002",
+    "B-003",
+    "B-004",
     "B-005",
-    "B-023"
+    "B-006",
+    "B-007",
+    "B-008",
+    "B-010",
+    "B-023",
+    "B-025",
+    "C-001",
+    "C-003",
+    "C-004",
+    "C-005",
+    "C-007",
+    "C-008"
   ],
   "scoreSummary": [
     {
       "group": "Platform infrastructure",
-      "weighted": 70,
+      "weighted": 73,
       "evidenceShare": 77,
       "openP0P1": 2
     },
     {
       "group": "Sales and customer operations",
-      "weighted": 70,
+      "weighted": 72,
       "evidenceShare": 89,
-      "openP0P1": 5
+      "openP0P1": 4
     },
     {
       "group": "Inventory and purchasing",
-      "weighted": 70,
+      "weighted": 73,
       "evidenceShare": 89,
-      "openP0P1": 6
+      "openP0P1": 4
     },
     {
       "group": "Manufacturing and processing",
-      "weighted": 69,
+      "weighted": 73,
       "evidenceShare": 89,
-      "openP0P1": 3
+      "openP0P1": 2
     },
     {
       "group": "Logistics and financial operations",
-      "weighted": 73,
+      "weighted": 75,
       "evidenceShare": 89,
-      "openP0P1": 3
+      "openP0P1": 2
     },
     {
       "group": "Enterprise experience",
-      "weighted": 57,
+      "weighted": 60,
       "evidenceShare": 89,
-      "openP0P1": 7
+      "openP0P1": 5
     }
   ],
   "unverifiedAreas": [
-    "Shop-floor operations, time logs, packages, drop tags, print queue: no success-path test",
-    "Partner API success paths and webhook delivery",
-    "User administration success paths",
+    "Forty-five route files and 18 service files were examined by tool only, not read line by line",
+    "Remnant creation from processing: a completed work order moves no stock, so the scenario cannot run (M-016)",
+    "Background jobs, retries and schedules: none exist (B-018, B-019)",
     "Dashboard and report figures against the records they summarise",
+    "Records with no branch column: quotes, requests for quotation, packages, drop tags, documents, the second stock list and the order hub (C-009)",
+    "Cost of the branch filter at 80 branches and real volume; resource use; many users at once",
+    "Partner API success paths and webhook delivery; carrier partner routes (C-002)",
     "Planning and optimization, customer specifications, AI assistant and voice (need provider keys)",
     "Shipping documents and printing (F-011)",
-    "Performance at 80-branch volume beyond the Workstream 1 benchmark; resource use; concurrent users",
     "Accessibility, tablet and mobile layouts",
-    "Design files and docs/ against the code, line by line",
-    "The live database and the host: not touched"
+    "Test coverage by line was not measured; reach is counted by route (see testReach)",
+    "The live database and the host: not touched. Nothing in Phase 2 was run against production"
   ],
   "currentBlockers": [
-    "B-019: whether the host may run a scheduled trigger (not yet decided; email and text are deferred by the owner)",
-    "B-018: blocked on the same trigger",
-    "Open rules from earlier phases: promise dates and cut-offs (X-007), stock adjustment and what processing consumes (I-016, M-016), purchasing (I-007), package upgrades (E-011), restore test (E-015)"
+    "B-018 and B-019: no scheduler; whether the host may run a scheduled trigger is undecided",
+    "Rules only the owner can give: what a completed work order consumes and produces (M-016), stock adjustment (I-016), promise dates and cut-offs (X-007), purchasing (I-007), scheduling rules behind the cockpit (C-013)",
+    "E-011: package upgrades are major versions and need the owner's approval",
+    "E-015: a restore test needs the owner's database"
   ],
   "nextActions": [
-    "Owner: issue the Phase 2 prompt. Phase 2 has not been started",
-    "Phase 2: see the handoff in phase-01-report.md; owner-decisions.json holds the six decisions of 2026-11-13",
-    "Apply the SQL Editor files from the earlier workstreams, in order, before merging pull request 30"
+    "Owner: issue the Phase 3 prompt. Phase 3 has not been started",
+    "Owner: apply the five SQL Editor files in order before merging pull request 30; the fifth is 20261113190000_order_branch.sql",
+    "Owner: give every staff login a home branch before merging; a login with none and no all-branch role sees no orders, stock, jobs or shipments",
+    "Owner: review the list of roles that see every branch and the department table (phase-02-service-boundaries.md)",
+    "Phase 3: see the handoff in phase-02-report.md"
   ],
-  "lastCompletedCheckpoint": "Phase 1 artifacts written; four corrections verified (B-001, B-002, B-005, B-023); full gate run on the final code with qa/tools/run-gates.sh; six owner decisions recorded (owner-decisions.json)"
+  "lastCompletedCheckpoint": "Phase 2: five correction batches committed and tested; full gate run on the final code (qa/tools/run-gates.sh) all green; nine Phase 2 files written; registers rebuilt"
 }

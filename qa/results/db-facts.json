@@ -1,5 +1,5 @@
 {
- "at": "2026-11-13T18:33:10.168Z",
+ "at": "2026-11-13T18:47:39.200Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 158,
  "totalRows": 5727,

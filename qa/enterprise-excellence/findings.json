@@ -52,8 +52,8 @@
    "workflow": "All",
    "cause": "The access model was built on role and department only.",
    "dependencies": "Every list and detail route; reports; the screens' branch pickers.",
-   "statusNote": "Owner's decision 2, 2026-11-13: Read as: staff see and change only their own branch's records. Super admin and high-level management see every branch. Which roles count as high-level management, and how transfers and ship-from-another-branch work under this rule, will be proposed in the security and multi-location phase for the owner to confirm.",
-   "verification": "",
+   "statusNote": "Owner's decision 2, 2026-11-13: Read as: staff see and change only their own branch's records. Super admin and high-level management see every branch. Which roles count as high-level management, and how transfers and ship-from-another-branch work under this rule, will be proposed in the security and multi-location phase for the owner to confirm. Phase 2: enforced in the database client (lib/branchScope.js, lib/db.js) for orders, order lines, invoices, invoice lines, payments, stock items, stock levels, shipments, shipment items, jobs, work orders, work centers, dispatch jobs, dispatch operations and stock movements. Roles that see every branch: super admin, tenant owner, admin, executive, CFO, COO, CIO, division director, operations manager, sales director, credit manager, data analyst, auditor, integration admin. What it does not yet cover is finding C-009.",
+   "verification": "qa/sim/branch-boundary.mjs: 37 checks, 0 problems (25 fail with the boundary switched off). test/branchScope.test.js: 9 unit tests. Simulation 150 of 150 and sweep 20 of 20 with the boundary on.",
    "module": "Access control",
    "severity": "P1",
    "category": "Security: multi-location",
@@ -65,7 +65,7 @@
    "correction": "Needs the owner's rule first: which roles are held to their own branch or region for reading, and which for changing. Then one scoping helper used by every route, and a sweep section that proves it.",
    "requiredTests": "A sweep section: a branch login cannot read or change another branch's rows on every route that carries a location.",
    "phase": "Security and multi-location phase (extends E-019)",
-   "status": "OPEN"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "B-004",
@@ -74,8 +74,8 @@
    "workflow": "Set-up and shop floor",
    "cause": "Rules were added for the core order-to-cash records only.",
    "dependencies": "Scheduling, routing, quality records, documents.",
-   "statusNote": "Owner's decision 3, 2026-11-13: The engineer assigns each area to the department that does that work, lists the assignment in permissions-matrix.md when it is implemented, and the owner can change any line.",
-   "verification": "",
+   "statusNote": "Owner's decision 3, 2026-11-13: The engineer assigns each area to the department that does that work, lists the assignment in permissions-matrix.md when it is implemented, and the owner can change any line. Phase 2, under the owner's decision 3: every area now has a department or role (lib/roleAccess.js WRITE_RULES; the table is in phase-02-service-boundaries.md and permissions-matrix.md). The owner can change any line.",
+   "verification": "test/roleAccess.test.js \"the areas that had no department now have one\"; qa/sim/phase2-integrity.mjs: 10 refusals through the API; qa/tools/access-coverage.mjs: 319 changing routes, 0 with no rule or stated reason (it fails the gates if one appears).",
    "module": "Access control",
    "severity": "P1",
    "category": "Security",
@@ -87,7 +87,7 @@
    "correction": "Needs the owner's matrix. Proposed: set-up records (work centers, recipes, BOMs, staff, assets, dispatch set-up) to production managers and admins; documents delete to quality, warehouse leads and managers; maintenance to maintenance and production managers; order hub to sales.",
    "requiredTests": "Probe: one refused role per area, generated from the rule table.",
    "phase": "Security and multi-location phase",
-   "status": "OPEN"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "B-005",
@@ -118,8 +118,8 @@
    "workflow": "Counter pricing",
    "cause": "Left from an earlier counter design.",
    "dependencies": "None found.",
-   "statusNote": "",
-   "verification": "",
+   "statusNote": "Phase 2: the three routes answer 501 with a plain sentence instead of crashing. Nothing was removed; whether the session counter flow is finished or retired stays with X-008.",
+   "verification": "Baseline probe section 3: 275 changing routes, 0 server errors (ceiling lowered from 3 to 0 in qa/tools/run-gates.sh).",
    "module": "Counter (older session flow)",
    "severity": "P3",
    "category": "Broken code",
@@ -131,7 +131,7 @@
    "correction": "Remove the three routes and the unreachable hook, or repair them if the session counter flow is kept (X-008 decides).",
    "requiredTests": "Probe section 3 ceiling drops from 3 to 0.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "B-007",
@@ -140,8 +140,8 @@
    "workflow": "Set-up",
    "cause": "Handlers written before the field rules existed.",
    "dependencies": "Scheduling reads work centers; maintenance reads assets.",
-   "statusNote": "",
-   "verification": "",
+   "statusNote": "Phase 2: work centers (create and change), equipment (change) and maintenance orders (change) read a field list (lib/fieldRules.js). Creating a work center used to fail every time because it named two columns that do not exist; it works now (C-004). The executive decision route was not mass assignment (its service picks the fields); only who made the decision was wrong, and that now comes from the signed-in user.",
+   "verification": "qa/sim/phase2-integrity.mjs: 9 checks on work centers, equipment and maintenance orders. The executive decision change has no automated check: FIXED, NOT VERIFIED for that one line.",
    "module": "Work centers, assets, maintenance orders, executive decisions",
    "severity": "P2",
    "category": "Data integrity: validation",
@@ -153,7 +153,7 @@
    "correction": "Read these four through lib/fieldRules.js.",
    "requiredTests": "Sweep: an unlisted field in the body is not saved.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "B-008",
@@ -162,8 +162,8 @@
    "workflow": "Record creation",
    "cause": "No required-field check.",
    "dependencies": "Job board, schedule, order hub.",
-   "statusNote": "",
-   "verification": "",
+   "statusNote": "Phase 2: jobs (both addresses), order hub contacts and orders, and intake drafts refuse a save with nothing in it. Two of the seven are by design and stay: a counter session needs only the signed-in user (it now ignores a user id sent by the browser), and demand-shaping suggestions log which suggestions were shown.",
+   "verification": "qa/sim/phase2-integrity.mjs: 6 checks. Baseline probe section 3: records saved from nothing fell from 7 routes to the 2 that are by design.",
    "module": "Jobs, order hub, counter sessions, demand shaping",
    "severity": "P2",
    "category": "Data integrity: validation",
@@ -175,7 +175,7 @@
    "correction": "Required fields per route. Which of the seven may legitimately start empty needs one line from the owner each (drafts).",
    "requiredTests": "Probe section 3 reports \"saved from nothing\" as 0, or lists the allowed drafts.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "B-009",
@@ -184,7 +184,7 @@
    "workflow": "Stock, RFQ to order, safety",
    "cause": "Prototype stores that were moved from memory into tables without being redesigned.",
    "dependencies": "D-024, S-021, I-011 and the open decision card \"Choose which stock list is the real one\".",
-   "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
+   "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them.",
    "verification": "",
    "module": "Second stock list, order hub, stop work",
    "severity": "P1",
@@ -197,7 +197,15 @@
    "correction": "The owner chooses the real one of each pair. Then the other is removed or made a view of the first.",
    "requiredTests": "A two-requests-at-once test on whichever store is kept; the audit shows one stock list.",
    "phase": "Phase 2: architecture and code quality (after the decision)",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Connecting or retiring the second stock list and the order hub means moving or discarding the records they hold as JSON and changing nine screens. That is a data migration, which Phase 3 owns, and the owner applies database changes himself.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+    "correction": "For each of the two: either read and write the real tables through the existing routes, or switch its changing routes off and label its screens. Then remove the JSON stores.",
+    "dependencies": "Owner decision 1 (given). I-012, S-021, U-002, U-020. The JSON stores in AppSetting.",
+    "acceptance": "No changing route writes stock or orders anywhere but the Inventory, Coil, Order and OrderLine tables; db-facts shows 0 rows in the JSON stores.",
+    "verification": "A sweep section that changes stock and an order through every remaining route and finds each change in the real tables; the 125-screen check."
+   }
   },
   {
    "id": "B-010",
@@ -206,8 +214,8 @@
    "workflow": "Several",
    "cause": "Sequential awaits.",
    "dependencies": "Time tracking, labor costing, user administration.",
-   "statusNote": "",
-   "verification": "",
+   "statusNote": "Phase 2: 10 of the 16 handlers now save in one transaction: users (create, edit, delete, reset password), job plan, operation start, complete and reassign, staging ship, recipe change. One was never a multi-step save (deleting a work center type is a single write). Three are separate findings: accepting a cockpit recommendation (C-013), the equipment seed and demand shaping (repeatable set-up writes, by design), and the carrier proof of delivery (C-002).",
+   "verification": "qa/sim/phase2-integrity.mjs: start, complete, reassign and plan checked against the database, including a refused reassign that leaves the clock running. 32 of the first 43 checks fail on the code before the change.",
    "module": "Users, shop-floor operations, job planning, material tracking, cockpit, partner carrier",
    "severity": "P2",
    "category": "Data integrity: partial save",
@@ -219,7 +227,7 @@
    "correction": "Wrap each in one transaction.",
    "requiredTests": "A test per handler that fails the second change and checks the first was not kept.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "B-011",
@@ -263,7 +271,15 @@
    "correction": "Read each of the 58; give the growing ones a limit and paging, and record the fixed-size ones as accepted.",
    "requiredTests": "The existing \"bounded lists\" sweep check extended to these routes.",
    "phase": "Performance phase",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Performance phase.",
+    "targetPhase": "Performance phase: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Read each of the 58; give the growing ones a limit and paging, and record the fixed-size ones as accepted.",
+    "dependencies": "Screens that expect the whole list.",
+    "acceptance": "A list that grows with the business has a limit and paging.",
+    "verification": "The existing \"bounded lists\" sweep check extended to these routes."
+   }
   },
   {
    "id": "B-013",
@@ -272,7 +288,7 @@
    "workflow": "",
    "cause": "Screens were replaced without deleting what they replaced.",
    "dependencies": "None by definition; confirm each before deleting.",
-   "statusNote": "",
+   "statusNote": "Reviewed in Phase 2. Not deleted.",
    "verification": "",
    "module": "Code base",
    "severity": "P3",
@@ -285,7 +301,15 @@
    "correction": "Delete after confirming each file; remove the packages.",
    "requiredTests": "Build, lint and the 125-screen check after removal.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "The owner decided on 13 November that every sample module is to be built (decision 4). Most of the 45 unused screen files belong to those modules, so deleting them now would remove material the build will start from. The six unused packages are left for the same change, so the lock files change once.",
+    "targetPhase": "The phase the owner issues for each module that is built (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "When a module is built, delete the files it replaced. Remove the packages no file imports.",
+    "dependencies": "Decision 4. X-001, X-002.",
+    "acceptance": "Discovery reports 0 files imported by nothing and 0 unused packages.",
+    "verification": "qa/tools/discover.mjs; build, lint and the 125-screen check after each removal."
+   }
   },
   {
    "id": "B-014",
@@ -294,7 +318,7 @@
    "workflow": "",
    "cause": "Growth without refactoring.",
    "dependencies": "Every phase that changes these files.",
-   "statusNote": "",
+   "statusNote": "Phase 2 moved three rules into testable units: the branch boundary (lib/branchScope.js), who may change a login (lib/userAdminRules.js) and the department table (lib/roleAccess.js). phase-02-business-rule-ownership.md lists every critical rule, its owner file and whether a unit test reaches it.",
    "verification": "",
    "module": "Code base",
    "severity": "P2",
@@ -307,7 +331,15 @@
    "correction": "Move rules out of the largest handlers into lib/ as they are touched (already done for prices, tax, credit, receiving, workflow moves). Split the five largest screens.",
    "requiredTests": "Unit tests for each rule moved; the browser suites before and after.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "The remaining rules sit in 14 route files of 500 to 1,390 lines. Moving them is a refactor of working, tested code, and the Phase 2 instruction is not to refactor in bulk. Each move is safest when its module is being worked on anyway.",
+    "targetPhase": "The phase the owner issues for each module (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Per module: move the rule out of the handler into lib/ as a pure function with unit tests; the handler calls it.",
+    "dependencies": "E-018.",
+    "acceptance": "Every rule in phase-02-business-rule-ownership.md has a named owner file and a unit test.",
+    "verification": "Unit tests per rule; the simulation and sweep unchanged."
+   }
   },
   {
    "id": "B-015",
@@ -329,7 +361,15 @@
    "correction": "Name every icon button; replace the 25 native boxes; add an automated accessibility check to the browser suites.",
    "requiredTests": "An accessibility scan in the browser suites.",
    "phase": "Phase 9: user experience",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "Name every icon button; replace the 25 native boxes; add an automated accessibility check to the browser suites.",
+    "dependencies": "None.",
+    "acceptance": "Every control has a name a screen reader can say; confirmations use the application's own dialogs.",
+    "verification": "An accessibility scan in the browser suites."
+   }
   },
   {
    "id": "B-016",
@@ -351,7 +391,15 @@
    "correction": "Add success-path tests area by area as each phase reaches it; run the database-backed gates in the pull-request workflow with a Postgres service.",
    "requiredTests": "The measured number rises each phase; it is recorded in progress.json.",
    "phase": "Testing phase; each phase for its own area",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Testing phase; each phase for its own area.",
+    "targetPhase": "Testing phase; each phase for its own area: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Add success-path tests area by area as each phase reaches it; run the database-backed gates in the pull-request workflow with a Postgres service.",
+    "dependencies": "Every later phase relies on these gates.",
+    "acceptance": "Every route the business depends on has a test that makes it succeed and checks the result.",
+    "verification": "The measured number rises each phase; it is recorded in progress.json."
+   }
   },
   {
    "id": "B-017",
@@ -373,7 +421,15 @@
    "correction": "After the X-009 decisions, drop the tables of modules that will not be built. Dropping tables is a destructive change and needs the owner's approval and a SQL Editor file.",
    "requiredTests": "The inventory shows no table without code.",
    "phase": "Data integrity phase (after X-009)",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Data integrity phase (after X-009).",
+    "targetPhase": "Data integrity phase (after X-009): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "After the X-009 decisions, drop the tables of modules that will not be built. Dropping tables is a destructive change and needs the owner's approval and a SQL Editor file.",
+    "dependencies": "X-009 decides which modules are built.",
+    "acceptance": "A table exists because something uses it.",
+    "verification": "The inventory shows no table without code."
+   }
   },
   {
    "id": "B-018",
@@ -426,8 +482,8 @@
    "workflow": "",
    "cause": "A role removed or never added.",
    "dependencies": "None.",
-   "statusNote": "",
-   "verification": "",
+   "statusNote": "Phase 2: the finding was wrong. MILL_OPERATOR is in the role list of the database schema (an older role kept for existing logins), so the name does match.",
+   "verification": "Read prisma/schema.prisma, enum UserRole.",
    "module": "Access control",
    "severity": "P3",
    "category": "Maintainability",
@@ -439,7 +495,7 @@
    "correction": "Remove the name, or add the role if mills need it.",
    "requiredTests": "A unit test that every role in the rule table exists in the schema.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "NOT APPLICABLE"
   },
   {
    "id": "B-021",
@@ -461,7 +517,15 @@
    "correction": "Remove the static mount and serve only through the download route.",
    "requiredTests": "Sweep: /uploads/… answers 401 or 404 with no token.",
    "phase": "Security and multi-location phase",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Security and multi-location phase.",
+    "targetPhase": "Security and multi-location phase: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Remove the static mount and serve only through the download route.",
+    "dependencies": "Screens that link to /uploads directly, if any.",
+    "acceptance": "A mill certificate or signed delivery note is served only to a signed-in user who may see it (GET /api/documents/:id/download does this).",
+    "verification": "Sweep: /uploads/… answers 401 or 404 with no token."
+   }
   },
   {
    "id": "B-022",
@@ -483,7 +547,15 @@
    "correction": "Rebuild the demo seed through the API, or delete it.",
    "requiredTests": "db-facts checks return 0 with no demo exclusion.",
    "phase": "Data integrity phase",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Data integrity phase.",
+    "targetPhase": "Data integrity phase: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Rebuild the demo seed through the API, or delete it.",
+    "dependencies": "D-023.",
+    "acceptance": "Seed data obeys the same rules as real data.",
+    "verification": "db-facts checks return 0 with no demo exclusion."
+   }
   },
   {
    "id": "B-023",
@@ -514,7 +586,7 @@
    "workflow": "",
    "cause": "Lint was never a gate.",
    "dependencies": "None.",
-   "statusNote": "",
+   "statusNote": "Phase 2 read all 39. One was a defect and is fixed: on the order entry screen the override confirmation could submit through an older copy of the submit handler (C-008). 28 are the same harmless shape (load once when the screen opens). 10 are in the session counter flow, the map and the voice assistant.",
    "verification": "",
    "module": "Code base",
    "severity": "P3",
@@ -527,7 +599,15 @@
    "correction": "Read the 39 effect warnings and fix the real ones; remove unused imports; then make the root lint a pull-request check with a warning ceiling.",
    "requiredTests": "Root lint with a ceiling that can only go down.",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "The other 38 change no saved data. Rewriting each effect is screen work with a visual check, which belongs to the screen phase.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "Rewrite each effect so it lists what it reads, screen by screen.",
+    "dependencies": "X-008 for the session counter files.",
+    "acceptance": "qa/tools/frontend-checks.mjs reports 0.",
+    "verification": "The ratchet in the gates: the ceiling is 38 and can only go down."
+   }
   },
   {
    "id": "B-025",
@@ -536,8 +616,8 @@
    "workflow": "Counter sale",
    "cause": "The quick sale was built as a priced receipt on top of orders and invoices; stock for items priced each was left out and the void marker was put in the notes.",
    "dependencies": "The owner: are shelf items counted stock? I-016 (no stock adjustment).",
-   "statusNote": "Owner's decision 6, 2026-11-13: A counter sale reduces stock, and a void puts it back.",
-   "verification": "",
+   "statusNote": "Owner's decision 6, 2026-11-13: A counter sale reduces stock, and a void puts it back. Phase 2, owner's decision 6: a counter sale takes its pieces from the shelf stock of the selling branch and a void puts them back. What is still missing is a way to receive shelf items by the piece (C-011), so in practice a product has shelf stock only once that exists.",
+   "verification": "qa/sim/phase2-integrity.mjs: 13 checks, including three sales at once for the last pieces and one sale sent three times.",
    "module": "Counter quick sale",
    "severity": "P2",
    "category": "Data integrity",
@@ -549,7 +629,349 @@
    "correction": "After the decision: record a stock movement on sale and on void, and give a voided sale its own status or flag.",
    "requiredTests": "Simulation: a counter sale reduces the shelf item and a void restores it; reports exclude voided sales.",
    "phase": "Inventory and purchasing",
-   "status": "OPEN"
+   "status": "VERIFIED FIXED"
+  },
+  {
+   "id": "C-001",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Creating and changing logins",
+   "cause": "requireRole checked the caller and never the change.",
+   "dependencies": "",
+   "statusNote": "",
+   "verification": "test/userAdminRules.test.js (5 tests). qa/sim/phase2-integrity.mjs: 14 checks through the API; 10 of them fail on the code before the fix.",
+   "phase": "Phase 2: architecture and code quality",
+   "module": "User administration",
+   "severity": "P1",
+   "category": "Security: privilege escalation",
+   "where": "src/backend/src/routes/users.js (POST /, PUT /:id, DELETE /:id, POST /:id/reset-password)",
+   "evidence": "Code read, then qa/sim/phase2-integrity.mjs on the code before the fix: a branch manager created SUPER_ADMIN, ADMIN, EXECUTIVE and BRANCH_MANAGER logins (201 each), changed their own role to SUPER_ADMIN (200), added a branch to themselves (200) and changed the super admin's name (200).",
+   "expected": "Nobody can grant a role above their own or a branch they are not in.",
+   "actual": "The four routes checked only that the caller was a manager. A branch manager could make themselves super admin; an admin could reset a super admin's password or switch the account off.",
+   "impact": "Any branch manager could take over the system, and with it undo the branch boundary.",
+   "correction": "lib/userAdminRules.js: one rule for who may give which role and which branches, used by all four routes.",
+   "requiredTests": "Unit tests for the rule; the same attempts through the API.",
+   "status": "VERIFIED FIXED"
+  },
+  {
+   "id": "C-002",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Carrier status and proof of delivery",
+   "cause": "Written against an earlier schema.",
+   "dependencies": "B-018, B-019 (partner messages and the scheduled trigger).",
+   "statusNote": "",
+   "verification": "",
+   "phase": "Integration phase",
+   "module": "Partner API: carriers",
+   "severity": "P2",
+   "category": "Broken code; rule bypass",
+   "where": "src/backend/src/routes/partner/carrierRoutes.js",
+   "evidence": "Code read against prisma/schema.prisma: the routes filter on Shipment.carrier and read order.buyerOrgId, neither of which exists; they set the statuses CONFIRMED and DELAYED, which are not shipment statuses; and they write the shipment directly instead of calling the dispatch and delivery steps in routes/shipments.js.",
+   "expected": "A carrier update goes through the same rules as a dispatch or delivery entered by staff (stock leaves, the invoice is raised, proof of delivery is checked).",
+   "actual": "The carrier routes cannot work as written, and if repaired in place would skip those rules.",
+   "impact": "None today: no carrier has a token and the sweep shows the partner API refuses every call without one. A risk the day a carrier is connected.",
+   "correction": "Export the dispatch and deliver steps from routes/shipments.js and have the carrier routes call them.",
+   "requiredTests": "A carrier token dispatches and delivers a shipment and the simulation's reconciliation stays at zero problems.",
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "It needs a carrier connection to test against, and the owner has deferred partner messaging (decision 5). Nothing reaches these routes today.",
+    "targetPhase": "The phase the owner issues for integrations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Call the core dispatch and deliver steps; remove the two statuses that do not exist.",
+    "dependencies": "Decision 5; B-018; B-019.",
+    "acceptance": "A carrier update produces exactly the records a staff dispatch or delivery does.",
+    "verification": "A sweep section using a carrier token; reconciliation 0 problems."
+   }
+  },
+  {
+   "id": "C-003",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Planning a job",
+   "cause": "A hard-coded default from the first demo.",
+   "dependencies": "",
+   "statusNote": "Existing rows in the live database that hold \"FWA\" or other text are a data clean-up for Phase 3 (see the handoff).",
+   "verification": "qa/sim/phase2-integrity.mjs: \"the plan belongs to the branch of the job's work center\" and \"planning moves the job to SCHEDULED and the history says so\".",
+   "phase": "Phase 2: architecture and code quality",
+   "module": "Jobs",
+   "severity": "P2",
+   "category": "Data integrity",
+   "where": "src/backend/src/routes/jobs.js (POST /:id/plan)",
+   "evidence": "qa/sim/phase2-integrity.mjs on the code before the fix: the dispatch job of a job at branch QA-L01 was saved with the branch \"FWA\", a piece of text that is no branch; and the job's move to SCHEDULED left no line in its history.",
+   "expected": "A plan belongs to the branch the work is done at, and every job move is in the history.",
+   "actual": "Every plan made without a branch in the request was filed under \"FWA\". Under the branch boundary those plans are invisible to branch staff, so operators got \"not found\" on their own operations.",
+   "impact": "Shop-floor operations unusable for branch staff once the boundary is on; history incomplete.",
+   "correction": "The branch comes from the job's work center, else the order, else the planner's home branch; the move is recorded in the same transaction.",
+   "requiredTests": "Plan a job and read its dispatch job and history from the database.",
+   "status": "VERIFIED FIXED"
+  },
+  {
+   "id": "C-004",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Set-up",
+   "cause": "Written against an earlier schema.",
+   "dependencies": "",
+   "statusNote": "",
+   "verification": "qa/sim/phase2-integrity.mjs: 6 checks.",
+   "phase": "Phase 2: architecture and code quality",
+   "module": "Work centers",
+   "severity": "P2",
+   "category": "Broken code",
+   "where": "src/backend/src/routes/workCenters.js (POST /)",
+   "evidence": "qa/sim/phase2-integrity.mjs on the code before the fix: POST /api/work-centers answered 400 for a complete, valid work center.",
+   "expected": "A work center can be created.",
+   "actual": "The handler wrote hourlyRate and setupMinutes, which are not columns, so every create failed.",
+   "impact": "No work center could be added through the product.",
+   "correction": "A field list for create and change; branch and duplicate-code checks.",
+   "requiredTests": "Create, duplicate, bad branch, change.",
+   "status": "VERIFIED FIXED"
+  },
+  {
+   "id": "C-005",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Starting and completing operations; moving a job",
+   "cause": "Read, decide, write with no lock and no condition on the write.",
+   "dependencies": "",
+   "statusNote": "",
+   "verification": "qa/sim/phase2-integrity.mjs: four race checks of 8 rounds each, plus the cancelled-job and repeated-completion checks. All fail on the code before the fix.",
+   "phase": "Phase 2: architecture and code quality",
+   "module": "Shop-floor operations and jobs",
+   "severity": "P1",
+   "category": "Data integrity: simultaneous requests",
+   "where": "src/backend/src/routes/operationsRoutes.js (start, complete); src/backend/src/routes/jobs.js (POST and PATCH /:id/status)",
+   "evidence": "qa/sim/phase2-integrity.mjs on the code before the fix. Two operators completing the last two operations of a job at the same moment: in 8 of 8 rounds the job stayed IN_PROCESS for ever, because each request counted the other operation as still open. Completing an operation of a cancelled job moved the cancelled job to WAITING_QC. Two people moving one job at once both succeeded and the history did not match the job.",
+   "expected": "Whatever the timing, the job, its operations and its history agree, and a cancelled job stays cancelled.",
+   "actual": "Three ways for the shop-floor record to end up wrong under ordinary simultaneous use.",
+   "impact": "Jobs stuck in process that are in fact finished; cancelled work reappearing in the inspection queue.",
+   "correction": "Completing an operation locks the dispatch job and the job first. Operations of a finished or cancelled job are refused (409). A repeated completion changes nothing. A job status move applies only if the job is still in the status it was checked in, and is saved with its history line.",
+   "requiredTests": "Race rounds for each case, checked against the database.",
+   "status": "VERIFIED FIXED"
+  },
+  {
+   "id": "C-006",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Order entry and web checkout",
+   "cause": "No idempotency key.",
+   "dependencies": "A new table for request keys.",
+   "statusNote": "",
+   "verification": "",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "module": "Orders",
+   "severity": "P2",
+   "category": "Reliability: duplicate requests",
+   "where": "POST /api/orders, POST /api/orders/intake, POST /api/ecom/checkout/submit",
+   "evidence": "Code read: none of the three accepts a request key. The simulation probe \"10 simultaneous orders all saved with distinct numbers\" shows identical bodies are each saved. The counter quick sale is the one sale route that recognises a repeat (by its sale id).",
+   "expected": "A request repeated after a timeout or a double press creates one order.",
+   "actual": "It creates two. Only the screens guard against it, by disabling the button while saving.",
+   "impact": "A duplicate order on a slow connection, found later by a person.",
+   "correction": "An Idempotency-Key header on order creation, stored with a unique rule per user, answering a repeat with the first reply.",
+   "requiredTests": "The same key twice, in sequence and at once: one order, the same answer.",
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "It needs a new table with a unique rule, and every database change is made in Phase 3 and applied by the owner.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+    "correction": "Table RequestKey (userId, key, route, reply, createdAt) with a unique rule on (userId, key); a small middleware on the three routes; the screens send a key per form.",
+    "dependencies": "None besides the migration.",
+    "acceptance": "The same key twice creates one order and returns the same answer both times.",
+    "verification": "A check in qa/sim/phase2-integrity.mjs for each of the three routes, in sequence and simultaneous."
+   }
+  },
+  {
+   "id": "C-007",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Work center queue; will-call queue",
+   "cause": "Left from the prototype.",
+   "dependencies": "",
+   "statusNote": "",
+   "verification": "qa/tools/frontend-checks.mjs: 0 (it reports 2 on the code before the fix). In the gates.",
+   "phase": "Phase 2: architecture and code quality",
+   "module": "Shop floor screen; counter will-call screen",
+   "severity": "P2",
+   "category": "Data honesty",
+   "where": "src/frontend/src/apps/shopfloor/WorkCenterQueuePage.jsx; src/frontend/src/components/pos/screens/WillCallQueueScreen.jsx",
+   "evidence": "Code read while triaging B-024: when the operator list failed to load, the work center queue showed an operator called \"Default Operator\" with the id OP-001; when the will-call queue failed to load, the screen showed three invented orders for invented customers.",
+   "expected": "A failed load shows an error and nothing else.",
+   "actual": "Two real screens showed made-up records as if they were real.",
+   "impact": "An operator could try to start work under a name that is not on file (the server refuses it); counter staff could look for material for an order that does not exist.",
+   "correction": "Both show an empty list and the reason.",
+   "requiredTests": "A check that fails when a catch block sets a list holding a literal record.",
+   "status": "VERIFIED FIXED"
+  },
+  {
+   "id": "C-008",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Submitting an order that needs an override",
+   "cause": "A missing dependency.",
+   "dependencies": "",
+   "statusNote": "",
+   "verification": "qa/tools/frontend-checks.mjs: 38, down from 39; the ceiling in the gates is 38. The order entry browser checks pass.",
+   "phase": "Phase 2: architecture and code quality",
+   "module": "Order entry screen",
+   "severity": "P3",
+   "category": "Frontend state",
+   "where": "src/frontend/src/pages/Orders/CSRIntakePage.jsx (handleOverrideConfirm)",
+   "evidence": "The lint rule for effects: the handler called doSubmit without listing it, so it kept the copy of doSubmit from the render in which the override dialog opened.",
+   "expected": "The order submitted is the one on the screen.",
+   "actual": "A change made to the form between opening the dialog and confirming it would not have been in the order sent.",
+   "impact": "Small: the dialog is modal, so the form cannot normally change underneath it.",
+   "correction": "The handler is declared after doSubmit and lists it.",
+   "requiredTests": "The effect ratchet.",
+   "status": "VERIFIED FIXED"
+  },
+  {
+   "id": "C-009",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Branch boundary",
+   "cause": "The tables have no branch column to filter on.",
+   "dependencies": "Branch columns on Quote, RFQ, Package, DropTag, Document; a home branch on every staff login in the live database.",
+   "statusNote": "",
+   "verification": "",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "module": "Access control",
+   "severity": "P2",
+   "category": "Security: incomplete isolation",
+   "where": "src/backend/src/lib/branchScope.js (BRANCH_OWNED); prisma/schema.prisma",
+   "evidence": "Code read. The boundary covers 15 record types. It does not cover: quotes and requests for quotation (no branch column), customers and contacts (shared by design, not decided), packages, drop tags, documents, inspections, maintenance orders and equipment (reachable only through a branch-owned record today), the second stock list and order hub (JSON stores, B-009), records read through a nested include of a record of another type, and the 14 raw SQL statements. A login with no home branch and no all-branch role sees no branch records at all.",
+   "expected": "Every record that belongs to a branch is held to it, and every staff login has a branch.",
+   "actual": "The core order-to-cash and shop records are held; the rest are not.",
+   "impact": "A branch login can still read another branch's quotes and the records listed. Stock, orders, invoices, shipments, jobs and work orders are held.",
+   "correction": "Add the columns (Phase 3), add the models to BRANCH_OWNED, extend qa/sim/branch-boundary.mjs with one refusal per model.",
+   "requiredTests": "One read and one change refused per added model.",
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "The missing piece is database columns and a backfill, which Phase 3 owns and the owner applies. None of the uncovered records carries stock or money.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability for the columns and the home-branch backfill; Phase 10: security and infrastructure for the enforcement and its tests",
+    "correction": "As above.",
+    "dependencies": "The SQL Editor file 20261113190000_order_branch.sql applied first.",
+    "acceptance": "Every table with a branch is in BRANCH_OWNED; every staff login has a home branch; branch-boundary.mjs has a refusal for each.",
+    "verification": "qa/sim/branch-boundary.mjs extended; a database check that counts staff logins with no home branch."
+   }
+  },
+  {
+   "id": "C-010",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Voiding a sale",
+   "cause": "creditInvoice and recordRefund open their own transactions and cannot be nested as written.",
+   "dependencies": "F-series billing functions.",
+   "statusNote": "",
+   "verification": "",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "module": "Counter quick sale",
+   "severity": "P2",
+   "category": "Data integrity: partial save",
+   "where": "src/backend/src/routes/quickSale.js (POST /:saleId/void)",
+   "evidence": "Code read: the void is claimed and the stock returned in one transaction (Phase 2). The credit memo and the refund are then made by two further calls, each its own transaction.",
+   "expected": "A void is all or nothing.",
+   "actual": "A failure after the claim leaves a sale marked void, its stock returned, and no credit memo or refund.",
+   "impact": "Rare (it needs a failure between two calls), and visible: the sale shows as void with money still taken.",
+   "correction": "Let creditInvoice and recordRefund accept an open transaction, and run the whole void in one.",
+   "requiredTests": "A failure forced after the claim leaves the sale exactly as it was.",
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "The correction changes the two billing functions every credit and refund uses. Phase 3 is the transactional-correctness phase and will run the full money reconciliation around that change.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+    "correction": "As above.",
+    "dependencies": "None.",
+    "acceptance": "A forced failure at each step of a void leaves no partial record.",
+    "verification": "A unit test with a failing step, and the simulation's reconciliation."
+   }
+  },
+  {
+   "id": "C-011",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Shelf items",
+   "cause": "Receiving was built for metal by weight.",
+   "dependencies": "I-016 (count and adjustment). The owner: may an item with no shelf stock on file be sold? Today it may, with the note.",
+   "statusNote": "",
+   "verification": "",
+   "phase": "Inventory and purchasing",
+   "module": "Receiving",
+   "severity": "P2",
+   "category": "Missing function",
+   "where": "src/backend/src/lib/receiving.js",
+   "evidence": "Code read: receiving creates stock by weight only (unit LB) and needs a heat and a grade. No route creates stock counted in pieces. The QA database holds 333 stock levels, all in LB.",
+   "expected": "Shelf items (discs, gloves) can be received by the piece, so the counter sale has stock to reduce.",
+   "actual": "They cannot. The counter rule built in Phase 2 takes effect only where piece-counted stock exists; elsewhere the sale goes through and the receipt says no stock was reduced.",
+   "impact": "Shelf stock is still uncounted in practice until this is built.",
+   "correction": "A receipt by the piece for products priced EACH, with no heat or grade.",
+   "requiredTests": "Receive 10, sell 3, void 1 sale, count 7 then 10.",
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "It is a new receiving function with its own screen, and Coil.heatId and gradeId would have to allow empty values, which is a database change.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability for the two columns; The phase the owner issues for inventory (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12 for the function and screen",
+    "correction": "As above.",
+    "dependencies": "I-016.",
+    "acceptance": "A shelf item received by the piece is reduced by a counter sale and restored by a void, through the screens.",
+    "verification": "The counter checks in qa/sim/phase2-integrity.mjs run without a database fixture."
+   }
+  },
+  {
+   "id": "C-012",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Order entry",
+   "cause": "Left from the first customer set-up.",
+   "dependencies": "",
+   "statusNote": "",
+   "verification": "",
+   "phase": "Sales and customer operations",
+   "module": "Order intake",
+   "severity": "P3",
+   "category": "Maintainability: hard-coded value",
+   "where": "src/backend/src/routes/intakeOrders.js (seller lookup by the code \"ALRO\")",
+   "evidence": "Code read: the seller on an intake order is found by the fixed code \"ALRO\".",
+   "expected": "The seller is the signed-in user's company.",
+   "actual": "A fixed code. If the company record has another code the seller is left empty.",
+   "impact": "None while the code matches.",
+   "correction": "Use the user's organization.",
+   "requiredTests": "An intake order by a login of another company carries that company as seller.",
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Changing it changes which company appears on existing order documents; it should be done with the sales module and checked against live data the engineer does not have.",
+    "targetPhase": "The phase the owner issues for sales and customer operations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "As above.",
+    "dependencies": "None.",
+    "acceptance": "No company code in the source.",
+    "verification": "A sweep check."
+   }
+  },
+  {
+   "id": "C-013",
+   "discovered": "2026-11-13",
+   "source": "Phase 2 architecture review",
+   "workflow": "Accepting a recommendation",
+   "cause": "Recommendations are generated on request and not stored.",
+   "dependencies": "M-series scheduling rules, which are not decided.",
+   "statusNote": "",
+   "verification": "",
+   "phase": "Manufacturing and processing",
+   "module": "Operations cockpit",
+   "severity": "P2",
+   "category": "Data integrity: trust in browser input",
+   "where": "src/backend/src/routes/opsCockpit.js (POST /recommendations/accept)",
+   "evidence": "Code read: the handler decides what to do from the words in the recommendation's title as sent by the browser (it looks for \"bottleneck\" or \"Rebalance\" and reads a work center code out of the text), then moves jobs between work centers in several separate writes.",
+   "expected": "The server acts on a recommendation it made and kept, identified by id, in one transaction.",
+   "actual": "Any text shaped like a recommendation moves jobs.",
+   "impact": "Limited by Phase 2 to the production manager, schedulers and the inventory manager. A partial failure can leave some jobs moved.",
+   "correction": "Store recommendations; accept by id; one transaction.",
+   "requiredTests": "Accept twice; accept an id that does not exist; a forced failure.",
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "What a recommendation may do is a scheduling rule the owner has not set, and inventing it is outside what Phase 2 may do.",
+    "targetPhase": "The phase the owner issues for manufacturing and processing (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "As above.",
+    "dependencies": "The owner's scheduling rules.",
+    "acceptance": "Accepting acts only on a stored recommendation, once, all or nothing.",
+    "verification": "Checks in qa/sim/phase2-integrity.mjs."
+   }
   },
   {
    "id": "D-001",
@@ -1031,9 +1453,17 @@
    "correction": "Many are helper functions no page uses. The screen check shows which pages actually hit a missing route when they open. Buttons inside pages were not clicked.",
    "requiredTests": "",
    "phase": "By subject (see the finding)",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open: engineering work",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).",
+    "targetPhase": "By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Many are helper functions no page uses. The screen check shows which pages actually hit a missing route when they open. Buttons inside pages were not clicked.",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "D-021",
@@ -1097,9 +1527,17 @@
    "correction": "Seed script, not app behaviour. Matters only because the demo site shows them.",
    "requiredTests": "",
    "phase": "By subject (see the finding)",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open: engineering work",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).",
+    "targetPhase": "By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Seed script, not app behaviour. Matters only because the demo site shows them.",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "D-024",
@@ -1119,9 +1557,17 @@
    "correction": "Needs consolidation.",
    "requiredTests": "",
    "phase": "By subject (see the finding)",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open: engineering work",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).",
+    "targetPhase": "By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Needs consolidation.",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "D-025",
@@ -1185,9 +1631,17 @@
    "correction": "Already noted in the code.",
    "requiredTests": "",
    "phase": "By subject (see the finding)",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open: engineering work",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).",
+    "targetPhase": "By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Already noted in the code.",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "D-028",
@@ -1339,9 +1793,17 @@
    "correction": "The email and text provider to connect.",
    "requiredTests": "",
    "phase": "By subject (see the finding)",
-   "status": "DEFERRED WITH JUSTIFICATION",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 5, 2026-11-13: Email and text are deferred by the owner. The scheduled trigger (a timer on the host that lets the system act without a person, for example to retry a failed partner message) was not decided and will be asked again, in plain terms, in the integration phase.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).",
+    "targetPhase": "By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "The email and text provider to connect.",
+    "dependencies": "The email and text provider to connect.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "D-035",
@@ -1383,9 +1845,17 @@
    "correction": "Order Hub needs a decision (S-021).",
    "requiredTests": "",
    "phase": "By subject (see the finding)",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open: engineering work",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: By subject (see the finding).",
+    "targetPhase": "By subject (see the finding): The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Order Hub needs a decision (S-021).",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "E-001",
@@ -1471,9 +1941,17 @@
    "correction": "Fixed in Workstream 3",
    "requiredTests": "The database refuses a row where on hand differs from available + reserved + on hold; three cycles pass with the rule on",
    "phase": "Phase 2: architecture and code quality",
-   "status": "IN PROGRESS",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Fixed in part",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Database constraints are Phase 3 work and every database change is applied by the owner from a SQL Editor file.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+    "correction": "Add the remaining value checks listed in database-inventory.md.",
+    "dependencies": "The four SQL Editor files already waiting.",
+    "acceptance": "Every money, quantity and status column the code relies on has a database rule.",
+    "verification": "Each constraint proven by an insert that it refuses; the migration run twice on a copy."
+   }
   },
   {
    "id": "E-005",
@@ -1626,8 +2104,8 @@
    "requiredTests": "`npm audit --omit=dev` reports 0 in both packages and the full suite passes",
    "phase": "Phase 2: architecture and code quality",
    "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Fixed in part",
-   "verification": ""
+   "statusNote": "Fixed in part Audited again in Phase 2 (13 November). Server: 1 moderate (uuid; the affected functions are not used, only v4 is). Screens: 1 high and 3 moderate (vite and esbuild, which run only on a developer machine; react-router, an open redirect through a crafted link). None is critical. Every fix is a major-version upgrade (uuid 14, vite 8, react-router-dom 7), which needs the owner's approval.",
+   "verification": "npm audit in src/backend and src/frontend, this session."
   },
   {
    "id": "E-012",
@@ -1647,9 +2125,9 @@
    "correction": "Assigned to Workstream 6",
    "requiredTests": "No route sends raw error text; sweep section \"Error replies\" still at 0",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN",
-   "statusNote": "Open",
-   "verification": ""
+   "status": "VERIFIED FIXED",
+   "statusNote": "Open The reply layer (middleware/safeErrors.js) removes internal text from every error reply, whatever the route sent.",
+   "verification": "Sweep section \"Error replies do not expose internals\": 0 replies exposed internal detail, this session."
   },
   {
    "id": "E-014",
@@ -1669,9 +2147,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open: needs a shared store, which is a new service",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "A shared counter needs a store on the host or a firewall rule, and host settings are the owner's.",
+    "targetPhase": "Phase 10: security and infrastructure",
+    "correction": "A shared rate counter (the database or the host's firewall).",
+    "dependencies": "Owner: host settings.",
+    "acceptance": "The limit holds across server instances.",
+    "verification": "A burst test against two instances."
+   }
   },
   {
    "id": "E-015",
@@ -1713,9 +2199,9 @@
    "correction": "Requires a business decision",
    "requiredTests": "Lint runs in the pull-request workflow and passes",
    "phase": "Phase 2: architecture and code quality",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open: adding a linter is a new development dependency, so it needs approval",
-   "verification": ""
+   "status": "VERIFIED FIXED",
+   "statusNote": "Open: adding a linter is a new development dependency, so it needs approval A lint configuration exists and runs on every pull request.",
+   "verification": "Lint, frontend: passes. Lint, whole repository: 0 errors. Both run this session."
   },
   {
    "id": "E-017",
@@ -1757,9 +2243,17 @@
    "correction": "Accepted risk proposed, awaiting approval",
    "requiredTests": "Owner agrees large files are split only when they are next changed for another reason",
    "phase": "Phase 2: architecture and code quality",
-   "status": "DEFERRED WITH JUSTIFICATION",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open. Not refactored for style alone",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Splitting large working files is a refactor with no change in behaviour; Phase 2 is told not to refactor in bulk.",
+    "targetPhase": "The phase the owner issues for each module (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Split a file when its module is worked on.",
+    "dependencies": "B-014.",
+    "acceptance": "No route file over 600 lines.",
+    "verification": "Simulation, sweep and unit tests unchanged after each split."
+   }
   },
   {
    "id": "E-019",
@@ -1779,9 +2273,17 @@
    "correction": "Assigned to Workstream 6",
    "requiredTests": "Sweep section proving a login from one tenant cannot read another's rows on every route that carries a tenant id",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN",
-   "statusNote": "Open: audit in Workstream 6",
-   "verification": ""
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited.",
+   "verification": "",
+   "deferral": {
+    "reason": "The product runs one company. Whether a second tenant will ever share the database is not decided, and the audit is a per-table review.",
+    "targetPhase": "Phase 10: security and infrastructure",
+    "correction": "Decide whether more than one tenant will share a database; if so, scope every query the way the branch boundary does.",
+    "dependencies": "C-009.",
+    "acceptance": "Every table with a tenant id is either scoped or documented as unused.",
+    "verification": "A sweep section with two tenants."
+   }
   },
   {
    "id": "E-020",
@@ -1823,9 +2325,17 @@
    "correction": "Assigned to Workstreams 2 to 5, per module",
    "requiredTests": "Every list route in the module answers `{ data, meta }` and its screens are updated; contract scan shows no mismatch",
    "phase": "Phase 2: architecture and code quality",
-   "status": "OPEN",
-   "statusNote": "Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header",
-   "verification": ""
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each.",
+   "verification": "",
+   "deferral": {
+    "reason": "Changing a list reply from a bare list to { data, meta } breaks every screen that reads it. Phase 2 may not introduce an incompatible contract.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "Move the screens to one reader that accepts both, then change the routes.",
+    "dependencies": "E-008 (paging).",
+    "acceptance": "One list shape on every route.",
+    "verification": "qa/tools/api-contract.mjs extended to check the shape."
+   }
   },
   {
    "id": "E-023",
@@ -1845,9 +2355,17 @@
    "correction": "Fixed in part; remainder assigned to Workstream 4",
    "requiredTests": "Cockpit answers under 500 ms on the scaled database",
    "phase": "Phase 2: architecture and code quality",
-   "status": "IN PROGRESS",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Fixed in part",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "It is a performance defect that needs measuring at volume.",
+    "targetPhase": "Phase 11: performance and full simulation cycles",
+    "correction": "Load the cockpit from counted queries.",
+    "dependencies": "B-012.",
+    "acceptance": "Measured under the target at 80-branch volume.",
+    "verification": "The benchmark with a stated environment."
+   }
   },
   {
    "id": "F-001",
@@ -2087,9 +2605,17 @@
    "correction": "Not examined in this workstream either",
    "requiredTests": "The print path examined and either wired to the Shipment screen or recorded as a gap",
    "phase": "Shipping and financial operations",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Shipping and financial operations.",
+    "targetPhase": "Shipping and financial operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Not examined in this workstream either",
+    "dependencies": "None",
+    "acceptance": "To be examined",
+    "verification": "The print path examined and either wired to the Shipment screen or recorded as a gap"
+   }
   },
   {
    "id": "F-012",
@@ -2109,9 +2635,17 @@
    "correction": "Fixed in Workstream 6 (X-006)",
    "requiredTests": "`npm run lint` fails on an undefined name; shown failing on the F-012 defect",
    "phase": "Shipping and financial operations",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open (see E-016)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Shipping and financial operations.",
+    "targetPhase": "Shipping and financial operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Fixed in Workstream 6 (X-006)",
+    "dependencies": "None",
+    "acceptance": "A build or lint step that rejects an undefined name",
+    "verification": "`npm run lint` fails on an undefined name; shown failing on the F-012 defect"
+   }
   },
   {
    "id": "I-001",
@@ -2351,9 +2885,17 @@
    "correction": "Requires a business decision, then a build",
    "requiredTests": "The six screens read real data and the notice is removed",
    "phase": "Inventory and purchasing",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Inventory and purchasing.",
+    "targetPhase": "Inventory and purchasing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Requires a business decision, then a build",
+    "dependencies": "Whether supplier quality is built, and on what records",
+    "acceptance": "Real records, or a clear statement",
+    "verification": "The six screens read real data and the notice is removed"
+   }
   },
   {
    "id": "I-012 (D-024)",
@@ -2373,9 +2915,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Inventory and purchasing",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Inventory and purchasing.",
+    "targetPhase": "Inventory and purchasing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "One stock list",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "I-013 (E-020)",
@@ -2483,9 +3033,17 @@
    "correction": "Deferred with justification: receiving works; this is speed of first load",
    "requiredTests": "A heats upload template; sweep check",
    "phase": "Inventory and purchasing",
-   "status": "DEFERRED WITH JUSTIFICATION",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Inventory and purchasing.",
+    "targetPhase": "Inventory and purchasing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Deferred with justification: receiving works; this is speed of first load",
+    "dependencies": "None",
+    "acceptance": "Heats can be loaded from a file with the stock",
+    "verification": "A heats upload template; sweep check"
+   }
   },
   {
    "id": "I-018",
@@ -2505,9 +3063,9 @@
    "correction": "Fixed in Workstream 5 (F-001)",
    "requiredTests": "Sweep 20",
    "phase": "Inventory and purchasing",
-   "status": "OPEN",
-   "statusNote": "Open: Workstream 5",
-   "verification": ""
+   "status": "VERIFIED FIXED",
+   "statusNote": "Open: Workstream 5 Phase 2 register correction: this was fixed in Workstream 5 as F-001 and the Phase 1 import carried the older \"open\" line.",
+   "verification": "Sweep section \"Shipping and money records: web order tax, shipments and who did what\": 37 checks, 0 problems, this session."
   },
   {
    "id": "M-001",
@@ -2747,9 +3305,17 @@
    "correction": "Requires a business decision, then a build",
    "requiredTests": "The screens read real data and the notice is removed",
    "phase": "Manufacturing and processing",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Manufacturing and processing.",
+    "targetPhase": "Manufacturing and processing: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Requires a business decision, then a build",
+    "dependencies": "Whether production quality (NCR, SPC, in-process inspection) and bills of material are built",
+    "acceptance": "Real data, or a clear notice",
+    "verification": "The screens read real data and the notice is removed"
+   }
   },
   {
    "id": "M-012",
@@ -3077,9 +3643,17 @@
    "correction": "Deferred with justification: the branch list belongs with the promise engine (S-010), which reads the same list",
    "requiredTests": "Both entry screens list the branches in the database; Browser check",
    "phase": "Sales and customer operations",
-   "status": "DEFERRED WITH JUSTIFICATION",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.",
+    "targetPhase": "Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Deferred with justification: the branch list belongs with the promise engine (S-010), which reads the same list",
+    "dependencies": "S-010",
+    "acceptance": "Branches come from the database",
+    "verification": "Both entry screens list the branches in the database; Browser check"
+   }
   },
   {
    "id": "S-009",
@@ -3363,9 +3937,17 @@
    "correction": "Requires a business decision",
    "requiredTests": "One RFQ screen; route removed or linked",
    "phase": "Sales and customer operations",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.",
+    "targetPhase": "Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Requires a business decision",
+    "dependencies": "Retire Order Hub or merge it",
+    "acceptance": "One place for one job",
+    "verification": "One RFQ screen; route removed or linked"
+   }
   },
   {
    "id": "S-022",
@@ -3385,9 +3967,17 @@
    "correction": "Assigned to Workstream 6",
    "requiredTests": "Contract scan and route inventory show no unused sales route",
    "phase": "Sales and customer operations",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.",
+    "targetPhase": "Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Assigned to Workstream 6",
+    "dependencies": "S-026",
+    "acceptance": "Unused paths are removed or finished",
+    "verification": "Contract scan and route inventory show no unused sales route"
+   }
   },
   {
    "id": "S-023",
@@ -3473,9 +4063,17 @@
    "correction": "Assigned to Workstream 5 (will-call, split shipment) and 6 (`api/pricing.js`)",
    "requiredTests": "`api-contract.md` shows 0 sales calls without a route",
    "phase": "Sales and customer operations",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.",
+    "targetPhase": "Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Assigned to Workstream 5 (will-call, split shipment) and 6 (`api/pricing.js`)",
+    "dependencies": "S-010",
+    "acceptance": "No call without a route",
+    "verification": "`api-contract.md` shows 0 sales calls without a route"
+   }
   },
   {
    "id": "S-027",
@@ -3539,9 +4137,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-003",
@@ -3583,9 +4189,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open; 18 are sales calls (S-026)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-005",
@@ -3671,9 +4285,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Caution notice added; engine open (S-010)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-009",
@@ -3737,9 +4359,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open (S-008)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-012",
@@ -3913,9 +4543,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-020",
@@ -3935,9 +4573,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-021",
@@ -3979,9 +4625,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open (I-017)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-023",
@@ -4111,9 +4765,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Removed (M-010): opens the real shop floor",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-029",
@@ -4133,9 +4795,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-030",
@@ -4265,9 +4935,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-036",
@@ -4287,9 +4965,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open (F-011)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-037",
@@ -4309,9 +4995,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-038",
@@ -4375,9 +5069,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open (X-009)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "U-041",
@@ -4397,9 +5099,17 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open (X-007)",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "See \"Recommended correction\".",
+    "dependencies": "None recorded.",
+    "acceptance": "The behaviour under \"Expected\".",
+    "verification": "A success-path test and a refusal test for the corrected behaviour."
+   }
   },
   {
    "id": "X-001",
@@ -4419,9 +5129,17 @@
    "correction": "Mitigated; requires a business decision per module",
    "requiredTests": "The audit shows the screen as REAL, or the route is gone",
    "phase": "Enterprise experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.",
+    "targetPhase": "Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Mitigated; requires a business decision per module",
+    "dependencies": "Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance",
+    "acceptance": "Real records, or a clear label",
+    "verification": "The audit shows the screen as REAL, or the route is gone"
+   }
   },
   {
    "id": "X-002",
@@ -4441,9 +5159,17 @@
    "correction": "Mitigated; requires a business decision per module",
    "requiredTests": "The audit shows the screen as REAL, or the route is gone",
    "phase": "Enterprise experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.",
+    "targetPhase": "Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Mitigated; requires a business decision per module",
+    "dependencies": "Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance",
+    "acceptance": "Real records, or a clear label",
+    "verification": "The audit shows the screen as REAL, or the route is gone"
+   }
   },
   {
    "id": "X-003",
@@ -4573,9 +5299,17 @@
    "correction": "Requires a business decision",
    "requiredTests": "Built on real orders, or removed",
    "phase": "Enterprise experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.",
+    "targetPhase": "Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Requires a business decision",
+    "dependencies": "Whether will call is used",
+    "acceptance": "Real orders or removal",
+    "verification": "Built on real orders, or removed"
+   }
   },
   {
    "id": "X-009",
@@ -4595,9 +5329,17 @@
    "correction": "Mitigated; requires a business decision per module",
    "requiredTests": "The audit shows the screen as REAL, or the route is gone",
    "phase": "Enterprise experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.",
+    "targetPhase": "Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Mitigated; requires a business decision per module",
+    "dependencies": "Build or remove: safety, maintenance, training, contractors, customer quality, executive, production quality, supplier quality, freight, BOMs, provenance",
+    "acceptance": "To be decided",
+    "verification": "The audit shows the screen as REAL, or the route is gone"
+   }
   },
   {
    "id": "X-010",
@@ -4617,9 +5359,17 @@
    "correction": "Assigned",
    "requiredTests": "Every manual page read against its screen",
    "phase": "Enterprise experience",
-   "status": "OPEN",
+   "status": "DEFERRED TO SPECIFIC PHASE",
    "statusNote": "Open",
-   "verification": ""
+   "verification": "",
+   "deferral": {
+    "reason": "Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Enterprise experience.",
+    "targetPhase": "Enterprise experience: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Assigned",
+    "dependencies": "The decisions above",
+    "acceptance": "The manual matches the screens",
+    "verification": "Every manual page read against its screen"
+   }
   }
  ]
 }

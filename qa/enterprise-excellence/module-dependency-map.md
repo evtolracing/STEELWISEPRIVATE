@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit b821398. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -69,9 +69,9 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | WorkCenter | Staff and operators; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 6 |
 | OrderLine | Order entry; Sales orders; Customer specifications; Jobs, job board and schedule; Shipping; Returns | 6 |
 | Inventory | Sales orders; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 6 |
+| MaterialMovement | Counter quick sale; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 6 |
 | User | Sign-in and sessions; Users, roles and branches; RFQs and quotes; Stock items and stock levels; Jobs, job board and schedule | 5 |
 | Product | Order entry; Counter quick sale; Web store; Products, grades and heats; Stock items and stock levels | 5 |
-| MaterialMovement | Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 5 |
 | Quote | RFQs and quotes; Order entry; Partner API; Operations cockpit and dashboards | 4 |
 | Shipment | Material tracking, packages and drop tags; Shipping; Partner API; Operations cockpit and dashboards | 4 |
 | Operator | Staff and operators; Dispatch, work centers and shop-floor operations; Quality inspections | 3 |
@@ -98,11 +98,11 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/numbering.js | intakeOrders.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, quotes.js, returns.js, … | 12 |
 | lib/roleAccess.js | coils.js, customers.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, orders.js, … | 11 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
+| lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |
 | lib/workflowRules.js | intakeOrders.js, inventory.js, jobs.js, orders.js, returns.js, rfqs.js, shipments.js | 7 |
 | middleware/partnerAuth.js | adminRoutes.js, carrierRoutes.js, customerRoutes.js, partnerAuthRoutes.js, supplierRoutes.js, webhookRoutes.js | 6 |
 | lib/jobHistory.js | jobs.js, materialTrackingRoutes.js, operationsRoutes.js, qcRoutes.js, shipments.js | 5 |
 | services/intakeCatalogService.js | coils.js, intakePricing.js, inventory.js, products.js | 4 |
-| lib/fieldRules.js | grades.js, heats.js, products.js, workOrders.js | 4 |
 | lib/creditControl.js | intakeOrders.js, onlineOrders.js, orders.js, quotes.js | 4 |
 | lib/billingRules.js | intakeOrders.js, onlineOrders.js, quickSale.js, returns.js | 4 |
 | services/billing.js | invoices.js, quickSale.js, returns.js, shipments.js | 4 |
@@ -126,6 +126,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | services/simulationService.js | executive.js | 1 |
 | services/forecastService.js | executive.js | 1 |
 | services/decisionService.js | executive.js | 1 |
+| lib/branchScope.js | inventory.js | 1 |
 | lib/receiving.js | inventory.js | 1 |
 | lib/receivingRules.js | inventory.js | 1 |
 | services/portalService.js | portal.js | 1 |
@@ -133,13 +134,16 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | services/tagRenderer.js | printQueue.js | 1 |
 | services/remnantService.js | remnants.js | 1 |
 | services/pricingIntelligenceService.js | salesRoutes.js | 1 |
+| lib/userAdminRules.js | users.js | 1 |
 | lib/workOrderRules.js | workOrders.js | 1 |
 
 ## Highest-risk dependencies
 
-1. `lib/db.js`, `middleware/apiGate.js`, `lib/roleAccess.js`: every request passes through them. Covered by unit tests and the sweep.
-2. The Job table: read or written by jobs, dispatch, operations, quality, material tracking, shipping, order entry, cockpit, planning, print queue and the partner API. Its moves are governed in one place (`lib/workflowRules.js`, `lib/jobHistory.js`) only for the routes that use them; dispatch and operations change related records without those rules (B-011).
+1. `lib/db.js`, `lib/branchScope.js`, `middleware/apiGate.js`, `lib/roleAccess.js`: every request and, since Phase 2, every query on a branch-owned table passes through them. A mistake here hides records from everyone or shows them to everyone. Covered by unit tests, the sweep, the probe and `qa/sim/branch-boundary.mjs` (37 checks).
+2. The Job table: read or written by jobs, dispatch, operations, quality, material tracking, shipping, order entry, cockpit, planning, print queue and the partner API. Its moves are governed by `lib/workflowRules.js` and recorded by `lib/jobHistory.js`. Since Phase 2, planning and operations record their moves in the same transaction, completing an operation locks the job, and a status move applies only if the job is still where it was checked (C-005; `qa/sim/phase2-integrity.mjs`). Still outside: the general edit route writes a status unconditionally, and three job routes carry their own status checks (M-017).
 3. Order, OrderLine, Coil, Inventory, Shipment, Invoice: the order-to-cash chain. Covered in depth by the simulation and its reconciliation.
 4. `services/billing.js`: every money action. Covered by unit tests, the simulation and the sweep.
-5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree.
+5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner; to be connected or retired in Phase 3.
+6. Shelf stock: the counter quick sale now writes stock levels and movements (B-025), joining receiving, transfer, hold, allocation, dispatch and return receipt as the only writers of stock.
+7. `routes/shipments.js` holds dispatch and delivery as private functions; the carrier partner routes re-implemented them and are wrong (C-002).
 

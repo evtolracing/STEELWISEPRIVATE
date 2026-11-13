@@ -146,6 +146,7 @@ check('a branch manager cannot create a login at a branch they are not in', far.
 const farExtra = await tryCreate({ locationIds: [L4] });
 check('a branch manager cannot add a branch they are not in to a new login', farExtra.r.status === 403 && !farExtra.row, `${farExtra.r.status}`);
 const own = await tryCreate({});
+check('creating a login records who created it', own.row && (await prisma.auditLog.count({ where: { resourceType: 'User', resourceId: own.row.id, action: 'user.create', userId: me.id } })) === 1);
 check('a branch manager can create a sales login at their own branch', own.r.status === 201 && own.row?.role === 'CSR' && own.row?.homeLocationId === L1, `${own.r.status} ${JSON.stringify(own.r.body).slice(0, 120)}`);
 const selfUp = await A.put(`/api/users/${me.id}`, { role: 'SUPER_ADMIN' }, 'regional');
 check('a branch manager cannot change their own role', selfUp.status === 403 && (await prisma.user.findUnique({ where: { id: me.id } })).role === 'BRANCH_MANAGER', `${selfUp.status}`);

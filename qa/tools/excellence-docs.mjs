@@ -34,6 +34,8 @@ const okOf = (e) => (e.exercised?.ok || 0) > 0;
 const screens = d.screens?.rows || [];
 const rowsOf = Object.fromEntries((db?.rows || []).map((r) => [r.table, r.rows]));
 const open = (f) => !['VERIFIED FIXED', 'NOT APPLICABLE'].includes(f.status);
+// A module's list of findings shows only the ones still open in the register.
+const stillOpen = (ids) => String(ids || '').split(/,\s*/).filter(Boolean).filter((id) => { const f = reg.findings.find((x) => x.id === id); return !f || open(f); }).join(', ');
 
 // ── Module facts ────────────────────────────────────────────────────────────────────────────
 const mods = MODULES.map((m) => {
@@ -74,7 +76,7 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
         `- **Routes:** ${m.routes}${m.routes ? `, of which ${m.writes} change data. Returned a success in a test this session: ${m.okRoutes} of ${m.routes}; of the changing routes, ${m.okWrites} of ${m.writes}` : ''}`,
         `- **Tables:** ${m.tables.length ? m.tables.join(', ') : 'none directly in the route files (through a service, or none)'}`,
         `- **Who may change it:** see permissions-matrix.md`, `- **Depends on:** ${m.upstream || 'nothing'}`, `- **Feeds:** ${m.downstream || 'nothing'}`,
-        `- **Findings:** ${m.findings || 'none open'}`, ...(m.concern ? [`- **Production concern:** ${m.concern}`] : []), '');
+        `- **Findings:** ${stillOpen(m.findings) || 'none open'}`, ...(m.concern ? [`- **Production concern:** ${m.concern}`] : []), '');
     }
   }
   L.push('## Capabilities in the program brief that the code does not contain', '', 'These are not modules. Nothing was built for them in Phase 1; each is a decision for the owner or a later phase.', '', '| Capability | Finding |', '|---|---|', ...NOT_BUILT.map(([c, f]) => `| ${c} | ${f} |`), '');
@@ -156,11 +158,13 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '## Tables touched by more than one module', '', '| Table | Modules | Count |', '|---|---|---:|', ...shared.map(([t, s]) => `| ${t} | ${[...s].join('; ')} | ${s.size} |`), '',
     '## Shared server code and who imports it', '', '| File | Imported by (route files) | Count |', '|---|---|---:|', ...Object.entries(libUse).sort((a, b) => b[1].length - a[1].length).map(([f, a]) => `| ${f} | ${a.slice(0, 8).join(', ')}${a.length > 8 ? ', …' : ''} | ${a.length} |`), '',
     '## Highest-risk dependencies', '',
-    '1. `lib/db.js`, `middleware/apiGate.js`, `lib/roleAccess.js`: every request passes through them. Covered by unit tests and the sweep.',
-    '2. The Job table: read or written by jobs, dispatch, operations, quality, material tracking, shipping, order entry, cockpit, planning, print queue and the partner API. Its moves are governed in one place (`lib/workflowRules.js`, `lib/jobHistory.js`) only for the routes that use them; dispatch and operations change related records without those rules (B-011).',
+    '1. `lib/db.js`, `lib/branchScope.js`, `middleware/apiGate.js`, `lib/roleAccess.js`: every request and, since Phase 2, every query on a branch-owned table passes through them. A mistake here hides records from everyone or shows them to everyone. Covered by unit tests, the sweep, the probe and `qa/sim/branch-boundary.mjs` (37 checks).',
+    '2. The Job table: read or written by jobs, dispatch, operations, quality, material tracking, shipping, order entry, cockpit, planning, print queue and the partner API. Its moves are governed by `lib/workflowRules.js` and recorded by `lib/jobHistory.js`. Since Phase 2, planning and operations record their moves in the same transaction, completing an operation locks the job, and a status move applies only if the job is still where it was checked (C-005; `qa/sim/phase2-integrity.mjs`). Still outside: the general edit route writes a status unconditionally, and three job routes carry their own status checks (M-017).',
     '3. Order, OrderLine, Coil, Inventory, Shipment, Invoice: the order-to-cash chain. Covered in depth by the simulation and its reconciliation.',
     '4. `services/billing.js`: every money action. Covered by unit tests, the simulation and the sweep.',
-    '5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree.', ''];
+    '5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner; to be connected or retired in Phase 3.',
+    '6. Shelf stock: the counter quick sale now writes stock levels and movements (B-025), joining receiving, transfer, hold, allocation, dispatch and return receipt as the only writers of stock.',
+    '7. `routes/shipments.js` holds dispatch and delivery as private functions; the carrier partner routes re-implemented them and are wrong (C-002).', ''];
   write('module-dependency-map.md', L);
 }
 
@@ -202,7 +206,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
 {
   const order = ['P0', 'P1', 'P2', 'P3'];
   const L = ['# Findings register', '', made('qa/tools/excellence-docs.mjs'), '',
-    'Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.', '',
+    'Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.', '',
     'Severity: P0 critical security, financial integrity, data corruption or outage risk. P1 essential workflow failure or significant operational risk. P2 functional, architectural, performance or maintainability deficiency. P3 minor.', '',
     '## Counts', '', '| Severity | All | Still open |', '|---|---:|---:|', ...order.map((s) => `| ${s} | ${F.filter((f) => f.severity === s).length} | ${F.filter((f) => f.severity === s && open(f)).length} |`), `| Total | ${F.length} | ${F.filter(open).length} |`, '',
     '| Status | Count |', '|---|---:|', ...Object.entries(count(F, 'status')).sort((a, b) => b[1] - a[1]).map(([k, v]) => `| ${k} | ${v} |`), '',
@@ -211,7 +215,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
     '## Every finding in full', ''];
   for (const f of F) {
     L.push(`### ${f.id} · ${f.severity} · ${f.status}`, '',
-      ...[['Discovered', f.discovered], ['Module', f.module], ['Workflow', f.workflow], ['Category', f.category], ['Source file or endpoint', f.where], ['Evidence', f.evidence], ['Expected', f.expected], ['Actual', f.actual], ['Root cause or suspected cause', f.cause], ['Operational impact', f.impact], ['Affected dependencies', f.dependencies], ['Recommended correction', f.correction], ['Required tests', f.requiredTests], ['Assigned phase', f.phase], ['Status note', f.statusNote], ['Verification evidence', f.verification], ['First recorded in', f.source]].filter(([, v]) => v).map(([k, v]) => `- **${k}:** ${String(v).replace(/\n/g, ' ')}`), '');
+      ...[['Discovered', f.discovered], ['Module', f.module], ['Workflow', f.workflow], ['Category', f.category], ['Source file or endpoint', f.where], ['Evidence', f.evidence], ['Expected', f.expected], ['Actual', f.actual], ['Root cause or suspected cause', f.cause], ['Operational impact', f.impact], ['Affected dependencies', f.dependencies], ['Recommended correction', f.correction], ['Deferred: reason', f.deferral?.reason], ['Deferred: target phase', f.deferral?.targetPhase], ['Deferred: required correction', f.deferral && f.deferral.correction !== f.correction ? f.deferral.correction : ''], ['Deferred: dependencies', f.deferral?.dependencies], ['Deferred: acceptance criteria', f.deferral?.acceptance], ['Deferred: verification', f.deferral?.verification], ['Required tests', f.requiredTests], ['Assigned phase', f.phase], ['Status note', f.statusNote], ['Verification evidence', f.verification], ['First recorded in', f.source]].filter(([, v]) => v).map(([k, v]) => `- **${k}:** ${String(v).replace(/\n/g, ' ')}`), '');
   }
   write('findings-register.md', L);
 }
@@ -284,7 +288,15 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
     let sum = 0; let wsum = 0; const rows = [];
     for (const [cat, wgt] of WEIGHTS) {
       let s = g.scores[cat]?.score ?? null; let ev = g.scores[cat]?.evidence || 'No evidence gathered';
-      if (cat === 'Security') { if (s == null) { s = 60; ev = P1NOTE.Security; } else if (s > 60) { ev = `${P1NOTE.Security}. Was ${s}`; s = 60; } else ev = `${ev}. ${P1NOTE.Security}`; }
+      if (cat === 'Security') {
+        // The Phase 1 cap of 60 stood while B-003 and B-004 were open. With both verified fixed the cap is 78, held there by C-009 and E-014.
+        const boundaryDone = ['B-003', 'B-004'].every((id) => F.find((f) => f.id === id)?.status === 'VERIFIED FIXED');
+        const cap = boundaryDone ? 78 : 60;
+        const note = boundaryDone ? 'Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open' : P1NOTE.Security;
+        if (s == null) { s = cap; ev = note; } else if (s > cap) { ev = `${note}. Was ${s}`; s = cap; } else ev = `${ev}. ${note}`;
+      }
+      const adj = (state.scoreAdjustments || []).find((x) => x.group === g.title && x.category === cat);
+      if (adj) { ev = `${adj.evidence}. Was ${s} (${ev})`; s = adj.score; }
       if (cat === 'Accessibility') { s = null; ev = P1NOTE.Accessibility; }
       if (cat === 'Performance' && s == null) ev = 'NOT VERIFIED for this group. Only the routes in the Workstream 1 benchmark were measured';
       if (s != null) { sum += s * wgt; wsum += wgt; }
@@ -298,7 +310,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
     summary.push([g.title, weighted, wsum, p01.length, wr ? `${wo} of ${wr}` : 'n/a']);
   }
   L.splice(L.indexOf('## Module groups'), 0, '## Summary', '', '| Module group | Weighted score | Share of the weights that has evidence | Open P0 or P1 | Changing routes with a success-path test | Meets the gate |', '|---|---:|---:|---:|---|:-:|', ...summary.map(([t, w, ws, p, c]) => `| ${t} | ${w} | ${ws}% | ${p} | ${c} | No |`), '', 'No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.', '',
-    '## Modules below the groups', '', 'The groups hide large differences. Classification and test reach per module:', '', '| Module | Classification | Changing routes with a success-path test | Open findings |', '|---|---|---|---|', ...mods.map((m) => `| ${m.name} | ${m.status} | ${m.writes ? `${m.okWrites} of ${m.writes}` : 'n/a'} | ${m.findings} |`), '');
+    '## Modules below the groups', '', 'The groups hide large differences. Classification and test reach per module:', '', '| Module | Classification | Changing routes with a success-path test | Open findings |', '|---|---|---|---|', ...mods.map((m) => `| ${m.name} | ${m.status} | ${m.writes ? `${m.okWrites} of ${m.writes}` : 'n/a'} | ${stillOpen(m.findings)} |`), '');
   write('quality-scorecard.md', L);
   state.scoreSummary = summary.map(([group, weighted, evidenceShare, openP0P1]) => ({ group, weighted, evidenceShare, openP0P1 }));
 }
@@ -307,14 +319,14 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
 {
   const w = eps.filter((e) => e.method !== 'GET');
   const progress = {
-    programVersion: '1.0', program: 'Enterprise Excellence Program', currentPhase: 1, phaseStatus: state.phaseStatus || 'IN PROGRESS', updated: new Date().toISOString(),
+    programVersion: '1.0', program: 'Enterprise Excellence Program', currentPhase: state.currentPhase || 1, phaseStatus: state.phaseStatus || 'IN PROGRESS', updated: new Date().toISOString(),
     repository: { branch: git('rev-parse --abbrev-ref HEAD'), commit: git('rev-parse HEAD'), baselineCommit: state.baselineCommit || null, pullRequest: 30, merged: false },
     modulesDiscovered: mods.length, modulesAudited: mods.filter((m) => !/Not examined/.test(m.basis)).length, modulesByClassification: mods.reduce((a, m) => { a[m.status] = (a[m.status] || 0) + 1; return a; }, {}),
     discovered: { apiRoutes: eps.length, apiRoutesThatChangeData: w.length, routeFiles: Object.keys(d.backend.files).length, databaseTables: d.schema.models.length, enumerations: Object.keys(d.schema.enums).length, migrations: d.schema.migrations.length, screens: screens.length, frontendFiles: d.frontend.files.length, roles: (d.schema.enums.UserRole || []).length },
     workflowsMapped: state.workflowsMapped ?? null, jobTypesIdentified: state.jobTypesIdentified ?? null,
-    findingsBySeverity: count(F, 'severity'), findingsByStatus: count(F, 'status'), openFindingsBySeverity: count(F.filter(open), 'severity'), findingsTotal: F.length, findingsAddedThisPhase: F.filter((f) => f.id.startsWith('B-')).length,
+    findingsBySeverity: count(F, 'severity'), findingsByStatus: count(F, 'status'), openFindingsBySeverity: count(F.filter(open), 'severity'), findingsTotal: F.length, findingsAddedThisPhase: F.filter((f) => f.id.startsWith(state.findingPrefix || 'B-')).length,
     testsExecuted: state.testsExecuted || [], testReach: { routesWithSuccess: eps.filter(okOf).length, routes: eps.length, changingRoutesWithSuccess: w.filter(okOf).length, changingRoutes: w.length },
-    correctionsCompleted: F.filter((f) => f.id.startsWith('B-') && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
+    correctionsCompleted: F.filter((f) => /^[BC]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
     unverifiedAreas: state.unverifiedAreas || [], currentBlockers: state.currentBlockers || [], nextActions: state.nextActions || [], lastCompletedCheckpoint: state.lastCompletedCheckpoint || null,
   };
   fs.writeFileSync(path.join(DIR, 'progress.json'), `${JSON.stringify(progress, null, 2)}\n`);

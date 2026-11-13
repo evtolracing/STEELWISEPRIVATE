@@ -180,7 +180,9 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
+    // The login and the record of who created it are saved together (B-010).
+    const user = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
       data: {
         email,
         passwordHash,
@@ -219,7 +221,7 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
     });
 
     // Log audit event
-    await prisma.auditLog.create({
+    await tx.auditLog.create({
       data: {
         tenantId: req.user.organizationId,
         category: 'DATA',
@@ -230,6 +232,8 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
         action: 'user.create',
         details: { email, role, firstName, lastName }
       }
+    });
+    return user;
     });
 
     const { passwordHash: _, ...sanitizedUser } = user;

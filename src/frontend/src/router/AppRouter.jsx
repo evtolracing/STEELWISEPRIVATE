@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider, Navigate, useLocation } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate, useLocation, useParams } from 'react-router-dom'
 import { canAccessPath } from '../config/roleAccess'
 import { Box, CircularProgress } from '@mui/material'
 import { AppLayout } from '../components/layout'
@@ -16,8 +16,8 @@ const UnitDetailPage = lazy(() => import('../pages/Units/UnitDetailPage'))
 const WorkOrderListPage = lazy(() => import('../pages/WorkOrders/WorkOrderListPage'))
 const WorkOrderDetailPage = lazy(() => import('../pages/WorkOrders/WorkOrderDetailPage'))
 const WorkOrderCreatePage = lazy(() => import('../pages/WorkOrders/WorkOrderCreatePage'))
-const ShipmentListPage = lazy(() => import('../pages/Logistics/ShipmentListPage'))
-const ShipmentDetailPage = lazy(() => import('../pages/Logistics/ShipmentDetailPage'))
+const ShippingPage = lazy(() => import('../pages/Shipping/ShippingPage'))
+const ShipmentPage = lazy(() => import('../pages/Shipping/ShipmentPage'))
 const PricingDashboardPage = lazy(() => import('../pages/Pricing/PricingDashboardPage'))
 const DemandShapingDashboard = lazy(() => import('../pages/Commercial/DemandShapingDashboard'))
 const QualityDashboardPage = lazy(() => import('../pages/QAQC/QualityDashboardPage'))
@@ -151,7 +151,6 @@ const ShopFloorScreen = lazy(() => import('../components/production/ShopFloorScr
 const ShippingScreen = lazy(() => import('../components/production/ShippingScreen'))
 
 // New App Pages
-const ShipmentsPage = lazy(() => import('../apps/shipments/ShipmentsPage'))
 const OrdersPage = lazy(() => import('../apps/orders/OrdersPage'))
 const BOMsPage = lazy(() => import('../apps/boms/BOMsPage'))
 
@@ -234,6 +233,12 @@ function ProtectedRoute({ children, checkRole = false }) {
   }
 
   return children
+}
+
+/** Old shipment links keep working: they open the real shipment screen. */
+function OldShipmentAddress() {
+  const { id } = useParams()
+  return <Navigate to={`/shipping/${id}`} replace />
 }
 
 // Router configuration
@@ -400,25 +405,10 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Logistics
-      {
-        path: 'logistics/shipments',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ShipmentListPage />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
-      {
-        path: 'logistics/shipments/:id',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ShipmentDetailPage />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
-      },
+      // Logistics: the old shipment screens showed sample data. The real ones are under /shipping.
+      { path: 'logistics/shipments', element: <Navigate to="/shipping" replace />, errorElement: <RouteErrorPage /> },
+      { path: 'logistics/shipments/:id', element: <OldShipmentAddress />, errorElement: <RouteErrorPage /> },
+
 
       // Pricing
       {
@@ -914,7 +904,7 @@ const router = createBrowserRouter([
         path: 'freight/planner',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ShipmentPlanner />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><ShipmentPlanner /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -923,7 +913,7 @@ const router = createBrowserRouter([
         path: 'freight/comparison',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <FreightComparison />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><FreightComparison /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -932,7 +922,7 @@ const router = createBrowserRouter([
         path: 'freight/comparison/:shipmentId',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <FreightComparison />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><FreightComparison /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -941,7 +931,7 @@ const router = createBrowserRouter([
         path: 'freight/route/:shipmentId',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <RouteView />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><RouteView /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -950,7 +940,7 @@ const router = createBrowserRouter([
         path: 'freight/tracking',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ShipmentTrackingBoard />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><ShipmentTrackingBoard /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -959,7 +949,7 @@ const router = createBrowserRouter([
         path: 'freight/exceptions',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ExceptionInbox />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><ExceptionInbox /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -968,7 +958,7 @@ const router = createBrowserRouter([
         path: 'freight/pod/:shipmentId',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PODViewer />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><PODViewer /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1072,7 +1062,16 @@ const router = createBrowserRouter([
         path: 'shipping',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ShipmentsPage />
+            <ShippingPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'shipping/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ShipmentPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1116,7 +1115,7 @@ const router = createBrowserRouter([
         path: 'logistics/route-optimization',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <RouteOptimizationScreen />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><RouteOptimizationScreen /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1127,7 +1126,7 @@ const router = createBrowserRouter([
         path: 'logistics/tracking',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ShipmentTrackingScreen />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><ShipmentTrackingScreen /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1138,7 +1137,7 @@ const router = createBrowserRouter([
         path: 'logistics/dispatch',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <DispatchPlanningScreen />
+            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><DispatchPlanningScreen /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

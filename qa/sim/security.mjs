@@ -1339,6 +1339,141 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   section('Shop floor records: who moved a job, and work orders that follow the rules', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
 }
 
+// 20. Shipping and money records (findings F-001 to F-009): an accepted web order carried no tax
+// and no total, so its invoices had none either; the shipment list sent every shipment with the
+// customer's whole record; nothing said who created, dispatched or delivered a shipment, or who
+// took a payment, issued a credit, paid a refund or cancelled an invoice; and a proof of delivery
+// accepted any text of any size.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const [adminT, csrT, shipT, custT] = await Promise.all(['admin', 'csr', 'shipping', 'custA'].map(tokenFor));
+  const send = async (method, url, token, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(30000) });
+    return { status: res.status, body: await res.json().catch(() => null), headers: res.headers };
+  };
+  const cents = (n) => Math.round(Number(n) * 100);
+  const tag = `QA20-${Date.now().toString(36).toUpperCase()}`;
+  const [adminU, csrU, shipU] = await Promise.all(['admin', 'csr', 'shipping'].map((w) => prisma.user.findUnique({ where: { email: QA_USERS[w] } })));
+  const onlineIds = []; let exemptId = null;
+  try {
+    // --- A web order, once accepted, carries tax and a total ---
+    const rate = await prisma.salesTaxRate.findFirst({ where: { rate: { gt: 0 } }, orderBy: { state: 'asc' } });
+    const branch = rate ? await prisma.location.findFirst({ where: { state: rate.state } }) : null;
+    const customer = await prisma.organization.findFirst({ where: { code: 'QA-C04' } });
+    if (!rate || !branch || !customer) findings.push('no tax rate, branch in that state, or test customer to check with');
+    else {
+      const items = [{ sku: `${tag}-A`, description: 'Web order flat bar', qty: 3, unitPrice: 40 }, { sku: `${tag}-B`, description: 'Web order plate, by weight', qty: 2, extended: 81.37 }];
+      const web = (id, extra = {}) => prisma.onlineOrder.create({ data: { id, externalOrderId: id, customerName: 'QA Web Buyer', items, subtotal: 201.37, ...extra } });
+      await web(`${tag}-1`); onlineIds.push(`${tag}-1`);
+      const acc = await send('POST', `/api/orders/online/${tag}-1/accept`, csrT, { customerId: customer.id, locationId: branch.id });
+      const order = acc.body?.internalOrderId ? await prisma.order.findUnique({ where: { id: acc.body.internalOrderId }, include: { lines: true } }) : null;
+      const wantTax = Math.round(201.37 * Number(rate.rate) * 100);
+      check('accepting a web order makes a sales order', acc.status === 200 && !!order, `status ${acc.status} ${acc.body?.error || ''}`);
+      check('the sales order carries the subtotal of its lines', cents(order?.subtotal) === 20137, `subtotal ${order?.subtotal}`);
+      check('the sales order carries tax at the selling branch rate', cents(order?.taxAmount) === wantTax && wantTax > 0, `tax ${order?.taxAmount}, expected ${wantTax / 100} (${rate.state})`);
+      check('the sales order total is subtotal plus tax', cents(order?.totalAmount) === 20137 + wantTax, `total ${order?.totalAmount}`);
+      check('the reply says which state was taxed and at what rate', acc.body?.totals?.taxState === rate.state && Math.abs(Number(acc.body?.totals?.taxRate) - Number(rate.rate)) < 1e-9 && cents(acc.body?.totals?.totalAmount) === 20137 + wantTax, JSON.stringify(acc.body?.totals ?? null));
+      check('accepting the same web order twice is refused', (await send('POST', `/api/orders/online/${tag}-1/accept`, csrT, { customerId: customer.id, locationId: branch.id })).status === 409, 'accepted twice');
+
+      const exempt = await prisma.organization.create({ data: { code: `${tag}-EX`, name: `${tag} Exempt Buyer`, type: 'FABRICATOR', taxExempt: true, state: rate.state } });
+      exemptId = exempt.id;
+      await web(`${tag}-2`); onlineIds.push(`${tag}-2`);
+      const acc2 = await send('POST', `/api/orders/online/${tag}-2/accept`, csrT, { customerId: exempt.id, locationId: branch.id });
+      const order2 = acc2.body?.internalOrderId ? await prisma.order.findUnique({ where: { id: acc2.body.internalOrderId } }) : null;
+      check('a tax-exempt customer pays no tax on a web order', acc2.status === 200 && cents(order2?.taxAmount) === 0 && cents(order2?.totalAmount) === 20137 && acc2.body?.totals?.exempt === true, `status ${acc2.status}, tax ${order2?.taxAmount}, total ${order2?.totalAmount}`);
+
+      // --- Shipping the accepted order ---
+      const line = order?.lines?.find((l) => l.lineNumber === 1);
+      await send('PUT', `/api/orders/${order.id}`, adminT, { status: 'CONFIRMED' });
+      const look = await send('GET', `/api/shipments/shippable?orderNumber=${encodeURIComponent(order.orderNumber.toLowerCase())}`, shipT);
+      check('the shipping desk can look up what is left to ship on an order', look.status === 200 && look.body?.orderId === order.id && look.body?.lines?.length === 2 && look.body.lines[0].qtyOpen === 3 && look.body.reason === null, `status ${look.status} ${JSON.stringify(look.body).slice(0, 200)}`);
+      check('the lookup names the customer without credit terms or pricing', look.body?.customer?.name === customer.name && !/creditLimit|paymentTerms|priceLevel/.test(JSON.stringify(look.body)), JSON.stringify(look.body?.customer ?? null).slice(0, 160));
+      check('the lookup needs an order number', (await send('GET', '/api/shipments/shippable', shipT)).status === 400, 'accepted');
+      check('the lookup of an order not on file is a 404', (await send('GET', '/api/shipments/shippable?orderNumber=NO-SUCH-ORDER', shipT)).status === 404, 'not 404');
+      check('a customer login cannot use the lookup', [401, 403].includes((await send('GET', `/api/shipments/shippable?orderNumber=${order.orderNumber}`, custT)).status), 'readable');
+      const lookHeld = await send('GET', `/api/shipments/shippable?orderNumber=${order2.orderNumber}`, shipT);
+      check('an order that is not confirmed says why it cannot ship', lookHeld.status === 200 && /Only confirmed orders/.test(lookHeld.body?.reason || ''), JSON.stringify(lookHeld.body?.reason ?? null));
+
+      const made = await send('POST', '/api/shipments', shipT, { orderId: order.id, fromLocationId: branch.id, carrierName: `${tag} Freight`, items: [{ orderLineId: line.id, qtyShipped: 2, weightLb: 50 }] });
+      const shipId = made.body?.id;
+      check('a shipment can be created for part of a line', made.status === 201 && !!shipId, `status ${made.status} ${made.body?.error || ''}`);
+      const after = await send('GET', `/api/shipments/shippable?orderNumber=${order.orderNumber}`, shipT);
+      check('what is on an open shipment is no longer offered', after.body?.lines?.[0]?.qtyOpen === 1 && after.body?.lines?.[0]?.qtyOnOpenShipments === 2, JSON.stringify(after.body?.lines?.[0] ?? null));
+
+      const list = await send('GET', `/api/shipments?search=${encodeURIComponent(`${tag} freight`)}`, shipT);
+      check('the list searches on the server and reports the count', list.status === 200 && list.body?.length === 1 && list.body[0].id === shipId && list.headers.get('x-total-count') === '1', `status ${list.status}, ${list.body?.length} rows, count ${list.headers.get('x-total-count')}`);
+      check('the list finds a shipment by its order number', ((await send('GET', `/api/shipments?search=${order.orderNumber}`, shipT)).body || []).some((s) => s.id === shipId), 'not found');
+      check('the list does not send the customer credit terms', list.body?.[0]?.order?.buyer?.name === customer.name && !/creditLimit|paymentTerms|taxExempt/.test(JSON.stringify(list.body)), JSON.stringify(list.body?.[0]?.order?.buyer ?? null).slice(0, 200));
+      check('an unknown status filter is refused', (await send('GET', '/api/shipments?status=NOPE', shipT)).status === 400, 'accepted');
+      const capped = await send('GET', '/api/shipments?limit=100000', shipT);
+      check('the list never sends more than 200 rows', capped.status === 200 && capped.body.length <= 200, `${capped.body?.length} rows`);
+
+      const events = () => prisma.auditLog.findMany({ where: { resourceType: 'Shipment', resourceId: shipId, eventType: 'SHIPMENT_STATUS_CHANGED' }, orderBy: { timestamp: 'asc' } });
+      let ev = await events();
+      check('creating a shipment is recorded with who created it', ev.length === 1 && ev[0].userId === shipU.id && ev[0].details?.to === 'PENDING', JSON.stringify(ev.map((e) => [e.userId === shipU.id, e.details?.to])));
+      const out = await send('PUT', `/api/shipments/${shipId}/dispatch`, shipT, {});
+      ev = await events();
+      check('dispatch is recorded with who dispatched', out.status === 200 && ev.length === 2 && ev[1].userId === shipU.id && ev[1].details?.from === 'PENDING' && ev[1].details?.to === 'IN_TRANSIT', `status ${out.status} ${out.body?.error || ''}, ${ev.length} records`);
+      const invoiceId = out.body?.invoice?.id;
+      const invoice = invoiceId ? await prisma.invoice.findUnique({ where: { id: invoiceId } }) : null;
+      const wantInvTax = Math.round(80 * Number(rate.rate) * 100);
+      check('the invoice for the shipment carries its share of the order tax', !!invoice && cents(invoice.subtotal) === 8000 && cents(invoice.taxAmount) === wantInvTax && cents(invoice.totalAmount) === 8000 + wantInvTax, `subtotal ${invoice?.subtotal}, tax ${invoice?.taxAmount}, expected tax ${wantInvTax / 100}`);
+
+      const big = await send('PUT', `/api/shipments/${shipId}/deliver`, shipT, { podSignature: 'x'.repeat(201) });
+      const script = await send('PUT', `/api/shipments/${shipId}/deliver`, shipT, { podSignature: 'J. Smith', podImageUrl: 'javascript:alert(1)' });
+      const notText = await send('PUT', `/api/shipments/${shipId}/deliver`, shipT, { podSignature: { a: 1 } });
+      check('a proof of delivery that is too long, not text, or not a safe address is refused', big.status === 400 && script.status === 400 && notText.status === 400 && (await prisma.shipment.findUnique({ where: { id: shipId } }))?.status === 'IN_TRANSIT', `statuses ${big.status}/${script.status}/${notText.status}`);
+      const done = await send('PUT', `/api/shipments/${shipId}/deliver`, shipT, { podSignature: '  J. Smith  ' });
+      ev = await events();
+      check('delivery is recorded with who marked it and who signed', done.status === 200 && done.body?.podSignature === 'J. Smith' && done.body?.podCaptured === true && ev.length === 3 && ev[2].userId === shipU.id && ev[2].details?.to === 'DELIVERED' && /J\. Smith/.test(ev[2].details?.note || ''), `status ${done.status}, signature ${JSON.stringify(done.body?.podSignature ?? null)}, ${ev.length} records`);
+      const one = await send('GET', `/api/shipments/${shipId}`, csrT);
+      check('the shipment shows its history with names, and its invoice', one.status === 200 && one.body?.history?.length === 3 && one.body.history.every((h) => typeof h.by === 'string' && h.by.length > 1) && one.body.history.map((h) => h.to).join('>') === 'PENDING>IN_TRANSIT>DELIVERED' && one.body?.invoices?.[0]?.id === invoiceId, JSON.stringify(one.body?.history ?? null).slice(0, 240));
+      check('the shipment does not send the customer credit terms', !/creditLimit|paymentTerms|taxExempt/.test(JSON.stringify(one.body)), 'sent');
+
+      // A cancelled shipment is recorded, and a refused move is not.
+      const made2 = await send('POST', '/api/shipments', shipT, { orderId: order.id, fromLocationId: branch.id, items: [{ orderLineId: line.id, qtyShipped: 1, weightLb: 25 }] });
+      const cancel = await send('PATCH', `/api/shipments/${made2.body?.id}/status`, csrT, { status: 'CANCELLED' });
+      const again = await send('PATCH', `/api/shipments/${made2.body?.id}/status`, csrT, { status: 'CANCELLED' });
+      const ev2 = await prisma.auditLog.findMany({ where: { resourceType: 'Shipment', resourceId: made2.body?.id || 'none' }, orderBy: { timestamp: 'asc' } });
+      check('cancelling a shipment is recorded with who cancelled; a refused move is not', cancel.status === 200 && again.status >= 400 && ev2.length === 2 && ev2[1].userId === csrU.id && ev2[1].details?.to === 'CANCELLED', `statuses ${cancel.status}/${again.status}, ${ev2.length} records`);
+
+      // --- Money: who issued, took, credited, refunded and cancelled ---
+      const money = (id) => prisma.auditLog.findMany({ where: { resourceType: 'Invoice', resourceId: id, category: 'FINANCIAL' }, orderBy: { timestamp: 'asc' } });
+      let mv = await money(invoiceId);
+      check('the invoice is recorded with who dispatched the shipment it bills', mv.length === 1 && mv[0].eventType === 'INVOICE_ISSUED' && mv[0].userId === shipU.id && cents(mv[0].details?.amount) === 8000 + wantInvTax, JSON.stringify(mv.map((m) => [m.eventType, m.userId === shipU.id, m.details?.amount])));
+      const pay = await send('POST', `/api/invoices/${invoiceId}/payments`, csrT, { amount: 30, paymentMethod: 'CHECK', referenceNumber: `${tag}-CHK` });
+      mv = await money(invoiceId);
+      check('a payment is recorded with who took it, the amount, method and reference', pay.status === 201 && mv.length === 2 && mv[1].eventType === 'PAYMENT_RECORDED' && mv[1].userId === csrU.id && cents(mv[1].details?.amount) === 3000 && mv[1].details?.method === 'CHECK' && mv[1].details?.reference === `${tag}-CHK`, `status ${pay.status}, ${JSON.stringify(mv[1]?.details ?? null)}`);
+      const over = await send('POST', `/api/invoices/${invoiceId}/payments`, csrT, { amount: 999999, paymentMethod: 'CHECK' });
+      check('a refused payment leaves no record', over.status >= 400 && (await money(invoiceId)).length === 2, `status ${over.status}, ${(await money(invoiceId)).length} records`);
+      const credit = await send('POST', `/api/invoices/${invoiceId}/credit`, adminT, { reason: `${tag} short one bar`, amount: 70 });
+      mv = await money(invoiceId);
+      const onCredit = credit.body?.id ? await money(credit.body.id) : [];
+      check('a credit is recorded on the invoice and on the credit memo with who issued it and why', credit.status === 201 && mv.length === 3 && mv[2].eventType === 'CREDIT_ISSUED' && mv[2].userId === adminU.id && cents(mv[2].details?.amount) === 7000 && /short one bar/.test(mv[2].details?.note || '') && onCredit.length === 1 && onCredit[0].userId === adminU.id, `status ${credit.status} ${credit.body?.error || ''}, ${mv.length}/${onCredit.length} records`);
+      const owed = Math.round(-(Number(credit.body?.totalAmount) - Number(credit.body?.paidAmount)) * 100) / 100;
+      const refund = owed > 0 ? await send('POST', `/api/invoices/${credit.body.id}/refund`, adminT, { amount: owed, paymentMethod: 'CHECK', referenceNumber: `${tag}-RF` }) : { status: 0 };
+      const afterRefund = credit.body?.id ? await money(credit.body.id) : [];
+      check('a refund is recorded with who paid it back', refund.status === 201 && afterRefund.length === 2 && afterRefund[1].eventType === 'REFUND_RECORDED' && afterRefund[1].userId === adminU.id && cents(afterRefund[1].details?.amount) === cents(owed), `owed ${owed}, status ${refund.status} ${refund.body?.error || ''}, ${afterRefund.length} records`);
+      const shown = await send('GET', `/api/invoices/${invoiceId}`, csrT);
+      check('the invoice shows its history with names', shown.status === 200 && shown.body?.history?.map((h) => h.event).join('>') === 'INVOICE_ISSUED>PAYMENT_RECORDED>CREDIT_ISSUED' && shown.body.history.every((h) => typeof h.by === 'string' && h.by.length > 1), JSON.stringify(shown.body?.history ?? null).slice(0, 240));
+      check('a customer login cannot read an invoice history', [401, 403].includes((await send('GET', `/api/invoices/${invoiceId}`, custT)).status), 'readable');
+
+      // Cancel: an invoice with nothing on it.
+      const made3 = await send('POST', '/api/shipments', shipT, { orderId: order.id, fromLocationId: branch.id, items: [{ orderLineId: line.id, qtyShipped: 1, weightLb: 25 }] });
+      const out3 = await send('PUT', `/api/shipments/${made3.body?.id}/dispatch`, shipT, {});
+      const inv3 = out3.body?.invoice?.id;
+      const cancelled = inv3 ? await send('POST', `/api/invoices/${inv3}/cancel`, adminT, { reason: `${tag} billed in error` }) : { status: 0 };
+      const mv3 = inv3 ? await money(inv3) : [];
+      check('cancelling an invoice is recorded with who cancelled it and why', cancelled.status === 200 && mv3.length === 2 && mv3[1].eventType === 'INVOICE_CANCELLED' && mv3[1].userId === adminU.id && /billed in error/.test(mv3[1].details?.note || ''), `status ${cancelled.status} ${cancelled.body?.error || ''}, ${mv3.length} records`);
+    }
+  } finally {
+    await prisma.onlineOrder.deleteMany({ where: { id: { in: onlineIds } } });
+    if (exemptId) await prisma.organization.update({ where: { id: exemptId }, data: { isActive: false } }).catch(() => {});
+  }
+  section('Shipping and money records: web order tax, shipments and who did what', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
 report.pass = Object.values(report.sections).every((s) => s.pass);
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(report, null, 1));

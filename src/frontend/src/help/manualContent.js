@@ -939,18 +939,19 @@ const manualModules = [
   // ─── 8. SHIPPING / STAGING / DOCUMENTS ─────────────────────────────
   {
     moduleId: 'shipping',
-    title: 'Shipping / Staging / Documents',
-    shortDescription: 'Create shipments, generate BOLs and packing lists, assign carriers, and track deliveries.',
+    title: 'Shipping',
+    shortDescription: 'Put order lines on a shipment, dispatch it, and record the delivery. Dispatch raises the invoice.',
     icon: 'LocalShipping',
     roles: ['SHIPPING', 'WAREHOUSE', 'BRANCH_MANAGER', 'ADMIN'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
-    routes: ['/shipping', '/freight/planner', '/freight/tracking', '/freight/exceptions'],
+    routes: ['/shipping'],
     sections: [
       {
         id: 'what-it-does',
         title: 'What This Module Does',
         blocks: [
-          { type: 'text', value: 'Shipping handles everything from creating a shipment record to tracking delivery. You assign packages to shipments, pick the carrier (UPS, FedEx, LTL freight, company truck), generate the Bill of Lading (BOL) and packing list, print labels, and mark the shipment as shipped when the truck leaves.' },
+          { type: 'text', value: 'A shipment is one truckload for one order: which lines, how much of each, from which branch, and on which carrier. Dispatching it takes the reserved stock out of inventory, updates the order, marks its jobs shipped and raises the invoice. Marking it delivered records who signed for it. Every step is recorded with the name of the person who did it.' },
+          { type: 'text', value: 'The Freight screens (planner, comparison, tracking, exceptions, route optimization, dispatch planning) show example figures only and say so at the top. They are not connected to real shipments.' },
         ],
       },
       {
@@ -958,11 +959,23 @@ const manualModules = [
         title: 'Who Uses It',
         blocks: [
           { type: 'bullets', items: [
-            'Shipping Coordinator — creates shipments, prints documents, loads trucks',
-            'Warehouse Lead — verifies staged packages, coordinates dock activities',
-            'Branch Manager — reviews shipping metrics and exceptions',
-            'CSR — looks up tracking information for customer inquiries',
+            'Shipping and warehouse staff: create, dispatch and deliver shipments',
+            'Sales and customer service: create shipments and look up where an order is',
+            'Everyone else on staff can view shipments but not change them',
           ]},
+        ],
+      },
+      {
+        id: 'find-shipment',
+        title: 'How to Find a Shipment',
+        blocks: [
+          { type: 'steps', items: [
+            'Go to "Shipping" in the sidebar.',
+            'Type part of the shipment number, order number, customer name, carrier or bill of lading number in "Search shipments".',
+            'Or choose a status: Not yet loaded, Loading, On the road, Delivered, Problem, Cancelled.',
+            'Click a row to open the shipment.',
+          ]},
+          { type: 'text', value: 'The list shows the newest shipments first. When there are more than fit, the line under the table says how many there are in total; search to narrow it.' },
         ],
       },
       {
@@ -970,66 +983,45 @@ const manualModules = [
         title: 'How to Create a Shipment',
         blocks: [
           { type: 'steps', items: [
-            'Go to "Shipping" in the sidebar under Service Center.',
-            'Click "Create Shipment" button.',
-            'Select the packages to include by checking boxes next to staged packages.',
-            'The system auto-fills the ship-to address from the order.',
-            'Verify the address is correct. Edit if the customer requested a different ship-to.',
-            'Select the carrier from the dropdown: UPS, FedEx, LTL Freight, Company Truck, or Customer Pickup.',
-            'Select the service level: Ground, 2-Day, Next Day, or Freight Standard.',
-            'The system shows estimated delivery date and shipping cost.',
-            'Add any special instructions (liftgate required, call before delivery, etc.).',
-            'Click "Create" to finalize the shipment. A Shipment ID is generated.',
+            'On the Shipping screen click "New shipment".',
+            'Type the order number and click "Find order". The order must be confirmed.',
+            'Each line shows what was ordered, what has shipped and what is left. Type how much goes on this truck in "Ship now". Leave a line empty to keep it off this shipment.',
+            'Choose the branch it ships from. Carrier and bill of lading number are optional and can be added later.',
+            'Click "Create shipment". The shipment opens.',
+          ]},
+          { type: 'text', value: 'A line that is waiting on a job says which job. A quantity that is already on another shipment that has not left is not offered again.' },
+        ],
+      },
+      {
+        id: 'dispatch',
+        title: 'How to Dispatch a Shipment',
+        blocks: [
+          { type: 'steps', items: [
+            'Open the shipment.',
+            'Click "Carrier and truck" to record the carrier, bill of lading number, truck number and driver.',
+            'When the truck is loaded, click "Dispatch", read the message, and click "Dispatch now".',
+            'The status becomes "On the road". The invoice number and total appear under Invoice.',
+          ]},
+          { type: 'text', value: 'Dispatch cannot be undone on this screen. It is refused, with the reason, when the stock for a line is on hold or when a job for the line is not finished. An order waiting on a credit hold is not confirmed, so it cannot be put on a shipment until a manager releases it.' },
+        ],
+      },
+      {
+        id: 'mark-delivered',
+        title: 'How to Mark a Shipment Delivered',
+        blocks: [
+          { type: 'steps', items: [
+            'Open the shipment that is on the road.',
+            'Click "Mark delivered".',
+            'Type the name of the person who signed for it, if there is a signed receipt.',
+            'Click "Mark delivered". The history shows who recorded the delivery and who signed.',
           ]},
         ],
       },
       {
-        id: 'print-shipping-docs',
-        title: 'How to Print Shipping Documents',
+        id: 'cancel-shipment',
+        title: 'How to Cancel a Shipment',
         blocks: [
-          { type: 'steps', items: [
-            'Open the shipment detail page by clicking on the Shipment ID.',
-            'Click "Documents" tab.',
-            'Click "Generate BOL" — the Bill of Lading opens in a new tab.',
-            'Review the BOL: shipper name, consignee, package count, weight, freight class.',
-            'Print 3 copies: one for the driver, one for the customer, one for your files.',
-            'Click "Generate Packing List" — print and include with the shipment.',
-            'Click "Generate Shipping Label" — print and affix to the package(s).',
-            'If material test reports (MTRs) are required, click "Attach Certs" and select them.',
-          ]},
-        ],
-      },
-      {
-        id: 'mark-shipped',
-        title: 'How to Mark a Shipment as Shipped',
-        blocks: [
-          { type: 'steps', items: [
-            'When the truck is loaded and ready to leave:',
-            'Open the shipment record.',
-            'Click "Mark as Shipped".',
-            'Enter the tracking number (from the carrier label or provided by the driver).',
-            'Confirm the ship date and time.',
-            'Enter the driver name or carrier reference number.',
-            'Click "Confirm".',
-            'The system automatically notifies the customer with tracking information.',
-            'The order status updates to "SHIPPED".',
-          ]},
-        ],
-      },
-      {
-        id: 'handle-customer-pickup',
-        title: 'How to Handle a Customer Pickup (Will Call)',
-        blocks: [
-          { type: 'steps', items: [
-            'When creating the shipment, select "Customer Pickup" as the carrier.',
-            'The system stages the order in the Will Call area.',
-            'When the customer arrives, ask for their name and order number.',
-            'Go to the shipment record and click "Customer Pickup".',
-            'Verify their ID matches the order contact.',
-            'Have the customer sign on the screen or print a pickup receipt for signature.',
-            'Click "Released to Customer" to complete the pickup.',
-            'The order updates to "DELIVERED".',
-          ]},
+          { type: 'text', value: 'A shipment that has not left can be cancelled with "Cancel shipment". Nothing has moved, so stock and the order are unchanged and the lines can go on another shipment. A shipment that has been dispatched cannot be cancelled: record a return on the Returns screen.' },
         ],
       },
       {
@@ -1037,11 +1029,11 @@ const manualModules = [
         title: 'Troubleshooting',
         blocks: [
           { type: 'troubleshoot', items: [
-            { problem: 'Can\'t find a package for the shipment', solution: 'Check the Staging Board to verify the package is there. It may still be in QC Release. Contact packaging if needed.' },
-            { problem: 'BOL won\'t generate', solution: 'Make sure all required fields are filled: shipper address, consignee address, package count, weight, and freight class. Check for red error highlights.' },
-            { problem: 'Carrier tracking shows no data', solution: 'It can take 1-2 hours for carriers to scan packages into their system. Wait and check again. Verify the tracking number is entered correctly.' },
-            { problem: 'Customer says they never received the shipment', solution: 'Check the tracking number in the carrier\'s website. Look for "Delivered" status and delivery proof. If carrier shows delivered, provide the POD. If not, file a claim with the carrier.' },
-            { problem: 'Wrong items shipped to customer', solution: 'Immediately notify the customer and apologize. Create a return authorization. Ship the correct items as a rush. File an incident report to prevent recurrence.' },
+            { problem: '"Order ... is not on file"', solution: 'Check the order number. It must be typed in full, for example SO-000123.' },
+            { problem: '"Only confirmed orders can be shipped"', solution: 'The order is still a draft, on hold, or already complete. Open the order to see its status.' },
+            { problem: 'A line shows nothing left to ship', solution: 'It has shipped, or it is already on a shipment that has not left. Search Shipping for the order number to find that shipment.' },
+            { problem: 'Dispatch is refused', solution: 'The message says why: stock on hold, or a job not finished. Fix that first, then dispatch again.' },
+            { problem: 'History says "Not recorded"', solution: 'The shipment was moved before names were recorded. Newer shipments always show a name.' },
           ]},
         ],
       },
@@ -1050,12 +1042,18 @@ const manualModules = [
         title: 'How You Know It Worked',
         blocks: [
           { type: 'bullets', items: [
-            'Shipment shows status "SHIPPED" with a tracking number',
-            'All documents (BOL, packing list, labels) are printed and attached',
-            'Customer receives a shipping notification email',
-            'The order status updates to "SHIPPED"',
-            'Tracking shows movement within 24 hours',
+            'The shipment shows "On the road" and then "Delivered"',
+            'The History table lists each step with a name',
+            'An invoice number appears on the shipment after dispatch',
+            'The order shows the shipped quantity',
           ]},
+        ],
+      },
+      {
+        id: 'invoices-and-payments',
+        title: 'Invoices, Payments and Credits',
+        blocks: [
+          { type: 'text', value: 'Invoices are under Orders, Invoices. An invoice is raised when a shipment is dispatched and carries its share of the order tax. Click an invoice to see its lines, payments and history. "Record payment" takes an amount, a method and a check or reference number. Credits, refunds and cancelling an invoice need a manager. The History list names who issued the invoice and who recorded each payment, credit, refund or cancellation.' },
         ],
       },
     ],

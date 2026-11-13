@@ -22,6 +22,11 @@ function StatusChip({ invoice }) {
   return <Chip size="small" label={label} color={invoice.kind === 'CREDIT' ? 'secondary' : STATUS_COLOR[invoice.displayStatus] || 'default'} />
 }
 
+const HISTORY_LABELS = {
+  INVOICE_ISSUED: 'Invoice issued', PAYMENT_RECORDED: 'Payment recorded', CREDIT_ISSUED: 'Credit issued',
+  REFUND_RECORDED: 'Refund recorded', INVOICE_CANCELLED: 'Invoice cancelled',
+}
+
 function InvoiceDialog({ id, onClose, onChanged }) {
   const [invoice, setInvoice] = useState(null)
   const [error, setError] = useState(null)
@@ -95,6 +100,16 @@ function InvoiceDialog({ id, onClose, onChanged }) {
                 <Typography variant="subtitle2" sx={{ mt: 2 }}>Payments and credits</Typography>
                 {invoice.payments.map((p) => (
                   <Typography key={p.id} variant="body2">{day(p.paymentDate)} · {p.paymentMethod} {p.referenceNumber ? `(${p.referenceNumber})` : ''} · {usd(p.amount)}</Typography>
+                ))}
+              </>
+            )}
+            {invoice.history?.length > 0 && (
+              <>
+                <Typography variant="subtitle2" sx={{ mt: 2 }}>History</Typography>
+                {invoice.history.map((h, i) => (
+                  <Typography key={i} variant="body2" data-testid="invoice-history-row">
+                    {day(h.timestamp)} · {HISTORY_LABELS[h.event] || h.event}{h.amount != null ? ` ${usd(h.amount)}` : ''} · {h.by || 'Not recorded'}{h.note ? ` · ${h.note}` : ''}
+                  </Typography>
                 ))}
               </>
             )}

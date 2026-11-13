@@ -12,6 +12,8 @@ import { statusAfterCreditCheck, recordCreditHold } from '../lib/creditControl.j
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { packNotes, createSalesOrder } from './intakeOrders.js';
+import { orderTax, branchStateFor } from '../lib/orderTax.js';
+import { money } from '../lib/billingRules.js';
 
 const router = Router();
 const iso = (d) => (d ? d.toISOString() : null);
@@ -89,8 +91,31 @@ router.post('/:id/accept', async (req, res) => {
     });
     const bySku = new Map(products.map((p) => [p.sku, p]));
 
+    const lines = items.map((item, idx) => {
+      const product = bySku.get(item.sku);
+      const qty = Number(item.qty) || 1;
+      // Store checkouts carry the line's extended price (weight-priced items).
+      const ext = item.extended != null ? Number(item.extended) : null;
+      const price = ext != null ? ext / qty : Number(item.unitPrice) || 0;
+      return {
+        lineNumber: idx + 1,
+        description: item.description || item.sku || 'Material',
+        productId: product?.id || null,
+        gradeId: product?.gradeId || null,
+        qtyOrdered: qty,
+        unit: 'EA',
+        unitPrice: price,
+        extendedPrice: ext != null ? money(ext) : money(qty * price),
+      };
+    });
+    // The order carries what is owed: the lines, plus tax by rule 27 (the selling
+    // branch's state; a tax-exempt customer pays none). Invoices take their tax from here.
+    const subtotal = money(lines.reduce((sum, l) => sum + l.extendedPrice, 0));
+    const tax = await orderTax({ subtotal, customerId: buyerId, branchState: await branchStateFor(req.user, locationId) });
+    const totalAmount = money(subtotal + tax.taxAmount);
+
     // Rule 32: an accepted web order waits on hold when it would pass the credit limit.
-    const gate = await statusAfterCreditCheck(prisma, { customerId: buyerId, orderTotal: online.subtotal, wanted: 'PENDING' });
+    const gate = await statusAfterCreditCheck(prisma, { customerId: buyerId, orderTotal: totalAmount, wanted: 'PENDING' });
     const order = await createSalesOrder((orderNumber) => prisma.$transaction(async (tx) => {
       const created = await tx.order.create({
         data: {
@@ -99,31 +124,15 @@ router.post('/:id/accept', async (req, res) => {
           status: gate.status,
           buyerId,
           poReference: online.externalOrderId,
-          subtotal: online.subtotal,
+          subtotal,
+          taxAmount: tax.taxAmount,
+          totalAmount,
           notes: packNotes(online.notes, {
             source: 'ONLINE', division, location: locationId || null,
             customerName: online.customerName, shippingMethod: online.shippingMethod,
           }),
           createdById,
-          lines: {
-            create: items.map((item, idx) => {
-              const product = bySku.get(item.sku);
-              const qty = Number(item.qty) || 1;
-              // Store checkouts carry the line's extended price (weight-priced items).
-              const ext = item.extended != null ? Number(item.extended) : null;
-              const price = ext != null ? ext / qty : Number(item.unitPrice) || 0;
-              return {
-                lineNumber: idx + 1,
-                description: item.description || item.sku || 'Material',
-                productId: product?.id || null,
-                gradeId: product?.gradeId || null,
-                qtyOrdered: qty,
-                unit: 'EA',
-                unitPrice: price,
-                extendedPrice: ext != null ? Math.round(ext * 100) / 100 : Math.round(qty * price * 100) / 100,
-              };
-            }),
-          },
+          lines: { create: lines },
         },
         select: { id: true, orderNumber: true },
       });
@@ -136,7 +145,7 @@ router.post('/:id/accept', async (req, res) => {
     }));
 
     const updated = await prisma.onlineOrder.findUnique({ where: { id: online.id } });
-    res.json({ ...toApi(updated), internalOrderNumber: order.orderNumber, ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }) });
+    res.json({ ...toApi(updated), internalOrderNumber: order.orderNumber, totals: { subtotal, taxAmount: tax.taxAmount, totalAmount, taxState: tax.taxState, taxRate: tax.taxRate, exempt: tax.exempt, rateFound: tax.rateFound }, ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }) });
   } catch (error) {
     console.error('Failed to accept online order:', error);
     res.status(500).json({ error: 'Failed to accept online order' });

@@ -19,6 +19,7 @@ Everything here runs against a **local** database whose name contains `qa`. The 
 | `sim/ui-sales.cjs` | Operates the sales screens and the credit hold in a browser, as a clerk and as a manager |
 | `sim/ui-inventory.cjs` | Operates the stock, heat and receiving screens in a browser |
 | `sim/ui-shop.cjs` | Operates the job, schedule, time tracking and work order screens in a browser |
+| `sim/ui-shipping.cjs` | Creates, dispatches, delivers and cancels a shipment and records a payment in a browser |
 | `sim/fixtures.mjs` | Builds the QA data set (80 branches) |
 | `tools/*.mjs` | Generators for the documents above |
 

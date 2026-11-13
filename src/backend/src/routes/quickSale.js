@@ -286,9 +286,9 @@ router.post('/:saleId/void', handle('void sale', async (req, res) => {
   // Claim the void first so two people cannot both refund it.
   const claimed = await prisma.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
   if (!claimed.count) refuse(409, 'This sale was just changed by someone else. Reload and try again.');
-  const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: (await prisma.invoiceLine.findMany({ where: { invoiceId: invoice.id } })).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) })) });
+  const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: (await prisma.invoiceLine.findMany({ where: { invoiceId: invoice.id } })).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) })) }, req.user?.id);
   const owed = money(-credit.totalAmount + credit.paidAmount);
-  if (owed > 0) await recordRefund(credit.id, { amount: owed, paymentMethod: paid?.paymentMethod || 'CASH', notes: `Refund for voided sale ${sale.orderNumber}` });
+  if (owed > 0) await recordRefund(credit.id, { amount: owed, paymentMethod: paid?.paymentMethod || 'CASH', notes: `Refund for voided sale ${sale.orderNumber}` }, req.user?.id);
   const saved = await findSale(sale.id);
   res.json({ success: true, refunded: owed, creditMemo: credit.invoiceNumber, receipt: receiptFrom(saved, saved.invoices[0]) });
 }));

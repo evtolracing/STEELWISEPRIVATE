@@ -1,0 +1,143 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-13T10:03:27.794Z",
+ "checks": 27,
+ "failed": 0,
+ "results": [
+  {
+   "name": "shipping: the list is the real one, not the sample shipments",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new shipment: an order that is not on file says so",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new shipment: finding an order lists its lines and the customer",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new shipment: it is saved on the server and its screen opens",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: the screen shows the order, customer, line and carrier",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: the history says who created it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: truck and driver are saved and shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: dispatch asks before it takes stock and bills",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: dispatch is saved, and the history names who dispatched",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: the invoice raised by the dispatch is shown with its total",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: once dispatched it cannot be cancelled or edited",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: delivery is saved with who signed for it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: after reloading it is still delivered with three history rows",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment screens: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipping: search finds the shipment by carrier, on the server",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipping: a search with no match says so",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: cancelling one that has not left is saved and says nothing was billed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: one that does not exist says so",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "the old sample shipment list now opens the real Shipping screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "an old shipment link opens the real shipment",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "invoice: it shows tax carried from the order and who issued it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "invoice: a payment is saved and the history names who took it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "invoice screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "all orders: real orders are listed with no sample fallback",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/freight/planner: says it is a sample screen and points to Shipping",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/freight/tracking: says it is a sample screen and points to Shipping",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/logistics/dispatch: says it is a sample screen and points to Shipping",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

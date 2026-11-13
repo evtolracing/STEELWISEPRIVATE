@@ -48,7 +48,35 @@ export function toApi(inv) {
   };
 }
 
-export const getInvoice = async (id) => toApi(await prisma.invoice.findUnique({ where: { id }, include: INCLUDE }));
+export const MONEY_EVENTS = ['INVOICE_ISSUED', 'PAYMENT_RECORDED', 'CREDIT_ISSUED', 'REFUND_RECORDED', 'INVOICE_CANCELLED'];
+
+/** Who did what to an invoice, written in the same transaction as the money. */
+function recordMoney(tx, { invoice, eventType, userId, details }) {
+  return tx.auditLog.create({
+    data: {
+      category: 'FINANCIAL', eventType, severity: 'INFO', action: eventType === 'INVOICE_CANCELLED' ? 'UPDATE' : 'CREATE',
+      userId: userId || null, resourceType: 'Invoice', resourceId: invoice.id,
+      details: { invoiceNumber: invoice.invoiceNumber, ...details },
+    },
+  });
+}
+
+/** One invoice with its lines, payments and the record of who issued, paid, credited, refunded or cancelled it. */
+export async function getInvoice(id) {
+  const invoice = await prisma.invoice.findUnique({ where: { id }, include: INCLUDE });
+  if (!invoice) return invoice;
+  const rows = await prisma.auditLog.findMany({
+    where: { resourceType: 'Invoice', resourceId: id, eventType: { in: MONEY_EVENTS } },
+    orderBy: { timestamp: 'asc' }, take: 200,
+    include: { user: { select: { firstName: true, lastName: true, email: true } } },
+  });
+  const history = rows.map((r) => ({
+    timestamp: r.timestamp, event: r.eventType,
+    amount: r.details?.amount ?? null, method: r.details?.method || null, reference: r.details?.reference || null, note: r.details?.note || null,
+    by: r.user ? [r.user.firstName, r.user.lastName].filter(Boolean).join(' ') || r.user.email : null,
+  }));
+  return { ...toApi(invoice), history };
+}
 
 /** Quantity of each order line already on a live invoice. */
 async function invoicedByLine(tx, orderId) {
@@ -105,7 +133,7 @@ const numbered = (prefix, create) => createNumbered({
 });
 
 /** Bills one dispatched shipment. Returns the existing invoice if it was already billed. */
-export async function invoiceShipment(shipmentId) {
+export async function invoiceShipment(shipmentId, userId = null) {
   const shipment = await prisma.shipment.findUnique({ where: { id: shipmentId }, include: { items: true } });
   if (!shipment) refuse(404, 'Shipment not found');
   if (!['IN_TRANSIT', 'DELIVERED', 'EXCEPTION'].includes(shipment.status)) refuse(409, 'A shipment is invoiced once it has left the dock');
@@ -116,19 +144,23 @@ export async function invoiceShipment(shipmentId) {
     const existing = await tx.invoice.findFirst({ where: { shipmentId, kind: 'INVOICE', status: { not: 'CANCELLED' } }, include: INCLUDE });
     if (existing) return existing;
     const order = await tx.order.findUnique({ where: { id: shipment.orderId }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
-    return buildInvoice(tx, order, wanted, { shipmentId, invoiceNumber });
+    const made = await buildInvoice(tx, order, wanted, { shipmentId, invoiceNumber });
+    if (made) await recordMoney(tx, { invoice: made, eventType: 'INVOICE_ISSUED', userId, details: { amount: num(made.totalAmount), note: `Shipment ${shipment.shipmentNumber || ''}`.trim() } });
+    return made;
   });
   return toApi(invoice);
 }
 
 /** Bills everything shipped on the order that is not on an invoice yet. */
-export async function invoiceOrder(orderId, { notes } = {}) {
+export async function invoiceOrder(orderId, { notes } = {}, userId = null) {
   const found = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, orderType: true, status: true } });
   if (!found) refuse(404, 'Order not found');
   if (found.orderType !== 'SO') refuse(409, 'Only sales orders are invoiced');
   const invoice = await numbered('INV', async (tx, invoiceNumber) => {
     const order = await tx.order.findUnique({ where: { id: orderId }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
-    return buildInvoice(tx, order, null, { notes, invoiceNumber });
+    const made = await buildInvoice(tx, order, null, { notes, invoiceNumber });
+    if (made) await recordMoney(tx, { invoice: made, eventType: 'INVOICE_ISSUED', userId, details: { amount: num(made.totalAmount), note: notes || null } });
+    return made;
   });
   if (!invoice) refuse(409, 'Nothing has shipped on this order that is not already invoiced');
   return toApi(invoice);
@@ -144,7 +176,7 @@ async function applyPayment(tx, invoice, amount, data) {
   });
 }
 
-export async function recordPayment(invoiceId, body = {}) {
+export async function recordPayment(invoiceId, body = {}, userId = null) {
   const amount = Number(body.amount);
   const method = String(body.paymentMethod || body.method || '').toUpperCase();
   let paymentDate;
@@ -158,8 +190,10 @@ export async function recordPayment(invoiceId, body = {}) {
     if (!invoice) refuse(404, 'Invoice not found');
     const why = paymentError(invoice, amount, method);
     if (why) refuse(/must be|cannot have/.test(why) ? 400 : 409, why);
+    const reference = body.referenceNumber ? String(body.referenceNumber) : null;
+    await recordMoney(tx, { invoice, eventType: 'PAYMENT_RECORDED', userId, details: { amount, method, reference, note: body.notes ? String(body.notes) : null } });
     return applyPayment(tx, invoice, amount, {
-      paymentMethod: method, referenceNumber: body.referenceNumber ? String(body.referenceNumber) : null,
+      paymentMethod: method, referenceNumber: reference,
       notes: body.notes ? String(body.notes) : null, ...(paymentDate && { paymentDate }),
     });
   }, SERIALIZABLE));
@@ -171,7 +205,7 @@ export async function recordPayment(invoiceId, body = {}) {
  *   lines:  [{ invoiceLineId, quantity }]  credit by quantity at the invoiced price, with its share of tax
  *   amount: a plain money credit (no tax)  — use one or the other
  */
-export async function creditInvoice(invoiceId, body = {}) {
+export async function creditInvoice(invoiceId, body = {}, userId = null) {
   const reason = String(body.reason || '').trim();
   if (!reason) refuse(400, 'A reason is required for a credit');
   const run = async (tx, invoiceNumber) => {
@@ -230,13 +264,16 @@ export async function creditInvoice(invoiceId, body = {}) {
     if (applied > 0) {
       await applyPayment(tx, invoice, applied, { paymentMethod: 'CREDIT', referenceNumber: invoiceNumber, notes: reason });
     }
+    // On the invoice it reduces and on the credit memo itself, so either screen shows who issued it.
+    await recordMoney(tx, { invoice, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoiceNumber, note: reason } });
+    await recordMoney(tx, { invoice: credit, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoice.invoiceNumber, note: reason } });
     return credit;
   };
   return toApi(await numbered('CM', run));
 }
 
 /** Money handed back to the customer for the part of a credit memo that was not used against the invoice. */
-export async function recordRefund(creditId, body = {}) {
+export async function recordRefund(creditId, body = {}, userId = null) {
   const amount = Number(body.amount);
   const method = String(body.paymentMethod || body.method || '').toUpperCase();
   if (!Number.isFinite(amount) || amount <= 0) refuse(400, 'amount must be more than zero');
@@ -249,14 +286,16 @@ export async function recordRefund(creditId, body = {}) {
     if (credit.status === 'CANCELLED') refuse(409, 'This credit memo is cancelled');
     const owed = money(num(credit.paidAmount) - num(credit.totalAmount)); // both negative
     if (amount > owed + 0.005) refuse(409, `Only ${owed.toFixed(2)} is still owed back on this credit memo`);
+    const reference = body.referenceNumber ? String(body.referenceNumber) : null;
+    await recordMoney(tx, { invoice: credit, eventType: 'REFUND_RECORDED', userId, details: { amount, method, reference, note: body.notes ? String(body.notes) : null } });
     return applyPayment(tx, credit, -amount, {
-      paymentMethod: method, referenceNumber: body.referenceNumber ? String(body.referenceNumber) : null, notes: body.notes ? String(body.notes) : 'Refund',
+      paymentMethod: method, referenceNumber: reference, notes: body.notes ? String(body.notes) : 'Refund',
     });
   }, SERIALIZABLE));
   return toApi(updated);
 }
 
-export async function cancelInvoice(invoiceId, body = {}) {
+export async function cancelInvoice(invoiceId, body = {}, userId = null) {
   const updated = await retryOverlap(() => prisma.$transaction(async (tx) => {
     const invoice = await tx.invoice.findUnique({ where: { id: invoiceId }, include: { payments: true } });
     if (!invoice) refuse(404, 'Invoice not found');
@@ -264,6 +303,7 @@ export async function cancelInvoice(invoiceId, body = {}) {
     if (invoice.kind === 'CREDIT') refuse(409, 'A credit memo cannot be cancelled once issued');
     if (invoice.payments.length) refuse(409, 'This invoice has payments or credits on it. Issue a credit memo instead of cancelling.');
     const note = body.reason ? `Cancelled: ${String(body.reason)}` : 'Cancelled';
+    await recordMoney(tx, { invoice, eventType: 'INVOICE_CANCELLED', userId, details: { amount: num(invoice.totalAmount), note: body.reason ? String(body.reason) : null } });
     return tx.invoice.update({
       where: { id: invoiceId },
       data: { status: 'CANCELLED', notes: [invoice.notes, note].filter(Boolean).join(' · ') },

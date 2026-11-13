@@ -39,25 +39,25 @@ router.get('/:id', handle('fetch invoice', async (req, res) => {
 
 router.post('/', handle('create invoice', async (req, res) => {
   const { orderId, shipmentId, notes } = req.body || {};
-  if (shipmentId) return res.status(201).json(await invoiceShipment(String(shipmentId)));
+  if (shipmentId) return res.status(201).json(await invoiceShipment(String(shipmentId), req.user?.id));
   if (!orderId) return res.status(400).json({ error: 'orderId or shipmentId is required' });
-  res.status(201).json(await invoiceOrder(String(orderId), { notes: notes ? String(notes) : undefined }));
+  res.status(201).json(await invoiceOrder(String(orderId), { notes: notes ? String(notes) : undefined }, req.user?.id));
 }));
 
 router.post('/:id/payments', handle('record payment', async (req, res) => {
-  res.status(201).json(await recordPayment(req.params.id, req.body || {}));
+  res.status(201).json(await recordPayment(req.params.id, req.body || {}, req.user?.id));
 }));
 
 router.post('/:id/credit', handle('issue credit', async (req, res) => {
-  res.status(201).json(await creditInvoice(req.params.id, req.body || {}));
+  res.status(201).json(await creditInvoice(req.params.id, req.body || {}, req.user?.id));
 }));
 
 router.post('/:id/refund', handle('record refund', async (req, res) => {
-  res.status(201).json(await recordRefund(req.params.id, req.body || {}));
+  res.status(201).json(await recordRefund(req.params.id, req.body || {}, req.user?.id));
 }));
 
 router.post('/:id/cancel', handle('cancel invoice', async (req, res) => {
-  res.json(await cancelInvoice(req.params.id, req.body || {}));
+  res.json(await cancelInvoice(req.params.id, req.body || {}, req.user?.id));
 }));
 
 export default router;

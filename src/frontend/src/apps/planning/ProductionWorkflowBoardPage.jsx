@@ -13,7 +13,6 @@ import {
   Alert,
 } from '@mui/material';
 import { getJobs } from '../../api/planning';
-import { mockJobs } from '../../mocks/planningData';
 
 const STAGES = [
   { id: 'ORDERED', label: 'Ordered' },

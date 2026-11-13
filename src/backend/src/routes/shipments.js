@@ -96,29 +96,103 @@ async function checkItems(db, orderId, rawItems, ignoreShipmentId) {
   return items;
 }
 
+const SHIPMENT_STATUSES = ['PENDING', 'LOADING', 'IN_TRANSIT', 'DELIVERED', 'EXCEPTION', 'CANCELLED'];
+const LIST_MAX = 200;
+// The customer as the shipping desk needs it: who and where, not credit terms or pricing.
+const BUYER = { select: { id: true, code: true, name: true, city: true, state: true } };
+
+/** Who did what to a shipment, for the audit log. */
+function recordShipmentEvent(db, { shipment, from, to, userId, note }) {
+  return db.auditLog.create({
+    data: {
+      category: 'WORKFLOW', eventType: 'SHIPMENT_STATUS_CHANGED', severity: 'INFO', action: from ? 'UPDATE' : 'CREATE',
+      userId: userId || null, resourceType: 'Shipment', resourceId: shipment.id,
+      details: { shipmentNumber: shipment.shipmentNumber || null, from: from || null, to, note: note || null },
+    },
+  });
+}
+
 router.get('/', handle('fetch shipments', async (req, res) => {
   const { status } = req.query;
-  const shipments = await prisma.shipment.findMany({
-    where: { ...(status && { status }) },
-    include: { order: { include: { buyer: true } }, fromLocation: true, items: true },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-  });
+  if (status !== undefined && !SHIPMENT_STATUSES.includes(status)) refuse(400, `status must be one of: ${SHIPMENT_STATUSES.join(', ')}`);
+  const search = typeof req.query.search === 'string' ? req.query.search.trim().slice(0, 60) : '';
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), LIST_MAX);
+  const like = { contains: search, mode: 'insensitive' };
+  const where = {
+    ...(status && { status }),
+    ...(search && { OR: [{ shipmentNumber: like }, { bolNumber: like }, { carrierName: like }, { order: { orderNumber: like } }, { order: { buyer: { name: like } } }] }),
+  };
+  const [shipments, total] = await Promise.all([
+    prisma.shipment.findMany({
+      where,
+      include: { order: { select: { id: true, orderNumber: true, status: true, buyer: BUYER } }, fromLocation: { select: { id: true, code: true, name: true } }, items: true },
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      take: limit,
+    }),
+    prisma.shipment.count({ where }),
+  ]);
+  res.set('X-Total-Count', String(total));
   res.json(shipments);
+}));
+
+/**
+ * What can still be shipped on an order: each line with what is left after
+ * what has shipped and what other open shipments already hold, and anything
+ * that would stop it going out. The New shipment form is built from this.
+ */
+router.get('/shippable', handle('look up what can ship', async (req, res) => {
+  const orderNumber = typeof req.query.orderNumber === 'string' ? req.query.orderNumber.trim() : '';
+  if (!orderNumber) refuse(400, 'orderNumber is required');
+  const order = await prisma.order.findFirst({
+    where: { orderNumber: { equals: orderNumber, mode: 'insensitive' } },
+    select: {
+      id: true, orderNumber: true, status: true, buyer: BUYER,
+      lines: { orderBy: { lineNumber: 'asc' }, include: { shipmentItems: { where: { shipment: { status: { in: OPEN } } } } } },
+    },
+  });
+  if (!order) refuse(404, `Order ${orderNumber} is not on file`);
+  const jobs = await prisma.job.findMany({ where: { orderId: order.id }, select: { jobNumber: true, status: true, orderLineId: true, workCenter: { select: { locationId: true } } } });
+  const lines = order.lines.filter((l) => l.lineStatus !== 'CANCELLED').map((l) => {
+    const onDock = l.shipmentItems.reduce((sum, it) => sum + num(it.qtyShipped), 0);
+    const open = Math.max(0, num(l.qtyOrdered) - num(l.qtyShipped) - onDock);
+    return {
+      orderLineId: l.id, lineNumber: l.lineNumber, description: l.description, unit: l.unit,
+      qtyOrdered: num(l.qtyOrdered), qtyShipped: num(l.qtyShipped), qtyOnOpenShipments: onDock, qtyOpen: open,
+      waitingOn: jobsBlockingShipment(jobs, [l.id]) ? jobs.filter((j) => (!j.orderLineId || j.orderLineId === l.id) && !['READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status)).map((j) => j.jobNumber) : [],
+    };
+  });
+  const canShip = SHIPPABLE_ORDER_STATUSES.includes(order.status);
+  res.json({
+    orderId: order.id, orderNumber: order.orderNumber, status: order.status, customer: order.buyer, lines,
+    suggestedLocationId: jobs.find((j) => j.workCenter?.locationId)?.workCenter.locationId || null,
+    reason: canShip ? (lines.some((l) => l.qtyOpen > 0) ? null : 'Everything on this order has shipped or is already on a shipment.') : `Order ${order.orderNumber} is ${String(order.status).toLowerCase()}. Only confirmed orders can be shipped.`,
+  });
 }));
 
 router.get('/:id', handle('fetch shipment', async (req, res) => {
   const shipment = await prisma.shipment.findUnique({
     where: { id: req.params.id },
     include: {
-      order: { include: { buyer: true, lines: true } },
-      fromLocation: true,
-      items: { include: { orderLine: true } },
+      order: { select: { id: true, orderNumber: true, status: true, poReference: true, buyer: BUYER, lines: { select: { id: true, lineNumber: true, description: true, unit: true, qtyOrdered: true, qtyShipped: true, lineStatus: true } } } },
+      fromLocation: { select: { id: true, code: true, name: true, city: true, state: true } },
+      items: { include: { orderLine: { select: { id: true, lineNumber: true, description: true, unit: true, qtyOrdered: true, qtyShipped: true } } } },
       stops: { orderBy: { stopNumber: 'asc' } },
     },
   });
   if (!shipment) refuse(404, 'Shipment not found');
-  res.json(shipment);
+  const [invoices, rows] = await Promise.all([
+    prisma.invoice.findMany({ where: { shipmentId: shipment.id }, select: { id: true, invoiceNumber: true, status: true, totalAmount: true, kind: true }, orderBy: { createdAt: 'asc' } }),
+    prisma.auditLog.findMany({
+      where: { resourceType: 'Shipment', resourceId: shipment.id, eventType: 'SHIPMENT_STATUS_CHANGED' },
+      orderBy: { timestamp: 'asc' }, take: 100,
+      include: { user: { select: { firstName: true, lastName: true, email: true } } },
+    }),
+  ]);
+  const history = rows.map((r) => ({
+    timestamp: r.timestamp, from: r.details?.from || null, to: r.details?.to || null, note: r.details?.note || null,
+    by: r.user ? [r.user.firstName, r.user.lastName].filter(Boolean).join(' ') || r.user.email : null,
+  }));
+  res.json({ ...shipment, invoices, history });
 }));
 
 router.post('/', handle('create shipment', async (req, res) => {
@@ -147,6 +221,7 @@ router.post('/', handle('create shipment', async (req, res) => {
       });
     }, { isolationLevel: 'Serializable' }),
   });
+  await recordShipmentEvent(prisma, { shipment, from: null, to: shipment.status, userId: req.user?.id });
   res.status(201).json(shipment);
 }));
 
@@ -244,6 +319,7 @@ async function dispatch(id, body, userId) {
       data: { ...edits, status: 'IN_TRANSIT', ...(!resuming && { shippedAt: new Date() }) },
     });
     if (!claimed.count) refuse(409, 'This shipment was just changed by someone else. Reload and try again.');
+    await recordShipmentEvent(tx, { shipment, from: shipment.status, to: 'IN_TRANSIT', userId });
     if (!resuming) {
       for (const item of shipment.items) {
         const line = await tx.orderLine.update({ where: { id: item.orderLineId }, data: { qtyShipped: { increment: item.qtyShipped } } });
@@ -268,22 +344,36 @@ async function dispatch(id, body, userId) {
   }));
 }
 
-async function move(id, to, extra = {}) {
-  const shipment = await prisma.shipment.findUnique({ where: { id }, select: { id: true, status: true } });
+async function move(id, to, extra = {}, userId = null) {
+  const shipment = await prisma.shipment.findUnique({ where: { id }, select: { id: true, status: true, shipmentNumber: true } });
   if (!shipment) refuse(404, 'Shipment not found');
   const why = shipmentMoveError(shipment.status, to);
   if (why) refuse(409, why);
   const changed = await prisma.shipment.updateMany({ where: { id, status: shipment.status }, data: { ...extra, status: to } });
   if (!changed.count) refuse(409, 'This shipment was just changed by someone else. Reload and try again.');
+  await recordShipmentEvent(prisma, { shipment, from: shipment.status, to, userId, note: extra.podSignature ? `Signed for by ${extra.podSignature}` : null });
   return prisma.shipment.findUnique({ where: { id }, include: { items: true } });
 }
 
-const deliver = (id, body) => move(id, 'DELIVERED', {
-  deliveredAt: new Date(),
-  podCaptured: Boolean(body.podSignature || body.podImageUrl),
-  ...(body.podSignature !== undefined && { podSignature: body.podSignature }),
-  ...(body.podImageUrl !== undefined && { podImageUrl: body.podImageUrl }),
-});
+function podText(value, name, max) {
+  if (value === undefined || value === null || value === '') return undefined;
+  if (typeof value !== 'string') refuse(400, `${name} must be text`);
+  const text = value.trim();
+  if (text.length > max) refuse(400, `${name} is too long (${max} characters at most)`);
+  return text || undefined;
+}
+
+function deliver(id, body, userId) {
+  const podSignature = podText(body.podSignature, 'podSignature', 200);
+  const podImageUrl = podText(body.podImageUrl, 'podImageUrl', 2000);
+  if (podImageUrl && !/^(https:\/\/|\/api\/documents\/)/.test(podImageUrl)) refuse(400, 'podImageUrl must be an https address or a stored document');
+  return move(id, 'DELIVERED', {
+    deliveredAt: new Date(),
+    podCaptured: Boolean(podSignature || podImageUrl),
+    ...(podSignature !== undefined && { podSignature }),
+    ...(podImageUrl !== undefined && { podImageUrl }),
+  }, userId);
+}
 
 /**
  * Dispatch, then bill what left the dock. Billing never undoes a dispatch: if it
@@ -293,7 +383,7 @@ async function dispatchAndInvoice(id, body, userId) {
   const shipment = await dispatch(id, body, userId);
   let invoice = null;
   try {
-    invoice = await invoiceShipment(id);
+    invoice = await invoiceShipment(id, userId);
   } catch (error) {
     console.error(`Shipments: could not invoice shipment ${id}:`, error?.message || error);
   }
@@ -352,14 +442,14 @@ router.put('/:id/dispatch', handle('dispatch', async (req, res) => {
 }));
 
 router.put('/:id/deliver', handle('mark delivered', async (req, res) => {
-  res.json(await deliver(req.params.id, req.body || {}));
+  res.json(await deliver(req.params.id, req.body || {}, req.user?.id));
 }));
 
 router.patch('/:id/status', handle('update shipment status', async (req, res) => {
   const { status, ...rest } = req.body || {};
   if (status === 'IN_TRANSIT') return res.json(await dispatchAndInvoice(req.params.id, rest, req.user.id));
-  if (status === 'DELIVERED') return res.json(await deliver(req.params.id, rest));
-  res.json(await move(req.params.id, status));
+  if (status === 'DELIVERED') return res.json(await deliver(req.params.id, rest, req.user?.id));
+  res.json(await move(req.params.id, status, {}, req.user?.id));
 }));
 
 export default router;

@@ -195,7 +195,7 @@ async function restockTarget(tx, ret, line) {
 }
 
 /** Credits what was invoiced for the returned quantity, newest invoice first. */
-async function creditReturn(ret) {
+async function creditReturn(ret, userId) {
   const credits = [];
   const byInvoice = new Map();
   for (const line of ret.lines) {
@@ -220,7 +220,7 @@ async function creditReturn(ret) {
     }
   }
   for (const [invoiceId, lines] of byInvoice) {
-    credits.push(await creditInvoice(invoiceId, { reason: `Return ${ret.orderNumber}: ${ret.notes || 'returned material'}`, lines }));
+    credits.push(await creditInvoice(invoiceId, { reason: `Return ${ret.orderNumber}: ${ret.notes || 'returned material'}`, lines }, userId));
   }
   return credits;
 }
@@ -284,7 +284,7 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
 
   let creditError = null;
   try {
-    await creditReturn(ret);
+    await creditReturn(ret, req.user?.id);
   } catch (error) {
     console.error(`Returns: could not credit return ${ret.orderNumber}:`, error?.message || error);
     creditError = 'The material was received, but the credit memo could not be issued. Issue it from the invoice.';

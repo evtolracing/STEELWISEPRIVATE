@@ -77,6 +77,11 @@ if (stock) {
   L.push('', '## Stock screens operated in a browser', '', `Run ${stock.at} with \`qa/sim/ui-inventory.cjs\`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.`, '', `- Checks: ${stock.checks}`, `- Failed: ${stock.failed}`, '', '| Check | Result |', '|---|---|');
   for (const c of stock.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
 }
+const shop = read('ui-shop.json');
+if (shop) {
+  L.push('', '## Shop screens operated in a browser', '', `Run ${shop.at} with \`qa/sim/ui-shop.cjs\`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.`, '', `- Checks: ${shop.checks}`, `- Failed: ${shop.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of shop.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
 const contract = (() => { try { return JSON.parse(fs.readFileSync(path.join(root, '.api-contract.json'), 'utf8')); } catch { return null; } })();
 if (contract) L.push('', '## Screen-to-server contract', '', `${contract.total} distinct API calls are written in the screens; ${contract.missing.length} have no matching server route. Full list in \`qa/api-contract.md\`.`);
 L.push('', '## Unit tests', '', 'Run with `npm test` in `src/backend` (Node built-in test runner). The count and result are printed by the runner; see the pull request for the latest run.');

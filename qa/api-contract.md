@@ -2,61 +2,13 @@
 
 Generated 2026-11-13 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
 
-- Distinct API calls found in the screens: **345**
-- Matched to a server route: **206**
-- No matching server route (the call would get a 404): **139**
+- Distinct API calls found in the screens: **282**
+- Matched to a server route: **202**
+- No matching server route (the call would get a 404): **80**
 
 Calls built from variables (a base URL constant plus a suffix) are not seen by this scan, so the real number of calls is higher.
 
 ## Calls with no server route, by area
-
-### /api/work-centers (21)
-
-| Call | Used in |
-|---|---|
-| `PUT /api/work-centers/:x` | api/workCenters.js |
-| `DELETE /api/work-centers/:x` | api/workCenters.js |
-| `GET /api/work-centers/:x/capabilities` | api/workCenters.js |
-| `PUT /api/work-centers/:x/capabilities` | api/workCenters.js |
-| `GET /api/work-centers/:x/capacity` | api/workCenters.js |
-| `GET /api/work-centers/:x/current-job` | api/workCenters.js |
-| `GET /api/work-centers/:x/downtime` | api/workCenters.js |
-| `POST /api/work-centers/:x/downtime` | api/workCenters.js |
-| `POST /api/work-centers/:x/downtime/:x/end` | api/workCenters.js |
-| `GET /api/work-centers/:x/jobs` | api/jobs.js |
-| `GET /api/work-centers/:x/maintenance` | api/workCenters.js |
-| `POST /api/work-centers/:x/maintenance` | api/workCenters.js |
-| `POST /api/work-centers/:x/maintenance/:x/complete` | api/workCenters.js |
-| `GET /api/work-centers/:x/metrics` | api/workCenters.js |
-| `GET /api/work-centers/:x/operators` | api/workCenters.js |
-| `POST /api/work-centers/:x/operators` | api/workCenters.js |
-| `DELETE /api/work-centers/:x/operators/:x` | api/workCenters.js |
-| `GET /api/work-centers/:x/queue` | api/workCenters.js |
-| `PUT /api/work-centers/:x/queue` | api/workCenters.js |
-| `PATCH /api/work-centers/:x/status` | api/workCenters.js |
-| `GET /api/work-centers/:x/utilization` | api/workCenters.js |
-
-### /api/jobs (17)
-
-| Call | Used in |
-|---|---|
-| `DELETE /api/jobs/:x` | api/jobs.js |
-| `POST /api/jobs/:x/cancel` | api/jobs.js |
-| `GET /api/jobs/:x/documents` | api/jobs.js |
-| `POST /api/jobs/:x/documents` | api/jobs.js |
-| `POST /api/jobs/:x/measurements` | api/jobs.js |
-| `GET /api/jobs/:x/notes` | api/jobs.js |
-| `POST /api/jobs/:x/notes` | api/jobs.js |
-| `POST /api/jobs/:x/pause` | api/jobs.js |
-| `PATCH /api/jobs/:x/priority` | api/jobs.js |
-| `POST /api/jobs/:x/resume` | api/jobs.js |
-| `POST /api/jobs/:x/schedule` | api/jobs.js |
-| `PUT /api/jobs/:x/schedule` | api/jobs.js |
-| `POST /api/jobs/:x/scrap` | api/jobs.js |
-| `POST /api/jobs/:x/split` | api/jobs.js |
-| `GET /api/jobs/:x/timeline` | api/jobs.js |
-| `POST /api/jobs/:x/unassign` | api/jobs.js |
-| `POST /api/jobs/merge` | api/jobs.js |
 
 ### /api/qaqc (15)
 
@@ -95,22 +47,6 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `GET /api/pricing/surcharges` | api/pricing.js |
 | `PUT /api/pricing/surcharges/:x` | api/pricing.js |
 
-### /api/boms (11)
-
-| Call | Used in |
-|---|---|
-| `GET /api/boms` | api/boms.js, apps/boms/BOMsPage.jsx |
-| `POST /api/boms` | api/boms.js |
-| `GET /api/boms/:x` | api/boms.js |
-| `PUT /api/boms/:x` | api/boms.js |
-| `DELETE /api/boms/:x` | api/boms.js |
-| `GET /api/boms/:x/items` | api/boms.js |
-| `POST /api/boms/:x/items` | api/boms.js |
-| `PUT /api/boms/:x/items/:x` | api/boms.js |
-| `DELETE /api/boms/:x/items/:x` | api/boms.js |
-| `GET /api/boms/:x/versions` | api/boms.js |
-| `POST /api/boms/:x/versions` | api/boms.js |
-
 ### /api/provenance (11)
 
 | Call | Used in |
@@ -141,20 +77,6 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `POST /api/fabrication-work-orders/:x/outputs` | api/fabrication.js |
 | `PATCH /api/fabrication-work-orders/:x/status` | api/fabrication.js |
 
-### /api/work-orders (9)
-
-| Call | Used in |
-|---|---|
-| `PUT /api/work-orders/:x` | api/workOrders.js |
-| `PUT /api/work-orders/:x/cancel` | api/workOrders.js |
-| `GET /api/work-orders/:x/outputs` | api/workOrders.js |
-| `POST /api/work-orders/:x/outputs` | api/workOrders.js |
-| `PATCH /api/work-orders/:x/status` | api/workOrders.js |
-| `GET /api/work-orders/:x/steps` | api/workOrders.js |
-| `POST /api/work-orders/:x/steps` | api/workOrders.js |
-| `PUT /api/work-orders/:x/steps/:x` | api/workOrders.js |
-| `PATCH /api/work-orders/:x/steps/:x/status` | api/workOrders.js |
-
 ### /api/units (8)
 
 | Call | Used in |
@@ -167,16 +89,6 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `POST /api/units/:x/tests` | api/qaqc.js |
 | `GET /api/units/:x/tests/:x` | api/qaqc.js |
 | `PUT /api/units/:x/tests/:x` | api/qaqc.js |
-
-### /api/batches (5)
-
-| Call | Used in |
-|---|---|
-| `GET /api/batches` | api/batches.js |
-| `POST /api/batches` | api/batches.js |
-| `GET /api/batches/:x` | api/batches.js |
-| `PUT /api/batches/:x` | api/batches.js |
-| `DELETE /api/batches/:x` | api/batches.js |
 
 ### /api/shipments (5)
 
@@ -222,14 +134,33 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `POST /api/pos/will-call/:x/verify` | components/pos/screens/WillCallVerifyScreen.jsx |
 | `GET /api/pos/will-call/queue` | components/pos/screens/WillCallQueueScreen.jsx |
 
+### /api/work-centers (2)
+
+| Call | Used in |
+|---|---|
+| `PUT /api/work-centers/:x` | api/workCenters.js |
+| `DELETE /api/work-centers/:x` | api/workCenters.js |
+
 ### /api/auth (1)
 
 | Call | Used in |
 |---|---|
 | `PUT /api/auth/profile` | hooks/useAuth.jsx |
 
+### /api/boms (1)
+
+| Call | Used in |
+|---|---|
+| `GET /api/boms` | apps/boms/BOMsPage.jsx |
+
 ### /api/returns (1)
 
 | Call | Used in |
 |---|---|
 | `POST /api/returns/:x/:x` | pages/Orders/ReturnsPage.jsx |
+
+### /api/work-orders (1)
+
+| Call | Used in |
+|---|---|
+| `PUT /api/work-orders/:x/:x` | pages/WorkOrders/WorkOrderDetailPage.jsx |

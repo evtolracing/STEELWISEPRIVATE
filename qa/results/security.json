@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T09:11:22.117Z",
- "endpointsInInventory": 593,
- "endpointsSwept": 593,
+ "at": "2026-11-13T09:42:06.764Z",
+ "endpointsInInventory": 595,
+ "endpointsSwept": 595,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "554 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
-   "tested": 554,
+   "summary": "556 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 556,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "531 staff routes tried as a customer, 0 not refused",
-   "tested": 531,
+   "summary": "533 staff routes tried as a customer, 0 not refused",
+   "tested": 533,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -99,6 +99,11 @@
   "Receiving: a receipt is real stock, and an upload says what it saved": {
    "pass": true,
    "summary": "32 checks, 0 problems",
+   "findings": []
+  },
+  "Shop floor records: who moved a job, and work orders that follow the rules": {
+   "pass": true,
+   "summary": "51 checks, 0 problems",
    "findings": []
   }
  },

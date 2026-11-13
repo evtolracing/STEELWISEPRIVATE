@@ -47,6 +47,19 @@ Not examined in this workstream: credit application and new-account approval (no
 | Who is told? | Nobody. No transfer request, approval or notice exists |
 | What happens to reservations? | They travel with the item |
 
+## Journey 5: a job on the shop floor, from planned to shipped (Workstream 4)
+
+| Question | Answer |
+|---|---|
+| Who starts it? | Order entry creates the jobs for an order ("create work orders"), one per processed line. Verified: the cycles |
+| How is it planned? | On the Order Board: click an Ordered job, choose the work center and dates. The Schedule screen then shows it on its day. Verified: Browser (schedule) |
+| How does it move? | Operators start and finish operations on the Shop Floor screens; the last operation sends the job to inspection; the inspection result sends it to packaging, hold or rework; packaging makes it ready to ship; the shipment marks it shipped. Verified: the cycles, 788 moves |
+| Who moved it, and why? | Every move is recorded with the person and the reason, and shown on the job screen. Verified: Sweep 19, Browser |
+| Can a supervisor step in? | Yes: the job screen's Change status, with a reason. Moves the rules do not allow are refused with the reason |
+| What can go wrong silently? | A backward move the rules allow (M-017) is not blocked, but it is now on the record. Capacity is not checked when planning: not examined |
+| How many screens? | Order Board to plan, Shop Floor to run, QC Inspections to inspect, Shipping to ship. The job screen ties them together |
+| What is missing? | In-process quality records (M-011); stock consumed and produced by the work is handled by the order's reservations and shipment, not by the job |
+
 ## Journeys queued
 
 4. Customer return, inspection, credit, stock disposition (Workstream 5)

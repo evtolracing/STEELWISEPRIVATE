@@ -26,7 +26,7 @@ Target is 95. The platform layer is not there. The largest gaps are a tested res
 |---|---|---|
 | Sales and customer operations | 2 | 73 (was 45), see below |
 | Inventory and purchasing | 3 | 68 (was 30), see below |
-| Manufacturing and processing | 4 | Not yet audited |
+| Manufacturing and processing | 4 | 66 (was 35), see below |
 | Logistics and financial operations | 5 | Not yet audited |
 | Enterprise administration, reporting, navigation | 6 | Not yet audited |
 
@@ -73,4 +73,27 @@ Covers stock items, heats, grades, products, receiving, the stock upload, holds,
 Target is 95. The module is not there. The largest gaps are purchasing (I-007), stock adjustments and counts (I-016), supplier quality (I-011), and the fact that none of this is live.
 
 Not examined in this workstream: cycle counting, reorder points and replenishment, stock valuation and costing method, consignment stock, whether customer-owned stock can be reserved for another customer, the remnant marketplace, RFID and etched-ID scanning, bin-level capacity.
+
+## Manufacturing and processing (Workstream 4)
+
+Covers jobs, the job screen, the order boards, the schedule screen, time tracking, coil work orders, and the production quality and BOM screens. The path an order really takes (job created, planned, operations run, inspected, packaged, shipped) is exercised 150 times by the simulation and passes.
+
+| Category | Before | After | Evidence |
+|---|---:|---:|---|
+| Functional correctness | 35 | 70 | The job, schedule, work order and old operator screens showed sample data or saved nothing (M-001, M-007, M-008, M-010); all now run on real records. Production quality and BOM screens are still samples (M-011); a work order does not move stock (M-016) |
+| Data integrity | 45 | 78 | Work orders read an allow-list and follow status rules (M-005, M-006); a status note no longer overwrites job notes (M-003). Backward job moves are loosely ruled (M-017) |
+| Reliability | 50 | 70 | Missing jobs and work orders answer 404, not 500; concurrent work order moves are guarded; starting an inspection no longer reports failure after saving (M-015) |
+| Security | 45 | 80 | No mass assignment on work orders; assignee checked; identities from the sign-in; customers refused (Sweep 19 and the existing sweeps) |
+| Operational efficiency | 35 | 60 | A job opens from the board and the schedule; its status changes on one screen. Scheduling by drag, capacity limits and re-planning were not examined |
+| User experience | 30 | 68 | Real data, "not recorded" instead of invented values, refusals in the server's words, sample screens labelled, false AI claims removed (M-014) |
+| Performance | Not measured | Not measured | The schedule asks for one day of jobs, not the whole list. Nothing timed |
+| Integration quality | 40 | 65 | 73 dead calls removed (M-012). Work orders are not connected to stock or to jobs (M-016) |
+| Maintainability | 40 | 72 | One job history module and one work order rule, pure and unit tested (87 tests in all). Three job routes still carry their own status checks (M-017) |
+| Observability | 20 | 80 | Every job move, assignment and work order move is in the audit log with the person and is shown on the screen (M-002) |
+| Accessibility | Not measured | Not measured | New screens use labelled tables and controls. No keyboard or contrast audit was run |
+| **Weighted** | **35** | **66** | Performance and accessibility left out and the other weights rescaled to 100 |
+
+Target is 95. The module is not there. The largest gaps are production quality and bills of material (M-011), work orders that do not move stock (M-016), and everything listed below as not examined.
+
+Not examined in this workstream: the dispatch engine and how it assigns operations, the planning boards, processing recipes and their versions, the shop floor queue screens beyond what the cycles drive through the API, packaging and drop tags, maintenance, downtime, capacity limits, scheduling by drag and drop, and labor costing.
 

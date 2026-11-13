@@ -124,6 +124,7 @@ const OUT = arg('out', 'qa/results/ui-shop.json');
     check('work orders: the list opens', (await seen(list, 'Work Orders')) && !/WO-2024-001/.test(await body(list)), await body(list));
     await list.getByRole('button', { name: 'New work order' }).click();
     await list.waitForURL(/\/work-orders\/new$/, { timeout: 8000 }).catch(() => {});
+    check('work orders: the form carries no made-up scheduling tip', !/AI Tip|would optimize machine utilization/.test(await body(list)), 'tip is shown');
     await list.getByLabel(/Source Coil/).click();
     await list.getByRole('option').first().click().catch(() => {});
     await list.getByRole('button', { name: /Create Work Order/i }).click().catch(() => {});

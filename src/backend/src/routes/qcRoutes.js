@@ -235,7 +235,7 @@ router.post('/inspections', async (req, res) => {
       },
     }) })
 
-    console.log(`[QC] Created inspection ${inspectionNumber} for job ${job.jobNumber}`)
+    console.log(`[QC] Created inspection ${inspection.inspectionNumber} for job ${job.jobNumber}`)
     res.status(201).json({ success: true, data: inspection })
   } catch (err) {
     console.error('[QC] Error creating inspection:', err)
@@ -408,10 +408,9 @@ router.post('/inspections/:id/rework', async (req, res) => {
     })
 
     // Send job back to SCHEDULED for re-planning
-    const reworkJob = await prisma.job.findUnique({ where: { id: inspection.jobId }, select: { notes: true } })
     await moveJob(prisma, inspection.jobId, {
         status: 'SCHEDULED',
-        notes: `REWORK: ${reworkInstructions || 'Rework required per QC inspector'}${reworkJob?.notes ? '\n\n' + reworkJob.notes : ''}`,
+        notes: `REWORK: ${reworkInstructions || 'Rework required per QC inspector'}${inspection.job.notes ? '\n\n' + inspection.job.notes : ''}`,
       }, { note: `Inspection ${inspection.inspectionNumber}: rework`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} REWORK — job ${inspection.job.jobNumber} → SCHEDULED`)

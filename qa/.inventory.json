@@ -489,11 +489,19 @@
    "file": "src/backend/src/routes/workOrders.js"
   },
   {
+   "ep": "PUT /api/work-orders/:id/release",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
    "ep": "PUT /api/work-orders/:id/start",
    "file": "src/backend/src/routes/workOrders.js"
   },
   {
    "ep": "PUT /api/work-orders/:id/complete",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "PUT /api/work-orders/:id/cancel",
    "file": "src/backend/src/routes/workOrders.js"
   },
   {

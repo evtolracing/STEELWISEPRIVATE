@@ -2,10 +2,13 @@
 
 There are no ticket files in the repository, so each commit is treated as one ticket. Commits #1–#28 are squashed pull requests; older commits came before the PR workflow. Requested scope is taken from the commit or PR title; "implemented" is what the diff touched.
 
-Commits: 199. Commits that changed the database schema: 56. Commits that added tests: 18.
+Commits: 202. Commits that changed the database schema: 57. Commits that added tests: 21.
 
 | Commit | Date | Ticket (title) | Files | Schema | API areas | UI areas | Tests added |
 |---|---|---|---:|:-:|---|---|---:|
+| fbbacf6 | 2026-11-13 | Shop screens browser check; remove made-up AI tip and claim | 4 |  |  | ui:SchedulePage, ui:WorkOrders | 2 |
+| e27d4d9 | 2026-11-13 | Shop floor: record who moved each job, real job, schedule and work order screens | 28 |  | api:jobHistory, api:workOrderRules, api:jobs, api:materialTrackingRoutes, api:operationsRoutes, api:qcRoutes, api:shipments, api:workOrders | ui:api, ui:components, ui:constants, ui:JobDetailPage, ui:ModernOrderBoardPage, ui:OrderBoardPage, ui:SchedulePage, ui:ShopFloorPage | 2 |
+| f2c1c76 | 2026-11-13 | Workstream 3 gate: one stock list, balance rule in the database, sample screens labelled | 37 | yes |  | ui:api, ui:apps, ui:components, ui:help, ui:Units, ui:router | 25 |
 | 31e569a | 2026-11-13 | Receiving: a receipt makes real stock, and an upload says what it saved | 11 |  | api:receiving, api:receivingRules, api:inventory, api:receivingRules.test | ui:components, ui:ReceivingPage, ui:Units | 5 |
 | 9292e6c | 2026-11-13 | Heats, products and grades: real screens, checked input, price changes recorded | 11 |  | api:fieldRules, api:grades, api:heats, api:products, api:fieldRules.test | ui:Heats | 5 |
 | 3134bf5 | 2026-11-13 | Credit hold on over-limit orders; stock items on real data with working holds | 33 |  | api:creditControl, api:creditRules, api:roleAccess, api:coils, api:intakeOrders, api:inventory, api:onlineOrders, api:orders | ui:components, ui:help, ui:MobileRep, ui:Orders, ui:Units, ui:router | 12 |

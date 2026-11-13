@@ -1201,7 +1201,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const operator = await prisma.user.findUnique({ where: { email: QA_USERS.operator } });
   const csr = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
   const wc = await prisma.workCenter.findFirst({ where: { isActive: true }, orderBy: { code: 'asc' } });
-  const jobIds = []; const woIds = []; let idleUserId = null;
+  const jobIds = []; const woIds = []; const inspectionIds = []; let idleUserId = null;
   const movesOf = (id) => prisma.auditLog.findMany({ where: { resourceType: 'Job', resourceId: id, eventType: 'JOB_STATUS_CHANGED' }, orderBy: { timestamp: 'asc' } });
   try {
     // --- Jobs: every move is recorded with who made it ---
@@ -1245,6 +1245,19 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     jobIds.push(old.id);
     const oldHist = (await send('GET', `/api/jobs/${old.id}/history`, csrT)).body;
     check('an older job shows its times and says who is not recorded', Array.isArray(oldHist) && oldHist.filter((e) => e.type === 'STATUS').length === 2 && oldHist.filter((e) => e.type === 'STATUS').every((e) => e.recorded === false && e.by === null), JSON.stringify(oldHist ?? null).slice(0, 200));
+
+    // A job moved as a side effect (here, an inspector sending it back for rework) is recorded too,
+    // and the rework instruction is added above the job's notes, not written over them.
+    const rw = await prisma.job.create({ data: { jobNumber: `${tag}-RW`, status: 'WAITING_QC', priority: 3, notes: 'Ship on customer pallets' } });
+    jobIds.push(rw.id);
+    const insp = await send('POST', '/api/qc/inspections', adminT, { jobId: rw.id });
+    const inspId = insp.body?.data?.id; if (inspId) inspectionIds.push(inspId);
+    check('starting an inspection answers with the inspection it made', insp.status === 201 && !!inspId && (await prisma.jobInspection.count({ where: { jobId: rw.id } })) === 1, `status ${insp.status} ${insp.body?.error || ''}, ${await prisma.jobInspection.count({ where: { jobId: rw.id } })} on file`);
+    const rework = await send('POST', `/api/qc/inspections/${inspId}/rework`, adminT, { reworkInstructions: 'Deburr both edges' });
+    const rwJob = await prisma.job.findUnique({ where: { id: rw.id } });
+    const rwMoves = await movesOf(rw.id);
+    check('rework sends the job back with the instruction added to its notes, not over them', rework.status === 200 && rwJob?.status === 'SCHEDULED' && /Deburr both edges/.test(rwJob?.notes || '') && /Ship on customer pallets/.test(rwJob?.notes || ''), `status ${rework.status}, job ${rwJob?.status}, notes ${JSON.stringify(rwJob?.notes ?? null)}`);
+    check('a move made by an inspection result is recorded with the inspector', rwMoves.length === 1 && rwMoves[0].details?.from === 'WAITING_QC' && rwMoves[0].details?.to === 'SCHEDULED' && rwMoves[0].details?.via === 'inspection' && !!rwMoves[0].userId, `${rwMoves.length} records ${JSON.stringify(rwMoves[0]?.details ?? null)}`);
 
     // --- Assigning a job ---
     const made2 = await send('POST', '/api/jobs', csrT, { workCenterId: wc.id, operationType: 'SHEARING', instructions: `${tag} assign`, status: 'SCHEDULED' });
@@ -1315,11 +1328,11 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     const list = await send('GET', `/api/work-orders?search=${encodeURIComponent(wo?.woNumber || 'none')}`, csrT);
     check('the work order list searches on the server and says how many there are', list.status === 200 && Array.isArray(list.body) && list.body.length === 1 && list.body[0].id === woId && list.headers.get('x-total-count') === '1', `status ${list.status}, ${Array.isArray(list.body) ? list.body.length : 'no list'} rows, count ${list.headers.get('x-total-count')}`);
     check('a work order list filter that is not a status is refused', (await send('GET', '/api/work-orders?status=NONSENSE', csrT)).status === 400, 'accepted');
-    void adminT;
   } finally {
     await prisma.auditLog.deleteMany({ where: { OR: [{ resourceType: 'Job', resourceId: { in: jobIds } }, { resourceType: 'WorkOrder', resourceId: { in: woIds } }] } });
     const stray = await prisma.workOrder.findMany({ where: { notes: tag }, select: { id: true } });
     await prisma.workOrder.deleteMany({ where: { id: { in: [...woIds, ...stray.map((w) => w.id)] } } });
+    await prisma.jobInspection.deleteMany({ where: { OR: [{ id: { in: inspectionIds } }, { jobId: { in: jobIds } }] } });
     await prisma.job.deleteMany({ where: { id: { in: jobIds } } });
     if (idleUserId) await prisma.user.delete({ where: { id: idleUserId } }).catch(() => {});
   }

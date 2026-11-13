@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T09:21:11.335Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T09:49:08.592Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -55,8 +55,8 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 - Pass: one shipment dispatched three times at once: counted once. statuses 409,200,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
-- Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
-- Pass: one return received three times at once: counted once, one credit. statuses 409,200,409; 1 credit memo(s); source coil on hand 2640 → 3630
+- Pass: three full payments at once on one invoice: taken once. statuses 409,201,409; paid 2574 of 2574
+- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
 
 The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
@@ -76,14 +76,14 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T09:11:22.117Z. 593 of 593 routes swept.
+Run 2026-11-13T09:42:06.764Z. 595 of 595 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
-| No access without signing in | Pass | 554 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
+| No access without signing in | Pass | 556 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
 | Partner API needs a partner token | Pass | 60 calls, 0 let in |
 | Forged and invalid sign-ins are refused | Pass | 5 cases, 0 problems |
-| Customer logins are held to the store | Pass | 531 staff routes tried as a customer, 0 not refused |
+| Customer logins are held to the store | Pass | 533 staff routes tried as a customer, 0 not refused |
 | Customers and divisions cannot see each other | Pass | 31 checks, 0 problems |
 | Staff roles and departments | Pass | 18 checks, 0 problems |
 | Read routes do not crash on bad input | Pass | 786 reads, 0 server errors |
@@ -98,24 +98,27 @@ Run 2026-11-13T09:11:22.117Z. 593 of 593 routes swept.
 | Credit hold: over the limit waits for a manager | Pass | 22 checks, 0 problems |
 | Heats, products and grades: checked input, right people, prices recorded | Pass | 47 checks, 0 problems |
 | Receiving: a receipt is real stock, and an upload says what it saved | Pass | 32 checks, 0 problems |
+| Shop floor records: who moved a job, and work orders that follow the rules | Pass | 51 checks, 0 problems |
 
 ## Screen check
 
-Run 2026-11-13T09:17:57.219Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T09:48:31.052Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 124
 - OK: 124
-- Screens that made at least one failing API call: 7
+- Screens that made at least one failing API call: 8
 
 ### API calls that failed while screens loaded
 
 | Call | Screens |
 |---|---|
 | `GET /api/heats/:id → 404` | `/heats/:id` |
-| `GET /api/coils/:id/history → 404` | `/units/:id` |
 | `GET /api/coils/:id → 404` | `/units/:id` |
+| `GET /api/coils/:id/history → 404` | `/units/:id` |
 | `GET /api/work-orders/:id → 404` | `/work-orders/:id` |
 | `GET /api/qc/inspections/:id → 404` | `/qc/inspect/:id` |
+| `GET /api/jobs/:id/history → 404` | `/jobs/:id` |
+| `GET /api/jobs/:id → 404` | `/jobs/:id` |
 | `GET /api/orders/intake/:id → 404` | `/orders/:id` |
 | `GET /api/ecom/catalog/:id → 404` | `/shop/products/:id` |
 | `GET /api/ecom/my-orders/:id → 404` | `/shop/orders/:id` |
@@ -124,7 +127,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-13T09:12:10.659Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T09:43:19.986Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 24
 - Failed: 0
@@ -158,7 +161,7 @@ Run 2026-11-13T09:12:10.659Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 
 ## Stock screens operated in a browser
 
-Run 2026-11-13T09:18:37.640Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T09:43:41.808Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 22
 - Failed: 0
@@ -188,9 +191,49 @@ Run 2026-11-13T09:18:37.640Z with `qa/sim/ui-inventory.cjs`: stock items, heats 
 | units: an item is moved to another location and the move is in its history | Pass |
 | units: the move screen has no script errors | Pass |
 
+## Shop screens operated in a browser
+
+Run 2026-11-13T09:42:58.617Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
+
+- Checks: 30
+- Failed: 0
+
+| Check | Result |
+|---|---|
+| job: the screen shows the real job, not a sample | Pass |
+| job: the history names who started it and why | Pass |
+| job: a status change is saved on the server | Pass |
+| job: the change appears in the history with the reason | Pass |
+| job: the change is still there after reloading | Pass |
+| job: a move that is not allowed is refused with the reason | Pass |
+| job: no script errors | Pass |
+| job: a job that does not exist says so instead of showing a sample | Pass |
+| schedule: shows the real work centers and makes no claim it cannot back | Pass |
+| schedule: shows the job really scheduled today | Pass |
+| schedule: a job on the schedule opens its own screen | Pass |
+| schedule: no script errors | Pass |
+| order board: clicking a job opens its screen | Pass |
+| time tracking: opens without sample data | Pass |
+| time tracking: no script errors | Pass |
+| work orders: the list opens | Pass |
+| work orders: the form carries no made-up scheduling tip | Pass |
+| work orders: the form creates a real work order and opens it | Pass |
+| work orders: the screen shows the real work order, not a sample | Pass |
+| work orders: Start is saved on the server | Pass |
+| work orders: more weight out than went in is refused with the reason | Pass |
+| work orders: Complete is saved with a yield worked out by the server | Pass |
+| work orders: the history names who did each step | Pass |
+| work orders: a finished work order offers no more actions | Pass |
+| work orders: no script errors | Pass |
+| work orders: one that does not exist says so instead of showing a sample | Pass |
+| the old sample operator screen now opens the real shop floor | Pass |
+| /production-quality/dashboard: says it is a sample screen | Pass |
+| /production-quality/ncr: says it is a sample screen | Pass |
+| /boms: says it is a sample screen | Pass |
+
 ## Screen-to-server contract
 
-345 distinct API calls are written in the screens; 139 have no matching server route. Full list in `qa/api-contract.md`.
+282 distinct API calls are written in the screens; 80 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

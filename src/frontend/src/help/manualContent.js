@@ -547,6 +547,20 @@ const manualModules = [
         ],
       },
       {
+        id: 'schedule-screen',
+        title: 'The Schedule Screen',
+        blocks: [
+          { type: 'text', value: 'The Schedule screen shows one day. Each row is a work center and each block is a job scheduled to start that day, placed at its scheduled hours. The work centers and jobs are your real ones.' },
+          { type: 'bullets', items: [
+            'Use the arrows or Today to change the day',
+            'Booked is the share of the day that has a job scheduled on that work center. It is not a measure of how the machine actually ran',
+            'Click a job to open its own screen',
+            'A job scheduled for the day with no work center is not on the grid. A notice at the top says how many there are. Plan them on the Order Board',
+            'Queue View lists the same jobs under each work center',
+          ]},
+        ],
+      },
+      {
         id: 'who-uses-it',
         title: 'Who Uses It',
         blocks: [
@@ -1691,30 +1705,34 @@ const manualModules = [
         title: 'How to Use the Order Board',
         blocks: [
           { type: 'steps', items: [
-            'Click "Order Board" in the sidebar under Service Center.',
-            'The board loads with columns for each order stage. Each card shows the order number, customer name, due date, and priority color.',
-            'Red border = past due. Orange = due today. Green = on track.',
-            'Click any card to open the order detail panel on the right side.',
-            'Use the search bar at the top to find a specific order by number, customer, or PO.',
-            'Use the filter dropdowns to narrow by priority, product type, or assigned CSR.',
-            'Drag-and-drop cards between columns to manually advance an order stage (if you have permission).',
+            'Open Order Board from the menu',
+            'Each card is one job. The columns are the stages a job moves through, from ordered to shipped',
+            'Click a job that is still Ordered to plan it: choose its work center and dates',
+            'Click any other job to open its own screen',
+            'Drag a card to another column to move the job, if your role allows it. A move the rules do not allow is refused and the card goes back',
           ]},
-          { type: 'tip', value: 'Most order transitions happen automatically as jobs progress on the shop floor. Manual drag-and-drop is for exceptions only.' },
+          { type: 'tip', value: 'Most jobs move by themselves as work is done on the shop floor, inspected and shipped. Moving a card by hand is for exceptions.' },
         ],
       },
       {
         id: 'order-detail-panel',
-        title: 'Order Detail Panel',
+        title: 'The Job Screen',
         blocks: [
-          { type: 'text', value: 'When you click an order card, the detail panel shows:' },
+          { type: 'text', value: 'The job screen shows one job as it really is. Where something has not been recorded, it says so.' },
           { type: 'bullets', items: [
-            'Order header — order number, PO number, customer name, account number, order date, due date',
-            'Line items — each product, quantity, dimensions, processing operations, and status',
-            'Job links — click to jump to the job on the Shop Floor Queue',
-            'Documents — BOL, packing list, MTR, certificates attached to this order',
-            'Timeline — a chronological log of every event (created, scheduled, started, completed, shipped)',
-            'Notes — internal notes from CSRs, shop floor, or shipping',
+            'Header: the job number, its status and priority, and the customer order it is for',
+            'Work: the operation, work center, who it is assigned to, the instructions and the notes',
+            'Dates: when it is scheduled, and when work really started, finished and shipped',
+            'Weights and shipping: weight in, weight out, scrap, carrier and tracking number',
+            'History: every change of status, with the time, who made it and the reason they gave',
           ]},
+          { type: 'steps', items: [
+            'To move the job, click Change status',
+            'Choose the new status and type the reason',
+            'Click Change status. The change is saved and added to the history with your name',
+          ]},
+          { type: 'text', value: 'Some moves are refused, with the reason shown: a job that has not started cannot be marked shipped or completed, a job that is ready to ship cannot go back to scheduled, and a completed or cancelled job cannot be changed. A job for a customer order is marked shipped by its shipment, not by hand. The reason you type goes into the history. It does not replace the notes on the job.' },
+          { type: 'text', value: 'Steps that happened before status changes were recorded with a name show only their times.' },
         ],
       },
       {
@@ -1798,7 +1816,7 @@ const manualModules = [
   {
     moduleId: 'time-tracking',
     title: 'Time Tracking',
-    shortDescription: 'Track operator hours, job labor time, clock-in/out, and labor cost allocation across production jobs.',
+    shortDescription: 'A report of the time recorded on shop floor operations: by entry, by operator and by work center.',
     icon: 'AccessTime',
     roles: ['OPERATOR', 'SHOP_SUPERVISOR', 'BRANCH_MANAGER', 'HR', 'ADMIN'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES'],
@@ -1808,36 +1826,23 @@ const manualModules = [
         id: 'what-it-does',
         title: 'What This Module Does',
         blocks: [
-          { type: 'text', value: 'Time Tracking records when operators clock in and out, which jobs they work on, and how long each operation takes. This data feeds labor cost calculations, efficiency metrics, and payroll reports. Supervisors can review and approve timesheets, and the system automatically allocates labor costs to specific jobs.' },
+          { type: 'text', value: 'Time Tracking is a report. It shows the time recorded when operators start, pause and finish operations on the Shop Floor screens. Nothing is entered here: the times come from the shop floor.' },
+          { type: 'text', value: 'It does not clock people in and out for payroll, and it does not approve timesheets. If the report cannot load, it says so and shows nothing. It never fills in example hours.' },
         ],
       },
       {
-        id: 'clock-in-out',
-        title: 'Clock In / Clock Out',
+        id: 'read-the-report',
+        title: 'Reading the Report',
         blocks: [
           { type: 'steps', items: [
-            'Click "Time Tracking" in the sidebar under Service Center.',
-            'If you are an operator, the screen shows your current clock status (clocked in or out).',
-            'Click "Clock In" to start your shift. Select your work center if you have multiple options.',
-            'When starting a job, click "Start Job" and scan or enter the job number. The system begins tracking time against that job.',
-            'When you finish a job or switch to another, click "Stop Job" or "Switch Job."',
-            'At the end of your shift, click "Clock Out." Your total hours are recorded.',
+            'Open Time Tracking from the menu under Production',
+            'Set the From and To dates. The report starts on the last seven days',
+            'Narrow it by location, work center, operator or status if you need to',
+            'Time Log Details lists each entry: the job, the operation, the work center, the operator, the status and how long it ran',
+            'By Operator and By Work Center add the same entries up for each person and each machine',
+            'Export CSV saves the entries on screen to a file',
           ]},
-        ],
-      },
-      {
-        id: 'supervisor-view',
-        title: 'Supervisor Timesheet Review',
-        blocks: [
-          { type: 'steps', items: [
-            'As a supervisor, navigate to Time Tracking and click the "Team View" tab.',
-            'You see all operators on your shift with their clock-in time, current job, and hours worked today.',
-            'Click an operator to see their detailed timesheet: jobs worked, breaks, idle time.',
-            'Flag any discrepancies (e.g., forgot to clock out, missing job entries).',
-            'At the end of the pay period, click "Approve Timesheets" to approve hours for payroll.',
-            'Approved timesheets lock and cannot be edited without manager override.',
-          ]},
-          { type: 'tip', value: 'The "Idle Time" column shows time clocked in but not assigned to any job. High idle time may indicate scheduling gaps or operators waiting for material.' },
+          { type: 'text', value: 'The boxes at the top add up what is on screen: total time, completed entries, entries still running, paused entries and downtime.' },
         ],
       },
       {
@@ -1845,9 +1850,8 @@ const manualModules = [
         title: 'Troubleshooting',
         blocks: [
           { type: 'troubleshoot', items: [
-            { problem: 'Operator forgot to clock in', solution: 'A supervisor can add a manual clock-in entry with the correct time. Go to Team View, click the operator, then "Add Manual Entry."' },
-            { problem: 'Job time seems too high', solution: 'Check if the operator forgot to stop the job before going on break or switching tasks. Edit the time entry to split or correct it.' },
-            { problem: 'Timesheet already approved but needs correction', solution: 'A manager or admin can unlock an approved timesheet from the "Approved" tab by clicking "Unlock for Edit." This is logged in the audit trail.' },
+            { problem: 'The report is empty', solution: 'Check the dates and filters. Time appears only after an operator has started an operation on the Shop Floor screen.' },
+            { problem: 'A time looks too long', solution: 'The operator may not have paused or finished the operation. The time runs until one of those is pressed on the Shop Floor screen.' },
           ]},
         ],
       },
@@ -2653,6 +2657,7 @@ const manualModules = [
         id: 'what-it-does',
         title: 'What This Module Does',
         blocks: [
+          { type: 'text', value: 'Important: the five Production Quality screens are design samples. They show example inspections, charts and reports, not your records, and nothing entered on them is saved. Each screen carries a notice saying so. Real inspections of finished jobs are done on the QC Inspections screen.' },
           { type: 'text', value: 'Production Quality monitors quality during the manufacturing process — not just at receiving (SQM) or at final shipment, but while work is happening on the shop floor. It includes a quality dashboard, in-process inspection execution, NCR (Non-Conformance Report) management, SPC (Statistical Process Control) charts for monitoring process capability, and traceability for linking inputs to outputs.' },
         ],
       },

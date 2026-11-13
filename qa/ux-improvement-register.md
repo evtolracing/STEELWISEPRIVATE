@@ -28,4 +28,12 @@ Not reviewed yet: keyboard-only use, screen-reader labels and colour contrast on
 | U-020 | Menu | "Inventory" and "Units" were two different stock lists | One entry, Inventory, on the real list (I-012, pending the owner's answer) |
 | U-021 | Orders | No sign that an order was over the credit limit | Fixed (rule 32): warning on entry, a Credit Holds list, Release for managers |
 | U-022 | Receiving | A heat must be added before its stock, one at a time | Open (I-017) |
+| U-023 | Job screen | A sample job for every job; status dialog saved nothing | Fixed (M-001): real job, real history with names, a status change that saves and explains a refusal |
+| U-024 | Order boards, Schedule | Clicking a job that was past planning did nothing | Fixed: opens the job screen |
+| U-025 | Schedule | Random work centers and jobs; "AI-optimized" | Fixed (M-008, M-014): the real day; a notice for jobs with no work center |
+| U-026 | Time tracking | Random hours shown when loading failed | Fixed (M-009) |
+| U-027 | Work orders | Blank columns, a sample work order, buttons that did nothing | Fixed (M-007): list with server search, detail with Release, Start, Complete (weights) and Cancel, and history |
+| U-028 | Old operator screen | Recorded output into nothing | Removed (M-010): opens the real shop floor |
+| U-029 | Production quality, BOMs | Invented data presented as real | Labelled as samples (M-011); build is a decision |
+| U-030 | QC Inspections | "Failed to create inspection" although it was created | Fixed (M-015) |
 

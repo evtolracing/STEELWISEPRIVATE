@@ -19,6 +19,9 @@ jobs:
           cache: npm
           cache-dependency-path: src/backend/package-lock.json
       - run: npm ci --ignore-scripts
+      # Builds the database client from the schema. It needs no database. Without it any test
+      # that loads a file which imports the client fails to load.
+      - run: npx prisma generate
       - run: npm test
 
   frontend:

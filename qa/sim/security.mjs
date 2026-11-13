@@ -965,6 +965,132 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   section('Credit hold: over the limit waits for a manager', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
 }
 
+// 17. Heats, products and grades: the catalog behind every stock item. Writes used to store
+// whatever the browser sent (findings I-004, S-025) and anyone could change a list price through
+// the product record, around rule 30.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const [adminT, csrT, operatorT] = await Promise.all(['admin', 'csr', 'operator'].map(tokenFor));
+  const send = async (method, url, token, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
+    return { status: res.status, body: await res.json().catch(() => null), total: res.headers.get('x-total-count') };
+  };
+  const tag = `QA17-${Date.now().toString(36).toUpperCase()}`;
+  const adminUser = await prisma.user.findUnique({ where: { email: QA_USERS.admin } });
+  const shipper = await prisma.user.findUnique({ where: { email: QA_USERS.shipping } });
+  const mill = await prisma.organization.findFirst({ where: { type: 'MILL' } });
+  const grade = await prisma.grade.findFirst({ orderBy: { code: 'asc' } });
+  const made = { heats: [], products: [], grades: [] };
+  try {
+    // ── Heats ──
+    const list = await send('GET', '/api/heats?limit=5', csrT);
+    check('heats list is capped and says how many there are', list.status === 200 && Array.isArray(list.body) && list.body.length <= 5 && Number(list.total) >= list.body.length && list.body.every((h) => typeof h.unitCount === 'number' && h.mill?.name && h.grade?.code), `status ${list.status}, total ${list.total}`);
+    const some = list.body?.[0];
+    const found = some ? await send('GET', `/api/heats?search=${encodeURIComponent(some.heatNumber)}`, csrT) : { body: [] };
+    check('heats can be searched by number', Array.isArray(found.body) && found.body.some((h) => h.id === some?.id), `${found.body?.length} rows`);
+    check('an unknown heat status is refused', (await send('GET', '/api/heats?status=NOPE', csrT)).status === 400, 'not a 400');
+    const mills = await send('GET', '/api/heats/mills', csrT);
+    check('the mills a heat can be recorded against are listed', mills.status === 200 && Array.isArray(mills.body) && mills.body.some((m) => m.id === mill.id), `status ${mills.status}`);
+
+    const good = { heatNumber: `${tag}-H1`, millId: mill.id, gradeId: grade.id, castDate: '2026-03-01', meltType: 'EAF', totalWeightLb: 42000, chemistry: { C: 0.2, Mn: 0.85 } };
+    const forged = await send('POST', '/api/heats', operatorT, { ...good, id: 'forged-id', createdById: adminUser.id, createdAt: '2001-01-01T00:00:00Z', mtrDocumentId: 'nope' });
+    made.heats.push(forged.body?.id);
+    const operatorUser = await prisma.user.findUnique({ where: { email: QA_USERS.operator } });
+    const saved = forged.body?.id ? await prisma.heat.findUnique({ where: { id: forged.body.id } }) : null;
+    check('a heat is saved with the listed fields only, and who created it comes from the sign-in', forged.status === 201 && saved && saved.id !== 'forged-id' && saved.createdById === operatorUser.id && saved.mtrDocumentId === null && saved.createdAt.getFullYear() > 2020, `status ${forged.status} ${JSON.stringify(forged.body).slice(0, 160)}`);
+    check('the same heat number cannot be entered twice', (await send('POST', '/api/heats', operatorT, good)).status === 409, 'accepted');
+    for (const [why, body] of [
+      ['no heat number', { ...good, heatNumber: '' }], ['no mill', { ...good, heatNumber: `${tag}-H2`, millId: undefined }],
+      ['a mill that does not exist', { ...good, heatNumber: `${tag}-H2`, millId: 'no-such-mill' }], ['a grade that does not exist', { ...good, heatNumber: `${tag}-H2`, gradeId: 'no-such-grade' }],
+      ['a cast date that is not a date', { ...good, heatNumber: `${tag}-H2`, castDate: 'yesterday' }], ['a negative weight', { ...good, heatNumber: `${tag}-H2`, totalWeightLb: -5 }],
+      ['an unknown melt type', { ...good, heatNumber: `${tag}-H2`, meltType: 'MAGIC' }], ['chemistry that is a list', { ...good, heatNumber: `${tag}-H2`, chemistry: [1, 2] }],
+    ]) {
+      const r = await send('POST', '/api/heats', operatorT, body);
+      if (r.body?.id) made.heats.push(r.body.id);
+      check(`a heat with ${why} is refused with a reason`, r.status === 400 && typeof r.body?.error === 'string' && r.body.error.length > 5, `status ${r.status}`);
+    }
+    check('sales staff cannot add a heat', (await send('POST', '/api/heats', csrT, { ...good, heatNumber: `${tag}-H3` })).status === 403, 'accepted');
+    const edit = saved ? await send('PUT', `/api/heats/${saved.id}`, operatorT, { status: 'ARCHIVED', totalWeightLb: 41000, createdById: adminUser.id }) : { status: 0 };
+    const edited = saved ? await prisma.heat.findUnique({ where: { id: saved.id } }) : null;
+    check('a heat can be edited, and only its listed fields change', edit.status === 200 && edited?.status === 'ARCHIVED' && Number(edited.totalWeightLb) === 41000 && edited.createdById === operatorUser.id, `status ${edit.status}`);
+    check('editing a heat that does not exist answers not found', (await send('PUT', '/api/heats/no-such-heat', operatorT, { status: 'ACTIVE' })).status === 404, 'not a 404');
+    const withStock = await prisma.heat.findFirst({ where: { coils: { some: {} } } });
+    if (withStock) {
+      const rename = await send('PUT', `/api/heats/${withStock.id}`, adminT, { heatNumber: `${tag}-RENAMED` });
+      check('a heat with stock on it keeps its number', rename.status === 409 && (await prisma.heat.findUnique({ where: { id: withStock.id } })).heatNumber === withStock.heatNumber, `status ${rename.status}`);
+      const one = await send('GET', `/api/heats/${withStock.id}`, csrT);
+      check('a heat shows its stock items without their cost', one.status === 200 && one.body.coils.length > 0 && one.body.coils.every((c) => !('unitCost' in c) && !('landedCost' in c)), JSON.stringify(Object.keys(one.body?.coils?.[0] || {})).slice(0, 200));
+      const trace = await send('GET', `/api/heats/${encodeURIComponent(withStock.heatNumber)}/trace`, csrT);
+      check('the heat trace does not send cost to sales staff', trace.status === 200 && trace.body.coils.length > 0 && trace.body.coils.every((c) => !('unitCost' in c) && !('landedCost' in c)), 'cost present');
+      const bossTrace = await send('GET', `/api/heats/${encodeURIComponent(withStock.heatNumber)}/trace`, adminT);
+      check('a manager still sees cost on the heat trace', bossTrace.body?.coils?.every((c) => 'unitCost' in c), 'cost missing for a manager');
+    }
+
+    // ── Products ──
+    const product = { sku: `${tag}-P1`, name: 'QA sweep product', productType: 'FLAT', form: 'PLATE', division: 'METALS', thicknessMin: 0.25, thicknessMax: 0.5 };
+    check('a clerk cannot add a product', (await send('POST', '/api/products', csrT, product)).status === 403, 'accepted');
+    check('a machine operator cannot add a product', (await send('POST', '/api/products', operatorT, product)).status === 403, 'accepted');
+    const p1 = await send('POST', '/api/products', adminT, { ...product, id: 'forged', createdAt: '2001-01-01T00:00:00Z', basePriceCwt: 55 });
+    made.products.push(p1.body?.id);
+    check('a manager adds a product; fields that are not on the form are ignored', p1.status === 201 && p1.body.id !== 'forged' && Number(p1.body.basePriceCwt) === 55 && new Date(p1.body.createdAt).getFullYear() > 2020, `status ${p1.status} ${JSON.stringify(p1.body).slice(0, 160)}`);
+    check('the same SKU cannot be added twice', (await send('POST', '/api/products', adminT, product)).status === 409, 'accepted');
+    for (const [why, body] of [
+      ['no name', { ...product, sku: `${tag}-P2`, name: '' }], ['an unknown form', { ...product, sku: `${tag}-P2`, form: 'CLOUD' }],
+      ['a price of zero', { ...product, sku: `${tag}-P2`, basePriceCwt: 0 }], ['a price that is text', { ...product, sku: `${tag}-P2`, basePriceCwt: 'cheap' }],
+      ['a minimum thickness above the maximum', { ...product, sku: `${tag}-P2`, thicknessMin: 2, thicknessMax: 1 }], ['a grade that does not exist', { ...product, sku: `${tag}-P2`, gradeId: 'no-such-grade' }],
+    ]) {
+      const r = await send('POST', '/api/products', adminT, body);
+      if (r.body?.id) made.products.push(r.body.id);
+      check(`a product with ${why} is refused with a reason`, r.status === 400 && typeof r.body?.error === 'string', `status ${r.status}`);
+    }
+    if (p1.body?.id) {
+      const sneak = await send('PUT', `/api/products/${p1.body.id}`, csrT, { basePriceCwt: 1 });
+      check('a clerk cannot change a list price through the product record', sneak.status === 403 && Number((await prisma.product.findUnique({ where: { id: p1.body.id } })).basePriceCwt) === 55, `status ${sneak.status}`);
+      // A buyer keeps the catalog but does not set prices.
+      await prisma.user.update({ where: { id: shipper.id }, data: { role: 'BUYER' } });
+      const buyer = await fetch(`${BASE}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: QA_USERS.shipping, password: 'qa-password-1' }) }).then((r) => r.json());
+      const rename = await send('PUT', `/api/products/${p1.body.id}`, buyer.token, { name: 'QA sweep product, renamed', basePriceCwt: 55 });
+      check('a buyer can change a product description', rename.status === 200 && rename.body?.name === 'QA sweep product, renamed', `status ${rename.status} ${rename.body?.error || ''}`);
+      const reprice = await send('PUT', `/api/products/${p1.body.id}`, buyer.token, { basePriceCwt: 60 });
+      check('a buyer cannot change the list price', reprice.status === 403 && Number((await prisma.product.findUnique({ where: { id: p1.body.id } })).basePriceCwt) === 55, `status ${reprice.status}`);
+      const priced = await send('POST', '/api/products', buyer.token, { ...product, sku: `${tag}-P3`, basePriceCwt: 10 });
+      if (priced.body?.id) made.products.push(priced.body.id);
+      check('a buyer cannot add a product with a price', priced.status === 403, `status ${priced.status}`);
+      const unpriced = await send('POST', '/api/products', buyer.token, { ...product, sku: `${tag}-P3` });
+      made.products.push(unpriced.body?.id);
+      check('a buyer can add a product without a price', unpriced.status === 201 && unpriced.body?.basePriceCwt === null, `status ${unpriced.status}`);
+      const boss = await send('PUT', `/api/products/${p1.body.id}`, adminT, { basePriceCwt: 61.5 });
+      const audit = await prisma.auditLog.findFirst({ where: { eventType: 'LIST_PRICE_CHANGED', resourceId: p1.body.id, userId: adminUser.id }, orderBy: { timestamp: 'desc' } });
+      check('a manager changes the price and the change is recorded', boss.status === 200 && Number(boss.body.basePriceCwt) === 61.5 && audit?.details?.from === 55 && audit?.details?.to === 61.5, `status ${boss.status} ${JSON.stringify(audit?.details ?? null)}`);
+      check('an empty change is refused', (await send('PUT', `/api/products/${p1.body.id}`, adminT, { nonsense: true })).status === 400, 'accepted');
+    }
+    check('changing a product that does not exist answers not found', (await send('PUT', '/api/products/no-such-product', adminT, { name: 'x' })).status === 404, 'not a 404');
+
+    // ── Grades ──
+    const g = { code: `${tag}-G1`, name: 'QA sweep grade', family: 'CARBON', tensileMin: 58000, tensileMax: 80000 };
+    check('a clerk cannot add a grade', (await send('POST', '/api/grades', csrT, g)).status === 403, 'accepted');
+    const g1 = await send('POST', '/api/grades', adminT, { ...g, id: 'forged' });
+    made.grades.push(g1.body?.id);
+    check('a manager adds a grade', g1.status === 201 && g1.body.id !== 'forged' && g1.body.code === g.code, `status ${g1.status}`);
+    check('the same grade code cannot be added twice', (await send('POST', '/api/grades', adminT, g)).status === 409, 'accepted');
+    check('a grade with an unknown family is refused', (await send('POST', '/api/grades', adminT, { ...g, code: `${tag}-G2`, family: 'WOOD' })).status === 400, 'accepted');
+    check('a grade whose minimum strength is above its maximum is refused', (await send('POST', '/api/grades', adminT, { ...g, code: `${tag}-G2`, tensileMin: 9, tensileMax: 1 })).status === 400, 'accepted');
+    if (g1.body?.id) {
+      check('a clerk cannot change a grade', (await send('PUT', `/api/grades/${g1.body.id}`, csrT, { name: 'hacked' })).status === 403, 'accepted');
+      const upd = await send('PUT', `/api/grades/${g1.body.id}`, adminT, { yieldMin: 36000, createdAt: '2001-01-01T00:00:00Z' });
+      check('a manager changes a grade, and only its listed fields', upd.status === 200 && Number(upd.body.yieldMin) === 36000 && new Date(upd.body.createdAt).getFullYear() > 2020, `status ${upd.status}`);
+      check('a grade range that ends up upside down is refused', (await send('PUT', `/api/grades/${g1.body.id}`, adminT, { tensileMax: 100 })).status === 400, 'accepted');
+    }
+  } finally {
+    await prisma.user.update({ where: { id: shipper.id }, data: { role: shipper.role } });
+    await prisma.heat.deleteMany({ where: { OR: [{ id: { in: made.heats.filter(Boolean) } }, { heatNumber: { startsWith: tag } }], coils: { none: {} } } });
+    await prisma.product.deleteMany({ where: { OR: [{ id: { in: made.products.filter(Boolean) } }, { sku: { startsWith: tag } }] } });
+    await prisma.grade.deleteMany({ where: { OR: [{ id: { in: made.grades.filter(Boolean) } }, { code: { startsWith: tag } }] } });
+  }
+  section('Heats, products and grades: checked input, right people, prices recorded', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
 report.pass = Object.values(report.sections).every((s) => s.pass);
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(report, null, 1));

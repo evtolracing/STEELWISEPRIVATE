@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T08:51:03.694Z",
+ "at": "2026-11-13T08:57:07.530Z",
  "endpointsInInventory": 587,
  "endpointsSwept": 587,
  "sections": {
@@ -89,6 +89,11 @@
   "Credit hold: over the limit waits for a manager": {
    "pass": true,
    "summary": "22 checks, 0 problems",
+   "findings": []
+  },
+  "Heats, products and grades: checked input, right people, prices recorded": {
+   "pass": true,
+   "summary": "47 checks, 0 problems",
    "findings": []
   }
  },

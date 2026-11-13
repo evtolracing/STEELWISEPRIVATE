@@ -1,6 +1,6 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T06:42:30.789Z",
+ "at": "2026-11-13T06:55:02.306Z",
  "who": "qa-admin@qa.test",
  "screens": 123,
  "tally": {
@@ -35,7 +35,7 @@
    "route": "/shop-floor",
    "pageErrors": [],
    "consoleErrors": [
-    "Warning: validateDOMNesting(...): %s cannot appear as a child of <%s>.%s%s%s <h5> h2   \n    at h5\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=e22db364:4218:49\n    at Typog"
+    "Warning: validateDOMNesting(...): %s cannot appear as a child of <%s>.%s%s%s <h5> h2   \n    at h5\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=f940b1ca:4218:49\n    at Typog"
    ],
    "apiFailures": [],
    "status": "OK",
@@ -628,7 +628,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/schedule",
-   "textLength": 2471,
+   "textLength": 2527,
    "hasParam": false
   },
   {
@@ -765,8 +765,8 @@
    "route": "/freight/exceptions",
    "pageErrors": [],
    "consoleErrors": [
-    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <p> p \n    at p\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=e22db364:4218:49\n    at Typograph",
-    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=e22db364:4218:49\n    at Box3 "
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <p> p \n    at p\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=f940b1ca:4218:49\n    at Typograph",
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=f940b1ca:4218:49\n    at Box3 "
    ],
    "apiFailures": [],
    "status": "OK",
@@ -1011,7 +1011,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/intake",
-   "textLength": 2673,
+   "textLength": 2671,
    "hasParam": false
   },
   {

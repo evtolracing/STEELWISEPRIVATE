@@ -25,7 +25,7 @@ Yardstick: OWASP Top 10 and ASVS, used as a checklist. No penetration test was r
 
 - Shared rate limit (E-014).
 - The three remaining moderate package advisories need major version changes (uuid, react-router).
-- Sign-in sessions last 8 hours with no server-side revocation list; a stolen token works until it expires. Not yet assessed in depth.
+- Sign-in sessions last 8 hours. Deactivating a user stops their token at once, but there is no way to end one session of an active user. Not yet assessed in depth.
 - No audit of who can read what at the branch level beyond the customer and department rules above (Workstream 6).
 - Password policy, lockout and multi-factor sign-in not yet reviewed.
 - No independent penetration test.

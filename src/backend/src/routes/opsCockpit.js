@@ -41,49 +41,50 @@ router.get('/', async (req, res) => {
     endOfDay.setDate(endOfDay.getDate() + 1);
 
     // ── Parallel queries ──────────────────────────────────────────
+    // Only the rows the page lists are loaded: open jobs and today's activity.
+    // Totals and breakdowns are counted in the database, so the cost of this
+    // route does not grow with history.
+    const FINISHED = ['SHIPPED', 'COMPLETED', 'CANCELLED'];
     const [
       allJobs,
+      jobStatusCounts,
       workCenters,
-      orders,
-      coils,
-      shipments,
-      dispatchOps,
+      totalOrders,
+      noCarrierOrders,
+      coilGroups,
+      heldCoilRows,
+      shipmentGroups,
+      todayShipmentGroups,
+      opGroups,
       qcHolds,
       recentMovements,
     ] = await Promise.all([
-      // All jobs with order + buyer info
+      // Open jobs, plus anything created or finished today
       prisma.job.findMany({
-        include: {
-          order: { include: { buyer: true } },
-          workCenter: true,
-        },
-        orderBy: { scheduledEnd: 'asc' },
+        where: { OR: [{ status: { notIn: FINISHED } }, { createdAt: { gte: startOfDay } }, { actualEnd: { gte: startOfDay } }] },
+        // Only the customer name is read from the order.
+        include: { order: { select: { buyer: { select: { name: true } } } } },
+        orderBy: [{ scheduledEnd: 'asc' }, { id: 'asc' }],
       }),
+      prisma.job.groupBy({ by: ['status'], _count: { _all: true } }),
 
       // All work centers
       prisma.workCenter.findMany(),
 
-      // All orders with lines
-      prisma.order.findMany({
-        include: { buyer: true, lines: true },
-        orderBy: { createdAt: 'desc' },
-      }),
+      prisma.order.count(),
+      // Confirmed orders with no shipment yet
+      prisma.order.count({ where: { status: 'CONFIRMED', shipments: { none: {} } } }),
 
-      // All coils with grade + location
-      prisma.coil.findMany({
-        include: { grade: true, location: true },
-      }),
+      // Stock grouped by grade, form, thickness and status
+      prisma.coil.groupBy({ by: ['gradeId', 'form', 'thicknessIn', 'status'], _count: { _all: true }, _sum: { netWeightLb: true } }),
+      prisma.coil.findMany({ where: { status: 'HOLD' }, include: { grade: true }, orderBy: { updatedAt: 'desc' }, take: 500 }),
 
-      // Shipments
-      prisma.shipment.findMany({
-        include: { items: true, stops: true },
-        orderBy: { createdAt: 'desc' },
-      }),
+      // Shipments by carrier and status (all time), and by status for today
+      prisma.shipment.groupBy({ by: ['carrierName', 'status'], _count: { _all: true } }),
+      prisma.shipment.groupBy({ by: ['status'], where: { createdAt: { gte: startOfDay } }, _count: { _all: true } }),
 
-      // Dispatch operations for utilization
-      prisma.dispatchOperation.findMany({
-        include: { dispatchJob: true, timeLogs: true },
-      }),
+      // Dispatch operations per work center and status
+      prisma.dispatchOperation.groupBy({ by: ['assignedWorkCenterId', 'status'], _count: { _all: true } }),
 
       // QC holds
       prisma.qCHold.findMany({
@@ -98,6 +99,13 @@ router.get('/', async (req, res) => {
         include: { coil: { include: { grade: true } } },
       }),
     ]);
+    const totalJobs = jobStatusCounts.reduce((n, g) => n + g._count._all, 0);
+    const gradeIds = [...new Set(coilGroups.map((g) => g.gradeId).filter(Boolean))];
+    const grades = gradeIds.length ? await prisma.grade.findMany({ where: { id: { in: gradeIds } }, select: { id: true, code: true } }) : [];
+    const gradeCode = new Map(grades.map((g) => [g.id, g.code]));
+    const coilCount = (status) => coilGroups.filter((g) => !status || g.status === status).reduce((n, g) => n + g._count._all, 0);
+    const shipmentCount = (groups, statuses) => groups.filter((g) => !statuses || statuses.includes(g.status)).reduce((n, g) => n + g._count._all, 0);
+    const opCount = (workCenterId, statuses) => opGroups.filter((g) => g.assignedWorkCenterId === workCenterId && statuses.includes(g.status)).reduce((n, g) => n + g._count._all, 0);
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 1. FLOW STATE — counts by job status pipeline
@@ -105,11 +113,10 @@ router.get('/', async (req, res) => {
     const statusMap = {
       ORDERED: 0, SCHEDULED: 0, IN_PROCESS: 0, RUNNING: 0,
       PACKAGING: 0, WAITING_QC: 0, READY_TO_SHIP: 0, SHIPPED: 0,
-      COMPLETE: 0,
+      COMPLETED: 0,
     };
-    allJobs.forEach(j => {
-      const s = j.status;
-      if (statusMap[s] !== undefined) statusMap[s]++;
+    jobStatusCounts.forEach(g => {
+      if (statusMap[g.status] !== undefined) statusMap[g.status] = g._count._all;
     });
 
     const flowState = {
@@ -118,7 +125,7 @@ router.get('/', async (req, res) => {
       inProcess: statusMap.IN_PROCESS + statusMap.RUNNING,
       packaging: statusMap.PACKAGING + statusMap.WAITING_QC,
       readyToShip: statusMap.READY_TO_SHIP,
-      shipped: statusMap.SHIPPED + statusMap.COMPLETE,
+      shipped: statusMap.SHIPPED + statusMap.COMPLETED,
     };
 
     // Calculate day-over-day flow changes (use createdAt as proxy)
@@ -129,14 +136,14 @@ router.get('/', async (req, res) => {
       inProcess: todayJobs.filter(j => ['IN_PROCESS', 'RUNNING'].includes(j.status)).length,
       packaging: todayJobs.filter(j => ['PACKAGING', 'WAITING_QC'].includes(j.status)).length,
       readyToShip: todayJobs.filter(j => j.status === 'READY_TO_SHIP').length,
-      shipped: todayJobs.filter(j => ['SHIPPED', 'COMPLETE'].includes(j.status)).length,
+      shipped: todayJobs.filter(j => ['SHIPPED', 'COMPLETED'].includes(j.status)).length,
     };
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 2. PROMISE RISK — hot + at-risk jobs
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const activeJobs = allJobs.filter(j =>
-      !['SHIPPED', 'COMPLETE', 'CANCELLED'].includes(j.status)
+      !['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status)
     );
 
     const hotJobs = [];
@@ -177,13 +184,12 @@ router.get('/', async (req, res) => {
       );
       const hotCount = wcJobs.filter(j => {
         const h = hoursFromNow(j.scheduledEnd || j.dueDate);
-        return h !== null && h <= 3 && !['SHIPPED', 'COMPLETE', 'CANCELLED'].includes(j.status);
+        return h !== null && h <= 3 && !['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status);
       }).length;
 
       // Dispatch ops on this work center
-      const wcOps = dispatchOps.filter(op => op.assignedWorkCenterId === wc.id);
-      const runningOps = wcOps.filter(op => ['RUNNING', 'IN_PROGRESS'].includes(op.status));
-      const pendingOps = wcOps.filter(op => ['PENDING', 'SCHEDULED'].includes(op.status));
+      const runningOps = { length: opCount(wc.id, ['RUNNING', 'IN_PROGRESS']) };
+      const pendingOps = { length: opCount(wc.id, ['PENDING', 'SCHEDULED']) };
 
       // Estimate utilization: running ops / capacity (simple heuristic)
       const totalOps = runningOps.length + pendingOps.length;
@@ -235,7 +241,7 @@ router.get('/', async (req, res) => {
     // Overdue jobs as exceptions
     allJobs.filter(j => {
       const h = hoursFromNow(j.scheduledEnd);
-      return h !== null && h <= 0 && !['SHIPPED', 'COMPLETE', 'CANCELLED'].includes(j.status);
+      return h !== null && h <= 0 && !['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status);
     }).forEach(j => {
       exceptions.push({
         id: `overdue-${j.id}`,
@@ -249,7 +255,7 @@ router.get('/', async (req, res) => {
     });
 
     // Held coils as exceptions
-    coils.filter(c => c.status === 'HOLD').forEach(c => {
+    heldCoilRows.forEach(c => {
       exceptions.push({
         id: `hold-${c.id}`,
         time: formatTimeSince(c.updatedAt),
@@ -277,7 +283,7 @@ router.get('/', async (req, res) => {
     });
     const totalDueToday = todayDueJobs.length || activeJobs.length;
     const completedToday = allJobs.filter(j =>
-      ['SHIPPED', 'COMPLETE'].includes(j.status) &&
+      ['SHIPPED', 'COMPLETED'].includes(j.status) &&
       j.actualEnd && new Date(j.actualEnd) >= startOfDay
     ).length;
 
@@ -293,7 +299,7 @@ router.get('/', async (req, res) => {
     if (qcHolds.length > 0) {
       riskFactors.push(`${qcHolds.length} QC hold(s) blocking progress`);
     }
-    const heldCoils = coils.filter(c => c.status === 'HOLD').length;
+    const heldCoils = coilCount('HOLD');
     if (heldCoils > 0) {
       riskFactors.push(`${heldCoils} coil(s) on hold`);
     }
@@ -362,7 +368,7 @@ router.get('/', async (req, res) => {
     });
 
     // Material optimization
-    const allocatedCoils = coils.filter(c => c.status === 'ALLOCATED');
+    const allocatedCoils = { length: coilCount('ALLOCATED') };
     if (allocatedCoils.length > 0) {
       recommendations.push({
         id: recPriority,
@@ -391,31 +397,23 @@ router.get('/', async (req, res) => {
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 7. STAGING & SHIPPING
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // A shipment that has left is IN_TRANSIT or DELIVERED (there is no SHIPPED shipment status).
+    const SHIPPED_STATUSES = ['IN_TRANSIT', 'DELIVERED'];
     const readyToShipJobs = allJobs.filter(j => j.status === 'READY_TO_SHIP');
     const packagingJobs = allJobs.filter(j => ['PACKAGING', 'WAITING_QC'].includes(j.status));
 
-    const todayShipments = shipments.filter(s =>
-      s.createdAt >= startOfDay
-    );
-    const shippedToday = todayShipments.filter(s =>
-      ['SHIPPED', 'DELIVERED'].includes(s.status)
-    );
-    const pendingShipments = shipments.filter(s =>
-      ['PENDING', 'LOADING'].includes(s.status)
-    );
+    const todayShipments = { length: shipmentCount(todayShipmentGroups) };
+    const shippedToday = { length: shipmentCount(todayShipmentGroups, SHIPPED_STATUSES) };
+    const pendingShipments = { length: shipmentCount(shipmentGroups, ['PENDING', 'LOADING']) };
 
     // Group by carrier
     const carrierGroups = {};
-    shipments.forEach(s => {
-      const carrier = s.carrierName || 'Unassigned';
+    shipmentGroups.forEach(g => {
+      const carrier = g.carrierName || 'Unassigned';
       if (!carrierGroups[carrier]) carrierGroups[carrier] = { total: 0, shipped: 0 };
-      carrierGroups[carrier].total++;
-      if (['SHIPPED', 'DELIVERED'].includes(s.status)) carrierGroups[carrier].shipped++;
+      carrierGroups[carrier].total += g._count._all;
+      if (SHIPPED_STATUSES.includes(g.status)) carrierGroups[carrier].shipped += g._count._all;
     });
-
-    const noCarrierOrders = orders.filter(o =>
-      o.status === 'CONFIRMED' && !shipments.some(s => s.orderId === o.id)
-    ).length;
 
     const staging = {
       readyToShip: readyToShipJobs.length,
@@ -442,16 +440,17 @@ router.get('/', async (req, res) => {
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // Group coils by grade + form for availability analysis
     const materialGroups = {};
-    coils.forEach(c => {
-      const key = `${c.grade?.code || 'UNK'}-${c.form}-${c.thicknessIn}"`;
+    coilGroups.forEach(g => {
+      const key = `${gradeCode.get(g.gradeId) || 'UNK'}-${g.form}-${g.thicknessIn}"`;
       if (!materialGroups[key]) {
         materialGroups[key] = { available: 0, held: 0, allocated: 0, total: 0, totalWeight: 0 };
       }
-      materialGroups[key].total++;
-      materialGroups[key].totalWeight += parseFloat(c.netWeightLb || 0);
-      if (c.status === 'AVAILABLE') materialGroups[key].available++;
-      else if (c.status === 'HOLD') materialGroups[key].held++;
-      else if (c.status === 'ALLOCATED') materialGroups[key].allocated++;
+      const n = g._count._all;
+      materialGroups[key].total += n;
+      materialGroups[key].totalWeight += parseFloat(g._sum.netWeightLb || 0);
+      if (g.status === 'AVAILABLE') materialGroups[key].available += n;
+      else if (g.status === 'HOLD') materialGroups[key].held += n;
+      else if (g.status === 'ALLOCATED') materialGroups[key].allocated += n;
     });
 
     // Stockouts: materials with allocated or needed but none available
@@ -474,8 +473,8 @@ router.get('/', async (req, res) => {
       }));
 
     // Inventory summary
-    const totalWeightLb = coils.reduce((sum, c) => sum + parseFloat(c.netWeightLb || 0), 0);
-    const availableCount = coils.filter(c => c.status === 'AVAILABLE').length;
+    const totalWeightLb = coilGroups.reduce((sum, g) => sum + parseFloat(g._sum.netWeightLb || 0), 0);
+    const availableCount = coilCount('AVAILABLE');
 
     const materialData = {
       stockouts,
@@ -490,10 +489,10 @@ router.get('/', async (req, res) => {
           eta: formatTimeSince(m.createdAt),
         })),
       summary: {
-        totalCoils: coils.length,
+        totalCoils: coilCount(),
         available: availableCount,
-        allocated: coils.filter(c => c.status === 'ALLOCATED').length,
-        held: coils.filter(c => c.status === 'HOLD').length,
+        allocated: coilCount('ALLOCATED'),
+        held: coilCount('HOLD'),
         totalWeightLb: Math.round(totalWeightLb),
       },
     };
@@ -515,12 +514,12 @@ router.get('/', async (req, res) => {
       shipping: shippingData,
       material: materialData,
       summary: {
-        totalJobs: allJobs.length,
+        totalJobs,
         activeJobs: activeJobs.length,
-        totalOrders: orders.length,
-        totalCoils: coils.length,
+        totalOrders,
+        totalCoils: coilCount(),
         totalWorkCenters: workCenters.length,
-        totalShipments: shipments.length,
+        totalShipments: shipmentCount(shipmentGroups),
       },
     });
   } catch (error) {

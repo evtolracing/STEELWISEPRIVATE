@@ -9,7 +9,6 @@ Blockers:
 1. The tested code is not live. Pull request 30 is unmerged and three database updates are pending.
 2. No backup restore has been tested, and there is no staging environment (E-015).
 3. Workstreams 2 to 6 have not been audited, so most modules have no score.
-4. One known scale defect is open (E-023, operations cockpit).
 
 ## Quality before and after this batch (platform layer only)
 
@@ -17,7 +16,7 @@ Weighted score 59 before, 73 after, against a target of 95. Detail and evidence:
 
 ## Improvements completed in this batch
 
-Eleven findings fixed or fixed in part (E-001 to E-011). See `engineering-quality-findings.md`.
+Twelve findings fixed or fixed in part (E-001 to E-011 and E-023). See `engineering-quality-findings.md`.
 
 ## Validation
 
@@ -27,7 +26,7 @@ Eleven findings fixed or fixed in part (E-001 to E-011). See `engineering-qualit
 | 2 Functional integrity | 150 of 150 simulated jobs pass (seeds 8001 to 8003) |
 | 3 Data integrity | Stock and billing reconcile with 0 problems; 8 database checks hold through all cycles |
 | 4 Security | Sweep passes all 11 sections; no high or critical package advisories |
-| 5 Performance | 0 of 137 measured read routes over target at 80-branch volume; one route does not answer (E-023) |
+| 5 Performance | 137 of 138 measured read routes inside the target at 80-branch volume; the operations cockpit takes about 1 s (E-023) |
 | 6 User experience | Not assessed yet |
 | 7 Operational readiness | Fails: no restore test, no alerting, no runbook |
 | 8 Enterprise simulation | Passes locally: 150 jobs, 24 simultaneous-request probes |

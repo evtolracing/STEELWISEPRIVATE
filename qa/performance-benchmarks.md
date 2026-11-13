@@ -9,7 +9,7 @@ Target used: a list or summary route answers in under 500 ms (median).
 | | Before | After |
 |---|---|---|
 | Parameter-free read routes answering | 137 of 146 | 137 of 146 |
-| Routes at or over 500 ms | 7 | 0 |
+| Routes at or over 500 ms | 7, plus one that never answered | 1 (operations cockpit, about 1 s, see below) |
 | Replies over 1 MB | 3 (largest 104 MB) | 2 (1.2 MB each, the job list) |
 | Median of all route medians | 6 ms | 6 ms |
 | 20 people opening the job list at once | all 20 failed after 30 s | all answered within 1.4 s |
@@ -30,7 +30,13 @@ Slowest routes after the changes, all inside the target: work-center utilization
 
 ## Not answered
 
-Nine of the 146 routes did not return 200. Eight need a parameter or are customer-only (expected). One is a real finding: `/api/ops-cockpit` gave no reply within 30 seconds at this volume, before and after (E-023, open).
+Eight of the 146 routes need a parameter or are customer-only and are skipped (expected).
+
+## Operations cockpit (E-023)
+
+Before: no reply within 30 seconds on the scaled database. It loaded every job, order, stock item and shipment on each call.
+
+After: it loads open jobs and today's activity and counts the rest in the database. Measured on the scaled database after spreading the copied jobs and shipments over 300 days of history (13,244 open jobs, 3,494 created today): 0.94 to 1.17 seconds, 0.47 MB. That is over the 0.5 second target. The remaining cost is the list of every hot job, which the page shows in full.
 
 ## Limits of this benchmark
 

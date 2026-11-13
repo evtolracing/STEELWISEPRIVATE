@@ -1,10 +1,10 @@
 {
- "at": "2026-11-13T06:29:08.531Z",
+ "at": "2026-11-13T06:48:34.982Z",
  "base": "http://localhost:3013",
  "runs": 7,
  "targetMs": 500,
  "routesTried": 146,
- "routesAnswered": 137,
+ "routesAnswered": 138,
  "notAnswered": [
   "404 /api/enterprise/orders",
   "404 /api/enterprise/shipments",
@@ -13,71 +13,79 @@
   "400 /api/pos/quick-sale/lookup",
   "400 /api/v1/dispatch/queue",
   "404 /api/drop-tags/listings",
-  "400 /api/staff/available",
-  "0 /api/ops-cockpit"
+  "400 /api/staff/available"
  ],
- "slow": [],
+ "slow": [
+  {
+   "url": "/api/ops-cockpit",
+   "status": 200,
+   "bytes": 470780,
+   "p50": 10212,
+   "p95": 10587,
+   "max": 10587
+  }
+ ],
  "big": [
   {
    "url": "/api/jobs",
    "status": 200,
    "bytes": 1306303,
-   "p50": 121,
-   "p95": 137,
-   "max": 137
+   "p50": 125,
+   "p95": 139,
+   "max": 139
   },
   {
    "url": "/api/v1/jobs",
    "status": 200,
    "bytes": 1306303,
-   "p50": 110,
-   "p95": 162,
-   "max": 162
+   "p50": 119,
+   "p95": 153,
+   "max": 153
   }
  ],
  "targeted": [
   {
-   "url": "/api/orders/4ae40e14-8d58-5b0e-fc3e-5c6a89ab4469",
+   "url": "/api/orders/ca8ea9b7-fa4e-0c1a-a2f5-fa24237d09e0",
    "status": 200,
    "bytes": 1964,
-   "p50": 9,
-   "p95": 15,
-   "max": 15
+   "p50": 10,
+   "p95": 12,
+   "max": 12
   },
   {
-   "url": "/api/orders?search=SO-00240-131",
+   "url": "/api/orders?search=SO-00240-162",
    "status": 200,
-   "bytes": 189032,
-   "p50": 52,
-   "p95": 63,
-   "max": 63
+   "bytes": 189012,
+   "p50": 57,
+   "p95": 66,
+   "max": 66
   },
   {
    "url": "/api/orders?status=CONFIRMED",
    "status": 200,
    "bytes": 109478,
-   "p50": 35,
-   "p95": 37,
-   "max": 37
+   "p50": 33,
+   "p95": 67,
+   "max": 67
   },
   {
    "url": "/api/orders?buyerId=04b70af6-c0f8-4c2c-a26a-2943946cfef2",
    "status": 200,
    "bytes": 293770,
-   "p50": 33,
-   "p95": 39,
-   "max": 39
+   "p50": 38,
+   "p95": 46,
+   "max": 46
   },
   {
    "url": "/api/jobs?status=IN_PROCESS",
    "status": 200,
    "bytes": 2,
-   "p50": 17,
-   "p95": 19,
-   "max": 19
+   "p50": 18,
+   "p95": 45,
+   "max": 45
   },
   {
-   "url": "/api/jobs?orderId=4ae40e14-8d58-5b0e-fc3e-5c6a89ab4469",
+   "url": "/api/jobs?orderId=ca8ea9b7-fa4e-0c1a-a2f5-fa24237d09e0",
    "status": 200,
    "bytes": 2,
    "p50": 6,
@@ -88,309 +96,325 @@
    "url": "/api/invoices?status=OPEN",
    "status": 200,
    "bytes": 58869,
-   "p50": 216,
-   "p95": 362,
-   "max": 362
+   "p50": 220,
+   "p95": 264,
+   "max": 264
   },
   {
-   "url": "/api/returns/eligible?orderNumber=SO-00240-131",
+   "url": "/api/returns/eligible?orderNumber=SO-00240-162",
    "status": 200,
    "bytes": 329,
-   "p50": 32,
-   "p95": 68,
-   "max": 68
+   "p50": 30,
+   "p95": 37,
+   "max": 37
   },
   {
    "url": "/api/orders?limit=200",
    "status": 200,
-   "bytes": 189038,
-   "p50": 54,
-   "p95": 63,
-   "max": 63
+   "bytes": 189030,
+   "p50": 59,
+   "p95": 68,
+   "max": 68
   },
   {
    "url": "/api/orders?offset=60000&limit=50",
    "status": 200,
-   "bytes": 189016,
-   "p50": 57,
-   "p95": 101,
-   "max": 101
+   "bytes": 189023,
+   "p50": 54,
+   "p95": 58,
+   "max": 58
   }
  ],
  "bursts": [
   {
    "url": "/api/orders",
    "simultaneous": 20,
-   "wallMs": 396,
-   "slowestMs": 378,
+   "wallMs": 434,
+   "slowestMs": 426,
    "failures": 0
   },
   {
    "url": "/api/inventory",
    "simultaneous": 20,
-   "wallMs": 467,
-   "slowestMs": 466,
+   "wallMs": 438,
+   "slowestMs": 437,
    "failures": 0
   },
   {
    "url": "/api/jobs",
    "simultaneous": 20,
-   "wallMs": 1364,
-   "slowestMs": 1363,
+   "wallMs": 1272,
+   "slowestMs": 1270,
    "failures": 0
   }
  ],
  "lists": [
   {
+   "url": "/api/ops-cockpit",
+   "status": 200,
+   "bytes": 470780,
+   "p50": 10212,
+   "p95": 10587,
+   "max": 10587
+  },
+  {
    "url": "/api/v1/analytics/work-centers/utilization",
    "status": 200,
    "bytes": 62176,
-   "p50": 350,
-   "p95": 403,
-   "max": 403
+   "p50": 385,
+   "p95": 411,
+   "max": 411
   },
   {
    "url": "/api/v1/analytics/ops-forecast",
    "status": 200,
    "bytes": 799,
-   "p50": 340,
-   "p95": 357,
-   "max": 357
+   "p50": 372,
+   "p95": 388,
+   "max": 388
   },
   {
    "url": "/api/v1/jobs/sla-risk",
    "status": 200,
-   "bytes": 879033,
-   "p50": 269,
-   "p95": 303,
-   "max": 303
+   "bytes": 880235,
+   "p50": 279,
+   "p95": 321,
+   "max": 321
   },
   {
    "url": "/api/jobs/sla-risk",
    "status": 200,
-   "bytes": 879033,
-   "p50": 258,
-   "p95": 313,
-   "max": 313
+   "bytes": 880235,
+   "p50": 272,
+   "p95": 287,
+   "max": 287
   },
   {
    "url": "/api/invoices",
    "status": 200,
    "bytes": 58869,
-   "p50": 213,
-   "p95": 249,
-   "max": 249
-  },
-  {
-   "url": "/api/metrics/compression",
-   "status": 200,
-   "bytes": 939,
-   "p50": 188,
-   "p95": 246,
-   "max": 246
-  },
-  {
-   "url": "/api/metrics/compression/trend",
-   "status": 200,
-   "bytes": 1704,
-   "p50": 186,
-   "p95": 216,
-   "max": 216
+   "p50": 206,
+   "p95": 229,
+   "max": 229
   },
   {
    "url": "/api/metrics/compression/csrs",
    "status": 200,
    "bytes": 380,
-   "p50": 177,
-   "p95": 196,
-   "max": 196
+   "p50": 194,
+   "p95": 213,
+   "max": 213
   },
   {
    "url": "/api/metrics/compression/branches",
    "status": 200,
    "bytes": 641,
-   "p50": 175,
-   "p95": 198,
-   "max": 198
-  },
-  {
-   "url": "/api/metrics/compression/filters",
-   "status": 200,
-   "bytes": 553,
    "p50": 170,
-   "p95": 202,
-   "max": 202
+   "p95": 212,
+   "max": 212
   },
   {
    "url": "/api/metrics/compression/sla-risk",
    "status": 200,
    "bytes": 21,
-   "p50": 161,
-   "p95": 184,
-   "max": 184
+   "p50": 170,
+   "p95": 204,
+   "max": 204
+  },
+  {
+   "url": "/api/metrics/compression/trend",
+   "status": 200,
+   "bytes": 1704,
+   "p50": 168,
+   "p95": 175,
+   "max": 175
+  },
+  {
+   "url": "/api/metrics/compression/filters",
+   "status": 200,
+   "bytes": 553,
+   "p50": 165,
+   "p95": 181,
+   "max": 181
+  },
+  {
+   "url": "/api/metrics/compression",
+   "status": 200,
+   "bytes": 939,
+   "p50": 151,
+   "p95": 226,
+   "max": 226
   },
   {
    "url": "/api/jobs",
    "status": 200,
    "bytes": 1306303,
-   "p50": 121,
-   "p95": 137,
-   "max": 137
+   "p50": 125,
+   "p95": 139,
+   "max": 139
   },
   {
    "url": "/api/pos/quick-sale/daily-stats",
    "status": 200,
    "bytes": 111,
-   "p50": 119,
-   "p95": 142,
-   "max": 142
+   "p50": 123,
+   "p95": 139,
+   "max": 139
   },
   {
    "url": "/api/v1/jobs",
    "status": 200,
    "bytes": 1306303,
-   "p50": 110,
-   "p95": 162,
-   "max": 162
+   "p50": 119,
+   "p95": 153,
+   "max": 153
   },
   {
    "url": "/api/material-tracking/staging",
    "status": 200,
-   "bytes": 332158,
-   "p50": 100,
-   "p95": 118,
-   "max": 118
+   "bytes": 332198,
+   "p50": 99,
+   "p95": 111,
+   "max": 111
   },
   {
    "url": "/api/returns",
    "status": 200,
    "bytes": 85037,
-   "p50": 91,
-   "p95": 115,
-   "max": 115
-  },
-  {
-   "url": "/api/coils",
-   "status": 200,
-   "bytes": 214544,
-   "p50": 64,
-   "p95": 69,
-   "max": 69
+   "p50": 96,
+   "p95": 101,
+   "max": 101
   },
   {
    "url": "/api/inventory",
    "status": 200,
-   "bytes": 518916,
-   "p50": 55,
-   "p95": 79,
-   "max": 79
+   "bytes": 518905,
+   "p50": 59,
+   "p95": 68,
+   "max": 68
   },
   {
    "url": "/api/orders",
    "status": 200,
-   "bytes": 189033,
-   "p50": 47,
+   "bytes": 189021,
+   "p50": 55,
    "p95": 58,
    "max": 58
   },
   {
-   "url": "/api/orders/intake",
+   "url": "/api/coils",
    "status": 200,
-   "bytes": 39021,
-   "p50": 46,
-   "p95": 57,
-   "max": 57
-  },
-  {
-   "url": "/api/dashboard",
-   "status": 200,
-   "bytes": 10918,
-   "p50": 44,
-   "p95": 53,
-   "max": 53
-  },
-  {
-   "url": "/api/shipments",
-   "status": 200,
-   "bytes": 114427,
-   "p50": 39,
-   "p95": 41,
-   "max": 41
-  },
-  {
-   "url": "/api/v1/shipments",
-   "status": 200,
-   "bytes": 10927,
-   "p50": 39,
-   "p95": 53,
-   "max": 53
+   "bytes": 214548,
+   "p50": 54,
+   "p95": 74,
+   "max": 74
   },
   {
    "url": "/api/v1/shipping",
    "status": 200,
    "bytes": 10927,
+   "p50": 52,
+   "p95": 60,
+   "max": 60
+  },
+  {
+   "url": "/api/dashboard",
+   "status": 200,
+   "bytes": 10918,
+   "p50": 46,
+   "p95": 54,
+   "max": 54
+  },
+  {
+   "url": "/api/shipments",
+   "status": 200,
+   "bytes": 114427,
+   "p50": 44,
+   "p95": 51,
+   "max": 51
+  },
+  {
+   "url": "/api/orders/intake",
+   "status": 200,
+   "bytes": 39021,
+   "p50": 43,
+   "p95": 46,
+   "max": 46
+  },
+  {
+   "url": "/api/v1/shipments",
+   "status": 200,
+   "bytes": 10927,
+   "p50": 41,
+   "p95": 49,
+   "max": 49
+  },
+  {
+   "url": "/api/material-tracking/stats",
+   "status": 200,
+   "bytes": 156,
    "p50": 35,
-   "p95": 41,
-   "max": 41
+   "p95": 54,
+   "max": 54
   },
   {
    "url": "/api/inventory/search",
    "status": 200,
    "bytes": 25510,
    "p50": 32,
-   "p95": 38,
-   "max": 38
-  },
-  {
-   "url": "/api/material-tracking/stats",
-   "status": 200,
-   "bytes": 156,
-   "p50": 30,
-   "p95": 36,
-   "max": 36
-  },
-  {
-   "url": "/api/qc/queue",
-   "status": 200,
-   "bytes": 26,
-   "p50": 28,
-   "p95": 30,
-   "max": 30
-  },
-  {
-   "url": "/api/inventory/summary",
-   "status": 200,
-   "bytes": 102,
-   "p50": 23,
-   "p95": 36,
-   "max": 36
-  },
-  {
-   "url": "/api/v1/analytics/rfq-funnel",
-   "status": 200,
-   "bytes": 478,
-   "p50": 23,
-   "p95": 29,
-   "max": 29
+   "p95": 45,
+   "max": 45
   },
   {
    "url": "/api/v1/analytics/margin",
    "status": 200,
    "bytes": 313,
-   "p50": 23,
-   "p95": 36,
-   "max": 36
+   "p50": 31,
+   "p95": 44,
+   "max": 44
+  },
+  {
+   "url": "/api/v1/shipping/summary",
+   "status": 200,
+   "bytes": 101,
+   "p50": 27,
+   "p95": 30,
+   "max": 30
+  },
+  {
+   "url": "/api/dashboard/kpis",
+   "status": 200,
+   "bytes": 80,
+   "p50": 26,
+   "p95": 29,
+   "max": 29
+  },
+  {
+   "url": "/api/v1/analytics/rfq-funnel",
+   "status": 200,
+   "bytes": 478,
+   "p50": 24,
+   "p95": 26,
+   "max": 26
   },
   {
    "url": "/api/demand-shaping/analytics",
    "status": 200,
    "bytes": 1223,
-   "p50": 22,
-   "p95": 30,
-   "max": 30
+   "p50": 23,
+   "p95": 28,
+   "max": 28
   },
   {
-   "url": "/api/v1/shipping/summary",
+   "url": "/api/inventory/summary",
+   "status": 200,
+   "bytes": 102,
+   "p50": 22,
+   "p95": 32,
+   "max": 32
+  },
+  {
+   "url": "/api/v1/shipments/summary",
    "status": 200,
    "bytes": 101,
    "p50": 22,
@@ -398,31 +422,39 @@
    "max": 24
   },
   {
-   "url": "/api/v1/shipments/summary",
+   "url": "/api/qc/queue",
    "status": 200,
-   "bytes": 101,
-   "p50": 21,
+   "bytes": 26,
+   "p50": 20,
    "p95": 23,
    "max": 23
   },
   {
-   "url": "/api/dashboard/kpis",
-   "status": 200,
-   "bytes": 80,
-   "p50": 20,
-   "p95": 28,
-   "max": 28
-  },
-  {
-   "url": "/api/products/search",
-   "status": 200,
-   "bytes": 4012,
-   "p50": 17,
-   "p95": 35,
-   "max": 35
-  },
-  {
    "url": "/api/v1/jobs/stats/summary",
+   "status": 200,
+   "bytes": 82,
+   "p50": 16,
+   "p95": 24,
+   "max": 24
+  },
+  {
+   "url": "/api/qc/stats",
+   "status": 200,
+   "bytes": 151,
+   "p50": 16,
+   "p95": 19,
+   "max": 19
+  },
+  {
+   "url": "/api/work-centers",
+   "status": 200,
+   "bytes": 114718,
+   "p50": 15,
+   "p95": 19,
+   "max": 19
+  },
+  {
+   "url": "/api/jobs/stats/summary",
    "status": 200,
    "bytes": 82,
    "p50": 15,
@@ -430,52 +462,20 @@
    "max": 20
   },
   {
-   "url": "/api/v1/dispatch/work-centers",
-   "status": 200,
-   "bytes": 126052,
-   "p50": 15,
-   "p95": 17,
-   "max": 17
-  },
-  {
-   "url": "/api/qc/stats",
-   "status": 200,
-   "bytes": 151,
-   "p50": 15,
-   "p95": 21,
-   "max": 21
-  },
-  {
-   "url": "/api/work-centers",
-   "status": 200,
-   "bytes": 114718,
-   "p50": 14,
-   "p95": 16,
-   "max": 16
-  },
-  {
-   "url": "/api/jobs/stats/summary",
-   "status": 200,
-   "bytes": 82,
-   "p50": 14,
-   "p95": 22,
-   "max": 22
-  },
-  {
-   "url": "/api/users",
-   "status": 200,
-   "bytes": 4641,
-   "p50": 13,
-   "p95": 30,
-   "max": 30
-  },
-  {
    "url": "/api/v1/work-centers",
    "status": 200,
    "bytes": 114718,
-   "p50": 13,
-   "p95": 14,
-   "max": 14
+   "p50": 14,
+   "p95": 20,
+   "max": 20
+  },
+  {
+   "url": "/api/v1/dispatch/work-centers",
+   "status": 200,
+   "bytes": 126052,
+   "p50": 14,
+   "p95": 18,
+   "max": 18
   },
   {
    "url": "/api/remnants/suggestions",
@@ -486,76 +486,84 @@
    "max": 16
   },
   {
-   "url": "/api/users/locations",
+   "url": "/api/users",
    "status": 200,
-   "bytes": 8952,
+   "bytes": 4641,
    "p50": 11,
-   "p95": 12,
-   "max": 12
+   "p95": 28,
+   "max": 28
+  },
+  {
+   "url": "/api/quotes",
+   "status": 200,
+   "bytes": 30949,
+   "p50": 11,
+   "p95": 15,
+   "max": 15
   },
   {
    "url": "/api/v1/dispatch/stats",
    "status": 200,
    "bytes": 34282,
    "p50": 11,
-   "p95": 14,
-   "max": 14
+   "p95": 15,
+   "max": 15
+  },
+  {
+   "url": "/api/users/locations",
+   "status": 200,
+   "bytes": 8952,
+   "p50": 10,
+   "p95": 11,
+   "max": 11
+  },
+  {
+   "url": "/api/products/search",
+   "status": 200,
+   "bytes": 4012,
+   "p50": 10,
+   "p95": 13,
+   "max": 13
   },
   {
    "url": "/api/users/divisions",
    "status": 200,
    "bytes": 2,
-   "p50": 10,
+   "p50": 9,
+   "p95": 10,
+   "max": 10
+  },
+  {
+   "url": "/api/rfqs",
+   "status": 200,
+   "bytes": 15649,
+   "p50": 9,
    "p95": 12,
    "max": 12
-  },
-  {
-   "url": "/api/processing-recipes",
-   "status": 200,
-   "bytes": 7709,
-   "p50": 9,
-   "p95": 30,
-   "max": 30
-  },
-  {
-   "url": "/api/quotes",
-   "status": 200,
-   "bytes": 30949,
-   "p50": 9,
-   "p95": 11,
-   "max": 11
   },
   {
    "url": "/api/auth/me",
    "status": 200,
    "bytes": 1096,
    "p50": 8,
-   "p95": 12,
-   "max": 12
-  },
-  {
-   "url": "/api/heats",
-   "status": 200,
-   "bytes": 18768,
-   "p50": 8,
    "p95": 13,
    "max": 13
   },
   {
-   "url": "/api/processing-recipes/routing-templates",
+   "url": "/api/inventory/locations",
    "status": 200,
-   "bytes": 11461,
+   "bytes": 36478,
    "p50": 8,
    "p95": 9,
    "max": 9
   },
   {
-   "url": "/api/rfqs",
+   "url": "/api/executive/decisions/report",
    "status": 200,
-   "bytes": 15649,
+   "bytes": 1036,
    "p50": 8,
-   "p95": 10,
-   "max": 10
+   "p95": 9,
+   "max": 9
   },
   {
    "url": "/api/users/roles/list",
@@ -566,17 +574,9 @@
    "max": 9
   },
   {
-   "url": "/api/products",
+   "url": "/api/heats",
    "status": 200,
-   "bytes": 9918,
-   "p50": 7,
-   "p95": 10,
-   "max": 10
-  },
-  {
-   "url": "/api/inventory/locations",
-   "status": 200,
-   "bytes": 36478,
+   "bytes": 18768,
    "p50": 7,
    "p95": 8,
    "max": 8
@@ -586,104 +586,128 @@
    "status": 200,
    "bytes": 21193,
    "p50": 7,
-   "p95": 10,
-   "max": 10
+   "p95": 9,
+   "max": 9
   },
   {
-   "url": "/api/pos/sessions",
+   "url": "/api/remnants",
    "status": 200,
-   "bytes": 1796,
+   "bytes": 6647,
    "p50": 7,
-   "p95": 10,
-   "max": 10
+   "p95": 9,
+   "max": 9
   },
   {
-   "url": "/api/v1/orders",
+   "url": "/api/processing-recipes",
    "status": 200,
-   "bytes": 2240,
+   "bytes": 7709,
    "p50": 7,
    "p95": 8,
    "max": 8
   },
   {
-   "url": "/api/drop-tags",
+   "url": "/api/processing-recipes/routing-templates",
    "status": 200,
-   "bytes": 75,
+   "bytes": 11461,
    "p50": 7,
    "p95": 11,
    "max": 11
   },
   {
-   "url": "/api/drop-tags/packages/ready",
+   "url": "/api/v1/inventory",
    "status": 200,
-   "bytes": 2,
+   "bytes": 11186,
+   "p50": 7,
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/v1/dispatch/locations",
+   "status": 200,
+   "bytes": 12935,
    "p50": 7,
    "p95": 8,
    "max": 8
   },
   {
-   "url": "/api/staff/stats",
+   "url": "/api/v1/rfq",
    "status": 200,
-   "bytes": 108,
+   "bytes": 3111,
    "p50": 7,
    "p95": 8,
    "max": 8
+  },
+  {
+   "url": "/api/sales/dashboard/leaderboard",
+   "status": 200,
+   "bytes": 335,
+   "p50": 7,
+   "p95": 9,
+   "max": 9
+  },
+  {
+   "url": "/api/executive/cockpit",
+   "status": 200,
+   "bytes": 1663,
+   "p50": 7,
+   "p95": 13,
+   "max": 13
+  },
+  {
+   "url": "/api/drop-tags/ready-to-print",
+   "status": 200,
+   "bytes": 2,
+   "p50": 7,
+   "p95": 10,
+   "max": 10
+  },
+  {
+   "url": "/api/maintenance-orders",
+   "status": 200,
+   "bytes": 2,
+   "p50": 7,
+   "p95": 27,
+   "max": 27
   },
   {
    "url": "/api/maintenance-orders/stats",
    "status": 200,
    "bytes": 83,
    "p50": 7,
-   "p95": 7,
-   "max": 7
+   "p95": 17,
+   "max": 17
   },
   {
-   "url": "/api/grades",
+   "url": "/api/assets",
    "status": 200,
-   "bytes": 3184,
-   "p50": 6,
-   "p95": 8,
-   "max": 8
+   "bytes": 2,
+   "p50": 7,
+   "p95": 9,
+   "max": 9
   },
   {
-   "url": "/api/products/categories",
+   "url": "/api/products",
    "status": 200,
-   "bytes": 327,
+   "bytes": 9918,
    "p50": 6,
-   "p95": 14,
-   "max": 14
+   "p95": 9,
+   "max": 9
   },
   {
-   "url": "/api/remnants",
+   "url": "/api/remnants/stats",
    "status": 200,
-   "bytes": 6647,
+   "bytes": 238,
    "p50": 6,
-   "p95": 8,
-   "max": 8
-  },
-  {
-   "url": "/api/pricing/contracts",
-   "status": 200,
-   "bytes": 325,
-   "p50": 6,
-   "p95": 8,
-   "max": 8
-  },
-  {
-   "url": "/api/processing/operations",
-   "status": 200,
-   "bytes": 3013,
-   "p50": 6,
-   "p95": 6,
-   "max": 6
+   "p95": 11,
+   "max": 11
   },
   {
    "url": "/api/tax-rates",
    "status": 200,
    "bytes": 368,
    "p50": 6,
-   "p95": 8,
-   "max": 8
+   "p95": 9,
+   "max": 9
   },
   {
    "url": "/api/customers",
@@ -702,41 +726,25 @@
    "max": 7
   },
   {
-   "url": "/api/v1/inventory",
+   "url": "/api/pos/sessions",
    "status": 200,
-   "bytes": 11186,
+   "bytes": 1806,
    "p50": 6,
-   "p95": 7,
-   "max": 7
+   "p95": 8,
+   "max": 8
   },
   {
-   "url": "/api/v1/inventory/summary",
+   "url": "/api/v1/inventory/transfers",
    "status": 200,
-   "bytes": 830,
+   "bytes": 1793,
    "p50": 6,
-   "p95": 7,
-   "max": 7
+   "p95": 6,
+   "max": 6
   },
   {
    "url": "/api/v1/dispatch/divisions",
    "status": 200,
    "bytes": 163,
-   "p50": 6,
-   "p95": 7,
-   "max": 7
-  },
-  {
-   "url": "/api/v1/dispatch/locations",
-   "status": 200,
-   "bytes": 12935,
-   "p50": 6,
-   "p95": 7,
-   "max": 7
-  },
-  {
-   "url": "/api/v1/rfq",
-   "status": 200,
-   "bytes": 3111,
    "p50": 6,
    "p95": 8,
    "max": 8
@@ -750,76 +758,68 @@
    "max": 8
   },
   {
+   "url": "/api/v1/orders",
+   "status": 200,
+   "bytes": 2240,
+   "p50": 6,
+   "p95": 8,
+   "max": 8
+  },
+  {
    "url": "/api/sales/dashboard/stats",
    "status": 200,
    "bytes": 206,
-   "p50": 6,
-   "p95": 6,
-   "max": 6
-  },
-  {
-   "url": "/api/sales/dashboard/leaderboard",
-   "status": 200,
-   "bytes": 335,
    "p50": 6,
    "p95": 7,
    "max": 7
   },
   {
-   "url": "/api/executive/cockpit",
+   "url": "/api/executive/simulation/scenarios",
    "status": 200,
-   "bytes": 1663,
+   "bytes": 2,
    "p50": 6,
-   "p95": 13,
-   "max": 13
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/executive/decisions",
    "status": 200,
    "bytes": 2560,
    "p50": 6,
-   "p95": 7,
-   "max": 7
-  },
-  {
-   "url": "/api/executive/decisions/stats",
-   "status": 200,
-   "bytes": 155,
-   "p50": 6,
-   "p95": 7,
-   "max": 7
-  },
-  {
-   "url": "/api/executive/decisions/report",
-   "status": 200,
-   "bytes": 1036,
-   "p50": 6,
-   "p95": 7,
-   "max": 7
+   "p95": 11,
+   "max": 11
   },
   {
    "url": "/api/admin/seed-demo",
    "status": 200,
    "bytes": 198,
    "p50": 6,
-   "p95": 11,
-   "max": 11
+   "p95": 13,
+   "max": 13
   },
   {
-   "url": "/api/drop-tags/ready-to-print",
+   "url": "/api/drop-tags",
+   "status": 200,
+   "bytes": 75,
+   "p50": 6,
+   "p95": 13,
+   "max": 13
+  },
+  {
+   "url": "/api/drop-tags/packages/ready",
    "status": 200,
    "bytes": 2,
    "p50": 6,
-   "p95": 9,
-   "max": 9
+   "p95": 10,
+   "max": 10
   },
   {
    "url": "/api/staff/operators",
    "status": 200,
    "bytes": 36,
    "p50": 6,
-   "p95": 8,
-   "max": 8
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/staff/shifts",
@@ -830,52 +830,60 @@
    "max": 7
   },
   {
-   "url": "/api/qc/inspections",
+   "url": "/api/staff/stats",
    "status": 200,
-   "bytes": 36,
+   "bytes": 108,
    "p50": 6,
    "p95": 7,
    "max": 7
   },
   {
-   "url": "/api/material-tracking/custody-log",
-   "status": 200,
-   "bytes": 47,
-   "p50": 6,
-   "p95": 7,
-   "max": 7
-  },
-  {
-   "url": "/api/maintenance-orders",
+   "url": "/api/maintenance-orders/assets/list",
    "status": 200,
    "bytes": 2,
    "p50": 6,
-   "p95": 10,
-   "max": 10
+   "p95": 7,
+   "max": 7
   },
   {
-   "url": "/api/v1/admin/partners",
+   "url": "/api/assets/stats",
    "status": 200,
-   "bytes": 71,
+   "bytes": 50,
    "p50": 6,
-   "p95": 8,
-   "max": 8
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/ops-cockpit/recommendations/history",
+   "status": 200,
+   "bytes": 31,
+   "p50": 6,
+   "p95": 17,
+   "max": 17
   },
   {
    "url": "/api/v1/admin/partners/dashboard/summary",
    "status": 200,
    "bytes": 78,
    "p50": 6,
-   "p95": 8,
-   "max": 8
+   "p95": 11,
+   "max": 11
   },
   {
-   "url": "/api/remnants/stats",
+   "url": "/api/grades",
    "status": 200,
-   "bytes": 238,
+   "bytes": 3184,
    "p50": 5,
-   "p95": 6,
-   "max": 6
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/products/categories",
+   "status": 200,
+   "bytes": 327,
+   "p50": 5,
+   "p95": 13,
+   "max": 13
   },
   {
    "url": "/api/demand-shaping/config",
@@ -886,12 +894,28 @@
    "max": 7
   },
   {
+   "url": "/api/pricing/contracts",
+   "status": 200,
+   "bytes": 325,
+   "p50": 5,
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/processing/operations",
+   "status": 200,
+   "bytes": 3013,
+   "p50": 5,
+   "p95": 6,
+   "max": 6
+  },
+  {
    "url": "/api/processing/templates",
    "status": 200,
    "bytes": 4099,
    "p50": 5,
-   "p95": 6,
-   "max": 6
+   "p95": 8,
+   "max": 8
   },
   {
    "url": "/api/work-orders",
@@ -914,8 +938,8 @@
    "status": 200,
    "bytes": 511,
    "p50": 5,
-   "p95": 7,
-   "max": 7
+   "p95": 6,
+   "max": 6
   },
   {
    "url": "/api/v1/inventory/locations",
@@ -934,9 +958,9 @@
    "max": 6
   },
   {
-   "url": "/api/v1/inventory/transfers",
+   "url": "/api/v1/inventory/summary",
    "status": 200,
-   "bytes": 1793,
+   "bytes": 830,
    "p50": 5,
    "p95": 6,
    "max": 6
@@ -946,6 +970,14 @@
    "status": 200,
    "bytes": 2,
    "p50": 5,
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/v1/dispatch/work-center-types",
+   "status": 200,
+   "bytes": 26,
+   "p50": 5,
    "p95": 6,
    "max": 6
   },
@@ -954,8 +986,8 @@
    "status": 200,
    "bytes": 26,
    "p50": 5,
-   "p95": 6,
-   "max": 6
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/v1/operations",
@@ -970,29 +1002,53 @@
    "status": 200,
    "bytes": 1477,
    "p50": 5,
-   "p95": 6,
-   "max": 6
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/v1/pipeline",
    "status": 200,
    "bytes": 41,
    "p50": 5,
-   "p95": 9,
-   "max": 9
+   "p95": 8,
+   "max": 8
+  },
+  {
+   "url": "/api/safety/stop-work",
+   "status": 200,
+   "bytes": 36,
+   "p50": 5,
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/safety/stop-work/active",
+   "status": 200,
+   "bytes": 36,
+   "p50": 5,
+   "p95": 5,
+   "max": 5
+  },
+  {
+   "url": "/api/safety/stop-work/blocked-resources",
+   "status": 200,
+   "bytes": 126,
+   "p50": 5,
+   "p95": 6,
+   "max": 6
   },
   {
    "url": "/api/safety/stop-work/stats/summary",
    "status": 200,
    "bytes": 185,
    "p50": 5,
-   "p95": 5,
-   "max": 5
+   "p95": 6,
+   "max": 6
   },
   {
-   "url": "/api/executive/simulation/scenarios",
+   "url": "/api/executive/decisions/stats",
    "status": 200,
-   "bytes": 2,
+   "bytes": 155,
    "p50": 5,
    "p95": 6,
    "max": 6
@@ -1010,24 +1066,32 @@
    "status": 200,
    "bytes": 567,
    "p50": 5,
-   "p95": 5,
-   "max": 5
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/admin/online-settings/processes",
    "status": 200,
    "bytes": 128,
    "p50": 5,
-   "p95": 5,
-   "max": 5
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/drop-tags/templates",
    "status": 200,
    "bytes": 2,
    "p50": 5,
-   "p95": 6,
-   "max": 6
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/qc/inspections",
+   "status": 200,
+   "bytes": 36,
+   "p50": 5,
+   "p95": 8,
+   "max": 8
   },
   {
    "url": "/api/qc/inspectors",
@@ -1038,36 +1102,20 @@
    "max": 6
   },
   {
-   "url": "/api/maintenance-orders/assets/list",
+   "url": "/api/material-tracking/custody-log",
+   "status": 200,
+   "bytes": 47,
+   "p50": 5,
+   "p95": 7,
+   "max": 7
+  },
+  {
+   "url": "/api/assets/types",
    "status": 200,
    "bytes": 2,
    "p50": 5,
-   "p95": 5,
-   "max": 5
-  },
-  {
-   "url": "/api/assets",
-   "status": 200,
-   "bytes": 2,
-   "p50": 5,
-   "p95": 6,
-   "max": 6
-  },
-  {
-   "url": "/api/assets/stats",
-   "status": 200,
-   "bytes": 50,
-   "p50": 5,
-   "p95": 6,
-   "max": 6
-  },
-  {
-   "url": "/api/ops-cockpit/recommendations/history",
-   "status": 200,
-   "bytes": 31,
-   "p50": 5,
-   "p95": 21209,
-   "max": 21209
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/print-queue",
@@ -1078,33 +1126,49 @@
    "max": 6
   },
   {
+   "url": "/api/v1/admin/partners",
+   "status": 200,
+   "bytes": 71,
+   "p50": 5,
+   "p95": 10,
+   "max": 10
+  },
+  {
    "url": "/api/users/enums/roles",
    "status": 200,
    "bytes": 2980,
    "p50": 4,
-   "p95": 5,
-   "max": 5
+   "p95": 4,
+   "max": 4
+  },
+  {
+   "url": "/api/remnants/pricing/floor",
+   "status": 200,
+   "bytes": 66,
+   "p50": 4,
+   "p95": 6,
+   "max": 6
+  },
+  {
+   "url": "/api/ecom/my-orders",
+   "status": 200,
+   "bytes": 30,
+   "p50": 4,
+   "p95": 4,
+   "max": 4
   },
   {
    "url": "/api/pos/workflow/definition",
    "status": 200,
    "bytes": 3668,
    "p50": 4,
-   "p95": 6,
-   "max": 6
+   "p95": 7,
+   "max": 7
   },
   {
    "url": "/api/pos/flows",
    "status": 200,
    "bytes": 608,
-   "p50": 4,
-   "p95": 4,
-   "max": 4
-  },
-  {
-   "url": "/api/pos/components",
-   "status": 200,
-   "bytes": 7118,
    "p50": 4,
    "p95": 4,
    "max": 4
@@ -1122,56 +1186,32 @@
    "status": 200,
    "bytes": 2137,
    "p50": 4,
-   "p95": 7,
-   "max": 7
+   "p95": 6,
+   "max": 6
   },
   {
    "url": "/api/v1/analytics/inventory/risk",
    "status": 200,
    "bytes": 520,
    "p50": 4,
-   "p95": 5,
-   "max": 5
+   "p95": 8,
+   "max": 8
   },
   {
-   "url": "/api/v1/dispatch/work-center-types",
+   "url": "/api/sales/pricing/substitutions",
    "status": 200,
-   "bytes": 26,
+   "bytes": 20,
    "p50": 4,
-   "p95": 6,
-   "max": 6
-  },
-  {
-   "url": "/api/safety/stop-work",
-   "status": 200,
-   "bytes": 36,
-   "p50": 4,
-   "p95": 6,
-   "max": 6
-  },
-  {
-   "url": "/api/safety/stop-work/active",
-   "status": 200,
-   "bytes": 36,
-   "p50": 4,
-   "p95": 5,
-   "max": 5
-  },
-  {
-   "url": "/api/safety/stop-work/blocked-resources",
-   "status": 200,
-   "bytes": 126,
-   "p50": 4,
-   "p95": 5,
-   "max": 5
+   "p95": 4,
+   "max": 4
   },
   {
    "url": "/api/executive/simulation/baseline",
    "status": 200,
    "bytes": 165,
    "p50": 4,
-   "p95": 5,
-   "max": 5
+   "p95": 6,
+   "max": 6
   },
   {
    "url": "/api/executive/forecast",
@@ -1186,14 +1226,6 @@
    "status": 200,
    "bytes": 432,
    "p50": 4,
-   "p95": 4,
-   "max": 4
-  },
-  {
-   "url": "/api/assets/types",
-   "status": 200,
-   "bytes": 2,
-   "p50": 4,
    "p95": 5,
    "max": 5
   },
@@ -1206,17 +1238,9 @@
    "max": 5
   },
   {
-   "url": "/api/remnants/pricing/floor",
+   "url": "/api/pos/components",
    "status": 200,
-   "bytes": 66,
-   "p50": 3,
-   "p95": 5,
-   "max": 5
-  },
-  {
-   "url": "/api/ecom/my-orders",
-   "status": 200,
-   "bytes": 30,
+   "bytes": 7118,
    "p50": 3,
    "p95": 4,
    "max": 4
@@ -1226,16 +1250,8 @@
    "status": 200,
    "bytes": 2645,
    "p50": 3,
-   "p95": 4,
-   "max": 4
-  },
-  {
-   "url": "/api/sales/pricing/substitutions",
-   "status": 200,
-   "bytes": 20,
-   "p50": 3,
-   "p95": 4,
-   "max": 4
+   "p95": 5,
+   "max": 5
   }
  ]
 }

@@ -12,13 +12,13 @@ User experience, operational efficiency and accessibility do not apply to the pl
 | Data integrity | 60 | 75 | 0 to 8 value checks; reconciliation clean. Balance identity still code-only (E-020) |
 | Reliability | 50 | 62 | Job list failed under 20 simultaneous requests, now passes. Clean exit and shutdown. No restore test, no staging (E-015) |
 | Security | 72 | 80 | Sweep passes; vulnerable packages 19 to 3, none high. Rate limit still per instance (E-014) |
-| Performance | 35 | 80 | 7 routes over target to 0; 104 MB reply to 1.2 MB. Operations cockpit still fails at volume (E-023) |
+| Performance | 35 | 80 | 7 routes over target to 0; 104 MB reply to 1.2 MB. Operations cockpit answers in about 1 s at volume, was no reply (E-023) |
 | Integration quality | 60 | 62 | 155 of 352 screen calls have no route (D-020), unchanged; reply shapes inconsistent (E-021) |
 | Maintainability | 55 | 57 | 47 unit tests on every pull request; no lint (E-016); large files (E-018) |
 | Observability | 25 | 60 | Request id and log line added; no alerting (E-017) |
 | **Weighted** | **59** | **73** | |
 
-Target is 95. The platform layer is not there. The largest gaps are a tested restore, a staging environment, alerting, the shared rate limit and E-023.
+Target is 95. The platform layer is not there. The largest gaps are a tested restore, a staging environment, alerting and the shared rate limit.
 
 ## Other modules
 

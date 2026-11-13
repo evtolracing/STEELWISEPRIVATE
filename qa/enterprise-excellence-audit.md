@@ -56,6 +56,7 @@ Method: measure first, on a copy of the QA database scaled to 100,000 stock item
 | Value checks | The database had no value checks at all | Eight added: stock quantities cannot go negative, order and shipment quantities must be positive, an invoice cannot be paid beyond its total |
 | Tracing | No request id, no request log | Every request has an id (returned in a header and in every server-error reply) and one JSON log line with time taken. Slow requests are flagged |
 | Startup and shutdown | The server loaded demo data into any empty non-local database at start. After an unexpected error it kept running. Shutdown did not close the database pool | Demo data only when asked for. Unexpected error exits cleanly. Pool closed on shutdown |
+| Operations cockpit | Loaded every job, order, stock item and shipment on each call; no reply in 30 seconds at volume. Tested for statuses that do not exist | Loads open jobs and today only, counts the rest in the database; about 1 second with 13,000 open jobs. Reply proven identical on QA data apart from two corrected counts |
 | Dependencies | 19 known vulnerabilities in installed packages (1 critical, 8 high) | 3 remain, all moderate, each needing a major version change |
 
 Verification after the changes: 47 unit tests pass; three 50-job cycles (seeds 8001 to 8003) pass 150 of 150 with 2,107 API steps, 2,331 checks, 24 of 24 simultaneous-request probes and 0 reconciliation problems; security sweep passes all 11 sections; 123 screens open; frontend build passes.
@@ -64,4 +65,4 @@ Verification after the changes: 47 unit tests pass; three 50-job cycles (seeds 8
 
 - Branch `claude/project-thread-25z3jd`, pull request 30.
 - Rebuild the QA database with `qa/tools/rebuild-qa-db.sh`. Build the scaled copy with `createdb -T steelwise_qa steelwise_qa_perf` then `PGOPTIONS="-c perf.copies=300" psql steelwise_qa_perf -f qa/perf/scale-up.sql`, start a server on it with `QA_DATABASE_URL=... PORT=3013 qa/tools/start-qa-server.sh`, and run `node qa/perf/bench.mjs`.
-- Next in Workstream 1: E-023 (operations cockpit loads whole tables), E-014 (shared rate limit), E-015 (restore test), E-016 (lint). Then Workstream 2.
+- Left in Workstream 1, all needing the owner: E-014 (shared rate limit), E-015 (restore test), E-016 (lint), E-017 (alerting). Next: Workstream 2.

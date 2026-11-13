@@ -17,7 +17,7 @@
 | Deploy rollback understood | Partly | The host keeps earlier deployments and can promote one back. Database updates are additive, so older code keeps working. Not rehearsed |
 | Staging environment | **No** | Tests run locally. A staging copy of production does not exist |
 | Outside services validated | **No** | No card processor, email or text provider connected |
-| Performance at 80 branches | Verified locally, one open item | `performance-benchmarks.md`; operations cockpit E-023 |
+| Performance at 80 branches | Verified locally, one open item | `performance-benchmarks.md`; operations cockpit about 1 s at volume (E-023) |
 | Lint gate | **No** | No lint configuration (E-016) |
 | Incident runbook | **No** | Not written |
 

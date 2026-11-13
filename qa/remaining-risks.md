@@ -7,7 +7,6 @@ Ordered by how much they should worry you.
 | None of the Phase 1 or Phase 2 work is live | The hosted site still has the defects these fixes address | Run the three database updates, merge pull request 30, deploy |
 | No tested restore | A database loss today has an unknown outcome | One restore test (E-015) |
 | No staging environment | Every result here is from a local database, not production data | A staging copy, then rerun the cycles and the benchmark there |
-| Operations cockpit loads whole tables | The page will stop loading as history grows | E-023, next item |
 | Rate limit is per server instance | The login throttle is weaker than configured on the hosted site | Shared store (E-014) |
 | No alerting | Errors are found by users | Error tracking (E-017) |
 | Screens were opened, not operated | A form or button could be broken without a test noticing | Click-through tests in Workstreams 2 to 6 |

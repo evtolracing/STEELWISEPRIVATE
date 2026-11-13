@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T06:42:30.916Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T06:55:02.399Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -50,12 +50,12 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
 - Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 4800
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
 - Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 7200 of 7200; on hand 12000 → 4800
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 7200 billed of 7200 shipped
 - Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 4680 of 4680
-- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 4800 → 6600
+- Pass: one return received three times at once: counted once, one credit. statuses 409,200,409; 1 credit memo(s); source coil on hand 4800 → 6600
 
 The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
@@ -75,7 +75,7 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T06:37:38.853Z. 574 of 574 routes swept.
+Run 2026-11-13T06:50:25.588Z. 574 of 574 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
@@ -93,7 +93,7 @@ Run 2026-11-13T06:37:38.853Z. 574 of 574 routes swept.
 
 ## Screen check
 
-Run 2026-11-13T06:42:30.789Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T06:55:02.306Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 123
 - OK: 123

@@ -47,6 +47,8 @@ model Organization {
   partners        Partner[]                @relation("PartnerOrganization")
   preferences     CustomerPreference?      @relation("CustomerPreferences")
 
+  shipmentsCarried Shipment[] @relation("ShipmentCarrier")
+
   @@index([parentId])
 }
 
@@ -121,8 +123,6 @@ model CustomerPreference {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([customerId])
 }
 
 model User {
@@ -164,6 +164,8 @@ model User {
   approvalRequests ApprovalRequest[]    @relation("ApprovalRequester")
   approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
   operator         Operator?
+
+  quotesCreated Quote[] @relation("QuoteCreatedBy")
 
   @@index([customerId])
   @@index([homeLocationId])
@@ -373,6 +375,8 @@ model Product {
   grade        Grade?        @relation(fields: [gradeId], references: [id])
   storeListing StoreListing?
 
+  quoteLines QuoteLine[] @relation("QuoteLineProduct")
+
   @@index([gradeId])
 }
 
@@ -501,6 +505,11 @@ model Location {
   packages        Package[]          @relation("PackageLocation")
   dropTagListings DropTagListing[]   @relation("ListingOrigin")
   operatorsHome   Operator[]         @relation("OperatorHomeLocation")
+
+  dispatchJobs DispatchJob[] @relation("DispatchJobLocation")
+
+  rfqsOwned   RFQ[]   @relation("RFQBranch")
+  quotesOwned Quote[] @relation("QuoteBranch")
 
   @@index([ownerId])
   @@index([parentId])
@@ -631,6 +640,11 @@ model RFQ {
   customer      Organization @relation("CustomerRFQs", fields: [customerId], references: [id])
   lines         RFQLine[]
 
+  /// The branch that works this request. Empty means not yet assigned: every branch sees it.
+  locationId String?
+  location   Location? @relation("RFQBranch", fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@index([locationId])
   @@index([customerId])
 }
 
@@ -680,7 +694,15 @@ model Quote {
   rfq              RFQ         @relation(fields: [rfqId], references: [id])
   lines            QuoteLine[]
 
+  createdBy User? @relation("QuoteCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  /// The branch that wrote this quote. Empty means not assigned: every branch sees it.
+  locationId String?
+  location   Location? @relation("QuoteBranch", fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@index([locationId])
   @@index([rfqId])
+  @@index([createdById])
 }
 
 model QuoteLine {
@@ -718,8 +740,11 @@ model QuoteLine {
   quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   rfqLine   RFQLine? @relation(fields: [rfqLineId], references: [id])
 
+  product Product? @relation("QuoteLineProduct", fields: [productId], references: [id], onDelete: Restrict)
+
   @@index([quoteId])
   @@index([rfqLineId])
+  @@index([productId])
 }
 
 // ============================================================================
@@ -846,7 +871,7 @@ model DispatchJob {
   grade        String?
   thickness    Decimal   @default(0.5)
   division     String    @default("METALS")
-  locationId   String    @default("FWA")
+  locationId   String
   dueDate      DateTime?
   priority     String    @default("NORMAL")
   customerName String?
@@ -856,8 +881,12 @@ model DispatchJob {
   job        Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
   operations DispatchOperation[]
 
+  order    Order?   @relation("DispatchJobOrder", fields: [orderId], references: [id], onDelete: SetNull)
+  location Location @relation("DispatchJobLocation", fields: [locationId], references: [id], onDelete: Restrict)
+
   @@index([locationId])
   @@index([jobNumber])
+  @@index([orderId])
 }
 
 model DispatchOperation {
@@ -883,6 +912,8 @@ model DispatchOperation {
 
   dispatchJob DispatchJob       @relation(fields: [dispatchJobId], references: [id], onDelete: Cascade)
   timeLogs    DispatchTimeLog[]
+
+  assignedWorkCenter WorkCenter? @relation("DispatchOperationWorkCenter", fields: [assignedWorkCenterId], references: [id], onDelete: SetNull)
 
   @@unique([dispatchJobId, sequence])
   @@index([dispatchJobId])
@@ -967,6 +998,8 @@ model WorkCenter {
   assets        Asset[]    @relation("AssetWorkCenter")
   operatorsHome Operator[] @relation("OperatorHomeWorkCenter")
 
+  dispatchOperations DispatchOperation[] @relation("DispatchOperationWorkCenter")
+
   @@index([locationId])
 }
 
@@ -1028,11 +1061,16 @@ model Job {
   dispatchJob DispatchJob?
   inspections JobInspection[]
 
+  orderLine OrderLine? @relation("JobOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
+  workOrder WorkOrder? @relation("JobWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
+
   @@index([recipeId])
   @@index([assignedToId])
   @@index([createdById])
   @@index([orderId])
   @@index([workCenterId])
+  @@index([orderLineId])
+  @@index([workOrderId])
 }
 
 model Order {
@@ -1079,6 +1117,11 @@ model Order {
   shipments       Shipment[]
   dropTags        DropTag[]
   packages        Package[]
+
+  returnOf     Order?        @relation("OrderReturns", fields: [returnOfOrderId], references: [id], onDelete: Restrict)
+  returnOrders Order[]       @relation("OrderReturns")
+  workOrders   WorkOrder[]   @relation("WorkOrderSalesOrder")
+  dispatchJobs DispatchJob[] @relation("DispatchJobOrder")
 
   @@index([returnOfOrderId])
   @@index([buyerId])
@@ -1136,6 +1179,12 @@ model OrderLine {
   dropTags      DropTag[]
   packages      Package[]
 
+  invoiceLines InvoiceLine[] @relation("InvoiceLineOrderLine")
+  jobs         Job[]         @relation("JobOrderLine")
+  returnOfLine OrderLine?    @relation("OrderLineReturns", fields: [returnOfLineId], references: [id], onDelete: Restrict)
+  returnLines  OrderLine[]   @relation("OrderLineReturns")
+  workOrders   WorkOrder[]   @relation("WorkOrderLine")
+
   @@index([returnOfLineId])
   @@index([gradeId])
   @@index([orderId])
@@ -1179,7 +1228,13 @@ model WorkOrder {
   sourceCoil     Coil               @relation("WorkOrderInput", fields: [sourceCoilId], references: [id])
   outputs        WorkOrderOutput[]
 
+  jobs       Job[]      @relation("JobWorkOrder")
+  salesOrder Order?     @relation("WorkOrderSalesOrder", fields: [salesOrderId], references: [id], onDelete: SetNull)
+  line       OrderLine? @relation("WorkOrderLine", fields: [lineId], references: [id], onDelete: SetNull)
+
   @@index([sourceCoilId])
+  @@index([salesOrderId])
+  @@index([lineId])
 }
 
 model WorkOrderOutput {
@@ -1229,8 +1284,12 @@ model Shipment {
   dropTags        DropTag[]
   dropTagListings DropTagListing[]
 
+  invoices Invoice[]     @relation("InvoiceShipment")
+  carrier  Organization? @relation("ShipmentCarrier", fields: [carrierId], references: [id], onDelete: SetNull)
+
   @@index([fromLocationId])
   @@index([orderId])
+  @@index([carrierId])
 }
 
 model ShipmentItem {
@@ -1290,6 +1349,10 @@ model Invoice {
   payments          Payment[]
   lines             InvoiceLine[]
 
+  shipment Shipment? @relation("InvoiceShipment", fields: [shipmentId], references: [id], onDelete: Restrict)
+  creditOf Invoice?  @relation("InvoiceCredits", fields: [creditOfInvoiceId], references: [id], onDelete: Restrict)
+  credits  Invoice[] @relation("InvoiceCredits")
+
   @@index([orderId])
   @@index([shipmentId])
   @@index([creditOfInvoiceId])
@@ -1308,6 +1371,8 @@ model InvoiceLine {
   extendedPrice Decimal
   createdAt     DateTime @default(now())
   invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  orderLine OrderLine? @relation("InvoiceLineOrderLine", fields: [orderLineId], references: [id], onDelete: Restrict)
 
   @@index([invoiceId])
   @@index([orderLineId])
@@ -1842,7 +1907,6 @@ model Asset {
   downtimeRecords   DowntimeRecord[]
   spareParts        SparePart[]
 
-  @@index([assetNumber])
   @@index([siteId])
   @@index([status])
   @@index([criticality])
@@ -1871,7 +1935,6 @@ model AssetType {
   assets      Asset[]
   pmTemplates PMTemplate[]
 
-  @@index([code])
   @@index([category])
 }
 
@@ -1999,7 +2062,6 @@ model MaintenanceOrder {
   labor       MaintenanceOrderLabor[]
   attachments MaintenanceAttachment[]
 
-  @@index([woNumber])
   @@index([assetId])
   @@index([status])
   @@index([type])
@@ -2126,7 +2188,6 @@ model PMTemplate {
   pmSchedules       PMSchedule[]
   maintenanceOrders MaintenanceOrder[]
 
-  @@index([code])
   @@index([assetTypeId])
 }
 
@@ -2244,7 +2305,6 @@ model SparePart {
   orderParts   MaintenanceOrderPart[]
   transactions SparePartTransaction[]
 
-  @@index([partNumber])
   @@index([category])
   @@index([assetId])
 }
@@ -2693,7 +2753,6 @@ model DropTag {
   @@index([customerId])
   @@index([heatNumber])
   @@index([status])
-  @@index([dropTagId])
   @@index([jobId])
   @@index([listingId])
   @@index([orderLineId])
@@ -2836,7 +2895,6 @@ model Package {
   @@index([status])
   @@index([orderId])
   @@index([currentLocationId])
-  @@index([packageId])
   @@index([jobId])
   @@index([orderLineId])
 }
@@ -2953,7 +3011,6 @@ model LabelTemplate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([code])
   @@index([customerId])
   @@index([templateType])
 }
@@ -3046,7 +3103,6 @@ model CustomerTagRequirement {
   updatedAt DateTime @updatedAt
 
   @@unique([customerId])
-  @@index([customerId])
 }
 
 // ============================================================================
@@ -5220,4 +5276,21 @@ model DemandSuggestionEvent {
 
   @@index([createdAt])
   @@index([suggestionId])
+}
+
+/// One row per request that carried an Idempotency-Key header. A repeat of the same request
+/// (a double click, a retry after a timeout) is answered from this row instead of running again.
+/// Rows are removed a day after they are written.
+model RequestKey {
+  id             String   @id @default(uuid())
+  scope          String
+  key            String
+  bodyHash       String
+  status         String   @default("IN_PROGRESS") // IN_PROGRESS, DONE
+  responseStatus Int?
+  responseBody   Json?
+  createdAt      DateTime @default(now())
+
+  @@unique([scope, key])
+  @@index([createdAt])
 }

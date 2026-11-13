@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit 181a874. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -62,8 +62,8 @@ Two views. The first is the business flow, written by hand in the module map. Th
 |---|---|---:|
 | Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 10 |
 | Job | Order entry; Customer specifications; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Partner API; Operations cockpit and dashboards | 10 |
+| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Coil work orders; Shipping; Operations cockpit and dashboards | 9 |
 | Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Shipping; Returns; Partner API; Operations cockpit and dashboards | 9 |
-| AuditLog | Users, roles and branches; Customers; Order entry; Pricing and customer tiers; Counter quick sale; Coil work orders; Shipping; Operations cockpit and dashboards | 8 |
 | Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Stock items and stock levels; Receiving; Dispatch, work centers and shop-floor operations; Shipping | 7 |
 | Coil | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
 | WorkCenter | Staff and operators; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 6 |
@@ -143,7 +143,12 @@ Two views. The first is the business flow, written by hand in the module map. Th
 2. The Job table: read or written by jobs, dispatch, operations, quality, material tracking, shipping, order entry, cockpit, planning, print queue and the partner API. Its moves are governed by `lib/workflowRules.js` and recorded by `lib/jobHistory.js`. Since Phase 2, planning and operations record their moves in the same transaction, completing an operation locks the job, and a status move applies only if the job is still where it was checked (C-005; `qa/sim/phase2-integrity.mjs`). Still outside: the general edit route writes a status unconditionally, and three job routes carry their own status checks (M-017).
 3. Order, OrderLine, Coil, Inventory, Shipment, Invoice: the order-to-cash chain. Covered in depth by the simulation and its reconciliation.
 4. `services/billing.js`: every money action. Covered by unit tests, the simulation and the sweep.
-5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner; to be connected or retired in Phase 3.
+5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner (decision 1). Audited in Phase 3 and not migrated: the live contents must be exported and read first.
 6. Shelf stock: the counter quick sale now writes stock levels and movements (B-025), joining receiving, transfer, hold, allocation, dispatch and return receipt as the only writers of stock.
 7. `routes/shipments.js` holds dispatch and delivery as private functions; the carrier partner routes re-implemented them and are wrong (C-002).
+8. `lib/numbering.js`: every numbered document (orders, shipments, invoices, credit memos, jobs, work orders, quotes, requests, returns) is created through it. Phase 3 found it failed under 80 simultaneous saves and after deleted rows (G-017, fixed). Covered by 9 unit tests and the 80-at-once scenario.
+9. `lib/moneyColumns.js` (new in Phase 3): every write to a decimal column passes through it inside the database client, after the branch boundary. A mistake here corrupts amounts everywhere. Covered by 6 unit tests, the residue check in `db-facts` and the exact-cent scenarios.
+10. `middleware/requestKeys.js` (new in Phase 3): sits in front of every changing route. It acts only when a request carries an Idempotency-Key. Covered by 3 unit tests and three database scenarios.
+11. The order row lock: a reservation, a cancellation and (through conditional updates) a status move now queue on the Order row. Any new code that changes reservations must take the same lock first, or the race of G-004 returns.
+12. Foreign keys added in Phase 3 with RESTRICT: an invoiced shipment, a credited invoice, a returned order and an invoiced order line can no longer be deleted. Seed and clean-up scripts must delete children first.
 

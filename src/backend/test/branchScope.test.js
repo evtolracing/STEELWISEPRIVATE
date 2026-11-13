@@ -71,3 +71,25 @@ test('the arguments passed in are never changed in place', () => {
   scopedArgs('Order', 'findMany', args, held);
   assert.deepEqual(args, { where: { id: 'x' } });
 });
+
+test('quotes and requests for quotation are held to their branch; one with no branch is seen by all', () => {
+  for (const model of ['Quote', 'RFQ']) {
+    const out = scopedArgs(model, 'findMany', { where: { status: 'DRAFT' } }, held);
+    assert.deepEqual(out.where.AND, [{ OR: [{ locationId: { in: [A] } }, { locationId: null }] }], model);
+    assert.throws(() => scopedArgs(model, 'create', { data: { locationId: B } }, held), OutsideBranch, `${model} cannot be filed under another branch`);
+    assert.throws(() => scopedArgs(model, 'update', { where: { id: 'x' }, data: { locationId: B } }, held), OutsideBranch, `${model} cannot be handed to another branch`);
+    assert.equal(scopedArgs(model, 'findMany', { where: {} }, free).where.AND, undefined, `${model}: head office is not filtered`);
+  }
+  assert.deepEqual(scopedArgs('QuoteLine', 'findMany', {}, held).where.AND, [{ quote: { OR: [{ locationId: { in: [A] } }, { locationId: null }] } }]);
+  assert.deepEqual(scopedArgs('RFQLine', 'findMany', {}, held).where.AND, [{ rfq: { OR: [{ locationId: { in: [A] } }, { locationId: null }] } }]);
+});
+
+test('drop tags follow their order; packages follow their order or the branch they stand at', () => {
+  const tag = scopedArgs('DropTag', 'findMany', {}, held).where.AND[0];
+  assert.ok(tag.order, 'a drop tag is reached through its order');
+  const pkg = scopedArgs('Package', 'findMany', {}, held).where.AND[0];
+  assert.equal(pkg.OR.length, 3);
+  assert.deepEqual(pkg.OR[1], { currentLocationId: { in: [A] } });
+  assert.deepEqual(pkg.OR[2], { orderId: null, currentLocationId: null }, 'a package with neither is seen by every branch');
+  for (const model of ['DropTag', 'Package', 'Quote', 'RFQ', 'QuoteLine', 'RFQLine']) assert.ok(BRANCH_OWNED[model], `${model} is listed as branch-owned`);
+});

@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit 181a874. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,18 +11,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 71 | 17 |
-| P2 | 72 | 38 |
-| P3 | 60 | 23 |
-| Total | 223 | 80 |
+| P1 | 76 | 17 |
+| P2 | 80 | 42 |
+| P3 | 67 | 29 |
+| Total | 243 | 90 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 142 |
-| DEFERRED TO SPECIFIC PHASE | 58 |
-| REQUIRES BUSINESS DECISION | 19 |
+| VERIFIED FIXED | 152 |
+| DEFERRED TO SPECIFIC PHASE | 63 |
+| REQUIRES BUSINESS DECISION | 23 |
+| BLOCKED | 2 |
 | IN PROGRESS | 2 |
-| BLOCKED | 1 |
 | NOT APPLICABLE | 1 |
 
 ## Open findings, most severe first
@@ -34,11 +34,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-009 | P1 | DEFERRED TO SPECIFIC PHASE | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 2: architecture and code quality (after the decision) |
 | B-016 | P1 | DEFERRED TO SPECIFIC PHASE | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
 | B-019 | P1 | REQUIRES BUSINESS DECISION | Platform | Everything happens only when someone opens a screen or presses a button. | Integration phase |
-| E-004 | P1 | DEFERRED TO SPECIFIC PHASE | Database | No check constraints anywhere | Phase 2: architecture and code quality |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
 | E-014 | P1 | DEFERRED TO SPECIFIC PHASE | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
 | E-015 | P1 | REQUIRES BUSINESS DECISION | Platform | No evidence that a backup has ever been restored | Phase 2: architecture and code quality |
 | E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
+| G-019 | P1 | REQUIRES BUSINESS DECISION | Shipments | Shipping reserved stock is fully recorded. Shipping without a reservation is accepted and records nothing about the material. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | I-007 | P1 | REQUIRES BUSINESS DECISION | Purchasing | There is no purchase order: nothing records what was ordered from a mill, what is due, or whether a receipt matches an order or a supplier invoice | Inventory and purchasing |
 | I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
 | I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
@@ -56,9 +56,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-018 | P2 | BLOCKED | Partner API | It is marked for retry and never sent again. | Integration phase |
 | B-021 | P2 | DEFERRED TO SPECIFIC PHASE | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
 | C-002 | P2 | DEFERRED TO SPECIFIC PHASE | Partner API: carriers | The carrier routes cannot work as written, and if repaired in place would skip those rules. | Integration phase |
-| C-006 | P2 | DEFERRED TO SPECIFIC PHASE | Orders | It creates two. Only the screens guard against it, by disabling the button while saving. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | C-009 | P2 | DEFERRED TO SPECIFIC PHASE | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| C-010 | P2 | DEFERRED TO SPECIFIC PHASE | Counter quick sale | A failure after the claim leaves a sale marked void, its stock returned, and no credit memo or refund. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | C-011 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | They cannot. The counter rule built in Phase 2 takes effect only where piece-counted stock exists; elsewhere the sale goes through and the receipt says no stock was reduced. | Inventory and purchasing |
 | C-013 | P2 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | Any text shaped like a recommendation moves jobs. | Manufacturing and processing |
 | D-020 | P2 | DEFERRED TO SPECIFIC PHASE |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
@@ -73,6 +71,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | F-009 | P2 | REQUIRES BUSINESS DECISION | Invoices | Any staff login can read every invoice and its payments (reads are open to all staff by design; only changes are restricted) | Shipping and financial operations |
 | F-011 | P2 | DEFERRED TO SPECIFIC PHASE | Shipping documents | Whether a bill of lading or packing list can be printed for a shipment was not examined. Print code exists in the server (`printQueue`, `printAutomationService`); the new Shipment screen has no print button | Shipping and financial operations |
 | F-012 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend build | A stray word left in `AppRouter.jsx` by a patch in this workstream passed the production build and broke every screen at run time. Caught by the browser check before commit | Shipping and financial operations |
+| G-003 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017). | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-006 | P2 | REQUIRES BUSINESS DECISION | Stock items | The company total rises by the remnant's weight. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-007 | P2 | DEFERRED TO SPECIFIC PHASE | Inventory | The item is at the destination the moment the sender presses the button. What is on the road is counted as on the receiver's shelf. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-008 | P2 | REQUIRES BUSINESS DECISION | Work orders | A work order does not claim its source item. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-011 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-015 | P2 | BLOCKED | Platform | Unknown. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Manufacturing and processing |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
@@ -94,6 +98,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | D-027 | P3 | DEFERRED TO SPECIFIC PHASE |  | The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured. | By subject (see the finding) |
 | D-035 | P3 | REQUIRES BUSINESS DECISION |  | Sales tax is charged only for states that have a rate set. A sale at a branch in a state with no rate charges no tax and says so on the screen. A login with no home branch also charges no tax. A new screen, Admin > Sales | By subject (see the finding) |
 | E-018 | P3 | DEFERRED TO SPECIFIC PHASE | Code | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Phase 2: architecture and code quality |
+| G-009 | P3 | DEFERRED TO SPECIFIC PHASE | Counter quick sale | Free text. The order stays COMPLETE. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-013 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items, stock search, heat trace | Both grow in step with the whole company's data. Both are far inside the half-second target today. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-014 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Each order comes with its full lines and customer record. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-016 | P3 | REQUIRES BUSINESS DECISION | Database | Everything is kept for ever in the working tables. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-018 | P3 | DEFERRED TO SPECIFIC PHASE | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | U-002 | P3 | DEFERRED TO SPECIFIC PHASE | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
 | U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
@@ -283,15 +293,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Stock adjusted or transferred in the second list changes nothing the business ships from. At volume, each request to it reads every row.
 - **Affected dependencies:** D-024, S-021, I-011 and the open decision card "Choose which stock list is the real one".
 - **Recommended correction:** The owner chooses the real one of each pair. Then the other is removed or made a view of the first.
-- **Deferred: reason:** Connecting or retiring the second stock list and the order hub means moving or discarding the records they hold as JSON and changing nine screens. That is a data migration, which Phase 3 owns, and the owner applies database changes himself.
-- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Deferred: required correction:** For each of the two: either read and write the real tables through the existing routes, or switch its changing routes off and label its screens. Then remove the JSON stores.
-- **Deferred: dependencies:** Owner decision 1 (given). I-012, S-021, U-002, U-020. The JSON stores in AppSetting.
-- **Deferred: acceptance criteria:** No changing route writes stock or orders anywhere but the Inventory, Coil, Order and OrderLine tables; db-facts shows 0 rows in the JSON stores.
-- **Deferred: verification:** A sweep section that changes stock and an order through every remaining route and finds each change in the real tables; the 125-screen check.
+- **Deferred: reason:** Decision 1 says the second stock list and the order hub are to be connected to the real tables or retired. Either needs the live contents of the two JSON stores to be read first (a read-only export the owner runs), and the screens rebuilt on the real routes, which is module work.
+- **Deferred: target phase:** The phase the owner issues for inventory and purchasing, and for sales (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Export the two stores read-only; decide record by record whether each is a real order or stock item; point the screens at /api/orders and /api/coils; remove the stores.
+- **Deferred: dependencies:** A read-only export of AppSetting from the live database; decision 1.
+- **Deferred: acceptance criteria:** No route reads or writes an order or a stock record in AppSetting; the two screens show the same records as the main ones.
+- **Deferred: verification:** A database check that the two keys hold no records; the browser suites for both screens.
 - **Required tests:** A two-requests-at-once test on whichever store is kept; the audit shows one stock list.
 - **Assigned phase:** Phase 2: architecture and code quality (after the decision)
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them.
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them. Phase 3 audited the two stores and did not migrate them. The QA database holds only fixture rows in them; what the live stores hold cannot be seen from here, and moving records nobody has inspected into the order and stock tables would be changing business data on a guess.
 - **First recorded in:** Phase 1 discovery
 
 ### B-010 · P2 · VERIFIED FIXED
@@ -353,6 +363,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The existing "bounded lists" sweep check extended to these routes.
 - **Required tests:** The existing "bounded lists" sweep check extended to these routes.
 - **Assigned phase:** Performance phase
+- **Status note:** Phase 3 measured the branch list screens on the 85-branch copy: every one answered in under 160 ms at the 95th percentile for a branch login and under 270 ms for an all-branch login (qa/results/phase3-branch-bench-before.json). The unlimited lists were not changed in this phase.
 - **First recorded in:** Phase 1 discovery
 
 ### B-013 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -693,7 +704,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The branch comes from the job's work center, else the order, else the planner's home branch; the move is recorded in the same transaction.
 - **Required tests:** Plan a job and read its dispatch job and history from the database.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Existing rows in the live database that hold "FWA" or other text are a data clean-up for Phase 3 (see the handoff).
+- **Status note:** Existing rows in the live database that hold "FWA" or other text are a data clean-up for Phase 3 (see the handoff). Phase 3: DispatchJob.locationId now has a foreign key to Location and the default text "FWA" is removed (migration 20261113210000_reference_integrity). The key is validated only if every live row names a real branch; otherwise the SQL Editor file prints a notice and the key holds for new rows. Any live rows holding "FWA" are a clean-up the owner approves (phase-03-migration-review.md, section 4).
 - **Verification evidence:** qa/sim/phase2-integrity.mjs: "the plan belongs to the branch of the job's work center" and "planning moves the job to SCHEDULED and the history says so".
 - **First recorded in:** Phase 2 architecture review
 
@@ -733,7 +744,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase2-integrity.mjs: four race checks of 8 rounds each, plus the cancelled-job and repeated-completion checks. All fail on the code before the fix.
 - **First recorded in:** Phase 2 architecture review
 
-### C-006 · P2 · DEFERRED TO SPECIFIC PHASE
+### C-006 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Orders
@@ -747,14 +758,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A duplicate order on a slow connection, found later by a person.
 - **Affected dependencies:** A new table for request keys.
 - **Recommended correction:** An Idempotency-Key header on order creation, stored with a unique rule per user, answering a repeat with the first reply.
-- **Deferred: reason:** It needs a new table with a unique rule, and every database change is made in Phase 3 and applied by the owner.
-- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Deferred: required correction:** Table RequestKey (userId, key, route, reply, createdAt) with a unique rule on (userId, key); a small middleware on the three routes; the screens send a key per form.
-- **Deferred: dependencies:** None besides the migration.
-- **Deferred: acceptance criteria:** The same key twice creates one order and returns the same answer both times.
-- **Deferred: verification:** A check in qa/sim/phase2-integrity.mjs for each of the three routes, in sequence and simultaneous.
 - **Required tests:** The same key twice, in sequence and at once: one order, the same answer.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 3: a RequestKey table with a unique rule on (user and route, key); middleware on every changing route that honours an Idempotency-Key header; the screens send a key for every request that creates a document (src/frontend/src/api/requestKey.js). A repeat gets the first answer back; the same key with a different body is refused (422); a refused request is not remembered.
+- **Verification evidence:** qa/sim/phase3-db.mjs: the same order sent three times at once with one key saves one order and the retry is marked as a replay; different body 422; another user's same key is separate; a stale claim is taken over after a minute. test/requestKeys.test.js (3 tests). Order creation only was exercised through the API; the web checkout and order intake use the same middleware and were not separately run (NOT VERIFIED for those two routes).
 - **First recorded in:** Phase 2 architecture review
 
 ### C-007 · P2 · VERIFIED FIXED
@@ -807,17 +814,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A branch login can still read another branch's quotes and the records listed. Stock, orders, invoices, shipments, jobs and work orders are held.
 - **Affected dependencies:** Branch columns on Quote, RFQ, Package, DropTag, Document; a home branch on every staff login in the live database.
 - **Recommended correction:** Add the columns (Phase 3), add the models to BRANCH_OWNED, extend qa/sim/branch-boundary.mjs with one refusal per model.
-- **Deferred: reason:** The missing piece is database columns and a backfill, which Phase 3 owns and the owner applies. None of the uncovered records carries stock or money.
-- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability for the columns and the home-branch backfill; Phase 10: security and infrastructure for the enforcement and its tests
-- **Deferred: required correction:** As above.
-- **Deferred: dependencies:** The SQL Editor file 20261113190000_order_branch.sql applied first.
-- **Deferred: acceptance criteria:** Every table with a branch is in BRANCH_OWNED; every staff login has a home branch; branch-boundary.mjs has a refusal for each.
-- **Deferred: verification:** qa/sim/branch-boundary.mjs extended; a database check that counts staff logins with no home branch.
+- **Deferred: reason:** The remaining records are either JSON stores that must first become real tables (B-009) or depend on the owner assigning home branches in the live database.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** Enforce the boundary on the second stock list once it reads the real tables; add API tests for drop tags and packages; require a branch on every order.
+- **Deferred: dependencies:** B-009, G-018, the owner's backfill.
+- **Deferred: acceptance criteria:** A branch login cannot read any record of another branch through any route.
+- **Deferred: verification:** qa/sim/branch-boundary.mjs extended to each record type.
 - **Required tests:** One read and one change refused per added model.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 3: quotes, requests for quotation and their lines now carry a branch and are held to it (G-012, verified). Drop tags are held through their order and packages through their order or the branch they stand at (unit-tested in test/branchScope.test.js; not exercised through the API: FIXED, NOT VERIFIED end to end). Documents are shared by design: a mill certificate follows the material from branch to branch. What remains: the second stock list and order hub (B-009), a home branch on every live staff login, and making Order.locationId required (G-018).
 - **First recorded in:** Phase 2 architecture review
 
-### C-010 · P2 · DEFERRED TO SPECIFIC PHASE
+### C-010 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter quick sale
@@ -831,14 +839,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Rare (it needs a failure between two calls), and visible: the sale shows as void with money still taken.
 - **Affected dependencies:** F-series billing functions.
 - **Recommended correction:** Let creditInvoice and recordRefund accept an open transaction, and run the whole void in one.
-- **Deferred: reason:** The correction changes the two billing functions every credit and refund uses. Phase 3 is the transactional-correctness phase and will run the full money reconciliation around that change.
-- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Deferred: required correction:** As above.
-- **Deferred: dependencies:** None.
-- **Deferred: acceptance criteria:** A forced failure at each step of a void leaves no partial record.
-- **Deferred: verification:** A unit test with a failing step, and the simulation's reconciliation.
 - **Required tests:** A failure forced after the claim leaves the sale exactly as it was.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 3: creditInvoice accepts steps that run inside its own transaction. A void now claims the sale, returns the shelf stock, writes the credit memo and records the refund in one transaction.
+- **Verification evidence:** qa/sim/phase3-db.mjs: a credit whose last step is forced to fail leaves no memo, no refund, no history line, and undoes the step before it; a sale voided twice at once is voided once, with one credit memo, one stock return and money netting to zero.
 - **First recorded in:** Phase 2 architecture review
 
 ### C-011 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -855,14 +859,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Shelf stock is still uncounted in practice until this is built.
 - **Affected dependencies:** I-016 (count and adjustment). The owner: may an item with no shelf stock on file be sold? Today it may, with the note.
 - **Recommended correction:** A receipt by the piece for products priced EACH, with no heat or grade.
-- **Deferred: reason:** It is a new receiving function with its own screen, and Coil.heatId and gradeId would have to allow empty values, which is a database change.
-- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability for the two columns; The phase the owner issues for inventory (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12 for the function and screen
-- **Deferred: required correction:** As above.
-- **Deferred: dependencies:** I-016.
-- **Deferred: acceptance criteria:** A shelf item received by the piece is reduced by a counter sale and restored by a void, through the screens.
-- **Deferred: verification:** The counter checks in qa/sim/phase2-integrity.mjs run without a database fixture.
+- **Deferred: reason:** The columns can only be relaxed together with the receiving function that needs it, and the rule for which products are counted by the piece is not decided.
+- **Deferred: target phase:** The phase the owner issues for inventory and purchasing (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** A receipt by the piece for products priced EACH, with heat and grade optional for those products only (a database check ties the exemption to the unit).
+- **Deferred: dependencies:** I-016; the owner's list of piece goods.
+- **Deferred: acceptance criteria:** A shelf item is received by the piece, sold at the counter and reconciles.
+- **Deferred: verification:** Database scenarios: receive 10, sell 3, void 1, count 8.
 - **Required tests:** Receive 10, sell 3, void 1 sale, count 7 then 10.
 - **Assigned phase:** Inventory and purchasing
+- **Status note:** Phase 3 did not change Coil.heatId or gradeId. Making them optional changes what every stock screen and trace report may assume, and the rule for piece goods is the owner's. No database change was made on a guess.
 - **First recorded in:** Phase 2 architecture review
 
 ### C-012 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -1459,7 +1464,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Migration `20261113062621`. Order detail 20 ms to 9 ms; jobs for an order 12 ms to 6 ms
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-004 · P1 · DEFERRED TO SPECIFIC PHASE
+### E-004 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -1471,15 +1476,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A bug or a manual edit could leave negative stock
 - **Affected dependencies:** Owner applies the SQL file
 - **Recommended correction:** Fixed in Workstream 3
-- **Deferred: reason:** Database constraints are Phase 3 work and every database change is applied by the owner from a SQL Editor file.
-- **Deferred: target phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Deferred: required correction:** Add the remaining value checks listed in database-inventory.md.
-- **Deferred: dependencies:** The four SQL Editor files already waiting.
-- **Deferred: acceptance criteria:** Every money, quantity and status column the code relies on has a database rule.
-- **Deferred: verification:** Each constraint proven by an insert that it refuses; the migration run twice on a copy.
 - **Required tests:** The database refuses a row where on hand differs from available + reserved + on hold; three cycles pass with the rule on
-- **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Fixed in part
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Fixed in part Phase 3: 15 value checks added to the 9 that existed (24 in all): prices, quantities and weights cannot be negative; a discount is 0 to 100; an order total and an invoice total equal subtotal plus tax plus freight; a payment and a stock movement cannot be zero; a reservation is more than zero. Each is added only if no existing row breaks it.
+- **Verification evidence:** qa/sim/phase3-db.mjs, two scenarios that write directly to the database: 13 bad writes, each refused by a check or a key. SQL Editor file run twice on the scale copy (72,240 orders, 37,625 invoices): every check validated; second run changed nothing.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-005 · P2 · VERIFIED FIXED
@@ -1996,6 +1996,416 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Shipping and financial operations
 - **Status note:** Open (see E-016)
 - **First recorded in:** qa/engineering-quality-findings.md
+
+### G-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Database
+- **Workflow:** Every amount, weight and price
+- **Category:** Data integrity: inexact numbers
+- **Source file or endpoint:** src/backend/src/lib/db.js (every write); columns of type numeric
+- **Evidence:** Query over every numeric column of the QA database after one simulation: 12 columns held values with digits nobody entered, for example Invoice.taxAmount 9.380000000000001 and OrderLine.extendedPrice 162.49999999999997. Eight of 62 invoices were affected.
+- **Expected:** An amount is stored as entered, to the cent.
+- **Actual:** A number passed from JavaScript to a decimal column was written with every binary digit of its floating-point form. Sums of such values drift by fractions of a cent, and two amounts that print the same can compare as different.
+- **Root cause or suspected cause:** The database client serialises a JavaScript number in full; the columns have no fixed scale (numeric with 30 places).
+- **Operational impact:** Invoice, payment and tax totals that do not add up exactly; reconciliation reports that flag false differences or hide real ones.
+- **Recommended correction:** lib/moneyColumns.js: every number bound for a decimal column is sent as an exact decimal string; amounts of money are rounded to the cent first. Applied in the database client, so every route is covered.
+- **Required tests:** A database check for residue in every numeric column; scenarios that store fractional weights, four-place prices and split tax.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Existing rows in the live database keep the digits they were saved with. They are not changed by this fix; a repair of historical rows needs the owner's approval (see phase-03-financial-reconciliation.md, section 5).
+- **Verification evidence:** test/moneyColumns.test.js (6 tests). qa/tools/db-facts.mjs check "amounts kept with digits beyond what was entered": 12 columns before, 0 after three simulation seeds and the Phase 3 scenarios. qa/sim/phase3-db.mjs: fractional weight 1234.5678 and price 0.8125 stored exactly; tax split across two invoices adds to the cent.
+- **First recorded in:** Phase 3 database audit
+
+### G-002 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Database
+- **Workflow:** Invoices, credit memos, returns, jobs, work orders, quotes, shipments, dispatch
+- **Category:** Data integrity: missing foreign keys
+- **Source file or endpoint:** prisma/schema.prisma; migration 20261113210000_reference_integrity
+- **Evidence:** qa/tools/db-schema.mjs against the catalogues: 232 columns named like a reference had no foreign key. Fifteen of them tie money, stock or work to its source: Invoice.shipmentId, Invoice.creditOfInvoiceId, InvoiceLine.orderLineId, Job.orderLineId, Job.workOrderId, Order.returnOfOrderId, OrderLine.returnOfLineId, Quote.createdById, QuoteLine.productId, WorkOrder.salesOrderId, WorkOrder.lineId, DispatchJob.orderId, DispatchJob.locationId, DispatchOperation.assignedWorkCenterId, Shipment.carrierId.
+- **Expected:** An invoice cannot name a shipment that does not exist, and a shipment that has been invoiced cannot be deleted.
+- **Actual:** Nothing in the database stopped either. DispatchJob.locationId also carried the default text "FWA", which is no branch (C-003).
+- **Root cause or suspected cause:** The columns were added as plain text ids.
+- **Operational impact:** Orphaned financial and production records after any delete or bad write.
+- **Recommended correction:** Fifteen foreign keys, each added without locking the table and validated only when no existing row breaks it; eight indexes for the new keys; the "FWA" default removed.
+- **Required tests:** Each key proven by a refused write; the migration run twice on a populated copy.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Takes effect in the live database when the owner applies database update 6. If live rows break a key, the file says so in a notice and leaves that key in force for new rows only.
+- **Verification evidence:** qa/sim/phase3-db.mjs "the database refuses money that does not add up": an invoice pointed at a missing shipment, an invoice line at a missing order line, and the delete of an invoiced shipment are each refused. SQL Editor file run twice on the 85-branch copy (72,240 orders): all 15 keys validated, second run changed nothing. Catalogue count 171 foreign keys before, 188 after (with the two branch keys of G-012).
+- **First recorded in:** Phase 3 database audit
+
+### G-003 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Database
+- **Category:** Data integrity: missing foreign keys
+- **Source file or endpoint:** qa/results/db-schema.json (unconstrained)
+- **Evidence:** After G-002: 217 reference-like columns still have no foreign key; for 79 the target table is evident. Ten hold values that match no row in the QA database, all in sample modules or JSON-backed stores (ExceptionEvent, IntakeJob, IntakeOrder, InventoryUnit, RfidScanEvent, PrintQueueJob, DispatchTimeLog). Seventeen tables have a locationId with no key to Location. Job.operatorId has two possible targets (User or Operator) and the code uses both readings.
+- **Expected:** Every reference is enforced or is documented as free text.
+- **Actual:** Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017).
+- **Root cause or suspected cause:** Schema written ahead of the code.
+- **Operational impact:** None on stock or money today. Each becomes a risk when its module is built.
+- **Affected dependencies:** X-009 and decision 4 (build everything): each module phase decides its tables.
+- **Recommended correction:** Add the key when the module is built or the table is retired; decide the target of Job.operatorId.
+- **Deferred: reason:** Adding keys to tables no code writes cannot be tested, and the instruction forbids adding constraints blindly. The 15 that guard money, stock and work were added in this phase.
+- **Deferred: target phase:** The phase the owner issues for each module (inventory, manufacturing, logistics, safety) (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** As above, table by table, with the module that owns it.
+- **Deferred: dependencies:** X-009, B-017.
+- **Deferred: acceptance criteria:** No reference column with a known target lacks a key; no orphan rows.
+- **Deferred: verification:** qa/tools/db-schema.mjs in the gates; the count is recorded in each phase report.
+- **Required tests:** db-schema.mjs count of unconstrained references with a known target falls to 0.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
+
+### G-004 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Orders
+- **Workflow:** Reserving stock for an order line
+- **Category:** Data integrity: simultaneous requests
+- **Source file or endpoint:** src/backend/src/routes/orders.js (POST /:id/allocate)
+- **Evidence:** qa/sim/phase3-db.mjs on the code before the fix (qa/results/phase3-db-before-fixes.json): one order line needing 1000 lb, reserved 700 lb from each of two items at the same moment, ended with 1400 lb reserved in 6 of 6 rounds. An order cancelled at the same moment as a reservation kept the reservation in 6 of 6 rounds: stock held for a cancelled order, for ever.
+- **Expected:** A line is never reserved beyond what it still needs, and a cancelled order holds no stock.
+- **Actual:** The open quantity and the order status were read before the transaction and not checked again inside it.
+- **Root cause or suspected cause:** Read, decide, write with the decision made outside the transaction.
+- **Operational impact:** Stock tied up that nobody can see a reason for; available stock understated; in the cancelled case nothing ever releases it.
+- **Recommended correction:** The reservation locks the order row first, then reads the status and the line's open quantity inside the transaction. A cancellation waits for it and releases what it saved.
+- **Required tests:** Both races, six rounds each; eight reservations at once on one item.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Verification evidence:** qa/sim/phase3-db.mjs: both race scenarios pass 6 of 6 after the fix and failed 6 of 6 before; db-facts checks "order line reserved more than is left to ship" and "reservations left on cancelled or completed orders" return 0.
+- **First recorded in:** Phase 3 database audit
+
+### G-005 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Database
+- **Category:** Performance: redundant indexes
+- **Source file or endpoint:** migration 20261113210000_reference_integrity
+- **Evidence:** Catalogue read: 10 indexes were exact duplicates of another index on the same columns (578 indexes in all).
+- **Expected:** One index per need.
+- **Actual:** Every write to those tables maintained the same index twice.
+- **Root cause or suspected cause:** A unique rule and a plain index declared on the same column.
+- **Operational impact:** Slower writes and wasted space; no effect on correctness.
+- **Recommended correction:** The ten duplicates are dropped. Four more are prefixes of a unique index and were left, because dropping them is not measured to help.
+- **Required tests:** db-schema.mjs reports 0 duplicate indexes; the sweep check "every foreign key has an index" still passes.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Verification evidence:** qa/results/db-schema.json: duplicateIndexes 10 before, 0 after. Sweep "Platform safeguards": 33 checks pass.
+- **First recorded in:** Phase 3 database audit
+
+### G-006 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-13
+- **Module:** Stock items
+- **Workflow:** Remnants
+- **Category:** Inventory accounting
+- **Source file or endpoint:** src/backend/src/lib/receiving.js (parentTag)
+- **Evidence:** qa/sim/phase3-db.mjs: a 51.25 lb remnant entered against a 6000 lb parent leaves the parent at 6000 lb. The remnant inherits heat, grade and owner and is linked both ways.
+- **Expected:** Material is conserved: what a remnant weighs comes out of its parent, or the system says the parent weight is not maintained.
+- **Actual:** The company total rises by the remnant's weight.
+- **Root cause or suspected cause:** Processing moves no stock (M-016), so there is no step at which the parent is reduced.
+- **Operational impact:** Stock by weight is overstated by every remnant entered.
+- **Affected dependencies:** M-016.
+- **Recommended correction:** Decided together with M-016: what a completed work order consumes, produces and scraps.
+- **Required tests:** Parent plus children plus scrap equals the parent before, for every work order.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** The question for the owner is the one already asked under M-016: when a piece is cut, what happens to the weight of the piece it was cut from?
+- **First recorded in:** Phase 3 database audit
+
+### G-007 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Inventory
+- **Workflow:** Transfers between branches
+- **Category:** Missing function
+- **Source file or endpoint:** src/backend/src/routes/inventory.js (POST /transfer)
+- **Evidence:** qa/sim/phase3-db.mjs, nine transfer scenarios: a transfer is one immediate step that moves the whole item and writes one movement. There is no request, approval, pick, in-transit or receipt stage. The tables InventoryTransfer and InventoryAdjustment hold only the second stock list's JSON records (B-009).
+- **Expected:** Material in a truck is in transit: off the sender's shelf, not yet on the receiver's, with shortage and damage recorded at receipt.
+- **Actual:** The item is at the destination the moment the sender presses the button. What is on the road is counted as on the receiver's shelf.
+- **Root cause or suspected cause:** Never built.
+- **Operational impact:** A receiving branch can sell or reserve material that has not arrived. Loss or damage in transit has no record.
+- **Affected dependencies:** B-009 (the second stock list has transfer screens with no real data behind them); I-016.
+- **Recommended correction:** A transfer document with statuses (requested, shipped, received), an in-transit balance, and receipt by quantity with a variance.
+- **Deferred: reason:** It is a new function with screens, not a correction. Decision 4 says build everything; it belongs with the inventory module.
+- **Deferred: target phase:** The phase the owner issues for inventory and purchasing (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** B-009, I-016.
+- **Deferred: acceptance criteria:** Stock in transit is on neither shelf; sender plus in transit plus receiver is constant; a receipt cannot be entered twice.
+- **Deferred: verification:** Database scenarios for each stage, including two receipts at once.
+- **Required tests:** The eight transfer scenarios of Phase 3 plus partial receipt, shortage, damage, duplicate receipt and cancellation.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
+
+### G-008 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-13
+- **Module:** Work orders
+- **Workflow:** Raising a work order
+- **Category:** Inventory accounting
+- **Source file or endpoint:** src/backend/src/routes/workOrders.js (POST /)
+- **Evidence:** qa/sim/phase3-db.mjs: two work orders raised on one 4000 lb item, at once or one after the other, are both accepted, each with 4000 lb as its input.
+- **Expected:** The same material is not planned for consumption twice, or the rule says it may be.
+- **Actual:** A work order does not claim its source item.
+- **Root cause or suspected cause:** Processing moves no stock (M-016).
+- **Operational impact:** Two jobs can be planned against the same steel.
+- **Affected dependencies:** M-016.
+- **Recommended correction:** Decided with M-016.
+- **Required tests:** Per the rule.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Question for the owner: may one stock item feed more than one open work order at a time?
+- **First recorded in:** Phase 3 database audit
+
+### G-009 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Counter quick sale
+- **Workflow:** Voiding a sale
+- **Category:** Data model
+- **Source file or endpoint:** src/backend/src/routes/quickSale.js
+- **Evidence:** Code read: a voided sale is known by the word VOIDED in the order's notes; the void is claimed by matching that text.
+- **Expected:** A status or column that reports can filter on.
+- **Actual:** Free text. The order stays COMPLETE.
+- **Root cause or suspected cause:** No status for it.
+- **Operational impact:** Any report by order status counts a voided sale as a sale. The money side is right (credit memo and refund).
+- **Recommended correction:** A voidedAt column, or a status.
+- **Deferred: reason:** It changes what order statuses mean to every report and screen that reads them, which is a sales-module decision; the void itself is now all-or-nothing (C-010).
+- **Deferred: target phase:** The phase the owner issues for sales and customer operations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** No code reads the notes to learn that a sale is void.
+- **Deferred: verification:** A database scenario that voids and then reads the status.
+- **Required tests:** A report by status excludes voided sales.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
+
+### G-010 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Orders
+- **Workflow:** Order status and reservations
+- **Category:** Audit trail
+- **Source file or endpoint:** src/backend/src/routes/orders.js (PUT /:id, POST /:id/allocate)
+- **Evidence:** AuditLog of the QA database after three simulation seeds: jobs, shipments, invoices, payments, credits, prices and work orders each leave a line with the person. Confirming or cancelling an order left none, and a reservation records no person anywhere (OrderLineAllocation has no user column).
+- **Expected:** Who confirmed, cancelled or reserved, and when.
+- **Actual:** Not recorded.
+- **Root cause or suspected cause:** Never added to these two routes.
+- **Operational impact:** A cancelled order or a reservation cannot be traced to a person.
+- **Recommended correction:** ORDER_STATUS_CHANGED and STOCK_RESERVED are written inside the same transaction as the change.
+- **Required tests:** A scenario reads the history after each.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Verification evidence:** qa/sim/phase3-db.mjs: the reservation scenario reads who reserved what; the cancellation scenario reads the confirmation and the cancellation; two status changes at once leave exactly one line.
+- **First recorded in:** Phase 3 database audit
+
+### G-011 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Platform
+- **Workflow:** Audit trail
+- **Category:** Audit trail: can be altered
+- **Source file or endpoint:** AuditLog table; src/backend/src/routes/quickSale.js:308; src/backend/src/routes/overrides.js:159
+- **Evidence:** Catalogue read: no trigger and no rule protects AuditLog; the application's database role may update and delete it. Two code paths do: a duplicate counter sale deletes the history lines of the copy it removes, and revoking an override updates its line. Changes to an order's fields other than status, edits to a stock item, and the release of reservations by a cancellation are not itemised.
+- **Expected:** History is append-only; critical field changes carry before and after values.
+- **Actual:** History can be rewritten by any code with database access.
+- **Root cause or suspected cause:** An ordinary table.
+- **Operational impact:** The audit trail is evidence only as long as nobody with access wants otherwise.
+- **Affected dependencies:** The owner's database roles on the host.
+- **Recommended correction:** Revoke update and delete on AuditLog from the application role, or add a trigger that refuses them; change the two code paths to add a line instead; add before and after values for order and stock item edits.
+- **Deferred: reason:** It needs a change to database roles on the host, which are the owner's, and it is the subject of the security phase.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** Host database roles.
+- **Deferred: acceptance criteria:** No statement issued by the application can change or remove an audit row.
+- **Deferred: verification:** A database scenario that tries both.
+- **Required tests:** An update and a delete of an audit row are refused by the database.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
+
+### G-012 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Quotes
+- **Workflow:** Quotes and requests for quotation
+- **Category:** Security: branch isolation
+- **Source file or endpoint:** Quote.locationId, RFQ.locationId; lib/branchScope.js
+- **Evidence:** C-009: a sales login at one branch could read every branch's quotes, because the tables had no branch.
+- **Expected:** A quote belongs to the branch of the person who wrote it.
+- **Actual:** No branch column.
+- **Root cause or suspected cause:** Schema.
+- **Operational impact:** Prices quoted by one branch visible to another.
+- **Recommended correction:** A branch column on both, filled from the writer's home branch (existing quotes) and set on creation; the boundary holds quotes, requests and their lines to it. One with no branch is seen by every branch.
+- **Required tests:** Read and list from another branch.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Takes effect in the live database when the owner applies database update 8.
+- **Verification evidence:** qa/sim/phase3-db.mjs: a quote written at one branch answers 404 to a sales login at another and is absent from its list; the order made from it carries the same branch. test/branchScope.test.js: 2 new tests. SQL Editor file run twice on the scale copy.
+- **First recorded in:** Phase 3 database audit
+
+### G-013 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Stock items, stock search, heat trace
+- **Workflow:** Lists at company scale
+- **Category:** Performance
+- **Source file or endpoint:** GET /api/coils?search=, GET /api/jobs (branch filter)
+- **Evidence:** Measured on the scale copy (100,233 stock items, 72,541 jobs, 85 branches; qa/results/phase3-plans.txt): the stock search reads every stock item (sequential scan, 140 ms); a branch's job count reads every job in the company (parallel sequential scan, 25 ms) because a job reaches its branch through its order, its work center or its creator.
+- **Expected:** The cost of a branch screen grows with the branch, not the company.
+- **Actual:** Both grow in step with the whole company's data. Both are far inside the half-second target today.
+- **Root cause or suspected cause:** A contains-search across three tables cannot use an ordinary index; Job has no branch column of its own.
+- **Operational impact:** None now. At ten times the volume the search would take over a second.
+- **Recommended correction:** A trigram index and a search limited to one column at a time; a branch column on Job, kept by the same code that sets its order and work center.
+- **Deferred: reason:** Both are measured at 4 to 20 times under the target. The instruction forbids adding indexes or structure without evidence of need.
+- **Deferred: target phase:** Phase 11: performance and full simulation cycles
+- **Deferred: required correction:** As above, if the measurement at ten times the volume shows the need.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** p95 under 500 ms for both at 1,000,000 stock items and jobs.
+- **Deferred: verification:** qa/perf/phase3-plans.sh and qa/perf/branch-bench.mjs on a larger copy.
+- **Required tests:** The same two measurements at one million rows.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
+
+### G-014 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Orders
+- **Workflow:** Lists
+- **Category:** Performance: reply size
+- **Source file or endpoint:** GET /api/orders
+- **Evidence:** qa/results/phase3-branch-bench-before.json: 50 orders are a 244 KB reply. qa/results/phase3-load.txt: one server process answers about 43 list requests a second on the scale copy; 400 at once all succeed, with a 95th-percentile wait of 9.3 s.
+- **Expected:** A list sends what the list shows.
+- **Actual:** Each order comes with its full lines and customer record.
+- **Root cause or suspected cause:** One include clause for list and detail.
+- **Operational impact:** Bandwidth and server time on the busiest screen; the limit on requests per second is the size of the replies, not the database (it peaked at 16 connections).
+- **Recommended correction:** A list shape with the columns the screen shows.
+- **Deferred: reason:** It changes the reply of an endpoint the screens depend on, which is the subject of the API contract phase.
+- **Deferred: target phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** E-021 (reply shapes).
+- **Deferred: acceptance criteria:** 50 orders in under 50 KB; no screen loses a field it shows.
+- **Deferred: verification:** qa/perf/branch-bench.mjs; the five browser suites.
+- **Required tests:** Reply size and requests per second before and after.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
+
+### G-015 · P2 · BLOCKED
+
+- **Discovered:** 2026-11-13
+- **Module:** Platform
+- **Workflow:** Database connections on the host
+- **Category:** Configuration not verifiable
+- **Source file or endpoint:** DATABASE_URL on the host (the owner's setting)
+- **Evidence:** The repository sets no pool size or timeout; the database client's default is used (16 connections observed under load on a 4-processor machine). On the host each serverless instance opens its own pool. Whether DATABASE_URL points at the provider's connection pooler, and with what limits, cannot be read from here.
+- **Expected:** A stated limit per instance and a pooler in front of the database, so that many instances cannot exhaust it.
+- **Actual:** Unknown.
+- **Root cause or suspected cause:** Host settings are the owner's.
+- **Operational impact:** If the direct address is used, a burst of traffic that starts many instances can use every connection the database allows.
+- **Affected dependencies:** The owner.
+- **Recommended correction:** Confirm that DATABASE_URL is the pooler address (port 6543 on Supabase, with pgbouncer=true and a connection_limit) and DIRECT_URL the direct one.
+- **Required tests:** A load test against a staging copy.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Blocked on the owner reading two host settings. Nothing was changed.
+- **First recorded in:** Phase 3 database audit
+
+### G-016 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-13
+- **Module:** Database
+- **Workflow:** Retention
+- **Category:** Capacity
+- **Source file or endpoint:** AuditLog, MaterialMovement, RequestKey, time logs
+- **Evidence:** No retention or archive rule exists for any table. RequestKey rows are removed after 24 hours by the middleware itself. Sizes on the scale copy: the whole database is 325 MB at 72,240 orders.
+- **Expected:** A rule for how long history is kept and where it goes.
+- **Actual:** Everything is kept for ever in the working tables.
+- **Root cause or suspected cause:** Not decided.
+- **Operational impact:** None for years at the measured growth; a decision, not a defect.
+- **Recommended correction:** The owner sets the periods; archive tables or partitions follow only if the volume needs them.
+- **Required tests:** None until the rule exists.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Question for the owner: how many years of audit history and stock movements must stay online?
+- **First recorded in:** Phase 3 database audit
+
+### G-017 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Database
+- **Workflow:** Numbering of orders, shipments, invoices and other documents
+- **Category:** Reliability: simultaneous requests
+- **Source file or endpoint:** src/backend/src/lib/numbering.js (used by 15 route and service files)
+- **Evidence:** qa/sim/phase3-db.mjs on the code before the fix: 80 orders entered at the same moment, 72 saved and 8 answered "Failed to create order" (server log: "Could not assign a unique number"). Unit test on the same code: a series that has had rows deleted, so that its row count is more than 25 below its highest number, can never issue another number.
+- **Expected:** Eighty branches can save at once, and a series keeps working after rows are deleted.
+- **Actual:** The next number was the row count plus one, tried 25 times in step with every other request.
+- **Root cause or suspected cause:** Every simultaneous request started from the same count and walked forward together.
+- **Operational impact:** Lost orders at a busy moment; and a document type that stops working for good once enough rows have been deleted (a duplicate counter sale deletes its order).
+- **Recommended correction:** After two collisions the search waits a random moment, counts again and steps ahead by a random distance that doubles. A series may skip numbers; the unique rule in the database guarantees none repeats.
+- **Required tests:** 80 at once; a series whose count lags its highest number by 300.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Document numbers can have gaps. If the owner needs invoice numbers with no gaps, that is a different mechanism (a counter row locked per series) and a decision.
+- **Verification evidence:** test/numbering.test.js: 2 new tests, both fail on the code before. qa/sim/phase3-db.mjs "eighty orders entered at the same moment": 80 saved with 80 numbers.
+- **First recorded in:** Phase 3 database audit
+
+### G-018 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Database
+- **Workflow:** Orders
+- **Category:** Data integrity: optional branch
+- **Source file or endpoint:** Order.locationId, User.homeLocationId
+- **Evidence:** db-facts on the QA database: orders with no branch 59 (the demo seed) rising to 62 after the scenarios, because an order entered by a login with no home branch gets none; 2 staff logins have no home branch.
+- **Expected:** Every order has a branch.
+- **Actual:** The column is optional, so that existing rows and all-branch logins keep working.
+- **Root cause or suspected cause:** The column was added in Phase 2 to a table with rows.
+- **Operational impact:** An order with no branch is seen only by all-branch roles.
+- **Affected dependencies:** The owner gives every staff login a home branch and assigns the orders that have none.
+- **Recommended correction:** After the backfill: make Order.locationId required, and refuse an order from a login with no branch unless it names one.
+- **Deferred: reason:** Making the column required before the live rows are assigned would fail the migration or lose orders from view.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** The owner's backfill in the live database.
+- **Deferred: acceptance criteria:** No order without a branch; the column is NOT NULL.
+- **Deferred: verification:** db-facts in the gates; the migration run twice on a copy.
+- **Required tests:** db-facts "orders with no branch" is 0; a database scenario for the refusal.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
+
+### G-019 · P1 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-13
+- **Module:** Shipments
+- **Workflow:** Dispatch
+- **Category:** Traceability and inventory accounting
+- **Source file or endpoint:** src/backend/src/routes/shipments.js (consumeReserved: "Stock with no reservation is left alone")
+- **Evidence:** qa/sim/phase3-db.mjs: a shipment of 300 lb for an order line with nothing reserved is dispatched and invoiced; no stock movement is written, no stock item is named and no balance goes down. ShipmentItem has no column for the stock item; the only link from a shipment to an item, and so to its heat, is the movement written when reserved stock is consumed.
+- **Expected:** Every pound that leaves is taken from a named stock item, so the heat can be traced to the customer and the shelf balance is right; or the shipment is marked as material that was never in stock (a direct shipment from the mill).
+- **Actual:** Shipping reserved stock is fully recorded. Shipping without a reservation is accepted and records nothing about the material.
+- **Root cause or suspected cause:** Dispatch consumes reservations and does nothing when there are none.
+- **Operational impact:** For such a shipment a mill certificate cannot be matched to the customer from the records, and the stock on the books stays too high.
+- **Affected dependencies:** I-016 (no stock adjustment), M-016.
+- **Recommended correction:** The engineer's recommendation: refuse to dispatch a line that is not fully reserved, unless the order line is marked as shipped direct from a supplier.
+- **Required tests:** Dispatch with a part reservation is refused; a direct shipment is accepted and marked; the database check for uncovered shipment items returns 0.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Question for the owner: may an order ship when no stock has been reserved for it? If yes, in which cases (direct from the mill, buy-outs), and how should the heat be recorded?
+- **First recorded in:** Phase 3 database audit
+
+### G-020 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Orders
+- **Workflow:** Two people editing one record
+- **Category:** Reliability: lost update
+- **Source file or endpoint:** PUT /api/orders/:id and the other edit routes
+- **Evidence:** Code read and qa/sim/phase3-db.mjs: a change of status is conditional on the status the editor saw, so of two simultaneous status changes one wins and the other is told (409). A change to other fields (dates, notes, ship-to) carries no version: two people saving different edits both succeed and the later one silently replaces the earlier where they touch the same field.
+- **Expected:** The second editor is told the record changed.
+- **Actual:** Status is protected; other fields are last write wins.
+- **Root cause or suspected cause:** No version or updated-at check on edits.
+- **Operational impact:** An edit can be lost without notice. No quantity or amount is at risk: totals are recomputed and checked by the database.
+- **Recommended correction:** Send the record's updatedAt with an edit and refuse the edit if it has changed (409).
+- **Deferred: reason:** It changes the request contract of every edit route and the screens that call them, which is the subject of the API contract phase.
+- **Deferred: target phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Deferred: required correction:** As above.
+- **Deferred: dependencies:** E-021.
+- **Deferred: acceptance criteria:** No edit route accepts a change based on a stale copy.
+- **Deferred: verification:** A database scenario per record type.
+- **Required tests:** Two edits at once: one 200, one 409.
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **First recorded in:** Phase 3 database audit
 
 ### I-001 · P0 · VERIFIED FIXED
 

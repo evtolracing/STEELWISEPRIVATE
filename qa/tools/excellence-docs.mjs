@@ -124,6 +124,7 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
 // ── database-inventory.md ───────────────────────────────────────────────────────────────────
 {
   const ms = d.schema.models; const use = d.backend.modelUse;
+  const cat = json('qa/results/db-schema.json', null);
   const used = (m) => use[m.name].read.length + use[m.name].write.length > 0 || use[m.name].nested;
   const noCode = ms.filter((m) => !used(m));
   const L = ['# Database inventory', '', made('qa/tools/excellence-docs.mjs'), '',
@@ -131,6 +132,11 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '## Totals', '', '| Item | Count |', '|---|---:|', `| Tables | ${ms.length} |`, `| Tables no server code reads or writes | ${noCode.length} |`, ...(db ? [`| Tables empty after a full test run | ${db.emptyTables.length} of ${db.tables} |`, `| Rows in the QA database | ${db.totalRows.toLocaleString('en-US')} |`, `| Indexes | ${db.indexes} |`, `| Foreign keys | ${db.constraintCounts['foreign key']} |`, `| Foreign keys with no index | ${db.fkNoIndex.length} |`, `| Value rules the database enforces (CHECK) | ${db.constraintCounts.check || 0} |`, `| Views | ${db.views.length} |`, `| Triggers | ${db.triggers.length} |`, `| Columns holding free-form JSON | ${db.jsonCols.length} |`] : []),
     `| Tables with a branch or location column | ${ms.filter((m) => m.scope.location).length} |`, `| Tables with an organization or tenant column | ${ms.filter((m) => m.scope.organization).length} |`, `| Tables with a status column backed by an enumeration | ${ms.filter((m) => m.status).length} |`, `| Tables with no updatedAt | ${ms.filter((m) => !m.audit.updatedAt).length} |`,
     `| Foreign keys that delete children with the parent (cascade) | ${ms.reduce((s, m) => s + m.fk.filter((f) => f.onDelete === 'Cascade').length, 0)} |`, `| Money or quantity columns stored as floating point | ${ms.reduce((s, m) => s + m.floats.length, 0)} (${ms.filter((m) => m.floats.length).map((m) => m.name).join(', ')}) |`, '',
+    ...(cat ? ['## Read from the database catalogues (Phase 3)', '', `\`qa/tools/db-schema.mjs\` reads PostgreSQL's own catalogues on the QA database (${cat.identity.db}, PostgreSQL ${cat.identity.version.split(' ')[0]}, isolation ${cat.identity.isolation}). The schema file says what was intended; this says what exists.`, '',
+      '| Item | Count |', '|---|---:|', `| Tables | ${cat.counts.tables} |`, `| Columns | ${cat.counts.columns} |`, `| Primary keys | ${cat.counts.primaryKeys} |`, `| Foreign keys | ${cat.counts.foreignKeys} (cascade ${cat.audit.foreignKeyDeleteRules.cascade}, restrict ${cat.audit.foreignKeyDeleteRules.restrict}, set null ${cat.audit.foreignKeyDeleteRules['set null']}) |`, `| Foreign keys not validated | ${cat.audit.foreignKeysNotValidated.length} |`,
+      `| Unique indexes | ${cat.counts.uniqueIndexes} |`, `| Value checks | ${cat.counts.checks} |`, `| Indexes | ${cat.counts.indexes} |`, `| Exact duplicate indexes | ${cat.audit.duplicateIndexes.length ?? cat.audit.duplicateIndexes} |`, `| Views, materialized views, triggers, functions, partitioned tables | ${cat.counts.views}, ${cat.counts.materializedViews}, ${cat.counts.triggers}, ${cat.counts.functions}, ${cat.counts.partitionedTables} |`,
+      `| Row-level security policies in the QA database | ${cat.counts.policies} (the SQL Editor files add one per table on the host; see phase-03-schema-audit.md) |`, `| Sequences | ${cat.counts.sequences} |`, `| Enumerations | ${cat.counts.enums} |`, `| Migrations applied, failed | ${cat.counts.migrationsApplied}, ${cat.counts.migrationsFailed} |`,
+      `| Columns named like a reference with no foreign key | ${cat.audit.referenceColumnsWithNoForeignKey} (target evident for ${cat.audit.ofWhichTargetKnown}; G-003) |`, `| Floating-point columns | ${cat.audit.floatingPointColumns.length} (${cat.audit.floatingPointColumns.join(', ')}) |`, `| Deletes that cascade into money or stock rows | ${cat.audit.cascadesIntoMoneyOrStock.join('; ')} |`, ''] : []),
     '## Rules the database itself enforces', '', ...(db ? ['| Table | Rule |', '|---|---|', ...db.checkConstraints.map((c) => `| ${c.table} | \`${esc(c.def)}\` |`)] : ['Not read.']), '',
     'Everything else (status moves, totals, who may change what) is enforced in server code only.', '',
     '## Read-only consistency checks on the QA database', '', 'Run by `qa/tools/db-facts.mjs`. Each number is how many rows break the rule. The demo seed writes rows directly and is known to break some (D-023, B-022); the "outside the demo seed" rows are the ones that matter.', '',
@@ -162,9 +168,14 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '2. The Job table: read or written by jobs, dispatch, operations, quality, material tracking, shipping, order entry, cockpit, planning, print queue and the partner API. Its moves are governed by `lib/workflowRules.js` and recorded by `lib/jobHistory.js`. Since Phase 2, planning and operations record their moves in the same transaction, completing an operation locks the job, and a status move applies only if the job is still where it was checked (C-005; `qa/sim/phase2-integrity.mjs`). Still outside: the general edit route writes a status unconditionally, and three job routes carry their own status checks (M-017).',
     '3. Order, OrderLine, Coil, Inventory, Shipment, Invoice: the order-to-cash chain. Covered in depth by the simulation and its reconciliation.',
     '4. `services/billing.js`: every money action. Covered by unit tests, the simulation and the sweep.',
-    '5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner; to be connected or retired in Phase 3.',
+    '5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner (decision 1). Audited in Phase 3 and not migrated: the live contents must be exported and read first.',
     '6. Shelf stock: the counter quick sale now writes stock levels and movements (B-025), joining receiving, transfer, hold, allocation, dispatch and return receipt as the only writers of stock.',
-    '7. `routes/shipments.js` holds dispatch and delivery as private functions; the carrier partner routes re-implemented them and are wrong (C-002).', ''];
+    '7. `routes/shipments.js` holds dispatch and delivery as private functions; the carrier partner routes re-implemented them and are wrong (C-002).',
+    '8. `lib/numbering.js`: every numbered document (orders, shipments, invoices, credit memos, jobs, work orders, quotes, requests, returns) is created through it. Phase 3 found it failed under 80 simultaneous saves and after deleted rows (G-017, fixed). Covered by 9 unit tests and the 80-at-once scenario.',
+    '9. `lib/moneyColumns.js` (new in Phase 3): every write to a decimal column passes through it inside the database client, after the branch boundary. A mistake here corrupts amounts everywhere. Covered by 6 unit tests, the residue check in `db-facts` and the exact-cent scenarios.',
+    '10. `middleware/requestKeys.js` (new in Phase 3): sits in front of every changing route. It acts only when a request carries an Idempotency-Key. Covered by 3 unit tests and three database scenarios.',
+    '11. The order row lock: a reservation, a cancellation and (through conditional updates) a status move now queue on the Order row. Any new code that changes reservations must take the same lock first, or the race of G-004 returns.',
+    '12. Foreign keys added in Phase 3 with RESTRICT: an invoiced shipment, a credited invoice, a returned order and an invoiced order line can no longer be deleted. Seed and clean-up scripts must delete children first.', ''];
   write('module-dependency-map.md', L);
 }
 
@@ -320,13 +331,13 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
   const w = eps.filter((e) => e.method !== 'GET');
   const progress = {
     programVersion: '1.0', program: 'Enterprise Excellence Program', currentPhase: state.currentPhase || 1, phaseStatus: state.phaseStatus || 'IN PROGRESS', updated: new Date().toISOString(),
-    repository: { branch: git('rev-parse --abbrev-ref HEAD'), commit: git('rev-parse HEAD'), baselineCommit: state.baselineCommit || null, pullRequest: 30, merged: false },
+    repository: { branch: git('rev-parse --abbrev-ref HEAD'), commit: git('rev-parse HEAD'), baselineCommit: state.baselineCommit || null, pullRequest: state.pullRequest ?? null, merged: false, previousPullRequests: state.previousPullRequests || [] },
     modulesDiscovered: mods.length, modulesAudited: mods.filter((m) => !/Not examined/.test(m.basis)).length, modulesByClassification: mods.reduce((a, m) => { a[m.status] = (a[m.status] || 0) + 1; return a; }, {}),
     discovered: { apiRoutes: eps.length, apiRoutesThatChangeData: w.length, routeFiles: Object.keys(d.backend.files).length, databaseTables: d.schema.models.length, enumerations: Object.keys(d.schema.enums).length, migrations: d.schema.migrations.length, screens: screens.length, frontendFiles: d.frontend.files.length, roles: (d.schema.enums.UserRole || []).length },
     workflowsMapped: state.workflowsMapped ?? null, jobTypesIdentified: state.jobTypesIdentified ?? null,
     findingsBySeverity: count(F, 'severity'), findingsByStatus: count(F, 'status'), openFindingsBySeverity: count(F.filter(open), 'severity'), findingsTotal: F.length, findingsAddedThisPhase: F.filter((f) => f.id.startsWith(state.findingPrefix || 'B-')).length,
     testsExecuted: state.testsExecuted || [], testReach: { routesWithSuccess: eps.filter(okOf).length, routes: eps.length, changingRoutesWithSuccess: w.filter(okOf).length, changingRoutes: w.length },
-    correctionsCompleted: F.filter((f) => /^[BC]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
+    correctionsCompleted: F.filter((f) => /^[BCG]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
     unverifiedAreas: state.unverifiedAreas || [], currentBlockers: state.currentBlockers || [], nextActions: state.nextActions || [], lastCompletedCheckpoint: state.lastCompletedCheckpoint || null,
   };
   fs.writeFileSync(path.join(DIR, 'progress.json'), `${JSON.stringify(progress, null, 2)}\n`);

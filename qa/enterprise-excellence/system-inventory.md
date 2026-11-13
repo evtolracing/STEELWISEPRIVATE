@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit 181a874. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -12,12 +12,12 @@ Every figure here is counted from the code or measured in a test run. The module
 | Server route files | 72 |
 | API routes (each address counted; two route files are mounted twice) | 611 |
 | API routes that change data | 319 |
-| Database tables in the schema | 157 |
+| Database tables in the schema | 158 |
 | Enumerations | 96 |
-| Migrations | 23 |
+| Migrations | 26 |
 | Screens (routes in the browser) | 143 |
-| Frontend source files | 387 (117,796 lines) |
-| Server route code | 25,414 lines |
+| Frontend source files | 388 (117,893 lines) |
+| Server route code | 25,442 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -167,7 +167,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 7 (6 real, 1 mixed): /orders/invoices, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
 - **Server:** `src/backend/src/routes/orders.js`; served at /api/orders
 - **Routes:** 7, of which 4 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 4 of 4
-- **Tables:** Order, OrderLineAllocation, Inventory, Coil, OrderLine
+- **Tables:** Order, OrderLineAllocation, Inventory, Coil, AuditLog, OrderLine
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Order entry, quotes, web store, counter
 - **Feeds:** Jobs, shipments, invoices
@@ -606,7 +606,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Invoice on dispatch, payments, credit memos, refunds, cancel, every action recorded against a person
 - **Screens:** 1 (1 real): /orders/invoices
 - **Server:** `src/backend/src/routes/invoices.js`, `src/backend/src/services/billing.js`; served at /api/invoices
-- **Routes:** 7, of which 5 change data. Returned a success in a test this session: 6 of 7; of the changing routes, 4 of 5
+- **Routes:** 7, of which 5 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 5 of 5
 - **Tables:** none directly in the route files (through a service, or none)
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Shipping, counter, returns
@@ -776,7 +776,7 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 
 ## Code nothing uses
 
-Found by following imports from the application entry points. 45 frontend files (7,042 lines) and 5 server files. Finding B-013.
+Found by following imports from the application entry points. 45 frontend files (7,063 lines) and 5 server files. Finding B-013.
 
 | File | Lines |
 |---|---:|
@@ -802,7 +802,7 @@ Found by following imports from the application entry points. 45 frontend files 
 | src/frontend/src/apps/shopfloor/ShopFloorApp.jsx | 121 |
 | src/frontend/src/components/help/HelpDrawer.jsx | 98 |
 | src/frontend/src/components/production/ProductionLayout.jsx | 76 |
-| src/frontend/src/api/authFetch.js | 45 |
+| src/frontend/src/api/authFetch.js | 66 |
 | src/frontend/src/services/inventoryAiApi.js | 31 |
 | src/frontend/src/components/logistics/index.js | 29 |
 | src/frontend/src/config/supabaseClient.js | 28 |

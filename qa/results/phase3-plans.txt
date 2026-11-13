@@ -1,0 +1,100 @@
+database steelwise_qa_scale3: 72240 orders, 74347 order lines, 100233 stock items, 72541 jobs, 37625 invoices, 42441 movements, 85 branches
+
+## one branch's newest 50 orders
+Sort Method: top-N heapsort  Memory: 63kB
+->  Bitmap Heap Scan on "Order"  (cost=52.64..4157.98 rows=3658 width=464) (actual time=0.337..2.970 rows=3612 loops=1)
+->  Bitmap Index Scan on "Order_locationId_idx"  (cost=0.00..51.73 rows=3658 width=0) (actual time=0.196..0.196 rows=3612 loops=1)
+Planning Time: 0.576 ms
+Execution Time: 4.122 ms
+
+## count of one branch's orders
+->  Index Only Scan using "Order_locationId_idx" on "Order"  (cost=0.29..88.31 rows=3658 width=0) (actual time=0.027..0.239 rows=3612 loops=1)
+Planning Time: 0.480 ms
+Execution Time: 0.467 ms
+
+## one branch's confirmed orders
+Sort Method: top-N heapsort  Memory: 50kB
+->  Bitmap Heap Scan on "Order"  (cost=51.85..4166.34 rows=496 width=464) (actual time=3.000..3.055 rows=301 loops=1)
+Rows Removed by Filter: 3311
+->  Bitmap Index Scan on "Order_locationId_idx"  (cost=0.00..51.73 rows=3658 width=0) (actual time=0.236..0.237 rows=3612 loops=1)
+Planning Time: 0.571 ms
+Execution Time: 3.172 ms
+
+## one branch's invoices, newest 50 (through the order)
+Sort Method: quicksort  Memory: 25kB
+->  Seq Scan on "Invoice" i  (cost=0.00..1520.25 rows=37625 width=255) (actual time=0.006..9.161 rows=37625 loops=1)
+->  Bitmap Heap Scan on "Order" o  (cost=52.64..4157.98 rows=3658 width=36) (actual time=0.430..4.079 rows=3612 loops=1)
+->  Bitmap Index Scan on "Order_locationId_idx"  (cost=0.00..51.73 rows=3658 width=0) (actual time=0.261..0.261 rows=3612 loops=1)
+Planning Time: 1.286 ms
+Execution Time: 19.638 ms
+
+## one branch's open jobs, counted (order branch, or work center branch, or creator's branch)
+Rows Removed by Filter: 4013
+->  Parallel Seq Scan on "Order" o  (cost=0.00..4282.00 rows=30100 width=73) (actual time=0.011..4.616 rows=24080 loops=3)
+->  Parallel Seq Scan on "Job" j  (cost=0.00..4823.60 rows=5175 width=104) (actual time=0.027..6.638 rows=4114 loops=3)
+Rows Removed by Filter: 20067
+->  Seq Scan on "User" u  (cost=0.00..1.16 rows=16 width=62) (actual time=0.021..0.023 rows=16 loops=3)
+->  Seq Scan on "WorkCenter" w  (cost=0.00..9.84 rows=284 width=73) (actual time=0.009..0.070 rows=284 loops=3)
+Planning Time: 2.530 ms
+Execution Time: 29.383 ms
+
+## one branch's stock, newest 50
+Sort Method: top-N heapsort  Memory: 46kB
+->  Bitmap Heap Scan on "Inventory"  (cost=30.29..2622.00 rows=2322 width=250) (actual time=0.092..1.212 rows=2408 loops=1)
+->  Bitmap Index Scan on "Inventory_locationId_idx"  (cost=0.00..29.71 rows=2322 width=0) (actual time=0.060..0.060 rows=2408 loops=1)
+Planning Time: 0.433 ms
+Execution Time: 1.521 ms
+
+## stock search by number, heat or grade (whole company)
+Rows Removed by Filter: 100233
+->  Seq Scan on "Coil" c  (cost=0.00..5216.33 rows=100233 width=87) (actual time=0.011..12.717 rows=100233 loops=1)
+->  Seq Scan on "Grade" g  (cost=0.00..1.08 rows=8 width=42) (actual time=0.003..0.004 rows=8 loops=1)
+->  Seq Scan on "Heat" h  (cost=0.00..1.15 rows=15 width=48) (actual time=0.003..0.004 rows=15 loops=1)
+Planning Time: 1.382 ms
+Execution Time: 123.563 ms
+
+## customer order history
+Sort Method: top-N heapsort  Memory: 47kB
+->  Bitmap Heap Scan on "Order"  (cost=175.65..4297.55 rows=11272 width=464) (actual time=0.862..6.722 rows=11137 loops=1)
+->  Bitmap Index Scan on "Order_buyerId_idx"  (cost=0.00..172.83 rows=11272 width=0) (actual time=0.509..0.510 rows=11137 loops=1)
+Planning Time: 0.684 ms
+Execution Time: 9.462 ms
+
+## traceability: every item from one heat
+Bitmap Heap Scan on "Coil"  (cost=361.61..4971.29 rows=31654 width=707) (actual time=1.589..15.226 rows=31605 loops=1)
+->  Bitmap Index Scan on "Coil_heatId_idx"  (cost=0.00..353.70 rows=31654 width=0) (actual time=1.152..1.153 rows=31605 loops=1)
+Planning Time: 0.656 ms
+Execution Time: 16.465 ms
+
+## traceability: one item's movements
+Sort Method: quicksort  Memory: 26kB
+->  Bitmap Heap Scan on "MaterialMovement"  (cost=4.43..12.23 rows=2 width=338) (actual time=0.019..0.025 rows=4 loops=1)
+->  Bitmap Index Scan on "MaterialMovement_coilId_idx"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.014..0.014 rows=4 loops=1)
+Planning Time: 0.559 ms
+Execution Time: 0.093 ms
+
+## reservations on one item
+->  Index Scan using "OrderLineAllocation_coilId_idx" on "OrderLineAllocation"  (cost=0.28..8.29 rows=1 width=5) (actual time=0.021..0.021 rows=0 loops=1)
+Planning Time: 0.570 ms
+Execution Time: 0.091 ms
+
+## invoice by shipment (duplicate invoice check)
+Bitmap Heap Scan on "Invoice"  (cost=6.68..691.47 rows=301 width=36) (actual time=0.031..0.032 rows=0 loops=1)
+->  Seq Scan on "Shipment"  (cost=0.00..2901.69 rows=50869 width=36) (actual time=0.009..0.009 rows=1 loops=1)
+->  Bitmap Index Scan on "Invoice_shipmentId_idx"  (cost=0.00..6.55 rows=301 width=0) (actual time=0.028..0.028 rows=0 loops=1)
+Planning Time: 0.709 ms
+Execution Time: 0.062 ms
+
+## reconciliation of every stock row against its reservations
+->  Seq Scan on "Inventory" i  (cost=0.00..838453.22 rows=55685 width=0) (actual time=324.640..324.641 rows=0 loops=1)
+Rows Removed by Filter: 100233
+->  Index Scan using "OrderLineAllocation_coilId_idx" on "OrderLineAllocation" a  (cost=0.28..8.29 rows=1 width=5) (actual time=0.001..0.001 rows=0 loops=100233)
+Planning Time: 0.667 ms
+Execution Time: 343.113 ms
+
+## reconciliation of every invoice against its payments
+->  Seq Scan on "Invoice" i  (cost=0.00..319545.56 rows=12542 width=0) (actual time=11.492..170.103 rows=301 loops=1)
+Rows Removed by Filter: 37324
+->  Index Scan using "Payment_invoiceId_idx" on "Payment" p  (cost=0.41..8.43 rows=1 width=6) (actual time=0.003..0.003 rows=1 loops=37625)
+Planning Time: 1.042 ms
+Execution Time: 192.821 ms

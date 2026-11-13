@@ -316,6 +316,13 @@ router.put('/:id', async (req, res) => {
       // Guard against two people changing the status at once.
       const changed = await tx.order.updateMany({ where: { id: order.id, status: order.status }, data });
       if (!changed.count) return null;
+      // Who moved the order, from what to what, in the same save as the move itself.
+      if (data.status !== undefined && data.status !== order.status) {
+        await tx.auditLog.create({ data: {
+          category: 'WORKFLOW', eventType: 'ORDER_STATUS_CHANGED', action: 'UPDATE', userId: req.user?.id || null, resourceType: 'Order', resourceId: order.id,
+          details: { orderNumber: order.orderNumber, from: order.status, to: data.status, ...(data.totalAmount !== undefined && Number(data.totalAmount) !== Number(order.totalAmount) && { totalFrom: Number(order.totalAmount), totalTo: Number(data.totalAmount) }) },
+        } });
+      }
       if (moving && data.status === 'CANCELLED') {
         await releaseAllocations(tx, order.id);
         await tx.orderLine.updateMany({ where: { orderId: order.id }, data: { lineStatus: 'CANCELLED' } });
@@ -339,28 +346,40 @@ router.post('/:id/allocate', async (req, res) => {
     if (!lineId || !coilId) return res.status(400).json({ error: 'lineId and coilId are required' });
     if (qty === null) return res.status(400).json({ error: 'qty must be more than zero' });
 
-    const line = await prisma.orderLine.findUnique({ where: { id: lineId }, include: { order: { select: { id: true, status: true } }, allocations: true } });
-    if (!line || line.orderId !== req.params.id) return res.status(404).json({ error: 'Order line not found on this order' });
-    if (['CANCELLED', 'COMPLETE'].includes(line.order.status)) return res.status(409).json({ error: `Cannot reserve stock for a ${line.order.status.toLowerCase()} order` });
-    const held = line.allocations.reduce((s, a) => s + Number(a.qtyAllocated), 0);
-    const open = Number(line.qtyOrdered) - Number(line.qtyShipped) - held;
-    if (qty > open + 1e-9) return res.status(409).json({ error: `Only ${Math.max(open, 0)} is still unreserved on this line` });
-
+    // Seen through the user's branch first: a line they may not open is "not found".
+    const seen = await prisma.orderLine.findUnique({ where: { id: lineId }, select: { orderId: true } });
+    if (!seen || seen.orderId !== req.params.id) return res.status(404).json({ error: 'Order line not found on this order' });
     const coil = await prisma.coil.findUnique({ where: { id: coilId }, select: { id: true, status: true, qcStatus: true, inventory: { select: { qtyAvailable: true } } } });
     if (!coil || !coil.inventory) return res.status(404).json({ error: 'Stock item not found' });
     if (coil.status === 'HOLD' || ['FAILED', 'HOLD'].includes(coil.qcStatus)) return res.status(409).json({ error: 'This stock is on hold and cannot be reserved' });
 
-    const allocation = await prisma.$transaction(async (tx) => {
+    const outcome = await prisma.$transaction(async (tx) => {
+      // The order row is locked for the length of the reservation. A cancellation, or a second
+      // reservation for the same order, waits its turn and then sees what this one saved, so a
+      // line is never reserved beyond what it needs and a cancelled order never keeps stock.
+      const [locked] = await tx.$queryRaw`SELECT status::text AS status FROM "Order" WHERE id = ${req.params.id} FOR UPDATE`;
+      if (!locked) return fail(404, 'Order line not found on this order');
+      if (['CANCELLED', 'COMPLETE'].includes(locked.status)) return fail(409, `Cannot reserve stock for a ${locked.status.toLowerCase()} order`);
+      const line = await tx.orderLine.findUnique({ where: { id: lineId }, include: { allocations: true } });
+      const held = line.allocations.reduce((sum, a) => sum + Number(a.qtyAllocated), 0);
+      const open = Number(line.qtyOrdered) - Number(line.qtyShipped) - held;
+      if (qty > open + 1e-9) return fail(409, `Only ${Math.max(open, 0)} is still unreserved on this line`);
       // Only succeeds while enough is still available, so two reservations can't both take the last of it.
       const taken = await tx.inventory.updateMany({
         where: { coilId, qtyAvailable: { gte: qty } },
         data: { qtyAllocated: { increment: qty }, qtyAvailable: { decrement: qty } },
       });
-      if (!taken.count) return null;
+      if (!taken.count) return fail(409, `Not enough available: ${Number(coil.inventory.qtyAvailable)} on hand to reserve`);
       await tx.coil.updateMany({ where: { id: coilId, status: 'AVAILABLE' }, data: { status: 'ALLOCATED' } });
-      return tx.orderLineAllocation.create({ data: { orderLineId: lineId, coilId, qtyAllocated: qty } });
+      const allocation = await tx.orderLineAllocation.create({ data: { orderLineId: lineId, coilId, qtyAllocated: qty } });
+      await tx.auditLog.create({ data: {
+        category: 'WORKFLOW', eventType: 'STOCK_RESERVED', action: 'CREATE', userId: req.user?.id || null, resourceType: 'Order', resourceId: req.params.id,
+        details: { orderLineId: lineId, coilId, qty, allocationId: allocation.id },
+      } });
+      return { allocation };
     });
-    if (!allocation) return res.status(409).json({ error: `Not enough available: ${Number(coil.inventory.qtyAvailable)} on hand to reserve` });
+    if (outcome.error) return res.status(outcome.status).json({ error: outcome.error });
+    const { allocation } = outcome;
     res.status(201).json(allocation);
   } catch (error) {
     console.error('Orders: allocate failed:', error);

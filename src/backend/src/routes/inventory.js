@@ -124,6 +124,9 @@ router.post('/transfer', async (req, res) => {
     }
     const onHand = Number(inv.qtyOnHand);
     if (onHand <= 0) return res.status(409).json({ error: 'There is nothing on hand to transfer' });
+    // A reservation travels with its item: stock reserved at one branch for an order is often
+    // transferred to the branch that will process and ship it. The whole item moves, so the
+    // reserved quantity and the reservation rows stay in step.
     if (req.body.qty != null) {
       const qty = positiveQty(req.body.qty);
       if (qty === null) return res.status(400).json({ error: 'qty must be more than zero' });

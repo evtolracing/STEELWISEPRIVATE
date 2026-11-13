@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T18:55:34.952Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T21:02:07.153Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -51,8 +51,8 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
 - Pass: two reservations racing for the same stock: exactly one wins. statuses 409,201; available 2640
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
+- Pass: one shipment dispatched three times at once: counted once. statuses 409,200,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
 - Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
@@ -76,7 +76,7 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T18:47:39.299Z. 596 of 596 routes swept.
+Run 2026-11-13T20:53:40.967Z. 596 of 596 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
@@ -103,7 +103,7 @@ Run 2026-11-13T18:47:39.299Z. 596 of 596 routes swept.
 
 ## Screen check
 
-Run 2026-11-13T18:54:53.594Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T21:01:25.888Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 125
 - OK: 125
@@ -129,7 +129,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-13T18:49:50.749Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T20:56:13.566Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 24
 - Failed: 0
@@ -163,7 +163,7 @@ Run 2026-11-13T18:49:50.749Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 
 ## Stock screens operated in a browser
 
-Run 2026-11-13T18:50:12.021Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T20:56:36.749Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 22
 - Failed: 0
@@ -195,7 +195,7 @@ Run 2026-11-13T18:50:12.021Z with `qa/sim/ui-inventory.cjs`: stock items, heats 
 
 ## Shop screens operated in a browser
 
-Run 2026-11-13T18:49:30.284Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
+Run 2026-11-13T20:55:52.501Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
 
 - Checks: 30
 - Failed: 0
@@ -235,7 +235,7 @@ Run 2026-11-13T18:49:30.284Z with `qa/sim/ui-shop.cjs`: the job, schedule, time 
 
 ## Shipping and invoice screens operated in a browser
 
-Run 2026-11-13T18:49:02.849Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
+Run 2026-11-13T20:55:23.677Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
 
 - Checks: 27
 - Failed: 0
@@ -272,7 +272,7 @@ Run 2026-11-13T18:49:02.849Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 
 ## Sample notices and invented figures checked in a browser
 
-Run 2026-11-13T18:48:41.233Z with `qa/sim/ui-experience.cjs`.
+Run 2026-11-13T20:55:00.097Z with `qa/sim/ui-experience.cjs`.
 
 - Checks: 22
 - Failed: 0

@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit 181a874. Do not edit by hand: change the source and rerun.
 
 611 routes in 72 route files, served at 74 mount points. 319 change data.
 
@@ -15,12 +15,12 @@ Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 284 of 611 |
-| Changing routes that returned a success in a test | 87 of 319 |
+| Routes that returned a success in a test | 285 of 611 |
+| Changing routes that returned a success in a test | 88 of 319 |
 | Changing handlers with two or more database writes and no transaction | 5 |
 | Read routes with a list query that has no row limit | 58 |
 | Handlers with no try/catch of their own | 135 (many use a shared wrapper) |
-| Routes that use raw SQL | 1 |
+| Routes that use raw SQL | 2 |
 | Calls the screens make that have no server route | 80 |
 
 ## Reply shapes
@@ -47,7 +47,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/grades` | grades.js:25 |
 | `GET /api/products` | products.js:40 |
 | `GET /api/coils/:id/history` | coils.js:113 |
-| `GET /api/inventory/locations` | inventory.js:150 |
+| `GET /api/inventory/locations` | inventory.js:153 |
 | `GET /api/processing-recipes` | processingRecipes.js:67 |
 | `GET /api/processing-recipes/routing-templates` | processingRecipes.js:81 |
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
@@ -185,7 +185,7 @@ Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocati
 | `POST /api/coils/:id/hold` | yes | 3 | yes |  |  |  |
 | `POST /api/coils/:id/release` | yes | 3 | yes |  |  |  |
 
-### inventory.js (10 routes, 278 lines)
+### inventory.js (10 routes, 281 lines)
 
 Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement.
 
@@ -346,9 +346,9 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (7 routes, 372 lines)
+### orders.js (7 routes, 391 lines)
 
-Mounted at /api/orders. Tables: Order, OrderLineAllocation, Inventory, Coil, OrderLine.
+Mounted at /api/orders. Tables: Order, OrderLineAllocation, Inventory, Coil, AuditLog, OrderLine.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -357,8 +357,8 @@ Mounted at /api/orders. Tables: Order, OrderLineAllocation, Inventory, Coil, Ord
 | `POST /api/orders/:id/credit-release` | yes |  |  |  |  |  |
 | `GET /api/orders/:id` | yes |  |  |  |  |  |
 | `POST /api/orders` | yes | 4 | yes | yes |  |  |
-| `PUT /api/orders/:id` | yes | 2 | yes |  |  |  |
-| `POST /api/orders/:id/allocate` | yes | 3 | yes |  |  |  |
+| `PUT /api/orders/:id` | yes | 3 | yes |  | yes |  |
+| `POST /api/orders/:id/allocate` | yes | 4 | yes |  | yes |  |
 
 ### workOrders.js (7 routes, 164 lines)
 
@@ -400,7 +400,7 @@ Mounted at /api/invoices. Tables: through a service or none.
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/invoices` | yes |  |  |  |  |  |
 | `GET /api/invoices/:id` | yes |  |  |  |  |  |
-| `POST /api/invoices` |  |  |  |  |  |  |
+| `POST /api/invoices` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/payments` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/credit` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/refund` | yes |  |  |  |  |  |
@@ -569,7 +569,7 @@ Mounted at /api/documents. Tables: Document, DocumentLink, DocumentBlob, Heat.
 | `POST /api/documents/upload-multiple` |  |  |  |  |  |  |
 | `DELETE /api/documents/:id` | yes | 3 | yes |  |  |  |
 
-### quickSale.js (10 routes, 372 lines)
+### quickSale.js (10 routes, 378 lines)
 
 Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovement, AuditLog, Payment, InvoiceLine.
 
@@ -582,7 +582,7 @@ Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovemen
 | `POST /api/pos/quick-sale/process-payment` | yes | 7 | yes |  | yes |  |
 | `GET /api/pos/quick-sale/daily-stats` | yes |  |  | yes |  |  |
 | `GET /api/pos/quick-sale/:saleId/receipt` | yes |  |  |  |  |  |
-| `POST /api/pos/quick-sale/:saleId/void` | yes | 1 | yes | yes |  |  |
+| `POST /api/pos/quick-sale/:saleId/void` | yes | 1 |  |  |  |  |
 | `POST /api/pos/quick-sale/email-receipt` |  |  |  |  |  |  |
 | `POST /api/pos/quick-sale/sms-receipt` |  |  |  |  |  |  |
 

@@ -205,10 +205,14 @@ export async function recordPayment(invoiceId, body = {}, userId = null) {
  *   lines:  [{ invoiceLineId, quantity }]  credit by quantity at the invoiced price, with its share of tax
  *   amount: a plain money credit (no tax)  — use one or the other
  */
-export async function creditInvoice(invoiceId, body = {}, userId = null) {
+export async function creditInvoice(invoiceId, body = {}, userId = null, steps = {}) {
+  // steps.before(tx) and steps.after(tx, credit) run inside the credit's own transaction, so a
+  // caller whose credit is one part of a larger change (voiding a counter sale: C-010) gets
+  // all of it or none of it.
   const reason = String(body.reason || '').trim();
   if (!reason) refuse(400, 'A reason is required for a credit');
   const run = async (tx, invoiceNumber) => {
+    if (steps.before) await steps.before(tx);
     const invoice = await tx.invoice.findUnique({ where: { id: invoiceId }, include: { lines: true } });
     if (!invoice) refuse(404, 'Invoice not found');
     if (invoice.kind !== 'INVOICE') refuse(409, 'A credit memo cannot itself be credited');
@@ -267,6 +271,7 @@ export async function creditInvoice(invoiceId, body = {}, userId = null) {
     // On the invoice it reduces and on the credit memo itself, so either screen shows who issued it.
     await recordMoney(tx, { invoice, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoiceNumber, note: reason } });
     await recordMoney(tx, { invoice: credit, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoice.invoiceNumber, note: reason } });
+    if (steps.after) return (await steps.after(tx, credit)) || credit;
     return credit;
   };
   return toApi(await numbered('CM', run));
@@ -274,25 +279,28 @@ export async function creditInvoice(invoiceId, body = {}, userId = null) {
 
 /** Money handed back to the customer for the part of a credit memo that was not used against the invoice. */
 export async function recordRefund(creditId, body = {}, userId = null) {
+  const updated = await retryOverlap(() => prisma.$transaction((tx) => refundWithin(tx, creditId, body, userId), SERIALIZABLE));
+  return toApi(updated);
+}
+
+/** The refund itself, inside a transaction the caller already holds. */
+export async function refundWithin(tx, creditId, body = {}, userId = null) {
   const amount = Number(body.amount);
   const method = String(body.paymentMethod || body.method || '').toUpperCase();
   if (!Number.isFinite(amount) || amount <= 0) refuse(400, 'amount must be more than zero');
   if (money(amount) !== amount) refuse(400, 'amount cannot have fractions of a cent');
   if (!PAYMENT_METHODS.includes(method) || method === 'CREDIT') refuse(400, `paymentMethod must be one of: ${PAYMENT_METHODS.filter((m) => m !== 'CREDIT').join(', ')}`);
-  const updated = await retryOverlap(() => prisma.$transaction(async (tx) => {
-    const credit = await tx.invoice.findUnique({ where: { id: creditId } });
-    if (!credit) refuse(404, 'Credit memo not found');
-    if (credit.kind !== 'CREDIT') refuse(409, 'Refunds are recorded on a credit memo');
-    if (credit.status === 'CANCELLED') refuse(409, 'This credit memo is cancelled');
-    const owed = money(num(credit.paidAmount) - num(credit.totalAmount)); // both negative
-    if (amount > owed + 0.005) refuse(409, `Only ${owed.toFixed(2)} is still owed back on this credit memo`);
-    const reference = body.referenceNumber ? String(body.referenceNumber) : null;
-    await recordMoney(tx, { invoice: credit, eventType: 'REFUND_RECORDED', userId, details: { amount, method, reference, note: body.notes ? String(body.notes) : null } });
-    return applyPayment(tx, credit, -amount, {
-      paymentMethod: method, referenceNumber: reference, notes: body.notes ? String(body.notes) : 'Refund',
-    });
-  }, SERIALIZABLE));
-  return toApi(updated);
+  const credit = await tx.invoice.findUnique({ where: { id: creditId } });
+  if (!credit) refuse(404, 'Credit memo not found');
+  if (credit.kind !== 'CREDIT') refuse(409, 'Refunds are recorded on a credit memo');
+  if (credit.status === 'CANCELLED') refuse(409, 'This credit memo is cancelled');
+  const owed = money(num(credit.paidAmount) - num(credit.totalAmount)); // both negative
+  if (amount > owed + 0.005) refuse(409, `Only ${owed.toFixed(2)} is still owed back on this credit memo`);
+  const reference = body.referenceNumber ? String(body.referenceNumber) : null;
+  await recordMoney(tx, { invoice: credit, eventType: 'REFUND_RECORDED', userId, details: { amount, method, reference, note: body.notes ? String(body.notes) : null } });
+  return applyPayment(tx, credit, -amount, {
+    paymentMethod: method, referenceNumber: reference, notes: body.notes ? String(body.notes) : 'Refund',
+  });
 }
 
 export async function cancelInvoice(invoiceId, body = {}, userId = null) {

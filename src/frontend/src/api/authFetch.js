@@ -4,6 +4,8 @@
  * Bearer token from localStorage, and a 401 (an expired or missing session)
  * sends the user back to the login page, like the axios client does.
  */
+import { needsRequestKey, requestKeyFor } from './requestKey'
+
 const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
 
 function isApiRequest(url) {
@@ -32,7 +34,26 @@ if (typeof window !== 'undefined' && window.fetch && !window.fetch.__steelwiseAu
       options = { ...init, headers }
     }
 
-    const res = await originalFetch(input, options)
+    // A request that creates a business document carries a key, so a repeat is not run twice.
+    const method = (options.method || (input instanceof Request ? input.method : 'GET')).toUpperCase()
+    let keyed = null
+    if (needsRequestKey(method, url) && (options.body == null || typeof options.body === 'string')) {
+      const headers = new Headers(options.headers || (input instanceof Request ? input.headers : undefined))
+      if (!headers.has('Idempotency-Key')) {
+        keyed = requestKeyFor(method, url, options.body ?? null)
+        headers.set('Idempotency-Key', keyed.key)
+        options = { ...options, headers }
+      }
+    }
+
+    let res
+    try {
+      res = await originalFetch(input, options)
+    } catch (error) {
+      keyed?.settle(false)
+      throw error
+    }
+    keyed?.settle(res.status < 500 && res.status !== 409, res.ok)
     if (res.status === 401 && !isCredentialCheck(url) && window.location.pathname !== '/login') {
       localStorage.removeItem('token')
       window.location.href = '/login'

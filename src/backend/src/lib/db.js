@@ -7,6 +7,7 @@ import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 import { requestContext, isBadFilterValue, isRecordNotFound, isRejectedShape } from './requestContext.js';
 import { scopedArgs } from './branchScope.js';
+import { roundedArgs } from './moneyColumns.js';
 
 const globalForPrisma = global;
 
@@ -22,6 +23,8 @@ const withBadFilterNote = (client) => client.$extends({
         // The branch boundary: see lib/branchScope.js.
         const store = requestContext.getStore();
         if (model && store?.branchScope) args = scopedArgs(model, operation, args, store.branchScope);
+        // Amounts are saved to the cent: see lib/moneyColumns.js.
+        if (model) args = roundedArgs(model, operation, args);
         return await query(args);
       } catch (error) {
         const store = requestContext.getStore();

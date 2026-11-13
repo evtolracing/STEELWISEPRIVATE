@@ -30,7 +30,7 @@ import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { money } from '../lib/billingRules.js';
-import { BillingError, creditInvoice, recordRefund, recordMoney } from '../services/billing.js';
+import { BillingError, creditInvoice, refundWithin, recordMoney } from '../services/billing.js';
 
 const router = Router();
 const METHODS = ['CASH', 'CARD', 'CHECK'];
@@ -348,17 +348,23 @@ router.post('/:saleId/void', handle('void sale', async (req, res) => {
   if (/VOIDED/.test(sale.notes || '')) refuse(409, 'This sale is already voided');
   const invoice = sale.invoices[0];
   const paid = invoice.payments.find((p) => num(p.amount) > 0);
-  // Claim the void first so two people cannot both refund it.
-  // The claim and the stock going back on the shelf are one step.
-  const claimed = await prisma.$transaction(async (tx) => {
-    const got = await tx.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
-    if (got.count) await returnShelfStock(tx, { orderId: sale.id, userId: req.user?.id });
-    return got;
+  // The claim, the stock going back on the shelf, the credit memo and the refund are one
+  // transaction: a void happens completely or not at all (C-010). The claim is conditional,
+  // so two people cannot both void the same sale.
+  const creditLines = (await prisma.invoiceLine.findMany({ where: { invoiceId: invoice.id } })).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) }));
+  let owed = 0;
+  const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: creditLines }, req.user?.id, {
+    before: async (tx) => {
+      const got = await tx.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
+      if (!got.count) refuse(409, 'This sale was just changed by someone else. Reload and try again.');
+      await returnShelfStock(tx, { orderId: sale.id, userId: req.user?.id });
+    },
+    after: async (tx, memo) => {
+      owed = money(-num(memo.totalAmount) + num(memo.paidAmount));
+      if (owed > 0) await refundWithin(tx, memo.id, { amount: owed, paymentMethod: paid?.paymentMethod || 'CASH', notes: `Refund for voided sale ${sale.orderNumber}` }, req.user?.id);
+      return memo;
+    },
   });
-  if (!claimed.count) refuse(409, 'This sale was just changed by someone else. Reload and try again.');
-  const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: (await prisma.invoiceLine.findMany({ where: { invoiceId: invoice.id } })).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) })) }, req.user?.id);
-  const owed = money(-credit.totalAmount + credit.paidAmount);
-  if (owed > 0) await recordRefund(credit.id, { amount: owed, paymentMethod: paid?.paymentMethod || 'CASH', notes: `Refund for voided sale ${sale.orderNumber}` }, req.user?.id);
   const saved = await findSale(sale.id);
   res.json({ success: true, refunded: owed, creditMemo: credit.invoiceNumber, receipt: receiptFrom(saved, saved.invoices[0]) });
 }));

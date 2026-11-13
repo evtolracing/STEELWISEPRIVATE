@@ -2,6 +2,7 @@
  * Customer returns (RMAs).
  *
  *   GET  /api/returns                 list (orderId, customerId, status)
+ *   GET  /api/returns/eligible?orderNumber=   what can still be returned on an order
  *   GET  /api/returns/:id             one return
  *   POST /api/returns                 { orderId, reason, lines: [{ orderLineId, quantity, disposition?, coilId?, notes? }] }
  *   POST /api/returns/:id/receive     material is back on the dock: restock or scrap it, and credit the customer
@@ -96,6 +97,26 @@ router.get('/', handle('fetch returns', async (req, res) => {
     prisma.order.count({ where }),
   ]);
   res.json({ data: await Promise.all(rows.map(toApi)), meta: { total, limit: take, offset: skip } });
+}));
+
+/** What can still come back on an order: looked up by order number for the "new return" form. */
+router.get('/eligible', handle('look up order', async (req, res) => {
+  const key = String(req.query.orderNumber || req.query.orderId || '').trim();
+  if (!key) refuse(400, 'orderNumber is required');
+  const order = await prisma.order.findFirst({
+    where: { orderType: 'SO', OR: [{ id: key }, { orderNumber: { equals: key, mode: 'insensitive' } }] },
+    include: { lines: { orderBy: { lineNumber: 'asc' } }, buyer: { select: { id: true, name: true } } },
+  });
+  if (!order) refuse(404, `No sales order found for "${key}"`);
+  const already = await returnedByLine(prisma, order.id);
+  res.json({
+    orderId: order.id, orderNumber: order.orderNumber, customer: order.buyer,
+    lines: order.lines.map((l) => ({
+      orderLineId: l.id, lineNumber: l.lineNumber, description: l.description, unit: l.unit,
+      shipped: num(l.qtyShipped), alreadyReturned: already.get(l.id) || 0,
+      returnable: Math.max(num(l.qtyShipped) - (already.get(l.id) || 0), 0),
+    })),
+  });
 }));
 
 router.get('/:id', handle('fetch return', async (req, res) => {

@@ -19,7 +19,4 @@ export { default as WillCallVerifyScreen } from './WillCallVerifyScreen';
 export { default as WillCallLoadScreen } from './WillCallLoadScreen';
 export { default as WillCallCompleteScreen } from './WillCallCompleteScreen';
 
-// Quick Sale Screens
-export { default as QuickSaleScreen } from './QuickSaleScreen';
-export { default as QuickSalePaymentScreen } from './QuickSalePaymentScreen';
-export { default as QuickSaleReceiptScreen } from './QuickSaleReceiptScreen';
+

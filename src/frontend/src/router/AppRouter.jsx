@@ -79,6 +79,8 @@ const ExceptionInbox = lazy(() => import('../pages/Freight/ExceptionInbox'))
 const PODViewer = lazy(() => import('../pages/Freight/PODViewer'))
 
 // Sales & Pricing Pages
+const InvoicesPage = lazy(() => import('../pages/Orders/InvoicesPage'))
+const ReturnsPage = lazy(() => import('../pages/Orders/ReturnsPage'))
 const RFQInbox = lazy(() => import('../pages/Sales/RFQInbox'))
 const SalesQuoteBuilder = lazy(() => import('../pages/Sales/QuoteBuilder'))
 const SalesDashboard = lazy(() => import('../pages/Sales/SalesDashboard'))
@@ -1159,6 +1161,25 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <DispatchPlanningScreen />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      {
+        path: 'orders/invoices',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <InvoicesPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'orders/returns',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ReturnsPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

@@ -57,6 +57,7 @@ import {
   // Customer Quality
   Inbox as ClaimsIcon,
   AssignmentReturn as RMAIcon,
+  ReceiptLong as InvoicesIcon,
   BugReport as CARIcon,
   CreditCard as CreditsIcon,
   // Contractor Portal
@@ -155,6 +156,8 @@ const navSections = [
       { path: '/orders/intake', label: 'CSR Intake', icon: CSRIntakeIcon, highlight: true },
       { path: '/orders/online-inbox', label: 'Online Inbox', icon: OnlineInboxIcon },
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },
+      { path: '/orders/invoices', label: 'Invoices', icon: InvoicesIcon },
+      { path: '/orders/returns', label: 'Returns', icon: RMAIcon },
     ],
   },
 

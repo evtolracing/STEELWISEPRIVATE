@@ -28,6 +28,7 @@ import {
   AutoAwesome as AIIcon,
 } from '@mui/icons-material';
 import { POSShell } from '../components/pos';
+import QuickSale from '../components/pos/QuickSale';
 
 // Available POS flows
 const POS_FLOWS = [
@@ -132,6 +133,8 @@ export function POSPage() {
     setSelectedFlow(null);
   };
   
+  if (selectedFlow === 'quick_sale') return <QuickSale onClose={handleClose} />;
+
   // If flow is selected, show POS Shell
   if (selectedFlow) {
     return (

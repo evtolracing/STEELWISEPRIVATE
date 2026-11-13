@@ -51,6 +51,7 @@ export const QA_USERS = {
   shipping: 'qa-shipping@qa.test',
   custA: 'qa-cust-a@qa.test',
   custB: 'qa-cust-b@qa.test',
+  custDiv: 'qa-cust-div@qa.test', // a login on one division of customer A
 };
 
 /** Minimal API client with per-user tokens. */

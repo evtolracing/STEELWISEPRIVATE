@@ -37,7 +37,7 @@ async function raw(method, url, { token, body } = {}) {
     });
     const text = await res.text();
     if (res.status >= 400 && LEAK.test(text)) leaks.add(`${method} ${url.split('?')[0].replaceAll(FAKE_ID, ':id')} → ${res.status} ${text.slice(0, 90).replace(/\s+/g, ' ')}`);
-    return { status: res.status, text: text.slice(0, 200) };
+    return { status: res.status, text: text.slice(0, 200), full: text };
   } catch (e) { return { status: 0, text: String(e.message) }; }
 }
 async function tokenFor(who) {
@@ -140,7 +140,33 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
     const r = await raw('GET', `/api/ecom/my-orders/${id}`, { token: a });
     if (r.status !== 404 && r.status !== 403) findings.push(`customer A opened customer B's web order → ${r.status}`);
   } else findings.push(`could not place a test web order as customer B: ${JSON.stringify(placed).slice(0, 120)}`);
-  section('Customers cannot see each other', { pass: findings.length === 0, summary: `${tries.length + 2} checks, ${findings.length} problems`, findings });
+  // Divisions: a login on one division sees that division, not its sister division or the parent company.
+  const [d1, d2] = await Promise.all(['QA-C01-D1', 'QA-C01-D2'].map((code) => prisma.organization.findUnique({ where: { code } })));
+  const adminUser = await prisma.user.findUnique({ where: { email: QA_USERS.admin } });
+  if (!d1 || !d2) findings.push('division fixtures missing: run qa/sim/fixtures.mjs');
+  else {
+    const mk = (org, tag) => prisma.order.upsert({
+      where: { orderNumber: `QA-DIV-${tag}` }, update: {},
+      create: { orderNumber: `QA-DIV-${tag}`, orderType: 'SO', status: 'CONFIRMED', buyerId: org.id, subtotal: 10, totalAmount: 10, createdById: adminUser.id },
+    });
+    const [own, sister, parent] = await Promise.all([mk(d1, 'OWN'), mk(d2, 'SISTER'), mk(orgA, 'PARENT')]);
+    const div = await tokenFor('custDiv');
+    for (const u of [`/api/enterprise/orders?accountId=${d1.id}`, `/api/enterprise/orders?accountId=${orgA.id}`, `/api/enterprise/orders?accountId=${d2.id}`, `/api/enterprise/accounts/${orgA.id}`, `/api/enterprise/accounts/${d2.id}`, '/api/enterprise/orders']) {
+      const r = await raw('GET', u, { token: div });
+      if (r.full.includes(sister.id) || r.full.includes('QA-DIV-SISTER')) findings.push(`division login saw its sister division's order at ${u.replace(/[0-9a-f-]{36}/g, '<id>')}`);
+      if (r.full.includes(parent.id) || r.full.includes('QA-DIV-PARENT')) findings.push(`division login saw the parent company's order at ${u.replace(/[0-9a-f-]{36}/g, '<id>')}`);
+      if (r.status === 200 && (r.full.includes(`"${d2.id}"`) || r.full.includes('QA-C01-D2'))) findings.push(`division login was shown its sister division at ${u.replace(/[0-9a-f-]{36}/g, '<id>')}`);
+    }
+    const mine = await raw('GET', `/api/enterprise/orders?accountId=${d1.id}`, { token: div });
+    if (!mine.full.includes('QA-DIV-OWN')) findings.push(`division login could not see its own order (${mine.status})`);
+    for (const id of [sister.id, parent.id]) {
+      const r = await raw('GET', `/api/enterprise/orders/${id}`, { token: div });
+      if (r.status >= 200 && r.status < 300 && r.full.includes(id)) findings.push(`division login opened another division's order → ${r.status}`);
+    }
+    const whole = await raw('GET', `/api/enterprise/orders?accountId=${orgA.id}`, { token: a });
+    for (const tag of ['OWN', 'SISTER', 'PARENT']) if (!whole.full.includes(`QA-DIV-${tag}`)) findings.push(`parent-company login could not see QA-DIV-${tag}`);
+  }
+  section('Customers and divisions cannot see each other', { pass: findings.length === 0, summary: `${tries.length + 2 + 24} checks, ${findings.length} problems`, findings });
 }
 
 // 6. Staff roles: who can change users, and can a shop-floor login change sales orders?

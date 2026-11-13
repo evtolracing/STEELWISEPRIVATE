@@ -28,9 +28,19 @@ async function main() {
     }));
   }
 
+  // Customer A has two divisions; one login belongs to the first division only.
+  const divisions = [];
+  for (const n of [1, 2]) {
+    divisions.push(await prisma.organization.upsert({
+      where: { code: `QA-C01-D${n}` }, update: { parentId: customers[0].id },
+      create: { code: `QA-C01-D${n}`, name: `QA Customer 1 Division ${n}`, type: 'FABRICATOR', city: 'Testville', state: customers[0].state, parentId: customers[0].id },
+    }));
+  }
+
   const roleUsers = [
     ['admin', 'SUPER_ADMIN', null], ['csr', 'CSR', null], ['operator', 'OPERATOR_SAW', null], ['shipping', 'SHIPPING_COORDINATOR', null],
     ['custA', 'CUSTOMER_BUYER', customers[0].id], ['custB', 'CUSTOMER_BUYER', customers[1].id],
+    ['custDiv', 'CUSTOMER_BUYER', divisions[0].id],
   ];
   const users = {};
   for (const [key, role, customerId] of roleUsers) {

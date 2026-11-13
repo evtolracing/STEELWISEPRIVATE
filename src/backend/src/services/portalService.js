@@ -26,20 +26,28 @@ export async function resolveCustomer(idOrCode) {
 }
 
 /** The account root and every division under it (two levels). */
+/**
+ * The account a login or a staff member is looking at: that customer and the
+ * divisions under it. A login linked to a division sees that division only,
+ * never its sister divisions or the parent company; a login on the parent
+ * company sees everything. `company` is the top-level account, which holds
+ * the pricing tier, terms and credit limit for all of its divisions.
+ */
 async function accountTree(idOrCode) {
-  let org = await resolveCustomer(idOrCode);
+  const org = await resolveCustomer(idOrCode);
   if (!org) return null;
-  for (let i = 0; i < 5 && org.parentId; i++) {
-    const parent = await prisma.organization.findUnique({ where: { id: org.parentId } });
+  let company = org;
+  for (let i = 0; i < 5 && company.parentId; i++) {
+    const parent = await prisma.organization.findUnique({ where: { id: company.parentId } });
     if (!parent) break;
-    org = parent;
+    company = parent;
   }
   const children = await prisma.organization.findMany({ where: { parentId: org.id }, orderBy: { name: 'asc' } });
   const grandchildren = children.length
     ? await prisma.organization.findMany({ where: { parentId: { in: children.map((c) => c.id) } }, orderBy: { name: 'asc' } })
     : [];
   const all = [org, ...children, ...grandchildren];
-  return { root: org, orgs: all, ids: all.map((o) => o.id), byId: new Map(all.map((o) => [o.id, o])) };
+  return { root: org, company, orgs: all, ids: all.map((o) => o.id), byId: new Map(all.map((o) => [o.id, o])) };
 }
 
 const address = (o) => [o.address, o.city, [o.state, o.postalCode].filter(Boolean).join(' ')].filter(Boolean).join(', ');
@@ -155,15 +163,15 @@ export async function customerPriceLevel(idOrCode) {
   if (!idOrCode) return 'RETAIL';
   const tree = await accountTree(idOrCode).catch(() => null);
   if (!tree) return 'RETAIL';
-  const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: tree.root.id } }).catch(() => null);
+  const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: tree.company.id } }).catch(() => null);
   return (tier?.isActive !== false && TIER_TO_LEVEL[tier?.tierCode]) || 'RETAIL';
 }
 
 export async function accountProfile(idOrCode) {
   const tree = await accountTree(idOrCode);
   if (!tree) return null;
-  const { root } = tree;
-  const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: root.id } }).catch(() => null);
+  const { root, company } = tree;
+  const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: company.id } }).catch(() => null);
   const { orders, links } = await loadAccountOrders(tree);
   const mapped = orders.map((o) => toAccountOrder(o, tree, links));
   const yearStart = new Date(new Date().getFullYear(), 0, 1);
@@ -179,7 +187,7 @@ export async function accountProfile(idOrCode) {
     priceLevel: TIER_TO_LEVEL[tier?.tierCode] || 'RETAIL',
     creditLimit: tier?.creditLimit != null ? num(tier.creditLimit) : null,
     creditUsed: money(unpaid + open.reduce((s, o) => s + o.total, 0)),
-    paymentTerms: tier?.paymentTerms || root.paymentTerms || null,
+    paymentTerms: tier?.paymentTerms || root.paymentTerms || company.paymentTerms || null,
     accountRep: null,
     branches: tree.orgs.map((o) => toBranch(o, root)),
     userRole: 'ADMIN', // customer logins and roles come with portal authentication

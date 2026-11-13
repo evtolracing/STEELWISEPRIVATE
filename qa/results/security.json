@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T05:42:18.406Z",
+ "at": "2026-11-13T05:45:25.733Z",
  "endpointsInInventory": 571,
  "endpointsSwept": 571,
  "sections": {
@@ -27,18 +27,16 @@
    "tested": 509,
    "findings": []
   },
-  "Customers cannot see each other": {
+  "Customers and divisions cannot see each other": {
    "pass": true,
-   "summary": "7 checks, 0 problems",
+   "summary": "31 checks, 0 problems",
    "findings": []
   },
-  "Staff roles": {
+  "Staff roles and departments": {
    "pass": true,
-   "summary": "0 problems, 1 observation(s) needing a policy decision",
+   "summary": "18 checks, 0 problems",
    "findings": [],
-   "observations": [
-    "A saw-operator login edited a sales order through the API → 200. Screens are limited by role, but the API lets any signed-in staff member use any staff route."
-   ]
+   "observations": []
   },
   "Read routes do not crash on bad input": {
    "pass": true,

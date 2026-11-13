@@ -36,4 +36,9 @@ Not reviewed yet: keyboard-only use, screen-reader labels and colour contrast on
 | U-028 | Old operator screen | Recorded output into nothing | Removed (M-010): opens the real shop floor |
 | U-029 | Production quality, BOMs | Invented data presented as real | Labelled as samples (M-011); build is a decision |
 | U-030 | QC Inspections | "Failed to create inspection" although it was created | Fixed (M-015) |
-
+| U-031 | Shipping | Menu item showed invented shipments; no way to ship on screen | Fixed (F-002): real list, New shipment, Dispatch, Mark delivered |
+| U-032 | Shipment | No one could see who dispatched or delivered | Fixed (F-004): history table with names |
+| U-033 | Invoices | No one could see who took a payment or issued a credit | Fixed (F-006): history on the invoice |
+| U-034 | All Orders | Tax shown as 0 and total as subtotal; sample orders on error | Fixed (F-007) |
+| U-035 | Freight and logistics | Invented routes, rates and tracking presented as real | Labelled as samples (F-007); build is a decision |
+| U-036 | Shipment | No button to print a bill of lading or packing list | Open (F-011) |

@@ -2,10 +2,12 @@
 
 There are no ticket files in the repository, so each commit is treated as one ticket. Commits #1–#28 are squashed pull requests; older commits came before the PR workflow. Requested scope is taken from the commit or PR title; "implemented" is what the diff touched.
 
-Commits: 202. Commits that changed the database schema: 57. Commits that added tests: 21.
+Commits: 204. Commits that changed the database schema: 57. Commits that added tests: 23.
 
 | Commit | Date | Ticket (title) | Files | Schema | API areas | UI areas | Tests added |
 |---|---|---|---:|:-:|---|---|---:|
+| 9caf03c | 2026-11-13 | Shipping: real screens to create, dispatch and deliver; web orders carry tax; money actions record who | 28 |  | api:invoices, api:onlineOrders, api:quickSale, api:returns, api:shipments, api:billing | ui:apps, ui:help, ui:mocks, ui:Logistics, ui:Orders, ui:Shipping, ui:ShippingDeskPage, ui:router | 6 |
+| 3d1c6bc | 2026-11-13 | Workstream 4: inspection reply fix, checks, manual, registers and gate report | 27 |  | api:qcRoutes | ui:help | 25 |
 | fbbacf6 | 2026-11-13 | Shop screens browser check; remove made-up AI tip and claim | 4 |  |  | ui:SchedulePage, ui:WorkOrders | 2 |
 | e27d4d9 | 2026-11-13 | Shop floor: record who moved each job, real job, schedule and work order screens | 28 |  | api:jobHistory, api:workOrderRules, api:jobs, api:materialTrackingRoutes, api:operationsRoutes, api:qcRoutes, api:shipments, api:workOrders | ui:api, ui:components, ui:constants, ui:JobDetailPage, ui:ModernOrderBoardPage, ui:OrderBoardPage, ui:SchedulePage, ui:ShopFloorPage | 2 |
 | f2c1c76 | 2026-11-13 | Workstream 3 gate: one stock list, balance rule in the database, sample screens labelled | 37 | yes |  | ui:api, ui:apps, ui:components, ui:help, ui:Units, ui:router | 25 |

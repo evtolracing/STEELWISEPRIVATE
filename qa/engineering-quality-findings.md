@@ -158,7 +158,7 @@ Fixed and verified in Workstream 2, each with an automated check that fails with
 | I-012 | Awaiting the owner's answer to a decision card | Owner | The answer | If confirmed, nothing more. If not, the change is one file to undo |
 | I-016 | Requires a business decision | Owner | Who may adjust stock, and above what amount a second approval is needed | An adjustment route and screen; sweep checks on the rule |
 | I-017 | Deferred with justification: receiving works; this is speed of first load | Inventory | None | A heats upload template; sweep check |
-| I-018 | Assigned to Workstream 5 | Financial operations | None | Sweep check: an accepted web order carries tax and total |
+| I-018 | Fixed in Workstream 5 (F-001) | Financial operations | None | Sweep 20 |
 | Browser checks | Not proven to fail without the fixes: the 22 checks in `ui-inventory.cjs` were run only against the fixed screens | QA | None | Run once against the previous commit |
 
 ## Workstream 4: manufacturing execution
@@ -197,3 +197,35 @@ Fixed and verified in Workstream 2, each with an automated check that fails with
 | M-017 | Requires a business decision | Owner | Which backward moves a job may make | One move table used by every route; unit tests |
 | M-018 | Assigned to Workstream 6 | Documentation | None | Every manual page read against its screen |
 | Browser checks | Not proven to fail without the fixes: the 30 checks in `ui-shop.cjs` were run only against the fixed screens | QA | None | Run once against the previous commit |
+
+## Workstream 5: shipping and financial operations
+
+"Sweep 20" is the section "Shipping and money records" of `qa/sim/security.mjs` (37 checks). "Browser" is `qa/sim/ui-shipping.cjs` (27 checks). "26 of 36 fail without it" was measured by running the first 36 checks of the section against the commit before the fixes (3d1c6bc). The 37th, on counter sales, was added later and was seen failing before its fix.
+
+| ID | Module | Category | What it did | Standard expected | Evidence | Impact | Risk | Status | Proof of fix |
+|---|---|---|---|---|---|---|---|---|---|
+| F-001 | Web orders (was I-018) | Money | An accepted web order saved its lines and no subtotal, tax or total. Its invoices therefore carried no tax, and it counted as zero against a credit limit | Tax and total by rule 27 | Code read; Sweep 20 on the old commit: tax null, invoice tax 0 where 5.00 was due | Every web order under-billed by its tax | Critical | Fixed | Sweep 20: 7 checks, including an exempt customer and the invoice. Fail without it |
+| F-002 | Shipping screen (`/shipping`) | Functional | The Shipping menu item listed sample shipments. There was no screen to create, dispatch or deliver a real shipment; it could only be done through the API | Real shipments, created and moved on the screen | Screen read against `routes/shipments.js`; Browser | Shipping staff could not do their work in the system, and saw invented shipments | Critical | Fixed | Browser: 17 checks from New shipment to Delivered |
+| F-003 | Shipments list | Performance, privacy | The list sent the 50 newest with no count, no search, and the customer's whole record (credit limit, terms, tax status) to the shipping desk | Search and count on the server; only what the desk needs | Sweep 20 on the old commit | Older shipments could not be found; credit terms shown to staff with no need | High | Fixed | Sweep 20: 6 checks. Fail without it |
+| F-004 | Shipments | Observability | Nothing recorded who created, dispatched, delivered or cancelled a shipment | Every move in the audit log with the person | Code read | A wrong dispatch, which moves stock and raises an invoice, could not be traced to anyone | High | Fixed | Sweep 20: 5 checks; Browser history checks. Fail without it |
+| F-005 | Proof of delivery | Input | The signature and image address were stored as sent: any length, any type, any address | Text of a sensible length; an https or stored-document address | Sweep 20 on the old commit: a 201-character signature was accepted | Stored junk, and an unsafe link shown later on a screen | Medium | Fixed | Sweep 20: 2 checks. Fail without it |
+| F-006 | Invoices, payments, credits, refunds | Observability, financial control | No money action recorded who did it. `Payment` has no user field and billing wrote no audit row | Each one in the audit log with the person, in the same transaction as the money | Code read of `services/billing.js` | A payment, credit, refund or cancelled invoice could not be traced to a person | High | Fixed | Sweep 20: 9 checks, counter sales included; Browser: 2. Fail without it. No database change: the audit log table is used |
+| F-007 | Freight and logistics screens; All Orders | Mock data | Nine freight and logistics screens showed invented shipments, routes and rates as real. All Orders fell back to sample orders on error and showed tax 0 and total equal to subtotal for every order | Real data, or a clear label | Screen read | Staff could act on invented freight figures; order totals looked wrong | High | Mitigated and fixed | The nine screens carry the sample notice and point to Shipping (Browser: 3). All Orders has no fallback and shows saved tax and total. Two old sample shipment screens and one unused sample shipping desk deleted; old addresses redirect (Browser: 2) |
+| F-008 | Web store checkout | Business rule | The store shows the buyer an estimate of tax by the ship-to state. On acceptance the order is taxed by the selling branch (rule 27). The two can differ | One rule the buyer and the invoice agree on | Code read | A buyer could be shown one tax and invoiced another | Medium | Open | Needs the owner: should the store estimate also use the selling branch |
+| F-009 | Invoices | Access | Any staff login can read every invoice and its payments (reads are open to all staff by design; only changes are restricted) | To be decided | `lib/roleAccess.js`; a check written for it was withdrawn because it tested a rule nobody set | Shop staff can see what customers owe and paid | Medium | Open | Needs the owner: who may read invoices |
+| F-010 | Help manual, Shipping | Documentation | The page described steps that are not on any screen: selecting packages, service levels, shipping cost, generating a BOL, packing list and label, tracking numbers, customer notification, signature capture | The manual matches the screens | Screen read | Staff trained on steps that are not there | Medium | Fixed | Rewritten from the screens as built |
+| F-011 | Shipping documents | Not examined | Whether a bill of lading or packing list can be printed for a shipment was not examined. Print code exists in the server (`printQueue`, `printAutomationService`); the new Shipment screen has no print button | To be examined | None | Unknown | Unknown | Open | Assigned to Workstream 6 |
+| F-012 | Frontend build | Tooling | A stray word left in `AppRouter.jsx` by a patch in this workstream passed the production build and broke every screen at run time. Caught by the browser check before commit | A build or lint step that rejects an undefined name | Seen in this session | A broken release could pass the build | Medium | Open (see E-016) | The browser suites and the 124-screen check catch it; a lint step would catch it sooner |
+
+### Disposition of every Workstream 5 item not fixed and verified
+
+| ID | Disposition | Owner | Depends on | What will show it is done |
+|---|---|---|---|---|
+| F-007 | Mitigated; requires a business decision | Owner | Whether freight planning (rates, routes, tracking, exceptions) is built or taken off the menu | The screens read real data, or are removed |
+| F-008 | Requires a business decision | Owner | Which state the store's tax estimate uses | A sweep check that the estimate equals the tax on the accepted order |
+| F-009 | Requires a business decision | Owner | Who may read invoices and payments | A sweep check per role |
+| F-011 | Assigned to Workstream 6 | Engineering | None | The print path examined and either wired to the Shipment screen or recorded as a gap |
+| F-012 | Assigned (same as E-016) | Engineering | A lint configuration | `no-undef` fails the build |
+| Returns | Not re-examined in this workstream beyond attributing the credit to the person who received the return. A return still has no inspection step before credit | Owner | Whether returned material must be inspected before credit | A rule, then a check |
+| Browser checks | Not proven to fail without the fixes: the old screens had none of these controls, so the 27 checks were run only against the new screens | QA | None | Not planned: the old screens are deleted |
+

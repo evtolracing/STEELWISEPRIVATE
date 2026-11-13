@@ -1,32 +1,36 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T09:48:31.052Z",
+ "at": "2026-11-13T10:12:30.373Z",
  "who": "qa-admin@qa.test",
- "screens": 124,
+ "screens": 125,
  "tally": {
-  "OK": 124
+  "OK": 125
  },
- "screensWithFailedApiCalls": 8,
+ "screensWithFailedApiCalls": 10,
  "failedApiCalls": {
   "GET /api/heats/:id → 404": [
    "/heats/:id"
   ],
-  "GET /api/coils/:id → 404": [
+  "GET /api/coils/:id/history → 404": [
    "/units/:id"
   ],
-  "GET /api/coils/:id/history → 404": [
+  "GET /api/coils/:id → 404": [
    "/units/:id"
   ],
   "GET /api/work-orders/:id → 404": [
    "/work-orders/:id"
   ],
+  "GET /api/shipments/:id → 404": [
+   "/logistics/shipments/:id",
+   "/shipping/:id"
+  ],
   "GET /api/qc/inspections/:id → 404": [
    "/qc/inspect/:id"
   ],
-  "GET /api/jobs/:id/history → 404": [
+  "GET /api/jobs/:id → 404": [
    "/jobs/:id"
   ],
-  "GET /api/jobs/:id → 404": [
+  "GET /api/jobs/:id/history → 404": [
    "/jobs/:id"
   ],
   "GET /api/orders/intake/:id → 404": [
@@ -117,7 +121,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/ops-cockpit",
-   "textLength": 15843,
+   "textLength": 15917,
    "hasParam": false
   },
   {
@@ -166,10 +170,10 @@
     "Failed to load resource: the server responded with a status of 404 (Not Found)"
    ],
    "apiFailures": [
-    "GET /api/coils/00000000-0000-4000-8000-000000000000 → 404",
     "GET /api/coils/00000000-0000-4000-8000-000000000000/history → 404",
     "GET /api/coils/00000000-0000-4000-8000-000000000000 → 404",
-    "GET /api/coils/00000000-0000-4000-8000-000000000000/history → 404"
+    "GET /api/coils/00000000-0000-4000-8000-000000000000/history → 404",
+    "GET /api/coils/00000000-0000-4000-8000-000000000000 → 404"
    ],
    "status": "OK",
    "landedOn": "/units/00000000-0000-4000-8000-000000000000",
@@ -218,18 +222,24 @@
    "consoleErrors": [],
    "apiFailures": [],
    "status": "OK",
-   "landedOn": "/logistics/shipments",
-   "textLength": 2163,
+   "landedOn": "/shipping",
+   "textLength": 10832,
    "hasParam": false
   },
   {
    "route": "/logistics/shipments/:id",
    "pageErrors": [],
-   "consoleErrors": [],
-   "apiFailures": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/shipments/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/shipments/00000000-0000-4000-8000-000000000000 → 404"
+   ],
    "status": "OK",
-   "landedOn": "/logistics/shipments/00000000-0000-4000-8000-000000000000",
-   "textLength": 2050,
+   "landedOn": "/shipping/00000000-0000-4000-8000-000000000000",
+   "textLength": 1651,
    "hasParam": true
   },
   {
@@ -259,7 +269,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/commercial/demand-shaping",
-   "textLength": 2549,
+   "textLength": 2550,
    "hasParam": false
   },
   {
@@ -495,7 +505,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/dashboard",
-   "textLength": 3845,
+   "textLength": 3846,
    "hasParam": false
   },
   {
@@ -545,7 +555,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/dashboard",
-   "textLength": 3631,
+   "textLength": 3632,
    "hasParam": false
   },
   {
@@ -615,7 +625,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production/shop-floor",
-   "textLength": 4625,
+   "textLength": 4635,
    "hasParam": false
   },
   {
@@ -658,10 +668,10 @@
     "Failed to load resource: the server responded with a status of 404 (Not Found)"
    ],
    "apiFailures": [
-    "GET /api/jobs/00000000-0000-4000-8000-000000000000/history → 404",
     "GET /api/jobs/00000000-0000-4000-8000-000000000000 → 404",
     "GET /api/jobs/00000000-0000-4000-8000-000000000000/history → 404",
-    "GET /api/jobs/00000000-0000-4000-8000-000000000000 → 404"
+    "GET /api/jobs/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/jobs/00000000-0000-4000-8000-000000000000/history → 404"
    ],
    "status": "OK",
    "landedOn": "/jobs/00000000-0000-4000-8000-000000000000",
@@ -675,7 +685,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/receiving",
-   "textLength": 3059,
+   "textLength": 3065,
    "hasParam": false
   },
   {
@@ -715,7 +725,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/staging",
-   "textLength": 12691,
+   "textLength": 12694,
    "hasParam": false
   },
   {
@@ -745,7 +755,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/planner",
-   "textLength": 2661,
+   "textLength": 2915,
    "hasParam": false
   },
   {
@@ -755,7 +765,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/comparison",
-   "textLength": 2958,
+   "textLength": 3212,
    "hasParam": false
   },
   {
@@ -765,7 +775,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/comparison/00000000-0000-4000-8000-000000000000",
-   "textLength": 2958,
+   "textLength": 3212,
    "hasParam": true
   },
   {
@@ -775,7 +785,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/route/00000000-0000-4000-8000-000000000000",
-   "textLength": 2742,
+   "textLength": 2996,
    "hasParam": true
   },
   {
@@ -785,7 +795,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/tracking",
-   "textLength": 3065,
+   "textLength": 3319,
    "hasParam": false
   },
   {
@@ -798,7 +808,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/exceptions",
-   "textLength": 2916,
+   "textLength": 3170,
    "hasParam": false
   },
   {
@@ -808,7 +818,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/pod/00000000-0000-4000-8000-000000000000",
-   "textLength": 2511,
+   "textLength": 2765,
    "hasParam": true
   },
   {
@@ -868,7 +878,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/cockpit",
-   "textLength": 2905,
+   "textLength": 2906,
    "hasParam": false
   },
   {
@@ -918,7 +928,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/compression-metrics",
-   "textLength": 6532,
+   "textLength": 6535,
    "hasParam": false
   },
   {
@@ -928,8 +938,24 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shipping",
-   "textLength": 2608,
+   "textLength": 10824,
    "hasParam": false
+  },
+  {
+   "route": "/shipping/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/shipments/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/shipments/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/shipping/00000000-0000-4000-8000-000000000000",
+   "textLength": 1651,
+   "hasParam": true
   },
   {
    "route": "/time-tracking",
@@ -968,7 +994,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/route-optimization",
-   "textLength": 2026,
+   "textLength": 2280,
    "hasParam": false
   },
   {
@@ -978,7 +1004,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/tracking",
-   "textLength": 2805,
+   "textLength": 3059,
    "hasParam": false
   },
   {
@@ -988,7 +1014,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/dispatch",
-   "textLength": 2209,
+   "textLength": 2463,
    "hasParam": false
   },
   {
@@ -998,7 +1024,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/invoices",
-   "textLength": 7170,
+   "textLength": 7264,
    "hasParam": false
   },
   {
@@ -1018,7 +1044,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders",
-   "textLength": 5409,
+   "textLength": 5503,
    "hasParam": false
   },
   {
@@ -1038,7 +1064,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/intake",
-   "textLength": 2686,
+   "textLength": 2685,
    "hasParam": false
   },
   {
@@ -1154,7 +1180,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/audit-log",
-   "textLength": 2322,
+   "textLength": 2325,
    "hasParam": false
   },
   {

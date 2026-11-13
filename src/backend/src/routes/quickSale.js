@@ -30,7 +30,7 @@ import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { money } from '../lib/billingRules.js';
-import { BillingError, creditInvoice, recordRefund } from '../services/billing.js';
+import { BillingError, creditInvoice, recordRefund, recordMoney } from '../services/billing.js';
 
 const router = Router();
 const METHODS = ['CASH', 'CARD', 'CHECK'];
@@ -225,7 +225,7 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
           include: { lines: true },
         });
         const invoiceNumber = `INV-QS-${orderNumber.replace(/^SO-/, '')}`;
-        await tx.invoice.create({
+        const invoice = await tx.invoice.create({
           data: {
             invoiceNumber, orderId: created.id, kind: 'INVOICE', status: 'PAID', invoiceDate: now, dueDate: now,
             subtotal: sale.subtotal, taxAmount: sale.tax, freightAmount: 0, totalAmount: sale.total, paidAmount: sale.total,
@@ -234,13 +234,18 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
             payments: { create: [{ amount: sale.total, paymentMethod: method, referenceNumber: reference || null, paymentDate: now }] },
           },
         });
+        // The cashier is on record for the invoice and for the money taken, like every other invoice.
+        await recordMoney(tx, { invoice, eventType: 'INVOICE_ISSUED', userId: req.user.id, details: { amount: sale.total, note: 'Counter quick sale' } });
+        await recordMoney(tx, { invoice, eventType: 'PAYMENT_RECORDED', userId: req.user.id, details: { amount: sale.total, method, reference: reference || null } });
         return created;
     }),
   });
   // Two submissions of the same sale id at once: keep the first, drop this one.
   const all = await prisma.order.findMany({ where: { poReference: `QS:${saleId}` }, orderBy: { createdAt: 'asc' }, select: { id: true } });
   if (all.length > 1 && all[0].id !== order.id) {
+    const dropped = (await prisma.invoice.findMany({ where: { orderId: order.id }, select: { id: true } })).map((i) => i.id);
     await prisma.$transaction([
+      prisma.auditLog.deleteMany({ where: { resourceType: 'Invoice', resourceId: { in: dropped }, category: 'FINANCIAL' } }),
       prisma.payment.deleteMany({ where: { invoice: { orderId: order.id } } }),
       prisma.invoice.deleteMany({ where: { orderId: order.id } }),
       prisma.order.delete({ where: { id: order.id } }),

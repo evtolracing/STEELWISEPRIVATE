@@ -51,7 +51,7 @@ export function toApi(inv) {
 export const MONEY_EVENTS = ['INVOICE_ISSUED', 'PAYMENT_RECORDED', 'CREDIT_ISSUED', 'REFUND_RECORDED', 'INVOICE_CANCELLED'];
 
 /** Who did what to an invoice, written in the same transaction as the money. */
-function recordMoney(tx, { invoice, eventType, userId, details }) {
+export function recordMoney(tx, { invoice, eventType, userId, details }) {
   return tx.auditLog.create({
     data: {
       category: 'FINANCIAL', eventType, severity: 'INFO', action: eventType === 'INVOICE_CANCELLED' ? 'UPDATE' : 'CREATE',

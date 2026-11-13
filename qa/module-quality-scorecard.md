@@ -27,7 +27,7 @@ Target is 95. The platform layer is not there. The largest gaps are a tested res
 | Sales and customer operations | 2 | 73 (was 45), see below |
 | Inventory and purchasing | 3 | 68 (was 30), see below |
 | Manufacturing and processing | 4 | 66 (was 35), see below |
-| Logistics and financial operations | 5 | Not yet audited |
+| Logistics and financial operations | 5 | 70 (was 40), see below |
 | Enterprise administration, reporting, navigation | 6 | Not yet audited |
 
 ## Sales and customer operations (Workstream 2)
@@ -97,3 +97,21 @@ Target is 95. The module is not there. The largest gaps are production quality a
 
 Not examined in this workstream: the dispatch engine and how it assigns operations, the planning boards, processing recipes and their versions, the shop floor queue screens beyond what the cycles drive through the API, packaging and drop tags, maintenance, downtime, capacity limits, scheduling by drag and drop, and labor costing.
 
+## Logistics and financial operations (Workstream 5)
+
+Covers the Shipping and Shipment screens, the shipment routes, accepted web orders, invoices, payments, credits, refunds, and the freight and logistics sample screens. The money path (dispatch, invoice, payment, credit, refund, return) is exercised by the three 50-job cycles on every run, including three payments at once on one invoice. Not examined: shipping documents and printing (F-011), freight cost on orders, the carrier and tracking screens beyond labelling them, customer statements and ageing, the tax rate admin screen, the counter sale screens (Workstream 2 examined pricing there), and returns beyond crediting.
+
+| Category | Before | After | Evidence |
+|---|---:|---:|---|
+| Functional correctness | 35 | 75 | There was no screen to ship from and the one on the menu was a sample (F-002); web orders carried no tax (F-001). Both fixed and operated in a browser. Freight planning is still samples (F-007) |
+| Data integrity | 55 | 82 | Web order totals saved; proof of delivery checked (F-005). The billing arithmetic was already sound: the cycles reconcile to zero problems |
+| Reliability | 60 | 75 | Concurrent dispatch, payment and return were already guarded and still pass. Missing shipments answer 404 |
+| Security | 50 | 78 | Credit terms no longer sent to the shipping desk (F-003); unsafe delivery links refused. Who may read invoices is undecided (F-009) |
+| Operational efficiency | 25 | 68 | A shipment is created from the order number in one dialog that shows what is left; dispatch raises the invoice. No documents print from the screen (F-011) |
+| User experience | 30 | 72 | Plain status names, a confirmation before dispatch, refusals in the server's words, history with names |
+| Performance | Not measured | Not measured | The list is capped at 200 and searched on the server. Nothing timed |
+| Integration quality | 45 | 68 | Shipping, stock, order, jobs and invoice move together on dispatch (cycles). The store's tax estimate and the accepted order can disagree (F-008). No carrier connection |
+| Maintainability | 50 | 70 | Two small screens replace four sample ones; one event writer each for shipments and money. No unit tests added: the checks are in the sweep |
+| Observability | 15 | 82 | Every shipment step and every money action is in the audit log with the person and shown on the screen (F-004, F-006) |
+| Accessibility | Not measured | Not measured | New screens use labelled tables and controls. No keyboard or contrast audit was run |
+| **Weighted** | **40** | **70** | Performance and accessibility left out and the other weights rescaled to 100. The figures are a judgement from the evidence listed, not a measurement |

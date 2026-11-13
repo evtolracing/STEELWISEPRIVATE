@@ -60,8 +60,18 @@ Not examined in this workstream: credit application and new-account approval (no
 | How many screens? | Order Board to plan, Shop Floor to run, QC Inspections to inspect, Shipping to ship. The job screen ties them together |
 | What is missing? | In-process quality records (M-011); stock consumed and produced by the work is handled by the order's reservations and shipment, not by the job |
 
+## Journey 4: confirmed order, shipment, invoice, payment, credit (Workstream 5)
+
+Operated in a browser as shipping staff and as a manager (`qa/sim/ui-shipping.cjs`, 27 checks), and through the API in the three cycles.
+
+| Question | Answer |
+|---|---|
+| Can it be done on screen from start to finish? | Yes, now. Shipping: New shipment from the order number, Carrier and truck, Dispatch, Mark delivered. Invoices: Record payment, Issue credit, Record refund |
+| Does each step move what it should? | Dispatch takes the reserved stock, updates the order and its jobs, and raises the invoice with its share of tax (cycles reconcile to zero problems). Delivery records who signed |
+| Who did it? | Every shipment step and every money action shows a name |
+| What stops a mistake? | Dispatch asks first and says it cannot be undone; a quantity already on another open shipment is not offered; stock on hold and unfinished jobs refuse the dispatch; a payment over the balance is refused |
+| What is missing? | Printing a bill of lading or packing list from the shipment (F-011); freight cost and carrier rates (F-007); a return is still credited without an inspection step |
+
 ## Journeys queued
 
-4. Customer return, inspection, credit, stock disposition (Workstream 5)
-
-Known from Phase 1, to be re-examined there: a return has no inspection step before credit; there is no purchasing workflow in the simulation.
+Customer return, inspection, credit, stock disposition: the return and its credit run in the cycles and the credit now names who received the return. The missing inspection step before credit is a decision for the owner (see the Workstream 5 dispositions).

@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T09:59:08.916Z",
- "endpointsInInventory": 595,
- "endpointsSwept": 595,
+ "at": "2026-11-13T10:14:02.489Z",
+ "endpointsInInventory": 596,
+ "endpointsSwept": 596,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "556 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
-   "tested": 556,
+   "summary": "557 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 557,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "533 staff routes tried as a customer, 0 not refused",
-   "tested": 533,
+   "summary": "534 staff routes tried as a customer, 0 not refused",
+   "tested": 534,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -40,8 +40,8 @@
   },
   "Read routes do not crash on bad input": {
    "pass": true,
-   "summary": "786 reads, 0 server errors",
-   "tested": 786,
+   "summary": "789 reads, 0 server errors",
+   "tested": 789,
    "byFile": {},
    "findings": []
   },
@@ -107,12 +107,10 @@
    "findings": []
   },
   "Shipping and money records: web order tax, shipments and who did what": {
-   "pass": false,
-   "summary": "36 checks, 1 problems",
-   "findings": [
-    "a shop login cannot read an invoice history: readable"
-   ]
+   "pass": true,
+   "summary": "37 checks, 0 problems",
+   "findings": []
   }
  },
- "pass": false
+ "pass": true
 }

@@ -509,6 +509,10 @@
    "file": "src/backend/src/routes/shipments.js"
   },
   {
+   "ep": "GET /api/shipments/shippable",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
    "ep": "GET /api/shipments/:id",
    "file": "src/backend/src/routes/shipments.js"
   },
@@ -4207,6 +4211,7 @@
   "executive/digital-twin",
   "executive/compression-metrics",
   "shipping",
+  "shipping/:id",
   "time-tracking",
   "shopfloor",
   "shopfloor/:workCenterId",

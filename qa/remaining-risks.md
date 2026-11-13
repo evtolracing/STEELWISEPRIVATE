@@ -19,8 +19,13 @@ Ordered by how much they should worry you.
 | No stock adjustment or count | A wrong weight or a lost item cannot be corrected in the system | Decision on who may adjust, then build (I-016) |
 | Supplier quality screens are samples | They are labelled, but the work they describe is not being recorded anywhere | Decision and build (I-011) |
 | Stock pending inspection can be sold and shipped | Uninspected material could reach a customer | A rule from the owner (gate report, Workstream 3) |
-| Accepted web orders carry no tax or total | Web orders understate what is owed and count low against a credit limit | Workstream 5 (I-018) |
 | Production quality and BOM screens are samples | They are labelled, but in-process inspection, NCRs and SPC are not being recorded anywhere | Decision and build (M-011) |
 | Completing a coil work order does not move stock | Stock is wrong after a work order unless corrected, and it cannot be corrected (I-016) | Decision on whether work orders stay beside jobs (M-016) |
 | Much of the shop floor was not examined | Dispatch, planning, recipes, packaging, maintenance and capacity may hold defects like those found here | Listed in the scorecard; to be scheduled |
 | Job history starts now | Moves made before this change show times only, with no name | None: the past was not recorded |
+| Web orders accepted before this change have no tax or total | Their invoices carry no tax | Owner: list them (orders with a web order number and no total) and decide whether to correct each. Nothing was changed on existing orders |
+| Store tax estimate can differ from the invoice | A buyer is shown one tax and billed another when ship-to and branch states differ | Decision (F-008) |
+| Any staff login can read invoices and payments | Shop staff can see customer balances | Decision (F-009) |
+| Freight planning screens are samples | They are labelled, but rates, routes, tracking and exceptions are not being recorded anywhere | Decision and build (F-007) |
+| Shipping documents not examined | A bill of lading or packing list may not be printable from the shipment | Workstream 6 (F-011) |
+| Shipment and money history starts now | Shipments and payments made before this change show no name | None: the past was not recorded |

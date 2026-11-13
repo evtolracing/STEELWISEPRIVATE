@@ -1466,6 +1466,16 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       const cancelled = inv3 ? await send('POST', `/api/invoices/${inv3}/cancel`, adminT, { reason: `${tag} billed in error` }) : { status: 0 };
       const mv3 = inv3 ? await money(inv3) : [];
       check('cancelling an invoice is recorded with who cancelled it and why', cancelled.status === 200 && mv3.length === 2 && mv3[1].eventType === 'INVOICE_CANCELLED' && mv3[1].userId === adminU.id && /billed in error/.test(mv3[1].details?.note || ''), `status ${cancelled.status} ${cancelled.body?.error || ''}, ${mv3.length} records`);
+
+      // A counter sale is an invoice and a payment too.
+      const each = await prisma.product.findFirst({ where: { priceUnit: 'EACH', basePriceCwt: { gt: 0 } } });
+      if (!each) findings.push('no each-priced product to make a counter sale with');
+      else {
+        const sold = await send('POST', '/api/pos/quick-sale/process-payment', csrT, { sale: { id: `${tag}-QS`, locationId: branch.id, items: [{ productId: each.id, quantity: 1 }] }, payment: { method: 'CARD', reference: `${tag}-APPR` } });
+        const saleInvoice = sold.body?.orderId ? await prisma.invoice.findFirst({ where: { orderId: sold.body.orderId } }) : null;
+        const mvSale = saleInvoice ? await money(saleInvoice.id) : [];
+        check('a counter sale records the cashier for the invoice and the money taken', sold.status === 201 && mvSale.map((m) => m.eventType).join('>') === 'INVOICE_ISSUED>PAYMENT_RECORDED' && mvSale.every((m) => m.userId === csrU.id) && cents(mvSale[1].details?.amount) === cents(saleInvoice.totalAmount) && mvSale[1].details?.method === 'CARD', `status ${sold.status} ${sold.body?.error || ''}, ${mvSale.map((m) => m.eventType).join('>')}`);
+      }
     }
   } finally {
     await prisma.onlineOrder.deleteMany({ where: { id: { in: onlineIds } } });

@@ -396,8 +396,15 @@ async function runScenario(category, i, id) {
 async function concurrency(report) {
   const out = [];
   const record = (name, pass, detail) => out.push({ name, pass: !!pass, detail });
-  const loc = ctx.locs[1];
-  const pool = await stockAt(loc.id, { minAvail: 2000 });
+  // Earlier cycles use up stock, so take the first QA location that still has enough.
+  let loc = ctx.locs[1];
+  let pool = await stockAt(loc.id, { minAvail: 2000 });
+  for (const other of ctx.locs) {
+    if (pool.length) break;
+    loc = other;
+    pool = await stockAt(loc.id, { minAvail: 2000 });
+  }
+  if (!pool.length) throw new Error('No QA location has 2000 available on any coil; reseed QA fixtures.');
   const stock = R.pick(pool);
 
   // 1. Ten simultaneous order creations must all succeed with distinct numbers.

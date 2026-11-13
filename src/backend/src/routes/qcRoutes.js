@@ -10,14 +10,9 @@
 
 import express from 'express'
 import prisma from '../lib/db.js'
+import { createNumbered, padded } from '../lib/numbering.js';
 
 const router = express.Router()
-
-// ── Helper: Generate inspection number ──────────────────────────────────────
-async function nextInspectionNumber() {
-  const count = await prisma.jobInspection.count()
-  return `INS-${String(count + 1).padStart(5, '0')}`
-}
 
 // ── GET /queue ── Jobs waiting for QC inspection ────────────────────────────
 router.get('/queue', async (req, res) => {
@@ -222,9 +217,7 @@ router.post('/inspections', async (req, res) => {
       })
     }
 
-    const inspectionNumber = await nextInspectionNumber()
-
-    const inspection = await prisma.jobInspection.create({
+    const inspection = await createNumbered({ count: () => prisma.jobInspection.count(), format: padded('INS'), create: (inspectionNumber) => prisma.jobInspection.create({
       data: {
         inspectionNumber,
         jobId,
@@ -239,7 +232,7 @@ router.post('/inspections', async (req, res) => {
         job: { select: { jobNumber: true, status: true } },
         inspector: { select: { id: true, firstName: true, lastName: true } },
       },
-    })
+    }) })
 
     console.log(`[QC] Created inspection ${inspectionNumber} for job ${job.jobNumber}`)
     res.status(201).json({ success: true, data: inspection })

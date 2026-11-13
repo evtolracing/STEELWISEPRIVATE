@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T03:21:10.473Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T05:13:15.067Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -15,17 +15,20 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 | `r5-2001.json` | 2001 | 50 | 49 | 0 | 0 | 1 | 586 | 490 | 5 of 5 pass | 0 problems in 323 stock items and 254 orders |
 | `r5-2002.json` | 2002 | 50 | 49 | 0 | 0 | 1 | 596 | 490 | 5 of 5 pass | 0 problems in 323 stock items and 310 orders |
 | `r5-2003.json` | 2003 | 50 | 49 | 0 | 0 | 1 | 583 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 366 orders |
-| `final-3001.json` | 3001 | 50 | 49 | 0 | 0 | 1 | 590 | 489 | 5 of 5 pass | 0 problems in 323 stock items and 423 orders |
-| `final-3002.json` | 3002 | 50 | 49 | 0 | 0 | 1 | 594 | 493 | 5 of 5 pass | 0 problems in 323 stock items and 479 orders |
-| `final-3003.json` | 3003 | 50 | 49 | 0 | 0 | 1 | 586 | 484 | 5 of 5 pass | 0 problems in 323 stock items and 535 orders |
+| `r6-3001.json` | 3001 | 50 | 49 | 0 | 0 | 1 | 590 | 489 | 5 of 5 pass | 0 problems in 323 stock items and 423 orders |
+| `r6-3002.json` | 3002 | 50 | 49 | 0 | 0 | 1 | 594 | 493 | 5 of 5 pass | 0 problems in 323 stock items and 479 orders |
+| `r6-3003.json` | 3003 | 50 | 49 | 0 | 0 | 1 | 586 | 484 | 5 of 5 pass | 0 problems in 323 stock items and 535 orders |
+| `final-4001.json` | 4001 | 50 | 49 | 0 | 0 | 1 | 593 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 56 orders |
+| `final-4002.json` | 4002 | 50 | 49 | 0 | 0 | 1 | 583 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 112 orders |
+| `final-4003.json` | 4003 | 50 | 49 | 0 | 0 | 1 | 595 | 494 | 5 of 5 pass | 0 problems in 323 stock items and 168 orders |
 
-**Final consecutive cycles:** 3 cycles, 150 jobs: 147 passed, 0 failed, 3 blocked. 1770 API steps and 1466 checks. Seeds 3001, 3002, 3003.
+**Final consecutive cycles:** 3 cycles, 150 jobs: 147 passed, 0 failed, 3 blocked. 1771 API steps and 1478 checks. Seeds 4001, 4002, 4003.
 
 Blocked jobs are not passes. They are jobs the app has no way to perform:
 
-- S3001-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
-- S3002-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
-- S3003-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
+- S4001-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
+- S4002-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
+- S4003-46 (partial-rework-return): No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).
 
 ### By category across the final cycles
 
@@ -44,9 +47,9 @@ Blocked jobs are not passes. They are jobs the app has no way to perform:
 ### Simultaneous-request probes (last final cycle)
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
-- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 960
+- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 6400
 - Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 1440 of 1440; on hand 2400 → 960
+- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 9600 of 9600; on hand 16000 → 6400
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 
 ### Known open defects re-checked every cycle
@@ -55,7 +58,7 @@ Blocked jobs are not passes. They are jobs the app has no way to perform:
 - D-015: No way to record a customer return. Still present (POST /api/returns → 404).
 - D-016: No way to create an invoice or record a payment. Still present (POST /api/invoices → 404).
 
-The reconciliation also found 49 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1003: fully shipped but status is CONFIRMED; SO-P1001: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
+The reconciliation also found 49 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
 ## What the baseline run found before any repair
 
@@ -73,7 +76,7 @@ The reconciliation also found 49 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T03:21:01.633Z. 581 of 581 routes swept.
+Run 2026-11-13T05:12:57.333Z. 581 of 581 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
@@ -83,9 +86,10 @@ Run 2026-11-13T03:21:01.633Z. 581 of 581 routes swept.
 | Customer logins are held to the store | Pass | 519 staff routes tried as a customer, 0 not refused |
 | Customers cannot see each other | Pass | 7 checks, 0 problems |
 | Staff roles | Pass | 0 problems, 1 observation(s) needing a policy decision |
-| Read routes do not crash on bad input | FINDINGS | 753 reads, 29 server errors |
+| Read routes do not crash on bad input | FINDINGS | 753 reads, 7 server errors |
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
+| Web checkout prices are checked against the system price | Pass | 3 checks, 0 problems |
 | Error replies do not expose internals | Pass | 0 replies exposed internal detail |
 
 ### Staff roles
@@ -94,35 +98,13 @@ Run 2026-11-13T03:21:01.633Z. 581 of 581 routes swept.
 
 ### Read routes do not crash on bad input
 
-- /api/heats (hostile filter) → 500 {"error":"Failed to fetch heats"} [heats.js]
-- /api/coils (hostile filter) → 500 {"error":"Failed to fetch coils"} [coils.js]
-- /api/orders/intake (hostile filter) → 500 {"error":"Failed to list orders"} [intakeOrders.js]
-- /api/work-orders (hostile filter) → 500 {"error":"Failed to fetch work orders"} [workOrders.js]
-- /api/customers (hostile filter) → 500 {"error":"Failed to fetch customers"} [customers.js]
-- /api/rfqs (hostile filter) → 500 {"error":"Failed to fetch RFQs"} [rfqs.js]
 - /api/rfqs/:id → 500 {"error":"Failed to fetch RFQ"} [rfqs.js]
 - /api/rfqs/:id (hostile filter) → 500 {"error":"Failed to fetch RFQ"} [rfqs.js]
 - /api/quotes → 500 {"error":"Failed to fetch quotes"} [quotes.js]
-- /api/quotes (hostile filter) → 500 {"error":"Failed to fetch quotes"} [quotes.js]
 - /api/quotes/:id → 500 {"error":"Failed to fetch quote"} [quotes.js]
 - /api/quotes/:id (hostile filter) → 500 {"error":"Failed to fetch quote"} [quotes.js]
-- /api/jobs (hostile filter) → 500 {"error":"Failed to fetch jobs"} [jobs.js]
 - /api/pos/quick-sale/:saleId/receipt → 500 {"error":"Failed to get receipt"} [pos.js]
 - /api/pos/quick-sale/:saleId/receipt (hostile filter) → 500 {"error":"Failed to get receipt"} [pos.js]
-- /api/v1/bom/recipes (hostile filter) → 500 {"error":"Failed to fetch BOM recipes"} [bomV1.js]
-- /api/v1/shipping (hostile filter) → 500 {"error":"Failed to fetch shipments"} [shippingV1.js]
-- /api/v1/shipments (hostile filter) → 500 {"error":"Failed to fetch shipments"} [shippingV1.js]
-- /api/v1/jobs (hostile filter) → 500 {"error":"Failed to fetch jobs"} [jobs.js]
-- /api/sales/rfqs (hostile filter) → 500 {"error":"Failed to fetch RFQs"} [salesRoutes.js]
-- /api/sales/quotes (hostile filter) → 500 {"error":"Failed to fetch quotes"} [salesRoutes.js]
-- /api/sales/dashboard/stats → 500 {"error":"Failed to fetch dashboard statistics"} [salesRoutes.js]
-- /api/sales/dashboard/stats (hostile filter) → 500 {"error":"Failed to fetch dashboard statistics"} [salesRoutes.js]
-- /api/drop-tags (hostile filter) → 500 {"error":"Something went wrong on our side. Please try again."} [dropTagRoutes.js]
-- /api/staff/operators (hostile filter) → 500 {"success":false,"error":"Failed to fetch operators"} [staff.js]
-- /api/staff/shifts (hostile filter) → 500 {"success":false,"error":"Failed to fetch shifts"} [staff.js]
-- /api/maintenance-orders (hostile filter) → 500 {"error":"Failed to fetch maintenance orders"} [maintenanceOrders.js]
-- /api/assets (hostile filter) → 500 {"error":"Failed to fetch assets"} [assets.js]
-- /api/v1/admin/partners (hostile filter) → 500 {"error":"Failed to list partners"} [adminRoutes.js]
 
 ## Screen check
 

@@ -249,6 +249,28 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
   section('Documents: upload, list, download, delete', { pass: findings.length === 0, summary: `11 checks, ${findings.length} problems`, findings });
 }
 
+// 11. Web checkout: a line priced below the system price is flagged for the CSR; an honest one is not.
+{
+  const token = await tokenFor('custB'); const H = { 'content-type': 'application/json', authorization: `Bearer ${token}` };
+  const findings = [];
+  const prod = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'EACH', basePriceCwt: { gt: 0 } } }) || await prisma.product.findFirst({ where: { isActive: true, form: 'SUPPLY' } });
+  if (!prod) findings.push('no each-priced product to test with');
+  else {
+    const quote = await fetch(`${BASE}/api/ecom/pricing/config`, { method: 'POST', headers: H, body: JSON.stringify({ productId: prod.id, quantity: 3 }) }).then((r) => r.json()).catch(() => null);
+    const fair = quote?.extended ?? quote?.data?.extended;
+    if (!(fair > 0)) findings.push(`could not get a system price: ${JSON.stringify(quote).slice(0, 120)}`);
+    else {
+      const place = async (extended) => { const r = await fetch(`${BASE}/api/ecom/checkout/submit`, { method: 'POST', headers: H, body: JSON.stringify({ items: [{ productId: prod.id, quantity: 3, extended, sku: prod.sku }], deliveryMethod: 'PICKUP' }) }).then((x) => x.json()); return r?.data?.id ? prisma.onlineOrder.findUnique({ where: { id: r.data.id } }) : null; };
+      const cheap = await place(0.03); const honest = await place(fair);
+      if (!cheap || !/PRICE CHECK/.test(cheap.notes || '')) findings.push(`a 3-cent order for a ${fair} item was not flagged (notes: ${cheap?.notes})`);
+      if (!honest || /PRICE CHECK/.test(honest.notes || '')) findings.push(`an order at the system price was flagged (notes: ${honest?.notes})`);
+      const neg = await fetch(`${BASE}/api/ecom/checkout/submit`, { method: 'POST', headers: H, body: JSON.stringify({ items: [{ productId: prod.id, quantity: 3, extended: -5 }] }) });
+      if (neg.status !== 400) findings.push(`negative price → ${neg.status}`);
+    }
+  }
+  section('Web checkout prices are checked against the system price', { pass: findings.length === 0, summary: `3 checks, ${findings.length} problems`, findings });
+}
+
 // 9. Nothing above may have answered with database or server internals.
 section('Error replies do not expose internals', { pass: leaks.size === 0, summary: `${leaks.size} replies exposed internal detail`, findings: [...leaks] });
 

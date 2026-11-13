@@ -5,16 +5,33 @@
 import '../config/env.js';
 import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
+import { requestContext, isBadFilterValue } from './requestContext.js';
 
 const globalForPrisma = global;
 
 // Only initialize Prisma if DATABASE_URL is configured
 const isDatabaseConfigured = process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== '';
 
+// Notes on the current request when a query is refused because of a value the
+// caller sent (for example ?status=nonsense), so the reply can be a 400.
+const withBadFilterNote = (client) => client.$extends({
+  query: {
+    async $allOperations({ args, query }) {
+      try {
+        return await query(args);
+      } catch (error) {
+        const store = requestContext.getStore();
+        if (store && isBadFilterValue(error)) store.badFilterValue = true;
+        throw error;
+      }
+    },
+  },
+});
+
 export const prisma = isDatabaseConfigured
-  ? (globalForPrisma.prisma || new PrismaClient({
+  ? (globalForPrisma.prisma || withBadFilterNote(new PrismaClient({
       log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-    }))
+    })))
   : null;
 
 if (process.env.NODE_ENV !== 'production' && prisma) {

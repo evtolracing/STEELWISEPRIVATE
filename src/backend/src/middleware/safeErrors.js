@@ -7,6 +7,8 @@
  * server and replaced with a plain sentence. Messages written for people
  * ("Order not found") pass through untouched.
  */
+import { requestContext } from '../lib/requestContext.js';
+
 const INTERNAL = /prisma|Invalid `|Unique constraint|Foreign key constraint|violates|relation "|column "|syntax error|ECONNREFUSED|ENOTFOUND|node_modules|\n\s+at |Cannot read properties|is not a function|is not defined/i;
 const FIELDS = ['error', 'details', 'message', 'stack'];
 
@@ -14,9 +16,17 @@ export function looksInternal(text) {
   return typeof text === 'string' && INTERNAL.test(text);
 }
 
+const READS = new Set(['GET', 'HEAD']);
+
 export function safeErrors(req, res, next) {
   const json = res.json.bind(res);
+  const store = {};
   res.json = (body) => {
+    // A read that failed only because a filter value was the wrong kind is the caller's mistake, not ours.
+    if (res.statusCode === 500 && store.badFilterValue && READS.has(req.method)) {
+      res.status(400);
+      return json({ error: 'One of the filter values in this request is not valid.' });
+    }
     if (res.statusCode >= 400 && body && typeof body === 'object' && !Array.isArray(body)) {
       let cleaned = null;
       for (const field of FIELDS) {
@@ -33,7 +43,7 @@ export function safeErrors(req, res, next) {
     }
     return json(body);
   };
-  next();
+  requestContext.run(store, next);
 }
 
 const PAGING = ['limit', 'offset', 'page', 'pageSize', 'perPage', 'take', 'skip'];

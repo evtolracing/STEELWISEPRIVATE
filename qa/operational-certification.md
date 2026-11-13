@@ -10,7 +10,7 @@ The system as a whole cannot be certified, for four reasons:
 
 1. **Money workflows do not exist.** There is no way to invoice, take a payment, issue a credit or process a return (D-015, D-016). Three of the 150 final jobs are blocked for this reason.
 2. **Counter quick sale is a prototype** that cannot complete a sale and simulates card payments (D-014).
-3. **Online checkout trusts the price sent by the browser** (D-017), and the API does not limit staff by department (D-018).
+3. **Online checkout still takes the price sent by the browser** (D-017; low prices are now flagged for the CSR, not rejected), and the API does not limit staff by department (D-018).
 4. **The fixes are not live.** They are in a pull request, tested locally only. The hosted site still has every defect in the "Fixed" list.
 
 ## What was done
@@ -25,8 +25,8 @@ The system as a whole cannot be certified, for four reasons:
 | Baseline | 3 of 50 jobs passed, 46 failed, 1 blocked |
 | Repair | 18 defects fixed at the root cause (`defect-register.md`) |
 | Regression tests | 32 unit tests (`npm test` in `src/backend`), none existed before |
-| Final cycles | Seeds 3001, 3002, 3003: 150 jobs, 147 passed, 0 failed, 3 blocked. 1,770 API steps, 1,466 checks. All 15 simultaneous-request probes passed. Reconciliation: 0 problems in 323 stock items and every order created during QA |
-| Security sweep | 542 routes refuse a request with no sign-in. 519 staff routes refuse a customer login. Forged tokens refused. Customers cannot read each other's records. No error reply exposes database detail. One section has findings: 29 read requests answered with a server error (D-019, D-021, and the quick-sale receipt in D-014) |
+| Final cycles | Seeds 4001, 4002, 4003 on a freshly rebuilt QA database, rerun after the follow-up fixes: 150 jobs, 147 passed, 0 failed, 3 blocked (returns, D-015). 1,771 API steps, 1,478 checks. All 15 simultaneous-request probes passed. Reconciliation: 0 problems in 323 stock items and every order created during QA. The earlier certification cycles (seeds 3001 to 3003) are kept as `qa/results/r6-*.json` |
+| Security sweep | 542 routes refuse a request with no sign-in. 519 staff routes refuse a customer login. Forged tokens refused. Customers cannot read each other's records. No error reply exposes database detail. One section has findings: 7 read requests answered with a server error (D-019 quotes/RFQs/sales stats, and the quick-sale receipt in D-014); this was 29 before the D-021 fix |
 | Screens | All 120 openable screens load in a browser with no crash after 3 fixes. Buttons and forms inside the screens were not exercised |
 | Build | Frontend production build succeeds |
 
@@ -44,9 +44,9 @@ Full numbers, generated from the recorded runs, are in `test-execution-results.m
 
 ## Open defects by severity
 
-- P1: D-014 quick sale, D-015 returns, D-016 invoicing and payments, D-017 checkout price, D-011b file storage on the hosted site
-- P2: D-018 staff permissions on the API, D-019 quotes and RFQs, D-020 screen calls with no server route (152 of 332), D-024 two stock systems and five mock services, D-025 tests not yet run automatically, D-028 division visibility, D-032 jobs not tied to shipments, D-006b remaining count-based numbers
-- P3: D-021 junk filters, D-023 demo seed data, D-027 rate limit per instance
+- P1: D-014 quick sale, D-015 returns, D-016 invoicing and payments, D-017 checkout price (flagged, not enforced), D-011b file storage on the hosted site
+- P2: D-018 staff permissions on the API, D-019 quotes and RFQs, D-020 screen calls with no server route (152 of 332), D-024 two stock systems and five mock services, D-028 division visibility, D-032 jobs not tied to shipments
+- P3: D-023 demo seed data, D-027 rate limit per instance
 
 ## Decisions needed
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { createNumbered, padded } from '../lib/numbering.js';
 
 const router = Router();
 
@@ -39,12 +40,10 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const count = await prisma.workOrder.count();
-    const woNumber = `WO-${String(count + 1).padStart(5, '0')}`;
-    const wo = await prisma.workOrder.create({
+    const wo = await createNumbered({ count: () => prisma.workOrder.count(), format: padded('WO'), create: (woNumber) => prisma.workOrder.create({
       data: { ...req.body, woNumber },
       include: { sourceCoil: true }
-    });
+    }) });
     res.status(201).json(wo);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create work order' });

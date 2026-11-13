@@ -352,6 +352,22 @@ export async function checkout(payload = {}, { quote = false } = {}) {
       estimatedWeight: Number(i.estimatedWeight ?? pricing.estimatedWeight) || null,
     };
   });
+  // The price comes from the browser, so compare each line with the system's
+  // own price and flag any line that came in lower for the CSR who reviews it.
+  const priceFlags = [];
+  const usd = (n) => `USD ${n.toFixed(2)}`;
+  for (const [idx, i] of raw.entries()) {
+    const line = lines[idx];
+    if (i.isRemnant || i.remnantId || line.priceSource === 'REMNANT' || line.priceSource === 'REVIEW_REQUIRED') continue;
+    const system = await priceConfig({ productId: i.productId, quantity: line.qty, dimensions: line.dimensions || {}, processing: line.processing, priceLevel: i.priceLevel || payload.priceLevel });
+    if (system.error || system.priceSource === 'REVIEW_REQUIRED') continue;
+    line.systemExtended = system.extended;
+    if (line.extended + 0.01 < system.extended) {
+      line.priceSource = 'REVIEW_REQUIRED';
+      priceFlags.push(`PRICE CHECK line ${line.lineNumber}: order says ${usd(line.extended)}, system price is ${usd(system.extended)}`);
+    }
+  }
+
   const subtotal = money(lines.reduce((s, l) => s + l.extended, 0));
   const tax = money(Number(payload.taxAmount ?? payload.tax) || 0);
   const needsReview = quote || lines.some((l) => l.priceSource === 'REVIEW_REQUIRED');
@@ -367,6 +383,7 @@ export async function checkout(payload = {}, { quote = false } = {}) {
     shipTo ? `Ship to: ${shipTo}` : null,
     payload.paymentMethod ? `Payment: ${payload.paymentMethod}` : null,
     payload.orderNotes || payload.notes || null,
+    ...priceFlags,
   ].filter(Boolean).join(' · ');
 
   let customerId = null;

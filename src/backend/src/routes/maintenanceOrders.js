@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { createNumbered, padded } from '../lib/numbering.js';
 
 const router = Router();
 
@@ -95,8 +96,6 @@ router.get('/:id', async (req, res) => {
 // POST /api/maintenance-orders — Create a new maintenance order
 router.post('/', async (req, res) => {
   try {
-    const count = await prisma.maintenanceOrder.count();
-    const woNumber = `MO-${new Date().getFullYear()}-${String(count + 1).padStart(4, '0')}`;
 
     const {
       assetId,
@@ -127,7 +126,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'title is required' });
     }
 
-    const mo = await prisma.maintenanceOrder.create({
+    const mo = await createNumbered({ count: () => prisma.maintenanceOrder.count(), format: (n) => `MO-${new Date().getFullYear()}-${String(n).padStart(4, '0')}`, create: (woNumber) => prisma.maintenanceOrder.create({
       data: {
         woNumber,
         assetId,
@@ -152,7 +151,7 @@ router.post('/', async (req, res) => {
           select: { id: true, assetNumber: true, name: true, workCenterId: true }
         },
       },
-    });
+    }) });
     res.status(201).json(mo);
   } catch (error) {
     console.error('Failed to create maintenance order:', error);

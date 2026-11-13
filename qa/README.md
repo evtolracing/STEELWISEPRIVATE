@@ -37,7 +37,7 @@ node qa/sim/security.mjs
 node qa/tools/report.mjs                            # rebuild test-execution-results.md
 ```
 
-A cycle can be replayed exactly by passing the same `--seed`. The screen check also needs the frontend dev server (`npx vite --port 5199` in `src/frontend`) and a QA backend on port 3001 (`PORT=3001 qa/tools/start-qa-server.sh`).
+A cycle can be replayed exactly by passing the same `--seed` on a freshly built QA database. Each cycle uses up QA stock, so after many cycles jobs start to show as blocked with "no stock"; rebuild the QA database (the one-time steps above) before a certification run. The screen check also needs the frontend dev server (`npx vite --port 5199` in `src/frontend`) and a QA backend on port 3001 (`PORT=3001 qa/tools/start-qa-server.sh`).
 
 ## Reading a cycle's result
 

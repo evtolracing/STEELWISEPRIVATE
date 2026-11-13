@@ -100,7 +100,6 @@ const LoginPage = lazy(() => import('../pages/Auth/LoginPage'))
 // Phase 1 - Service Center Pages
 const OrderBoardPage = lazy(() => import('../pages/ModernOrderBoardPage'))
 const SchedulePage = lazy(() => import('../pages/SchedulePage'))
-const ShopFloorPage = lazy(() => import('../pages/ShopFloorPage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
@@ -250,16 +249,11 @@ const router = createBrowserRouter([
     errorElement: <RouteErrorPage />,
   },
 
-  // Shop Floor - Standalone (no app layout for touch-friendly full screen)
+  // The first operator kiosk showed sample jobs and saved nothing. The real
+  // shop floor is /shopfloor, so the old address goes there.
   {
     path: '/shop-floor',
-    element: (
-      <ProtectedRoute checkRole>
-        <Suspense fallback={<PageLoader />}>
-          <ShopFloorPage />
-        </Suspense>
-      </ProtectedRoute>
-    ),
+    element: <Navigate to="/shopfloor" replace />,
     errorElement: <RouteErrorPage />,
   },
 
@@ -666,7 +660,7 @@ const router = createBrowserRouter([
         path: 'production-quality/dashboard',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ProdQualityDashboard />
+            <SampleScreen what="Production quality" instead="Real inspections are under QC Inspections."><ProdQualityDashboard /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -675,7 +669,7 @@ const router = createBrowserRouter([
         path: 'production-quality/inspections',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <InspectionExecution />
+            <SampleScreen what="Production quality" instead="Real inspections are under QC Inspections."><InspectionExecution /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -684,7 +678,7 @@ const router = createBrowserRouter([
         path: 'production-quality/ncr',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <NCRManagement />
+            <SampleScreen what="Production quality" instead="Real inspections are under QC Inspections."><NCRManagement /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -693,7 +687,7 @@ const router = createBrowserRouter([
         path: 'production-quality/spc',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SPCChartsPage />
+            <SampleScreen what="Production quality" instead="Real inspections are under QC Inspections."><SPCChartsPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -702,7 +696,7 @@ const router = createBrowserRouter([
         path: 'production-quality/trace',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <TraceabilitySearch />
+            <SampleScreen what="Production quality" instead="Real inspections are under QC Inspections."><TraceabilitySearch /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1185,7 +1179,7 @@ const router = createBrowserRouter([
         path: 'boms',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <BOMsPage />
+            <SampleScreen what="Bills of material" instead="Real processing recipes are under Admin, Processing Recipes."><BOMsPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

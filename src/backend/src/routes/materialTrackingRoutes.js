@@ -7,6 +7,7 @@
 import express from 'express';
 import { shipForJob } from './shipments.js';
 import prisma from '../lib/db.js';
+import { recordJobMove } from '../lib/jobHistory.js';
 
 const router = express.Router();
 
@@ -447,6 +448,7 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
         shippedAt: new Date(),
       },
     });
+    await recordJobMove(prisma, { job: staged, from: staged.status, to: 'SHIPPED', note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id });
 
     // Auto-log custody event
     await prisma.traceEvent.create({

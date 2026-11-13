@@ -22,52 +22,30 @@ import {
   CheckCircle as ActiveIcon,
   Speed as SpeedIcon,
 } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 import { WorkCenterSchedule } from '../components/jobs'
-import { DEFAULT_WORK_CENTERS, WORK_CENTER_STATUS, PROCESSING_TYPES } from '../constants/processingTypes'
+import { getWorkCenters } from '../api/workCenters'
+import { getJobs } from '../api/jobs'
+import { WORK_CENTER_STATUS } from '../constants/processingTypes'
 import { JOB_STATUSES } from '../constants/jobStatuses'
 import { PRIORITY_LEVELS } from '../constants/materials'
 
-// Mock data generator for work centers
-const generateMockWorkCenters = () => {
-  return DEFAULT_WORK_CENTERS.map((wc, idx) => ({
-    ...wc,
-    status: idx === 2 ? WORK_CENTER_STATUS.MAINTENANCE : WORK_CENTER_STATUS.ACTIVE,
-    utilization: Math.floor(Math.random() * 40 + 50),
-    currentOperator: idx % 2 === 0 ? 'John D.' : null,
-    activeJob: idx % 3 === 0 ? `JOB-100${idx}` : null,
-  }))
-}
+const DAY_START_HOUR = 6
+const DAY_HOURS = 10 // the grid shows 6 AM to 4 PM
 
-// Mock scheduled jobs
-const generateMockScheduledJobs = (date) => {
-  const baseHour = 6
-  const jobs = []
-  const customers = ['ABC Steel', 'Metro Mfg', 'Industrial Corp', 'Steel Solutions']
-  const materials = ['HR Coil 0.125"', 'CR Sheet 16ga', 'Galv Coil 0.060"', 'SS 304 0.048"']
-
-  for (let i = 0; i < 15; i++) {
-    const startHour = baseHour + (i % 8)
-    const duration = Math.floor(Math.random() * 3) + 1
-    jobs.push({
-      id: `JOB-${1000 + i}`,
-      jobNumber: `JOB-${1000 + i}`,
-      customerName: customers[i % customers.length],
-      material: materials[i % materials.length],
-      status: i < 3 ? JOB_STATUSES.IN_PROCESS : JOB_STATUSES.SCHEDULED,
-      priority: Object.values(PRIORITY_LEVELS)[i % 4],
-      processingType: Object.keys(PROCESSING_TYPES)[i % Object.keys(PROCESSING_TYPES).length],
-      workCenterId: DEFAULT_WORK_CENTERS[i % DEFAULT_WORK_CENTERS.length].id,
-      scheduledStart: new Date(date.setHours(startHour, 0, 0, 0)).toISOString(),
-      scheduledEnd: new Date(date.setHours(startHour + duration, 0, 0, 0)).toISOString(),
-      estimatedDuration: duration * 60, // minutes
-      targetPieces: Math.floor(Math.random() * 200 + 50),
-    })
-  }
-
-  return jobs
+/** Hours of the shown day a work center is booked for, as a share of the day. */
+function bookedShare(jobs) {
+  const minutes = jobs.reduce((sum, j) => {
+    if (!j.scheduledStart) return sum
+    const start = new Date(j.scheduledStart)
+    const end = j.scheduledEnd ? new Date(j.scheduledEnd) : new Date(start.getTime() + 2 * 3600000)
+    return sum + Math.max(0, (end - start) / 60000)
+  }, 0)
+  return Math.min(100, Math.round((minutes / (DAY_HOURS * 60)) * 100))
 }
 
 const SchedulePage = () => {
+  const navigate = useNavigate()
   const [date, setDate] = useState(new Date())
   const [workCenters, setWorkCenters] = useState([])
   const [scheduledJobs, setScheduledJobs] = useState([])
@@ -78,13 +56,27 @@ const SchedulePage = () => {
   const loadScheduleData = useCallback(async () => {
     setLoading(true)
     try {
-      // In production: const [wcs, jobs] = await Promise.all([getWorkCenters(), getAllSchedules(date)])
-      await new Promise((r) => setTimeout(r, 400))
-      setWorkCenters(generateMockWorkCenters())
-      setScheduledJobs(generateMockScheduledJobs(new Date(date)))
+      const from = new Date(date)
+      from.setHours(0, 0, 0, 0)
+      const to = new Date(from)
+      to.setDate(to.getDate() + 1)
+      const [wcs, jobs] = await Promise.all([
+        getWorkCenters({ isActive: true }),
+        getJobs({ scheduledFrom: from.toISOString(), scheduledTo: to.toISOString(), limit: 2000 }),
+      ])
+      const dayJobs = (Array.isArray(jobs) ? jobs : []).filter((j) => j.status !== 'CANCELLED')
+      setScheduledJobs(dayJobs)
+      // "Booked" is the share of the shown day with a job scheduled on the work center.
+      setWorkCenters((Array.isArray(wcs) ? wcs : []).map((wc) => ({
+        ...wc,
+        status: wc.isActive ? 'ACTIVE' : 'DOWN',
+        utilization: bookedShare(dayJobs.filter((j) => j.workCenterId === wc.id)),
+      })))
     } catch (error) {
       console.error('Failed to load schedule:', error)
-      setSnackbar({ open: true, message: 'Failed to load schedule', severity: 'error' })
+      setWorkCenters([])
+      setScheduledJobs([])
+      setSnackbar({ open: true, message: error.response?.data?.error || 'The schedule could not be loaded', severity: 'error' })
     } finally {
       setLoading(false)
     }
@@ -99,8 +91,7 @@ const SchedulePage = () => {
   }
 
   const handleJobClick = (job) => {
-    console.log('Selected job:', job)
-    // Navigate to job detail or open modal
+    navigate(`/jobs/${job.id}`)
   }
 
   // Calculate summary stats
@@ -158,6 +149,7 @@ const SchedulePage = () => {
             <Button 
               variant="contained" 
               startIcon={<AddIcon />}
+              onClick={() => navigate('/order-board')}
               sx={{ 
                 bgcolor: 'rgba(255,255,255,0.2)',
                 backdropFilter: 'blur(10px)',
@@ -170,6 +162,11 @@ const SchedulePage = () => {
         </Box>
       </Box>
 
+      {!loading && scheduledJobs.some((j) => !j.workCenterId) && (
+        <Alert severity="warning" sx={{ mx: 3, mt: 2 }}>
+          {scheduledJobs.filter((j) => !j.workCenterId).length} job(s) scheduled for this day have no work center, so they are not on the grid. Plan them on the Order Board.
+        </Alert>
+      )}
       {/* Stats Bar */}
       <Box sx={{ mx: 3, mt: 3 }}>
         <Paper sx={{ 
@@ -226,7 +223,7 @@ const SchedulePage = () => {
                 <SpeedIcon sx={{ color: '#7b1fa2' }} />
               </Avatar>
               <Box>
-                <Typography variant="caption" color="text.secondary">Avg Utilization</Typography>
+                <Typography variant="caption" color="text.secondary">Average booked</Typography>
                 <Typography variant="h5" fontWeight={700} sx={{ color: '#7b1fa2' }}>{stats.avgUtilization}%</Typography>
               </Box>
             </Box>
@@ -287,7 +284,7 @@ const SchedulePage = () => {
                     {wc.name} - {wc.type}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Status: {wc.status} | Utilization: {wc.utilization}%
+                    Status: {wc.status} | Booked: {wc.utilization}%
                   </Typography>
                   <Box sx={{ mt: 1.5 }}>
                     {scheduledJobs

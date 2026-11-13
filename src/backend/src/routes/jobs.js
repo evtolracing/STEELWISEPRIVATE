@@ -4,6 +4,7 @@ import { onJobStatusChange } from '../services/printAutomationService.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
 import { shipForJob } from './shipments.js';
+import { recordJobMove, recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
 
 const router = Router();
 
@@ -94,7 +95,9 @@ async function editJob(req, res) {
     if (!Object.keys(data).length) return res.status(400).json({ error: 'Nothing to update' });
 
     const updated = await prisma.job.update({ where: { id: job.id }, data, include: JOB_INCLUDE });
+    if (data.assignedToId !== undefined) await recordJobAssignment(prisma, { job, fromUserId: job.assignedToId, toUserId: data.assignedToId, userId: req.user?.id });
     if (moving) {
+      await recordJobMove(prisma, { job, from: job.status, to: body.status, via: 'edit', userId: req.user?.id });
       onJobStatusChange(updated, body.status, job.status).catch((e) => console.error('[PrintAutomation] status hook error:', e.message));
     }
     res.json(mapJobForFrontend(updated));
@@ -115,27 +118,9 @@ const FINISHED_JOB_STATUSES = ['SHIPPED', 'COMPLETED', 'CANCELLED'];
 
 router.get('/', async (req, res) => {
   try {
-    // Return mock data if Prisma is not configured
-    if (!prisma) {
-      const mockJobs = [
-        {
-          id: '1',
-          jobNumber: 'JOB-000001',
-          operationType: 'SLITTING',
-          instructions: 'Slit 48" x 0.125" CR coil into 12" strips',
-          priority: 5,
-          status: 'SCHEDULED',
-          scheduledStart: new Date('2026-02-10T08:00:00Z'),
-          scheduledEnd: new Date('2026-02-10T12:00:00Z'),
-          order: { id: '1', orderNumber: 'SO-1001', buyerId: 'CUST-001' },
-          workCenter: { id: '1', code: 'SLIT-01', name: 'Slitter #1', locationId: 'LOC-01' },
-          assignedTo: null
-        }
-      ];
-      return res.json(mockJobs);
-    }
+    // No database configured: say so. Sample jobs are never sent as if they were real.
+    if (!prisma) return res.status(503).json({ error: 'The database is not configured' });
 
-    // Fall back to Prisma
     const { status, locationId, workCenterId, orderId } = req.query;
     
     const where = {};
@@ -153,7 +138,18 @@ router.get('/', async (req, res) => {
     }
     if (workCenterId) where.workCenterId = workCenterId;
     if (orderId) where.orderId = orderId;
-    
+    // Jobs scheduled to start inside a window (the Schedule screen asks for one day).
+    const window = {};
+    for (const [name, op] of [['scheduledFrom', 'gte'], ['scheduledTo', 'lt']]) {
+      const value = req.query[name];
+      if (value === undefined || value === '') continue;
+      const d = new Date(value);
+      if (typeof value !== 'string' || Number.isNaN(d.getTime())) return res.status(400).json({ error: `${name} is not a valid date` });
+      window[op] = d;
+    }
+    const scheduled = Object.keys(window).length > 0;
+    if (scheduled) where.scheduledStart = window;
+
     const include = {
       order: {
         select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
@@ -172,7 +168,7 @@ router.get('/', async (req, res) => {
 
     let jobs;
     let total;
-    if (status || orderId) {
+    if (status || orderId || scheduled) {
       [jobs, total] = await Promise.all([
         prisma.job.findMany({ where, orderBy, include, take: limit, skip: offset }),
         prisma.job.count({ where }),
@@ -619,8 +615,8 @@ router.post('/:id/status', async (req, res) => {
       }
       updateData.scrapWeightLb = Number(job.scrapWeightLb || 0) + scrapWeight;
     }
-    if (note) updateData.notes = note;
-
+    // The note says why the job moved. It belongs to the move, so it goes in the
+    // job's history; the job's own notes are left as they were.
     const updatedJob = await prisma.job.update({
       where: { id },
       data: updateData,
@@ -630,6 +626,7 @@ router.post('/:id/status', async (req, res) => {
         assignedTo: { select: { id: true, firstName: true, lastName: true } },
       },
     });
+    await recordJobMove(prisma, { job, from: job.status, to: status, note, userId: req.user?.id });
     res.json(mapJobForFrontend(updatedJob));
   } catch (error) {
     console.error('Error updating job status:', error);
@@ -663,6 +660,8 @@ router.patch('/:id/status', async (req, res) => {
       },
     });
 
+    await recordJobMove(prisma, { job: prevJob, from: oldStatus, to: status, note: req.body?.note, userId: req.user?.id });
+
     // Auto-queue print jobs based on status transition
     if (oldStatus !== status) {
       onJobStatusChange(job, status, oldStatus).catch((e) =>
@@ -684,8 +683,20 @@ router.put('/:id', editJob);
 router.post('/:id/assign', async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId } = req.body;
-    
+    const userId = req.body?.userId ?? null;
+    if (userId !== null && typeof userId !== 'string') return res.status(400).json({ error: 'userId must be a user id, or null to remove the assignment' });
+
+    const before = await prisma.job.findUnique({ where: { id } });
+    if (!before) return res.status(404).json({ error: 'Job not found' });
+    if (['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(before.status)) {
+      return res.status(409).json({ error: `A ${before.status.toLowerCase()} job cannot be assigned` });
+    }
+    if (userId) {
+      const person = await prisma.user.findUnique({ where: { id: userId }, select: { isActive: true } }).catch(() => null);
+      if (!person) return res.status(400).json({ error: 'That user is not on file' });
+      if (!person.isActive) return res.status(400).json({ error: 'That user is not active, so work cannot be assigned to them' });
+    }
+
     const job = await prisma.job.update({
       where: { id },
       data: { assignedToId: userId },
@@ -695,9 +706,10 @@ router.post('/:id/assign', async (req, res) => {
         },
       },
     });
-    
+    await recordJobAssignment(prisma, { job: before, fromUserId: before.assignedToId, toUserId: userId, userId: req.user?.id });
+
     res.json({
-      message: 'Job assigned successfully',
+      message: userId ? 'Job assigned successfully' : 'Assignment removed',
       job,
     });
   } catch (error) {
@@ -723,12 +735,8 @@ router.post('/:id/start', async (req, res) => {
     
     const updateData = {
       status: 'IN_PROCESS',
-      actualStart: new Date(),
+      actualStart: job.actualStart || new Date(),
     };
-    
-    if (note) {
-      updateData.notes = note;
-    }
     
     const updatedJob = await prisma.job.update({
       where: { id },
@@ -745,7 +753,8 @@ router.post('/:id/start', async (req, res) => {
         },
       },
     });
-    
+    await recordJobMove(prisma, { job, from: job.status, to: 'IN_PROCESS', note, via: 'start', userId: req.user?.id });
+
     res.json(updatedJob);
   } catch (error) {
     console.error('Error starting job:', error);
@@ -773,10 +782,6 @@ router.post('/:id/complete', async (req, res) => {
       actualEnd: new Date(),
     };
     
-    if (note) {
-      updateData.notes = note;
-    }
-    
     const updatedJob = await prisma.job.update({
       where: { id },
       data: updateData,
@@ -786,6 +791,8 @@ router.post('/:id/complete', async (req, res) => {
         assignedTo: { select: { id: true, firstName: true, lastName: true } },
       },
     });
+
+    await recordJobMove(prisma, { job, from: job.status, to: 'READY_TO_SHIP', note, via: 'complete', userId: req.user?.id });
 
     // Auto-queue shipping label
     onJobStatusChange(updatedJob, 'READY_TO_SHIP', job.status).catch((e) =>
@@ -838,10 +845,6 @@ router.post('/:id/ship', async (req, res) => {
       trackingNumber: trackingNumber,
     };
     
-    if (note) {
-      updateData.notes = note;
-    }
-    
     const updatedJob = await prisma.job.update({
       where: { id },
       data: updateData,
@@ -858,6 +861,8 @@ router.post('/:id/ship', async (req, res) => {
       },
     });
     
+    await recordJobMove(prisma, { job, from: job.status, to: 'SHIPPED', note: note || `Shipped via ${carrier} - ${trackingNumber}`, via: 'ship', userId: req.user?.id });
+
     res.json({ ...updatedJob, shipment: shipment && { id: shipment.id, shipmentNumber: shipment.shipmentNumber, invoice: shipment.invoice } });
   } catch (error) {
     console.error('Error shipping job:', error);
@@ -868,50 +873,12 @@ router.post('/:id/ship', async (req, res) => {
 // GET /jobs/:id/history - Get job status history
 router.get('/:id/history', async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    // Check if job exists
-    const job = await prisma.job.findUnique({ where: { id } });
-    if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
-    }
-    
-    // Build history from job data
-    const history = [];
-    
-    if (job.createdAt) {
-      history.push({
-        timestamp: job.createdAt,
-        status: 'ORDERED',
-        note: 'Job created',
-      });
-    }
-    
-    if (job.actualStart) {
-      history.push({
-        timestamp: job.actualStart,
-        status: 'IN_PROCESS',
-        note: 'Job started',
-      });
-    }
-    
-    if (job.actualEnd) {
-      history.push({
-        timestamp: job.actualEnd,
-        status: 'READY_TO_SHIP',
-        note: 'Job completed',
-      });
-    }
-    
-    if (job.shippedAt) {
-      history.push({
-        timestamp: job.shippedAt,
-        status: 'SHIPPED',
-        note: job.trackingNumber ? `Shipped via ${job.shippingCarrier} - ${job.trackingNumber}` : 'Shipped',
-      });
-    }
-    
-    res.json(history);
+    const job = await prisma.job.findUnique({
+      where: { id: req.params.id },
+      include: { createdBy: { select: { firstName: true, lastName: true, email: true } } },
+    });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    res.json(await jobHistory(job));
   } catch (error) {
     console.error('Error fetching job history:', error);
     res.status(500).json({ error: 'Failed to fetch job history' });

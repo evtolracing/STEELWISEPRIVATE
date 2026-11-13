@@ -1185,6 +1185,147 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   section('Receiving: a receipt is real stock, and an upload says what it saved', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
 }
 
+// 19. Shop floor records (findings M-001 to M-008): the job screen showed a sample job, a job's
+// history was guessed from four timestamps with nobody's name on it, a status note overwrote the
+// job's notes, anyone's id could be written as the assignee, and a work order was created from
+// whatever the browser sent and could be started or completed from any status.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const [adminT, csrT, operatorT, custT] = await Promise.all(['admin', 'csr', 'operator', 'custA'].map(tokenFor));
+  const send = async (method, url, token, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(30000) });
+    return { status: res.status, body: await res.json().catch(() => null), headers: res.headers };
+  };
+  const tag = `QA19-${Date.now().toString(36).toUpperCase()}`;
+  const operator = await prisma.user.findUnique({ where: { email: QA_USERS.operator } });
+  const csr = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
+  const wc = await prisma.workCenter.findFirst({ where: { isActive: true }, orderBy: { code: 'asc' } });
+  const jobIds = []; const woIds = []; let idleUserId = null;
+  const movesOf = (id) => prisma.auditLog.findMany({ where: { resourceType: 'Job', resourceId: id, eventType: 'JOB_STATUS_CHANGED' }, orderBy: { timestamp: 'asc' } });
+  try {
+    // --- Jobs: every move is recorded with who made it ---
+    const start = new Date(); start.setHours(9, 0, 0, 0);
+    const end = new Date(start.getTime() + 2 * 3600000);
+    const made = await send('POST', '/api/jobs', csrT, { workCenterId: wc.id, operationType: 'SLITTING', instructions: `${tag} keep notes`, scheduledStart: start.toISOString(), scheduledEnd: end.toISOString(), status: 'SCHEDULED' });
+    const jobId = made.body?.id; if (jobId) jobIds.push(jobId);
+    check('a job can be created for the test', made.status === 201 && !!jobId, `status ${made.status} ${made.body?.error || ''}`);
+    await prisma.job.update({ where: { id: jobId }, data: { notes: 'Customer wants paper interleave' } });
+
+    const m1 = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'IN_PROCESS', note: 'Saw is free' });
+    let job = await prisma.job.findUnique({ where: { id: jobId } });
+    let moves = await movesOf(jobId);
+    check('a status note does not replace the notes on the job', m1.status === 200 && job?.notes === 'Customer wants paper interleave', `notes are now ${JSON.stringify(job?.notes ?? null)}`);
+    check('a status change is recorded with who made it, from and to, and the note', moves.length === 1 && moves[0].userId === operator.id && moves[0].details?.from === 'SCHEDULED' && moves[0].details?.to === 'IN_PROCESS' && moves[0].details?.note === 'Saw is free', `${moves.length} records ${JSON.stringify(moves[0]?.details ?? null)}`);
+
+    const m2 = await send('PATCH', `/api/jobs/${jobId}/status`, csrT, { status: 'ON_HOLD' });
+    const m3 = await send('PUT', `/api/jobs/${jobId}`, csrT, { status: 'IN_PROCESS' });
+    const m4 = await send('POST', `/api/jobs/${jobId}/complete`, operatorT, { note: 'Done, 2 skids' });
+    moves = await movesOf(jobId);
+    job = await prisma.job.findUnique({ where: { id: jobId } });
+    check('every way of moving a job leaves a record', m2.status === 200 && m3.status === 200 && m4.status === 200 && moves.length === 4 && moves.map((m) => m.details?.to).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>READY_TO_SHIP', `statuses ${m2.status}/${m3.status}/${m4.status}, records ${moves.map((m) => m.details?.to).join('>')}`);
+    check('each record carries the right person', moves.length === 4 && moves[1].userId === csr.id && moves[2].userId === csr.id && moves[3].userId === operator.id, moves.map((m) => m.userId === operator.id ? 'operator' : m.userId === csr.id ? 'csr' : 'other').join(','));
+    check('completing a job with a note still leaves its notes alone', job?.notes === 'Customer wants paper interleave', `notes are now ${JSON.stringify(job?.notes ?? null)}`);
+    const same = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'READY_TO_SHIP' });
+    check('setting the status a job already has adds no record', same.status === 200 && (await movesOf(jobId)).length === 4, `status ${same.status}, ${(await movesOf(jobId)).length} records`);
+    const refused = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'SCHEDULED' });
+    check('a refused move adds no record', refused.status === 409 && (await movesOf(jobId)).length === 4, `status ${refused.status}`);
+
+    const hist = await send('GET', `/api/jobs/${jobId}/history`, csrT);
+    const h = Array.isArray(hist.body) ? hist.body : [];
+    const statusRows = h.filter((e) => e.type === 'STATUS');
+    check('the job history lists every move in order', hist.status === 200 && h[0]?.type === 'CREATED' && statusRows.map((e) => e.status).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>READY_TO_SHIP', JSON.stringify(h.map((e) => e.status ?? e.type ?? null)));
+    check('the history names who made each move and carries the reason', statusRows.length === 4 && statusRows.every((e) => typeof e.by === 'string' && e.by.length > 1 && e.recorded === true) && statusRows[0]?.note === 'Saw is free' && statusRows[0]?.from === 'SCHEDULED', JSON.stringify(statusRows.map((e) => [e.by ?? null, e.note ?? null])));
+    check('the history names who created the job', typeof h[0]?.by === 'string' && h[0].by.length > 1, JSON.stringify(h[0] ?? null));
+    check('the history of a job that is not on file is a 404', (await send('GET', '/api/jobs/00000000-0000-0000-0000-000000000000/history', csrT)).status === 404, 'not 404');
+    check('a customer login cannot read a job history', [401, 403].includes((await send('GET', `/api/jobs/${jobId}/history`, custT)).status), 'readable');
+
+    // A job from before moves were recorded: times only, and it says nobody is on record.
+    const old = await prisma.job.create({ data: { jobNumber: `${tag}-OLD`, status: 'READY_TO_SHIP', priority: 3, actualStart: new Date(Date.now() - 7200000), actualEnd: new Date(Date.now() - 3600000) } });
+    jobIds.push(old.id);
+    const oldHist = (await send('GET', `/api/jobs/${old.id}/history`, csrT)).body;
+    check('an older job shows its times and says who is not recorded', Array.isArray(oldHist) && oldHist.filter((e) => e.type === 'STATUS').length === 2 && oldHist.filter((e) => e.type === 'STATUS').every((e) => e.recorded === false && e.by === null), JSON.stringify(oldHist ?? null).slice(0, 200));
+
+    // --- Assigning a job ---
+    const made2 = await send('POST', '/api/jobs', csrT, { workCenterId: wc.id, operationType: 'SHEARING', instructions: `${tag} assign`, status: 'SCHEDULED' });
+    const job2 = made2.body?.id; if (job2) jobIds.push(job2);
+    const idle = await prisma.user.create({ data: { email: `${tag.toLowerCase()}@qa.test`, firstName: 'Idle', lastName: 'Person', passwordHash: 'x', role: operator.role, organizationId: operator.organizationId, isActive: false } }).catch(() => null);
+    idleUserId = idle?.id || null;
+    check('a job cannot be assigned to someone who is not on file', (await send('POST', `/api/jobs/${job2}/assign`, csrT, { userId: '00000000-0000-0000-0000-000000000000' })).status === 400, 'accepted');
+    check('a job cannot be assigned to something that is not a user id', (await send('POST', `/api/jobs/${job2}/assign`, csrT, { userId: { not: null } })).status === 400, 'accepted');
+    if (idle) check('a job cannot be assigned to someone who is not active', (await send('POST', `/api/jobs/${job2}/assign`, csrT, { userId: idle.id })).status === 400, 'accepted');
+    check('assigning a job that is not on file is a 404', (await send('POST', '/api/jobs/00000000-0000-0000-0000-000000000000/assign', csrT, { userId: operator.id })).status === 404, 'not 404');
+    const asg = await send('POST', `/api/jobs/${job2}/assign`, csrT, { userId: operator.id });
+    const asgRows = await prisma.auditLog.findMany({ where: { resourceType: 'Job', resourceId: job2, eventType: 'JOB_ASSIGNED' } });
+    check('assigning a job works and is recorded with who did it', asg.status === 200 && asg.body?.job?.assignedTo?.id === operator.id && asgRows.length === 1 && asgRows[0].userId === csr.id && asgRows[0].details?.to === operator.id, `status ${asg.status}, ${asgRows.length} records`);
+    const hist2 = (await send('GET', `/api/jobs/${job2}/history`, csrT)).body;
+    check('the assignment is in the job history by name', Array.isArray(hist2) && hist2.some((e) => e.type === 'ASSIGNED' && /Assigned to \S+/.test(e.note || '') && !/no longer on file/.test(e.note || '')), JSON.stringify(hist2 ?? null).slice(0, 200));
+    const un = await send('POST', `/api/jobs/${job2}/assign`, csrT, { userId: null });
+    check('an assignment can be removed', un.status === 200 && (await prisma.job.findUnique({ where: { id: job2 } }))?.assignedToId === null, `status ${un.status}`);
+    await prisma.job.update({ where: { id: job2 }, data: { status: 'CANCELLED' } });
+    check('a cancelled job cannot be assigned', (await send('POST', `/api/jobs/${job2}/assign`, csrT, { userId: operator.id })).status === 409, 'accepted');
+
+    // --- The schedule asks for one day of jobs ---
+    const dayStart = new Date(start); dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(dayStart.getTime() + 86400000);
+    const day = await send('GET', `/api/jobs?scheduledFrom=${encodeURIComponent(dayStart.toISOString())}&scheduledTo=${encodeURIComponent(dayEnd.toISOString())}&limit=2000`, csrT);
+    check('jobs can be listed for one day, and only that day', day.status === 200 && Array.isArray(day.body) && day.body.some((j) => j.id === jobId) && day.body.every((j) => j.scheduledStart && new Date(j.scheduledStart) >= dayStart && new Date(j.scheduledStart) < dayEnd), `status ${day.status}, ${Array.isArray(day.body) ? day.body.length : 'no list'}`);
+    const nextDay = await send('GET', `/api/jobs?scheduledFrom=${encodeURIComponent(dayEnd.toISOString())}&scheduledTo=${encodeURIComponent(new Date(dayEnd.getTime() + 86400000).toISOString())}`, csrT);
+    check('a job is not on another day\'s schedule', nextDay.status === 200 && Array.isArray(nextDay.body) && !nextDay.body.some((j) => j.id === jobId), 'listed on the next day');
+    check('a schedule date that is not a date is refused', (await send('GET', '/api/jobs?scheduledFrom=tuesday', csrT)).status === 400, 'accepted');
+
+    // --- Work orders: checked input, real moves ---
+    const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE' }, orderBy: { coilNumber: 'asc' } });
+    const busy = await prisma.coil.findFirst({ where: { status: { not: 'AVAILABLE' } } });
+    const forged = await send('POST', '/api/work-orders', operatorT, { woType: 'SLIT', sourceCoilId: coil.id, priority: 2, notes: tag, id: 'forged-id', woNumber: 'WO-FORGED', status: 'COMPLETE', completedAt: '2020-01-01', yieldPct: 150, outputWeightLb: 999999 });
+    const woId = forged.body?.id; if (woId) woIds.push(woId);
+    const wo = woId ? await prisma.workOrder.findUnique({ where: { id: woId } }) : null;
+    check('a work order is created with only the fields the form has', forged.status === 201 && wo && wo.id !== 'forged-id' && wo.woNumber !== 'WO-FORGED' && wo.status === 'DRAFT' && wo.completedAt === null && wo.yieldPct === null && wo.outputWeightLb === null && wo.priority === 2, `status ${forged.status} ${JSON.stringify({ status: wo?.status ?? null, woNumber: wo?.woNumber ?? null, yield: wo?.yieldPct ?? null })}`);
+    check('the work order takes its weight in from the stock item', wo && Number(wo.inputWeightLb) === Number(coil.netWeightLb), `${wo?.inputWeightLb ?? null} against ${coil.netWeightLb}`);
+    for (const [why, body] of [
+      ['no type', { sourceCoilId: coil.id }], ['an unknown type', { woType: 'WELD', sourceCoilId: coil.id }], ['no stock item', { woType: 'SLIT' }],
+      ['a stock item that is not on file', { woType: 'SLIT', sourceCoilId: '00000000-0000-0000-0000-000000000000' }], ['a priority of 9', { woType: 'SLIT', sourceCoilId: coil.id, priority: 9 }],
+      ['a date that is not a date', { woType: 'SLIT', sourceCoilId: coil.id, scheduledDate: 'soon' }], ['a cut with no width', { woType: 'SLIT', sourceCoilId: coil.id, slitPattern: [{ width: 0 }] }],
+    ]) {
+      const r = await send('POST', '/api/work-orders', operatorT, { notes: tag, ...body });
+      if (r.body?.id) woIds.push(r.body.id);
+      check(`a work order with ${why} is refused with a reason`, r.status === 400 && typeof r.body?.error === 'string' && r.body.error.length > 8, `status ${r.status} ${r.body?.error || ''}`);
+    }
+    if (busy) {
+      const r = await send('POST', '/api/work-orders', operatorT, { woType: 'SLIT', sourceCoilId: busy.id, notes: tag });
+      if (r.body?.id) woIds.push(r.body.id);
+      check('a work order cannot be raised on stock that is not available', r.status === 409, `status ${r.status}`);
+    }
+    check('a customer login cannot create a work order', [401, 403].includes((await send('POST', '/api/work-orders', custT, { woType: 'SLIT', sourceCoilId: coil.id })).status), 'accepted');
+    check('a work order that has not started cannot be completed', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: 10 })).status === 409 && (await prisma.workOrder.findUnique({ where: { id: woId } }))?.status === 'DRAFT', 'completed from draft');
+    check('starting a work order that is not on file is a 404', (await send('PUT', '/api/work-orders/00000000-0000-0000-0000-000000000000/start', operatorT, {})).status === 404, 'not 404');
+    const st = await send('PUT', `/api/work-orders/${woId}/start`, operatorT, {});
+    check('a work order can be started', st.status === 200 && st.body?.status === 'IN_PROGRESS' && !!st.body?.startedAt, `status ${st.status}`);
+    check('a started work order cannot be started again', (await send('PUT', `/api/work-orders/${woId}/start`, operatorT, {})).status === 409, 'started twice');
+    const input = Number(coil.netWeightLb);
+    check('completing needs the weight out', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, {})).status === 400, 'accepted with no weight');
+    check('a negative weight is refused', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: -5 })).status === 400, 'accepted');
+    check('more cannot come out than went in', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: input, scrapWeightLb: input })).status === 400 && (await prisma.workOrder.findUnique({ where: { id: woId } }))?.status === 'IN_PROGRESS', 'accepted');
+    const out = Math.round(input * 0.9 * 100) / 100;
+    const done = await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: out, scrapWeightLb: Math.round(input * 0.05 * 100) / 100, yieldPct: 150 });
+    check('a work order completes with a yield worked out by the server', done.status === 200 && done.body?.status === 'COMPLETE' && Math.abs(Number(done.body?.yieldPct) - 90) < 0.05, `status ${done.status}, yield ${done.body?.yieldPct ?? null}`);
+    check('a completed work order cannot be cancelled or restarted', (await send('PUT', `/api/work-orders/${woId}/cancel`, operatorT, {})).status === 409 && (await send('PUT', `/api/work-orders/${woId}/start`, operatorT, {})).status === 409, 'changed after completion');
+    const view = await send('GET', `/api/work-orders/${woId}`, csrT);
+    check('the work order shows its history with who did each step', view.status === 200 && Array.isArray(view.body?.history) && view.body.history.map((e) => e.to ?? e.type).join('>') === 'CREATED>IN_PROGRESS>COMPLETE' && view.body.history.every((e) => typeof e.by === 'string' && e.by.length > 1), JSON.stringify(view.body?.history ?? null).slice(0, 200));
+    const list = await send('GET', `/api/work-orders?search=${encodeURIComponent(wo?.woNumber || 'none')}`, csrT);
+    check('the work order list searches on the server and says how many there are', list.status === 200 && Array.isArray(list.body) && list.body.length === 1 && list.body[0].id === woId && list.headers.get('x-total-count') === '1', `status ${list.status}, ${Array.isArray(list.body) ? list.body.length : 'no list'} rows, count ${list.headers.get('x-total-count')}`);
+    check('a work order list filter that is not a status is refused', (await send('GET', '/api/work-orders?status=NONSENSE', csrT)).status === 400, 'accepted');
+    void adminT;
+  } finally {
+    await prisma.auditLog.deleteMany({ where: { OR: [{ resourceType: 'Job', resourceId: { in: jobIds } }, { resourceType: 'WorkOrder', resourceId: { in: woIds } }] } });
+    const stray = await prisma.workOrder.findMany({ where: { notes: tag }, select: { id: true } });
+    await prisma.workOrder.deleteMany({ where: { id: { in: [...woIds, ...stray.map((w) => w.id)] } } });
+    await prisma.job.deleteMany({ where: { id: { in: jobIds } } });
+    if (idleUserId) await prisma.user.delete({ where: { id: idleUserId } }).catch(() => {});
+  }
+  section('Shop floor records: who moved a job, and work orders that follow the rules', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
 report.pass = Object.values(report.sections).every((s) => s.pass);
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(report, null, 1));

@@ -6,12 +6,12 @@
  */
 import { Alert, AlertTitle, Box } from '@mui/material'
 
-export default function SampleScreen({ what, children }) {
+export default function SampleScreen({ what, instead, children }) {
   return (
     <Box>
       <Alert severity="warning" variant="filled" role="status" sx={{ borderRadius: 0, position: 'sticky', top: 0, zIndex: 5 }}>
         <AlertTitle sx={{ mb: 0 }}>Sample screen: these are example figures, not your records</AlertTitle>
-        {what} is not connected yet. Nothing shown here comes from your suppliers, receipts or inspections, and nothing entered here is saved.
+        {what} is not connected yet. Nothing shown here comes from your records, and nothing entered here is saved.{instead ? ` ${instead}` : ''}
       </Alert>
       {children}
     </Box>

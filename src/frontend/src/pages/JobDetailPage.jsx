@@ -1,676 +1,212 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+/**
+ * One job: what it is for, where it stands, and everything that has happened
+ * to it. All of it is read from /api/jobs/:id and /api/jobs/:id/history.
+ * Nothing on this screen is sample data.
+ */
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom'
 import {
-  Box,
-  Typography,
-  Button,
-  Stack,
-  Grid,
-  Paper,
-  Chip,
-  Divider,
-  Tab,
-  Tabs,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Avatar,
-  AvatarGroup,
-  IconButton,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Alert,
-  Snackbar,
-  LinearProgress,
-  alpha,
+  Box, Typography, Paper, Grid, Button, IconButton, Chip, Alert, CircularProgress, Snackbar, Link, Divider,
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
 } from '@mui/material'
-import {
-  ArrowBack as BackIcon,
-  Edit as EditIcon,
-  PlayArrow as StartIcon,
-  Pause as PauseIcon,
-  CheckCircle as CompleteIcon,
-  Schedule as ScheduleIcon,
-  LocalShipping as ShippingIcon,
-  Print as PrintIcon,
-  MoreVert as MoreIcon,
-  Person as PersonIcon,
-  AttachFile as AttachIcon,
-  Notes as NotesIcon,
-  History as HistoryIcon,
-  Assessment as MetricsIcon,
-  ContentCut as ProcessIcon,
-  Inventory as InventoryIcon,
-  Scale as WeightIcon,
-  AutoAwesome as AIIcon,
-} from '@mui/icons-material'
-import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot } from '@mui/lab'
-import { JOB_STATUS_CONFIG, getNextStatuses } from '../constants/jobStatuses'
-import { PROCESSING_TYPES } from '../constants/processingTypes'
-import { PRIORITY_LEVELS_CONFIG } from '../constants/materials'
-import { StatusChip } from '../components/jobs'
+import { ArrowBack as BackIcon, SwapHoriz as MoveIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import client from '../api/client'
+import { JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 
-// Mock job data
-const getMockJob = (id) => ({
-  id,
-  jobNumber: id,
-  customerName: 'ABC Steel Corporation',
-  customerId: 'CUST-001',
-  status: 'IN_PROCESS',
-  priority: 'URGENT',
-  processingType: 'SLITTING',
-  materialDescription: 'Hot Rolled Coil 0.125" x 48"',
-  materialGrade: 'A36',
-  dimensions: '0.125" x 48" x Coil',
-  weight: 28500,
-  targetPieces: 150,
-  completedPieces: 87,
-  scrapPieces: 3,
-  workCenterId: 'WC-001',
-  workCenterName: 'Slitter #1',
-  operators: [
-    { id: 'OP-001', name: 'John Doe', initials: 'JD' },
-    { id: 'OP-002', name: 'Jane Smith', initials: 'JS' },
-  ],
-  orderNumber: 'SO-2024-0156',
-  poNumber: 'PO-ABC-789',
-  dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-  scheduledStart: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-  actualStart: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(),
-  estimatedEnd: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
-  notes: 'Customer requires tight tolerances. Check width specs carefully.',
-  specifications: {
-    targetWidth: '6.000"',
-    tolerance: '+/- 0.005"',
-    slitCount: 8,
-    edgeTrim: 'Both sides',
-  },
-  timeline: [
-    { timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), event: 'Job Created', user: 'System' },
-    { timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), event: 'Scheduled to Slitter #1', user: 'Mike J.' },
-    { timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), event: 'Material Staged', user: 'Receiving' },
-    { timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(), event: 'Processing Started', user: 'John D.' },
-    { timestamp: new Date(Date.now() - 0.5 * 60 * 60 * 1000).toISOString(), event: 'Progress: 87/150 pcs', user: 'John D.' },
-  ],
-  documents: [
-    { id: 'DOC-1', name: 'Work Order.pdf', type: 'work-order', uploadedAt: new Date().toISOString() },
-    { id: 'DOC-2', name: 'Customer Specs.pdf', type: 'specification', uploadedAt: new Date().toISOString() },
-  ],
-})
+export const jobStatusLabel = (status) => JOB_STATUS_CONFIG[status]?.label || String(status || '').replace(/_/g, ' ').toLowerCase()
+const when = (v) => (v ? new Date(v).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '')
+const pounds = (v) => (v == null || v === '' ? '' : `${Number(v).toLocaleString()} lb`)
+const person = (u) => (u ? [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email : '')
+const PRIORITY_LABELS = { LOW: 'Low', NORMAL: 'Normal', HIGH: 'High', HOT: 'Hot' }
 
-const JobDetailPage = () => {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const [job, setJob] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState(0)
-  const [menuAnchor, setMenuAnchor] = useState(null)
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState('')
-  const [statusNote, setStatusNote] = useState('')
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
+// Every status a job can be moved to by hand. The server decides whether a
+// particular move is allowed and says why when it is not.
+const ALL_STATUSES = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP', 'ON_HOLD', 'COMPLETED', 'CANCELLED']
 
+const Fact = ({ name, children }) => (
+  <Box sx={{ mb: 1.5 }}>
+    <Typography variant="caption" color="text.secondary" display="block">{name}</Typography>
+    <Typography variant="body1" component="div">{children || <Typography component="span" variant="body2" color="text.secondary">Not recorded</Typography>}</Typography>
+  </Box>
+)
+
+export function JobStatusChip({ status }) {
+  const cfg = JOB_STATUS_CONFIG[status]
+  return <Chip label={jobStatusLabel(status)} size="small" sx={{ fontWeight: 600, color: cfg?.color, bgcolor: cfg?.bgColor }} />
+}
+
+function ChangeStatusDialog({ job, open, onClose, onSaved }) {
+  const [status, setStatus] = useState('')
+  const [note, setNote] = useState('')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
   useEffect(() => {
-    const loadJob = async () => {
-      setLoading(true)
-      try {
-        await new Promise((r) => setTimeout(r, 300))
-        setJob(getMockJob(id))
-      } catch (error) {
-        console.error('Failed to load job:', error)
-      } finally {
-        setLoading(false)
-      }
+    if (open) { setStatus(''); setNote(''); setError('') }
+  }, [open])
+  const save = async () => {
+    setBusy(true); setError('')
+    try {
+      const { data } = await client.post(`/jobs/${job.id}/status`, { status, note: note.trim() || undefined })
+      onSaved(data)
+    } catch (e) {
+      setError(e.response?.data?.error || 'The status could not be changed')
+    } finally {
+      setBusy(false)
     }
-    loadJob()
-  }, [id])
-
-  if (loading) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <LinearProgress />
-      </Box>
-    )
   }
-
-  if (!job) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">Job not found</Alert>
-      </Box>
-    )
-  }
-
-  const statusConfig = JOB_STATUS_CONFIG[job.status] || {}
-  const priorityConfig = PRIORITY_LEVELS_CONFIG?.[job.priority] || {}
-  const processingType = PROCESSING_TYPES[job.processingType] || job.processingType
-  const nextStatuses = getNextStatuses(job.status)
-  const progress = job.targetPieces ? ((job.completedPieces / job.targetPieces) * 100).toFixed(1) : 0
-
-  const formatDate = (date) => {
-    if (!date) return '—'
-    return new Date(date).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-  }
-
-  const formatWeight = (lbs) => {
-    if (!lbs) return '—'
-    return lbs >= 1000 ? `${(lbs / 1000).toFixed(1)}k lbs` : `${lbs} lbs`
-  }
-
-  const handleStatusChange = (status) => {
-    setSelectedStatus(status)
-    setStatusDialogOpen(true)
-    setMenuAnchor(null)
-  }
-
-  const handleConfirmStatusChange = () => {
-    setJob((prev) => ({ ...prev, status: selectedStatus }))
-    setStatusDialogOpen(false)
-    setSnackbar({
-      open: true,
-      message: `Status updated to ${JOB_STATUS_CONFIG[selectedStatus]?.label || selectedStatus}`,
-      severity: 'success',
-    })
-  }
-
   return (
-    <Box sx={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)',
-      mx: -3,
-      mt: -3,
-    }}>
-      {/* Modern Header */}
-      <Box sx={{ 
-        px: 3, 
-        py: 3, 
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
-        color: 'white',
-        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton 
-            onClick={() => navigate(-1)}
-            sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
-          >
-            <BackIcon />
-          </IconButton>
-          <Avatar sx={{ 
-            width: 56, 
-            height: 56, 
-            background: 'rgba(255,255,255,0.15)',
-            backdropFilter: 'blur(10px)',
-          }}>
-            <ProcessIcon sx={{ fontSize: 30 }} />
-          </Avatar>
-          <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
-                {job.jobNumber}
-              </Typography>
-              <Chip
-                label={statusConfig.label || job.status}
-                size="small"
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.2)',
-                  color: 'white',
-                  fontWeight: 600,
-                  backdropFilter: 'blur(10px)',
-                }}
-              />
-              <Chip
-                label={job.priority}
-                size="small"
-                sx={{
-                  bgcolor: alpha(priorityConfig.color || '#666', 0.3),
-                  color: 'white',
-                  fontWeight: 600,
-                }}
-              />
-            </Box>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-              <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                {job.customerName} • {processingType}
-              </Typography>
-            </Stack>
-          </Box>
-          <Stack direction="row" spacing={1}>
-            <Button 
-              variant="outlined" 
-              startIcon={<PrintIcon />}
-              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
-            >
-              Print
-            </Button>
-            <Button
-              variant="contained"
-              endIcon={<MoreIcon />}
-              onClick={(e) => setMenuAnchor(e.currentTarget)}
-              sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
-            >
-              Actions
-            </Button>
-          </Stack>
-        </Box>
-
-        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
-          {nextStatuses.map((status) => (
-            <MenuItem key={status} onClick={() => handleStatusChange(status)}>
-              Move to {JOB_STATUS_CONFIG[status]?.label || status}
-            </MenuItem>
-          ))}
-          <Divider />
-          <MenuItem onClick={() => setMenuAnchor(null)}>Edit Job</MenuItem>
-          <MenuItem onClick={() => setMenuAnchor(null)}>Assign Operator</MenuItem>
-          <MenuItem onClick={() => setMenuAnchor(null)}>Split Job</MenuItem>
-        </Menu>
-      </Box>
-
-      {/* Content */}
-      <Box sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          {/* Left Column - Details */}
-          <Grid item xs={12} md={8}>
-            {/* Progress Card */}
-            <Paper sx={{ 
-              p: 3, 
-              mb: 3,
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}>
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                Progress
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#1976d2', 0.08), borderRadius: 3, border: `1px solid ${alpha('#1976d2', 0.15)}` }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Target
-                    </Typography>
-                    <Typography variant="h4" fontWeight={700} color="primary.main">
-                      {job.targetPieces}
-                    </Typography>
-                    <Typography variant="caption">pieces</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#2e7d32', 0.08), borderRadius: 3, border: `1px solid ${alpha('#2e7d32', 0.15)}` }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Complete
-                    </Typography>
-                    <Typography variant="h4" fontWeight={700} color="success.main">
-                      {job.completedPieces}
-                    </Typography>
-                    <Typography variant="caption">pieces</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={4}>
-                  <Box sx={{ textAlign: 'center', p: 2, bgcolor: alpha('#d32f2f', 0.08), borderRadius: 3, border: `1px solid ${alpha('#d32f2f', 0.15)}` }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Scrap
-                    </Typography>
-                    <Typography variant="h4" fontWeight={700} color="error.main">
-                      {job.scrapPieces || 0}
-                    </Typography>
-                    <Typography variant="caption">pieces</Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-              <Box sx={{ mt: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2" fontWeight={500}>Completion</Typography>
-                  <Typography variant="body2" fontWeight={700}>
-                    {progress}%
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={parseFloat(progress)}
-                  sx={{ 
-                    height: 12, 
-                    borderRadius: 6,
-                    bgcolor: alpha('#1976d2', 0.15),
-                    '& .MuiLinearProgress-bar': {
-                      borderRadius: 6,
-                    }
-                  }}
-                />
-              </Box>
-            </Paper>
-
-            {/* Tabs */}
-            <Paper sx={{ 
-              mb: 3,
-              borderRadius: 3,
-              overflow: 'hidden',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}>
-              <Tabs 
-                value={activeTab} 
-                onChange={(_, v) => setActiveTab(v)}
-                sx={{ 
-                  bgcolor: alpha('#1976d2', 0.03),
-                  '& .MuiTab-root': { fontWeight: 600, textTransform: 'none' } 
-                }}
-              >
-                <Tab icon={<InventoryIcon />} label="Details" iconPosition="start" />
-                <Tab icon={<HistoryIcon />} label="Timeline" iconPosition="start" />
-                <Tab icon={<AttachIcon />} label="Documents" iconPosition="start" />
-                <Tab icon={<NotesIcon />} label="Notes" iconPosition="start" />
-              </Tabs>
-              <Divider />
-
-              <Box sx={{ p: 3 }}>
-                {activeTab === 0 && (
-                  <Grid container spacing={3}>
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Material
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {job.materialDescription}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Grade
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {job.materialGrade}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Dimensions
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {job.dimensions}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Weight
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {formatWeight(job.weight)}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Divider sx={{ my: 1 }} />
-                    </Grid>
-                    {job.specifications && (
-                      <>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary">
-                            Target Width
-                          </Typography>
-                          <Typography variant="body1" fontWeight={500}>
-                            {job.specifications.targetWidth}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary">
-                            Tolerance
-                          </Typography>
-                          <Typography variant="body1" fontWeight={500}>
-                            {job.specifications.tolerance}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary">
-                            Slit Count
-                          </Typography>
-                          <Typography variant="body1" fontWeight={500}>
-                            {job.specifications.slitCount}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary">
-                            Edge Trim
-                          </Typography>
-                          <Typography variant="body1" fontWeight={500}>
-                            {job.specifications.edgeTrim}
-                          </Typography>
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
-                )}
-
-                {activeTab === 1 && (
-                  <Timeline position="right" sx={{ p: 0 }}>
-                    {job.timeline.map((event, idx) => (
-                      <TimelineItem key={idx}>
-                        <TimelineSeparator>
-                          <TimelineDot color={idx === 0 ? 'primary' : 'grey'} />
-                          {idx < job.timeline.length - 1 && <TimelineConnector />}
-                        </TimelineSeparator>
-                        <TimelineContent>
-                          <Typography variant="body2" fontWeight={500}>
-                            {event.event}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {formatDate(event.timestamp)} • {event.user}
-                          </Typography>
-                        </TimelineContent>
-                      </TimelineItem>
-                    ))}
-                  </Timeline>
-                )}
-
-                {activeTab === 2 && (
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Document</TableCell>
-                          <TableCell>Type</TableCell>
-                          <TableCell>Uploaded</TableCell>
-                          <TableCell>Actions</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {job.documents.map((doc) => (
-                          <TableRow key={doc.id}>
-                            <TableCell>{doc.name}</TableCell>
-                            <TableCell>
-                              <Chip label={doc.type} size="small" variant="outlined" />
-                            </TableCell>
-                            <TableCell>{formatDate(doc.uploadedAt)}</TableCell>
-                            <TableCell>
-                              <Button size="small">View</Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                )}
-
-                {activeTab === 3 && (
-                  <Box>
-                    <Alert severity="info" sx={{ mb: 2 }}>
-                      {job.notes}
-                    </Alert>
-                    <TextField
-                      label="Add Note"
-                      multiline
-                      rows={3}
-                      fullWidth
-                      placeholder="Enter note..."
-                    />
-                    <Button variant="contained" sx={{ mt: 1 }}>
-                      Add Note
-                    </Button>
-                  </Box>
-                )}
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Right Column - Summary */}
-          <Grid item xs={12} md={4}>
-            {/* Schedule Card */}
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
-                Schedule
-              </Typography>
-              <Stack spacing={2}>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Due Date
-                  </Typography>
-                  <Typography variant="body1" fontWeight={600}>
-                    {formatDate(job.dueDate)}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Scheduled Start
-                  </Typography>
-                  <Typography variant="body1">
-                    {formatDate(job.scheduledStart)}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Actual Start
-                  </Typography>
-                  <Typography variant="body1">
-                    {formatDate(job.actualStart)}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Est. Completion
-                  </Typography>
-                  <Typography variant="body1">
-                    {formatDate(job.estimatedEnd)}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Paper>
-
-            {/* Work Center Card */}
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
-                Work Center
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
-                  <ProcessIcon />
-                </Avatar>
-                <Box>
-                  <Typography variant="body1" fontWeight={600}>
-                    {job.workCenterName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {processingType}
-                  </Typography>
-                </Box>
-              </Box>
-            </Paper>
-
-            {/* Operators Card */}
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
-                Operators
-              </Typography>
-              <Stack spacing={1}>
-                {job.operators.map((op) => (
-                  <Box
-                    key={op.id}
-                    sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                  >
-                    <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                      {op.initials}
-                    </Avatar>
-                    <Typography variant="body1">{op.name}</Typography>
-                  </Box>
-                ))}
-                <Button startIcon={<PersonIcon />} variant="outlined" size="small" sx={{ mt: 1 }}>
-                  Assign Operator
-                </Button>
-              </Stack>
-            </Paper>
-
-            {/* Order Reference */}
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
-                References
-              </Typography>
-              <Stack spacing={1}>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Sales Order
-                  </Typography>
-                  <Typography variant="body1">{job.orderNumber}</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Customer PO
-                  </Typography>
-                  <Typography variant="body1">{job.poNumber}</Typography>
-                </Box>
-              </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
-
-      {/* Status Change Dialog */}
-      <Dialog open={statusDialogOpen} onClose={() => setStatusDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Update Status</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            Move job to <strong>{JOB_STATUS_CONFIG[selectedStatus]?.label}</strong>?
-          </Typography>
-          <TextField
-            label="Note (optional)"
-            value={statusNote}
-            onChange={(e) => setStatusNote(e.target.value)}
-            fullWidth
-            multiline
-            rows={2}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setStatusDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleConfirmStatusChange}>
-            Update Status
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert severity={snackbar.severity} variant="filled">
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+    <Dialog open={open} onClose={busy ? undefined : onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>Change status of {job.jobNumber}</DialogTitle>
+      <DialogContent>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Now: {jobStatusLabel(job.status)}. The change is recorded in the job history with your name.
+        </Typography>
+        <TextField select fullWidth label="New status" value={status} onChange={(e) => setStatus(e.target.value)} sx={{ mb: 2 }}>
+          {ALL_STATUSES.filter((s) => s !== job.status).map((s) => <MenuItem key={s} value={s}>{jobStatusLabel(s)}</MenuItem>)}
+        </TextField>
+        <TextField fullWidth multiline minRows={2} label="Reason (optional)" value={note} onChange={(e) => setNote(e.target.value)} inputProps={{ maxLength: 500 }} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={busy}>Cancel</Button>
+        <Button variant="contained" onClick={save} disabled={busy || !status}>{busy ? 'Saving…' : 'Change status'}</Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 
-export default JobDetailPage
+export default function JobDetailPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [job, setJob] = useState(null)
+  const [history, setHistory] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [dialog, setDialog] = useState(false)
+  const [toast, setToast] = useState('')
+
+  const load = useCallback(async () => {
+    setLoading(true); setError('')
+    try {
+      const [j, h] = await Promise.all([client.get(`/jobs/${id}`), client.get(`/jobs/${id}/history`)])
+      setJob(j.data)
+      setHistory(Array.isArray(h.data) ? h.data : [])
+    } catch (e) {
+      setJob(null)
+      setError(e.response?.status === 404 ? 'This job is not on file.' : (e.response?.data?.error || 'The job could not be loaded.'))
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+  useEffect(() => { load() }, [load])
+
+  if (loading) return <Box sx={{ p: 6, textAlign: 'center' }}><CircularProgress /></Box>
+  if (!job) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" action={<Button color="inherit" onClick={() => navigate('/order-board')}>Order Board</Button>}>{error}</Alert>
+      </Box>
+    )
+  }
+
+  const closed = ['COMPLETED', 'CANCELLED'].includes(job.status)
+  const size = [job.thicknessIn && `${Number(job.thicknessIn)} in thick`, job.widthIn && `${Number(job.widthIn)} in wide`, job.lengthIn && `${Number(job.lengthIn)} in long`].filter(Boolean).join(', ')
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3, flexWrap: 'wrap' }}>
+        <IconButton onClick={() => navigate(-1)} aria-label="Back"><BackIcon /></IconButton>
+        <Box sx={{ flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+            <Typography variant="h5" fontWeight={700}>{job.jobNumber}</Typography>
+            <JobStatusChip status={job.status} />
+            <Chip label={`${PRIORITY_LABELS[job.priority] || job.priority} priority`} size="small" variant="outlined" color={job.priority === 'HOT' ? 'error' : job.priority === 'HIGH' ? 'warning' : 'default'} />
+          </Box>
+          <Typography variant="body2" color="text.secondary">
+            {job.order ? <>For order <Link component={RouterLink} to={`/orders/${job.order.id}`}>{job.order.orderNumber}</Link>{job.order.buyer?.name ? `, ${job.order.buyer.name}` : ''}</> : 'Not tied to a customer order'}
+          </Typography>
+        </Box>
+        <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>
+        <Button variant="contained" startIcon={<MoveIcon />} onClick={() => setDialog(true)} disabled={closed}>Change status</Button>
+      </Box>
+
+      {closed && <Alert severity="info" sx={{ mb: 2 }}>This job is {jobStatusLabel(job.status).toLowerCase()}, so it can no longer be changed.</Alert>}
+
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={7}>
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>Work</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}><Fact name="Operation">{job.operationType ? String(job.operationType).replace(/_/g, ' ') : ''}</Fact></Grid>
+              <Grid item xs={12} sm={6}><Fact name="Work center">{job.workCenter ? `${job.workCenter.name} (${job.workCenter.code})` : ''}</Fact></Grid>
+              <Grid item xs={12} sm={6}><Fact name="Assigned to">{person(job.assignedTo)}</Fact></Grid>
+              <Grid item xs={12} sm={6}><Fact name="Created by">{person(job.createdBy)}</Fact></Grid>
+              <Grid item xs={12}><Fact name="Instructions">{job.instructions}</Fact></Grid>
+              {size && <Grid item xs={12}><Fact name="Finished size">{size}</Fact></Grid>}
+              <Grid item xs={12}><Fact name="Notes"><span style={{ whiteSpace: 'pre-wrap' }}>{job.notes}</span></Fact></Grid>
+            </Grid>
+          </Paper>
+
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>History</Typography>
+            <TableContainer>
+              <Table size="small" aria-label="Job history">
+                <TableHead>
+                  <TableRow><TableCell>When</TableCell><TableCell>What happened</TableCell><TableCell>By</TableCell><TableCell>Note</TableCell></TableRow>
+                </TableHead>
+                <TableBody>
+                  {history.map((h, i) => (
+                    <TableRow key={i}>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>{when(h.timestamp)}</TableCell>
+                      <TableCell>
+                        {h.type === 'STATUS'
+                          ? <>{h.from ? `${jobStatusLabel(h.from)} to ` : 'Moved to '}<strong>{jobStatusLabel(h.status)}</strong></>
+                          : h.type === 'CREATED' ? 'Job created' : h.note}
+                      </TableCell>
+                      <TableCell>{h.by || <Typography component="span" variant="body2" color="text.secondary">{h.recorded ? 'System' : 'Not recorded'}</Typography>}</TableCell>
+                      <TableCell>{h.type === 'STATUS' ? h.note : ''}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            {history.some((h) => !h.recorded) && (
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
+                Some steps happened before status changes were recorded with a name, so only their times are known.
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12} md={5}>
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>Dates</Typography>
+            <Fact name="Scheduled start">{when(job.scheduledStart)}</Fact>
+            <Fact name="Scheduled finish">{when(job.scheduledEnd)}</Fact>
+            <Divider sx={{ my: 1.5 }} />
+            <Fact name="Work started">{when(job.actualStart)}</Fact>
+            <Fact name="Work finished">{when(job.actualEnd)}</Fact>
+            <Fact name="Shipped">{when(job.shippedAt)}</Fact>
+          </Paper>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>Weights and shipping</Typography>
+            <Fact name="Weight in">{pounds(job.inputWeightLb)}</Fact>
+            <Fact name="Weight out">{pounds(job.outputWeightLb)}</Fact>
+            <Fact name="Scrap">{pounds(job.scrapWeightLb)}</Fact>
+            <Divider sx={{ my: 1.5 }} />
+            <Fact name="Carrier">{job.shippingCarrier}</Fact>
+            <Fact name="Tracking number">{job.trackingNumber}</Fact>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <ChangeStatusDialog
+        job={job}
+        open={dialog}
+        onClose={() => setDialog(false)}
+        onSaved={() => { setDialog(false); setToast('Status changed'); load() }}
+      />
+      <Snackbar open={!!toast} autoHideDuration={4000} onClose={() => setToast('')} message={toast} />
+    </Box>
+  )
+}

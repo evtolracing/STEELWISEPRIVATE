@@ -10,6 +10,7 @@
 
 import express from 'express'
 import prisma from '../lib/db.js'
+import { moveJob } from '../lib/jobHistory.js'
 import { createNumbered, padded } from '../lib/numbering.js';
 
 const router = express.Router()
@@ -318,10 +319,7 @@ router.post('/inspections/:id/pass', async (req, res) => {
     })
 
     // Advance job to PACKAGING
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: { status: 'PACKAGING' },
-    })
+    await moveJob(prisma, inspection.jobId, { status: 'PACKAGING' }, { note: `Inspection ${inspection.inspectionNumber} passed`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} PASSED — job ${inspection.job.jobNumber} → PACKAGING`)
     res.json({ success: true, data: updated })
@@ -366,10 +364,7 @@ router.post('/inspections/:id/fail', async (req, res) => {
     })
 
     // Put job on hold
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: { status: 'ON_HOLD' },
-    })
+    await moveJob(prisma, inspection.jobId, { status: 'ON_HOLD' }, { note: `Inspection ${inspection.inspectionNumber} failed`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} FAILED — job ${inspection.job.jobNumber} → ON_HOLD`)
     res.json({ success: true, data: updated })
@@ -413,13 +408,11 @@ router.post('/inspections/:id/rework', async (req, res) => {
     })
 
     // Send job back to SCHEDULED for re-planning
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: {
+    const reworkJob = await prisma.job.findUnique({ where: { id: inspection.jobId }, select: { notes: true } })
+    await moveJob(prisma, inspection.jobId, {
         status: 'SCHEDULED',
-        notes: `REWORK: ${reworkInstructions || 'Rework required per QC inspector'}${inspection.job.notes ? '\n\n' + inspection.job.notes : ''}`,
-      },
-    })
+        notes: `REWORK: ${reworkInstructions || 'Rework required per QC inspector'}${reworkJob?.notes ? '\n\n' + reworkJob.notes : ''}`,
+      }, { note: `Inspection ${inspection.inspectionNumber}: rework`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} REWORK — job ${inspection.job.jobNumber} → SCHEDULED`)
     res.json({ success: true, data: updated })
@@ -461,10 +454,7 @@ router.post('/inspections/:id/conditional', async (req, res) => {
     })
 
     // Advance job to PACKAGING (conditional pass still moves forward)
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: { status: 'PACKAGING' },
-    })
+    await moveJob(prisma, inspection.jobId, { status: 'PACKAGING' }, { note: `Inspection ${inspection.inspectionNumber} passed with conditions`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} CONDITIONAL — job ${inspection.job.jobNumber} → PACKAGING`)
     res.json({ success: true, data: updated })

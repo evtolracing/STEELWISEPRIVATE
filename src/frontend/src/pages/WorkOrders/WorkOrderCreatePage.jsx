@@ -231,7 +231,7 @@ export default function WorkOrderCreatePage() {
                     onChange={handleCoilSelect}
                     loading={coilsLoading}
                     getOptionLabel={(coil) => 
-                      `${coil.coilNumber || coil.unitNumber || coil.id} - ${coil.grade?.name || 'Unknown'} (${coil.widthIn || '?'}" x ${coil.gaugeIn || '?'}")`
+                      `${coil.coilNumber || coil.unitNumber || coil.id} - ${coil.grade?.code || coil.grade?.name || 'Unknown'} (${coil.widthIn || '?'}" x ${coil.gaugeIn || '?'}")`
                     }
                     renderOption={(props, coil) => (
                       <li {...props} key={coil.id}>
@@ -240,7 +240,7 @@ export default function WorkOrderCreatePage() {
                             {coil.coilNumber || coil.unitNumber || coil.id}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {coil.grade?.name || 'Unknown Grade'} • {coil.widthIn || '?'}" x {coil.gaugeIn || '?'}" • {coil.weightLb?.toLocaleString() || '?'} lbs
+                            {coil.grade?.name || 'Unknown Grade'} • {coil.widthIn || '?'}" x {coil.gaugeIn || '?'}" • {coil.netWeightLb != null ? Number(coil.netWeightLb).toLocaleString() : '?'} lbs
                           </Typography>
                         </Stack>
                       </li>

@@ -20,6 +20,7 @@ import {
 } from '../lib/workflowRules.js';
 
 import { invoiceShipment } from '../services/billing.js';
+import { moveJobsWhere } from '../lib/jobHistory.js';
 const router = Router();
 
 const EDIT_FIELDS = ['carrierId', 'carrierName', 'truckNumber', 'driverName', 'driverPhone', 'scheduledDate', 'totalWeightLb', 'bolNumber', 'notes'];
@@ -254,10 +255,12 @@ async function dispatch(id, body, userId) {
       // Jobs that were ready to ship go with the material once their line has fully shipped.
       const gone = lines.filter((l) => l.lineStatus === 'COMPLETE').map((l) => l.id);
       const allGone = lines.every((l) => ['COMPLETE', 'CANCELLED'].includes(l.lineStatus));
-      await tx.job.updateMany({
-        where: { orderId: shipment.orderId, status: 'READY_TO_SHIP', OR: [{ orderLineId: { in: gone } }, ...(allGone ? [{ orderLineId: null }] : [])] },
-        data: { status: 'SHIPPED' },
-      });
+      await moveJobsWhere(
+        tx,
+        { orderId: shipment.orderId, status: 'READY_TO_SHIP', OR: [{ orderLineId: { in: gone } }, ...(allGone ? [{ orderLineId: null }] : [])] },
+        'SHIPPED',
+        { note: `Left on shipment ${shipment.shipmentNumber}`, via: 'shipment', userId },
+      );
       const status = orderStatusFromLines(lines.map((l) => l.lineStatus));
       if (status) await tx.order.update({ where: { id: shipment.orderId }, data: { status } });
     }

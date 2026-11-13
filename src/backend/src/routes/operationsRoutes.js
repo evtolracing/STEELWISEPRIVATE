@@ -6,6 +6,7 @@
 
 import express from 'express'
 import prisma from '../lib/db.js'
+import { moveJob, moveJobsWhere } from '../lib/jobHistory.js'
 
 const router = express.Router()
 
@@ -223,10 +224,7 @@ router.post('/:id/start', async (req, res) => {
     
     // Also update the parent Job status to IN_PROCESS if it's still SCHEDULED
     if (operation.dispatchJob?.jobId) {
-      await prisma.job.updateMany({
-        where: { id: operation.dispatchJob.jobId, status: 'SCHEDULED' },
-        data: { status: 'IN_PROCESS' },
-      })
+      await moveJobsWhere(prisma, { id: operation.dispatchJob.jobId, status: 'SCHEDULED' }, 'IN_PROCESS', { note: 'First operation started', via: 'operation', userId: req.user?.id })
     }
     
     console.log(`[OPERATIONS] Started operation ${operation.id} by operator ${operatorId}`)
@@ -349,10 +347,7 @@ router.post('/:id/complete', async (req, res) => {
       })
       if (remaining === 0) {
         // All operations done → job goes to QC inspection queue (not directly to COMPLETE)
-        await prisma.job.update({
-          where: { id: operation.dispatchJob.jobId },
-          data: { status: 'WAITING_QC' },
-        })
+        await moveJob(prisma, operation.dispatchJob.jobId, { status: 'WAITING_QC' }, { note: 'All operations finished', via: 'operation', userId: req.user?.id })
         console.log(`[OPERATIONS] All ops complete for job ${operation.dispatchJob.jobId} — moved to WAITING_QC`)
       }
     }

@@ -30,13 +30,19 @@ const Fact = ({ name, children }) => (
 function CompleteDialog({ wo, open, onClose, onDone }) {
   const [out, setOut] = useState('')
   const [scrap, setScrap] = useState('')
+  const [pieces, setPieces] = useState('1')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   useEffect(() => { if (open) { setOut(''); setScrap(''); setError('') } }, [open])
   const save = async () => {
     setBusy(true); setError('')
     try {
-      await client.put(`/work-orders/${wo.id}/complete`, { outputWeightLb: out, scrapWeightLb: scrap === '' ? 0 : scrap })
+      const total = Number(out)
+      const n = Math.max(1, Math.min(200, parseInt(pieces, 10) || 1))
+      // Equal pieces; the last one takes any rounding so the pieces add up to the weight entered.
+      const each = Math.floor((total / n) * 10000) / 10000
+      const outputs = total > 0 ? Array.from({ length: n }, (_, i) => ({ weightLb: i === n - 1 ? Math.round((total - each * (n - 1)) * 10000) / 10000 : each })) : []
+      await client.put(`/work-orders/${wo.id}/complete`, { outputWeightLb: total, scrapWeightLb: scrap === '' ? 0 : Number(scrap), outputs })
       onDone('Work order completed')
     } catch (e) {
       setError(e.response?.data?.error || 'The work order could not be completed')
@@ -50,10 +56,11 @@ function CompleteDialog({ wo, open, onClose, onDone }) {
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Weight in: {pounds(wo.inputWeightLb) || 'not recorded'}. Yield is worked out from what you enter.
+          Weight in: {pounds(wo.inputWeightLb) || 'not recorded'}. Yield is worked out from what you enter. The good weight and the scrap come off the source item, and each piece becomes a stock item with the same heat. Anything not used stays on the source item.
         </Typography>
         <TextField fullWidth type="number" label="Good weight out (lb)" value={out} onChange={(e) => setOut(e.target.value)} inputProps={{ min: 0, step: 'any' }} sx={{ mb: 2 }} />
-        <TextField fullWidth type="number" label="Scrap (lb)" value={scrap} onChange={(e) => setScrap(e.target.value)} inputProps={{ min: 0, step: 'any' }} />
+        <TextField fullWidth type="number" label="Scrap (lb)" value={scrap} onChange={(e) => setScrap(e.target.value)} inputProps={{ min: 0, step: 'any' }} sx={{ mb: 2 }} />
+        <TextField fullWidth type="number" label="Number of pieces" helperText="The good weight is split equally between them" value={pieces} onChange={(e) => setPieces(e.target.value)} inputProps={{ min: 1, max: 200, step: 1 }} />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={busy}>Cancel</Button>
@@ -161,6 +168,28 @@ export default function WorkOrderDetailPage() {
             </Grid>
           </Paper>
         </Grid>
+        {wo.outputs?.length > 0 && (
+          <Grid item xs={12}>
+            <Paper sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>Pieces made</Typography>
+              <TableContainer>
+                <Table size="small" aria-label="Pieces made by this work order">
+                  <TableHead><TableRow><TableCell>Piece</TableCell><TableCell>Stock item</TableCell><TableCell align="right">Weight</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
+                  <TableBody>
+                    {wo.outputs.map((o) => (
+                      <TableRow key={o.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${o.outputCoil?.id}`)}>
+                        <TableCell>{o.sequence}</TableCell>
+                        <TableCell>{o.outputCoil?.coilNumber}</TableCell>
+                        <TableCell align="right">{pounds(o.outputCoil?.netWeightLb ?? o.actualWeight)}</TableCell>
+                        <TableCell>{String(o.outputCoil?.status || '').toLowerCase().replace(/_/g, ' ')}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>History</Typography>

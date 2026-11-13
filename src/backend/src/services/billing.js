@@ -13,7 +13,8 @@
  *  - Nothing here sends anything to a customer.
  */
 import prisma from '../lib/db.js';
-import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
+import { retryOverlap } from '../lib/numbering.js';
+import { recordBusinessEvent, kick } from './webhookService.js';
 import {
   money, lineAmount, chargesFor, dueDateFor, invoiceStatusFor, balanceOf, paymentError, PAYMENT_METHODS,
 } from '../lib/billingRules.js';
@@ -89,7 +90,7 @@ async function invoicedByLine(tx, orderId) {
   return map;
 }
 
-async function buildInvoice(tx, order, wanted, { shipmentId, notes, invoiceNumber }) {
+async function buildInvoice(tx, order, wanted, { shipmentId, notes, next }) {
   const invoiced = await invoicedByLine(tx, order.id);
   const lines = [];
   for (const line of order.lines) {
@@ -115,7 +116,9 @@ async function buildInvoice(tx, order, wanted, { shipmentId, notes, invoiceNumbe
   const { tax, freight } = chargesFor(order, billed, subtotal, final);
   const now = new Date();
   const total = money(subtotal + tax + freight);
-  return tx.invoice.create({
+  // The number is taken last, once it is certain an invoice will be written.
+  const invoiceNumber = await next();
+  const invoice = await tx.invoice.create({
     data: {
       invoiceNumber, orderId: order.id, shipmentId: shipmentId || null, kind: 'INVOICE', status: invoiceStatusFor(total, 0),
       invoiceDate: now, dueDate: dueDateFor(order.paymentTerms, now),
@@ -124,13 +127,52 @@ async function buildInvoice(tx, order, wanted, { shipmentId, notes, invoiceNumbe
     },
     include: INCLUDE,
   });
+  // The customer's own system is told in the same save, so an invoice cannot exist without its event.
+  await recordBusinessEvent(tx, 'invoice.issued', invoice.id, { invoiceId: invoice.id, invoiceNumber, orderId: order.id, orderNumber: order.orderNumber, totalAmount: total, dueDate: invoice.dueDate }, { customerOrgId: order.buyerId });
+  return invoice;
 }
 
-const numbered = (prefix, create) => createNumbered({
-  count: () => prisma.invoice.count({ where: { invoiceNumber: { startsWith: `${prefix}-` } } }),
-  format: padded(prefix, 6),
-  create: (invoiceNumber) => retryOverlap(() => prisma.$transaction((tx) => create(tx, invoiceNumber), SERIALIZABLE)),
-});
+/**
+ * Invoice and credit memo numbers are never skipped and never repeated (owner decision of
+ * 2026-11-13). The last number of each series is a row in DocumentCounter. It is advanced inside
+ * the transaction that saves the document, at the moment the document is written, so a save that
+ * is refused or fails gives its number back, and two saves at once cannot take the same one: the
+ * second waits for the row and is run again.
+ */
+const SERIES_WIDTH = 6;
+export async function takeNumber(tx, series = 'INV') {
+  const rows = await tx.$queryRaw`
+    INSERT INTO "DocumentCounter" ("series", "lastNumber", "updatedAt")
+    VALUES (${series},
+            COALESCE((SELECT MAX(substring(i."invoiceNumber" from '[0-9]+$')::bigint) FROM "Invoice" i
+                       WHERE i."invoiceNumber" ~ ('^' || ${series} || '-[0-9]{1,9}$')), 0) + 1,
+            CURRENT_TIMESTAMP)
+    ON CONFLICT ("series") DO UPDATE SET "lastNumber" = "DocumentCounter"."lastNumber" + 1, "updatedAt" = CURRENT_TIMESTAMP
+    RETURNING "lastNumber"`;
+  return `${series}-${String(rows[0].lastNumber).padStart(SERIES_WIDTH, '0')}`;
+}
+
+/** Moves a series past numbers that were written without it (seed data, an import). */
+export async function catchUp(series = 'INV') {
+  await prisma.$executeRaw`
+    UPDATE "DocumentCounter" SET "lastNumber" = GREATEST("lastNumber",
+      COALESCE((SELECT MAX(substring(i."invoiceNumber" from '[0-9]+$')::bigint) FROM "Invoice" i
+                 WHERE i."invoiceNumber" ~ ('^' || ${series} || '-[0-9]{1,9}$')), 0))
+     WHERE "series" = ${series}`;
+}
+
+/** Runs `create(tx, next)` in one serializable transaction. `next()` gives the document its number. */
+async function numbered(series, create) {
+  for (let i = 0; ; i++) {
+    try {
+      return await retryOverlap(() => prisma.$transaction((tx) => create(tx, () => takeNumber(tx, series)), SERIALIZABLE), 25);
+    } catch (error) {
+      const taken = error?.code === 'P2002' && String(error?.meta?.target || '').includes('invoiceNumber');
+      if (!taken || i >= 2) throw error;
+      await catchUp(series);
+    }
+  }
+}
 
 /** Bills one dispatched shipment. Returns the existing invoice if it was already billed. */
 export async function invoiceShipment(shipmentId, userId = null) {
@@ -140,14 +182,15 @@ export async function invoiceShipment(shipmentId, userId = null) {
   const wanted = new Map();
   for (const it of shipment.items) wanted.set(it.orderLineId, (wanted.get(it.orderLineId) || 0) + num(it.qtyShipped));
 
-  const invoice = await numbered('INV', async (tx, invoiceNumber) => {
+  const invoice = await numbered('INV', async (tx, next) => {
     const existing = await tx.invoice.findFirst({ where: { shipmentId, kind: 'INVOICE', status: { not: 'CANCELLED' } }, include: INCLUDE });
     if (existing) return existing;
     const order = await tx.order.findUnique({ where: { id: shipment.orderId }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
-    const made = await buildInvoice(tx, order, wanted, { shipmentId, invoiceNumber });
+    const made = await buildInvoice(tx, order, wanted, { shipmentId, next });
     if (made) await recordMoney(tx, { invoice: made, eventType: 'INVOICE_ISSUED', userId, details: { amount: num(made.totalAmount), note: `Shipment ${shipment.shipmentNumber || ''}`.trim() } });
     return made;
   });
+  kick();
   return toApi(invoice);
 }
 
@@ -156,13 +199,14 @@ export async function invoiceOrder(orderId, { notes } = {}, userId = null) {
   const found = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true, orderType: true, status: true } });
   if (!found) refuse(404, 'Order not found');
   if (found.orderType !== 'SO') refuse(409, 'Only sales orders are invoiced');
-  const invoice = await numbered('INV', async (tx, invoiceNumber) => {
+  const invoice = await numbered('INV', async (tx, next) => {
     const order = await tx.order.findUnique({ where: { id: orderId }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
-    const made = await buildInvoice(tx, order, null, { notes, invoiceNumber });
+    const made = await buildInvoice(tx, order, null, { notes, next });
     if (made) await recordMoney(tx, { invoice: made, eventType: 'INVOICE_ISSUED', userId, details: { amount: num(made.totalAmount), note: notes || null } });
     return made;
   });
   if (!invoice) refuse(409, 'Nothing has shipped on this order that is not already invoiced');
+  kick();
   return toApi(invoice);
 }
 
@@ -205,10 +249,14 @@ export async function recordPayment(invoiceId, body = {}, userId = null) {
  *   lines:  [{ invoiceLineId, quantity }]  credit by quantity at the invoiced price, with its share of tax
  *   amount: a plain money credit (no tax)  — use one or the other
  */
-export async function creditInvoice(invoiceId, body = {}, userId = null) {
+export async function creditInvoice(invoiceId, body = {}, userId = null, steps = {}) {
+  // steps.before(tx) and steps.after(tx, credit) run inside the credit's own transaction, so a
+  // caller whose credit is one part of a larger change (voiding a counter sale: C-010) gets
+  // all of it or none of it.
   const reason = String(body.reason || '').trim();
   if (!reason) refuse(400, 'A reason is required for a credit');
-  const run = async (tx, invoiceNumber) => {
+  const run = async (tx, next) => {
+    if (steps.before) await steps.before(tx);
     const invoice = await tx.invoice.findUnique({ where: { id: invoiceId }, include: { lines: true } });
     if (!invoice) refuse(404, 'Invoice not found');
     if (invoice.kind !== 'INVOICE') refuse(409, 'A credit memo cannot itself be credited');
@@ -251,6 +299,7 @@ export async function creditInvoice(invoiceId, body = {}, userId = null) {
     }
 
     const applied = Math.min(total, Math.max(balanceOf(invoice), 0));
+    const invoiceNumber = await next();
     const credit = await tx.invoice.create({
       data: {
         invoiceNumber, orderId: invoice.orderId, kind: 'CREDIT', creditOfInvoiceId: invoice.id,
@@ -267,6 +316,7 @@ export async function creditInvoice(invoiceId, body = {}, userId = null) {
     // On the invoice it reduces and on the credit memo itself, so either screen shows who issued it.
     await recordMoney(tx, { invoice, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoiceNumber, note: reason } });
     await recordMoney(tx, { invoice: credit, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoice.invoiceNumber, note: reason } });
+    if (steps.after) return (await steps.after(tx, credit)) || credit;
     return credit;
   };
   return toApi(await numbered('CM', run));
@@ -274,25 +324,28 @@ export async function creditInvoice(invoiceId, body = {}, userId = null) {
 
 /** Money handed back to the customer for the part of a credit memo that was not used against the invoice. */
 export async function recordRefund(creditId, body = {}, userId = null) {
+  const updated = await retryOverlap(() => prisma.$transaction((tx) => refundWithin(tx, creditId, body, userId), SERIALIZABLE));
+  return toApi(updated);
+}
+
+/** The refund itself, inside a transaction the caller already holds. */
+export async function refundWithin(tx, creditId, body = {}, userId = null) {
   const amount = Number(body.amount);
   const method = String(body.paymentMethod || body.method || '').toUpperCase();
   if (!Number.isFinite(amount) || amount <= 0) refuse(400, 'amount must be more than zero');
   if (money(amount) !== amount) refuse(400, 'amount cannot have fractions of a cent');
   if (!PAYMENT_METHODS.includes(method) || method === 'CREDIT') refuse(400, `paymentMethod must be one of: ${PAYMENT_METHODS.filter((m) => m !== 'CREDIT').join(', ')}`);
-  const updated = await retryOverlap(() => prisma.$transaction(async (tx) => {
-    const credit = await tx.invoice.findUnique({ where: { id: creditId } });
-    if (!credit) refuse(404, 'Credit memo not found');
-    if (credit.kind !== 'CREDIT') refuse(409, 'Refunds are recorded on a credit memo');
-    if (credit.status === 'CANCELLED') refuse(409, 'This credit memo is cancelled');
-    const owed = money(num(credit.paidAmount) - num(credit.totalAmount)); // both negative
-    if (amount > owed + 0.005) refuse(409, `Only ${owed.toFixed(2)} is still owed back on this credit memo`);
-    const reference = body.referenceNumber ? String(body.referenceNumber) : null;
-    await recordMoney(tx, { invoice: credit, eventType: 'REFUND_RECORDED', userId, details: { amount, method, reference, note: body.notes ? String(body.notes) : null } });
-    return applyPayment(tx, credit, -amount, {
-      paymentMethod: method, referenceNumber: reference, notes: body.notes ? String(body.notes) : 'Refund',
-    });
-  }, SERIALIZABLE));
-  return toApi(updated);
+  const credit = await tx.invoice.findUnique({ where: { id: creditId } });
+  if (!credit) refuse(404, 'Credit memo not found');
+  if (credit.kind !== 'CREDIT') refuse(409, 'Refunds are recorded on a credit memo');
+  if (credit.status === 'CANCELLED') refuse(409, 'This credit memo is cancelled');
+  const owed = money(num(credit.paidAmount) - num(credit.totalAmount)); // both negative
+  if (amount > owed + 0.005) refuse(409, `Only ${owed.toFixed(2)} is still owed back on this credit memo`);
+  const reference = body.referenceNumber ? String(body.referenceNumber) : null;
+  await recordMoney(tx, { invoice: credit, eventType: 'REFUND_RECORDED', userId, details: { amount, method, reference, note: body.notes ? String(body.notes) : null } });
+  return applyPayment(tx, credit, -amount, {
+    paymentMethod: method, referenceNumber: reference, notes: body.notes ? String(body.notes) : 'Refund',
+  });
 }
 
 export async function cancelInvoice(invoiceId, body = {}, userId = null) {

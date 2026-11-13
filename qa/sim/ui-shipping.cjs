@@ -92,6 +92,18 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
     await page.getByRole('button', { name: 'Dispatch', exact: true }).click();
     check('shipment: dispatch asks before it takes stock and bills', await has(page, /cannot be undone here/), await body(page));
     await page.getByRole('button', { name: 'Dispatch now' }).click();
+    // Everything that ships comes off reserved stock. Nothing is reserved yet, so the screen says so.
+    const refusedShown = await has(page, /Reserve the stock that is going out/);
+    const still = (await api('GET', `/api/shipments/${shipmentId}`, clerk)).body;
+    check('shipment: with nothing reserved the dispatch is refused and the screen says to reserve the stock', refusedShown && still?.status !== 'IN_TRANSIT', `shown ${refusedShown}, server ${still?.status}; ${(await body(page)).slice(-300)}`);
+    const stockRows = (await api('GET', '/api/inventory?limit=100', boss)).body;
+    const stock = (Array.isArray(stockRows) ? stockRows : stockRows?.data || []).find((r) => Number(r.qtyAvailable) >= 10 && r.coil?.status === 'AVAILABLE' && !['FAILED', 'HOLD'].includes(r.coil?.qcStatus));
+    const onShipment = (still?.items || []).reduce((n, it) => n + Number(it.qtyShipped), 0);
+    const reserved = await api('POST', `/api/orders/${order.id}/allocate`, boss, { lineId: order.lines[0].id, coilId: stock?.coilId, qty: onShipment });
+    check('shipment: the stock going out is reserved on the order', reserved.status === 201, `status ${reserved.status} ${JSON.stringify(reserved.body).slice(0, 200)}`);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: 'Dispatch', exact: true }).click();
+    await page.getByRole('button', { name: 'Dispatch now' }).click();
     await has(page, /Not yet loaded to/);
     const sent = (await api('GET', `/api/shipments/${shipmentId}`, clerk)).body;
     text = await body(page);

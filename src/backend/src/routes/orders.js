@@ -8,6 +8,8 @@
  *                                     gives reserved stock back
  *   POST /api/orders/:id/allocate     reserve stock for a line { lineId, coilId, qty }
  */
+import { listWindow, sendWindow } from '../lib/listing.js';
+import { recordBusinessEvent, kick } from '../services/webhookService.js';
 import { COMMITTED_STATUSES, HOLD_PLACED, statusAfterCreditCheck, recordCreditHold, openCreditHold, releaseCreditHold, creditHoldMessage } from '../lib/creditControl.js';
 import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { Router } from 'express';
@@ -15,6 +17,7 @@ import prisma from '../lib/db.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { orderMoveError, positiveQty } from '../lib/workflowRules.js';
 
+const STALE_EDIT = 'This order was just changed by someone else. Reload and try again.';
 const router = Router();
 
 const ORDER_TYPES = ['RFQ', 'QUOTE', 'SO', 'PO', 'RETURN'];
@@ -126,18 +129,33 @@ async function checkRefs(header) {
 
 router.get('/', async (req, res) => {
   try {
-    const { orderType, status, buyerId } = req.query;
-    const orders = await prisma.order.findMany({
-      where: {
-        ...(orderType && { orderType }),
-        ...(status && { status }),
-        ...(buyerId && { buyerId }),
-      },
-      include: { buyer: true, seller: true, lines: true },
-      orderBy: { createdAt: 'desc' },
-      take: 100,
-    });
-    res.json(orders);
+    const { orderType, status, buyerId, view } = req.query;
+    if (view !== undefined && view !== 'summary') return res.status(400).json({ error: 'view must be "summary" when it is given' });
+    const where = {
+      ...(orderType && { orderType }),
+      ...(status && { status }),
+      ...(buyerId && { buyerId }),
+    };
+    const window = listWindow(req.query, { max: 100 });
+    // `view=summary` is the list a screen shows: the header, who it is for and how many lines.
+    // Without it the answer is unchanged: every line and both organisations in full.
+    const shape = view === 'summary'
+      ? { include: { buyer: { select: { id: true, code: true, name: true } } } }
+      : { include: { buyer: true, seller: true, lines: true } };
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({ where, ...shape, orderBy: { createdAt: 'desc' }, take: window.take, skip: window.skip }),
+      window.windowed || view ? prisma.order.count({ where }) : null,
+    ]);
+    // Lines are counted for the orders on this page only. Asking for the count as part of the
+    // list query made the database count the lines of every order (measured at 80 branches:
+    // the summary was slower than the full list).
+    let rows = orders;
+    if (view === 'summary') {
+      const counts = orders.length ? await prisma.orderLine.groupBy({ by: ['orderId'], where: { orderId: { in: orders.map((o) => o.id) } }, _count: { _all: true } }) : [];
+      const lineCount = new Map(counts.map((c) => [c.orderId, c._count._all]));
+      rows = orders.map((o) => ({ ...o, lineCount: lineCount.get(o.id) || 0 }));
+    }
+    sendWindow(res, rows, { ...window, total });
   } catch (error) {
     if (error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'Invalid orderType or status filter' });
     console.error('Orders: list failed:', error);
@@ -274,8 +292,16 @@ export async function releaseAllocations(tx, orderId) {
 router.put('/:id', async (req, res) => {
   try {
     const body = req.body || {};
-    const order = await prisma.order.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, orderType: true, orderNumber: true, buyerId: true, totalAmount: true } });
+    const order = await prisma.order.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, orderType: true, orderNumber: true, buyerId: true, totalAmount: true, updatedAt: true } });
     if (!order) return res.status(404).json({ error: 'Order not found' });
+    // An edit may say which version of the order it was made from. If the order has been saved
+    // since, the edit is refused instead of silently overwriting the other person's change (G-020).
+    const expected = body.expectedUpdatedAt;
+    if (expected !== undefined && expected !== null) {
+      const at = new Date(expected);
+      if (Number.isNaN(at.getTime())) return res.status(400).json({ error: 'expectedUpdatedAt is not a valid date' });
+      if (at.getTime() !== order.updatedAt.getTime()) return res.status(409).json({ error: STALE_EDIT, code: 'STALE_EDIT', updatedAt: order.updatedAt });
+    }
     if (order.orderType === 'RETURN') return res.status(409).json({ error: 'Returns are received or cancelled on the returns page' });
 
     const header = pickHeader(body);
@@ -314,8 +340,20 @@ router.put('/:id', async (req, res) => {
 
     const updated = await prisma.$transaction(async (tx) => {
       // Guard against two people changing the status at once.
-      const changed = await tx.order.updateMany({ where: { id: order.id, status: order.status }, data });
+      const changed = await tx.order.updateMany({ where: { id: order.id, status: order.status, ...(expected != null && { updatedAt: order.updatedAt }) }, data });
       if (!changed.count) return null;
+      if (order.orderType === 'SO' && data.status !== undefined && data.status !== order.status) {
+        const fact = { orderId: order.id, orderNumber: order.orderNumber, from: order.status, status: data.status };
+        if (data.status === 'CONFIRMED') await recordBusinessEvent(tx, 'order.confirmed', order.id, fact, { customerOrgId: order.buyerId });
+        await recordBusinessEvent(tx, 'order.status_changed', `${order.id}:${order.status}>${data.status}:${Date.now()}`, fact, { customerOrgId: order.buyerId });
+      }
+      // Who moved the order, from what to what, in the same save as the move itself.
+      if (data.status !== undefined && data.status !== order.status) {
+        await tx.auditLog.create({ data: {
+          category: 'WORKFLOW', eventType: 'ORDER_STATUS_CHANGED', action: 'UPDATE', userId: req.user?.id || null, resourceType: 'Order', resourceId: order.id,
+          details: { orderNumber: order.orderNumber, from: order.status, to: data.status, ...(data.totalAmount !== undefined && Number(data.totalAmount) !== Number(order.totalAmount) && { totalFrom: Number(order.totalAmount), totalTo: Number(data.totalAmount) }) },
+        } });
+      }
       if (moving && data.status === 'CANCELLED') {
         await releaseAllocations(tx, order.id);
         await tx.orderLine.updateMany({ where: { orderId: order.id }, data: { lineStatus: 'CANCELLED' } });
@@ -323,7 +361,8 @@ router.put('/:id', async (req, res) => {
       if (gate.creditHold) await recordCreditHold(tx, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
       return tx.order.findUnique({ where: { id: order.id }, include: { lines: true } });
     });
-    if (!updated) return res.status(409).json({ error: 'This order was just changed by someone else. Reload and try again.' });
+    if (!updated) return res.status(409).json({ error: STALE_EDIT, code: 'STALE_EDIT' });
+    kick();
     res.json(gate.creditHold ? { ...updated, creditHold: gate.creditHold, warning: gate.creditHold.message } : updated);
   } catch (error) {
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'Order has a field that is not valid' });
@@ -339,28 +378,40 @@ router.post('/:id/allocate', async (req, res) => {
     if (!lineId || !coilId) return res.status(400).json({ error: 'lineId and coilId are required' });
     if (qty === null) return res.status(400).json({ error: 'qty must be more than zero' });
 
-    const line = await prisma.orderLine.findUnique({ where: { id: lineId }, include: { order: { select: { id: true, status: true } }, allocations: true } });
-    if (!line || line.orderId !== req.params.id) return res.status(404).json({ error: 'Order line not found on this order' });
-    if (['CANCELLED', 'COMPLETE'].includes(line.order.status)) return res.status(409).json({ error: `Cannot reserve stock for a ${line.order.status.toLowerCase()} order` });
-    const held = line.allocations.reduce((s, a) => s + Number(a.qtyAllocated), 0);
-    const open = Number(line.qtyOrdered) - Number(line.qtyShipped) - held;
-    if (qty > open + 1e-9) return res.status(409).json({ error: `Only ${Math.max(open, 0)} is still unreserved on this line` });
-
+    // Seen through the user's branch first: a line they may not open is "not found".
+    const seen = await prisma.orderLine.findUnique({ where: { id: lineId }, select: { orderId: true } });
+    if (!seen || seen.orderId !== req.params.id) return res.status(404).json({ error: 'Order line not found on this order' });
     const coil = await prisma.coil.findUnique({ where: { id: coilId }, select: { id: true, status: true, qcStatus: true, inventory: { select: { qtyAvailable: true } } } });
     if (!coil || !coil.inventory) return res.status(404).json({ error: 'Stock item not found' });
     if (coil.status === 'HOLD' || ['FAILED', 'HOLD'].includes(coil.qcStatus)) return res.status(409).json({ error: 'This stock is on hold and cannot be reserved' });
 
-    const allocation = await prisma.$transaction(async (tx) => {
+    const outcome = await prisma.$transaction(async (tx) => {
+      // The order row is locked for the length of the reservation. A cancellation, or a second
+      // reservation for the same order, waits its turn and then sees what this one saved, so a
+      // line is never reserved beyond what it needs and a cancelled order never keeps stock.
+      const [locked] = await tx.$queryRaw`SELECT status::text AS status FROM "Order" WHERE id = ${req.params.id} FOR UPDATE`;
+      if (!locked) return fail(404, 'Order line not found on this order');
+      if (['CANCELLED', 'COMPLETE'].includes(locked.status)) return fail(409, `Cannot reserve stock for a ${locked.status.toLowerCase()} order`);
+      const line = await tx.orderLine.findUnique({ where: { id: lineId }, include: { allocations: true } });
+      const held = line.allocations.reduce((sum, a) => sum + Number(a.qtyAllocated), 0);
+      const open = Number(line.qtyOrdered) - Number(line.qtyShipped) - held;
+      if (qty > open + 1e-9) return fail(409, `Only ${Math.max(open, 0)} is still unreserved on this line`);
       // Only succeeds while enough is still available, so two reservations can't both take the last of it.
       const taken = await tx.inventory.updateMany({
         where: { coilId, qtyAvailable: { gte: qty } },
         data: { qtyAllocated: { increment: qty }, qtyAvailable: { decrement: qty } },
       });
-      if (!taken.count) return null;
+      if (!taken.count) return fail(409, `Not enough available: ${Number(coil.inventory.qtyAvailable)} on hand to reserve`);
       await tx.coil.updateMany({ where: { id: coilId, status: 'AVAILABLE' }, data: { status: 'ALLOCATED' } });
-      return tx.orderLineAllocation.create({ data: { orderLineId: lineId, coilId, qtyAllocated: qty } });
+      const allocation = await tx.orderLineAllocation.create({ data: { orderLineId: lineId, coilId, qtyAllocated: qty } });
+      await tx.auditLog.create({ data: {
+        category: 'WORKFLOW', eventType: 'STOCK_RESERVED', action: 'CREATE', userId: req.user?.id || null, resourceType: 'Order', resourceId: req.params.id,
+        details: { orderLineId: lineId, coilId, qty, allocationId: allocation.id },
+      } });
+      return { allocation };
     });
-    if (!allocation) return res.status(409).json({ error: `Not enough available: ${Number(coil.inventory.qtyAvailable)} on hand to reserve` });
+    if (outcome.error) return res.status(outcome.status).json({ error: outcome.error });
+    const { allocation } = outcome;
     res.status(201).json(allocation);
   } catch (error) {
     console.error('Orders: allocate failed:', error);

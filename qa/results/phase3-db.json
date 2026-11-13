@@ -1,0 +1,3069 @@
+{
+ "at": "2026-11-13T23:00:29.245Z",
+ "base": "http://localhost:3011",
+ "scenarios": 74,
+ "passed": 74,
+ "checks": 607,
+ "groups": {
+  "Inventory receiving and adjustments": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 60
+  },
+  "Reservations and material consumption": {
+   "scenarios": 9,
+   "passed": 9,
+   "checks": 73
+  },
+  "Work orders, scrap and remnants": {
+   "scenarios": 11,
+   "passed": 11,
+   "checks": 106
+  },
+  "Interbranch transfers": {
+   "scenarios": 9,
+   "passed": 9,
+   "checks": 57
+  },
+  "Orders, invoicing and financial records": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 72
+  },
+  "Concurrency, retries and failure recovery": {
+   "scenarios": 18,
+   "passed": 18,
+   "checks": 171
+  },
+  "Stock corrections, invoice numbers and retention": {
+   "scenarios": 7,
+   "passed": 7,
+   "checks": 68
+  }
+ },
+ "notes": [
+  "Transfers: on the real stock list a transfer is one immediate step. There is no request, approval, picking, in-transit or receipt stage, so partial receipt, shortage, damage in transit, lost in transit and duplicate receipt cannot occur and were NOT EXECUTED. Recorded as finding G-007."
+ ],
+ "results": [
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "a receipt saves the item, its balance and its movement together",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "one new item",
+     "ok": true
+    },
+    {
+     "what": "balance: 4321 on hand, all available",
+     "ok": true
+    },
+    {
+     "what": "one RECEIVE movement of 4321 into the branch, by the signed-in user",
+     "ok": true
+    },
+    {
+     "what": "heat and grade kept",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 39
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "the same item number received twice is refused and nothing is added",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "still one item, one movement, same balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 30
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "a receipt naming a heat that is not on file saves nothing",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "no item, no balance, no movement was left behind",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 14
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "a fractional weight is kept exactly as entered",
+   "asserts": [
+    {
+     "what": "on hand is exactly 1234.5678",
+     "ok": true
+    },
+    {
+     "what": "item weight is exactly 1234.5678",
+     "ok": true
+    },
+    {
+     "what": "movement is exactly 1234.5678",
+     "ok": true
+    },
+    {
+     "what": "thickness 0.1875 and width 36.125 exact",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 19
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "receiving more of an item adds exactly that much, with a movement",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "2000 + 750.25 = 2750.25 on hand and available",
+     "ok": true
+    },
+    {
+     "what": "two RECEIVE movements",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 33
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "receiving at a branch the item is not at, or a zero or negative quantity, changes nothing",
+   "asserts": [
+    {
+     "what": "wrong branch refused with 409",
+     "ok": true
+    },
+    {
+     "what": "negative and zero refused with 400",
+     "ok": true
+    },
+    {
+     "what": "balance and ledger unchanged",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 30
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "an upload with one bad row saves the good rows and reports the bad one",
+   "asserts": [
+    {
+     "what": "answered",
+     "ok": true
+    },
+    {
+     "what": "two good rows saved, the bad one not",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-7: movement marked UPLOAD",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-7: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-7: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-7: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-7: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-8: movement marked UPLOAD",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-8: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-8: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-8: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "UP-MWFKXZG9-8: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 44
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "a hold takes stock out of sale and a release puts it back, with the books in balance throughout",
+   "asserts": [
+    {
+     "what": "hold accepted",
+     "ok": true
+    },
+    {
+     "what": "3000 moved from available to on hold; on hand unchanged",
+     "ok": true
+    },
+    {
+     "what": "a second hold is refused",
+     "ok": true
+    },
+    {
+     "what": "held: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "held: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "held: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "held: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "release accepted",
+     "ok": true
+    },
+    {
+     "what": "back to 3000 available, 0 on hold",
+     "ok": true
+    },
+    {
+     "what": "released: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "released: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "released: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "released: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 62
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "a warehouse login held to one branch cannot receive into another",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "no item was created at the other branch",
+     "ok": true
+    },
+    {
+     "what": "the same login receives into its own branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 28
+  },
+  {
+   "group": "Inventory receiving and adjustments",
+   "name": "the database itself refuses a negative balance, a broken balance and a movement of nothing",
+   "asserts": [
+    {
+     "what": "on hand below zero",
+     "ok": true
+    },
+    {
+     "what": "on hand that is not available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "a movement of zero",
+     "ok": true
+    },
+    {
+     "what": "a negative item weight",
+     "ok": true
+    },
+    {
+     "what": "the row is untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 27
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "a reservation moves quantity from available to reserved and is on file against the line",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "2500 available, 1500 reserved, 4000 on hand",
+     "ok": true
+    },
+    {
+     "what": "item shows as reserved",
+     "ok": true
+    },
+    {
+     "what": "no stock movement: a reservation does not move material",
+     "ok": true
+    },
+    {
+     "what": "the history names who reserved what",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 74
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "reserving more than is available is refused and changes nothing",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 59
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "reserving more than the order line still needs is refused",
+   "asserts": [
+    {
+     "what": "first 500 accepted",
+     "ok": true
+    },
+    {
+     "what": "300.5 more is refused: only 300 is open",
+     "ok": true
+    },
+    {
+     "what": "exactly 500 reserved",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 82
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "cancelling an order gives every reservation back",
+   "asserts": [
+    {
+     "what": "cancel accepted",
+     "ok": true
+    },
+    {
+     "what": "all available again, none reserved",
+     "ok": true
+    },
+    {
+     "what": "item available again",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "all available again, none reserved",
+     "ok": true
+    },
+    {
+     "what": "item available again",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "no reservation rows left on the order",
+     "ok": true
+    },
+    {
+     "what": "the history shows the confirmation and the cancellation, each with the person",
+     "ok": true
+    },
+    {
+     "what": "a cancelled order cannot reserve stock",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 153
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "shipping reserved stock takes it off hand, writes the movement and updates the line",
+   "asserts": [
+    {
+     "what": "shipment created",
+     "ok": true
+    },
+    {
+     "what": "creating the shipment moves nothing yet",
+     "ok": true
+    },
+    {
+     "what": "dispatched",
+     "ok": true
+    },
+    {
+     "what": "1900 on hand, 0 reserved, 1900 available",
+     "ok": true
+    },
+    {
+     "what": "one SHIP movement of 1100 tied to the order and the shipment, from the branch",
+     "ok": true
+    },
+    {
+     "what": "line shows 1100 shipped; order complete",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 184
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "a part shipment leaves the rest reserved, and the order is not complete",
+   "asserts": [
+    {
+     "what": "2600 on hand, 600 still reserved, 2000 available",
+     "ok": true
+    },
+    {
+     "what": "order is PARTIAL with 400 of 1000 shipped",
+     "ok": true
+    },
+    {
+     "what": "shipping more than is left on the line is refused",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 199
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "stock on hold cannot be reserved",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 76
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "a dispatch that hits a hold on one of two lines saves nothing for either line",
+   "asserts": [
+    {
+     "what": "dispatch refused with 409",
+     "ok": true
+    },
+    {
+     "what": "first line: nothing left the shelf (rolled back)",
+     "ok": true
+    },
+    {
+     "what": "second line untouched",
+     "ok": true
+    },
+    {
+     "what": "no SHIP movement was written",
+     "ok": true
+    },
+    {
+     "what": "shipment still not dispatched; line shows nothing shipped",
+     "ok": true
+    },
+    {
+     "what": "no invoice was raised",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 164
+  },
+  {
+   "group": "Reservations and material consumption",
+   "name": "a shipment with nothing reserved, or less reserved than it carries, is refused and changes nothing",
+   "asserts": [
+    {
+     "what": "dispatch with nothing reserved is refused with the reason",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved: the shipment has not left",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved: nothing shipped on the line, no invoice, no movement",
+     "ok": true
+    },
+    {
+     "what": "half a pound short of reserved is refused too",
+     "ok": true
+    },
+    {
+     "what": "short: the shipment has not left",
+     "ok": true
+    },
+    {
+     "what": "short: nothing shipped on the line, no invoice, no movement",
+     "ok": true
+    },
+    {
+     "what": "the reservation is still whole",
+     "ok": true
+    },
+    {
+     "what": "fully reserved, it goes",
+     "ok": true
+    },
+    {
+     "what": "the movement names the item, and through it the heat",
+     "ok": true
+    },
+    {
+     "what": "700 left on hand and one invoice for 600.00",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 254
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a work order runs from created to complete with weights, yield and a history line for each move",
+   "asserts": [
+    {
+     "what": "created with the item weight as input",
+     "ok": true
+    },
+    {
+     "what": "release",
+     "ok": true
+    },
+    {
+     "what": "start",
+     "ok": true
+    },
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "output 7812.5, scrap 187.5, yield 97.66 saved",
+     "ok": true
+    },
+    {
+     "what": "three moves in the history, each with the person",
+     "ok": true
+    },
+    {
+     "what": "the source item is used up: nothing on hand, marked consumed",
+     "ok": true
+    },
+    {
+     "what": "one piece of 7812.5 lb is on the books, tied to the work order",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 99
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "more cannot come off the line than went on, and weights cannot be negative",
+   "asserts": [
+    {
+     "what": "output + scrap above input refused",
+     "ok": true
+    },
+    {
+     "what": "negative output refused; missing output refused",
+     "ok": true
+    },
+    {
+     "what": "still in progress with no weights saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 61
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a completed work order cannot be completed again or cancelled",
+   "asserts": [
+    {
+     "what": "second completion refused with 409",
+     "ok": true
+    },
+    {
+     "what": "cancel after completion refused with 409",
+     "ok": true
+    },
+    {
+     "what": "the first figures stand",
+     "ok": true
+    },
+    {
+     "what": "exactly one completion in the history",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 81
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "steps out of order are refused",
+   "asserts": [
+    {
+     "what": "complete before start refused",
+     "ok": true
+    },
+    {
+     "what": "status unchanged",
+     "ok": true
+    },
+    {
+     "what": "cancel accepted",
+     "ok": true
+    },
+    {
+     "what": "a cancelled work order cannot start",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 50
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a work order needs a real, available source item",
+   "asserts": [
+    {
+     "what": "unknown item refused",
+     "ok": true
+    },
+    {
+     "what": "an item on hold refused with 409",
+     "ok": true
+    },
+    {
+     "what": "no work order row was created",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 45
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a remnant entered against its parent keeps the heat, grade and owner, and is traceable both ways",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "remnant saved",
+     "ok": true
+    },
+    {
+     "what": "linked to its parent",
+     "ok": true
+    },
+    {
+     "what": "same heat, grade and owner as the parent",
+     "ok": true
+    },
+    {
+     "what": "its own balance of 51.25 and its own movement",
+     "ok": true
+    },
+    {
+     "what": "the parent can list its remnants",
+     "ok": true
+    },
+    {
+     "what": "remnant: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "remnant: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "remnant: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "remnant: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "the parent is lighter by exactly the remnant: 5948.75 lb",
+     "ok": true
+    },
+    {
+     "what": "the parent has a movement for the piece cut from it",
+     "ok": true
+    },
+    {
+     "what": "parent: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "parent: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "parent: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "parent: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "parent and remnant together weigh what the parent weighed: 6000 lb",
+     "ok": true
+    },
+    {
+     "what": "a remnant heavier than what is left of the parent is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 71
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a remnant that names a different heat or grade than its parent, or a parent not on file, is refused",
+   "asserts": [
+    {
+     "what": "none of the three was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 41
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "completing a work order takes output and scrap off the source and puts each piece on the books",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "source: 2000 less 1462.5 of pieces and 37.5 of scrap leaves 500 on hand, all free",
+     "ok": true
+    },
+    {
+     "what": "source still available, because some is left",
+     "ok": true
+    },
+    {
+     "what": "one movement for the pieces and one for the scrap, both naming the work order",
+     "ok": true
+    },
+    {
+     "what": "three pieces, each a stock item with the source heat, grade, owner and branch",
+     "ok": true
+    },
+    {
+     "what": "piece widths and the form given are kept",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 1: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 1: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 2: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 2: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece 3: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 3: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 3: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 3: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "pieces + scrap + what is left on the source = the 2000 lb received",
+     "ok": true
+    },
+    {
+     "what": "yield is output over input: 97.5",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "completing it again is refused and takes nothing more",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 124
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a work order takes its input from what the item holds now, not from what it weighed when received",
+   "asserts": [
+    {
+     "what": "input defaults to the 650 lb on hand, not the 900 lb received",
+     "ok": true
+    },
+    {
+     "what": "an input heavier than the item holds is refused",
+     "ok": true
+    },
+    {
+     "what": "an item with nothing on hand cannot be put on a work order",
+     "ok": true
+    },
+    {
+     "what": "one work order on file for the item",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 69
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a completion that reports more than the item has free is refused, and nothing is saved",
+   "asserts": [
+    {
+     "what": "a work order can be raised on an item that is partly reserved",
+     "ok": true
+    },
+    {
+     "what": "400.5 lb against 400 free is refused with the reason",
+     "ok": true
+    },
+    {
+     "what": "the work order is still in progress",
+     "ok": true
+    },
+    {
+     "what": "no piece, no movement, and the reservation untouched",
+     "ok": true
+    },
+    {
+     "what": "what fits goes through, and the other order keeps its 600",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 160
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "stock reserved for an order is cut for it: the pieces stay reserved for that order and ship with their heat",
+   "asserts": [
+    {
+     "what": "the work order is tied to the order and its line",
+     "ok": true
+    },
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "source: 2000 on hand, all free, nothing reserved any more",
+     "ok": true
+    },
+    {
+     "what": "the 960 lb of pieces are reserved for the line; the 40 lb of scrap is not",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 1: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 1: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 2: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 2: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "the pieces ship",
+     "ok": true
+    },
+    {
+     "what": "the shipment names both pieces, which carry the heat of the item they were cut from",
+     "ok": true
+    },
+    {
+     "what": "heat to customer: the heat leads to this order through the pieces",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 252
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a transfer moves the whole item, on both records, with one movement, and creates or loses nothing",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "item and stock row are both at the destination",
+     "ok": true
+    },
+    {
+     "what": "quantity unchanged: 7250.5",
+     "ok": true
+    },
+    {
+     "what": "one TRANSFER movement, from and to named, whole quantity, by the user",
+     "ok": true
+    },
+    {
+     "what": "sending branch is down by exactly 7250.5 and receiving branch up by exactly 7250.5",
+     "ok": true
+    },
+    {
+     "what": "company total unchanged",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 48
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "part of a tracked item cannot be transferred",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "item has not moved; no movement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 23
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a transfer that names the wrong sending branch, the same branch or an unknown branch is refused",
+   "asserts": [
+    {
+     "what": "wrong sending branch 409",
+     "ok": true
+    },
+    {
+     "what": "same branch 400",
+     "ok": true
+    },
+    {
+     "what": "unknown branch 400",
+     "ok": true
+    },
+    {
+     "what": "no destination 400",
+     "ok": true
+    },
+    {
+     "what": "item has not moved; no movement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 36
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "the same transfer sent twice at once happens once",
+   "asserts": [
+    {
+     "what": "one accepted, one refused",
+     "ok": true
+    },
+    {
+     "what": "one movement; item at the destination with its full quantity",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 51
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "two transfers of one item to different branches at once: one wins and the ledger ends where the item is",
+   "asserts": [
+    {
+     "what": "exactly one accepted",
+     "ok": true
+    },
+    {
+     "what": "one movement, ending at the branch the item is now at",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 39
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a branch can send its stock to another branch but cannot pull stock from one it is not in",
+   "asserts": [
+    {
+     "what": "pull refused",
+     "ok": true
+    },
+    {
+     "what": "their item has not moved",
+     "ok": true
+    },
+    {
+     "what": "send accepted",
+     "ok": true
+    },
+    {
+     "what": "the item is now at the other branch",
+     "ok": true
+    },
+    {
+     "what": "and the sender can no longer open it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 61
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a reserved item transferred to the branch that will ship it keeps its reservation, and ships from there",
+   "asserts": [
+    {
+     "what": "transfer accepted",
+     "ok": true
+    },
+    {
+     "what": "at the new branch with 2000 on hand, 500 still reserved, 1500 available",
+     "ok": true
+    },
+    {
+     "what": "the reservation row is still on file against the same order line",
+     "ok": true
+    },
+    {
+     "what": "the movement carries the whole 2000, reserved part included",
+     "ok": true
+    },
+    {
+     "what": "after transfer: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "after transfer: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "after transfer: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "after transfer: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "the order ships from the new branch",
+     "ok": true
+    },
+    {
+     "what": "the shipping movement names the branch the item is now at",
+     "ok": true
+    },
+    {
+     "what": "after shipping: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "after shipping: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "after shipping: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "after shipping: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 184
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a transfer out and back leaves two movements and the item where it started",
+   "asserts": [
+    {
+     "what": "return leg accepted",
+     "ok": true
+    },
+    {
+     "what": "two movements: out, then back",
+     "ok": true
+    },
+    {
+     "what": "1500 on hand at the first branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 52
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "an item with nothing on hand cannot be transferred",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "no transfer movement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 148
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "order to invoice: every amount is exact to the cent and the totals add up",
+   "asserts": [
+    {
+     "what": "one invoice was raised by the shipment",
+     "ok": true
+    },
+    {
+     "what": "subtotal 923.81, tax 76.21, freight 45, total 1045.02",
+     "ok": true
+    },
+    {
+     "what": "no digits beyond the cent are stored",
+     "ok": true
+    },
+    {
+     "what": "invoice subtotal equals its lines",
+     "ok": true
+    },
+    {
+     "what": "invoice is tied to the shipment and each line to its order line",
+     "ok": true
+    },
+    {
+     "what": "the order stores exact cents too",
+     "ok": true
+    },
+    {
+     "what": "the unit price keeps its four places",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 151
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "two part shipments: tax and freight are billed once in total, to the cent",
+   "asserts": [
+    {
+     "what": "two invoices",
+     "ok": true
+    },
+    {
+     "what": "subtotals add up to the order subtotal 777.00",
+     "ok": true
+    },
+    {
+     "what": "tax adds up to the order tax 56.33 exactly",
+     "ok": true
+    },
+    {
+     "what": "freight billed once: 60.00",
+     "ok": true
+    },
+    {
+     "what": "grand total equals the order total",
+     "ok": true
+    },
+    {
+     "what": "each invoice total = subtotal + tax + freight",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 237
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "payments: the paid amount is the sum of the payments, and an overpayment is refused",
+   "asserts": [
+    {
+     "what": "part payment accepted",
+     "ok": true
+    },
+    {
+     "what": "a payment one cent above the balance is refused",
+     "ok": true
+    },
+    {
+     "what": "a payment with a fraction of a cent is refused",
+     "ok": true
+    },
+    {
+     "what": "the exact balance is accepted",
+     "ok": true
+    },
+    {
+     "what": "paid 588.30 = 200.10 + 388.20, status PAID",
+     "ok": true
+    },
+    {
+     "what": "paid amount stored with no stray digits",
+     "ok": true
+    },
+    {
+     "what": "a paid invoice takes no more money",
+     "ok": true
+    },
+    {
+     "what": "each payment has a history line with the person",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 211
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "credit memos: linked to the invoice, never more than it, and the money owed back is exact",
+   "asserts": [
+    {
+     "what": "credit for 100 of 400 accepted",
+     "ok": true
+    },
+    {
+     "what": "credit memo is -250.00 - 17.50 = -267.50 and points at the invoice",
+     "ok": true
+    },
+    {
+     "what": "crediting more than is left on the line is refused",
+     "ok": true
+    },
+    {
+     "what": "a credit memo cannot itself be credited",
+     "ok": true
+    },
+    {
+     "what": "a refund one cent above what is owed back is refused",
+     "ok": true
+    },
+    {
+     "what": "the exact refund is accepted",
+     "ok": true
+    },
+    {
+     "what": "the credit memo is settled: paid equals total",
+     "ok": true
+    },
+    {
+     "what": "nothing more can be refunded",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 227
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "an order whose total does not equal subtotal + tax + freight is refused or corrected, never saved wrong",
+   "asserts": [
+    {
+     "what": "refused with a 4xx, not a server error",
+     "ok": true
+    },
+    {
+     "what": "nothing saved",
+     "ok": true
+    },
+    {
+     "what": "a negative price is refused with a 4xx",
+     "ok": true
+    },
+    {
+     "what": "a zero quantity is refused with a 4xx",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 17
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "an order with one bad line saves no part of the order",
+   "asserts": [
+    {
+     "what": "refused with a 4xx",
+     "ok": true
+    },
+    {
+     "what": "no order and no line were saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 20
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "a quote keeps its price when it becomes an order, and belongs to the branch of the person who wrote it",
+   "asserts": [
+    {
+     "what": "request logged",
+     "ok": true
+    },
+    {
+     "what": "quoted",
+     "ok": true
+    },
+    {
+     "what": "both carry the branch of the person who entered them",
+     "ok": true
+    },
+    {
+     "what": "quote total is 12.5 cwt x 47.35 = 591.88",
+     "ok": true
+    },
+    {
+     "what": "a sales login at another branch cannot open the quote",
+     "ok": true
+    },
+    {
+     "what": "nor see it in the list",
+     "ok": true
+    },
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "one order, at the quoted price and total, in the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 96
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "the database refuses money that does not add up, whoever writes it",
+   "asserts": [
+    {
+     "what": "an invoice total that is not subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "what": "an invoice paid above its total",
+     "ok": true
+    },
+    {
+     "what": "an order total that does not add up",
+     "ok": true
+    },
+    {
+     "what": "a payment of zero",
+     "ok": true
+    },
+    {
+     "what": "an invoice pointing at a shipment that does not exist",
+     "ok": true
+    },
+    {
+     "what": "an invoice line pointing at an order line that does not exist",
+     "ok": true
+    },
+    {
+     "what": "deleting a shipment that has been invoiced",
+     "ok": true
+    },
+    {
+     "what": "a negative unit price on an order line",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 174
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "voiding a counter sale: stock back, credit memo, refund and the void mark all happen together",
+   "asserts": [
+    {
+     "what": "sale taken",
+     "ok": true
+    },
+    {
+     "what": "3 taken off the shelf",
+     "ok": true
+    },
+    {
+     "what": "voided twice at once: exactly one goes through",
+     "ok": true
+    },
+    {
+     "what": "one credit memo for the whole sale",
+     "ok": true
+    },
+    {
+     "what": "money taken nets to zero",
+     "ok": true
+    },
+    {
+     "what": "the shelf is back to where it was, once",
+     "ok": true
+    },
+    {
+     "what": "each sale movement has exactly one return movement",
+     "ok": true
+    },
+    {
+     "what": "the order is marked voided once",
+     "ok": true
+    },
+    {
+     "what": "shelf item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "shelf item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "shelf item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "shelf item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "shelf item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "shelf item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 197
+  },
+  {
+   "group": "Orders, invoicing and financial records",
+   "name": "a credit that fails part-way saves nothing: no memo, no refund, and the step before it is undone",
+   "asserts": [
+    {
+     "what": "the failure reaches the caller",
+     "ok": true
+    },
+    {
+     "what": "no credit memo was left behind",
+     "ok": true
+    },
+    {
+     "what": "no payment or refund row was left behind",
+     "ok": true
+    },
+    {
+     "what": "no financial history line was left behind",
+     "ok": true
+    },
+    {
+     "what": "the earlier step was undone with it",
+     "ok": true
+    },
+    {
+     "what": "the invoice is exactly as it was: paid 300.00",
+     "ok": true
+    },
+    {
+     "what": "and the same credit then goes through normally",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 305
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "two orders reserving the last of one item at once: exactly one gets it",
+   "asserts": [
+    {
+     "what": "one 201, one 409",
+     "ok": true
+    },
+    {
+     "what": "1000 reserved, 0 available, never oversold",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 98
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "eight reservations at once against one item never reserve more than it holds",
+   "asserts": [
+    {
+     "what": "exactly three of eight succeed (3 x 300 fits in 1000)",
+     "ok": true
+    },
+    {
+     "what": "900 reserved, 100 available",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 313
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "one order line reserved from two items at once is never reserved beyond what it needs",
+   "asserts": [
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "in 6 rounds the line never held more than its 1000",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 588
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "cancelling an order while stock is being reserved for it leaves no reservation behind",
+   "asserts": [
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "in 6 rounds a cancelled order never kept a reservation",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 480
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "two people changing one order at once: one wins and the other is told",
+   "asserts": [
+    {
+     "what": "one 200 and one 409",
+     "ok": true
+    },
+    {
+     "what": "the saved status is the winner's",
+     "ok": true
+    },
+    {
+     "what": "one move in the history, the winner's",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 35
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "the same order sent three times at once with one request key is saved once",
+   "asserts": [
+    {
+     "what": "every copy is answered with 201 or \"still being processed\" (409)",
+     "ok": true
+    },
+    {
+     "what": "exactly one order exists",
+     "ok": true
+    },
+    {
+     "what": "a retry afterwards gets the first answer back, marked as a replay",
+     "ok": true
+    },
+    {
+     "what": "still one order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 276
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "request keys: a different body is refused, another user is separate, and a refused request can be corrected and sent again",
+   "asserts": [
+    {
+     "what": "first accepted",
+     "ok": true
+    },
+    {
+     "what": "same key with a different body is refused with 422",
+     "ok": true
+    },
+    {
+     "what": "and saved nothing",
+     "ok": true
+    },
+    {
+     "what": "the same key from another user is that user's own request",
+     "ok": true
+    },
+    {
+     "what": "a refused request is answered 4xx",
+     "ok": true
+    },
+    {
+     "what": "the refusal was not stored: the same request is judged again",
+     "ok": true
+    },
+    {
+     "what": "no key is left on file for the refused request",
+     "ok": true
+    },
+    {
+     "what": "a key that is too short is refused with 400",
+     "ok": true
+    },
+    {
+     "what": "a request with no key behaves as before",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 160
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "a key claimed by a request that never finished is taken over after a minute, not blocked for ever",
+   "asserts": [
+    {
+     "what": "while the first is recent the repeat is told to wait (409)",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true
+    },
+    {
+     "what": "after it has gone stale the request runs",
+     "ok": true
+    },
+    {
+     "what": "one order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 36
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "one shipment dispatched four times at once leaves the shelf once and is billed once",
+   "asserts": [
+    {
+     "what": "one accepted, three refused",
+     "ok": true
+    },
+    {
+     "what": "1200 on hand; one SHIP movement",
+     "ok": true
+    },
+    {
+     "what": "one invoice for 1200.00, however many times it is asked for",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 185
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "five payments at once on one invoice: the balance is taken once",
+   "asserts": [
+    {
+     "what": "one accepted, four refused",
+     "ok": true
+    },
+    {
+     "what": "paid 600.00 with one payment row",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 246
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "three part payments at once that together fit: all are taken and the total is exact",
+   "asserts": [
+    {
+     "what": "all three accepted",
+     "ok": true
+    },
+    {
+     "what": "paid exactly 600.00 from three rows; no update was lost",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 262
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "stock received while reservations are being made: neither is lost",
+   "asserts": [
+    {
+     "what": "all five accepted",
+     "ok": true
+    },
+    {
+     "what": "1750 on hand, 600 reserved, 1150 available",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 157
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "the same item number received five times at once becomes one item",
+   "asserts": [
+    {
+     "what": "one 201 and four 409",
+     "ok": true
+    },
+    {
+     "what": "one item, 777 on hand, one movement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 26
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "two managers changing one list price at once: one price stands and both changes are on record",
+   "asserts": [
+    {
+     "what": "both answered without a server error",
+     "ok": true
+    },
+    {
+     "what": "the saved price is one of the two, not a mixture",
+     "ok": true
+    },
+    {
+     "what": "each accepted change left a history line",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 26
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "a return received four times at once is counted once and credited once",
+   "asserts": [
+    {
+     "what": "return authorised",
+     "ok": true
+    },
+    {
+     "what": "one accepted, three refused",
+     "ok": true
+    },
+    {
+     "what": "150 back on hand, once",
+     "ok": true
+    },
+    {
+     "what": "one return movement tied to the return",
+     "ok": true
+    },
+    {
+     "what": "one credit memo for 187.50",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 267
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "one item feeding several work orders at once: each takes its share, and no more than the item holds",
+   "asserts": [
+    {
+     "what": "three work orders on one item are all accepted, each with its own number",
+     "ok": true
+    },
+    {
+     "what": "completed at the same moment: two fit in 4000 lb, the third is refused",
+     "ok": true
+    },
+    {
+     "what": "1000 lb left on the source, never below zero",
+     "ok": true
+    },
+    {
+     "what": "two complete with a piece each, one still in progress with none",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "the third completes with what is really left, and the item is used up",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 151
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "eighty orders entered at the same moment each get their own number, and none is lost",
+   "asserts": [
+    {
+     "what": "all eighty accepted",
+     "ok": true
+    },
+    {
+     "what": "eighty orders on file with eighty different numbers",
+     "ok": true
+    },
+    {
+     "what": "each has its one line",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 608
+  },
+  {
+   "group": "Concurrency, retries and failure recovery",
+   "name": "the books are in balance at every moment while forty changes run at once",
+   "asserts": [
+    {
+     "what": "no request failed with a server error",
+     "ok": true
+    },
+    {
+     "what": "a reconciliation read taken 56 times during the burst never saw the books out of balance",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 927
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "a count that finds less, more, or the same: the balance follows through a movement that says who and why",
+   "asserts": [
+    {
+     "what": "counted 987.5: accepted",
+     "ok": true
+    },
+    {
+     "what": "987.5 on hand and free",
+     "ok": true
+    },
+    {
+     "what": "a count movement of 12.5 out, by the person, with the note",
+     "ok": true
+    },
+    {
+     "what": "20 lb found: accepted",
+     "ok": true
+    },
+    {
+     "what": "1007.5 on hand",
+     "ok": true
+    },
+    {
+     "what": "a count that agrees writes no movement, and is still on record",
+     "ok": true
+    },
+    {
+     "what": "each change is in the history with before and after",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 73
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "a correction cannot take away stock that is reserved or on hold, go below zero, or be made without a reason",
+   "asserts": [
+    {
+     "what": "down to 600 with 700 reserved is refused, and says what is reserved",
+     "ok": true
+    },
+    {
+     "what": "reserved: nothing changed",
+     "ok": true
+    },
+    {
+     "what": "below zero is refused",
+     "ok": true
+    },
+    {
+     "what": "below zero: nothing changed",
+     "ok": true
+    },
+    {
+     "what": "no note: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "unknown reason: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "both a count and a change: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "neither: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "negative count: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "zero change: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "damage that adds: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "found that removes: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "not a number: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "five decimal places: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "bad requests: nothing changed",
+     "ok": true
+    },
+    {
+     "what": "the 300 that is free can be written off; the order keeps its 700",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 184
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "only a manager or the inventory manager can correct stock, and only at their own branch",
+   "asserts": [
+    {
+     "what": "csr: refused",
+     "ok": true
+    },
+    {
+     "what": "operator: refused",
+     "ok": true
+    },
+    {
+     "what": "shipping: refused",
+     "ok": true
+    },
+    {
+     "what": "branchA: refused",
+     "ok": true
+    },
+    {
+     "what": "the inventory manager of the branch can",
+     "ok": true
+    },
+    {
+     "what": "and cannot at another branch",
+     "ok": true
+    },
+    {
+     "what": "a regional manager can correct stock at a branch they manage",
+     "ok": true
+    },
+    {
+     "what": "and not at a branch outside their three",
+     "ok": true
+    },
+    {
+     "what": "only the one allowed correction happened",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 92
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "a correction, a reservation and a shipment on one item at the same moment leave the books in balance",
+   "asserts": [
+    {
+     "what": "no server error",
+     "ok": true
+    },
+    {
+     "what": "nothing is negative and the identity holds",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 299
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "invoice numbers: twelve invoices raised at once take twelve numbers in a row, with none skipped and none repeated",
+   "asserts": [
+    {
+     "what": "the series has a counter that equals the highest number on file",
+     "ok": true
+    },
+    {
+     "what": "all twelve dispatched",
+     "ok": true
+    },
+    {
+     "what": "twelve invoices",
+     "ok": true
+    },
+    {
+     "what": "they are numbers 146 to 157 exactly",
+     "ok": true
+    },
+    {
+     "what": "the counter stands at the last one",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1944
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "invoice numbers: a save that fails or is refused gives its number back, and counter sales share the series",
+   "asserts": [
+    {
+     "what": "a credit memo that fails after taking its number leaves the series where it was",
+     "ok": true
+    },
+    {
+     "what": "asking to invoice an order with nothing left to bill is refused and takes no number",
+     "ok": true
+    },
+    {
+     "what": "a refused credit takes no number",
+     "ok": true
+    },
+    {
+     "what": "the next credit memo takes the very next number",
+     "ok": true
+    },
+    {
+     "what": "one counter sale sent three times at once is one sale",
+     "ok": true
+    },
+    {
+     "what": "it has one invoice, numbered next in the same series",
+     "ok": true
+    },
+    {
+     "what": "no number repeats anywhere in the series",
+     "ok": true
+    },
+    {
+     "what": "and none is skipped since the counter began",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 357
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "history older than five years raises an archive warning, and nothing is removed",
+   "asserts": [
+    {
+     "what": "the report answers with a period of five years",
+     "ok": true
+    },
+    {
+     "what": "with nothing old on file there is no warning",
+     "ok": true
+    },
+    {
+     "what": "an order 30 days short of five years: a warning to plan the archive",
+     "ok": true
+    },
+    {
+     "what": "an order two days past five years: ready to archive, counted once",
+     "ok": true
+    },
+    {
+     "what": "the report removed nothing",
+     "ok": true
+    },
+    {
+     "what": "csr cannot read it",
+     "ok": true
+    },
+    {
+     "what": "operator cannot read it",
+     "ok": true
+    },
+    {
+     "what": "shipping cannot read it",
+     "ok": true
+    },
+    {
+     "what": "with the dates put back, the warning clears",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 190
+  }
+ ]
+}

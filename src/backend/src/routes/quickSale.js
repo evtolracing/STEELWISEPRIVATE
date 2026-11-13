@@ -30,7 +30,7 @@ import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { money } from '../lib/billingRules.js';
-import { BillingError, creditInvoice, recordRefund, recordMoney } from '../services/billing.js';
+import { BillingError, creditInvoice, refundWithin, recordMoney, takeNumber, catchUp } from '../services/billing.js';
 
 const router = Router();
 const METHODS = ['CASH', 'CARD', 'CHECK'];
@@ -259,6 +259,11 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
       count: () => prisma.order.count(),
       format: padded('SO'),
       create: (orderNumber) => prisma.$transaction(async (tx) => {
+        // One sale id is rung up once. The lock makes a second copy of the same sale wait for the
+        // first, then see it, so no invoice is ever written and removed (which would leave a gap
+        // in the invoice numbers).
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`QS:${saleId}`}))`;
+        if (await tx.order.findFirst({ where: { poReference: `QS:${saleId}` }, select: { id: true } })) refuse(409, 'This sale has already been rung up');
         const created = await tx.order.create({
           data: {
             orderNumber, orderType: 'SO', status: 'COMPLETE', buyerId: buyer.id, poReference: `QS:${saleId}`,
@@ -276,7 +281,8 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
           },
           include: { lines: true },
         });
-        const invoiceNumber = `INV-QS-${orderNumber.replace(/^SO-/, '')}`;
+        // Counter sales share the one invoice series, which has no gaps.
+        const invoiceNumber = await takeNumber(tx, 'INV');
         const invoice = await tx.invoice.create({
           data: {
             invoiceNumber, orderId: created.id, kind: 'INVOICE', status: 'PAID', invoiceDate: now, dueDate: now,
@@ -291,6 +297,9 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
         await recordMoney(tx, { invoice, eventType: 'PAYMENT_RECORDED', userId: req.user.id, details: { amount: sale.total, method, reference: reference || null } });
         untracked = await takeShelfStock(tx, { sale, orderId: created.id, userId: req.user.id });
         return created;
+    }).catch(async (error) => {
+      if (error?.code === 'P2002' && String(error?.meta?.target || '').includes('invoiceNumber')) await catchUp('INV');
+      throw error;
     }),
   });
   } catch (error) {
@@ -348,17 +357,23 @@ router.post('/:saleId/void', handle('void sale', async (req, res) => {
   if (/VOIDED/.test(sale.notes || '')) refuse(409, 'This sale is already voided');
   const invoice = sale.invoices[0];
   const paid = invoice.payments.find((p) => num(p.amount) > 0);
-  // Claim the void first so two people cannot both refund it.
-  // The claim and the stock going back on the shelf are one step.
-  const claimed = await prisma.$transaction(async (tx) => {
-    const got = await tx.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
-    if (got.count) await returnShelfStock(tx, { orderId: sale.id, userId: req.user?.id });
-    return got;
+  // The claim, the stock going back on the shelf, the credit memo and the refund are one
+  // transaction: a void happens completely or not at all (C-010). The claim is conditional,
+  // so two people cannot both void the same sale.
+  const creditLines = (await prisma.invoiceLine.findMany({ where: { invoiceId: invoice.id } })).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) }));
+  let owed = 0;
+  const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: creditLines }, req.user?.id, {
+    before: async (tx) => {
+      const got = await tx.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
+      if (!got.count) refuse(409, 'This sale was just changed by someone else. Reload and try again.');
+      await returnShelfStock(tx, { orderId: sale.id, userId: req.user?.id });
+    },
+    after: async (tx, memo) => {
+      owed = money(-num(memo.totalAmount) + num(memo.paidAmount));
+      if (owed > 0) await refundWithin(tx, memo.id, { amount: owed, paymentMethod: paid?.paymentMethod || 'CASH', notes: `Refund for voided sale ${sale.orderNumber}` }, req.user?.id);
+      return memo;
+    },
   });
-  if (!claimed.count) refuse(409, 'This sale was just changed by someone else. Reload and try again.');
-  const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: (await prisma.invoiceLine.findMany({ where: { invoiceId: invoice.id } })).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) })) }, req.user?.id);
-  const owed = money(-credit.totalAmount + credit.paidAmount);
-  if (owed > 0) await recordRefund(credit.id, { amount: owed, paymentMethod: paid?.paymentMethod || 'CASH', notes: `Refund for voided sale ${sale.orderNumber}` }, req.user?.id);
   const saved = await findSale(sale.id);
   res.json({ success: true, refunded: owed, creditMemo: credit.invoiceNumber, receipt: receiptFrom(saved, saved.invoices[0]) });
 }));

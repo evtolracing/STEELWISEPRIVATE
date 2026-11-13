@@ -3,20 +3,29 @@ import { acrossBranches } from './branchScope.js';
 /**
  * Creates a record that needs the next number in a series (SO-00042, SHP-00007).
  * Numbers come from the row count, so two people saving at once can pick the
- * same one; when the database rejects the duplicate we try the next number.
+ * same one; when the database rejects the duplicate we try another number.
+ *
+ * Two things make a plain "try the next one" run out of attempts: eighty branches saving
+ * in the same instant all start from the same count, and a series that has had rows deleted
+ * has a count that lags behind its highest number. So after a few collisions the search
+ * widens: it waits a random moment, counts again, and steps ahead by a random distance that
+ * doubles each time. A series can therefore skip numbers; it never repeats one, because the
+ * database's unique rule on the number is what decides.
  */
-export async function createNumbered({ count, format, create, attempts = 25 }) {
+export async function createNumbered({ count, format, create, attempts = 40 }) {
   // The series is company-wide, so the count ignores the branch boundary.
   let n = (await acrossBranches(count)) + 1;
-  for (let i = 0; i < attempts; i++, n++) {
+  for (let i = 0; i < attempts; i++) {
     try {
       return await create(format(n));
     } catch (error) {
       // P2034: the database asked us to retry a transaction that overlapped another.
-      if (error?.code === 'P2034') { n--; continue; }
+      if (error?.code === 'P2034') continue;
       if (error?.code !== 'P2002') throw error;
-      // Jump ahead a little so a burst of simultaneous saves spreads out.
-      if (i > 2) n += Math.floor(Math.random() * 5);
+      if (i < 2) { n++; continue; }
+      await new Promise((r) => setTimeout(r, Math.random() * 4 * i));
+      const reach = Math.min(2 ** (i - 1), 512);
+      n = Math.max(n + 1, (await acrossBranches(count)) + 1) + Math.floor(Math.random() * reach);
     }
   }
   throw new Error('Could not assign a unique number');

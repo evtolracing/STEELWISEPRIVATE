@@ -1,7 +1,7 @@
 {
  "seed": 8001,
  "base": "http://localhost:3011",
- "at": "2026-11-13T18:47:09.189Z",
+ "at": "2026-11-13T22:59:22.431Z",
  "scenarios": [
   {
    "id": "S8001-01",
@@ -80,19 +80,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000003 is refused",
+     "name": "overpay INV-000001 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 158.31 on INV-000003",
+     "name": "pay 158.31 on INV-000001",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000003",
+     "name": "pay the rest of INV-000001",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -158,11 +158,11 @@
      "ok": true
     },
     {
-     "name": "INV-000003: status after payment",
+     "name": "INV-000001: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000003: paid in full",
+     "name": "INV-000001: paid in full",
      "ok": true
     },
     {
@@ -170,19 +170,19 @@
      "ok": true
     },
     {
-     "name": "INV-000003: total = subtotal + tax + freight",
+     "name": "INV-000001: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000003: subtotal = its lines",
+     "name": "INV-000001: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000003: paid = its payments",
+     "name": "INV-000001: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000003: never paid more than billed",
+     "name": "INV-000001: never paid more than billed",
      "ok": true
     },
     {
@@ -200,7 +200,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 448
+   "ms": 452
   },
   {
    "id": "S8001-02",
@@ -279,7 +279,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000004 is refused",
+     "name": "overpay INV-000002 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -343,19 +343,19 @@
      "ok": true
     },
     {
-     "name": "INV-000004: total = subtotal + tax + freight",
+     "name": "INV-000002: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000004: subtotal = its lines",
+     "name": "INV-000002: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000004: paid = its payments",
+     "name": "INV-000002: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000004: never paid more than billed",
+     "name": "INV-000002: never paid more than billed",
      "ok": true
     },
     {
@@ -373,7 +373,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 316
+   "ms": 328
   },
   {
    "id": "S8001-03",
@@ -452,19 +452,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000005 is refused",
+     "name": "overpay INV-000003 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 146.25 on INV-000005",
+     "name": "pay 146.25 on INV-000003",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000005",
+     "name": "pay the rest of INV-000003",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -530,11 +530,11 @@
      "ok": true
     },
     {
-     "name": "INV-000005: status after payment",
+     "name": "INV-000003: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000005: paid in full",
+     "name": "INV-000003: paid in full",
      "ok": true
     },
     {
@@ -542,19 +542,19 @@
      "ok": true
     },
     {
-     "name": "INV-000005: total = subtotal + tax + freight",
+     "name": "INV-000003: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000005: subtotal = its lines",
+     "name": "INV-000003: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000005: paid = its payments",
+     "name": "INV-000003: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000005: never paid more than billed",
+     "name": "INV-000003: never paid more than billed",
      "ok": true
     },
     {
@@ -572,7 +572,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 329
+   "ms": 350
   },
   {
    "id": "S8001-04",
@@ -651,13 +651,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000006 is refused",
+     "name": "overpay INV-000004 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 351.09 on INV-000006",
+     "name": "pay 351.09 on INV-000004",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -717,7 +717,7 @@
      "ok": true
     },
     {
-     "name": "INV-000006: status after payment",
+     "name": "INV-000004: status after payment",
      "ok": true
     },
     {
@@ -725,19 +725,19 @@
      "ok": true
     },
     {
-     "name": "INV-000006: total = subtotal + tax + freight",
+     "name": "INV-000004: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000006: subtotal = its lines",
+     "name": "INV-000004: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000006: paid = its payments",
+     "name": "INV-000004: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000006: never paid more than billed",
+     "name": "INV-000004: never paid more than billed",
      "ok": true
     },
     {
@@ -755,7 +755,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 302
+   "ms": 322
   },
   {
    "id": "S8001-05",
@@ -834,7 +834,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000007 is refused",
+     "name": "overpay INV-000005 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -898,19 +898,19 @@
      "ok": true
     },
     {
-     "name": "INV-000007: total = subtotal + tax + freight",
+     "name": "INV-000005: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000007: subtotal = its lines",
+     "name": "INV-000005: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000007: paid = its payments",
+     "name": "INV-000005: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000007: never paid more than billed",
+     "name": "INV-000005: never paid more than billed",
      "ok": true
     },
     {
@@ -928,7 +928,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 281
+   "ms": 308
   },
   {
    "id": "S8001-06",
@@ -1037,19 +1037,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000008 is refused",
+     "name": "overpay INV-000006 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 137.5 on INV-000008",
+     "name": "pay 137.5 on INV-000006",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000008",
+     "name": "pay the rest of INV-000006",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1119,11 +1119,11 @@
      "ok": true
     },
     {
-     "name": "INV-000008: status after payment",
+     "name": "INV-000006: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000008: paid in full",
+     "name": "INV-000006: paid in full",
      "ok": true
     },
     {
@@ -1131,19 +1131,19 @@
      "ok": true
     },
     {
-     "name": "INV-000008: total = subtotal + tax + freight",
+     "name": "INV-000006: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000008: subtotal = its lines",
+     "name": "INV-000006: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000008: paid = its payments",
+     "name": "INV-000006: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000008: never paid more than billed",
+     "name": "INV-000006: never paid more than billed",
      "ok": true
     },
     {
@@ -1161,7 +1161,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 417
+   "ms": 455
   },
   {
    "id": "S8001-07",
@@ -1270,7 +1270,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000009 is refused",
+     "name": "overpay INV-000007 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -1338,19 +1338,19 @@
      "ok": true
     },
     {
-     "name": "INV-000009: total = subtotal + tax + freight",
+     "name": "INV-000007: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000009: subtotal = its lines",
+     "name": "INV-000007: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000009: paid = its payments",
+     "name": "INV-000007: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000009: never paid more than billed",
+     "name": "INV-000007: never paid more than billed",
      "ok": true
     },
     {
@@ -1368,7 +1368,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 342
+   "ms": 381
   },
   {
    "id": "S8001-08",
@@ -1507,7 +1507,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000010 is refused",
+     "name": "overpay INV-000008 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -1571,19 +1571,19 @@
      "ok": true
     },
     {
-     "name": "INV-000010: total = subtotal + tax + freight",
+     "name": "INV-000008: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000010: subtotal = its lines",
+     "name": "INV-000008: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000010: paid = its payments",
+     "name": "INV-000008: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000010: never paid more than billed",
+     "name": "INV-000008: never paid more than billed",
      "ok": true
     },
     {
@@ -1601,7 +1601,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 487
+   "ms": 467
   },
   {
    "id": "S8001-09",
@@ -1740,19 +1740,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000011 is refused",
+     "name": "overpay INV-000009 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 346.45 on INV-000011",
+     "name": "pay 346.45 on INV-000009",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000011",
+     "name": "pay the rest of INV-000009",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1818,11 +1818,11 @@
      "ok": true
     },
     {
-     "name": "INV-000011: status after payment",
+     "name": "INV-000009: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000011: paid in full",
+     "name": "INV-000009: paid in full",
      "ok": true
     },
     {
@@ -1830,19 +1830,19 @@
      "ok": true
     },
     {
-     "name": "INV-000011: total = subtotal + tax + freight",
+     "name": "INV-000009: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000011: subtotal = its lines",
+     "name": "INV-000009: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000011: paid = its payments",
+     "name": "INV-000009: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000011: never paid more than billed",
+     "name": "INV-000009: never paid more than billed",
      "ok": true
     },
     {
@@ -1860,7 +1860,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 500
+   "ms": 523
   },
   {
    "id": "S8001-10",
@@ -1999,7 +1999,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000012 is refused",
+     "name": "overpay INV-000010 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -2063,19 +2063,19 @@
      "ok": true
     },
     {
-     "name": "INV-000012: total = subtotal + tax + freight",
+     "name": "INV-000010: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000012: subtotal = its lines",
+     "name": "INV-000010: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000012: paid = its payments",
+     "name": "INV-000010: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000012: never paid more than billed",
+     "name": "INV-000010: never paid more than billed",
      "ok": true
     },
     {
@@ -2093,7 +2093,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 447
+   "ms": 437
   },
   {
    "id": "S8001-11",
@@ -2232,7 +2232,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000013 is refused",
+     "name": "overpay INV-000011 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -2296,19 +2296,19 @@
      "ok": true
     },
     {
-     "name": "INV-000013: total = subtotal + tax + freight",
+     "name": "INV-000011: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000013: subtotal = its lines",
+     "name": "INV-000011: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000013: paid = its payments",
+     "name": "INV-000011: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000013: never paid more than billed",
+     "name": "INV-000011: never paid more than billed",
      "ok": true
     },
     {
@@ -2326,7 +2326,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 422
+   "ms": 452
   },
   {
    "id": "S8001-12",
@@ -2465,19 +2465,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000014 is refused",
+     "name": "overpay INV-000012 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 211.09 on INV-000014",
+     "name": "pay 211.09 on INV-000012",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000014",
+     "name": "pay the rest of INV-000012",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2543,11 +2543,11 @@
      "ok": true
     },
     {
-     "name": "INV-000014: status after payment",
+     "name": "INV-000012: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000014: paid in full",
+     "name": "INV-000012: paid in full",
      "ok": true
     },
     {
@@ -2555,19 +2555,19 @@
      "ok": true
     },
     {
-     "name": "INV-000014: total = subtotal + tax + freight",
+     "name": "INV-000012: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000014: subtotal = its lines",
+     "name": "INV-000012: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000014: paid = its payments",
+     "name": "INV-000012: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000014: never paid more than billed",
+     "name": "INV-000012: never paid more than billed",
      "ok": true
     },
     {
@@ -2585,7 +2585,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 495
+   "ms": 463
   },
   {
    "id": "S8001-13",
@@ -2664,7 +2664,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000015 is refused",
+     "name": "overpay INV-000013 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -2728,19 +2728,19 @@
      "ok": true
     },
     {
-     "name": "INV-000015: total = subtotal + tax + freight",
+     "name": "INV-000013: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000015: subtotal = its lines",
+     "name": "INV-000013: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000015: paid = its payments",
+     "name": "INV-000013: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000015: never paid more than billed",
+     "name": "INV-000013: never paid more than billed",
      "ok": true
     },
     {
@@ -2758,7 +2758,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 286
+   "ms": 278
   },
   {
    "id": "S8001-14",
@@ -2867,13 +2867,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000016 is refused",
+     "name": "overpay INV-000014 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 1210.8 on INV-000016",
+     "name": "pay 1210.8 on INV-000014",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2933,7 +2933,7 @@
      "ok": true
     },
     {
-     "name": "INV-000016: status after payment",
+     "name": "INV-000014: status after payment",
      "ok": true
     },
     {
@@ -2941,19 +2941,19 @@
      "ok": true
     },
     {
-     "name": "INV-000016: total = subtotal + tax + freight",
+     "name": "INV-000014: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000016: subtotal = its lines",
+     "name": "INV-000014: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000016: paid = its payments",
+     "name": "INV-000014: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000016: never paid more than billed",
+     "name": "INV-000014: never paid more than billed",
      "ok": true
     },
     {
@@ -2971,7 +2971,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 386
+   "ms": 379
   },
   {
    "id": "S8001-15",
@@ -3050,7 +3050,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000017 is refused",
+     "name": "overpay INV-000015 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -3114,19 +3114,19 @@
      "ok": true
     },
     {
-     "name": "INV-000017: total = subtotal + tax + freight",
+     "name": "INV-000015: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000017: subtotal = its lines",
+     "name": "INV-000015: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000017: paid = its payments",
+     "name": "INV-000015: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000017: never paid more than billed",
+     "name": "INV-000015: never paid more than billed",
      "ok": true
     },
     {
@@ -3144,7 +3144,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 250
+   "ms": 274
   },
   {
    "id": "S8001-16",
@@ -3253,7 +3253,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000018 is refused",
+     "name": "overpay INV-000016 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -3317,19 +3317,19 @@
      "ok": true
     },
     {
-     "name": "INV-000018: total = subtotal + tax + freight",
+     "name": "INV-000016: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000018: subtotal = its lines",
+     "name": "INV-000016: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000018: paid = its payments",
+     "name": "INV-000016: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000018: never paid more than billed",
+     "name": "INV-000016: never paid more than billed",
      "ok": true
     },
     {
@@ -3347,7 +3347,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 318
+   "ms": 355
   },
   {
    "id": "S8001-17",
@@ -3426,19 +3426,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000019 is refused",
+     "name": "overpay INV-000017 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 492.54 on INV-000019",
+     "name": "pay 492.54 on INV-000017",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000019",
+     "name": "pay the rest of INV-000017",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3504,11 +3504,11 @@
      "ok": true
     },
     {
-     "name": "INV-000019: status after payment",
+     "name": "INV-000017: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000019: paid in full",
+     "name": "INV-000017: paid in full",
      "ok": true
     },
     {
@@ -3516,19 +3516,19 @@
      "ok": true
     },
     {
-     "name": "INV-000019: total = subtotal + tax + freight",
+     "name": "INV-000017: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000019: subtotal = its lines",
+     "name": "INV-000017: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000019: paid = its payments",
+     "name": "INV-000017: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000019: never paid more than billed",
+     "name": "INV-000017: never paid more than billed",
      "ok": true
     },
     {
@@ -3546,7 +3546,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 292
+   "ms": 339
   },
   {
    "id": "S8001-18",
@@ -3685,13 +3685,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000020 is refused",
+     "name": "overpay INV-000018 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 357.5 on INV-000020",
+     "name": "pay 357.5 on INV-000018",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3751,7 +3751,7 @@
      "ok": true
     },
     {
-     "name": "INV-000020: status after payment",
+     "name": "INV-000018: status after payment",
      "ok": true
     },
     {
@@ -3759,19 +3759,19 @@
      "ok": true
     },
     {
-     "name": "INV-000020: total = subtotal + tax + freight",
+     "name": "INV-000018: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000020: subtotal = its lines",
+     "name": "INV-000018: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000020: paid = its payments",
+     "name": "INV-000018: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000020: never paid more than billed",
+     "name": "INV-000018: never paid more than billed",
      "ok": true
     },
     {
@@ -3789,7 +3789,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 462
+   "ms": 487
   },
   {
    "id": "S8001-19",
@@ -3846,7 +3846,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 112
+   "ms": 109
   },
   {
    "id": "S8001-20",
@@ -3903,7 +3903,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 72
+   "ms": 76
   },
   {
    "id": "S8001-21",
@@ -3960,7 +3960,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 65
+   "ms": 76
   },
   {
    "id": "S8001-22",
@@ -4077,7 +4077,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 151
+   "ms": 139
   },
   {
    "id": "S8001-23",
@@ -4194,7 +4194,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 142
+   "ms": 144
   },
   {
    "id": "S8001-24",
@@ -4321,7 +4321,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 238
+   "ms": 278
   },
   {
    "id": "S8001-25",
@@ -4438,7 +4438,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 253
+   "ms": 235
   },
   {
    "id": "S8001-26",
@@ -4565,7 +4565,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 230
+   "ms": 265
   },
   {
    "id": "S8001-27",
@@ -4682,7 +4682,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 224
+   "ms": 256
   },
   {
    "id": "S8001-28",
@@ -4799,7 +4799,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 221
+   "ms": 256
   },
   {
    "id": "S8001-29",
@@ -4916,7 +4916,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 214
+   "ms": 235
   },
   {
    "id": "S8001-30",
@@ -4957,7 +4957,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 19
+   "ms": 20
   },
   {
    "id": "S8001-31",
@@ -5023,7 +5023,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 19
+   "ms": 22
   },
   {
    "id": "S8001-33",
@@ -5056,7 +5056,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 9
+   "ms": 12
   },
   {
    "id": "S8001-34",
@@ -5089,7 +5089,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 11
+   "ms": 12
   },
   {
    "id": "S8001-35",
@@ -5168,13 +5168,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000027 is refused",
+     "name": "overpay INV-000025 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 702.9 on INV-000027",
+     "name": "pay 702.9 on INV-000025",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5234,7 +5234,7 @@
      "ok": true
     },
     {
-     "name": "INV-000027: status after payment",
+     "name": "INV-000025: status after payment",
      "ok": true
     },
     {
@@ -5242,19 +5242,19 @@
      "ok": true
     },
     {
-     "name": "INV-000027: total = subtotal + tax + freight",
+     "name": "INV-000025: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000027: subtotal = its lines",
+     "name": "INV-000025: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000027: paid = its payments",
+     "name": "INV-000025: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000027: never paid more than billed",
+     "name": "INV-000025: never paid more than billed",
      "ok": true
     },
     {
@@ -5272,7 +5272,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 271
+   "ms": 316
   },
   {
    "id": "S8001-36",
@@ -5337,7 +5337,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 44
+   "ms": 52
   },
   {
    "id": "S8001-37",
@@ -5418,7 +5418,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 68
+   "ms": 73
   },
   {
    "id": "S8001-38",
@@ -5537,7 +5537,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 142
+   "ms": 169
   },
   {
    "id": "S8001-39",
@@ -5614,7 +5614,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 78
+   "ms": 84
   },
   {
    "id": "S8001-40",
@@ -5711,19 +5711,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000029 is refused",
+     "name": "overpay INV-000027 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 175.91 on INV-000029",
+     "name": "pay 175.91 on INV-000027",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000029",
+     "name": "pay the rest of INV-000027",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5735,7 +5735,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000028 is refused",
+     "name": "overpay INV-000026 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -5819,11 +5819,11 @@
      "ok": true
     },
     {
-     "name": "INV-000029: status after payment",
+     "name": "INV-000027: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000029: paid in full",
+     "name": "INV-000027: paid in full",
      "ok": true
     },
     {
@@ -5831,35 +5831,35 @@
      "ok": true
     },
     {
-     "name": "INV-000029: total = subtotal + tax + freight",
+     "name": "INV-000027: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000029: subtotal = its lines",
+     "name": "INV-000027: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000029: paid = its payments",
+     "name": "INV-000027: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000029: never paid more than billed",
+     "name": "INV-000027: never paid more than billed",
      "ok": true
     },
     {
-     "name": "INV-000028: total = subtotal + tax + freight",
+     "name": "INV-000026: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000028: subtotal = its lines",
+     "name": "INV-000026: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000028: paid = its payments",
+     "name": "INV-000026: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000028: never paid more than billed",
+     "name": "INV-000026: never paid more than billed",
      "ok": true
     },
     {
@@ -5877,7 +5877,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 410
+   "ms": 418
   },
   {
    "id": "S8001-41",
@@ -5974,19 +5974,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000031 is refused",
+     "name": "overpay INV-000029 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "overpay INV-000030 is refused",
+     "name": "overpay INV-000028 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 123.14 on INV-000030",
+     "name": "pay 123.14 on INV-000028",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -6070,7 +6070,7 @@
      "ok": true
     },
     {
-     "name": "INV-000030: status after payment",
+     "name": "INV-000028: status after payment",
      "ok": true
     },
     {
@@ -6078,35 +6078,35 @@
      "ok": true
     },
     {
-     "name": "INV-000031: total = subtotal + tax + freight",
+     "name": "INV-000029: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000031: subtotal = its lines",
+     "name": "INV-000029: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000031: paid = its payments",
+     "name": "INV-000029: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000031: never paid more than billed",
+     "name": "INV-000029: never paid more than billed",
      "ok": true
     },
     {
-     "name": "INV-000030: total = subtotal + tax + freight",
+     "name": "INV-000028: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000030: subtotal = its lines",
+     "name": "INV-000028: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000030: paid = its payments",
+     "name": "INV-000028: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000030: never paid more than billed",
+     "name": "INV-000028: never paid more than billed",
      "ok": true
     },
     {
@@ -6124,7 +6124,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 384
+   "ms": 385
   },
   {
    "id": "S8001-42",
@@ -6237,19 +6237,19 @@
      "ok": true
     },
     {
-     "name": "INV-000032: total = subtotal + tax + freight",
+     "name": "INV-000030: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000032: subtotal = its lines",
+     "name": "INV-000030: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000032: paid = its payments",
+     "name": "INV-000030: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000032: never paid more than billed",
+     "name": "INV-000030: never paid more than billed",
      "ok": true
     },
     {
@@ -6307,7 +6307,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 293
+   "ms": 312
   },
   {
    "id": "S8001-43",
@@ -6436,19 +6436,19 @@
      "ok": true
     },
     {
-     "name": "INV-000033: total = subtotal + tax + freight",
+     "name": "INV-000031: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000033: subtotal = its lines",
+     "name": "INV-000031: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000033: paid = its payments",
+     "name": "INV-000031: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000033: never paid more than billed",
+     "name": "INV-000031: never paid more than billed",
      "ok": true
     },
     {
@@ -6506,7 +6506,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 335
+   "ms": 356
   },
   {
    "id": "S8001-44",
@@ -6693,19 +6693,19 @@
      "ok": true
     },
     {
-     "name": "INV-000034: total = subtotal + tax + freight",
+     "name": "INV-000032: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000034: subtotal = its lines",
+     "name": "INV-000032: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000034: paid = its payments",
+     "name": "INV-000032: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000034: never paid more than billed",
+     "name": "INV-000032: never paid more than billed",
      "ok": true
     },
     {
@@ -6755,7 +6755,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 339
+   "ms": 352
   },
   {
    "id": "S8001-45",
@@ -6870,7 +6870,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000035 is refused",
+     "name": "overpay INV-000033 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -6966,19 +6966,19 @@
      "ok": true
     },
     {
-     "name": "INV-000035: total = subtotal + tax + freight",
+     "name": "INV-000033: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000035: subtotal = its lines",
+     "name": "INV-000033: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000035: paid = its payments",
+     "name": "INV-000033: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000035: never paid more than billed",
+     "name": "INV-000033: never paid more than billed",
      "ok": true
     },
     {
@@ -6996,7 +6996,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 366
+   "ms": 428
   },
   {
    "id": "S8001-46",
@@ -7111,13 +7111,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000036 is refused",
+     "name": "overpay INV-000034 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 598.08 on INV-000036",
+     "name": "pay 598.08 on INV-000034",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7205,7 +7205,7 @@
      "ok": true
     },
     {
-     "name": "INV-000036: status after payment",
+     "name": "INV-000034: status after payment",
      "ok": true
     },
     {
@@ -7217,19 +7217,19 @@
      "ok": true
     },
     {
-     "name": "INV-000036: total = subtotal + tax + freight",
+     "name": "INV-000034: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000036: subtotal = its lines",
+     "name": "INV-000034: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000036: paid = its payments",
+     "name": "INV-000034: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000036: never paid more than billed",
+     "name": "INV-000034: never paid more than billed",
      "ok": true
     },
     {
@@ -7247,7 +7247,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 473
+   "ms": 428
   },
   {
    "id": "S8001-47",
@@ -7362,13 +7362,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000037 is refused",
+     "name": "overpay INV-000035 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 1170 on INV-000037",
+     "name": "pay 1170 on INV-000035",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7456,7 +7456,7 @@
      "ok": true
     },
     {
-     "name": "INV-000037: status after payment",
+     "name": "INV-000035: status after payment",
      "ok": true
     },
     {
@@ -7468,19 +7468,19 @@
      "ok": true
     },
     {
-     "name": "INV-000037: total = subtotal + tax + freight",
+     "name": "INV-000035: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000037: subtotal = its lines",
+     "name": "INV-000035: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000037: paid = its payments",
+     "name": "INV-000035: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000037: never paid more than billed",
+     "name": "INV-000035: never paid more than billed",
      "ok": true
     },
     {
@@ -7498,7 +7498,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 382
+   "ms": 423
   },
   {
    "id": "S8001-48",
@@ -7613,13 +7613,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000038 is refused",
+     "name": "overpay INV-000036 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 1477.61 on INV-000038",
+     "name": "pay 1477.61 on INV-000036",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7647,18 +7647,6 @@
      "ok": true
     },
     {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 2: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -7668,6 +7656,18 @@
     },
     {
      "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -7707,11 +7707,7 @@
      "ok": true
     },
     {
-     "name": "INV-000038: status after payment",
-     "ok": true
-    },
-    {
-     "name": "line 1: invoiced qty = shipped qty",
+     "name": "INV-000036: status after payment",
      "ok": true
     },
     {
@@ -7719,19 +7715,23 @@
      "ok": true
     },
     {
-     "name": "INV-000038: total = subtotal + tax + freight",
+     "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "INV-000038: subtotal = its lines",
+     "name": "INV-000036: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000038: paid = its payments",
+     "name": "INV-000036: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000038: never paid more than billed",
+     "name": "INV-000036: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000036: never paid more than billed",
      "ok": true
     },
     {
@@ -7749,7 +7749,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 438
+   "ms": 439
   },
   {
    "id": "S8001-49",
@@ -7868,7 +7868,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 169
+   "ms": 173
   },
   {
    "id": "S8001-50",
@@ -7971,7 +7971,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 115
+   "ms": 138
   }
  ],
  "concurrency": {
@@ -7985,7 +7985,7 @@
    {
     "name": "two reservations racing for the same stock: exactly one wins",
     "pass": true,
-    "detail": "statuses 201,409; available 6800"
+    "detail": "statuses 409,201; available 6800"
    },
    {
     "name": "two shipments racing for the same order line: exactly one is created",
@@ -7995,7 +7995,7 @@
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 200,409,409; line shipped 10200 of 10200; on hand 17000 → 6800"
+    "detail": "statuses 409,200,409; line shipped 10200 of 10200; on hand 17000 → 6800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8010,12 +8010,12 @@
    {
     "name": "three full payments at once on one invoice: taken once",
     "pass": true,
-    "detail": "statuses 409,409,201; paid 6630 of 6630"
+    "detail": "statuses 201,409,409; paid 6630 of 6630"
    },
    {
     "name": "one return received three times at once: counted once, one credit",
     "pass": true,
-    "detail": "statuses 409,200,409; 1 credit memo(s); source coil on hand 6800 → 9350"
+    "detail": "statuses 200,409,409; 1 credit memo(s); source coil on hand 6800 → 9350"
    }
   ]
  },

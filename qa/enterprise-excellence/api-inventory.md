@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
 
-611 routes in 72 route files, served at 74 mount points. 319 change data.
+618 routes in 74 route files, served at 75 mount points. 323 change data.
 
 ## What the columns mean
 
@@ -15,13 +15,13 @@ Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 284 of 611 |
-| Changing routes that returned a success in a test | 87 of 319 |
-| Changing handlers with two or more database writes and no transaction | 5 |
-| Read routes with a list query that has no row limit | 58 |
-| Handlers with no try/catch of their own | 135 (many use a shared wrapper) |
-| Routes that use raw SQL | 1 |
-| Calls the screens make that have no server route | 80 |
+| Routes that returned a success in a test | 328 of 618 |
+| Changing routes that returned a success in a test | 109 of 323 |
+| Changing handlers with two or more database writes and no transaction | 4 |
+| Read routes with a list query that has no row limit | 55 |
+| Handlers with no try/catch of their own | 164 (many use a shared wrapper) |
+| Routes that use raw SQL | 3 |
+| Calls the screens make that have no server route | 83 |
 
 ## Reply shapes
 
@@ -35,7 +35,6 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `DELETE /api/v1/dispatch/work-center-types/:id` | 2 | dispatchRoutes.js:206 |
 | `POST /api/assets/seed-from-work-centers` | 2 | assets.js:66 |
 | `POST /api/ops-cockpit/recommendations/accept` | 3 | opsCockpit.js:527 |
-| `POST /api/v1/partner/carrier/shipments/:id/pod` | 2 | partner/carrierRoutes.js:291 |
 
 ## Read routes with an unlimited list query (B-012)
 
@@ -46,22 +45,23 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/users/divisions` | users.js:631 |
 | `GET /api/grades` | grades.js:25 |
 | `GET /api/products` | products.js:40 |
+| `GET /api/heats/:heatNumber/trace` | heats.js:131 |
 | `GET /api/coils/:id/history` | coils.js:113 |
-| `GET /api/inventory/locations` | inventory.js:150 |
+| `GET /api/inventory/locations` | inventory.js:195 |
 | `GET /api/processing-recipes` | processingRecipes.js:67 |
 | `GET /api/processing-recipes/routing-templates` | processingRecipes.js:81 |
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
 | `GET /api/processing/operations` | intakeProcessing.js:20 |
 | `GET /api/processing/templates` | intakeProcessing.js:43 |
-| `GET /api/shipments/shippable` | shipments.js:123 |
-| `GET /api/shipments/:id/items` | shipments.js:222 |
+| `GET /api/shipments/shippable` | shipments.js:124 |
+| `GET /api/shipments/:id/items` | shipments.js:223 |
 | `GET /api/tax-rates` | taxRates.js:8 |
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:7 |
 | `GET /api/work-centers/:id/schedule` | workCenters.js:117 |
 | `GET /api/jobs/sla-risk` | jobs.js:200 |
 | `GET /api/documents/entity/:entityType/:entityId` | documents.js:155 |
-| `GET /api/pos/quick-sale/daily-stats` | quickSale.js:292 |
+| `GET /api/pos/quick-sale/daily-stats` | quickSale.js:301 |
 | `GET /api/v1/bom/recipes` | bomV1.js:73 |
 | `GET /api/v1/analytics/ops-forecast` | analyticsV1.js:12 |
 | `GET /api/v1/analytics/rfq-funnel` | analyticsV1.js:126 |
@@ -91,13 +91,9 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/maintenance-orders/assets/list` | maintenanceOrders.js:50 |
 | `GET /api/assets/types` | assets.js:53 |
 | `GET /api/ops-cockpit` | opsCockpit.js:28 |
-| `GET /api/v1/partner/customer/orders/:id/milestones` | partner/customerRoutes.js:390 |
-| `GET /api/v1/partner/customer/shipments` | partner/customerRoutes.js:543 |
-| `GET /api/v1/partner/customer/invoices` | partner/customerRoutes.js:634 |
-| `GET /api/v1/partner/supplier/asn` | partner/supplierRoutes.js:194 |
-| `GET /api/v1/partner/supplier/scorecard` | partner/supplierRoutes.js:333 |
-| `GET /api/v1/partner/carrier/performance` | partner/carrierRoutes.js:440 |
-| `GET /api/v1/partner/webhooks` | partner/webhookRoutes.js:38 |
+| `GET /api/v1/partner/customer/orders/:id/milestones` | partner/customerRoutes.js:161 |
+| `GET /api/v1/partner/carrier/performance` | partner/carrierRoutes.js:145 |
+| `GET /api/v1/partner/webhooks` | partner/webhookRoutes.js:36 |
 | `GET /api/v1/admin/partners/:id/usage` | partner/adminRoutes.js:273 |
 
 ## Every route, by route file
@@ -157,9 +153,9 @@ Mounted at /api/products. Tables: Product, Grade.
 | `POST /api/products` | yes | 1 | yes |  |  |  |
 | `PUT /api/products/:id` | yes | 1 | yes |  |  |  |
 
-### heats.js (6 routes, 161 lines)
+### heats.js (6 routes, 180 lines)
 
-Mounted at /api/heats. Tables: Heat, Organization.
+Mounted at /api/heats. Tables: Heat, Organization, MaterialMovement.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -168,7 +164,7 @@ Mounted at /api/heats. Tables: Heat, Organization.
 | `GET /api/heats/:id` | yes |  |  |  |  |  |
 | `POST /api/heats` | yes | 1 |  |  |  |  |
 | `PUT /api/heats/:id` | yes | 1 |  |  |  |  |
-| `GET /api/heats/:heatNumber/trace` | yes |  |  |  |  |  |
+| `GET /api/heats/:heatNumber/trace` | yes |  |  | yes |  |  |
 
 ### coils.js (8 routes, 282 lines)
 
@@ -185,7 +181,7 @@ Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocati
 | `POST /api/coils/:id/hold` | yes | 3 | yes |  |  |  |
 | `POST /api/coils/:id/release` | yes | 3 | yes |  |  |  |
 
-### inventory.js (10 routes, 278 lines)
+### inventory.js (11 routes, 327 lines)
 
 Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement.
 
@@ -196,6 +192,7 @@ Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement.
 | `GET /api/inventory/summary` | yes |  |  |  |  |  |
 | `POST /api/inventory/receive` | yes | 2 | yes |  |  |  |
 | `POST /api/inventory/transfer` | yes | 3 | yes |  |  |  |
+| `POST /api/inventory/adjust` | yes |  | yes |  |  |  |
 | `GET /api/inventory/locations` | yes |  |  | yes |  |  |
 | `POST /api/inventory/receipts` | yes |  |  |  |  |  |
 | `GET /api/inventory/receipts` | yes |  |  |  |  |  |
@@ -346,9 +343,9 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (7 routes, 372 lines)
+### orders.js (7 routes, 423 lines)
 
-Mounted at /api/orders. Tables: Order, OrderLineAllocation, Inventory, Coil, OrderLine.
+Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -357,12 +354,12 @@ Mounted at /api/orders. Tables: Order, OrderLineAllocation, Inventory, Coil, Ord
 | `POST /api/orders/:id/credit-release` | yes |  |  |  |  |  |
 | `GET /api/orders/:id` | yes |  |  |  |  |  |
 | `POST /api/orders` | yes | 4 | yes | yes |  |  |
-| `PUT /api/orders/:id` | yes | 2 | yes |  |  |  |
-| `POST /api/orders/:id/allocate` | yes | 3 | yes |  |  |  |
+| `PUT /api/orders/:id` | yes | 3 | yes |  | yes |  |
+| `POST /api/orders/:id/allocate` | yes | 4 | yes |  | yes |  |
 
-### workOrders.js (7 routes, 164 lines)
+### workOrders.js (7 routes, 209 lines)
 
-Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil.
+Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, OrderLine, Inventory.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -371,10 +368,10 @@ Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil.
 | `POST /api/work-orders` | yes | 4 | yes |  | yes |  |
 | `PUT /api/work-orders/:id/release` | yes |  |  |  |  |  |
 | `PUT /api/work-orders/:id/start` | yes |  |  |  |  |  |
-| `PUT /api/work-orders/:id/complete` | yes |  |  |  |  |  |
+| `PUT /api/work-orders/:id/complete` | yes | 2 | yes |  | yes |  |
 | `PUT /api/work-orders/:id/cancel` | yes |  |  |  |  |  |
 
-### shipments.js (11 routes, 456 lines)
+### shipments.js (11 routes, 487 lines)
 
 Mounted at /api/shipments. Tables: Shipment, Order, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, WorkCenter.
 
@@ -387,7 +384,7 @@ Mounted at /api/shipments. Tables: Shipment, Order, Job, Invoice, AuditLog, Loca
 | `PUT /api/shipments/:id` | yes | 1 |  |  |  |  |
 | `GET /api/shipments/:id/items` |  |  |  | yes |  |  |
 | `POST /api/shipments/:id/items` |  | 1 | yes |  |  |  |
-| `DELETE /api/shipments/:id/items/:itemId` |  | 14 | yes | yes | yes |  |
+| `DELETE /api/shipments/:id/items/:itemId` |  | 15 | yes | yes | yes |  |
 | `PUT /api/shipments/:id/dispatch` | yes |  |  |  |  |  |
 | `PUT /api/shipments/:id/deliver` | yes |  |  |  |  |  |
 | `PATCH /api/shipments/:id/status` | yes |  |  |  |  |  |
@@ -400,7 +397,7 @@ Mounted at /api/invoices. Tables: through a service or none.
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/invoices` | yes |  |  |  |  |  |
 | `GET /api/invoices/:id` | yes |  |  |  |  |  |
-| `POST /api/invoices` |  |  |  |  |  |  |
+| `POST /api/invoices` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/payments` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/credit` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/refund` | yes |  |  |  |  |  |
@@ -474,19 +471,19 @@ Mounted at /api/customers. Tables: Organization, AuditLog, CustomerPreference, C
 | `PUT /api/customers/:id/preferences` | yes | 3 | yes |  | yes |  |
 | `DELETE /api/customers/:id/preferences` |  | 1 |  |  |  |  |
 
-### rfqs.js (5 routes, 120 lines)
+### rfqs.js (5 routes, 124 lines)
 
 Mounted at /api/rfqs. Tables: RFQ, Organization, Quote.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/rfqs` | yes |  |  |  |  |  |
-| `GET /api/rfqs/:id` |  |  |  |  |  |  |
-| `POST /api/rfqs` | yes | 1 | yes |  |  |  |
+| `GET /api/rfqs/:id` | yes | 1 | yes |  |  |  |
+| `POST /api/rfqs` | yes |  |  |  |  |  |
 | `PATCH /api/rfqs/:id` |  | 2 | yes |  |  |  |
 | `POST /api/rfqs/:id/quotes` | yes |  |  |  |  |  |
 
-### quotes.js (6 routes, 206 lines)
+### quotes.js (6 routes, 222 lines)
 
 Mounted at /api/quotes. Tables: Quote, RFQ, Order.
 
@@ -494,10 +491,10 @@ Mounted at /api/quotes. Tables: Quote, RFQ, Order.
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/quotes` | yes |  |  |  |  |  |
 | `GET /api/quotes/:id` |  |  |  |  |  |  |
-| `POST /api/quotes` |  | 1 |  |  |  |  |
+| `POST /api/quotes` | yes | 1 |  |  |  |  |
 | `POST /api/quotes/:id/send` | yes | 1 | yes |  |  |  |
-| `POST /api/quotes/:id/reject` |  |  | yes |  |  |  |
-| `POST /api/quotes/:id/accept` | yes | 4 | yes |  |  |  |
+| `POST /api/quotes/:id/reject` |  | 4 | yes |  |  |  |
+| `POST /api/quotes/:id/accept` | yes |  |  |  |  |  |
 
 ### workCenters.js (10 routes, 156 lines)
 
@@ -569,7 +566,7 @@ Mounted at /api/documents. Tables: Document, DocumentLink, DocumentBlob, Heat.
 | `POST /api/documents/upload-multiple` |  |  |  |  |  |  |
 | `DELETE /api/documents/:id` | yes | 3 | yes |  |  |  |
 
-### quickSale.js (10 routes, 372 lines)
+### quickSale.js (10 routes, 387 lines)
 
 Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovement, AuditLog, Payment, InvoiceLine.
 
@@ -582,7 +579,7 @@ Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovemen
 | `POST /api/pos/quick-sale/process-payment` | yes | 7 | yes |  | yes |  |
 | `GET /api/pos/quick-sale/daily-stats` | yes |  |  | yes |  |  |
 | `GET /api/pos/quick-sale/:saleId/receipt` | yes |  |  |  |  |  |
-| `POST /api/pos/quick-sale/:saleId/void` | yes | 1 | yes | yes |  |  |
+| `POST /api/pos/quick-sale/:saleId/void` | yes | 1 |  |  |  |  |
 | `POST /api/pos/quick-sale/email-receipt` |  |  |  |  |  |  |
 | `POST /api/pos/quick-sale/sms-receipt` |  |  |  |  |  |  |
 
@@ -650,7 +647,7 @@ Mounted at /api/pos. Tables: Organization.
 | `POST /api/pos/sessions/:sessionId/pricing/recalculate` |  |  |  |  |  |  |
 | `GET /api/pos/sessions/:sessionId/pricing` | yes |  |  |  |  |  |
 
-### ai.js (9 routes, 332 lines)
+### ai.js (9 routes, 335 lines)
 
 Mounted at /api/ai. Tables: through a service or none.
 
@@ -666,7 +663,7 @@ Mounted at /api/ai. Tables: through a service or none.
 | `POST /api/ai/quote-assistant` |  |  |  |  |  |  |
 | `DELETE /api/ai/usage` |  |  |  |  |  |  |
 
-### tts.js (3 routes, 206 lines)
+### tts.js (3 routes, 193 lines)
 
 Mounted at /api/ai/tts. Tables: through a service or none.
 
@@ -674,15 +671,15 @@ Mounted at /api/ai/tts. Tables: through a service or none.
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/ai/tts/voices` | yes |  |  |  |  |  |
 | `GET /api/ai/tts/test` | yes |  |  |  |  |  |
-| `POST /api/ai/tts/speak` |  |  |  |  |  |  |
+| `POST /api/ai/tts/speak` | yes |  |  |  |  |  |
 
-### aiAssistant.js (2 routes, 427 lines)
+### aiAssistant.js (2 routes, 430 lines)
 
 Mounted at /api/ai/assistant. Tables: through a service or none.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `POST /api/ai/assistant` |  |  |  |  |  |  |
+| `POST /api/ai/assistant` | yes |  |  |  |  |  |
 | `POST /api/ai/assistant/stream` |  |  |  |  |  |  |
 
 ### inventoryV1.js (13 routes, 864 lines)
@@ -937,7 +934,18 @@ Mounted at /api/admin/online-settings. Tables: through a service or none.
 | `GET /api/admin/online-settings/processes` | yes |  |  |  |  |  |
 | `PUT /api/admin/online-settings/processes` |  |  |  |  |  |  |
 
-### admin.js (2 routes, 36 lines)
+### integrations.js (4 routes, 76 lines)
+
+Mounted at /api/admin/integrations. Tables: WebhookDelivery.
+
+| Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
+|---|:-:|---:|:-:|:-:|:-:|---|
+| `GET /api/admin/integrations` | yes |  |  |  |  |  |
+| `GET /api/admin/integrations/deliveries` | yes |  |  |  |  |  |
+| `POST /api/admin/integrations/deliveries/:id/replay` | yes |  |  |  |  |  |
+| `POST /api/admin/integrations/run` | yes |  |  |  |  |  |
+
+### admin.js (3 routes, 51 lines)
 
 Mounted at /api/admin. Tables: through a service or none.
 
@@ -945,6 +953,7 @@ Mounted at /api/admin. Tables: through a service or none.
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/admin/seed-demo` | yes |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
 | `POST /api/admin/seed-demo` |  |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `GET /api/admin/retention` | yes |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 
 ### dropTagRoutes.js (31 routes, 716 lines)
 
@@ -1114,71 +1123,72 @@ Mounted at /api/v1/partner/auth. Tables: through a service or none.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `POST /api/v1/partner/auth/token` |  |  |  |  |  |  |
+| `POST /api/v1/partner/auth/token` | yes |  |  |  |  |  |
 
-### partner/customerRoutes.js (14 routes, 718 lines)
+### partner/customerRoutes.js (14 routes, 266 lines)
 
-Mounted at /api/v1/partner/customer. Tables: RFQ, Quote, Order, Job, Document, Shipment, Invoice.
+Mounted at /api/v1/partner/customer. Tables: RFQ, Quote, Order, Shipment, Invoice, Document, DocumentBlob.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `POST /api/v1/partner/customer/rfqs` |  | 1 |  |  |  |  |
-| `GET /api/v1/partner/customer/rfqs` |  |  |  |  |  |  |
+| `POST /api/v1/partner/customer/rfqs` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/rfqs` | yes |  |  |  |  |  |
 | `GET /api/v1/partner/customer/rfqs/:id` |  |  |  |  |  |  |
-| `GET /api/v1/partner/customer/quotes` |  |  |  |  |  |  |
-| `GET /api/v1/partner/customer/quotes/:id` |  |  |  |  |  |  |
-| `POST /api/v1/partner/customer/quotes/:id/respond` |  | 1 |  |  |  |  |
-| `GET /api/v1/partner/customer/orders` |  |  |  |  |  |  |
-| `GET /api/v1/partner/customer/orders/:id` |  |  |  |  |  |  |
-| `GET /api/v1/partner/customer/orders/:id/milestones` |  |  |  | yes |  |  |
-| `GET /api/v1/partner/customer/documents` |  |  |  |  |  |  |
-| `GET /api/v1/partner/customer/documents/:id/download` |  |  |  |  |  |  |
-| `GET /api/v1/partner/customer/shipments` |  |  |  | yes |  |  |
-| `GET /api/v1/partner/customer/shipments/:id` |  |  |  |  |  |  |
-| `GET /api/v1/partner/customer/invoices` |  |  |  | yes |  |  |
+| `GET /api/v1/partner/customer/quotes` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/quotes/:id` | yes |  |  |  |  |  |
+| `POST /api/v1/partner/customer/quotes/:id/respond` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/orders` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/orders/:id` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/orders/:id/milestones` | yes |  |  | yes |  |  |
+| `GET /api/v1/partner/customer/shipments` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/shipments/:id` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/invoices` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/documents` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/customer/documents/:id/download` | yes |  |  |  |  |  |
 
-### partner/supplierRoutes.js (9 routes, 389 lines)
+### partner/supplierRoutes.js (9 routes, 77 lines)
 
-Mounted at /api/v1/partner/supplier. Tables: Order, Shipment, Document.
+Mounted at /api/v1/partner/supplier. Tables: Order, AuditLog.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `GET /api/v1/partner/supplier/purchase-orders` |  |  |  |  |  |  |
-| `GET /api/v1/partner/supplier/purchase-orders/:id` |  |  |  |  |  |  |
-| `POST /api/v1/partner/supplier/purchase-orders/:id/acknowledge` |  | 1 |  |  |  |  |
-| `POST /api/v1/partner/supplier/asn` |  | 1 |  |  |  |  |
-| `GET /api/v1/partner/supplier/asn` |  |  |  | yes |  |  |
-| `POST /api/v1/partner/supplier/documents` |  | 1 |  |  |  |  |
+| `GET /api/v1/partner/supplier/purchase-orders` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/supplier/purchase-orders/:id` | yes |  |  |  |  |  |
+| `POST /api/v1/partner/supplier/purchase-orders/:id/acknowledge` | yes | 1 |  |  | yes |  |
+| `POST /api/v1/partner/supplier/asn` |  |  |  |  |  |  |
+| `GET /api/v1/partner/supplier/asn` |  |  |  |  |  |  |
+| `POST /api/v1/partner/supplier/documents` |  |  |  |  |  |  |
 | `GET /api/v1/partner/supplier/scars` |  |  |  |  |  |  |
 | `POST /api/v1/partner/supplier/scars/:id/respond` |  |  |  |  |  |  |
-| `GET /api/v1/partner/supplier/scorecard` |  |  |  | yes |  |  |
+| `GET /api/v1/partner/supplier/scorecard` |  |  |  |  |  |  |
 
-### partner/carrierRoutes.js (7 routes, 510 lines)
+### partner/carrierRoutes.js (7 routes, 177 lines)
 
-Mounted at /api/v1/partner/carrier. Tables: Organization, Shipment, Order, Partner, Document.
+Mounted at /api/v1/partner/carrier. Tables: Shipment.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `GET /api/v1/partner/carrier/shipments` |  |  |  |  |  |  |
-| `GET /api/v1/partner/carrier/shipments/:id` |  |  |  |  |  |  |
-| `POST /api/v1/partner/carrier/shipments/:id/respond` |  | 1 |  |  |  |  |
-| `POST /api/v1/partner/carrier/shipments/:id/status` |  | 1 |  |  |  |  |
-| `POST /api/v1/partner/carrier/shipments/:id/pod` |  | 2 |  |  |  |  |
-| `POST /api/v1/partner/carrier/exceptions` |  | 1 |  |  |  |  |
-| `GET /api/v1/partner/carrier/performance` |  |  |  | yes |  |  |
+| `GET /api/v1/partner/carrier/shipments` | yes |  |  |  |  |  |
+| `GET /api/v1/partner/carrier/shipments/:id` | yes |  |  |  |  |  |
+| `POST /api/v1/partner/carrier/shipments/:id/respond` |  |  | yes |  |  |  |
+| `POST /api/v1/partner/carrier/shipments/:id/status` | yes |  |  |  |  |  |
+| `POST /api/v1/partner/carrier/shipments/:id/pod` | yes |  |  |  |  |  |
+| `POST /api/v1/partner/carrier/exceptions` |  |  |  |  |  |  |
+| `GET /api/v1/partner/carrier/performance` | yes |  |  | yes |  |  |
 
-### partner/webhookRoutes.js (6 routes, 309 lines)
+### partner/webhookRoutes.js (7 routes, 327 lines)
 
 Mounted at /api/v1/partner/webhooks. Tables: PartnerWebhook, WebhookDelivery.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `GET /api/v1/partner/webhooks` |  |  |  | yes |  |  |
-| `POST /api/v1/partner/webhooks` |  | 1 |  |  |  |  |
-| `PUT /api/v1/partner/webhooks/:id` |  | 1 |  |  |  |  |
-| `DELETE /api/v1/partner/webhooks/:id` |  | 1 |  |  |  |  |
-| `GET /api/v1/partner/webhooks/:id/deliveries` |  |  |  |  |  |  |
-| `POST /api/v1/partner/webhooks/:id/test` |  |  |  |  |  |  |
+| `GET /api/v1/partner/webhooks` | yes |  |  | yes |  |  |
+| `POST /api/v1/partner/webhooks` | yes | 1 |  |  |  |  |
+| `PUT /api/v1/partner/webhooks/:id` | yes | 1 |  |  |  |  |
+| `DELETE /api/v1/partner/webhooks/:id` | yes | 1 |  |  |  |  |
+| `GET /api/v1/partner/webhooks/:id/deliveries` | yes |  |  |  |  |  |
+| `POST /api/v1/partner/webhooks/:id/test` | yes |  |  | yes |  |  |
+| `POST /api/v1/partner/webhooks/:id/deliveries/:deliveryId/replay` | yes |  |  |  |  |  |
 
 ### partner/adminRoutes.js (9 routes, 433 lines)
 
@@ -1187,11 +1197,11 @@ Mounted at /api/v1/admin/partners. Tables: Partner, Organization, PartnerApiKey,
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/v1/admin/partners` | yes |  |  |  |  |  |
-| `POST /api/v1/admin/partners` |  | 1 |  |  |  |  |
+| `POST /api/v1/admin/partners` | yes | 1 |  |  |  |  |
 | `GET /api/v1/admin/partners/:id` |  |  |  |  |  |  |
-| `PUT /api/v1/admin/partners/:id` |  | 1 |  |  |  |  |
-| `POST /api/v1/admin/partners/:id/keys` |  | 1 |  |  |  |  |
-| `DELETE /api/v1/admin/partners/:id/keys/:keyId` |  | 1 |  |  |  |  |
+| `PUT /api/v1/admin/partners/:id` | yes | 1 |  |  |  |  |
+| `POST /api/v1/admin/partners/:id/keys` | yes | 1 |  |  |  |  |
+| `DELETE /api/v1/admin/partners/:id/keys/:keyId` | yes | 1 |  |  |  |  |
 | `GET /api/v1/admin/partners/:id/usage` |  |  |  | yes |  |  |
 | `GET /api/v1/admin/partners/:id/logs` | yes |  |  |  |  |  |
 | `GET /api/v1/admin/partners/dashboard/summary` | yes |  |  |  |  |  |

@@ -8,6 +8,7 @@
  * 4. Also handles general knowledge questions (steel grades, metallurgy, etc.)
  */
 
+import { outsideFailure } from '../lib/outbound.js';
 import express from 'express';
 import prisma from '../lib/db.js';
 import { aiProvider } from '../services/ai/AIProviderService.js';
@@ -336,8 +337,10 @@ router.post('/', async (req, res) => {
 
     res.json({ content, queryTypes, hasDbData: queryTypes.length > 0 });
   } catch (error) {
-    console.error('❌ AI Assistant error:', error);
-    res.status(500).json({ error: error.message });
+    const failure = outsideFailure(error, 'The assistant');
+    console.error(JSON.stringify({ level: 'error', msg: 'ai_assistant_failed', id: req.id, kind: error?.kind || error?.name || 'Error', providerStatus: error?.status || null }));
+    if (failure) return res.status(failure.status).json({ error: failure.error, requestId: req.id });
+    res.status(500).json({ error: 'The assistant could not answer.', requestId: req.id });
   }
 });
 

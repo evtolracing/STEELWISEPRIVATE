@@ -1293,12 +1293,14 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
 
     // --- Work orders: checked input, real moves ---
     const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE', location: { code: { startsWith: 'QA-L' } } }, orderBy: { coilNumber: 'asc' } }); // at a branch the operator belongs to
-    const busy = await prisma.coil.findFirst({ where: { status: { not: 'AVAILABLE' } } });
+    // Stock that is reserved may be cut for its order; stock that is on hold, shipped or used up may not.
+    const busy = await prisma.coil.findFirst({ where: { status: { in: ['HOLD', 'SHIPPED', 'CONSUMED'] } } });
     const forged = await send('POST', '/api/work-orders', operatorT, { woType: 'SLIT', sourceCoilId: coil.id, priority: 2, notes: tag, id: 'forged-id', woNumber: 'WO-FORGED', status: 'COMPLETE', completedAt: '2020-01-01', yieldPct: 150, outputWeightLb: 999999 });
     const woId = forged.body?.id; if (woId) woIds.push(woId);
     const wo = woId ? await prisma.workOrder.findUnique({ where: { id: woId } }) : null;
     check('a work order is created with only the fields the form has', forged.status === 201 && wo && wo.id !== 'forged-id' && wo.woNumber !== 'WO-FORGED' && wo.status === 'DRAFT' && wo.completedAt === null && wo.yieldPct === null && wo.outputWeightLb === null && wo.priority === 2, `status ${forged.status} ${JSON.stringify({ status: wo?.status ?? null, woNumber: wo?.woNumber ?? null, yield: wo?.yieldPct ?? null })}`);
-    check('the work order takes its weight in from the stock item', wo && Number(wo.inputWeightLb) === Number(coil.netWeightLb), `${wo?.inputWeightLb ?? null} against ${coil.netWeightLb}`);
+    const coilOnHand = Number((await prisma.inventory.findUnique({ where: { coilId: coil.id } }))?.qtyOnHand ?? coil.netWeightLb);
+    check('the work order takes its weight in from what the stock item holds now', wo && Number(wo.inputWeightLb) === coilOnHand, `${wo?.inputWeightLb ?? null} against ${coilOnHand}`);
     for (const [why, body] of [
       ['no type', { sourceCoilId: coil.id }], ['an unknown type', { woType: 'WELD', sourceCoilId: coil.id }], ['no stock item', { woType: 'SLIT' }],
       ['a stock item that is not on file', { woType: 'SLIT', sourceCoilId: '00000000-0000-0000-0000-000000000000' }], ['a priority of 9', { woType: 'SLIT', sourceCoilId: coil.id, priority: 9 }],
@@ -1416,6 +1418,12 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       const events = () => prisma.auditLog.findMany({ where: { resourceType: 'Shipment', resourceId: shipId, eventType: 'SHIPMENT_STATUS_CHANGED' }, orderBy: { timestamp: 'asc' } });
       let ev = await events();
       check('creating a shipment is recorded with who created it', ev.length === 1 && ev[0].userId === shipU.id && ev[0].details?.to === 'PENDING', JSON.stringify(ev.map((e) => [e.userId === shipU.id, e.details?.to])));
+      // Everything that ships comes off reserved stock: with nothing reserved the dispatch is refused.
+      const unreserved = await send('PUT', `/api/shipments/${shipId}/dispatch`, shipT, {});
+      check('a shipment with nothing reserved is refused, and says to reserve the stock', unreserved.status === 409 && /reserve/i.test(unreserved.body?.error || ''), `status ${unreserved.status} ${unreserved.body?.error || ''}`);
+      const stock = await prisma.inventory.findFirst({ where: { locationId: branch.id, qtyAvailable: { gte: 2 }, coil: { status: 'AVAILABLE', qcStatus: { notIn: ['FAILED', 'HOLD'] } } }, select: { coilId: true } });
+      const held = await send('POST', `/api/orders/${order.id}/allocate`, adminT, { lineId: line.id, coilId: stock?.coilId, qty: 2 });
+      check('the stock going out is reserved for the line', held.status === 201, `status ${held.status} ${held.body?.error || ''}`);
       const out = await send('PUT', `/api/shipments/${shipId}/dispatch`, shipT, {});
       ev = await events();
       check('dispatch is recorded with who dispatched', out.status === 200 && ev.length === 2 && ev[1].userId === shipU.id && ev[1].details?.from === 'PENDING' && ev[1].details?.to === 'IN_TRANSIT', `status ${out.status} ${out.body?.error || ''}, ${ev.length} records`);
@@ -1465,6 +1473,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
 
       // Cancel: an invoice with nothing on it.
       const made3 = await send('POST', '/api/shipments', shipT, { orderId: order.id, fromLocationId: branch.id, items: [{ orderLineId: line.id, qtyShipped: 1, weightLb: 25 }] });
+      await send('POST', `/api/orders/${order.id}/allocate`, adminT, { lineId: line.id, coilId: stock?.coilId, qty: 1 }); // what ships must be reserved
       const out3 = await send('PUT', `/api/shipments/${made3.body?.id}/dispatch`, shipT, {});
       const inv3 = out3.body?.invoice?.id;
       const cancelled = inv3 ? await send('POST', `/api/invoices/${inv3}/cancel`, adminT, { reason: `${tag} billed in error` }) : { status: 0 };

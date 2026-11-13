@@ -11,7 +11,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Snackbar,
   Table, TableBody, TableCell, TableHead, TableRow,
 } from '@mui/material'
-import { ArrowBack as BackIcon, Inventory as InventoryIcon, Edit as EditIcon, Block as HoldIcon, LockOpen as ReleaseIcon, SwapHoriz as MoveIcon } from '@mui/icons-material'
+import { ArrowBack as BackIcon, Inventory as InventoryIcon, Edit as EditIcon, Block as HoldIcon, LockOpen as ReleaseIcon, SwapHoriz as MoveIcon, FactCheck as CountIcon } from '@mui/icons-material'
 import { StatusChip } from '../../components/common'
 import { unitSize } from './UnitListPage'
 
@@ -41,6 +41,8 @@ const Fact = ({ label, value }) => (
     <Typography variant="body1">{value || 'Not set'}</Typography>
   </Grid>
 )
+
+const COUNT_REASONS = [['COUNT', 'Count'], ['DAMAGE', 'Damage'], ['SCRAP', 'Scrap'], ['FOUND', 'Found stock'], ['CORRECTION', 'Keying error']]
 
 export default function UnitDetailPage() {
   const { id } = useParams()
@@ -79,6 +81,7 @@ export default function UnitDetailPage() {
       setForm({ toLocationId: '' })
       call('/api/inventory/locations?all=true').then((l) => setLocations(Array.isArray(l) ? l : [])).catch(() => setDialogError('The locations could not be loaded.'))
     }
+    if (name === 'count') setForm({ countedQty: '', reason: 'COUNT', notes: '' })
     if (name === 'edit') setForm(Object.fromEntries([...EDIT_FIELDS.map(([k]) => [k, unit[k] ?? '']), ['edgeCondition', unit.edgeCondition || '']]))
     setDialog(name)
   }
@@ -89,7 +92,8 @@ export default function UnitDetailPage() {
       if (dialog === 'release') await call(`/api/coils/${id}/release`, 'POST', form)
       if (dialog === 'edit') await call(`/api/coils/${id}`, 'PUT', form)
       if (dialog === 'move') await call('/api/inventory/transfer', 'POST', { coilId: id, fromLocationId: unit.locationId, toLocationId: form.toLocationId })
-      setNotice(dialog === 'hold' ? 'Item put on hold' : dialog === 'release' ? 'Hold released' : dialog === 'move' ? 'Item moved' : 'Changes saved')
+      if (dialog === 'count') await call('/api/inventory/adjust', 'POST', { coilId: id, countedQty: Number(form.countedQty), reason: form.reason, notes: form.notes })
+      setNotice(dialog === 'count' ? 'Quantity corrected' : dialog === 'hold' ? 'Item put on hold' : dialog === 'release' ? 'Hold released' : dialog === 'move' ? 'Item moved' : 'Changes saved')
       setDialog(null)
       load()
     } catch (e) {
@@ -125,6 +129,7 @@ export default function UnitDetailPage() {
             <Stack direction="row" spacing={1}>
               <Button startIcon={<EditIcon />} variant="outlined" onClick={() => open('edit')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Edit</Button>
               <Button startIcon={<MoveIcon />} variant="outlined" disabled={closed || !unit.inventory} onClick={() => open('move')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Move</Button>
+              <Button startIcon={<CountIcon />} variant="outlined" disabled={!unit.inventory} onClick={() => open('count')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Correct quantity</Button>
               {onHold
                 ? <Button startIcon={<ReleaseIcon />} variant="contained" color="success" onClick={() => open('release')}>Release hold</Button>
                 : <Button startIcon={<HoldIcon />} variant="contained" color="warning" disabled={closed} onClick={() => open('hold')}>Put on hold</Button>}
@@ -231,7 +236,7 @@ export default function UnitDetailPage() {
       </Box>
 
       <Dialog open={Boolean(dialog)} onClose={() => !saving && setDialog(null)} maxWidth={dialog === 'edit' ? 'sm' : 'xs'} fullWidth>
-        <DialogTitle>{dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release hold' : dialog === 'move' ? 'Move to another location' : 'Edit item details'}</DialogTitle>
+        <DialogTitle>{dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release hold' : dialog === 'move' ? 'Move to another location' : dialog === 'count' ? 'Correct the quantity on hand' : 'Edit item details'}</DialogTitle>
         <DialogContent>
           {dialog === 'hold' && (
             <Stack spacing={2} sx={{ mt: 1 }}>
@@ -256,6 +261,18 @@ export default function UnitDetailPage() {
               </TextField>
             </Stack>
           )}
+          {dialog === 'count' && (
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <Typography variant="body2">
+                The books show {Number(inv?.qtyOnHand ?? 0).toLocaleString()} {String(inv?.unit || 'LB').toLowerCase()} on hand. Enter what is actually there. The difference is recorded in the item history with your name. Only a manager or the inventory manager can do this, and stock that is reserved or on hold cannot be taken away.
+              </Typography>
+              <TextField fullWidth type="number" label="Quantity actually there" required inputProps={{ min: 0, step: 'any' }} {...field('countedQty')} />
+              <TextField select fullWidth label="Why" {...field('reason')}>
+                {COUNT_REASONS.map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+              </TextField>
+              <TextField fullWidth multiline minRows={2} label="What was found" required helperText="At least 5 characters" {...field('notes')} />
+            </Stack>
+          )}
           {dialog === 'edit' && (
             <Grid container spacing={2} sx={{ mt: 0 }}>
               {EDIT_FIELDS.map(([key, label, numeric]) => (
@@ -269,7 +286,7 @@ export default function UnitDetailPage() {
                 </TextField>
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="caption" color="text.secondary">Status, quantity and location are changed by hold, receiving and transfer, not here.</Typography>
+                <Typography variant="caption" color="text.secondary">Status, quantity and location are changed by hold, receiving, transfer and Correct quantity, not here.</Typography>
               </Grid>
             </Grid>
           )}
@@ -277,8 +294,8 @@ export default function UnitDetailPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialog(null)} disabled={saving}>Cancel</Button>
-          <Button variant="contained" onClick={submit} disabled={saving || (dialog === 'hold' && !String(form.holdReason || '').trim()) || (dialog === 'move' && !form.toLocationId)}>
-            {dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release' : dialog === 'move' ? 'Move item' : 'Save'}
+          <Button variant="contained" onClick={submit} disabled={saving || (dialog === 'hold' && !String(form.holdReason || '').trim()) || (dialog === 'move' && !form.toLocationId) || (dialog === 'count' && (form.countedQty === '' || Number(form.countedQty) < 0 || String(form.notes || '').trim().length < 5))}>
+            {dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release' : dialog === 'move' ? 'Move item' : dialog === 'count' ? 'Record correction' : 'Save'}
           </Button>
         </DialogActions>
       </Dialog>

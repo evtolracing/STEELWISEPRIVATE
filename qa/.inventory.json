@@ -185,6 +185,10 @@
    "file": "src/backend/src/routes/inventory.js"
   },
   {
+   "ep": "POST /api/inventory/adjust",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
    "ep": "GET /api/inventory/locations",
    "file": "src/backend/src/routes/inventory.js"
   },
@@ -1805,6 +1809,10 @@
    "file": "src/backend/src/routes/admin.js"
   },
   {
+   "ep": "GET /api/admin/retention",
+   "file": "src/backend/src/routes/admin.js"
+  },
+  {
    "ep": "POST /api/drop-tags",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
@@ -2241,14 +2249,6 @@
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
   {
-   "ep": "GET /api/v1/partner/customer/documents",
-   "file": "src/backend/src/routes/partner/customerRoutes.js"
-  },
-  {
-   "ep": "GET /api/v1/partner/customer/documents/:id/download",
-   "file": "src/backend/src/routes/partner/customerRoutes.js"
-  },
-  {
    "ep": "GET /api/v1/partner/customer/shipments",
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
@@ -2258,6 +2258,14 @@
   },
   {
    "ep": "GET /api/v1/partner/customer/invoices",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents/:id/download",
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
   {
@@ -2349,6 +2357,10 @@
    "file": "src/backend/src/routes/partner/webhookRoutes.js"
   },
   {
+   "ep": "POST /api/v1/partner/webhooks/:id/deliveries/:deliveryId/replay",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
    "ep": "GET /api/v1/admin/partners",
    "file": "src/backend/src/routes/partner/adminRoutes.js"
   },
@@ -2388,7 +2400,7 @@
  "models": [
   {
    "name": "Organization",
-   "fields": 34,
+   "fields": 35,
    "fks": 1,
    "status": null
   },
@@ -2400,7 +2412,7 @@
   },
   {
    "name": "User",
-   "fields": 37,
+   "fields": 38,
    "fks": 3,
    "status": null
   },
@@ -2460,7 +2472,7 @@
   },
   {
    "name": "Product",
-   "fields": 24,
+   "fields": 25,
    "fks": 1,
    "status": null
   },
@@ -2478,7 +2490,7 @@
   },
   {
    "name": "Location",
-   "fields": 35,
+   "fields": 38,
    "fks": 2,
    "status": null
   },
@@ -2508,8 +2520,8 @@
   },
   {
    "name": "RFQ",
-   "fields": 16,
-   "fks": 1,
+   "fields": 18,
+   "fks": 2,
    "status": "RFQStatus"
   },
   {
@@ -2520,14 +2532,14 @@
   },
   {
    "name": "Quote",
-   "fields": 25,
-   "fks": 2,
+   "fields": 28,
+   "fks": 4,
    "status": "QuoteStatus"
   },
   {
    "name": "QuoteLine",
-   "fields": 30,
-   "fks": 2,
+   "fields": 31,
+   "fks": 3,
    "status": null
   },
   {
@@ -2550,14 +2562,14 @@
   },
   {
    "name": "DispatchJob",
-   "fields": 18,
-   "fks": 1,
+   "fields": 20,
+   "fks": 3,
    "status": null
   },
   {
    "name": "DispatchOperation",
-   "fields": 21,
-   "fks": 1,
+   "fields": 22,
+   "fks": 2,
    "status": "String"
   },
   {
@@ -2580,26 +2592,26 @@
   },
   {
    "name": "WorkCenter",
-   "fields": 14,
+   "fields": 15,
    "fks": 1,
    "status": null
   },
   {
    "name": "Job",
-   "fields": 53,
-   "fks": 5,
+   "fields": 55,
+   "fks": 7,
    "status": "JobStatus"
   },
   {
    "name": "Order",
-   "fields": 41,
-   "fks": 4,
+   "fields": 45,
+   "fks": 5,
    "status": "OrderStatus"
   },
   {
    "name": "OrderLine",
-   "fields": 43,
-   "fks": 3,
+   "fields": 48,
+   "fks": 4,
    "status": null
   },
   {
@@ -2610,8 +2622,8 @@
   },
   {
    "name": "WorkOrder",
-   "fields": 22,
-   "fks": 1,
+   "fields": 25,
+   "fks": 3,
    "status": "WOStatus"
   },
   {
@@ -2622,8 +2634,8 @@
   },
   {
    "name": "Shipment",
-   "fields": 28,
-   "fks": 2,
+   "fields": 30,
+   "fks": 3,
    "status": "ShipmentStatus"
   },
   {
@@ -2640,14 +2652,14 @@
   },
   {
    "name": "Invoice",
-   "fields": 20,
-   "fks": 1,
+   "fields": 23,
+   "fks": 3,
    "status": "InvoiceStatus"
   },
   {
    "name": "InvoiceLine",
-   "fields": 12,
-   "fks": 1,
+   "fields": 13,
+   "fks": 2,
    "status": null
   },
   {
@@ -3327,6 +3339,18 @@
    "fields": 10,
    "fks": 0,
    "status": null
+  },
+  {
+   "name": "DocumentCounter",
+   "fields": 3,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "RequestKey",
+   "fields": 8,
+   "fks": 0,
+   "status": "String"
   }
  ],
  "enums": {
@@ -4234,6 +4258,7 @@
   "pos/retail",
   "customers",
   "customers/preferences",
+  "admin/integrations",
   "admin/users",
   "admin/partners",
   "admin/tax-rates",

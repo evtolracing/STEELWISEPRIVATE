@@ -1,0 +1,303 @@
+{
+ "at": "2026-11-13T20:33:51.890Z",
+ "base": "http://localhost:3013",
+ "runs": 9,
+ "branch": {
+  "rows": [
+   {
+    "url": "/api/orders?limit=50",
+    "status": 200,
+    "bytes": 244183,
+    "p50": 33,
+    "p95": 34
+   },
+   {
+    "url": "/api/orders?limit=50&status=CONFIRMED",
+    "status": 200,
+    "bytes": 2,
+    "p50": 8,
+    "p95": 10
+   },
+   {
+    "url": "/api/orders?limit=50&page=40",
+    "status": 200,
+    "bytes": 244183,
+    "p50": 26,
+    "p95": 29
+   },
+   {
+    "url": "/api/orders?search=PO-1",
+    "status": 200,
+    "bytes": 244183,
+    "p50": 28,
+    "p95": 32
+   },
+   {
+    "url": "/api/invoices?limit=50",
+    "status": 200,
+    "bytes": 115,
+    "p50": 24,
+    "p95": 28
+   },
+   {
+    "url": "/api/invoices?status=SENT&limit=50",
+    "status": 200,
+    "bytes": 115,
+    "p50": 80,
+    "p95": 101
+   },
+   {
+    "url": "/api/invoices/aging",
+    "status": 404
+   },
+   {
+    "url": "/api/shipments?limit=50",
+    "status": 200,
+    "bytes": 49421,
+    "p50": 16,
+    "p95": 18
+   },
+   {
+    "url": "/api/shipments?status=IN_TRANSIT",
+    "status": 200,
+    "bytes": 2,
+    "p50": 7,
+    "p95": 8
+   },
+   {
+    "url": "/api/inventory?limit=50",
+    "status": 200,
+    "bytes": 2,
+    "p50": 5,
+    "p95": 6
+   },
+   {
+    "url": "/api/inventory/summary",
+    "status": 200,
+    "bytes": 71,
+    "p50": 6,
+    "p95": 7
+   },
+   {
+    "url": "/api/coils?limit=50",
+    "status": 200,
+    "bytes": 2,
+    "p50": 6,
+    "p95": 6
+   },
+   {
+    "url": "/api/coils?search=QA&limit=50",
+    "status": 200,
+    "bytes": 2,
+    "p50": 7,
+    "p95": 8
+   },
+   {
+    "url": "/api/jobs?limit=50",
+    "status": 200,
+    "bytes": 69491,
+    "p50": 143,
+    "p95": 158
+   },
+   {
+    "url": "/api/work-orders?limit=50",
+    "status": 200,
+    "bytes": 2,
+    "p50": 7,
+    "p95": 7
+   },
+   {
+    "url": "/api/quotes?limit=50",
+    "status": 200,
+    "bytes": 16702,
+    "p50": 9,
+    "p95": 10
+   },
+   {
+    "url": "/api/rfqs?limit=50",
+    "status": 200,
+    "bytes": 7248,
+    "p50": 7,
+    "p95": 8
+   },
+   {
+    "url": "/api/returns?limit=50",
+    "status": 200,
+    "bytes": 52,
+    "p50": 7,
+    "p95": 9
+   },
+   {
+    "url": "/api/customers?limit=50",
+    "status": 200,
+    "bytes": 7344,
+    "p50": 5,
+    "p95": 6
+   },
+   {
+    "url": "/api/dashboard/stats",
+    "status": 404
+   },
+   {
+    "url": "/api/dispatch/jobs?limit=50",
+    "status": 404
+   }
+  ],
+  "burst": {
+   "requests": 40,
+   "wallMs": 454,
+   "p50": 225,
+   "p95": 437,
+   "failed": 0
+  }
+ },
+ "admin": {
+  "rows": [
+   {
+    "url": "/api/orders?limit=50",
+    "status": 200,
+    "bytes": 190828,
+    "p50": 44,
+    "p95": 54
+   },
+   {
+    "url": "/api/orders?limit=50&status=CONFIRMED",
+    "status": 200,
+    "bytes": 111278,
+    "p50": 33,
+    "p95": 38
+   },
+   {
+    "url": "/api/orders?limit=50&page=40",
+    "status": 200,
+    "bytes": 190861,
+    "p50": 42,
+    "p95": 57
+   },
+   {
+    "url": "/api/orders?search=PO-1",
+    "status": 200,
+    "bytes": 190822,
+    "p50": 39,
+    "p95": 42
+   },
+   {
+    "url": "/api/invoices?limit=50",
+    "status": 200,
+    "bytes": 58869,
+    "p50": 209,
+    "p95": 267
+   },
+   {
+    "url": "/api/invoices?status=SENT&limit=50",
+    "status": 200,
+    "bytes": 58869,
+    "p50": 210,
+    "p95": 238
+   },
+   {
+    "url": "/api/invoices/aging",
+    "status": 404
+   },
+   {
+    "url": "/api/shipments?limit=50",
+    "status": 200,
+    "bytes": 59395,
+    "p50": 43,
+    "p95": 52
+   },
+   {
+    "url": "/api/shipments?status=IN_TRANSIT",
+    "status": 200,
+    "bytes": 59210,
+    "p50": 24,
+    "p95": 28
+   },
+   {
+    "url": "/api/inventory?limit=50",
+    "status": 200,
+    "bytes": 518908,
+    "p50": 59,
+    "p95": 64
+   },
+   {
+    "url": "/api/inventory/summary",
+    "status": 200,
+    "bytes": 102,
+    "p50": 22,
+    "p95": 28
+   },
+   {
+    "url": "/api/coils?limit=50",
+    "status": 200,
+    "bytes": 114387,
+    "p50": 50,
+    "p95": 66
+   },
+   {
+    "url": "/api/coils?search=QA&limit=50",
+    "status": 200,
+    "bytes": 114387,
+    "p50": 73,
+    "p95": 86
+   },
+   {
+    "url": "/api/jobs?limit=50",
+    "status": 200,
+    "bytes": 65286,
+    "p50": 42,
+    "p95": 50
+   },
+   {
+    "url": "/api/work-orders?limit=50",
+    "status": 200,
+    "bytes": 2,
+    "p50": 5,
+    "p95": 5
+   },
+   {
+    "url": "/api/quotes?limit=50",
+    "status": 200,
+    "bytes": 32045,
+    "p50": 9,
+    "p95": 11
+   },
+   {
+    "url": "/api/rfqs?limit=50",
+    "status": 200,
+    "bytes": 16691,
+    "p50": 7,
+    "p95": 9
+   },
+   {
+    "url": "/api/returns?limit=50",
+    "status": 200,
+    "bytes": 85037,
+    "p50": 95,
+    "p95": 110
+   },
+   {
+    "url": "/api/customers?limit=50",
+    "status": 200,
+    "bytes": 7344,
+    "p50": 6,
+    "p95": 6
+   },
+   {
+    "url": "/api/dashboard/stats",
+    "status": 404
+   },
+   {
+    "url": "/api/dispatch/jobs?limit=50",
+    "status": 404
+   }
+  ],
+  "burst": {
+   "requests": 40,
+   "wallMs": 1192,
+   "p50": 805,
+   "p95": 1187,
+   "failed": 0
+  }
+ }
+}

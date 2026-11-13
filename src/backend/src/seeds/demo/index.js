@@ -349,8 +349,8 @@ async function seedPortal() {
   const ids = portalOrders.map((o) => o.id);
   await prisma.onlineOrder.deleteMany({ where: { id: { in: portalWebOrders.map((w) => w.id) } } });
   await prisma.shipmentItem.deleteMany({ where: { shipment: { orderId: { in: ids } } } });
-  await prisma.shipment.deleteMany({ where: { orderId: { in: ids } } });
   await prisma.invoice.deleteMany({ where: { orderId: { in: ids } } });
+  await prisma.shipment.deleteMany({ where: { orderId: { in: ids } } });
   await prisma.orderLine.deleteMany({ where: { orderId: { in: ids } } });
 
   let shipments = 0;

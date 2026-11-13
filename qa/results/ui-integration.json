@@ -1,0 +1,173 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-13T23:04:21.588Z",
+ "checks": 33,
+ "failed": 0,
+ "results": [
+  {
+   "name": "slow answer: the screen shows it is working and shows no error while it waits",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "slow answer: the list arrives complete when the server answers",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "slow answer: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost connection: the screen says the connection was lost, in words, and shows no stale rows",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost connection: the user stays signed in",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost connection: when it returns, Refresh brings the list back and the message goes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "expired session: the server answers 401 and the user is taken to sign in",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "expired session: the dead token is removed and no shipment data is shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "refused input: shipping more than was ordered is refused with a reason, and the form stays open",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "refused input: nothing was saved",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "refused input: the server refuses it too, with 4xx and a sentence",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "double click: one shipment is created, not two",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "double click: every create request carried a request key",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "filter changed mid-request: the late answer for the old filter does not replace the list",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "filter changed mid-request: the screen is not left loading",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "left mid-step: the dispatch still finished on the server, once, with one invoice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "left mid-step: the list shows what the server has",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "left mid-step: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "part of a step failed: the screen says the truck left and the invoice was not raised",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "part of a step failed: the server agrees (dispatched, no invoice)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "part of a step failed: the Integrations screen lists the order as shipped but not invoiced, under \"Needs action\"",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "integrations screen: it names what is connected and shows no key or secret",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "integrations screen: \"Run now\" runs the delivery and upkeep task and says what it did",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "integrations screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "integrations screen: a shipping clerk is refused the report by the server",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "answer lost after saving (delivery): the screen says the answer was lost and that it may have been saved",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "answer lost after saving (delivery): sending it again does not deliver twice, and the screen shows the delivery once",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "answer lost after saving (new shipment): the shipment was saved and the screen says it may have been",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "answer lost after saving (new shipment): pressing Create again sends the same request key",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "answer lost after saving (new shipment): there is still one shipment, and the screen opens it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "answer lost after saving: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time limit: a request with no answer is given up after about a minute, and the screen says so",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time limit: the screen is usable afterwards (not left loading)",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

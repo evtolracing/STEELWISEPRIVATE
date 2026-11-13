@@ -124,11 +124,17 @@ export default function ShipmentPage() {
       await load()
     } catch (e) {
       setActionError(errorText(e, 'That could not be done'))
+      // No answer came back, so the step may or may not have been saved. Read the shipment
+      // again: what the screen shows next is what the server has.
+      if (!e.response?.status) await load()
     } finally {
       setBusy(false)
     }
   }
-  const dispatch = () => act(() => client.put(`/shipments/${id}/dispatch`, {}), (d) => (d?.invoice ? `Dispatched. Invoice ${d.invoice.invoiceNumber} raised.` : 'Dispatched.'))
+  const dispatch = () => act(() => client.put(`/shipments/${id}/dispatch`, {}), (d) => {
+    if (d?.invoiceWarning) { setActionError(d.invoiceWarning); return 'Dispatched. The invoice was not raised.' }
+    return d?.invoice ? `Dispatched. Invoice ${d.invoice.invoiceNumber} raised.` : 'Dispatched.'
+  })
   const cancel = () => act(() => client.patch(`/shipments/${id}/status`, { status: 'CANCELLED' }), 'Shipment cancelled')
 
   if (loading && !shipment) return <Box sx={{ p: 6, textAlign: 'center' }}><CircularProgress /></Box>

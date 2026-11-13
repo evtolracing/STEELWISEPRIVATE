@@ -52,8 +52,8 @@ router.get('/:id', handle('fetch RFQ', async (req, res) => {
   res.json(rfq);
 }));
 
-router.post('/', handle('create RFQ', async (req, res) => {
-  const body = req.body || {};
+/** Create a submitted RFQ. Used by staff, and by the partner API for the partner's own organisation. */
+export async function createRfq(body = {}) {
   if (!body.customerId) refuse(400, 'customerId is required');
   const customer = await prisma.organization.findUnique({ where: { id: String(body.customerId) }, select: { id: true } });
   if (!customer) refuse(400, 'Customer not found');
@@ -83,7 +83,11 @@ router.post('/', handle('create RFQ', async (req, res) => {
       include: INCLUDE,
     }),
   });
-  res.status(201).json(rfq);
+  return rfq;
+}
+
+router.post('/', handle('create RFQ', async (req, res) => {
+  res.status(201).json(await createRfq(req.body || {}));
 }));
 
 router.patch('/:id', handle('update RFQ', async (req, res) => {

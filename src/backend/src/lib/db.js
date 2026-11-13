@@ -5,8 +5,9 @@
 import '../config/env.js';
 import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
-import { requestContext, isBadFilterValue, isRecordNotFound, isRejectedShape } from './requestContext.js';
+import { requestContext, isBadFilterValue, isRecordNotFound, isRejectedShape, ruleRefusal } from './requestContext.js';
 import { scopedArgs } from './branchScope.js';
+import { roundedArgs } from './moneyColumns.js';
 
 const globalForPrisma = global;
 
@@ -22,6 +23,8 @@ const withBadFilterNote = (client) => client.$extends({
         // The branch boundary: see lib/branchScope.js.
         const store = requestContext.getStore();
         if (model && store?.branchScope) args = scopedArgs(model, operation, args, store.branchScope);
+        // Amounts are saved to the cent: see lib/moneyColumns.js.
+        if (model) args = roundedArgs(model, operation, args);
         return await query(args);
       } catch (error) {
         const store = requestContext.getStore();
@@ -29,6 +32,7 @@ const withBadFilterNote = (client) => client.$extends({
         if (store && isBadFilterValue(error)) store.badFilterValue = String(error.message || '');
         if (store && isRecordNotFound(error)) store.recordNotFound = true;
         if (store && isRejectedShape(error)) store.rejectedShape = String(error.message || '').slice(-400);
+        if (store && ruleRefusal(error)) { store.ruleRefusal = ruleRefusal(error); store.ruleRefusalDetail = String(error.message || '').slice(-300); }
         throw error;
       }
     },

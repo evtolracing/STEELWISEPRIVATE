@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -43,14 +43,15 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | Shipping | Sales orders, jobs, stock | Invoices, stock |
 | Returns | Shipping, invoices | Stock, credits |
 | Documents | Heats, shipments | Customer account pages, partner API |
-| Partner API | Sales orders, shipments, invoices | Outside systems |
+| Partner API | Sales orders, quotes, shipments, invoices, purchase orders | Outside systems |
+| Integrations and scheduled work | Partner API, shipments, invoices, request keys | Company administrators; the host scheduler |
 | Freight and logistics planning |  |  |
 | Invoices, payments, credits and refunds | Shipping, counter, returns | Customer account pages, partner API |
 | Sales tax | Tax rates | Orders, invoices |
 | Request safeguards | None | Every module |
-| AI assistant and voice | Read access to records | None |
+| AI assistant and voice | Read access to records; outside providers | None |
 | Help manual |  |  |
-| Background work, notifications, schedules |  |  |
+| Background work, notifications, schedules | Integrations and scheduled work |  |
 | Operations cockpit and dashboards | Every operational module | None |
 | Executive tools |  |  |
 | Stop work |  |  |
@@ -60,16 +61,16 @@ Two views. The first is the business flow, written by hand in the module map. Th
 
 | Table | Modules | Count |
 |---|---|---:|
+| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Coil work orders; Shipping; Partner API; Operations cockpit and dashboards | 10 |
 | Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 10 |
-| Job | Order entry; Customer specifications; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Partner API; Operations cockpit and dashboards | 10 |
 | Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Shipping; Returns; Partner API; Operations cockpit and dashboards | 9 |
-| AuditLog | Users, roles and branches; Customers; Order entry; Pricing and customer tiers; Counter quick sale; Coil work orders; Shipping; Operations cockpit and dashboards | 8 |
+| Job | Order entry; Customer specifications; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Operations cockpit and dashboards | 9 |
 | Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Stock items and stock levels; Receiving; Dispatch, work centers and shop-floor operations; Shipping | 7 |
+| OrderLine | Order entry; Sales orders; Customer specifications; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 7 |
+| Inventory | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
 | Coil | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
+| MaterialMovement | Counter quick sale; Products, grades and heats; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 7 |
 | WorkCenter | Staff and operators; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 6 |
-| OrderLine | Order entry; Sales orders; Customer specifications; Jobs, job board and schedule; Shipping; Returns | 6 |
-| Inventory | Sales orders; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 6 |
-| MaterialMovement | Counter quick sale; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 6 |
 | User | Sign-in and sessions; Users, roles and branches; RFQs and quotes; Stock items and stock levels; Jobs, job board and schedule | 5 |
 | Product | Order entry; Counter quick sale; Web store; Products, grades and heats; Stock items and stock levels | 5 |
 | Quote | RFQs and quotes; Order entry; Partner API; Operations cockpit and dashboards | 4 |
@@ -89,34 +90,38 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | DispatchOperation | Dispatch, work centers and shop-floor operations; Operations cockpit and dashboards | 2 |
 | JobInspection | Quality inspections; Material tracking, packages and drop tags | 2 |
 | Document | Documents; Partner API | 2 |
+| DocumentBlob | Documents; Partner API | 2 |
+| WebhookDelivery | Partner API; Integrations and scheduled work | 2 |
 
 ## Shared server code and who imports it
 
 | File | Imported by (route files) | Count |
 |---|---|---:|
-| lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 57 |
-| lib/numbering.js | intakeOrders.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, quotes.js, returns.js, … | 12 |
+| lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 58 |
+| lib/numbering.js | intakeOrders.js, inventory.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, quotes.js, … | 14 |
 | lib/roleAccess.js | coils.js, customers.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, orders.js, … | 11 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
 | lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |
 | lib/workflowRules.js | intakeOrders.js, inventory.js, jobs.js, orders.js, returns.js, rfqs.js, shipments.js | 7 |
-| middleware/partnerAuth.js | adminRoutes.js, carrierRoutes.js, customerRoutes.js, partnerAuthRoutes.js, supplierRoutes.js, webhookRoutes.js | 6 |
+| services/webhookService.js | integrations.js, orders.js, carrierRoutes.js, customerRoutes.js, webhookRoutes.js, shipments.js | 6 |
+| middleware/partnerAuth.js | adminRoutes.js, carrierRoutes.js, common.js, customerRoutes.js, partnerAuthRoutes.js, supplierRoutes.js | 6 |
 | lib/jobHistory.js | jobs.js, materialTrackingRoutes.js, operationsRoutes.js, qcRoutes.js, shipments.js | 5 |
+| middleware/auth.js | admin.js, auth.js, integrations.js, users.js | 4 |
 | services/intakeCatalogService.js | coils.js, intakePricing.js, inventory.js, products.js | 4 |
 | lib/creditControl.js | intakeOrders.js, onlineOrders.js, orders.js, quotes.js | 4 |
 | lib/billingRules.js | intakeOrders.js, onlineOrders.js, quickSale.js, returns.js | 4 |
 | services/billing.js | invoices.js, quickSale.js, returns.js, shipments.js | 4 |
-| middleware/partnerRateLimit.js | carrierRoutes.js, customerRoutes.js, supplierRoutes.js, webhookRoutes.js | 4 |
-| middleware/auth.js | admin.js, auth.js, users.js | 3 |
+| lib/outbound.js | ai.js, aiAssistant.js, tts.js | 3 |
 | services/ai/AIProviderService.js | ai.js, aiAssistant.js, opsCockpit.js | 3 |
 | lib/settings.js | compressionMetrics.js, demandShaping.js, onlineSettings.js | 3 |
 | lib/customerScope.js | ecom.js, portal.js, users.js | 3 |
 | lib/customerPricing.js | ecom.js, intakePricing.js, quickSale.js | 3 |
 | lib/orderTax.js | intakeOrders.js, intakePricing.js, onlineOrders.js | 3 |
-| services/webhookService.js | carrierRoutes.js, customerRoutes.js, supplierRoutes.js | 3 |
+| lib/quoteRules.js | customerRoutes.js, quotes.js, rfqs.js | 3 |
 | lib/priceRules.js | customers.js, intakePricing.js | 2 |
+| lib/listing.js | inventory.js, orders.js | 2 |
+| lib/stockChanges.js | inventory.js, workOrders.js | 2 |
 | services/printAutomationService.js | jobs.js, printQueue.js | 2 |
-| lib/quoteRules.js | quotes.js, rfqs.js | 2 |
 | services/dropTagService.js | dropTagRoutes.js | 1 |
 | services/dropTagListingService.js | dropTagRoutes.js | 1 |
 | services/scanService.js | dropTagRoutes.js | 1 |
@@ -126,9 +131,12 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | services/simulationService.js | executive.js | 1 |
 | services/forecastService.js | executive.js | 1 |
 | services/decisionService.js | executive.js | 1 |
+| lib/integrationReport.js | integrations.js | 1 |
 | lib/branchScope.js | inventory.js | 1 |
 | lib/receiving.js | inventory.js | 1 |
 | lib/receivingRules.js | inventory.js | 1 |
+| middleware/partnerRateLimit.js | common.js | 1 |
+| middleware/requestKeys.js | common.js | 1 |
 | services/portalService.js | portal.js | 1 |
 | lib/zip.js | portal.js | 1 |
 | services/tagRenderer.js | printQueue.js | 1 |
@@ -143,7 +151,12 @@ Two views. The first is the business flow, written by hand in the module map. Th
 2. The Job table: read or written by jobs, dispatch, operations, quality, material tracking, shipping, order entry, cockpit, planning, print queue and the partner API. Its moves are governed by `lib/workflowRules.js` and recorded by `lib/jobHistory.js`. Since Phase 2, planning and operations record their moves in the same transaction, completing an operation locks the job, and a status move applies only if the job is still where it was checked (C-005; `qa/sim/phase2-integrity.mjs`). Still outside: the general edit route writes a status unconditionally, and three job routes carry their own status checks (M-017).
 3. Order, OrderLine, Coil, Inventory, Shipment, Invoice: the order-to-cash chain. Covered in depth by the simulation and its reconciliation.
 4. `services/billing.js`: every money action. Covered by unit tests, the simulation and the sweep.
-5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner; to be connected or retired in Phase 3.
+5. Two stock lists and two order pipelines that do not depend on each other at all (B-009): the risk is that they disagree. Decided by the owner (decision 1). Audited in Phase 3 and not migrated: the live contents must be exported and read first.
 6. Shelf stock: the counter quick sale now writes stock levels and movements (B-025), joining receiving, transfer, hold, allocation, dispatch and return receipt as the only writers of stock.
 7. `routes/shipments.js` holds dispatch and delivery as private functions; the carrier partner routes re-implemented them and are wrong (C-002).
+8. `lib/numbering.js`: every numbered document (orders, shipments, invoices, credit memos, jobs, work orders, quotes, requests, returns) is created through it. Phase 3 found it failed under 80 simultaneous saves and after deleted rows (G-017, fixed). Covered by 9 unit tests and the 80-at-once scenario.
+9. `lib/moneyColumns.js` (new in Phase 3): every write to a decimal column passes through it inside the database client, after the branch boundary. A mistake here corrupts amounts everywhere. Covered by 6 unit tests, the residue check in `db-facts` and the exact-cent scenarios.
+10. `middleware/requestKeys.js` (new in Phase 3): sits in front of every changing route. It acts only when a request carries an Idempotency-Key. Covered by 3 unit tests and three database scenarios.
+11. The order row lock: a reservation, a cancellation and (through conditional updates) a status move now queue on the Order row. Any new code that changes reservations must take the same lock first, or the race of G-004 returns.
+12. Foreign keys added in Phase 3 with RESTRICT: an invoiced shipment, a credited invoice, a returned order and an invoiced order line can no longer be deleted. Seed and clean-up scripts must delete children first.
 

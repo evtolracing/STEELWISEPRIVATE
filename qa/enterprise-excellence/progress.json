@@ -1,35 +1,37 @@
 {
   "programVersion": "1.0",
   "program": "Enterprise Excellence Program",
-  "currentPhase": 2,
+  "currentPhase": 4,
   "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-13T19:01:57.756Z",
+  "updated": "2026-11-13T23:19:42.354Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "bcba5a1917cc9ba3e104657cdf1423472fa01132",
+    "commit": "dffa7d28a539e41a96e4d0dc543332ca923db408",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
-    "pullRequest": 30,
-    "merged": false
+    "pullRequest": 31,
+    "merged": false,
+    "previousPullRequests": [
+      30
+    ]
   },
-  "modulesDiscovered": 47,
-  "modulesAudited": 46,
+  "modulesDiscovered": 48,
+  "modulesAudited": 47,
   "modulesByClassification": {
-    "IMPLEMENTED AND VERIFIED": 22,
-    "IMPLEMENTED BUT NOT VERIFIED": 12,
-    "PARTIALLY IMPLEMENTED": 4,
+    "IMPLEMENTED AND VERIFIED": 23,
+    "IMPLEMENTED BUT NOT VERIFIED": 11,
+    "PARTIALLY IMPLEMENTED": 6,
     "PLACEHOLDER OR MOCK": 5,
-    "DISCONNECTED": 3,
-    "NOT APPLICABLE": 1
+    "DISCONNECTED": 3
   },
   "discovered": {
-    "apiRoutes": 611,
-    "apiRoutesThatChangeData": 319,
-    "routeFiles": 72,
-    "databaseTables": 157,
+    "apiRoutes": 618,
+    "apiRoutesThatChangeData": 323,
+    "routeFiles": 74,
+    "databaseTables": 159,
     "enumerations": 96,
-    "migrations": 23,
-    "screens": 143,
-    "frontendFiles": 387,
+    "migrations": 28,
+    "screens": 144,
+    "frontendFiles": 390,
     "roles": 48
   },
   "workflowsMapped": 17,
@@ -40,32 +42,68 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 71,
-    "P2": 72,
-    "P3": 60,
+    "P1": 82,
+    "P2": 91,
+    "P3": 69,
     "P0": 20
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 142,
-    "DEFERRED TO SPECIFIC PHASE": 58,
-    "REQUIRES BUSINESS DECISION": 19,
-    "BLOCKED": 1,
+    "VERIFIED FIXED": 174,
+    "DEFERRED TO SPECIFIC PHASE": 64,
+    "REQUIRES BUSINESS DECISION": 18,
+    "BLOCKED": 2,
     "NOT APPLICABLE": 1,
+    "ACCEPTED RISK WITH APPROVAL": 1,
     "IN PROGRESS": 2
   },
   "openFindingsBySeverity": {
-    "P1": 17,
-    "P2": 38,
-    "P3": 23,
+    "P1": 14,
+    "P2": 42,
+    "P3": 29,
     "P0": 2
   },
-  "findingsTotal": 223,
-  "findingsAddedThisPhase": 13,
+  "findingsTotal": 262,
+  "findingsAddedThisPhase": 19,
   "testsExecuted": [
     {
+      "test": "Phase 4 integration scenarios (qa/sim/phase4-integration.mjs, new in Phase 4)",
+      "result": "66 of 66 scenarios pass, 554 checks. Internal API contracts and validation 11 of 11; Cross-module workflow communication 10 of 10; Event processing and background jobs 13 of 13; Webhooks and external service failures 11 of 11; Idempotency, retries and concurrency 10 of 10; Security, isolation and recovery 11 of 11. Outside services are a local stand-in; no real provider, payment, shipment or message",
+      "before": "Did not exist. The partner API had never had a success-path run; on first run nearly every partner route answered 500"
+    },
+    {
+      "test": "Screens against a slow, silent or lost server (qa/sim/ui-integration.cjs, new in Phase 4): the ten cases of section 7",
+      "result": "33 checks, 0 failed",
+      "before": "Did not exist. With the four changed screen files reverted: 7 of 33 fail"
+    },
+    {
+      "test": "Unit tests (src/backend, npm test)",
+      "result": "144 of 144 pass (18 new: outside-call guard 8, webhook rules 6, list window 3, database-refusal mapping 1)",
+      "before": "126 of 126"
+    },
+    {
+      "test": "Integration load on the 85-branch copy (qa/perf/phase4-load.mjs, new in Phase 4; workload assumptions stated in the result file)",
+      "result": "0 failed requests. 80 list loads at once: p95 0.3 to 1.6 s for an all-branch login, 0.1 to 0.5 s for a branch login. 80 orders confirmed at once with a subscribed partner: p95 431 ms against 312 ms with none; all 80 events delivered 0.6 s later. 500 waiting events cleared at 489 a second; with a partner that takes 200 ms, 36 a second. Four delivery runs at once: 500 events, 500 calls, 500 distinct",
+      "before": "First measurement in this phase (qa/results/phase4-load-before.json): order summary slower than the full list (60 ms against 37 ms); 12 of 160 events sent after a burst, the rest only by a scheduled run 20 s later; backlog 119 a second, slow partner 5 a second"
+    },
+    {
+      "test": "SQL Editor file 10 (webhook_delivery_once) on the 85-branch copy, with duplicate rows planted",
+      "result": "Ran twice. First run: later duplicates renamed, none deleted, two indexes created, recorded once. Second run: skipped, nothing changed. A further duplicate is then refused by the database",
+      "before": "New in Phase 4"
+    },
+    {
       "test": "Order-to-cash simulation, seeds 8001 to 8003, rebuilt QA database",
-      "result": "150 of 150 jobs pass (50 per seed); 714, 709 and 711 steps; 784, 785 and 788 checks; 8 concurrency probes pass in each; reconciliation 0 problems",
-      "before": "150 of 150 at the Phase 2 baseline"
+      "result": "150 of 150 jobs pass; reconciliation after each seed: 0 problems (plus 52 in demo seed data)",
+      "before": "150 of 150"
+    },
+    {
+      "test": "Database consistency checks (qa/tools/db-facts.mjs) after the simulation and again after the Phase 3 and Phase 4 scenarios",
+      "result": "0 problems outside the demo seed rows. Orders with no branch 63 against 62 at the end of Phase 3 (an order entered by a login with no home branch gets none: G-018, already recorded)",
+      "before": "Same checks, same values"
+    },
+    {
+      "test": "Phase 3 database scenarios (qa/sim/phase3-db.mjs)",
+      "result": "74 of 74 scenarios pass, 607 checks",
+      "before": "74 of 74"
     },
     {
       "test": "Security and safeguards sweep",
@@ -73,85 +111,67 @@
       "before": "20 of 20"
     },
     {
-      "test": "Branch boundary (qa/sim/branch-boundary.mjs, new in Phase 2)",
+      "test": "Branch boundary (qa/sim/branch-boundary.mjs)",
       "result": "37 of 37 checks pass",
-      "before": "Did not exist. 25 of the checks fail with the boundary switched off"
+      "before": "37 of 37"
     },
     {
-      "test": "Phase 2 integrity and concurrency (qa/sim/phase2-integrity.mjs, new in Phase 2)",
+      "test": "Phase 2 integrity and concurrency (qa/sim/phase2-integrity.mjs)",
       "result": "80 of 80 checks pass",
-      "before": "Did not exist. 32 of the first 43 checks fail on the code before the corrections"
-    },
-    {
-      "test": "Unit tests (src/backend, npm test)",
-      "result": "105 of 105 pass",
-      "before": "90 of 90"
+      "before": "80 of 80"
     },
     {
       "test": "Browser suites: experience, shipping, shop, sales, inventory",
-      "result": "22, 27, 30, 24 and 22 checks, 0 failed",
-      "before": "Same counts, 0 failed"
+      "result": "22, 29, 30, 24 and 22 checks, 0 failed",
+      "before": "The same"
     },
     {
       "test": "Every route opens in a browser",
-      "result": "125 routes open with no crash",
+      "result": "All routes open with no crash, including the new Integrations screen",
       "before": "125"
     },
     {
       "test": "Baseline probe",
-      "result": "4 of 4 sections pass: 540 changing calls by view-only roles, 0 not refused; 275 changing routes sent an empty body, 0 server errors; 2 saved a record from nothing, both by design",
-      "before": "3 server errors and 7 saves from nothing at the Phase 2 baseline"
+      "result": "All sections pass: 546 write calls as read-only roles, 0 not refused; 278 write routes sent an empty body, 0 server errors",
+      "before": "The same"
     },
     {
-      "test": "Department rule coverage (qa/tools/access-coverage.mjs, new in Phase 2)",
-      "result": "319 changing routes, 0 with no rule or stated reason",
-      "before": "Did not exist. 16 areas had no rule (B-004)"
+      "test": "Department rule coverage",
+      "result": "323 changing routes, 0 with no rule",
+      "before": "0 with no rule"
     },
     {
-      "test": "Screen audit",
-      "result": "143 screens, 0 show made-up data with no notice (76 real, 58 labelled samples, 5 static, 4 mixed)",
-      "before": "Same"
+      "test": "Lint and build",
+      "result": "Frontend lint clean; whole repository 0 errors; production build succeeds",
+      "before": "The same"
     },
     {
-      "test": "Screen ratchets (qa/tools/frontend-checks.mjs, new in Phase 2)",
-      "result": "38 effect-dependency warnings (ceiling 38), 0 screens that invent records on failure (ceiling 0)",
-      "before": "Did not exist. 2 inventing screens on the code before"
+      "test": "Server errors seen during the whole gate run",
+      "result": "Only deliberate ones: 502, 503 and 504 from the provider-failure scenarios; 501 from routes that say they are not built; one 500 on POST /api/invoices while billing was made to fail on purpose",
+      "before": "Not listed"
     },
     {
-      "test": "Lint, frontend and whole repository",
-      "result": "Frontend passes; repository 0 errors, 1,524 warnings",
-      "before": "Same"
+      "test": "Payments against a processor sandbox; carrier rating, labels and tracking; email and text delivery; tax service; accounting export",
+      "result": "NOT EXECUTED. None of these is connected, and no provider exists to test against (H-013, H-015). Nothing was simulated as if it were"
     },
     {
-      "test": "Frontend production build",
-      "result": "passes",
-      "before": "passes"
+      "test": "Real AI and speech providers",
+      "result": "NOT EXECUTED. All calls went to a local stand-in with keys that are not real"
     },
     {
-      "test": "Database consistency checks on the QA database after the simulation (read-only)",
-      "result": "0 problems outside the demo seed rows; every counter-sale line of a stocked product has its stock movement",
-      "before": "Counter-sale lines moved no stock (B-025)"
+      "test": "The host: scheduled trigger, several server instances, time limits, the live database",
+      "result": "NOT VERIFIED. No access from this environment"
     },
     {
-      "test": "SQL Editor file 20261113190000_order_branch.sql, run twice on a populated copy",
-      "result": "First run gave 163 of 170 orders a branch; second run changed nothing",
-      "before": "Did not exist"
-    },
-    {
-      "test": "Package audit (npm audit, both packages)",
-      "result": "0 critical. Backend 1 moderate; frontend 1 high and 3 moderate, the high one in the development server only",
-      "before": "Not re-measured since Workstream 3"
-    },
-    {
-      "test": "Pull-request workflow on GitHub for the final Phase 2 commit",
+      "test": "Pull-request workflow on GitHub for the final Phase 4 commit",
       "result": "NOT VERIFIED at the time of writing; see the pull request"
     }
   ],
   "testReach": {
-    "routesWithSuccess": 284,
-    "routes": 611,
-    "changingRoutesWithSuccess": 87,
-    "changingRoutes": 319
+    "routesWithSuccess": 328,
+    "routes": 618,
+    "changingRoutesWithSuccess": 109,
+    "changingRoutes": 323
   },
   "correctionsCompleted": [
     "B-001",
@@ -163,44 +183,73 @@
     "B-007",
     "B-008",
     "B-010",
+    "B-018",
     "B-023",
     "B-025",
     "C-001",
+    "C-002",
     "C-003",
     "C-004",
     "C-005",
+    "C-006",
     "C-007",
-    "C-008"
+    "C-008",
+    "C-010",
+    "G-001",
+    "G-002",
+    "G-004",
+    "G-005",
+    "G-006",
+    "G-008",
+    "G-010",
+    "G-012",
+    "G-016",
+    "G-017",
+    "G-019",
+    "H-001",
+    "H-002",
+    "H-003",
+    "H-004",
+    "H-005",
+    "H-006",
+    "H-007",
+    "H-008",
+    "H-009",
+    "H-010",
+    "H-016",
+    "H-017",
+    "H-018",
+    "H-019"
   ],
   "scoreSummary": [
     {
       "group": "Platform infrastructure",
-      "weighted": 73,
+      "weighted": 80,
       "evidenceShare": 77,
       "openP0P1": 2
     },
     {
       "group": "Sales and customer operations",
-      "weighted": 72,
-      "evidenceShare": 89,
+      "weighted": 76,
+      "evidenceShare": 97,
       "openP0P1": 4
     },
     {
       "group": "Inventory and purchasing",
-      "weighted": 73,
-      "evidenceShare": 89,
-      "openP0P1": 4
+      "weighted": 76,
+      "evidenceShare": 97,
+      "openP0P1": 3
     },
     {
       "group": "Manufacturing and processing",
-      "weighted": 73,
-      "evidenceShare": 89,
-      "openP0P1": 2
+      "weighted": 74,
+      "evidenceShare": 97,
+      "openP0P1": 1
     },
     {
       "group": "Logistics and financial operations",
-      "weighted": 75,
-      "evidenceShare": 89,
+      "weighted": 79,
+      "evidenceShare": 97,
       "openP0P1": 2
     },
     {
@@ -211,31 +260,34 @@
     }
   ],
   "unverifiedAreas": [
-    "Forty-five route files and 18 service files were examined by tool only, not read line by line",
-    "Remnant creation from processing: a completed work order moves no stock, so the scenario cannot run (M-016)",
-    "Background jobs, retries and schedules: none exist (B-018, B-019)",
-    "Dashboard and report figures against the records they summarise",
-    "Records with no branch column: quotes, requests for quotation, packages, drop tags, documents, the second stock list and the order hub (C-009)",
-    "Cost of the branch filter at 80 branches and real volume; resource use; many users at once",
-    "Partner API success paths and webhook delivery; carrier partner routes (C-002)",
-    "Planning and optimization, customer specifications, AI assistant and voice (need provider keys)",
-    "Shipping documents and printing (F-011)",
-    "Accessibility, tablet and mobile layouts",
-    "Test coverage by line was not measured; reach is counted by route (see testReach)",
-    "The live database and the host: not touched. Nothing in Phase 2 was run against production"
+    "The live database and the host: nothing in Phase 4 was run against either. Whether live rows exist in WebhookDelivery, how many live orders are shipped but not invoiced, and how the server behaves with several instances are unknown",
+    "The scheduled trigger on the host (B-019): the address is tested locally; no schedule exists until the owner sets CRON_SECRET and a cron entry",
+    "Real providers: speech and AI were exercised only against a local stand-in",
+    "Card payments, carrier services, email, text messages, tax service and accounting: not connected, so their scenarios were NOT EXECUTED (H-013, H-015)",
+    "A partner system as receiver: signature checking and duplicate handling on the partner side were exercised by a test receiver, not by a real partner",
+    "Realtime updates: the system has none (no socket, no server push); screens load on open and on Refresh. Section 21 scenarios are NOT APPLICABLE",
+    "Import and export beyond the stock upload already tested in Phase 3: large files, interrupted uploads and spreadsheet formula injection in exports were not audited in this phase",
+    "Late-answer handling on list screens other than Shipping; they share the time limit and messages through the API client",
+    "Stale-edit protection exists on the orders API only and no screen sends it (G-020)",
+    "The 214 changing routes with no success-path test (B-016); Phase 4 added the partner and integration routes",
+    "Backup and restore (E-015); the host connection pool (G-015); the second stock list and order hub (B-009): unchanged from Phase 3",
+    "Performance on the host; sustained load over hours; more than one server instance",
+    "Accessibility, tablet and mobile layouts"
   ],
   "currentBlockers": [
-    "B-018 and B-019: no scheduler; whether the host may run a scheduled trigger is undecided",
-    "Rules only the owner can give: what a completed work order consumes and produces (M-016), stock adjustment (I-016), promise dates and cut-offs (X-007), purchasing (I-007), scheduling rules behind the cockpit (C-013)",
-    "E-011: package upgrades are major versions and need the owner's approval",
-    "E-015: a restore test needs the owner's database"
+    "Owner: SQL Editor files 6, 7, 8, 9 and 10 must be applied, in order, before pull request 31 is merged. Without file 9 no invoice can be numbered; without file 10 the code still runs, but the same event could be recorded twice",
+    "B-019: the host schedule and its secret are the owner's settings. Until set, failed partner events wait for \"Run now\"",
+    "H-013, H-015: no card processor, carrier service, email, text, tax or accounting provider has been chosen",
+    "E-015: no backup confirmed, no restore tested (owner: later)",
+    "B-009 (P1): the second stock list and order hub need a read-only export of the live stores",
+    "G-015: host connection settings unverified (owner)"
   ],
   "nextActions": [
-    "Owner: issue the Phase 3 prompt. Phase 3 has not been started",
-    "Owner: apply the five SQL Editor files in order before merging pull request 30; the fifth is 20261113190000_order_branch.sql",
-    "Owner: give every staff login a home branch before merging; a login with none and no all-branch role sees no orders, stock, jobs or shipments",
-    "Owner: review the list of roles that see every branch and the department table (phase-02-service-boundaries.md)",
-    "Phase 3: see the handoff in phase-02-report.md"
+    "Owner: apply SQL Editor files 6 to 10 in order (/mnt/project-files/database-updates/), then say when to merge pull request 31",
+    "Owner: on the host, set CRON_SECRET to a long random value and add a schedule that calls /api/internal/tasks/run every 5 minutes with \"Authorization: Bearer <CRON_SECRET>\"",
+    "Owner: answer the three questions in phase-04-report.md (order with no lines; card payment at web checkout; which outside services and in what order)",
+    "Owner: after deployment, open Admin > Integrations and read \"Shipped but not invoiced\"",
+    "Owner: issue the Phase 5 prompt. Phase 5 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 2: five correction batches committed and tested; full gate run on the final code (qa/tools/run-gates.sh) all green; nine Phase 2 files written; registers rebuilt"
+  "lastCompletedCheckpoint": "Phase 4: full gate run on the final code all green (66 of 66 integration scenarios, 33 of 33 browser checks, 144 unit tests, every earlier suite unchanged); SQL Editor file 10 run twice on the 85-branch copy; integration load measured at 85 branches; 19 findings recorded and dispositioned; documents written."
 }

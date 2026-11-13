@@ -3,7 +3,7 @@
  * status filter are applied by the server and the count is the server's.
  * A new shipment is built from what is still open on a confirmed order.
  */
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box, Typography, Paper, Button, TextField, MenuItem, Alert, LinearProgress, Chip, Grid,
@@ -149,17 +149,23 @@ export default function ShippingPage() {
     return () => clearTimeout(t)
   }, [typed])
 
+  // Each load is numbered. An answer for an older search or filter that arrives after a newer
+  // one was asked for is dropped, so the list always matches what the filter says.
+  const asked = useRef(0)
   const load = useCallback(async () => {
+    const mine = ++asked.current
     setLoading(true); setError('')
     try {
       const res = await client.get('/shipments', { params: { limit: LIMIT, ...(search && { search }), ...(status && { status }) } })
+      if (mine !== asked.current) return
       setRows(Array.isArray(res.data) ? res.data : [])
       setTotal(Number(res.headers?.['x-total-count']) || (Array.isArray(res.data) ? res.data.length : 0))
     } catch (e) {
+      if (mine !== asked.current) return
       setRows([]); setTotal(0)
       setError(errorText(e, 'Shipments could not be loaded.'))
     } finally {
-      setLoading(false)
+      if (mine === asked.current) setLoading(false)
     }
   }, [search, status])
   useEffect(() => { load() }, [load])

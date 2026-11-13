@@ -1,27 +1,18 @@
 {
- "at": "2026-11-13T18:47:39.200Z",
+ "at": "2026-11-13T23:01:09.529Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
- "tables": 158,
- "totalRows": 5727,
+ "tables": 160,
+ "totalRows": 9134,
  "emptyTables": [
-  "AppSetting",
   "ApprovalDecision",
   "ApprovalRequest",
-  "Asset",
   "AssetComponent",
-  "AssetType",
   "BomOperation",
   "BomRecipe",
   "CommodityPrice",
   "CustomerPreference",
   "CustomerTagRequirement",
-  "DispatchDivision",
-  "DispatchJob",
-  "DispatchOperation",
-  "DispatchTimeLog",
   "Division",
-  "Document",
-  "DocumentBlob",
   "DocumentLink",
   "DowntimeRecord",
   "DropTag",
@@ -32,27 +23,19 @@
   "LabelTemplate",
   "MaintenanceAttachment",
   "MaintenanceAuditLog",
-  "MaintenanceOrder",
   "MaintenanceOrderLabor",
   "MaintenanceOrderPart",
   "MaintenanceTask",
   "MeterReading",
-  "Operator",
   "OperatorSkill",
   "PMSchedule",
   "PMTemplate",
   "Package",
   "PackageItem",
-  "Partner",
-  "PartnerApiKey",
-  "PartnerApiLog",
-  "PartnerWebhook",
   "PipelineRun",
   "PricingAnalytics",
   "PricingOverride",
   "PricingRecommendation",
-  "PrintQueueJob",
-  "QCHold",
   "QuoteAcceptance",
   "RFQSource",
   "SafetyAttachment",
@@ -104,11 +87,7 @@
   "TestResult",
   "TraceEvent",
   "UserDivision",
-  "UserRoleAssignment",
-  "WebhookDelivery",
-  "WorkCenterType",
-  "WorkOrder",
-  "WorkOrderOutput"
+  "UserRoleAssignment"
  ],
  "rows": [
   {
@@ -117,7 +96,7 @@
   },
   {
    "table": "AppSetting",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "ApprovalDecision",
@@ -129,7 +108,7 @@
   },
   {
    "table": "Asset",
-   "rows": 0
+   "rows": 285
   },
   {
    "table": "AssetComponent",
@@ -137,11 +116,11 @@
   },
   {
    "table": "AssetType",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "AuditLog",
-   "rows": 1336
+   "rows": 2281
   },
   {
    "table": "BomOperation",
@@ -153,7 +132,7 @@
   },
   {
    "table": "Coil",
-   "rows": 333
+   "rows": 493
   },
   {
    "table": "CommodityPrice",
@@ -177,19 +156,19 @@
   },
   {
    "table": "DispatchDivision",
-   "rows": 0
+   "rows": 2
   },
   {
    "table": "DispatchJob",
-   "rows": 0
+   "rows": 18
   },
   {
    "table": "DispatchOperation",
-   "rows": 0
+   "rows": 36
   },
   {
    "table": "DispatchTimeLog",
-   "rows": 0
+   "rows": 35
   },
   {
    "table": "Division",
@@ -197,11 +176,15 @@
   },
   {
    "table": "Document",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "DocumentBlob",
-   "rows": 0
+   "rows": 1
+  },
+  {
+   "table": "DocumentCounter",
+   "rows": 2
   },
   {
    "table": "DocumentLink",
@@ -261,7 +244,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 333
+   "rows": 493
   },
   {
    "table": "InventoryAdjustment",
@@ -285,15 +268,15 @@
   },
   {
    "table": "Invoice",
-   "rows": 125
+   "rows": 213
   },
   {
    "table": "InvoiceLine",
-   "rows": 135
+   "rows": 223
   },
   {
    "table": "Job",
-   "rows": 242
+   "rows": 271
   },
   {
    "table": "JobInspection",
@@ -317,7 +300,7 @@
   },
   {
    "table": "MaintenanceOrder",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "MaintenanceOrderLabor",
@@ -333,7 +316,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 142
+   "rows": 443
   },
   {
    "table": "MeterReading",
@@ -341,11 +324,11 @@
   },
   {
    "table": "OnlineOrder",
-   "rows": 35
+   "rows": 39
   },
   {
    "table": "Operator",
-   "rows": 0
+   "rows": 2
   },
   {
    "table": "OperatorSkill",
@@ -353,19 +336,19 @@
   },
   {
    "table": "Order",
-   "rows": 236
+   "rows": 532
   },
   {
    "table": "OrderLine",
-   "rows": 248
+   "rows": 549
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 6
+   "rows": 35
   },
   {
    "table": "Organization",
-   "rows": 27
+   "rows": 34
   },
   {
    "table": "PMSchedule",
@@ -385,23 +368,23 @@
   },
   {
    "table": "Partner",
-   "rows": 0
+   "rows": 8
   },
   {
    "table": "PartnerApiKey",
-   "rows": 0
+   "rows": 12
   },
   {
    "table": "PartnerApiLog",
-   "rows": 0
+   "rows": 148
   },
   {
    "table": "PartnerWebhook",
-   "rows": 0
+   "rows": 15
   },
   {
    "table": "Payment",
-   "rows": 85
+   "rows": 121
   },
   {
    "table": "PipelineRun",
@@ -409,7 +392,7 @@
   },
   {
    "table": "PosSession",
-   "rows": 6
+   "rows": 9
   },
   {
    "table": "PriceLevel",
@@ -429,7 +412,7 @@
   },
   {
    "table": "PrintQueueJob",
-   "rows": 0
+   "rows": 2
   },
   {
    "table": "ProcessingOperation",
@@ -449,11 +432,11 @@
   },
   {
    "table": "QCHold",
-   "rows": 0
+   "rows": 6
   },
   {
    "table": "Quote",
-   "rows": 25
+   "rows": 29
   },
   {
    "table": "QuoteAcceptance",
@@ -461,15 +444,15 @@
   },
   {
    "table": "QuoteLine",
-   "rows": 6
+   "rows": 11
   },
   {
    "table": "RFQ",
-   "rows": 22
+   "rows": 30
   },
   {
    "table": "RFQLine",
-   "rows": 3
+   "rows": 12
   },
   {
    "table": "RFQSource",
@@ -482,6 +465,10 @@
   {
    "table": "Remnant",
    "rows": 10
+  },
+  {
+   "table": "RequestKey",
+   "rows": 18
   },
   {
    "table": "RfidScanEvent",
@@ -649,11 +636,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 169
+   "rows": 245
   },
   {
    "table": "ShipmentItem",
-   "rows": 137
+   "rows": 214
   },
   {
    "table": "ShipmentStop",
@@ -705,7 +692,7 @@
   },
   {
    "table": "User",
-   "rows": 17
+   "rows": 18
   },
   {
    "table": "UserDivision",
@@ -721,30 +708,30 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 0
+   "rows": 146
   },
   {
    "table": "WorkCenter",
-   "rows": 284
+   "rows": 285
   },
   {
    "table": "WorkCenterType",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "WorkOrder",
-   "rows": 0
+   "rows": 17
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 0
+   "rows": 16
   },
   {
    "table": "_prisma_migrations",
-   "rows": 23
+   "rows": 28
   }
  ],
- "indexes": 578,
+ "indexes": 584,
  "views": [],
  "triggers": [],
  "jsonCols": [
@@ -817,6 +804,7 @@
   "RFQSource.parseErrors",
   "RFQSource.parsedData",
   "RecipeRoutingTemplate.steps",
+  "RequestKey.responseBody",
   "RfidScanEvent.data",
   "Role.permissions",
   "SafetyAudit.auditTeam",
@@ -911,11 +899,23 @@
  ],
  "fkNoIndex": [],
  "constraintCounts": {
-  "foreign key": 171,
-  "primary key": 158,
-  "check": 9
+  "foreign key": 188,
+  "primary key": 160,
+  "check": 25
  },
  "checkConstraints": [
+  {
+   "table": "Coil",
+   "name": "Coil_weights_not_negative",
+   "kind": "check",
+   "def": "CHECK ((((\"netWeightLb\" IS NULL) OR (\"netWeightLb\" >= (0)::numeric)) AND ((\"grossWeightLb\" IS NULL) OR (\"grossWeightLb\" >= (0)::numeric))))"
+  },
+  {
+   "table": "DocumentCounter",
+   "name": "DocumentCounter_lastNumber_check",
+   "kind": "check",
+   "def": "CHECK ((\"lastNumber\" >= 0))"
+  },
   {
    "table": "Inventory",
    "name": "Inventory_balance_identity",
@@ -953,6 +953,48 @@
    "def": "CHECK ((abs(\"paidAmount\") <= (abs(\"totalAmount\") + 0.005)))"
   },
   {
+   "table": "Invoice",
+   "name": "Invoice_total_identity",
+   "kind": "check",
+   "def": "CHECK ((abs((\"totalAmount\" - ((subtotal + \"taxAmount\") + \"freightAmount\"))) <= 0.005))"
+  },
+  {
+   "table": "Job",
+   "name": "Job_weights_not_negative",
+   "kind": "check",
+   "def": "CHECK ((((\"inputWeightLb\" IS NULL) OR (\"inputWeightLb\" >= (0)::numeric)) AND ((\"outputWeightLb\" IS NULL) OR (\"outputWeightLb\" >= (0)::numeric)) AND ((\"scrapWeightLb\" IS NULL) OR (\"scrapWeightLb\" >= (0"
+  },
+  {
+   "table": "MaterialMovement",
+   "name": "MaterialMovement_qtyMoved_positive",
+   "kind": "check",
+   "def": "CHECK ((\"qtyMoved\" > (0)::numeric))"
+  },
+  {
+   "table": "Order",
+   "name": "Order_amounts_not_negative",
+   "kind": "check",
+   "def": "CHECK (((subtotal >= (0)::numeric) AND (\"taxAmount\" >= (0)::numeric) AND (\"freightAmount\" >= (0)::numeric) AND (\"totalAmount\" >= (0)::numeric)))"
+  },
+  {
+   "table": "Order",
+   "name": "Order_total_identity",
+   "kind": "check",
+   "def": "CHECK ((abs((\"totalAmount\" - ((subtotal + \"taxAmount\") + \"freightAmount\"))) <= 0.005))"
+  },
+  {
+   "table": "OrderLine",
+   "name": "OrderLine_discountPct_range",
+   "kind": "check",
+   "def": "CHECK (((\"discountPct\" IS NULL) OR ((\"discountPct\" >= (0)::numeric) AND (\"discountPct\" <= (100)::numeric))))"
+  },
+  {
+   "table": "OrderLine",
+   "name": "OrderLine_extendedPrice_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"extendedPrice\" >= (0)::numeric))"
+  },
+  {
    "table": "OrderLine",
    "name": "OrderLine_qtyOrdered_positive",
    "kind": "check",
@@ -965,25 +1007,93 @@
    "def": "CHECK ((\"qtyShipped\" >= (0)::numeric))"
   },
   {
+   "table": "OrderLine",
+   "name": "OrderLine_unitPrice_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"unitPrice\" >= (0)::numeric))"
+  },
+  {
+   "table": "OrderLineAllocation",
+   "name": "OrderLineAllocation_qtyAllocated_positive",
+   "kind": "check",
+   "def": "CHECK ((\"qtyAllocated\" > (0)::numeric))"
+  },
+  {
+   "table": "Payment",
+   "name": "Payment_amount_not_zero",
+   "kind": "check",
+   "def": "CHECK ((amount <> (0)::numeric))"
+  },
+  {
+   "table": "QuoteLine",
+   "name": "QuoteLine_quantity_positive",
+   "kind": "check",
+   "def": "CHECK ((quantity > (0)::numeric))"
+  },
+  {
+   "table": "QuoteLine",
+   "name": "QuoteLine_unitPrice_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"unitPrice\" >= (0)::numeric))"
+  },
+  {
    "table": "ShipmentItem",
    "name": "ShipmentItem_qtyShipped_positive",
    "kind": "check",
    "def": "CHECK ((\"qtyShipped\" > (0)::numeric))"
+  },
+  {
+   "table": "ShipmentItem",
+   "name": "ShipmentItem_weightLb_not_negative",
+   "kind": "check",
+   "def": "CHECK (((\"weightLb\" IS NULL) OR (\"weightLb\" >= (0)::numeric)))"
+  },
+  {
+   "table": "WorkOrder",
+   "name": "WorkOrder_weights_not_negative",
+   "kind": "check",
+   "def": "CHECK ((((\"inputWeightLb\" IS NULL) OR (\"inputWeightLb\" >= (0)::numeric)) AND ((\"outputWeightLb\" IS NULL) OR (\"outputWeightLb\" >= (0)::numeric)) AND ((\"scrapWeightLb\" IS NULL) OR (\"scrapWeightLb\" >= (0"
   }
  ],
  "checks": {
   "stock balance: on hand = available + allocated + on hold": 0,
   "stock: any quantity below zero": 0,
+  "stock reserved differs from the reservations on file for the item": 0,
+  "reservations on stock items that have no stock row": 0,
+  "order line reserved more than is left to ship": 0,
+  "reservations left on cancelled or completed orders": 0,
+  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 0,
+  "completed work orders whose output and scrap are not matched by movements on the source item": 0,
+  "completed work orders whose pieces do not weigh what the work order says came out": 0,
+  "pieces whose heat, grade or owner differs from the item they were cut from": 0,
+  "invoice series whose counter is not the highest number on file": 0,
+  "invoice numbers repeated": 0,
+  "stock corrections with no note or no person": 0,
+  "stock row and its item disagree about the branch": 0,
+  "transfers whose two branches are the same, or missing": 0,
+  "last transfer of an item did not end where the item now is": 0,
+  "shipped stock movements with no shipment": 0,
+  "dispatched shipment items whose quantity is not fully covered by stock movements: every shipment must come off reserved stock (G-019, refused since the owner decision of 2026-11-13)": 0,
+  "stock items cut from a parent that lost the parent heat": 0,
+  "amounts kept with digits beyond what was entered (floating-point residue)": 0,
+  "invoice subtotal differs from its lines": 2,
+  "order subtotal differs from its lines (orders that are not draft)": 0,
+  "order lines invoiced more than shipped": 0,
+  "tax invoiced on an order is more than the order tax": 0,
+  "credit memos larger than the invoice they credit": 0,
+  "two live invoices for the same shipment": 0,
+  "quotes or requests whose branch does not exist": 0,
+  "orders with no branch": 63,
   "order lines shipped more than ordered": 0,
   "order line shipped quantity differs from its dispatched shipment items": 47,
   "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
-  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 3,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 5,
   "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
   "invoices paid more than their total": 0,
   "invoice total differs from subtotal + tax + freight": 0,
   "invoice paid amount differs from its payments": 1,
   "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
-  "jobs with no order and no order line": 31,
+  "jobs with no order and no order line": 58,
   "stock items (coils) with no heat": 0,
   "stock items with no location": 0,
   "shipments delivered with no proof of delivery name": 47,

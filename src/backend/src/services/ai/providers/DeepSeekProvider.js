@@ -10,7 +10,10 @@ export class DeepSeekProvider {
   constructor(apiKey) {
     this.client = new OpenAI({
       apiKey: apiKey,
-      baseURL: 'https://api.deepseek.com/v1',
+      // A time limit on every call, and no hidden repeats: repeats are decided in one place (AIProviderService.withRetry).
+      timeout: Number(process.env.AI_TIMEOUT_MS) || 25_000,
+      maxRetries: 0,
+      baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1',
     });
     this.name = 'deepseek';
   }

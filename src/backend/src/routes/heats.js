@@ -150,6 +150,25 @@ router.get('/:heatNumber/trace', async (req, res) => {
     if (!heat) return res.status(404).json({ error: 'Heat not found' });
     // What stock cost us goes only to the roles that buy or manage money.
     if (!COST_VIEWERS.has(req.user?.role)) heat.coils = heat.coils.map(({ unitCost, landedCost, ...coil }) => coil);
+    // Forward trace: where the heat went. Every pound that ships is taken from a named stock
+    // item (a dispatch is refused otherwise), and a piece cut on a work order carries the heat
+    // of its source, so the shipping movements of this heat's items are the full answer.
+    const shipped = heat.coils.length ? await prisma.materialMovement.findMany({
+      where: { movementType: 'SHIP', shipmentId: { not: null }, coilId: { in: heat.coils.map((c) => c.id) } },
+      orderBy: { createdAt: 'asc' },
+      select: {
+        coilId: true, qtyMoved: true, unit: true, createdAt: true,
+        shipment: { select: { id: true, shipmentNumber: true, status: true, shippedAt: true, deliveredAt: true, order: { select: { id: true, orderNumber: true, buyer: { select: { id: true, code: true, name: true } } } } } },
+      },
+    }) : [];
+    const numberOf = new Map(heat.coils.map((c) => [c.id, c.coilNumber]));
+    heat.shipments = shipped.map((m) => ({
+      shipmentId: m.shipment.id, shipmentNumber: m.shipment.shipmentNumber, status: m.shipment.status, shippedAt: m.shipment.shippedAt, deliveredAt: m.shipment.deliveredAt,
+      orderId: m.shipment.order?.id || null, orderNumber: m.shipment.order?.orderNumber || null,
+      customerId: m.shipment.order?.buyer?.id || null, customerCode: m.shipment.order?.buyer?.code || null, customerName: m.shipment.order?.buyer?.name || null,
+      coilId: m.coilId, coilNumber: numberOf.get(m.coilId) || null, quantity: Number(m.qtyMoved), unit: m.unit,
+    }));
+    heat.customers = [...new Map(heat.shipments.filter((x) => x.customerId).map((x) => [x.customerId, { id: x.customerId, code: x.customerCode, name: x.customerName }])).values()];
     res.json(heat);
   } catch (error) {
     console.error('Heats: trace failed:', error);

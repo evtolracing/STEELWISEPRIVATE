@@ -1,3 +1,4 @@
+import { listWindow, sendWindow } from '../lib/listing.js';
 import { acrossBranches, currentScope } from '../lib/branchScope.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
@@ -7,6 +8,8 @@ import { searchStock } from '../services/intakeCatalogService.js';
 import { COST_VIEWERS } from '../lib/roleAccess.js';
 import { receiveStock, recentReceipts } from '../lib/receiving.js';
 import { TEMPLATE_FORMS, MAX_UPLOAD_ROWS } from '../lib/receivingRules.js';
+import { adjustStock, ADJUST_REASONS, STOCK_ADJUSTERS } from '../lib/stockChanges.js';
+import { retryOverlap } from '../lib/numbering.js';
 
 /** Cost goes only to the roles that manage it. */
 const withoutCost = (req, row) => {
@@ -21,19 +24,25 @@ const router = Router();
 router.get('/', async (req, res) => {
   try {
     const { locationId, status } = req.query;
-    const inventory = await prisma.inventory.findMany({
-      where: {
-        ...(locationId && { locationId }),
-        ...(status && { status })
-      },
-      include: {
-        coil: { include: { grade: true, product: true, heat: true } },
-        location: true
-      },
-      orderBy: { updatedAt: 'desc' },
-      take: 200
-    });
-    res.json(inventory.map((row) => withoutCost(req, row)));
+    const where = {
+      ...(locationId && { locationId }),
+      ...(status && { status })
+    };
+    const window = listWindow(req.query, { max: 200 });
+    const [inventory, total] = await Promise.all([
+      prisma.inventory.findMany({
+        where,
+        include: {
+          coil: { include: { grade: true, product: true, heat: true } },
+          location: true
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: window.take,
+        skip: window.skip,
+      }),
+      window.windowed ? prisma.inventory.count({ where }) : null,
+    ]);
+    sendWindow(res, inventory.map((row) => withoutCost(req, row)), { ...window, total });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch inventory' });
   }
@@ -124,6 +133,9 @@ router.post('/transfer', async (req, res) => {
     }
     const onHand = Number(inv.qtyOnHand);
     if (onHand <= 0) return res.status(409).json({ error: 'There is nothing on hand to transfer' });
+    // A reservation travels with its item: stock reserved at one branch for an order is often
+    // transferred to the branch that will process and ship it. The whole item moves, so the
+    // reserved quantity and the reservation rows stay in step.
     if (req.body.qty != null) {
       const qty = positiveQty(req.body.qty);
       if (qty === null) return res.status(400).json({ error: 'qty must be more than zero' });
@@ -146,6 +158,43 @@ router.post('/transfer', async (req, res) => {
   } catch (error) {
     console.error('Inventory: transfer failed:', error);
     res.status(500).json({ error: 'Failed to transfer inventory' });
+  }
+});
+
+/**
+ * Corrects a stock balance after a count, or for damage, scrap, found stock or a keying error.
+ * Managers and the inventory manager only. A reason and a note are required, and the change is a
+ * movement in the item's history: the balance is never simply overwritten.
+ */
+router.post('/adjust', async (req, res) => {
+  try {
+    if (!STOCK_ADJUSTERS.has(req.user?.role)) return res.status(403).json({ error: 'Correcting a stock balance is for a manager or the inventory manager' });
+    const { coilId } = req.body || {};
+    if (!coilId || typeof coilId !== 'string') return res.status(400).json({ error: 'coilId is required' });
+    const reason = String(req.body.reason || req.body.reasonCode || '').toUpperCase();
+    if (!ADJUST_REASONS.includes(reason)) return res.status(400).json({ error: `reason must be one of: ${ADJUST_REASONS.join(', ')}` });
+    const notes = typeof req.body.notes === 'string' ? req.body.notes.trim().slice(0, 1000) : '';
+    if (notes.length < 5) return res.status(400).json({ error: 'A note saying what was found is required (at least 5 characters)' });
+    const hasCount = req.body.countedQty != null && req.body.countedQty !== '';
+    const hasChange = req.body.change != null && req.body.change !== '';
+    if (hasCount === hasChange) return res.status(400).json({ error: 'Give either countedQty (what is actually there) or change (the difference), not both' });
+    const value = Number(hasCount ? req.body.countedQty : req.body.change);
+    if (!Number.isFinite(value) || Math.abs(value) > 10000000) return res.status(400).json({ error: `${hasCount ? 'countedQty' : 'change'} must be a number` });
+    if (hasCount && value < 0) return res.status(400).json({ error: 'countedQty cannot be less than zero' });
+    if (hasChange && value === 0) return res.status(400).json({ error: 'change cannot be zero' });
+    if (Math.round(value * 10000) / 10000 !== value) return res.status(400).json({ error: 'Quantities are kept to four decimal places' });
+    if (reason === 'FOUND' && hasChange && value < 0) return res.status(400).json({ error: 'Found stock adds to the balance' });
+    if (['DAMAGE', 'SCRAP'].includes(reason) && hasChange && value > 0) return res.status(400).json({ error: 'Damage and scrap take away from the balance' });
+    // The branch boundary applies: an item at another branch is not found.
+    if (!(await prisma.inventory.findUnique({ where: { coilId }, select: { id: true } }))) return res.status(404).json({ error: 'Stock item not found' });
+    const result = await retryOverlap(() => prisma.$transaction((tx) => adjustStock(tx, {
+      coilId, reason, notes, userId: req.user.id, ...(hasCount ? { countedQty: value } : { change: value }),
+    })));
+    res.status(result.movement ? 201 : 200).json(result);
+  } catch (error) {
+    if (error?.refuse) return res.status(error.status).json({ error: error.message });
+    console.error('Inventory: adjustment failed:', error);
+    res.status(500).json({ error: 'Failed to adjust inventory' });
   }
 });
 

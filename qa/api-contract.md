@@ -2,9 +2,9 @@
 
 Generated 2026-11-13 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
 
-- Distinct API calls found in the screens: **283**
-- Matched to a server route: **203**
-- No matching server route (the call would get a 404): **80**
+- Distinct API calls found in the screens: **287**
+- Matched to a server route: **204**
+- No matching server route (the call would get a 404): **83**
 
 Calls built from variables (a base URL constant plus a suffix) are not seen by this scan, so the real number of calls is higher.
 
@@ -117,6 +117,14 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `POST /api/pricing-records` | api/pricing.js |
 | `PUT /api/pricing-records/:x` | api/pricing.js |
 | `DELETE /api/pricing-records/:x` | api/pricing.js |
+
+### /api/admin (3)
+
+| Call | Used in |
+|---|---|
+| `GET /api/admin/integrations` | pages/Admin/IntegrationsPage.jsx |
+| `POST /api/admin/integrations/deliveries/:x/replay` | pages/Admin/IntegrationsPage.jsx |
+| `POST /api/admin/integrations/run` | pages/Admin/IntegrationsPage.jsx |
 
 ### /api/logistics (3)
 

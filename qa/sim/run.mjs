@@ -40,7 +40,7 @@ async function loadContext() {
   });
   const customers = await prisma.organization.findMany({ where: { code: { startsWith: 'QA-C' } }, orderBy: { code: 'asc' } });
   const products = await prisma.product.findMany({ where: { isActive: true }, include: { grade: true } });
-  return { locs, customers, products, admin: await prisma.user.findUnique({ where: { email: 'qa-admin@qa.test' } }) };
+  return { locs, customers, products, admin: await prisma.user.findUnique({ where: { email: 'qa-admin@qa.test' } }), csr: await prisma.user.findUnique({ where: { email: 'qa-csr@qa.test' } }) };
 }
 
 async function stockAt(locId, { plastics = false, minAvail = 500 } = {}) {
@@ -90,7 +90,7 @@ async function createOrder(sc, customer, lines, extra = {}) {
   const r = await step(sc, 'create sales order', () => A.post('/api/orders', {
     orderType: 'SO', buyerId: customer.id, status: 'DRAFT', subtotal, taxAmount, freightAmount, totalAmount: +(subtotal + taxAmount + freightAmount).toFixed(2),
     paymentTerms: R.pick(['NET 30', 'NET 15', 'COD', null]), poReference: `QA-${sc.id}`, lines, ...extra,
-  }));
+  }, 'csr')); // sales enters the order, so it belongs to a branch
   return r.body?.id ? r.body : null;
 }
 async function confirm(sc, order) { return step(sc, 'confirm order', () => A.put(`/api/orders/${order.id}`, { status: 'CONFIRMED' })); }
@@ -123,7 +123,7 @@ async function checkOrderBooks(sc, orderId, { expectStatus, createdBy } = {}) {
   if (!o) return check(sc, 'order exists', false, orderId);
   const sumLines = o.lines.reduce((s, l) => s + num(l.extendedPrice), 0);
   check(sc, 'order subtotal = sum of line totals', Math.abs(num(o.subtotal) - sumLines) < 0.01, `subtotal ${num(o.subtotal)} vs lines ${sumLines.toFixed(2)}`);
-  check(sc, 'order created by the signed-in user', o.createdById === (createdBy || ctx.admin.id), `createdById ${o.createdById}`);
+  check(sc, 'order created by the signed-in user', [createdBy || ctx.admin.id, ctx.csr?.id].includes(o.createdById), `createdById ${o.createdById}`);
   for (const l of o.lines) {
     const shippedItems = o.shipments.filter((s) => ['IN_TRANSIT', 'DELIVERED'].includes(s.status)).flatMap((s) => s.items).filter((i) => i.orderLineId === l.id).reduce((s, i) => s + num(i.qtyShipped), 0);
     check(sc, `line ${l.lineNumber}: shipped qty matches dispatched shipments`, Math.abs(num(l.qtyShipped) - shippedItems) < 0.001, `line.qtyShipped ${num(l.qtyShipped)} vs shipments ${shippedItems}`);
@@ -667,7 +667,7 @@ async function concurrency(report) {
   const fresh = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
   const want = Math.floor(num(fresh.qtyAvailable) * 0.6);
   const mk = async () => {
-    const o = (await A.post('/api/orders', { orderType: 'SO', buyerId: ctx.customers[3].id, status: 'CONFIRMED', lines: [lineFor(stock, want)] })).body;
+    const o = (await A.post('/api/orders', { orderType: 'SO', buyerId: ctx.customers[3].id, status: 'CONFIRMED', lines: [lineFor(stock, want)] }, 'csr')).body;
     return o;
   };
   const [o1, o2] = [await mk(), await mk()];

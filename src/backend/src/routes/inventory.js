@@ -1,3 +1,4 @@
+import { acrossBranches } from '../lib/branchScope.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { positiveQty } from '../lib/workflowRules.js';
@@ -137,7 +138,8 @@ router.post('/transfer', async (req, res) => {
       const movement = await tx.materialMovement.create({
         data: { coilId, fromLocationId: inv.locationId, toLocationId, movementType: 'TRANSFER', qtyMoved: onHand, unit: inv.unit, createdById: req.user.id },
       });
-      return { inventory: await tx.inventory.findUnique({ where: { coilId } }), movement };
+      // The item is now at the other branch; the sender is shown the result of their own transfer once.
+      return { inventory: await acrossBranches(() => tx.inventory.findUnique({ where: { coilId } })), movement };
     });
     if (!result) return res.status(409).json({ error: 'This item was just moved by someone else. Reload and try again.' });
     res.json(result);

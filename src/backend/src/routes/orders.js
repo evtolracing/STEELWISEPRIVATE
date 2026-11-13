@@ -20,7 +20,7 @@ const router = Router();
 const ORDER_TYPES = ['RFQ', 'QUOTE', 'SO', 'PO', 'RETURN'];
 const HEADER_FIELDS = [
   'buyerId', 'sellerId', 'shipToAddress', 'shipToCity', 'shipToState', 'shipToZip', 'requiredDate', 'promisedDate',
-  'expireDate', 'currency', 'paymentTerms', 'freightTerms', 'poReference', 'notes',
+  'expireDate', 'currency', 'paymentTerms', 'freightTerms', 'poReference', 'notes', 'locationId',
 ];
 const DATE_FIELDS = ['requiredDate', 'promisedDate', 'expireDate'];
 const LINE_FIELDS = [
@@ -120,6 +120,7 @@ async function checkRefs(header) {
       return `${f === 'buyerId' ? 'Customer' : 'Seller'} not found`;
     }
   }
+  if (header.locationId && !(await prisma.location.findUnique({ where: { id: header.locationId }, select: { id: true } }))) return 'Branch not found';
   return null;
 }
 

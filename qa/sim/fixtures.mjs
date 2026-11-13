@@ -97,6 +97,29 @@ async function main() {
       coilCount++;
     }
   }
+  // Branches for the staff logins (the branch boundary, lib/branchScope.js).
+  // The three working logins of the simulation are regional: home at branch 1, assigned to every QA branch.
+  // Two logins are held to one branch each, and one to a group of three, for the isolation tests.
+  const locs = Object.fromEntries((await prisma.location.findMany({ where: { code: { startsWith: 'QA-L' } }, select: { id: true, code: true } })).map((l) => [l.code, l.id]));
+  const branchUsers = [
+    ['branchA', 'CSR', ['QA-L01']], ['branchB', 'CSR', ['QA-L02']], ['branchWh', 'INVENTORY_MANAGER', ['QA-L01']],
+    ['regional', 'BRANCH_MANAGER', ['QA-L01', 'QA-L02', 'QA-L03']],
+  ];
+  for (const [key, role] of branchUsers) {
+    users[key] = await prisma.user.upsert({
+      where: { email: QA_USERS[key] },
+      update: { passwordHash: hash, role, isActive: true, organizationId: tenant.id },
+      create: { email: QA_USERS[key], passwordHash: hash, firstName: 'QA', lastName: key, role, organizationId: tenant.id },
+    });
+  }
+  const assign = async (key, codes) => {
+    await prisma.user.update({ where: { id: users[key].id }, data: { homeLocationId: locs[codes[0]] } });
+    await prisma.userLocation.createMany({ data: codes.map((c, i) => ({ userId: users[key].id, locationId: locs[c], isPrimary: i === 0 })), skipDuplicates: true });
+  };
+  for (const key of ['csr', 'operator', 'shipping']) await assign(key, Object.keys(locs).sort());
+  for (const [key, , codes] of branchUsers) await assign(key, codes);
+  // Head office sees every branch whatever its home; a home branch makes the orders it enters belong somewhere.
+  await prisma.user.update({ where: { id: users.admin.id }, data: { homeLocationId: locs['QA-L01'] } });
   console.log(`QA fixtures: 80 branches, ${wcCount} work centers, ${coilCount} stock items, 16 customers, ${roleUsers.length} logins`);
 }
 main().finally(() => prisma.$disconnect());

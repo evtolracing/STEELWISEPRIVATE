@@ -6,6 +6,7 @@ import '../config/env.js';
 import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
 import { requestContext, isBadFilterValue, isRecordNotFound, isRejectedShape } from './requestContext.js';
+import { scopedArgs } from './branchScope.js';
 
 const globalForPrisma = global;
 
@@ -16,11 +17,15 @@ const isDatabaseConfigured = process.env.DATABASE_URL && process.env.DATABASE_UR
 // caller sent (for example ?status=nonsense), so the reply can be a 400.
 const withBadFilterNote = (client) => client.$extends({
   query: {
-    async $allOperations({ args, query }) {
+    async $allOperations({ model, operation, args, query }) {
       try {
+        // The branch boundary: see lib/branchScope.js.
+        const store = requestContext.getStore();
+        if (model && store?.branchScope) args = scopedArgs(model, operation, args, store.branchScope);
         return await query(args);
       } catch (error) {
         const store = requestContext.getStore();
+        if (store && error?.name === 'OutsideBranch') store.outsideBranch = true;
         if (store && isBadFilterValue(error)) store.badFilterValue = String(error.message || '');
         if (store && isRecordNotFound(error)) store.recordNotFound = true;
         if (store && isRejectedShape(error)) store.rejectedShape = String(error.message || '').slice(-400);

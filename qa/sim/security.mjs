@@ -793,7 +793,8 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     await prisma.coil.update({ where: { id: a.coilId }, data: { unitCost: 0.4321, landedCost: 0.4567 } });
     try {
       // I-001 list: bounded, counted, searched on the server
-      const total = await prisma.coil.count();
+      // The sales login is assigned to the QA branches, so that is what it lists (lib/branchScope.js).
+      const total = await prisma.coil.count({ where: { location: { code: { startsWith: 'QA-L' } } } });
       const list = await send('GET', '/api/coils?limit=5', csrT);
       check('list is a capped list with the true total', list.status === 200 && Array.isArray(list.body) && list.body.length <= 5 && Number(list.headers.get('x-total-count')) === total, `status ${list.status}, ${list.body?.length} rows, total header ${list.headers.get('x-total-count')} vs ${total}`);
       check('list limit has a ceiling', ((await send('GET', '/api/coils?limit=99999', csrT)).body?.length ?? 1e9) <= 500, 'more than 500 rows');
@@ -808,7 +809,10 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       check('a manager still sees cost', Number(asManager?.unitCost) === 0.4321 && Number(asManager?.landedCost) === 0.4567, `${asManager?.unitCost}, ${asManager?.landedCost}`);
       const priced = await prisma.coil.findFirst({ where: { product: { basePriceCwt: { gt: 0 }, priceUnit: 'CWT' } }, include: { product: true } });
       if (priced) {
+        // The priced items are demo stock at a branch the sales login is not in, so it is assigned to that branch for this read.
+        const csrSeat = await prisma.userLocation.create({ data: { userId: csrUser.id, locationId: priced.locationId } }).catch(() => null);
         const got = (await send('GET', `/api/coils/${priced.id}`, csrT)).body;
+        if (csrSeat) await prisma.userLocation.delete({ where: { id: csrSeat.id } });
         check('the item carries its product list price per pound', Math.abs(got?.listPrice - Number(priced.product.basePriceCwt) / 100) < 0.00006 && got?.listPriceUnit === 'LB', `${got?.listPrice} ${got?.listPriceUnit} vs ${Number(priced.product.basePriceCwt) / 100}`);
       }
 
@@ -1115,7 +1119,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const tag = `QA18-${Date.now().toString(36).toUpperCase()}`;
   const heat = await prisma.heat.findFirst({ where: { coils: { some: {} } }, include: { grade: true } });
   const otherGrade = await prisma.grade.findFirst({ where: { id: { not: heat.gradeId } } });
-  const location = await prisma.location.findFirst({ where: { isActive: true }, orderBy: { code: 'asc' } });
+  const location = await prisma.location.findFirst({ where: { isActive: true, code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } }); // a branch the QA logins belong to
   const customer = await prisma.organization.findUnique({ where: { code: 'QA-C09' } });
   const shipper = await prisma.user.findUnique({ where: { email: QA_USERS.shipping } });
   const good = { coilNumber: `${tag}-1`, form: 'PLATE', heatNumber: heat.heatNumber, gradeCode: heat.grade.code, thicknessIn: 0.5, widthIn: 96, lengthIn: 240, weightLb: 3267, locationId: location.id, binLocation: 'B-02', poReference: 'QA-PO-18', notes: 'QA sweep' };
@@ -1200,7 +1204,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const tag = `QA19-${Date.now().toString(36).toUpperCase()}`;
   const operator = await prisma.user.findUnique({ where: { email: QA_USERS.operator } });
   const csr = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
-  const wc = await prisma.workCenter.findFirst({ where: { isActive: true }, orderBy: { code: 'asc' } });
+  const wc = await prisma.workCenter.findFirst({ where: { isActive: true, code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } }); // at a branch the QA logins belong to
   const jobIds = []; const woIds = []; const inspectionIds = []; let idleUserId = null;
   const movesOf = (id) => prisma.auditLog.findMany({ where: { resourceType: 'Job', resourceId: id, eventType: 'JOB_STATUS_CHANGED' }, orderBy: { timestamp: 'asc' } });
   try {
@@ -1241,7 +1245,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     check('a customer login cannot read a job history', [401, 403].includes((await send('GET', `/api/jobs/${jobId}/history`, custT)).status), 'readable');
 
     // A job from before moves were recorded: times only, and it says nobody is on record.
-    const old = await prisma.job.create({ data: { jobNumber: `${tag}-OLD`, status: 'READY_TO_SHIP', priority: 3, actualStart: new Date(Date.now() - 7200000), actualEnd: new Date(Date.now() - 3600000) } });
+    const old = await prisma.job.create({ data: { jobNumber: `${tag}-OLD`, workCenterId: wc.id, status: 'READY_TO_SHIP', priority: 3, actualStart: new Date(Date.now() - 7200000), actualEnd: new Date(Date.now() - 3600000) } });
     jobIds.push(old.id);
     const oldHist = (await send('GET', `/api/jobs/${old.id}/history`, csrT)).body;
     check('an older job shows its times and says who is not recorded', Array.isArray(oldHist) && oldHist.filter((e) => e.type === 'STATUS').length === 2 && oldHist.filter((e) => e.type === 'STATUS').every((e) => e.recorded === false && e.by === null), JSON.stringify(oldHist ?? null).slice(0, 200));
@@ -1288,7 +1292,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     check('a schedule date that is not a date is refused', (await send('GET', '/api/jobs?scheduledFrom=tuesday', csrT)).status === 400, 'accepted');
 
     // --- Work orders: checked input, real moves ---
-    const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE' }, orderBy: { coilNumber: 'asc' } });
+    const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE', location: { code: { startsWith: 'QA-L' } } }, orderBy: { coilNumber: 'asc' } }); // at a branch the operator belongs to
     const busy = await prisma.coil.findFirst({ where: { status: { not: 'AVAILABLE' } } });
     const forged = await send('POST', '/api/work-orders', operatorT, { woType: 'SLIT', sourceCoilId: coil.id, priority: 2, notes: tag, id: 'forged-id', woNumber: 'WO-FORGED', status: 'COMPLETE', completedAt: '2020-01-01', yieldPct: 150, outputWeightLb: 999999 });
     const woId = forged.body?.id; if (woId) woIds.push(woId);

@@ -1,0 +1,7 @@
+{
+ "base": "http://localhost:3011",
+ "at": "2026-11-13T18:15:38.252Z",
+ "pass": true,
+ "checks": 37,
+ "findings": []
+}

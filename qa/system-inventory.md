@@ -79,7 +79,7 @@ Mock-looking services: `branchComparisonApi.js`, `cutoffRulesApi.js`, `intakeCus
 | Product | 24 | 1 |  |
 | Heat | 21 | 4 | HeatStatus |
 | Coil | 48 | 8 | CoilStatus |
-| Location | 34 | 2 |  |
+| Location | 35 | 2 |  |
 | Inventory | 18 | 2 | String |
 | MaterialMovement | 21 | 7 |  |
 | TestResult | 20 | 4 |  |
@@ -98,7 +98,7 @@ Mock-looking services: `branchComparisonApi.js`, `cutoffRulesApi.js`, `intakeCus
 | WorkCenterType | 9 | 0 |  |
 | WorkCenter | 14 | 1 |  |
 | Job | 53 | 5 | JobStatus |
-| Order | 39 | 3 | OrderStatus |
+| Order | 41 | 4 | OrderStatus |
 | OrderLine | 43 | 3 |  |
 | OrderLineAllocation | 7 | 2 |  |
 | WorkOrder | 22 | 1 | WOStatus |

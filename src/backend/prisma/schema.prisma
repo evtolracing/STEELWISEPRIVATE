@@ -495,6 +495,7 @@ model Location {
   shipments       Shipment[]
   workCenters     WorkCenter[]
   usersHome       User[]             @relation("UserHomeLocation")
+  ordersOwned     Order[]            @relation("OrderBranch")
   userLocations   UserLocation[]
   assets          Asset[]            @relation("AssetSite")
   packages        Package[]          @relation("PackageLocation")
@@ -1062,6 +1063,9 @@ model Order {
   createdById     String
   /// For a return (orderType RETURN): the sales order being returned.
   returnOfOrderId String?
+  // The branch that owns the order (the selling branch). Staff outside it do not see the order.
+  locationId      String?
+  location        Location?          @relation("OrderBranch", fields: [locationId], references: [id], onDelete: SetNull)
   updatedAt       DateTime           @updatedAt
   originCoils     Coil[]             @relation("OriginOrder")
   invoices        Invoice[]
@@ -1080,6 +1084,7 @@ model Order {
   @@index([buyerId])
   @@index([createdById])
   @@index([sellerId])
+  @@index([locationId])
 }
 
 model OrderLine {

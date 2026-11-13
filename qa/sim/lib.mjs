@@ -52,6 +52,10 @@ export const QA_USERS = {
   custA: 'qa-cust-a@qa.test',
   custB: 'qa-cust-b@qa.test',
   custDiv: 'qa-cust-div@qa.test', // a login on one division of customer A
+  branchA: 'qa-branch-a@qa.test', // sales, branch QA-L01 only
+  branchB: 'qa-branch-b@qa.test', // sales, branch QA-L02 only
+  branchWh: 'qa-branch-wh@qa.test', // warehouse, branch QA-L01 only
+  regional: 'qa-regional@qa.test', // manager of QA-L01, QA-L02 and QA-L03
 };
 
 /** Minimal API client with per-user tokens. */

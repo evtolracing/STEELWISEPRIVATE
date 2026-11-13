@@ -84,8 +84,12 @@ function lineFor(stock, qty, price = 0.65) {
 }
 async function createOrder(sc, customer, lines, extra = {}) {
   const subtotal = +lines.reduce((s, l) => s + l.extendedPrice, 0).toFixed(2);
+  const taxed = R.int(0, 2) > 0;
+  const taxAmount = taxed ? +(subtotal * 0.0825).toFixed(2) : 0;
+  const freightAmount = taxed && R.int(0, 1) ? 85 + R.int(0, 20) * 5 : 0;
   const r = await step(sc, 'create sales order', () => A.post('/api/orders', {
-    orderType: 'SO', buyerId: customer.id, status: 'DRAFT', subtotal, totalAmount: subtotal, poReference: `QA-${sc.id}`, lines, ...extra,
+    orderType: 'SO', buyerId: customer.id, status: 'DRAFT', subtotal, taxAmount, freightAmount, totalAmount: +(subtotal + taxAmount + freightAmount).toFixed(2),
+    paymentTerms: R.pick(['NET 30', 'NET 15', 'COD', null]), poReference: `QA-${sc.id}`, lines, ...extra,
   }));
   return r.body?.id ? r.body : null;
 }
@@ -130,6 +134,49 @@ async function checkOrderBooks(sc, orderId, { expectStatus, createdBy } = {}) {
   if (expectStatus) check(sc, `order status is ${expectStatus}`, o.status === expectStatus, `status ${o.status}`);
   return o;
 }
+const cents = (n) => Math.round(num(n) * 100);
+/** Invoices for an order agree with what shipped, and with the order's own money. */
+async function checkBilling(sc, orderId) {
+  const o = await prisma.order.findUnique({ where: { id: orderId }, include: { lines: true, invoices: { include: { lines: true, payments: true } } } });
+  const live = o.invoices.filter((i) => i.kind === 'INVOICE' && i.status !== 'CANCELLED');
+  for (const l of o.lines) {
+    const billed = live.flatMap((i) => i.lines).filter((il) => il.orderLineId === l.id).reduce((t, il) => t + num(il.quantity), 0);
+    check(sc, `line ${l.lineNumber}: invoiced qty = shipped qty`, Math.abs(billed - num(l.qtyShipped)) < 0.001, `invoiced ${billed} vs shipped ${num(l.qtyShipped)}`);
+  }
+  for (const i of o.invoices) {
+    check(sc, `${i.invoiceNumber}: total = subtotal + tax + freight`, cents(i.totalAmount) === cents(i.subtotal) + cents(i.taxAmount) + cents(i.freightAmount), `${num(i.totalAmount)}`);
+    check(sc, `${i.invoiceNumber}: subtotal = its lines`, cents(i.subtotal) === i.lines.reduce((t, il) => t + cents(il.extendedPrice), 0), `${num(i.subtotal)}`);
+    check(sc, `${i.invoiceNumber}: paid = its payments`, cents(i.paidAmount) === i.payments.reduce((t, x) => t + cents(x.amount), 0), `paid ${num(i.paidAmount)}`);
+    check(sc, `${i.invoiceNumber}: never paid more than billed`, Math.abs(cents(i.paidAmount)) <= Math.abs(cents(i.totalAmount)), `paid ${num(i.paidAmount)} of ${num(i.totalAmount)}`);
+  }
+  if (o.status === 'COMPLETE' && o.lines.every((l) => l.lineStatus !== 'CANCELLED')) {
+    const sum = (f) => live.reduce((t, i) => t + cents(i[f]), 0);
+    check(sc, 'invoices add up to the order subtotal', Math.abs(sum('subtotal') - cents(o.subtotal)) <= live.length * o.lines.length, `invoices ${sum('subtotal') / 100} vs order ${num(o.subtotal)}`);
+    check(sc, 'invoices add up to the order tax', sum('taxAmount') === cents(o.taxAmount), `invoices ${sum('taxAmount') / 100} vs order ${num(o.taxAmount)}`);
+    check(sc, 'invoices add up to the order freight', sum('freightAmount') === cents(o.freightAmount), `invoices ${sum('freightAmount') / 100} vs order ${num(o.freightAmount)}`);
+  }
+  return o.invoices;
+}
+/** Pays an order's invoices: in full, in two parts, or leaves them open. Always tries one overpayment. */
+async function payInvoices(sc, orderId) {
+  const list = await step(sc, 'list invoices for the order', () => A.get(`/api/invoices?orderId=${orderId}`, 'csr'));
+  for (const inv of list.body?.data || []) {
+    if (inv.kind !== 'INVOICE' || inv.balance <= 0) continue;
+    await step(sc, `overpay ${inv.invoiceNumber} is refused`, () => A.post(`/api/invoices/${inv.id}/payments`, { amount: +(inv.balance + 10).toFixed(2), paymentMethod: 'CHECK' }, 'csr'), '4xx');
+    const how = R.int(0, 2);
+    if (how === 0) continue;
+    const first = how === 1 ? inv.balance : +(inv.balance / 2).toFixed(2);
+    const r = await step(sc, `pay ${first} on ${inv.invoiceNumber}`, () => A.post(`/api/invoices/${inv.id}/payments`, { amount: first, paymentMethod: R.pick(['CHECK', 'ACH', 'CARD', 'CASH']), referenceNumber: `QA-${sc.id}` }, 'csr'));
+    check(sc, `${inv.invoiceNumber}: status after payment`, r.body?.status === (how === 1 ? 'PAID' : 'PARTIAL'), `status ${r.body?.status}`);
+    if (how === 2) {
+      const rest = +(inv.balance - first).toFixed(2);
+      const r2 = await step(sc, `pay the rest of ${inv.invoiceNumber}`, () => A.post(`/api/invoices/${inv.id}/payments`, { amount: rest, paymentMethod: 'CHECK' }, 'csr'));
+      check(sc, `${inv.invoiceNumber}: paid in full`, r2.body?.status === 'PAID' && r2.body?.balance === 0, `status ${r2.body?.status} balance ${r2.body?.balance}`);
+      await step(sc, `paying a paid invoice is refused`, () => A.post(`/api/invoices/${inv.id}/payments`, { amount: 1, paymentMethod: 'CHECK' }, 'csr'), '4xx');
+    }
+  }
+}
+
 async function checkInventory(sc, coilIds) {
   const inv = await prisma.inventory.findMany({ where: { coilId: { in: coilIds } }, include: { coil: true } });
   for (const i of inv) {
@@ -176,6 +223,9 @@ async function standardFlow(sc, { plastics = false, multiStep = false, priority 
   }
   await checkOrderBooks(sc, order.id, { expectStatus: 'COMPLETE' });
   await checkInventory(sc, stocks.map((s) => s.coilId));
+  await payInvoices(sc, order.id);
+  await checkBilling(sc, order.id);
+  await step(sc, 'invoicing again finds nothing left to bill', () => A.post('/api/invoices', { orderId: order.id }, 'csr'), 409);
   // Negative path: a shipped order cannot be shipped again.
   await ship(sc, order, loc, [[ol[0], 1]], '4xx');
 }
@@ -300,9 +350,75 @@ async function partialRework(sc, variant) {
     await checkInventory(sc, [stock.coilId]);
     return;
   }
-  // Returns: the app has a RETURN order type but no return/RMA endpoint.
-  sc.result = 'BLOCKED';
-  sc.notes.push('No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one).');
+  return returnFlow(sc);
+}
+
+/** Ship an order, then take part of it back: restocked or scrapped, and credited. */
+async function returnFlow(sc) {
+  const loc = pickLoc(['METALS', 'MIXED']);
+  const stock = R.pick(await stockAt(loc.id));
+  if (!stock) { sc.result = 'BLOCKED'; sc.notes.push(`no stock at ${loc.code}`); return; }
+  const qty = Math.min(400, Math.floor(num(stock.qtyAvailable) / 2));
+  const order = await createOrder(sc, R.pick(ctx.customers), [lineFor(stock, qty)]);
+  if (!order) return;
+  await confirm(sc, order);
+  const line = order.lines[0];
+  await allocate(sc, order, line, stock, qty);
+  // Nothing has shipped yet, so nothing can come back.
+  await step(sc, 'return before shipping is refused', () => A.post('/api/returns', { orderId: order.id, reason: 'QA', lines: [{ orderLineId: line.id, quantity: 1 }] }, 'csr'), '4xx');
+  const s = await ship(sc, order, loc, [[line, qty]]);
+  if (s) await dispatchDeliver(sc, s);
+  await checkOrderBooks(sc, order.id, { expectStatus: 'COMPLETE' });
+  const paidFirst = R.int(0, 1) === 1;
+  const invoices = (await A.get(`/api/invoices?orderId=${order.id}`, 'csr')).body?.data || [];
+  const invoice = invoices[0];
+  check(sc, 'the shipment raised an invoice', !!invoice, 'no invoice');
+  if (!invoice) return;
+  if (paidFirst) await step(sc, 'customer pays the invoice in full', () => A.post(`/api/invoices/${invoice.id}/payments`, { amount: invoice.balance, paymentMethod: 'CHECK' }, 'csr'));
+
+  const scrap = R.int(0, 1) === 1;
+  const back = Math.max(1, Math.floor(qty / R.pick([2, 4, 5])));
+  const before = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
+  await step(sc, 'returning more than shipped is refused', () => A.post('/api/returns', { orderId: order.id, reason: 'QA', lines: [{ orderLineId: line.id, quantity: qty + 1 }] }, 'csr'), '4xx');
+  await step(sc, 'a return needs a reason', () => A.post('/api/returns', { orderId: order.id, lines: [{ orderLineId: line.id, quantity: back }] }, 'csr'), '4xx');
+  const made = await step(sc, `open a return for ${back} lb (${scrap ? 'scrap' : 'restock'})`, () => A.post('/api/returns', {
+    orderId: order.id, reason: scrap ? 'Damaged in transit' : 'Customer ordered too much', lines: [{ orderLineId: line.id, quantity: back, disposition: scrap ? 'SCRAP' : 'RESTOCK' }],
+  }, 'csr'));
+  const ret = made.body;
+  if (!ret?.id) return;
+  await step(sc, 'a second return cannot take more than what is left', () => A.post('/api/returns', { orderId: order.id, reason: 'QA', lines: [{ orderLineId: line.id, quantity: qty - back + 1 }] }, 'csr'), '4xx');
+  const got = await step(sc, `receive ${ret.returnNumber}`, () => A.post(`/api/returns/${ret.id}/receive`, {}, 'shipping'));
+  await step(sc, 'receiving the same return twice is refused', () => A.post(`/api/returns/${ret.id}/receive`, {}, 'shipping'), '4xx');
+  await step(sc, 'a received return cannot be cancelled', () => A.post(`/api/returns/${ret.id}/cancel`, {}, 'csr'), '4xx');
+  check(sc, 'return is complete', got.body?.status === 'COMPLETE', `status ${got.body?.status}`);
+
+  const after = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
+  const moved = num(after.qtyOnHand) - num(before.qtyOnHand);
+  check(sc, scrap ? 'scrapped return leaves stock unchanged' : 'restocked return is back on hand', Math.abs(moved - (scrap ? 0 : back)) < 0.001, `on hand moved ${moved}, returned ${back}`);
+  const movement = await prisma.materialMovement.findFirst({ where: { orderId: ret.id, movementType: scrap ? 'SCRAP' : 'RECEIVE' } });
+  check(sc, 'the return has a stock movement record', !!movement && Math.abs(num(movement.qtyMoved) - back) < 0.001, `movement ${movement && num(movement.qtyMoved)}`);
+
+  const now = await prisma.invoice.findUnique({ where: { id: invoice.id }, include: { payments: true } });
+  const credit = await prisma.invoice.findFirst({ where: { creditOfInvoiceId: invoice.id, kind: 'CREDIT' }, include: { lines: true } });
+  check(sc, 'a credit memo was issued for the return', !!credit, 'no credit memo');
+  if (credit) {
+    const expected = cents(invoice.subtotal * back / qty) + cents(invoice.taxAmount * back / qty);
+    check(sc, 'credit = returned share of the invoice (goods + tax)', Math.abs(-cents(credit.totalAmount) - expected) <= 2, `credit ${num(credit.totalAmount)} expected ${-expected / 100}`);
+    check(sc, 'credit quantity = returned quantity', Math.abs(-num(credit.lines[0]?.quantity) - back) < 0.001, `credit qty ${credit.lines[0] && num(credit.lines[0].quantity)}`);
+    if (paidFirst) {
+      check(sc, 'paid invoice: the credit is owed back to the customer', cents(credit.paidAmount) === 0 && credit.status === 'SENT', `credit paid ${num(credit.paidAmount)} status ${credit.status}`);
+      await step(sc, 'refunding more than the credit is refused', () => A.post(`/api/invoices/${credit.id}/refund`, { amount: +(-num(credit.totalAmount) + 5).toFixed(2), paymentMethod: 'CHECK' }, 'csr'), '4xx');
+      const refund = await step(sc, 'refund the credit', () => A.post(`/api/invoices/${credit.id}/refund`, { amount: -num(credit.totalAmount), paymentMethod: 'CHECK' }, 'csr'));
+      check(sc, 'credit memo is settled after the refund', refund.body?.status === 'PAID' && refund.body?.balance === 0, `status ${refund.body?.status} balance ${refund.body?.balance}`);
+    } else {
+      check(sc, 'open invoice: the credit reduced what is owed', cents(now.totalAmount) - cents(now.paidAmount) === cents(invoice.totalAmount) + cents(credit.totalAmount), `balance ${num(now.totalAmount) - num(now.paidAmount)}`);
+      check(sc, 'credit memo is fully applied', credit.status === 'PAID', `status ${credit.status}`);
+    }
+    await step(sc, 'crediting more than the invoice is refused', () => A.post(`/api/invoices/${invoice.id}/credit`, { reason: 'QA', amount: +(num(invoice.totalAmount) + 1).toFixed(2) }, 'csr'), '4xx');
+  }
+  await step(sc, 'an invoice with payments or credits cannot be cancelled', () => A.post(`/api/invoices/${invoice.id}/cancel`, {}, 'csr'), '4xx');
+  await checkBilling(sc, order.id);
+  await checkInventory(sc, [stock.coilId]);
 }
 
 async function posEcommerce(sc, variant) {
@@ -470,6 +586,7 @@ async function reconcile(report) {
   const stockProblems = problems.length;
   const orders = await prisma.order.findMany({ include: { lines: { include: { allocations: true } }, shipments: { include: { items: true } } } });
   for (const o of orders) {
+    if (o.orderType === 'RETURN') continue;
     const problems = o.createdAt >= since ? allProblems : seedProblems;
     const priced = o.lines.length && o.lines.every((l) => l.extendedPrice != null);
     const sum = o.lines.reduce((t, l) => t + num(l.extendedPrice), 0);
@@ -490,9 +607,37 @@ async function reconcile(report) {
     if (!allShipped && anyShipped && o.status !== 'PARTIAL') problems.push(`${o.orderNumber}: partly shipped but status is ${o.status}`);
     if (!anyShipped && ['PARTIAL', 'COMPLETE'].includes(o.status)) problems.push(`${o.orderNumber}: status ${o.status} with nothing shipped`);
   }
+  // Money: every invoice, payment, credit and return in the database.
+  const invoices = await prisma.invoice.findMany({ include: { lines: true, payments: true } });
+  const shippedBy = new Map(orders.flatMap((o) => o.lines).map((l) => [l.id, num(l.qtyShipped)]));
+  const billedBy = new Map();
+  const creditedBy = new Map();
+  for (const i of invoices) {
+    const problems = i.createdAt >= since ? allProblems : seedProblems;
+    if (cents(i.totalAmount) !== cents(i.subtotal) + cents(i.taxAmount) + cents(i.freightAmount)) problems.push(`${i.invoiceNumber}: total ≠ subtotal + tax + freight`);
+    if (cents(i.subtotal) !== i.lines.reduce((t, l) => t + cents(l.extendedPrice), 0)) problems.push(`${i.invoiceNumber}: subtotal ≠ its lines`);
+    if (cents(i.paidAmount) !== i.payments.reduce((t, x) => t + cents(x.amount), 0)) problems.push(`${i.invoiceNumber}: paid amount ≠ its payments`);
+    if (Math.abs(cents(i.paidAmount)) > Math.abs(cents(i.totalAmount))) problems.push(`${i.invoiceNumber}: paid more than billed`);
+    const settled = Math.abs(cents(i.paidAmount)) === Math.abs(cents(i.totalAmount));
+    if (i.status === 'PAID' && !settled) problems.push(`${i.invoiceNumber}: marked paid with a balance`);
+    if (['SENT', 'PARTIAL'].includes(i.status) && settled && cents(i.totalAmount) !== 0) problems.push(`${i.invoiceNumber}: settled but still ${i.status}`);
+    if (i.status === 'CANCELLED') continue;
+    if (i.kind === 'CREDIT') creditedBy.set(i.creditOfInvoiceId, (creditedBy.get(i.creditOfInvoiceId) || 0) - cents(i.totalAmount));
+    else for (const l of i.lines) if (l.orderLineId) billedBy.set(l.orderLineId, (billedBy.get(l.orderLineId) || 0) + num(l.quantity));
+  }
+  for (const [lineId, qty] of billedBy) if (qty > (shippedBy.get(lineId) || 0) + 0.001) problems.push(`order line ${lineId}: invoiced ${qty} > shipped ${shippedBy.get(lineId) || 0}`);
+  for (const i of invoices) if (i.kind === 'INVOICE' && (creditedBy.get(i.id) || 0) > cents(i.totalAmount)) problems.push(`${i.invoiceNumber}: credited more than billed`);
+  const shipmentsOut = await prisma.shipment.findMany({ where: { status: { in: ['IN_TRANSIT', 'DELIVERED'] }, createdAt: { gte: since } }, select: { id: true, shipmentNumber: true } });
+  const billedShipments = new Set(invoices.filter((i) => i.kind === 'INVOICE' && i.status !== 'CANCELLED').map((i) => i.shipmentId));
+  for (const sh of shipmentsOut) if (!billedShipments.has(sh.id)) problems.push(`${sh.shipmentNumber}: left the dock with no invoice`);
+  const returnedBy = new Map();
+  for (const o of orders.filter((x) => x.orderType === 'RETURN' && x.status !== 'CANCELLED')) {
+    for (const l of o.lines) if (l.lineStatus !== 'CANCELLED') returnedBy.set(l.returnOfLineId, (returnedBy.get(l.returnOfLineId) || 0) + num(l.qtyOrdered));
+  }
+  for (const [lineId, qty] of returnedBy) if (qty > (shippedBy.get(lineId) || 0) + 0.001) problems.push(`order line ${lineId}: returned ${qty} > shipped ${shippedBy.get(lineId) || 0}`);
   const moves = await prisma.materialMovement.groupBy({ by: ['shipmentId'], where: { movementType: 'SHIP', shipmentId: { not: null } }, _sum: { qtyMoved: true } });
   const dup = await prisma.$transaction([prisma.order.count(), prisma.job.count(), prisma.shipment.count()]);
-  report.reconciliation = { pass: problems.length === 0, stockItems: inv.length, orders: orders.length, shipmentsWithStockMovement: moves.length, ordersFromThisQaRun: orders.filter((o) => o.createdAt >= since).length, totals: { orders: dup[0], jobs: dup[1], shipments: dup[2] }, problems: problems.slice(0, 50), problemCount: problems.length, stockProblems, demoSeedDataProblems: { count: seedProblems.length, examples: seedProblems.slice(0, 5) } };
+  report.reconciliation = { pass: problems.length === 0, invoices: invoices.length, returns: orders.filter((x) => x.orderType === 'RETURN').length, stockItems: inv.length, orders: orders.length, shipmentsWithStockMovement: moves.length, ordersFromThisQaRun: orders.filter((o) => o.createdAt >= since).length, totals: { orders: dup[0], jobs: dup[1], shipments: dup[2] }, problems: problems.slice(0, 50), problemCount: problems.length, stockProblems, demoSeedDataProblems: { count: seedProblems.length, examples: seedProblems.slice(0, 5) } };
 }
 
 async function main() {

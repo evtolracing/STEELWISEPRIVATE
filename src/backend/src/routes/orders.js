@@ -167,6 +167,7 @@ router.post('/', async (req, res) => {
     const body = req.body || {};
     const orderType = body.orderType || 'SO';
     if (!ORDER_TYPES.includes(orderType)) return res.status(400).json({ error: `orderType must be one of: ${ORDER_TYPES.join(', ')}` });
+    if (orderType === 'RETURN') return res.status(400).json({ error: 'Returns are created on the returns page (POST /api/returns), against the order being returned' });
     const status = body.status || 'DRAFT';
     if (!['DRAFT', 'PENDING', 'CONFIRMED'].includes(status)) return res.status(400).json({ error: 'A new order must be DRAFT, PENDING or CONFIRMED' });
 
@@ -224,8 +225,9 @@ async function releaseAllocations(tx, orderId) {
 router.put('/:id', async (req, res) => {
   try {
     const body = req.body || {};
-    const order = await prisma.order.findUnique({ where: { id: req.params.id }, select: { id: true, status: true } });
+    const order = await prisma.order.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, orderType: true } });
     if (!order) return res.status(404).json({ error: 'Order not found' });
+    if (order.orderType === 'RETURN') return res.status(409).json({ error: 'Returns are received or cancelled on the returns page' });
 
     const header = pickHeader(body);
     if (header.error) return res.status(header.status).json({ error: header.error });

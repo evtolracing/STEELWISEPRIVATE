@@ -19,6 +19,7 @@ import {
   SHIPPABLE_ORDER_STATUSES, shipmentMoveError, positiveQty, lineStatusFor, orderStatusFromLines,
 } from '../lib/workflowRules.js';
 
+import { invoiceShipment } from '../services/billing.js';
 const router = Router();
 
 const EDIT_FIELDS = ['carrierId', 'carrierName', 'truckNumber', 'driverName', 'driverPhone', 'scheduledDate', 'totalWeightLb', 'bolNumber', 'notes'];
@@ -267,8 +268,23 @@ const deliver = (id, body) => move(id, 'DELIVERED', {
   ...(body.podImageUrl !== undefined && { podImageUrl: body.podImageUrl }),
 });
 
+/**
+ * Dispatch, then bill what left the dock. Billing never undoes a dispatch: if it
+ * fails the shipment still goes, and the order can be invoiced from the invoices page.
+ */
+async function dispatchAndInvoice(id, body, userId) {
+  const shipment = await dispatch(id, body, userId);
+  let invoice = null;
+  try {
+    invoice = await invoiceShipment(id);
+  } catch (error) {
+    console.error(`Shipments: could not invoice shipment ${id}:`, error?.message || error);
+  }
+  return { ...shipment, invoice: invoice && { id: invoice.id, invoiceNumber: invoice.invoiceNumber, totalAmount: invoice.totalAmount } };
+}
+
 router.put('/:id/dispatch', handle('dispatch', async (req, res) => {
-  res.json(await dispatch(req.params.id, req.body || {}, req.user.id));
+  res.json(await dispatchAndInvoice(req.params.id, req.body || {}, req.user.id));
 }));
 
 router.put('/:id/deliver', handle('mark delivered', async (req, res) => {
@@ -277,7 +293,7 @@ router.put('/:id/deliver', handle('mark delivered', async (req, res) => {
 
 router.patch('/:id/status', handle('update shipment status', async (req, res) => {
   const { status, ...rest } = req.body || {};
-  if (status === 'IN_TRANSIT') return res.json(await dispatch(req.params.id, rest, req.user.id));
+  if (status === 'IN_TRANSIT') return res.json(await dispatchAndInvoice(req.params.id, rest, req.user.id));
   if (status === 'DELIVERED') return res.json(await deliver(req.params.id, rest));
   res.json(await move(req.params.id, status));
 }));

@@ -1003,6 +1003,8 @@ model Order {
   notes         String?
   createdAt     DateTime           @default(now())
   createdById   String
+  /// For a return (orderType RETURN): the sales order being returned.
+  returnOfOrderId String?
   updatedAt     DateTime           @updatedAt
   originCoils   Coil[]             @relation("OriginOrder")
   invoices      Invoice[]
@@ -1016,6 +1018,8 @@ model Order {
   shipments     Shipment[]
   dropTags      DropTag[]
   packages      Package[]
+
+  @@index([returnOfOrderId])
 }
 
 model OrderLine {
@@ -1040,6 +1044,9 @@ model OrderLine {
   extendedPrice Decimal?
   lineStatus    LineStatus @default(OPEN)
   notes         String?
+  /// For a return line: the sales order line it returns, and RESTOCK or SCRAP.
+  returnOfLineId    String?
+  returnDisposition String?
 
   // Spec overrides (inherit from QuoteLine → CustomerPreference)
   gradeOverride     String?
@@ -1063,6 +1070,8 @@ model OrderLine {
   shipmentItems ShipmentItem[]
   dropTags      DropTag[]
   packages      Package[]
+
+  @@index([returnOfLineId])
 }
 
 model OrderLineAllocation {
@@ -1185,10 +1194,48 @@ model Invoice {
   paidAmount    Decimal       @default(0)
   status        InvoiceStatus @default(DRAFT)
   notes         String?
+  /// INVOICE, or CREDIT for a credit memo (amounts are then negative).
+  kind              String    @default("INVOICE")
+  /// The shipment this invoice bills, when it was raised by a shipment.
+  shipmentId        String?
+  /// For a credit memo: the invoice it credits.
+  creditOfInvoiceId String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   order         Order         @relation(fields: [orderId], references: [id])
   payments      Payment[]
+  lines         InvoiceLine[]
+
+  @@index([orderId])
+  @@index([shipmentId])
+  @@index([creditOfInvoiceId])
+}
+
+model InvoiceLine {
+  id            String   @id @default(uuid())
+  invoiceId     String
+  orderLineId   String?
+  lineNumber    Int
+  description   String?
+  quantity      Decimal
+  unit          String   @default("LB")
+  unitPrice     Decimal?
+  priceUnit     String?
+  extendedPrice Decimal
+  createdAt     DateTime @default(now())
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@index([orderLineId])
+}
+
+/// The bytes of an uploaded file, kept in the database where the server has no
+/// writable disk (the hosted site).
+model DocumentBlob {
+  documentId String   @id
+  data       Bytes
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
@@ -1225,6 +1272,7 @@ model Document {
   owner          Organization?  @relation(fields: [ownerId], references: [id])
   links          DocumentLink[]
   heats          Heat[]
+  blob           DocumentBlob?
 }
 
 model DocumentLink {

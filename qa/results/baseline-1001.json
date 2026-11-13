@@ -1,0 +1,1208 @@
+{
+ "seed": 1001,
+ "base": "http://localhost:3011",
+ "at": "2026-11-13T02:53:56.211Z",
+ "scenarios": [
+  {
+   "id": "S1001-01",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 21
+  },
+  {
+   "id": "S1001-02",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S1001-03",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S1001-04",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-05",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 10
+  },
+  {
+   "id": "S1001-06",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-07",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 10
+  },
+  {
+   "id": "S1001-08",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-09",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-10",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-11",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-12",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-13",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-14",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-15",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-16",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-17",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-18",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-19",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-20",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-21",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "customer checks out online",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "CSR accepts the web order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "another customer cannot open this web order",
+     "expect": 404,
+     "status": 404,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "web order filed under the customer login's account",
+     "ok": true
+    },
+    {
+     "name": "accepted web order became a sales order",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 118
+  },
+  {
+   "id": "S1001-22",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "customer checks out online",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "CSR accepts the web order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "another customer cannot open this web order",
+     "expect": 404,
+     "status": 404,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "web order filed under the customer login's account",
+     "ok": true
+    },
+    {
+     "name": "accepted web order became a sales order",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 63
+  },
+  {
+   "id": "S1001-23",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "customer checks out online",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "CSR accepts the web order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "another customer cannot open this web order",
+     "expect": 404,
+     "status": 404,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "web order filed under the customer login's account",
+     "ok": true
+    },
+    {
+     "name": "accepted web order became a sales order",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 59
+  },
+  {
+   "id": "S1001-24",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "POS: start quick sale",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: add item",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to add item\"}"
+    },
+    {
+     "name": "POS: take cash payment",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to process payment\"}"
+    }
+   ],
+   "invariants": [
+    {
+     "name": "POS total includes the items",
+     "ok": false,
+     "detail": "total 0"
+    }
+   ],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 17
+  },
+  {
+   "id": "S1001-25",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "POS: start quick sale",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: add item",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to add item\"}"
+    },
+    {
+     "name": "POS: take cash payment",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to process payment\"}"
+    }
+   ],
+   "invariants": [
+    {
+     "name": "POS total includes the items",
+     "ok": false,
+     "detail": "total 0"
+    }
+   ],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S1001-26",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-27",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-28",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-29",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-30",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-31",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-32",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "receive more of an existing item",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to receive inventory\"}"
+    }
+   ],
+   "invariants": [
+    {
+     "name": "receipt adds exactly the received qty",
+     "ok": false,
+     "detail": "11000 → 11000"
+    },
+    {
+     "name": "receipt recorded against the signed-in user",
+     "ok": false,
+     "detail": "createdById undefined"
+    },
+    {
+     "name": "QA-L79-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L79-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L79-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L79-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 22
+  },
+  {
+   "id": "S1001-33",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a negative receipt",
+     "expect": "4xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to receive inventory\"}"
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L48-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L48-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L48-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L48-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S1001-34",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "transfer whole item between branches",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to transfer inventory\"}"
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L79-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L79-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L79-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L79-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S1001-35",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a transfer from the wrong branch",
+     "expect": "4xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to transfer inventory\"}"
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L62-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L62-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L62-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L62-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 11
+  },
+  {
+   "id": "S1001-36",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a partial transfer of a single tracked item",
+     "expect": "4xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to transfer inventory\"}"
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L50-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L50-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L50-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L50-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S1001-37",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S1001-38",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-39",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-40",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-41",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-42",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 8
+  },
+  {
+   "id": "S1001-43",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S1001-44",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-45",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 7
+  },
+  {
+   "id": "S1001-46",
+   "category": "partial-rework-return",
+   "steps": [],
+   "invariants": [],
+   "result": "BLOCKED",
+   "notes": [
+    "No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one)."
+   ],
+   "ms": 0
+  },
+  {
+   "id": "S1001-47",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 10
+  },
+  {
+   "id": "S1001-48",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 10
+  },
+  {
+   "id": "S1001-49",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 10
+  },
+  {
+   "id": "S1001-50",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 500,
+     "ok": false,
+     "body": "{\"error\":\"Failed to create order\"}"
+    }
+   ],
+   "invariants": [],
+   "result": "FAIL",
+   "notes": [],
+   "ms": 9
+  }
+ ],
+ "concurrency": {
+  "simultaneousOrders": 10,
+  "succeeded": 0,
+  "distinctNumbers": 0,
+  "statuses": [
+   500,
+   500,
+   500,
+   500,
+   500,
+   500,
+   500,
+   500,
+   500,
+   500
+  ]
+ },
+ "summary": {
+  "tally": {
+   "FAIL": 46,
+   "PASS": 3,
+   "BLOCKED": 1
+  },
+  "steps": 59,
+  "checks": 45,
+  "failedSteps": {
+   "create sales order": [
+    "S1001-01: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-02: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-03: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-04: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-05: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-06: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-07: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-08: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-09: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-10: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-11: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-12: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-13: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-14: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-15: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-16: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-17: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-18: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-19: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-20: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-26: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-27: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-28: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-29: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-30: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-31: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-37: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-38: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-39: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-40: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-41: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-42: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-43: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-44: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-45: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-47: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-48: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-49: 500 {\"error\":\"Failed to create order\"}",
+    "S1001-50: 500 {\"error\":\"Failed to create order\"}"
+   ],
+   "POS: add item": [
+    "S1001-24: 500 {\"error\":\"Failed to add item\"}",
+    "S1001-25: 500 {\"error\":\"Failed to add item\"}"
+   ],
+   "POS: take cash payment": [
+    "S1001-24: 500 {\"error\":\"Failed to process payment\"}",
+    "S1001-25: 500 {\"error\":\"Failed to process payment\"}"
+   ],
+   "receive more of an existing item": [
+    "S1001-32: 500 {\"error\":\"Failed to receive inventory\"}"
+   ],
+   "reject a negative receipt": [
+    "S1001-33: 500 {\"error\":\"Failed to receive inventory\"}"
+   ],
+   "transfer whole item between branches": [
+    "S1001-34: 500 {\"error\":\"Failed to transfer inventory\"}"
+   ],
+   "reject a transfer from the wrong branch": [
+    "S1001-35: 500 {\"error\":\"Failed to transfer inventory\"}"
+   ],
+   "reject a partial transfer of a single tracked item": [
+    "S1001-36: 500 {\"error\":\"Failed to transfer inventory\"}"
+   ]
+  },
+  "failedChecks": {
+   "POS total includes the items": [
+    "S1001-24: total 0",
+    "S1001-25: total 0"
+   ],
+   "receipt adds exactly the received qty": [
+    "S1001-32: 11000 → 11000"
+   ],
+   "receipt recorded against the signed-in user": [
+    "S1001-32: createdById undefined"
+   ]
+  }
+ }
+}

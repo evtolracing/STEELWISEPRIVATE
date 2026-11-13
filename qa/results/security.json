@@ -1,0 +1,116 @@
+{
+ "base": "http://localhost:3011",
+ "at": "2026-11-13T03:21:01.633Z",
+ "endpointsInInventory": 581,
+ "endpointsSwept": 581,
+ "sections": {
+  "No access without signing in": {
+   "pass": true,
+   "summary": "542 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 542,
+   "findings": []
+  },
+  "Partner API needs a partner token": {
+   "pass": true,
+   "summary": "60 calls, 0 let in",
+   "tested": 60,
+   "findings": []
+  },
+  "Forged and invalid sign-ins are refused": {
+   "pass": true,
+   "summary": "5 cases, 0 problems",
+   "findings": []
+  },
+  "Customer logins are held to the store": {
+   "pass": true,
+   "summary": "519 staff routes tried as a customer, 0 not refused",
+   "tested": 519,
+   "findings": []
+  },
+  "Customers cannot see each other": {
+   "pass": true,
+   "summary": "7 checks, 0 problems",
+   "findings": []
+  },
+  "Staff roles": {
+   "pass": true,
+   "summary": "0 problems, 1 observation(s) needing a policy decision",
+   "findings": [],
+   "observations": [
+    "A saw-operator login edited a sales order through the API → 200. Screens are limited by role, but the API lets any signed-in staff member use any staff route."
+   ]
+  },
+  "Read routes do not crash on bad input": {
+   "pass": false,
+   "summary": "753 reads, 29 server errors",
+   "tested": 753,
+   "byFile": {
+    "heats.js": 1,
+    "coils.js": 1,
+    "intakeOrders.js": 1,
+    "workOrders.js": 1,
+    "customers.js": 1,
+    "rfqs.js": 3,
+    "quotes.js": 4,
+    "jobs.js": 2,
+    "pos.js": 2,
+    "bomV1.js": 1,
+    "shippingV1.js": 2,
+    "salesRoutes.js": 4,
+    "dropTagRoutes.js": 1,
+    "staff.js": 2,
+    "maintenanceOrders.js": 1,
+    "assets.js": 1,
+    "adminRoutes.js": 1
+   },
+   "findings": [
+    "/api/heats (hostile filter) → 500 {\"error\":\"Failed to fetch heats\"} [heats.js]",
+    "/api/coils (hostile filter) → 500 {\"error\":\"Failed to fetch coils\"} [coils.js]",
+    "/api/orders/intake (hostile filter) → 500 {\"error\":\"Failed to list orders\"} [intakeOrders.js]",
+    "/api/work-orders (hostile filter) → 500 {\"error\":\"Failed to fetch work orders\"} [workOrders.js]",
+    "/api/customers (hostile filter) → 500 {\"error\":\"Failed to fetch customers\"} [customers.js]",
+    "/api/rfqs (hostile filter) → 500 {\"error\":\"Failed to fetch RFQs\"} [rfqs.js]",
+    "/api/rfqs/:id → 500 {\"error\":\"Failed to fetch RFQ\"} [rfqs.js]",
+    "/api/rfqs/:id (hostile filter) → 500 {\"error\":\"Failed to fetch RFQ\"} [rfqs.js]",
+    "/api/quotes → 500 {\"error\":\"Failed to fetch quotes\"} [quotes.js]",
+    "/api/quotes (hostile filter) → 500 {\"error\":\"Failed to fetch quotes\"} [quotes.js]",
+    "/api/quotes/:id → 500 {\"error\":\"Failed to fetch quote\"} [quotes.js]",
+    "/api/quotes/:id (hostile filter) → 500 {\"error\":\"Failed to fetch quote\"} [quotes.js]",
+    "/api/jobs (hostile filter) → 500 {\"error\":\"Failed to fetch jobs\"} [jobs.js]",
+    "/api/pos/quick-sale/:saleId/receipt → 500 {\"error\":\"Failed to get receipt\"} [pos.js]",
+    "/api/pos/quick-sale/:saleId/receipt (hostile filter) → 500 {\"error\":\"Failed to get receipt\"} [pos.js]",
+    "/api/v1/bom/recipes (hostile filter) → 500 {\"error\":\"Failed to fetch BOM recipes\"} [bomV1.js]",
+    "/api/v1/shipping (hostile filter) → 500 {\"error\":\"Failed to fetch shipments\"} [shippingV1.js]",
+    "/api/v1/shipments (hostile filter) → 500 {\"error\":\"Failed to fetch shipments\"} [shippingV1.js]",
+    "/api/v1/jobs (hostile filter) → 500 {\"error\":\"Failed to fetch jobs\"} [jobs.js]",
+    "/api/sales/rfqs (hostile filter) → 500 {\"error\":\"Failed to fetch RFQs\"} [salesRoutes.js]",
+    "/api/sales/quotes (hostile filter) → 500 {\"error\":\"Failed to fetch quotes\"} [salesRoutes.js]",
+    "/api/sales/dashboard/stats → 500 {\"error\":\"Failed to fetch dashboard statistics\"} [salesRoutes.js]",
+    "/api/sales/dashboard/stats (hostile filter) → 500 {\"error\":\"Failed to fetch dashboard statistics\"} [salesRoutes.js]",
+    "/api/drop-tags (hostile filter) → 500 {\"error\":\"Something went wrong on our side. Please try again.\"} [dropTagRoutes.js]",
+    "/api/staff/operators (hostile filter) → 500 {\"success\":false,\"error\":\"Failed to fetch operators\"} [staff.js]",
+    "/api/staff/shifts (hostile filter) → 500 {\"success\":false,\"error\":\"Failed to fetch shifts\"} [staff.js]",
+    "/api/maintenance-orders (hostile filter) → 500 {\"error\":\"Failed to fetch maintenance orders\"} [maintenanceOrders.js]",
+    "/api/assets (hostile filter) → 500 {\"error\":\"Failed to fetch assets\"} [assets.js]",
+    "/api/v1/admin/partners (hostile filter) → 500 {\"error\":\"Failed to list partners\"} [adminRoutes.js]"
+   ]
+  },
+  "Core write routes reject bad input cleanly": {
+   "pass": true,
+   "summary": "38 bad requests, 0 not answered with a 4xx",
+   "tested": 38,
+   "findings": []
+  },
+  "Documents: upload, list, download, delete": {
+   "pass": true,
+   "summary": "11 checks, 0 problems",
+   "findings": []
+  },
+  "Error replies do not expose internals": {
+   "pass": true,
+   "summary": "0 replies exposed internal detail",
+   "findings": []
+  }
+ },
+ "pass": false
+}

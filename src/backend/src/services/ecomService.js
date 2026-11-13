@@ -6,6 +6,7 @@
  */
 import crypto from 'node:crypto';
 import prisma from '../lib/db.js';
+import { createNumbered } from '../lib/numbering.js';
 import { ci } from '../lib/dbText.js';
 import { unitPrice } from './intakeCatalogService.js';
 
@@ -314,11 +315,9 @@ function describe(item) {
   return size ? `${base} ${size}` : base;
 }
 
-async function nextWebNumber() {
-  const year = new Date().getFullYear();
-  const count = await prisma.onlineOrder.count({ where: { externalOrderId: { startsWith: `WEB-${year}-` } } });
-  return `WEB-${year}-${String(count + 5001).padStart(4, '0')}`;
-}
+const webYear = () => new Date().getFullYear();
+const countWebOrders = () => prisma.onlineOrder.count({ where: { externalOrderId: { startsWith: `WEB-${webYear()}-` } } });
+const webNumber = (n) => `WEB-${webYear()}-${String(n + 5000).padStart(4, '0')}`;
 
 /** Create the web order in the CSR inbox. `quote` marks a request for quote. */
 export async function checkout(payload = {}, { quote = false } = {}) {
@@ -326,6 +325,12 @@ export async function checkout(payload = {}, { quote = false } = {}) {
   if (!raw.length) return { status: 400, error: 'Cart is empty' };
   const check = await validateCart({ items: raw });
   if (!check.valid) return { status: 422, error: check.errors.map((e) => e.msg).join('; '), errors: check.errors };
+
+  for (const [idx, i] of raw.entries()) {
+    const sent = i.extended ?? i.pricingPreview?.extended;
+    if (sent != null && !(Number(sent) >= 0)) return { status: 400, error: `Line ${idx + 1}: price is not valid` };
+    if (lineQty(i) < 0 || (i.quantity != null && !(Number(i.quantity) > 0))) return { status: 400, error: `Line ${idx + 1}: quantity must be more than zero` };
+  }
 
   const products = await prisma.product.findMany({ where: { id: { in: raw.map((i) => i.productId) } }, select: { id: true, sku: true } });
   const skuById = new Map(products.map((p) => [p.id, p.sku]));
@@ -371,10 +376,10 @@ export async function checkout(payload = {}, { quote = false } = {}) {
     customerId = org?.id || null;
   }
 
-  const order = await prisma.onlineOrder.create({
+  const order = await createNumbered({ count: countWebOrders, format: webNumber, create: (externalOrderId) => prisma.onlineOrder.create({
     data: {
       id: crypto.randomUUID(),
-      externalOrderId: await nextWebNumber(),
+      externalOrderId,
       source: quote ? 'ONLINE_QUOTE' : 'ONLINE',
       status: 'NEEDS_REVIEW',
       customerName: payload.customerName || payload.shipToName || 'Online Customer',
@@ -385,7 +390,7 @@ export async function checkout(payload = {}, { quote = false } = {}) {
       shippingMethod: shipping,
       notes: notes || null,
     },
-  });
+  }) });
 
   return {
     success: true,

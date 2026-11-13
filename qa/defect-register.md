@@ -1,0 +1,71 @@
+# Defect register
+
+Severity: **P0** stops the core business or corrupts records. **P1** a main workflow is wrong, missing or unsafe. **P2** a secondary feature is broken or a control is weak. **P3** minor.
+
+Status: **Fixed** means repaired in this pull request, with a regression test or a simulation check that fails without the fix. **Open** means not repaired, with the reason.
+
+Evidence files are in `qa/results/`. "Sim" is `qa/sim/run.mjs`, "Sweep" is `qa/sim/security.mjs`, "Unit" is `src/backend/test`.
+
+## Fixed
+
+| ID | Sev | What was wrong | Root cause | Fix | Proof |
+|---|---|---|---|---|---|
+| D-001 | P0 | Creating a sales order through `POST /api/orders` failed with a server error unless the browser sent the id of the user creating it. Whatever id was sent was trusted. 46 of 50 baseline jobs stopped here. | The route wrote the request body straight into the database. | The signed-in user is the creator. Only listed fields are accepted. Lines, prices and totals are validated. `routes/orders.js` | Sim: "create sales order", "order created by the signed-in user". Baseline `baseline-1001.json`. |
+| D-002 | P0 | Dispatching a shipment changed nothing else. The order line's shipped quantity, the line and order status, and stock all stayed as they were, so orders never completed and stock never went down. | Dispatch only set the shipment's own status. | Dispatch now updates the lines, sets the order to PARTIAL or COMPLETE, takes the reserved stock out and writes a stock movement, in one transaction. `routes/shipments.js` | Sim: books checks after every shipment; whole-database reconciliation. |
+| D-003 | P0 | Stock could be reserved without limit: more than was available, more than the order line needed, on cancelled orders, with zero or negative quantities. Available stock could go negative. | No checks on `POST /api/orders/:id/allocate`. | All of those are refused. The update only succeeds while enough is available, so two requests cannot both take the last of it. | Sim: over-reservation refused; race probe "exactly one wins"; reconciliation (no negatives). |
+| D-004 | P1 | Any order status could be written by hand, including reopening a cancelled order or marking an order complete. Cancelling left its stock reserved for ever. | No status rules. | Status table in `lib/workflowRules.js`. Cancelling releases reservations and cancels the lines. | Unit: 6 order tests. Sim: reopen refused, cancel releases stock. |
+| D-005 | P1 | A shipment could be delivered without ever leaving, dispatched more than once, created for a draft or cancelled order, or carry more than was ordered. Shipment lines were not saved at all. | `POST /api/shipments` wrote the raw body; dispatch and deliver had no checks. | Shipments need a CONFIRMED or PARTIAL order, valid lines and quantities within what is left. Dispatch and deliver follow a status table and are safe against double-clicks. Added the item and status routes the logistics screens already call. | Unit: shipment tests. Sim: double-ship, over-ship, deliver-before-dispatch refused; triple-dispatch probe. |
+| D-006 | P1 | Order, job, shipment and web-order numbers were "row count + 1". Two people saving at the same moment got the same number and one save failed. | Counting rows is not a sequence. | `lib/numbering.js` retries with the next number when the database reports a duplicate. Applied to sales orders (the order API, order intake, accepted web orders and POS), jobs (both places they are created), shipments and web orders. | Unit: 7 numbering tests. Probes: 10 simultaneous orders and 10 simultaneous jobs, all distinct. |
+| D-007 | P1 | Receiving and transferring stock failed with a server error unless the browser sent a user id. Negative receipts were accepted. A transfer ignored where the item actually was and moved only one of the two records that hold its location. | Raw body written to the database; two tables hold the location. | Signed-in user recorded. Quantity must be above zero. From-location must match. Both records move together. `routes/inventory.js` | Sim: transfers-receiving category (15 jobs in the final cycles). Reconciliation: "one location per item". |
+| D-008 | P1 | A job could jump to any status (for example from scheduled straight to shipped). An unknown status caused a server error. Editing a job could overwrite its number, timestamps and creator. | No status rules; raw body written. | Status table that matches the job board's own list of moves. Only listed fields can be edited. A started job cannot be moved to another order. `routes/jobs.js` | Unit: 5 job tests plus "every move the job board offers is accepted by the server". Sim: exception category. |
+| D-009 | P1 | Editing an order could overwrite its number, totals and creator. | Raw body written by `PUT /api/orders/:id`. | Only header fields are accepted. | Sweep: bad-input cases. |
+| D-010 | P1 | A counter sale through the POS session saved an order with a price of $0 and no totals. The session's order totals were overwritten by one line's price detail. The same sale could be submitted twice. A session could be opened in another user's name. The POS screen posted to an address the server did not have. | The line's price fields had different names from what the line builder read; the line detail was copied over the totals; no submit guard. | Prices carried onto the line; totals rebuilt from the lines at submit; second submit refused; session belongs to the signed-in user; the address the screen uses now works. | Sim: 6 POS session jobs in the final cycles ("POS line is priced", "POS order saved with its total", "refuse to submit the same sale twice"). |
+| D-011 | P1 | Document upload, list, open and delete (mill certs on heats and stock items) all failed with a server error. A document could only ever be linked to a stock item, never to a heat or an order. Separately, one route let a signed-in user register a "document" pointing at any file path on the server, which the download route would then send back. | The routes used column names that are not in the database. The link table had a database constraint tying every link to a stock item. | Routes rewritten against the real columns, keeping the field names the screens use. The constraint is removed by a small database update (`20261113031734_document_links_any_record`, SQL Editor file included). Refused file types answer with a clear message. The route that accepted a file path is removed. `routes/documents.js` | Sweep: "Documents: upload, list, download, delete" (11 checks, including no download without signing in or as a customer). |
+| D-012 | P2 | Error replies in 114 places sent the raw error text, which for database errors names tables, columns and query shapes. | Handlers return `error.message`. | One middleware cleans database and server detail out of every error reply and logs it on the server. `middleware/safeErrors.js` | Unit: 4 tests. Sweep: "Error replies do not expose internals", checked on every reply the sweep receives. |
+| D-013 | P2 | Every live-pricing route under `/api/pos/pricing` failed. | The module imported a name that does not exist, so it never loaded. | Import corrected. | Module loads; sweep no longer reports it. |
+| D-022 | P3 | A list address with `limit=abc` or `page=-1` caused a server error on many routes. | Paging values passed to the database unchecked. | One guard refuses paging values that are not whole numbers. | Unit: paging test. Sweep: bad-paging variant on every read route. |
+| D-026 | P2 | An order with no customer and no lines could be created. | No check. | Refused. | Sweep. |
+| D-029 | P1 | The POS page crashed on open. | A screen imported an icon that does not exist. | Icon import corrected. `WillCallLoadScreen.jsx` | Screen check. |
+| D-030 | P2 | The route-optimization page crashed when no map key is set. | The map library throws without a key. | The map area shows a notice instead; the rest of the page works. `MapComponent.jsx` | Screen check. |
+| D-031 | P2 | The partner admin page could not load its list. | The address had `/api` twice. | Address corrected. `partnerApi.js` | Screen check. |
+
+## Open: needs a decision from the business
+
+| ID | Sev | What is wrong | Why it is not fixed here |
+|---|---|---|---|
+| D-014 | P1 | Counter quick sale does not work. Adding an item and taking payment fail with a server error. Sales are never saved. Card payments are simulated. "Email receipt" and "text receipt" report success without sending anything. The screen also calls the server without the sign-in token. | It is a prototype. Making it real means deciding how a walk-in sale is recorded, how tax is charged, and which payment processor is used. |
+| D-015 | P1 | There is no way to record a customer return. | The workflow does not exist. Needs a policy: restock or scrap, credit or replace, who approves. |
+| D-016 | P1 | There is no way to create an invoice, record a payment or issue a credit. The tables exist; nothing writes to them. | The workflow does not exist. Needs decisions on invoice timing, terms, tax and the accounting system it feeds. |
+| D-017 | P1 | Online checkout takes the price from the customer's browser. A CSR reviews every web order before it becomes a sales order, and that review is the only control. | Fixed here: negative or invalid prices and quantities are refused. Not fixed: recalculating on the server needs the rules for contract price levels and remnant discounts, which today are also sent by the browser. |
+| D-018 | P2 | Screens are limited by role, but the API lets any signed-in staff member call any staff route. Example recorded by the sweep: a saw-operator login edited a sales order. Customer logins, user administration and executive data are properly restricted. | Needs a permissions table: which staff roles may change orders, stock, shipments and jobs. |
+| D-019 | P2 | Quotes and RFQs. `/api/quotes`, `/api/rfqs/:id` and `/api/sales/dashboard/stats` fail with a server error (they use relations that are not in the database). The quote screens call `/api/pricing/quotes`, which the server does not have. | Two competing implementations. Needs a decision on which one is kept before repair. |
+| D-028 | P2 | A customer login linked to a division of a company sees the whole parent company's records. | Recorded when customer accounts were built. Needs a decision on whether divisions should be walled off from each other. |
+
+## Open: engineering work, no decision needed
+
+| ID | Sev | What is wrong | Note |
+|---|---|---|---|
+| D-011b | P1 | On the hosted site, uploaded files have nowhere to be stored (the host's disk is read-only). Upload there now answers with a clear message instead of failing. Verified working on a normal server disk only. | Needs a file store chosen and connected. |
+| D-006b | P2 | The same "row count + 1" numbering is still used for quotes, RFQs, orders created from quotes, work orders, QC inspections, maintenance orders and operator codes. | Same fix as D-006. Left out to keep this change to the workflows that were simulated. |
+| D-020 | P2 | 152 of 332 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | Many are helper functions no page uses. The screen check shows which pages actually hit a missing route when they open. Buttons inside pages were not clicked. |
+| D-021 | P3 | About 20 list routes answer a nonsense filter value (for example `status=';--`) with a server error instead of "bad request". No data is exposed. | Listed in `qa/results/security.json`. Each needs its filter checked against the allowed values. |
+| D-023 | P3 | The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed). | Seed script, not app behaviour. Matters only because the demo site shows them. |
+| D-024 | P2 | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`branchComparisonApi`, `cutoffRulesApi`, `intakeCustomersApi`, `overrideApi`, `splitShipmentApi`). | Needs consolidation. |
+| D-025 | P2 | Before this work the repository had no automated tests (0 of 117 commits touched a test). | Now 32 unit tests and the simulation. Should be run on every pull request. |
+| D-027 | P3 | The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured. | Already noted in the code. |
+| D-032 | P2 | Nothing ties a shop job to its shipment. An order can be shipped while its jobs are unfinished, and marking a job "shipped" does not create or need a shipment. | Possibly intended (stock orders need no job). Listed so it is a choice, not an accident. |
+
+## Rules this change introduces
+
+These are now enforced by the server. Each was chosen to match what the screens already assume, but they are business rules and should be confirmed.
+
+1. An order becomes PARTIAL or COMPLETE only by shipping. Cancelled and completed orders cannot be changed.
+2. A partly shipped order cannot be cancelled or put on hold.
+3. Only CONFIRMED or PARTIAL orders can have shipments.
+4. A shipment's lines cannot exceed what is left on the order, counting other shipments still on the dock.
+5. A tracked stock item transfers whole. Moving part of one is a processing job.
+6. Stock can only be received at the location where the item already is.
+7. Shipping takes stock from what was reserved for the order line. A line with nothing reserved ships without changing stock.
+8. Job moves follow the job board's own table. A job that has started cannot be moved to another order.
+9. A new job starts as ORDERED, SCHEDULED or ON_HOLD.
+10. An order needs a customer or at least one line.

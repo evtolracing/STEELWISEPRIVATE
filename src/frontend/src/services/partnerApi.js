@@ -5,7 +5,8 @@
 
 import client from '../api/client.js';
 
-const BASE = '/api/v1/admin/partners';
+// The shared client already adds /api.
+const BASE = '/v1/admin/partners';
 
 // ─── Partner CRUD ──────────────────────────────────────────────────────────────
 

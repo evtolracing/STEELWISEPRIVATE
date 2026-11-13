@@ -6,6 +6,7 @@
  */
 
 import prisma from '../../lib/db.js';
+import { createNumbered, padded } from '../../lib/numbering.js';
 import POSWorkflowStateMachine, { POSStates, POSTriggers } from './POSWorkflowStateMachine.js';
 import { evaluateGuard, getAllGuardResults } from './guards.js';
 import { executeEffect, recalculatePricing } from './effects.js';
@@ -572,11 +573,14 @@ class POSWorkflowService {
     const pricingResult = await this.calculateLinePrice(sessionId, productData);
     const pricing = pricingResult.pricing || pricingResult;
     
+    // The transition copies the payload into the session, so the line's price
+    // detail must not be called `pricing` (that is the order's totals).
     const payload = {
       ...productData,
-      unitPrice: pricing.unitPrice,
+      unitPrice: pricing.unitPrice ?? pricing.adjustedPrice ?? pricing.basePrice ?? 0,
+      priceUnit: productData.priceUnit || pricing.priceUnit || pricing.basePriceUnit || 'CWT',
       extendedPrice: pricing.extendedPrice,
-      pricing: pricing
+      linePricing: pricing
     };
     
     return this.transition(sessionId, POSTriggers.ADD_TO_ORDER, payload);
@@ -991,11 +995,14 @@ class POSWorkflowService {
       return { error: 'No line items' };
     }
     
+    if (ctx.orderId) {
+      return { error: `This sale was already submitted as order ${ctx.orderNumber || ctx.orderId}` };
+    }
+    // Totals come from the lines, never from whatever was last left in the session.
+    ctx.pricing = recalculatePricing(ctx.lines, ctx.pricing);
+
     // Create the order in database
-    const orderCount = await prisma.order.count();
-    const orderNumber = `SO-${String(orderCount + 1).padStart(5, '0')}`;
-    
-    const order = await prisma.order.create({
+    const order = await createNumbered({ count: () => prisma.order.count(), format: padded('SO'), create: (orderNumber) => prisma.order.create({
       data: {
         orderNumber,
         orderType: 'SO',
@@ -1029,7 +1036,7 @@ class POSWorkflowService {
             unit: line.unit || 'LB',
             unitPrice: line.unitPrice,
             priceUnit: line.priceUnit || 'CWT',
-            extendedPrice: line.extendedPrice,
+            extendedPrice: Math.round((parseFloat(line.extendedPrice) || 0) * 100) / 100,
             notes: line.notes
           }))
         }
@@ -1038,7 +1045,7 @@ class POSWorkflowService {
         lines: true,
         buyer: true
       }
-    });
+    }) });
     
     // Store order reference in context
     machine.context.orderId = order.id;

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { positiveQty } from '../lib/workflowRules.js';
 import { ci } from '../lib/dbText.js';
 import { searchStock } from '../services/intakeCatalogService.js';
 
@@ -65,43 +66,71 @@ router.get('/summary', async (req, res) => {
 
 router.post('/receive', async (req, res) => {
   try {
-    const { coilId, locationId, qty, userId } = req.body;
+    const { coilId, locationId } = req.body || {};
+    const qty = positiveQty(req.body?.qty);
+    if (!coilId || !locationId) return res.status(400).json({ error: 'coilId and locationId are required' });
+    if (qty === null) return res.status(400).json({ error: 'qty must be more than zero' });
+    const [coil, location] = await Promise.all([
+      prisma.coil.findUnique({ where: { id: coilId }, select: { id: true, inventory: { select: { locationId: true } } } }),
+      prisma.location.findUnique({ where: { id: locationId }, select: { id: true } }),
+    ]);
+    if (!coil) return res.status(404).json({ error: 'Stock item not found' });
+    if (!location) return res.status(400).json({ error: 'Location not found' });
+    if (coil.inventory && coil.inventory.locationId !== locationId) {
+      return res.status(409).json({ error: 'This item is stocked at another location. Transfer it first, or receive it where it is.' });
+    }
     const [inventory, movement] = await prisma.$transaction([
       prisma.inventory.upsert({
         where: { coilId },
         create: { coilId, locationId, qtyOnHand: qty, qtyAvailable: qty },
-        update: { qtyOnHand: { increment: qty }, qtyAvailable: { increment: qty } }
+        update: { qtyOnHand: { increment: qty }, qtyAvailable: { increment: qty }, lastMovement: new Date() },
       }),
       prisma.materialMovement.create({
-        data: {
-          coilId, toLocationId: locationId, movementType: 'RECEIVE',
-          qtyMoved: qty, createdById: userId
-        }
-      })
+        data: { coilId, toLocationId: locationId, movementType: 'RECEIVE', qtyMoved: qty, createdById: req.user.id },
+      }),
     ]);
     res.status(201).json({ inventory, movement });
   } catch (error) {
+    console.error('Inventory: receive failed:', error);
     res.status(500).json({ error: 'Failed to receive inventory' });
   }
 });
 
+// A tracked item (coil, plate, bundle) moves as one piece, so the whole
+// quantity transfers. Splitting an item is a processing job, not a transfer.
 router.post('/transfer', async (req, res) => {
   try {
-    const { coilId, fromLocationId, toLocationId, qty, userId } = req.body;
-    const [inventory, movement] = await prisma.$transaction([
-      prisma.inventory.update({
-        where: { coilId },
-        data: { locationId: toLocationId }
-      }),
-      prisma.materialMovement.create({
-        data: {
-          coilId, fromLocationId, toLocationId, movementType: 'TRANSFER',
-          qtyMoved: qty, createdById: userId
-        }
-      })
-    ]);
-    res.json({ inventory, movement });
+    const { coilId, fromLocationId, toLocationId } = req.body || {};
+    if (!coilId || !toLocationId) return res.status(400).json({ error: 'coilId and toLocationId are required' });
+    const inv = await prisma.inventory.findUnique({ where: { coilId } });
+    if (!inv) return res.status(404).json({ error: 'Stock item not found' });
+    if (fromLocationId && fromLocationId !== inv.locationId) return res.status(409).json({ error: 'This item is not at the location you are transferring from' });
+    if (toLocationId === inv.locationId) return res.status(400).json({ error: 'The item is already at that location' });
+    if (!(await prisma.location.findUnique({ where: { id: toLocationId }, select: { id: true } }))) {
+      return res.status(400).json({ error: 'Destination location not found' });
+    }
+    const onHand = Number(inv.qtyOnHand);
+    if (onHand <= 0) return res.status(409).json({ error: 'There is nothing on hand to transfer' });
+    if (req.body.qty != null) {
+      const qty = positiveQty(req.body.qty);
+      if (qty === null) return res.status(400).json({ error: 'qty must be more than zero' });
+      if (Math.abs(qty - onHand) > 1e-6) {
+        return res.status(409).json({ error: `A tracked item transfers whole: ${onHand} ${inv.unit} is on hand. To move part of it, cut it into a new item first.` });
+      }
+    }
+    const result = await prisma.$transaction(async (tx) => {
+      const moved = await tx.inventory.updateMany({ where: { coilId, locationId: inv.locationId }, data: { locationId: toLocationId, lastMovement: new Date() } });
+      if (!moved.count) return null;
+      await tx.coil.update({ where: { id: coilId }, data: { locationId: toLocationId } });
+      const movement = await tx.materialMovement.create({
+        data: { coilId, fromLocationId: inv.locationId, toLocationId, movementType: 'TRANSFER', qtyMoved: onHand, unit: inv.unit, createdById: req.user.id },
+      });
+      return { inventory: await tx.inventory.findUnique({ where: { coilId } }), movement };
+    });
+    if (!result) return res.status(409).json({ error: 'This item was just moved by someone else. Reload and try again.' });
+    res.json(result);
   } catch (error) {
+    console.error('Inventory: transfer failed:', error);
     res.status(500).json({ error: 'Failed to transfer inventory' });
   }
 });

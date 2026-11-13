@@ -2,6 +2,8 @@ import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { supabase } from '../config/supabaseClient.js';
 import { onJobStatusChange } from '../services/printAutomationService.js';
+import { createNumbered, padded } from '../lib/numbering.js';
+import { JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
 
 const router = Router();
 
@@ -22,6 +24,75 @@ function mapJobForFrontend(job) {
     customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : null) || 'Unassigned',
     // Material hint from instructions
     material: job.instructions || null,
+  }
+}
+
+// Fields a person may change on a job. Anything else in the request is ignored,
+// so the job number, timestamps and who created it can't be overwritten.
+const JOB_EDIT_FIELDS = [
+  'orderId', 'orderLineId', 'workCenterId', 'workOrderId', 'assignedToId', 'operatorId', 'operationType', 'priority',
+  'scheduledStart', 'scheduledEnd', 'inputWeightLb', 'outputWeightLb', 'scrapWeightLb', 'instructions', 'notes',
+  'shippingCarrier', 'trackingNumber', 'hasCustomRouting', 'recipeId', 'recipeVersion', 'thicknessIn', 'widthIn',
+  'lengthIn', 'gradeOverride', 'surfaceFinish', 'tolerancePreset', 'thkTolerancePlus', 'thkToleranceMinus',
+  'lenTolerancePlus', 'lenToleranceMinus', 'widTolerancePlus', 'widToleranceMinus', 'certRequirements', 'specNotes',
+  'specsInherited',
+];
+const JOB_WEIGHTS = ['inputWeightLb', 'outputWeightLb', 'scrapWeightLb'];
+const JOB_INCLUDE = {
+  order: { select: { id: true, orderNumber: true } },
+  workCenter: { select: { id: true, code: true, name: true } },
+  assignedTo: { select: { id: true, firstName: true, lastName: true } },
+};
+
+/** Timestamps that go with a status change. */
+function stampsFor(job, status) {
+  if (status === 'IN_PROCESS' && !job.actualStart) return { actualStart: new Date() };
+  if (['COMPLETED', 'READY_TO_SHIP', 'SHIPPED'].includes(status) && !job.actualEnd) return { actualEnd: new Date() };
+  return {};
+}
+
+/** Shared by PATCH and PUT /jobs/:id. */
+async function editJob(req, res) {
+  try {
+    const job = await prisma.job.findUnique({ where: { id: req.params.id } });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const body = req.body || {};
+    const data = {};
+    for (const f of JOB_EDIT_FIELDS) if (body[f] !== undefined) data[f] = body[f];
+    if (typeof data.priority === 'string') data.priority = PRIORITY_STRING_TO_INT[data.priority] || 3;
+    for (const f of ['scheduledStart', 'scheduledEnd']) {
+      if (data[f]) {
+        data[f] = new Date(data[f]);
+        if (Number.isNaN(data[f].getTime())) return res.status(400).json({ error: `${f} is not a valid date` });
+      }
+    }
+    for (const f of JOB_WEIGHTS) {
+      if (data[f] != null && !(Number(data[f]) >= 0)) return res.status(400).json({ error: `${f} must be zero or more` });
+    }
+    // Once work has started, the job stays tied to the order it was cut for.
+    const relinking = ['orderId', 'orderLineId'].some((f) => data[f] !== undefined && data[f] !== job[f]);
+    if (relinking && !['ORDERED', 'SCHEDULED', 'ON_HOLD'].includes(job.status)) {
+      return res.status(409).json({ error: 'This job has started, so it cannot be moved to a different order' });
+    }
+    const moving = body.status !== undefined && body.status !== job.status;
+    if (moving) {
+      const why = jobMoveError(job.status, body.status);
+      if (why) return res.status(JOB_STATUSES.includes(body.status) ? 409 : 400).json({ error: why });
+      Object.assign(data, { status: body.status }, stampsFor(job, body.status));
+    } else if (['COMPLETED', 'CANCELLED'].includes(job.status) && Object.keys(data).length) {
+      return res.status(409).json({ error: `A ${job.status.toLowerCase()} job cannot be changed` });
+    }
+    if (!Object.keys(data).length) return res.status(400).json({ error: 'Nothing to update' });
+
+    const updated = await prisma.job.update({ where: { id: job.id }, data, include: JOB_INCLUDE });
+    if (moving) {
+      onJobStatusChange(updated, body.status, job.status).catch((e) => console.error('[PrintAutomation] status hook error:', e.message));
+    }
+    res.json(mapJobForFrontend(updated));
+  } catch (error) {
+    if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'Job has a field that is not valid' });
+    console.error('Error updating job:', error);
+    res.status(500).json({ error: 'Failed to update job' });
   }
 }
 
@@ -241,13 +312,18 @@ router.post('/', async (req, res) => {
       status,
     } = req.body;
     
-    // Generate job number
-    const jobCount = await prisma.job.count();
-    const jobNumber = `JOB-${String(jobCount + 1).padStart(5, '0')}`;
-    
+    if (status && !JOB_STATUSES.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${JOB_STATUSES.join(', ')}` });
+    }
+    if (status && !['ORDERED', 'SCHEDULED', 'ON_HOLD'].includes(status)) {
+      return res.status(400).json({ error: 'A new job starts as ORDERED, SCHEDULED or ON_HOLD' });
+    }
+    for (const [name, value] of [['scheduledStart', scheduledStart], ['scheduledEnd', scheduledEnd]]) {
+      if (value && Number.isNaN(new Date(value).getTime())) return res.status(400).json({ error: `${name} is not a valid date` });
+    }
+
     // Build data object with only defined fields
     const data = {
-      jobNumber,
       priority: typeof priority === 'string' ? (PRIORITY_STRING_TO_INT[priority] || 3) : (priority || 3),
       status: status || 'SCHEDULED',
     };
@@ -258,14 +334,16 @@ router.post('/', async (req, res) => {
     if (operationType) data.operationType = operationType;
     if (instructions) data.instructions = instructions;
     if (assignedToId) data.assignedToId = assignedToId;
-    if (createdById) data.createdById = createdById;
+    data.createdById = req.user?.id || createdById;
     if (scheduledStart) data.scheduledStart = new Date(scheduledStart);
     if (scheduledEnd) data.scheduledEnd = new Date(scheduledEnd);
     
-    const job = await prisma.job.create({
-      data,
+    const job = await createNumbered({
+      count: () => prisma.job.count(),
+      format: padded('JOB'),
+      create: (jobNumber) => prisma.job.create({ data: { ...data, jobNumber } }),
     });
-    
+
     // Fetch with includes only if relations exist
     const jobWithRelations = await prisma.job.findUnique({
       where: { id: job.id },
@@ -284,10 +362,11 @@ router.post('/', async (req, res) => {
     
     res.status(201).json(mapJobForFrontend(jobWithRelations || job));
   } catch (error) {
+    if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') {
+      return res.status(400).json({ error: 'Job has a field that is not valid (check the order, work center and assignee)' });
+    }
     console.error('Error creating job:', error);
-    console.error('Request body:', req.body);
-    console.error('Error details:', error.message, error.stack);
-    res.status(500).json({ error: 'Failed to create job', details: error.message });
+    res.status(500).json({ error: 'Failed to create job' });
   }
 });
 
@@ -496,128 +575,58 @@ router.post('/:id/plan', async (req, res) => {
 router.post('/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, scrapWeight, note } = req.body;
-    
-    console.log('Updating job status:', { id, status, scrapWeight, note });
-    
-    // Find job first
+    const { status, scrapWeight, note } = req.body || {};
+    if (!status) return res.status(400).json({ error: 'Status is required' });
+
     const job = await prisma.job.findUnique({ where: { id } });
-    if (!job) {
-      console.log('Job not found:', id);
-      return res.status(404).json({ error: 'Job not found' });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const why = jobMoveError(job.status, status);
+    if (why) return res.status(JOB_STATUSES.includes(status) ? 409 : 400).json({ error: why });
+
+    const updateData = { status, ...stampsFor(job, status) };
+    if (scrapWeight != null) {
+      if (typeof scrapWeight !== 'number' || !Number.isFinite(scrapWeight) || scrapWeight < 0) {
+        return res.status(400).json({ error: 'scrapWeight must be zero or more' });
+      }
+      updateData.scrapWeightLb = Number(job.scrapWeightLb || 0) + scrapWeight;
     }
-    
-    // Prepare update data
-    const updateData = { status };
-    
-    // Handle scrapWeight accumulation
-    if (typeof scrapWeight === 'number') {
-      updateData.scrapWeightLb = (job.scrapWeightLb || 0) + scrapWeight;
-    }
-    
-    // Handle note
-    if (note) {
-      updateData.notes = note;
-    }
-    
-    // Set timestamps based on status
-    if (status === 'IN_PROCESS' && !job.actualStart) {
-      updateData.actualStart = new Date();
-    } else if (['COMPLETED', 'READY_TO_SHIP', 'SHIPPED'].includes(status) && !job.actualEnd) {
-      updateData.actualEnd = new Date();
-    }
-    
-    console.log('Update data:', updateData);
-    
-    // Update job
+    if (note) updateData.notes = note;
+
     const updatedJob = await prisma.job.update({
       where: { id },
       data: updateData,
       include: {
-        order: {
-          select: { id: true, orderNumber: true, buyerId: true },
-        },
-        workCenter: {
-          select: { id: true, code: true, name: true, locationId: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
+        order: { select: { id: true, orderNumber: true, buyerId: true } },
+        workCenter: { select: { id: true, code: true, name: true, locationId: true } },
+        assignedTo: { select: { id: true, firstName: true, lastName: true } },
       },
     });
-    
-    console.log('Job updated successfully');
     res.json(mapJobForFrontend(updatedJob));
   } catch (error) {
     console.error('Error updating job status:', error);
-    console.error('Error stack:', error.stack);
-    res.status(500).json({ error: 'Failed to update job status', details: error.message });
+    res.status(500).json({ error: 'Failed to update job status' });
   }
 });
 
 // PATCH /jobs/:id - Update job details
-router.patch('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = { ...req.body };
-    
-    // Convert string priority to int for DB
-    if (typeof updateData.priority === 'string') {
-      updateData.priority = PRIORITY_STRING_TO_INT[updateData.priority] || 3;
-    }
-    
-    // Handle date conversions
-    if (updateData.scheduledStart) {
-      updateData.scheduledStart = new Date(updateData.scheduledStart);
-    }
-    if (updateData.scheduledEnd) {
-      updateData.scheduledEnd = new Date(updateData.scheduledEnd);
-    }
-    
-    const job = await prisma.job.update({
-      where: { id },
-      data: updateData,
-      include: {
-        order: {
-          select: { id: true, orderNumber: true },
-        },
-        workCenter: {
-          select: { id: true, code: true, name: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
-      },
-    });
-    
-    res.json(mapJobForFrontend(job));
-  } catch (error) {
-    console.error('Error updating job:', error);
-    res.status(500).json({ error: 'Failed to update job' });
-  }
-});
+router.patch('/:id', editJob);
 
 // PATCH /jobs/:id/status - Update job status (used by PackagingQueue, Material Tracking)
 router.patch('/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
-    
-    if (!status) {
-      return res.status(400).json({ error: 'Status is required' });
-    }
-    
-    const validStatuses = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'ON_HOLD'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
-    }
-    
+    const { status } = req.body || {};
+    if (!status) return res.status(400).json({ error: 'Status is required' });
+
     const prevJob = await prisma.job.findUnique({ where: { id } });
-    const oldStatus = prevJob?.status;
+    if (!prevJob) return res.status(404).json({ error: 'Job not found' });
+    const why = jobMoveError(prevJob.status, status);
+    if (why) return res.status(JOB_STATUSES.includes(status) ? 409 : 400).json({ error: why });
+    const oldStatus = prevJob.status;
 
     const job = await prisma.job.update({
       where: { id },
-      data: { status },
+      data: { status, ...stampsFor(prevJob, status) },
       include: {
         order: { include: { buyer: true } },
         workCenter: { select: { id: true, code: true, name: true } },
@@ -631,64 +640,16 @@ router.patch('/:id/status', async (req, res) => {
         console.error('[PrintAutomation] status hook error:', e.message)
       );
     }
-    
+
     res.json(mapJobForFrontend(job));
   } catch (error) {
     console.error('Error updating job status:', error);
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Job not found' });
-    }
     res.status(500).json({ error: 'Failed to update job status' });
   }
 });
 
 // PUT /jobs/:id - Update job (alias for PATCH, used by frontend jobsApi)
-router.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = { ...req.body };
-    
-    // Convert string priority to int for DB
-    if (typeof updateData.priority === 'string') {
-      updateData.priority = PRIORITY_STRING_TO_INT[updateData.priority] || 3;
-    }
-    
-    // Handle date conversions
-    if (updateData.scheduledStart) {
-      updateData.scheduledStart = new Date(updateData.scheduledStart);
-    }
-    if (updateData.scheduledEnd) {
-      updateData.scheduledEnd = new Date(updateData.scheduledEnd);
-    }
-
-    // Remove virtual fields that don't exist in DB
-    delete updateData.processingType;
-    delete updateData.dueDate;
-    delete updateData.customerName;
-    delete updateData.material;
-    
-    const job = await prisma.job.update({
-      where: { id },
-      data: updateData,
-      include: {
-        order: {
-          select: { id: true, orderNumber: true },
-        },
-        workCenter: {
-          select: { id: true, code: true, name: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
-      },
-    });
-    
-    res.json(mapJobForFrontend(job));
-  } catch (error) {
-    console.error('Error updating job (PUT):', error);
-    res.status(500).json({ error: 'Failed to update job' });
-  }
-});
+router.put('/:id', editJob);
 
 // POST /jobs/:id/assign - Assign job to operator
 router.post('/:id/assign', async (req, res) => {

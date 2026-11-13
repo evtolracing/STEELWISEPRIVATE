@@ -1,0 +1,4190 @@
+{
+ "endpoints": [
+  {
+   "ep": "POST /api/auth/login",
+   "file": "src/backend/src/routes/auth.js"
+  },
+  {
+   "ep": "POST /api/auth/register",
+   "file": "src/backend/src/routes/auth.js"
+  },
+  {
+   "ep": "PUT /api/auth/password",
+   "file": "src/backend/src/routes/auth.js"
+  },
+  {
+   "ep": "GET /api/auth/me",
+   "file": "src/backend/src/routes/auth.js"
+  },
+  {
+   "ep": "GET /api/users",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "GET /api/users/:id",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "POST /api/users",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "PUT /api/users/:id",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "DELETE /api/users/:id",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "POST /api/users/:id/reset-password",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "GET /api/users/roles/list",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "GET /api/users/roles/:id",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "POST /api/users/roles",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "PUT /api/users/roles/:id",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "GET /api/users/enums/roles",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "GET /api/users/locations",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "GET /api/users/divisions",
+   "file": "src/backend/src/routes/users.js"
+  },
+  {
+   "ep": "GET /api/grades",
+   "file": "src/backend/src/routes/grades.js"
+  },
+  {
+   "ep": "GET /api/grades/:id",
+   "file": "src/backend/src/routes/grades.js"
+  },
+  {
+   "ep": "POST /api/grades",
+   "file": "src/backend/src/routes/grades.js"
+  },
+  {
+   "ep": "PUT /api/grades/:id",
+   "file": "src/backend/src/routes/grades.js"
+  },
+  {
+   "ep": "GET /api/products",
+   "file": "src/backend/src/routes/products.js"
+  },
+  {
+   "ep": "GET /api/products/search",
+   "file": "src/backend/src/routes/products.js"
+  },
+  {
+   "ep": "GET /api/products/categories",
+   "file": "src/backend/src/routes/products.js"
+  },
+  {
+   "ep": "GET /api/products/:id",
+   "file": "src/backend/src/routes/products.js"
+  },
+  {
+   "ep": "POST /api/products",
+   "file": "src/backend/src/routes/products.js"
+  },
+  {
+   "ep": "PUT /api/products/:id",
+   "file": "src/backend/src/routes/products.js"
+  },
+  {
+   "ep": "GET /api/heats",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
+   "ep": "GET /api/heats/:id",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
+   "ep": "POST /api/heats",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
+   "ep": "GET /api/heats/:heatNumber/trace",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
+   "ep": "GET /api/coils",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "GET /api/coils/:id",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "GET /api/coils/number/:coilNumber",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "POST /api/coils",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "PUT /api/coils/:id",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "POST /api/coils/:id/hold",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "GET /api/inventory",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "GET /api/inventory/search",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "GET /api/inventory/summary",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/receive",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/transfer",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "GET /api/inventory/locations",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/bulk-upload",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "GET /api/inventory/templates/:type",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/orders/intake",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "GET /api/orders/intake",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "GET /api/orders/intake/:id",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "PATCH /api/orders/intake/:id",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "POST /api/orders/intake/:id/submit",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "POST /api/orders/intake/:id/create-work-orders",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "GET /api/orders/online",
+   "file": "src/backend/src/routes/onlineOrders.js"
+  },
+  {
+   "ep": "POST /api/orders/online/:id/accept",
+   "file": "src/backend/src/routes/onlineOrders.js"
+  },
+  {
+   "ep": "POST /api/orders/online/:id/hold",
+   "file": "src/backend/src/routes/onlineOrders.js"
+  },
+  {
+   "ep": "POST /api/orders/online/:id/reject",
+   "file": "src/backend/src/routes/onlineOrders.js"
+  },
+  {
+   "ep": "GET /api/remnants",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "GET /api/remnants/stats",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "GET /api/remnants/suggestions",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "POST /api/remnants/pricing",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "POST /api/remnants/pricing/batch",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "GET /api/remnants/pricing/floor",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "GET /api/remnants/:id",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "POST /api/remnants/:id/reserve",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "POST /api/remnants/:id/release",
+   "file": "src/backend/src/routes/remnants.js"
+  },
+  {
+   "ep": "GET /api/ecom/my-orders",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/ecom/my-orders/:id",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/ecom/my-orders/:id/documents",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/accounts/:accountId",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/accounts/:accountId/kpis",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/orders",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/orders/export",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/orders/:orderId",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/shipments",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/documents",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/enterprise/documents/:docId/download",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "POST /api/enterprise/documents/bulk-download",
+   "file": "src/backend/src/routes/portal.js"
+  },
+  {
+   "ep": "GET /api/processing-recipes",
+   "file": "src/backend/src/routes/processingRecipes.js"
+  },
+  {
+   "ep": "GET /api/processing-recipes/routing-templates",
+   "file": "src/backend/src/routes/processingRecipes.js"
+  },
+  {
+   "ep": "GET /api/processing-recipes/:id",
+   "file": "src/backend/src/routes/processingRecipes.js"
+  },
+  {
+   "ep": "POST /api/processing-recipes",
+   "file": "src/backend/src/routes/processingRecipes.js"
+  },
+  {
+   "ep": "PUT /api/processing-recipes/:id",
+   "file": "src/backend/src/routes/processingRecipes.js"
+  },
+  {
+   "ep": "DELETE /api/processing-recipes/:id",
+   "file": "src/backend/src/routes/processingRecipes.js"
+  },
+  {
+   "ep": "POST /api/processing-recipes/:id/activate",
+   "file": "src/backend/src/routes/processingRecipes.js"
+  },
+  {
+   "ep": "POST /api/demand-shaping/suggestions",
+   "file": "src/backend/src/routes/demandShaping.js"
+  },
+  {
+   "ep": "POST /api/demand-shaping/accept",
+   "file": "src/backend/src/routes/demandShaping.js"
+  },
+  {
+   "ep": "POST /api/demand-shaping/dismiss",
+   "file": "src/backend/src/routes/demandShaping.js"
+  },
+  {
+   "ep": "GET /api/demand-shaping/analytics",
+   "file": "src/backend/src/routes/demandShaping.js"
+  },
+  {
+   "ep": "GET /api/demand-shaping/config",
+   "file": "src/backend/src/routes/demandShaping.js"
+  },
+  {
+   "ep": "PUT /api/demand-shaping/config",
+   "file": "src/backend/src/routes/demandShaping.js"
+  },
+  {
+   "ep": "GET /api/metrics/compression",
+   "file": "src/backend/src/routes/compressionMetrics.js"
+  },
+  {
+   "ep": "GET /api/metrics/compression/trend",
+   "file": "src/backend/src/routes/compressionMetrics.js"
+  },
+  {
+   "ep": "GET /api/metrics/compression/branches",
+   "file": "src/backend/src/routes/compressionMetrics.js"
+  },
+  {
+   "ep": "GET /api/metrics/compression/csrs",
+   "file": "src/backend/src/routes/compressionMetrics.js"
+  },
+  {
+   "ep": "GET /api/metrics/compression/sla-risk",
+   "file": "src/backend/src/routes/compressionMetrics.js"
+  },
+  {
+   "ep": "GET /api/metrics/compression/export",
+   "file": "src/backend/src/routes/compressionMetrics.js"
+  },
+  {
+   "ep": "GET /api/metrics/compression/filters",
+   "file": "src/backend/src/routes/compressionMetrics.js"
+  },
+  {
+   "ep": "POST /api/pricing/calculate",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
+   "ep": "POST /api/pricing/tax-estimate",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
+   "ep": "GET /api/pricing/contracts",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
+   "ep": "GET /api/processing/operations",
+   "file": "src/backend/src/routes/intakeProcessing.js"
+  },
+  {
+   "ep": "GET /api/processing/operations/:id",
+   "file": "src/backend/src/routes/intakeProcessing.js"
+  },
+  {
+   "ep": "GET /api/processing/templates",
+   "file": "src/backend/src/routes/intakeProcessing.js"
+  },
+  {
+   "ep": "GET /api/orders",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/orders/:id",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "POST /api/orders",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "PUT /api/orders/:id",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "POST /api/orders/:id/allocate",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/work-orders",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "GET /api/work-orders/:id",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "POST /api/work-orders",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "PUT /api/work-orders/:id/start",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "PUT /api/work-orders/:id/complete",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "GET /api/shipments",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "GET /api/shipments/:id",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "POST /api/shipments",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "PUT /api/shipments/:id",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "GET /api/shipments/:id/items",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "POST /api/shipments/:id/items",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "DELETE /api/shipments/:id/items/:itemId",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "PUT /api/shipments/:id/dispatch",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "PUT /api/shipments/:id/deliver",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "PATCH /api/shipments/:id/status",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "GET /api/dashboard",
+   "file": "src/backend/src/routes/dashboard.js"
+  },
+  {
+   "ep": "GET /api/dashboard/kpis",
+   "file": "src/backend/src/routes/dashboard.js"
+  },
+  {
+   "ep": "GET /api/customers",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "GET /api/customers/preferences/list",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "GET /api/customers/:id",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "POST /api/customers",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "PATCH /api/customers/:id",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "GET /api/customers/:id/preferences",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "PUT /api/customers/:id/preferences",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "DELETE /api/customers/:id/preferences",
+   "file": "src/backend/src/routes/customers.js"
+  },
+  {
+   "ep": "GET /api/rfqs",
+   "file": "src/backend/src/routes/rfqs.js"
+  },
+  {
+   "ep": "GET /api/rfqs/:id",
+   "file": "src/backend/src/routes/rfqs.js"
+  },
+  {
+   "ep": "POST /api/rfqs",
+   "file": "src/backend/src/routes/rfqs.js"
+  },
+  {
+   "ep": "PATCH /api/rfqs/:id",
+   "file": "src/backend/src/routes/rfqs.js"
+  },
+  {
+   "ep": "POST /api/rfqs/:id/quotes",
+   "file": "src/backend/src/routes/rfqs.js"
+  },
+  {
+   "ep": "GET /api/quotes",
+   "file": "src/backend/src/routes/quotes.js"
+  },
+  {
+   "ep": "GET /api/quotes/:id",
+   "file": "src/backend/src/routes/quotes.js"
+  },
+  {
+   "ep": "POST /api/quotes/:id/accept",
+   "file": "src/backend/src/routes/quotes.js"
+  },
+  {
+   "ep": "POST /api/quotes/:id/reject",
+   "file": "src/backend/src/routes/quotes.js"
+  },
+  {
+   "ep": "POST /api/quotes/:id/send",
+   "file": "src/backend/src/routes/quotes.js"
+  },
+  {
+   "ep": "GET /api/work-centers",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "GET /api/work-centers/:id",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "POST /api/work-centers",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "PATCH /api/work-centers/:id",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "GET /api/work-centers/:id/schedule",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "GET /api/jobs",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/sla-risk",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/:id",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/jobs",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/:id/plan",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/jobs/:id/plan",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/jobs/:id/status",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "PATCH /api/jobs/:id",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "PATCH /api/jobs/:id/status",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "PUT /api/jobs/:id",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/jobs/:id/assign",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/jobs/:id/start",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/jobs/:id/complete",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/jobs/:id/ship",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/:id/history",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/stats/summary",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/documents",
+   "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "GET /api/documents/entity/:entityType/:entityId",
+   "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "GET /api/documents/:id",
+   "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "GET /api/documents/:id/download",
+   "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "POST /api/documents/upload",
+   "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "POST /api/documents/upload-multiple",
+   "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "DELETE /api/documents/:id",
+   "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "GET /api/pos/workflow/definition",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/flows",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/flows/:flowId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/flows/:flowId/screens",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/flows/:flowId/screens/:screenId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/components",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/validation-rules",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/validation/rules",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/validation/field",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/validation/entity",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/validation/business-rules",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/validation/screen",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/validation/order",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/validation/quick-sale",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/validation/will-call",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/session",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/line",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "DELETE /api/pos/pricing/line/:lineNumber",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/discount/preview",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/discount/apply",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/refresh",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/pricing/:sessionId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/estimate",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/margin/validate",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/processing",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/pricing/quantity-breaks",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/screen",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/screen/validate",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/screen/next",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/screen/previous",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/progress",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "DELETE /api/pos/sessions/:sessionId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/suspend",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/transition",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/actions",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/customers/search",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/customers/select",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/customers",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/division-flow",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/divisions/:divisionId/ship-tos",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/division",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/tax-jurisdiction",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/products/search",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/products/:productId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/products/add",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/products/add-processed",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "PUT /api/pos/sessions/:sessionId/lines/:lineId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "DELETE /api/pos/sessions/:sessionId/lines/:lineId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/pricing/discount",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "DELETE /api/pos/sessions/:sessionId/pricing/discount/:discountId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/pricing/discount/:discountId/approve",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/pricing/calculate",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/pricing/recalculate",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/pricing",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/sessions/:sessionId/quick-sale/scan",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/will-call/queue",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/will-call/:orderId",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/will-call/:orderId/verify",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/will-call/:orderId/checklist",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/will-call/:orderId/load-item",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/will-call/:orderId/signature",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/will-call/:orderId/vehicle-photo",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/will-call/:orderId/complete",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/will-call/:orderId/partial",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/will-call/stats",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/sessions/:sessionId/will-call/queue",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/create",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/lookup",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/:saleId/add-item",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "PUT /api/pos/quick-sale/:saleId/items/:lineNumber",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "DELETE /api/pos/quick-sale/:saleId/items/:lineNumber",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "DELETE /api/pos/quick-sale/:saleId/items",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/process-payment",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/quick-sale/:saleId/receipt",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/print-receipt",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/email-receipt",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/sms-receipt",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/:saleId/void",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/quick-sale/daily-stats",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/pos/quick-sale/quick-amounts",
+   "file": "src/backend/src/routes/pos.js"
+  },
+  {
+   "ep": "GET /api/ai/providers",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "GET /api/ai/usage",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "POST /api/ai/chat",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "POST /api/ai/chat/stream",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "POST /api/ai/embeddings",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "POST /api/ai/test",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "POST /api/ai/analyze-product",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "POST /api/ai/quote-assistant",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "DELETE /api/ai/usage",
+   "file": "src/backend/src/routes/ai.js"
+  },
+  {
+   "ep": "GET /api/ai/tts/voices",
+   "file": "src/backend/src/routes/tts.js"
+  },
+  {
+   "ep": "GET /api/ai/tts/test",
+   "file": "src/backend/src/routes/tts.js"
+  },
+  {
+   "ep": "POST /api/ai/tts/speak",
+   "file": "src/backend/src/routes/tts.js"
+  },
+  {
+   "ep": "POST /api/ai/assistant",
+   "file": "src/backend/src/routes/aiAssistant.js"
+  },
+  {
+   "ep": "POST /api/ai/assistant/stream",
+   "file": "src/backend/src/routes/aiAssistant.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory/locations",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory/catalog",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory/summary",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory/transfers",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory/:id",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/adjust",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/rfid-scan",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory/rfid/:rfidTagId",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/inventory/etched/:etchedId",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/transfers",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/transfers/:id/status",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/ai-assistant",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "GET /api/v1/bom/recipes",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "GET /api/v1/bom/recipes/:id",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "POST /api/v1/bom/recipes",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "PUT /api/v1/bom/recipes/:id",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "POST /api/v1/bom/recipes/:id/activate",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "POST /api/v1/bom/recipes/:id/transition",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "POST /api/v1/bom/recipes/:id/clone",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "POST /api/v1/bom/recipes/match",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "POST /api/v1/bom/ai-suggest",
+   "file": "src/backend/src/routes/bomV1.js"
+  },
+  {
+   "ep": "POST /api/v1/ai/work-order-optimize/preview",
+   "file": "src/backend/src/routes/optimizationV1.js"
+  },
+  {
+   "ep": "POST /api/v1/ai/work-order-optimize/apply",
+   "file": "src/backend/src/routes/optimizationV1.js"
+  },
+  {
+   "ep": "GET /api/v1/ai/work-order-optimize/analysis",
+   "file": "src/backend/src/routes/optimizationV1.js"
+  },
+  {
+   "ep": "POST /api/v1/ai/work-order-optimize/simulate",
+   "file": "src/backend/src/routes/optimizationV1.js"
+  },
+  {
+   "ep": "GET /api/v1/analytics/ops-forecast",
+   "file": "src/backend/src/routes/analyticsV1.js"
+  },
+  {
+   "ep": "GET /api/v1/analytics/rfq-funnel",
+   "file": "src/backend/src/routes/analyticsV1.js"
+  },
+  {
+   "ep": "GET /api/v1/analytics/margin",
+   "file": "src/backend/src/routes/analyticsV1.js"
+  },
+  {
+   "ep": "GET /api/v1/analytics/work-centers/utilization",
+   "file": "src/backend/src/routes/analyticsV1.js"
+  },
+  {
+   "ep": "GET /api/v1/analytics/inventory/risk",
+   "file": "src/backend/src/routes/analyticsV1.js"
+  },
+  {
+   "ep": "GET /api/v1/shipping/summary",
+   "file": "src/backend/src/routes/shippingV1.js"
+  },
+  {
+   "ep": "GET /api/v1/shipping",
+   "file": "src/backend/src/routes/shippingV1.js"
+  },
+  {
+   "ep": "GET /api/v1/shipments/summary",
+   "file": "src/backend/src/routes/shippingV1.js"
+  },
+  {
+   "ep": "GET /api/v1/shipments",
+   "file": "src/backend/src/routes/shippingV1.js"
+  },
+  {
+   "ep": "GET /api/v1/events/exceptions",
+   "file": "src/backend/src/routes/eventsV1.js"
+  },
+  {
+   "ep": "POST /api/v1/events/exceptions",
+   "file": "src/backend/src/routes/eventsV1.js"
+  },
+  {
+   "ep": "POST /api/v1/events/exceptions/:id/acknowledge",
+   "file": "src/backend/src/routes/eventsV1.js"
+  },
+  {
+   "ep": "GET /api/v1/events/exceptions/stats",
+   "file": "src/backend/src/routes/eventsV1.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/sla-risk",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/:id",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/v1/jobs",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/:id/plan",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/v1/jobs/:id/plan",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/v1/jobs/:id/status",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "PATCH /api/v1/jobs/:id",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "PATCH /api/v1/jobs/:id/status",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "PUT /api/v1/jobs/:id",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/v1/jobs/:id/assign",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/v1/jobs/:id/start",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/v1/jobs/:id/complete",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "POST /api/v1/jobs/:id/ship",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/:id/history",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/stats/summary",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/work-centers",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "GET /api/v1/work-centers/:id",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "POST /api/v1/work-centers",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "PATCH /api/v1/work-centers/:id",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "GET /api/v1/work-centers/:id/schedule",
+   "file": "src/backend/src/routes/workCenters.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/work-center-types",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/work-center-types/:id",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/dispatch/work-center-types",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "PATCH /api/v1/dispatch/work-center-types/:id",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "DELETE /api/v1/dispatch/work-center-types/:id",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/divisions",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/dispatch/divisions",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/dispatch/work-centers",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "PATCH /api/v1/dispatch/work-centers/:id",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "DELETE /api/v1/dispatch/work-centers/:id",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/locations",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/dispatch/locations",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/work-centers",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/operators",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/dispatch/run",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/queue",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/dispatch/stats",
+   "file": "src/backend/src/routes/dispatchRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/operations",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/operations/:id",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/operations/:id/start",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/operations/:id/pause",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/operations/:id/complete",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/operations/:id/time-logs",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/operations/:id/reassign",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/contacts",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/contacts",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/contacts/:id",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/rfq",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/rfq",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/rfq/:id",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "PATCH /api/v1/rfq/:id/status",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/quotes",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/quotes",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/quotes/:id",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/quotes/:id/accept",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/orders",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/orders",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/orders/:id",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/orders/:id/plan",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/orders/:id/mark-packaging",
+   "file": "src/backend/src/routes/orderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/ai/parse-email-rfq",
+   "file": "src/backend/src/routes/aiOrderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/ai/quote-assistant",
+   "file": "src/backend/src/routes/aiOrderHubRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/ingest/email-rfq",
+   "file": "src/backend/src/routes/ingestRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/pipeline/stages",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/pipeline/simulate",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/pipeline",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/pipeline/:id",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/pipeline/:id/advance",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/pipeline/:id/auto-advance",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/pipeline",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/pipeline/:id/approve",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/pipeline/:id/analysis",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/pipeline/:id/pricing-recommendation",
+   "file": "src/backend/src/routes/pipelineRoutes.js"
+  },
+  {
+   "ep": "GET /api/safety/stop-work",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "GET /api/safety/stop-work/active",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "GET /api/safety/stop-work/blocked-resources",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "GET /api/safety/stop-work/:id",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "POST /api/safety/stop-work",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "PATCH /api/safety/stop-work/:id/status",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "POST /api/safety/stop-work/:id/steps/:stepId/complete",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "POST /api/safety/stop-work/:id/evidence",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "POST /api/safety/stop-work/:id/clearance",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "GET /api/safety/stop-work/:id/audit",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "POST /api/safety/stop-work/validate-assignment",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "POST /api/safety/stop-work/check-override",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "GET /api/safety/stop-work/stats/summary",
+   "file": "src/backend/src/routes/stopWork.js"
+  },
+  {
+   "ep": "POST /api/sales/pricing/recommend",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/sales/pricing/customer/:customerId/tier",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "POST /api/sales/pricing/override",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/sales/pricing/substitutions",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/sales/rfqs",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "POST /api/sales/rfqs",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "POST /api/sales/rfqs/:id/parse",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/sales/quotes",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "POST /api/sales/quotes",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "POST /api/sales/quotes/:id/send",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "POST /api/sales/quotes/:id/accept",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/sales/dashboard/stats",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/sales/dashboard/leaderboard",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/sales/portal/quote/:token",
+   "file": "src/backend/src/routes/salesRoutes.js"
+  },
+  {
+   "ep": "GET /api/executive/cockpit",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/cockpit/tile/:tileId",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/simulation/scenarios",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/simulation/scenarios",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/simulation/run",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/simulation/baseline",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/simulation/compare",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/forecast",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/forecast/assumptions",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/forecast/:category",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/forecast/sensitivity",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/forecast/snapshot",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/decisions",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/decisions/stats",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/decisions/report",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/executive/decisions/:id",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/decisions",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "PUT /api/executive/decisions/:id/status",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/decisions/:id/outcome",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/decisions/compare",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "POST /api/executive/ai/query",
+   "file": "src/backend/src/routes/executive.js"
+  },
+  {
+   "ep": "GET /api/admin/online-settings/rules",
+   "file": "src/backend/src/routes/onlineSettings.js"
+  },
+  {
+   "ep": "PUT /api/admin/online-settings/rules",
+   "file": "src/backend/src/routes/onlineSettings.js"
+  },
+  {
+   "ep": "GET /api/admin/online-settings/cutoffs",
+   "file": "src/backend/src/routes/onlineSettings.js"
+  },
+  {
+   "ep": "PUT /api/admin/online-settings/cutoffs",
+   "file": "src/backend/src/routes/onlineSettings.js"
+  },
+  {
+   "ep": "GET /api/admin/online-settings/processes",
+   "file": "src/backend/src/routes/onlineSettings.js"
+  },
+  {
+   "ep": "PUT /api/admin/online-settings/processes",
+   "file": "src/backend/src/routes/onlineSettings.js"
+  },
+  {
+   "ep": "GET /api/admin/seed-demo",
+   "file": "src/backend/src/routes/admin.js"
+  },
+  {
+   "ep": "POST /api/admin/seed-demo",
+   "file": "src/backend/src/routes/admin.js"
+  },
+  {
+   "ep": "POST /api/drop-tags",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/ready-to-print",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/templates",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/templates/:id",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/templates",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "PUT /api/drop-tags/templates/:id",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/templates/:id/preview",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/templates/seed",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/:id",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/validate",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/:id/validate",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/:id/print",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/:id/reprint",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/:id/apply",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/:id/void",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/packages",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/packages/ready",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/packages/:id/items",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/packages/:id/seal",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/packages/:id/qc-release",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/listings",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/listings",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/listings/:id",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/listings/:id/tags",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "DELETE /api/drop-tags/listings/:id/tags",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/listings/:id/print",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/listings/:id/lock",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/listings/:id/deliver",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/listings/:id/close",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/scans",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/staff/operators",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "GET /api/staff/operators/:id",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "POST /api/staff/operators",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "PATCH /api/staff/operators/:id",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "DELETE /api/staff/operators/:id",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "GET /api/staff/operators/:id/skills",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "POST /api/staff/operators/:id/skills",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "PATCH /api/staff/operators/:operatorId/skills/:skillId",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "DELETE /api/staff/operators/:operatorId/skills/:skillId",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "GET /api/staff/shifts",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "POST /api/staff/shifts",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "PATCH /api/staff/shifts/:id",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "DELETE /api/staff/shifts/:id",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "GET /api/staff/stats",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "GET /api/staff/available",
+   "file": "src/backend/src/routes/staff.js"
+  },
+  {
+   "ep": "GET /api/qc/queue",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "GET /api/qc/stats",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "GET /api/qc/inspections",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "GET /api/qc/inspections/:id",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "POST /api/qc/inspections",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "PATCH /api/qc/inspections/:id",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "POST /api/qc/inspections/:id/pass",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "POST /api/qc/inspections/:id/fail",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "POST /api/qc/inspections/:id/rework",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "POST /api/qc/inspections/:id/conditional",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "GET /api/qc/inspectors",
+   "file": "src/backend/src/routes/qcRoutes.js"
+  },
+  {
+   "ep": "GET /api/material-tracking/stats",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "GET /api/material-tracking/custody-log",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "POST /api/material-tracking/custody-log",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "GET /api/material-tracking/jobs/:jobId/tags",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "GET /api/material-tracking/jobs/:jobId/packages",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "GET /api/material-tracking/jobs/:jobId/timeline",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "GET /api/material-tracking/staging",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "PATCH /api/material-tracking/staging/:jobId/ship",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "POST /api/material-tracking/log-status-change",
+   "file": "src/backend/src/routes/materialTrackingRoutes.js"
+  },
+  {
+   "ep": "GET /api/maintenance-orders",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "GET /api/maintenance-orders/stats",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "GET /api/maintenance-orders/assets/list",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "GET /api/maintenance-orders/:id",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "POST /api/maintenance-orders",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "PATCH /api/maintenance-orders/:id",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "PUT /api/maintenance-orders/:id/start",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "PUT /api/maintenance-orders/:id/complete",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "DELETE /api/maintenance-orders/:id",
+   "file": "src/backend/src/routes/maintenanceOrders.js"
+  },
+  {
+   "ep": "GET /api/assets",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "GET /api/assets/stats",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "GET /api/assets/types",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "POST /api/assets/seed-from-work-centers",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "GET /api/assets/:id",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "POST /api/assets",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "PATCH /api/assets/:id",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "DELETE /api/assets/:id",
+   "file": "src/backend/src/routes/assets.js"
+  },
+  {
+   "ep": "GET /api/specs/resolve/order-line/:id",
+   "file": "src/backend/src/routes/specInheritance.js"
+  },
+  {
+   "ep": "GET /api/specs/resolve/job/:id",
+   "file": "src/backend/src/routes/specInheritance.js"
+  },
+  {
+   "ep": "GET /api/specs/customer/:customerId",
+   "file": "src/backend/src/routes/specInheritance.js"
+  },
+  {
+   "ep": "GET /api/ops-cockpit",
+   "file": "src/backend/src/routes/opsCockpit.js"
+  },
+  {
+   "ep": "POST /api/ops-cockpit/recommendations/accept",
+   "file": "src/backend/src/routes/opsCockpit.js"
+  },
+  {
+   "ep": "POST /api/ops-cockpit/recommendations/dismiss",
+   "file": "src/backend/src/routes/opsCockpit.js"
+  },
+  {
+   "ep": "POST /api/ops-cockpit/recommendations/explain",
+   "file": "src/backend/src/routes/opsCockpit.js"
+  },
+  {
+   "ep": "GET /api/ops-cockpit/recommendations/history",
+   "file": "src/backend/src/routes/opsCockpit.js"
+  },
+  {
+   "ep": "GET /api/print-queue",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "GET /api/print-queue/history",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "GET /api/print-queue/:id/render",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "POST /api/print-queue/:id/printed",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "POST /api/print-queue/:id/skip",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "POST /api/print-queue/trigger",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "POST /api/print-queue/:id/reprint",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "POST /api/print-queue/trigger-shipment",
+   "file": "src/backend/src/routes/printQueue.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/auth/token",
+   "file": "src/backend/src/routes/partner/partnerAuthRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/customer/rfqs",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/rfqs",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/rfqs/:id",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/quotes",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/quotes/:id",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/customer/quotes/:id/respond",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/orders",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/orders/:id",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/orders/:id/milestones",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents/:id/download",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/shipments",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/shipments/:id",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/invoices",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/supplier/purchase-orders",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/supplier/purchase-orders/:id",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/supplier/purchase-orders/:id/acknowledge",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/supplier/asn",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/supplier/asn",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/supplier/documents",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/supplier/scars",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/supplier/scars/:id/respond",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/supplier/scorecard",
+   "file": "src/backend/src/routes/partner/supplierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/carrier/shipments",
+   "file": "src/backend/src/routes/partner/carrierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/carrier/shipments/:id",
+   "file": "src/backend/src/routes/partner/carrierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/carrier/shipments/:id/respond",
+   "file": "src/backend/src/routes/partner/carrierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/carrier/shipments/:id/status",
+   "file": "src/backend/src/routes/partner/carrierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/carrier/shipments/:id/pod",
+   "file": "src/backend/src/routes/partner/carrierRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/carrier/exceptions",
+   "file": "src/backend/src/routes/partner/carrierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/carrier/performance",
+   "file": "src/backend/src/routes/partner/carrierRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/webhooks",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/webhooks",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
+   "ep": "PUT /api/v1/partner/webhooks/:id",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
+   "ep": "DELETE /api/v1/partner/webhooks/:id",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/webhooks/:id/deliveries",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/webhooks/:id/test",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/admin/partners",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/admin/partners",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/admin/partners/:id",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "PUT /api/v1/admin/partners/:id",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/admin/partners/:id/keys",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "DELETE /api/v1/admin/partners/:id/keys/:keyId",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/admin/partners/:id/usage",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/admin/partners/:id/logs",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/admin/partners/dashboard/summary",
+   "file": "src/backend/src/routes/partner/adminRoutes.js"
+  }
+ ],
+ "models": [
+  {
+   "name": "Organization",
+   "fields": 34,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "CustomerPreference",
+   "fields": 50,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "User",
+   "fields": 37,
+   "fks": 3,
+   "status": null
+  },
+  {
+   "name": "Role",
+   "fields": 10,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "UserRoleAssignment",
+   "fields": 8,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "UserLocation",
+   "fields": 7,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "UserDivision",
+   "fields": 6,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "Division",
+   "fields": 8,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "ApprovalRequest",
+   "fields": 14,
+   "fks": 1,
+   "status": "ApprovalStatus"
+  },
+  {
+   "name": "ApprovalDecision",
+   "fields": 8,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "AuditLog",
+   "fields": 22,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Grade",
+   "fields": 21,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "Product",
+   "fields": 24,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Heat",
+   "fields": 21,
+   "fks": 4,
+   "status": "HeatStatus"
+  },
+  {
+   "name": "Coil",
+   "fields": 48,
+   "fks": 8,
+   "status": "CoilStatus"
+  },
+  {
+   "name": "Location",
+   "fields": 34,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "Inventory",
+   "fields": 18,
+   "fks": 2,
+   "status": "String"
+  },
+  {
+   "name": "MaterialMovement",
+   "fields": 21,
+   "fks": 7,
+   "status": null
+  },
+  {
+   "name": "TestResult",
+   "fields": 20,
+   "fks": 4,
+   "status": null
+  },
+  {
+   "name": "QCHold",
+   "fields": 17,
+   "fks": 3,
+   "status": "HoldStatus"
+  },
+  {
+   "name": "RFQ",
+   "fields": 16,
+   "fks": 1,
+   "status": "RFQStatus"
+  },
+  {
+   "name": "RFQLine",
+   "fields": 14,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Quote",
+   "fields": 25,
+   "fks": 2,
+   "status": "QuoteStatus"
+  },
+  {
+   "name": "QuoteLine",
+   "fields": 30,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "Operator",
+   "fields": 27,
+   "fks": 3,
+   "status": "OperatorStatus"
+  },
+  {
+   "name": "OperatorSkill",
+   "fields": 11,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Shift",
+   "fields": 14,
+   "fks": 1,
+   "status": "ShiftStatus"
+  },
+  {
+   "name": "DispatchJob",
+   "fields": 18,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "DispatchOperation",
+   "fields": 21,
+   "fks": 1,
+   "status": "String"
+  },
+  {
+   "name": "DispatchTimeLog",
+   "fields": 12,
+   "fks": 1,
+   "status": "String"
+  },
+  {
+   "name": "JobInspection",
+   "fields": 20,
+   "fks": 2,
+   "status": "String"
+  },
+  {
+   "name": "WorkCenterType",
+   "fields": 9,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "WorkCenter",
+   "fields": 14,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Job",
+   "fields": 53,
+   "fks": 5,
+   "status": "JobStatus"
+  },
+  {
+   "name": "Order",
+   "fields": 38,
+   "fks": 3,
+   "status": "OrderStatus"
+  },
+  {
+   "name": "OrderLine",
+   "fields": 41,
+   "fks": 3,
+   "status": null
+  },
+  {
+   "name": "OrderLineAllocation",
+   "fields": 7,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "WorkOrder",
+   "fields": 22,
+   "fks": 1,
+   "status": "WOStatus"
+  },
+  {
+   "name": "WorkOrderOutput",
+   "fields": 11,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "Shipment",
+   "fields": 28,
+   "fks": 2,
+   "status": "ShipmentStatus"
+  },
+  {
+   "name": "ShipmentItem",
+   "fields": 8,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "ShipmentStop",
+   "fields": 13,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Invoice",
+   "fields": 16,
+   "fks": 1,
+   "status": "InvoiceStatus"
+  },
+  {
+   "name": "Payment",
+   "fields": 9,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Document",
+   "fields": 21,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "DocumentLink",
+   "fields": 7,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "CommodityPrice",
+   "fields": 8,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "BomRecipe",
+   "fields": 16,
+   "fks": 0,
+   "status": "BomRecipeStatus"
+  },
+  {
+   "name": "BomOperation",
+   "fields": 12,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Asset",
+   "fields": 46,
+   "fks": 4,
+   "status": "AssetStatus"
+  },
+  {
+   "name": "AssetType",
+   "fields": 14,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "AssetComponent",
+   "fields": 15,
+   "fks": 1,
+   "status": "ComponentStatus"
+  },
+  {
+   "name": "MeterReading",
+   "fields": 10,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "MaintenanceOrder",
+   "fields": 55,
+   "fks": 4,
+   "status": "MaintenanceOrderStatus"
+  },
+  {
+   "name": "MaintenanceTask",
+   "fields": 13,
+   "fks": 1,
+   "status": "TaskStatus"
+  },
+  {
+   "name": "MaintenanceOrderPart",
+   "fields": 14,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "MaintenanceOrderLabor",
+   "fields": 12,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "MaintenanceAttachment",
+   "fields": 11,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "PMTemplate",
+   "fields": 23,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "PMSchedule",
+   "fields": 18,
+   "fks": 2,
+   "status": "PMScheduleStatus"
+  },
+  {
+   "name": "DowntimeRecord",
+   "fields": 20,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SparePart",
+   "fields": 25,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SparePartTransaction",
+   "fields": 11,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "MaintenanceAuditLog",
+   "fields": 13,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "CustomerPricingTier",
+   "fields": 17,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "PricingRecommendation",
+   "fields": 31,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "PricingOverride",
+   "fields": 17,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "QuoteAcceptance",
+   "fields": 11,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "RFQSource",
+   "fields": 11,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "PricingAnalytics",
+   "fields": 17,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "DropTag",
+   "fields": 63,
+   "fks": 7,
+   "status": "DropTagStatus"
+  },
+  {
+   "name": "DropTagListing",
+   "fields": 30,
+   "fks": 2,
+   "status": "DropTagListingStatus"
+  },
+  {
+   "name": "Package",
+   "fields": 36,
+   "fks": 4,
+   "status": "PackageStatus"
+  },
+  {
+   "name": "PackageItem",
+   "fields": 16,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "TagIdentifier",
+   "fields": 7,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "LabelTemplate",
+   "fields": 17,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "TraceEvent",
+   "fields": 24,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "CustomerTagRequirement",
+   "fields": 20,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "Partner",
+   "fields": 23,
+   "fks": 1,
+   "status": "PartnerStatus"
+  },
+  {
+   "name": "PartnerApiKey",
+   "fields": 15,
+   "fks": 1,
+   "status": "ApiKeyStatus"
+  },
+  {
+   "name": "PartnerWebhook",
+   "fields": 15,
+   "fks": 1,
+   "status": "WebhookStatus"
+  },
+  {
+   "name": "WebhookDelivery",
+   "fields": 16,
+   "fks": 1,
+   "status": "WebhookDeliveryStatus"
+  },
+  {
+   "name": "PartnerApiLog",
+   "fields": 16,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyPolicyDocument",
+   "fields": 27,
+   "fks": 1,
+   "status": "PolicyStatus"
+  },
+  {
+   "name": "SafetyPolicyAcknowledgement",
+   "fields": 8,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyTrainingCourse",
+   "fields": 22,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyTrainingAssignment",
+   "fields": 14,
+   "fks": 1,
+   "status": "TrainingAssignmentStatus"
+  },
+  {
+   "name": "SafetyTrainingCompletion",
+   "fields": 18,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "SafetyIncident",
+   "fields": 42,
+   "fks": 0,
+   "status": "IncidentStatus"
+  },
+  {
+   "name": "SafetyIncidentInvestigation",
+   "fields": 24,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyInjuryDetails",
+   "fields": 15,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyCorrectiveAction",
+   "fields": 37,
+   "fks": 4,
+   "status": "CapaStatus"
+  },
+  {
+   "name": "SafetyInspectionTemplate",
+   "fields": 17,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyInspection",
+   "fields": 30,
+   "fks": 1,
+   "status": "InspectionStatus"
+  },
+  {
+   "name": "SafetyInspectionDefect",
+   "fields": 17,
+   "fks": 1,
+   "status": "DefectStatus"
+  },
+  {
+   "name": "SafetyPermit",
+   "fields": 38,
+   "fks": 0,
+   "status": "PermitStatus"
+  },
+  {
+   "name": "SafetyPermitLoto",
+   "fields": 13,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyPermitHotWork",
+   "fields": 17,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyPermitElectrical",
+   "fields": 15,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyPermitConfinedSpace",
+   "fields": 16,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyPermitSignoff",
+   "fields": 10,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyLotoProcedure",
+   "fields": 26,
+   "fks": 0,
+   "status": "PolicyStatus"
+  },
+  {
+   "name": "SafetyObservation",
+   "fields": 26,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "SafetyStopWorkEvent",
+   "fields": 28,
+   "fks": 0,
+   "status": "StopWorkStatus"
+  },
+  {
+   "name": "SafetyEquipmentAsset",
+   "fields": 26,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyEquipmentGuard",
+   "fields": 13,
+   "fks": 1,
+   "status": "String"
+  },
+  {
+   "name": "SafetySDSRecord",
+   "fields": 24,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetySDSRevision",
+   "fields": 12,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyMeeting",
+   "fields": 20,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "SafetyMeetingAttendee",
+   "fields": 8,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyAudit",
+   "fields": 23,
+   "fks": 0,
+   "status": "AuditStatus"
+  },
+  {
+   "name": "SafetyAuditFinding",
+   "fields": 15,
+   "fks": 1,
+   "status": "AuditFindingStatus"
+  },
+  {
+   "name": "SafetyContractorCompany",
+   "fields": 17,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyContractorWorker",
+   "fields": 15,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SafetyVisitorSignIn",
+   "fields": 15,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyPPEMatrix",
+   "fields": 12,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyAttachment",
+   "fields": 19,
+   "fks": 4,
+   "status": null
+  },
+  {
+   "name": "SafetyAuditEvent",
+   "fields": 20,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyElectronicSignature",
+   "fields": 18,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SafetyJobHazardAnalysis",
+   "fields": 25,
+   "fks": 0,
+   "status": "PolicyStatus"
+  },
+  {
+   "name": "Address",
+   "fields": 18,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "SimulationScenario",
+   "fields": 10,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "ForecastSnapshot",
+   "fields": 6,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "ExecutiveDecision",
+   "fields": 19,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "IntakeContact",
+   "fields": 13,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "IntakeRfq",
+   "fields": 13,
+   "fks": 1,
+   "status": "String"
+  },
+  {
+   "name": "IntakeQuote",
+   "fields": 13,
+   "fks": 2,
+   "status": "String"
+  },
+  {
+   "name": "IntakeOrder",
+   "fields": 15,
+   "fks": 2,
+   "status": "String"
+  },
+  {
+   "name": "IntakeJob",
+   "fields": 10,
+   "fks": 1,
+   "status": "String"
+  },
+  {
+   "name": "PosSession",
+   "fields": 9,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "StopWorkEvent",
+   "fields": 10,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "StopWorkAudit",
+   "fields": 5,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "StopWorkStep",
+   "fields": 7,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "StopWorkEvidence",
+   "fields": 4,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "DispatchDivision",
+   "fields": 6,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "PipelineRun",
+   "fields": 6,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "ExceptionEvent",
+   "fields": 11,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "InventoryCatalogItem",
+   "fields": 3,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "InventorySite",
+   "fields": 5,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "InventoryUnit",
+   "fields": 9,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "InventoryTransfer",
+   "fields": 5,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "RfidScanEvent",
+   "fields": 5,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "InventoryAdjustment",
+   "fields": 4,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "PrintQueueJob",
+   "fields": 11,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "PriceLevel",
+   "fields": 5,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "SalesTaxRate",
+   "fields": 3,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "ProcessingOperation",
+   "fields": 12,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "ProcessingTemplate",
+   "fields": 6,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "OnlineOrder",
+   "fields": 17,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "Remnant",
+   "fields": 30,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "StoreListing",
+   "fields": 15,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "ProcessingRecipe",
+   "fields": 23,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "RecipeRoutingTemplate",
+   "fields": 5,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "AppSetting",
+   "fields": 3,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "DemandSuggestionEvent",
+   "fields": 10,
+   "fks": 0,
+   "status": null
+  }
+ ],
+ "enums": {
+  "ApprovalStatus": [
+   "PENDING",
+   "APPROVED",
+   "REJECTED",
+   "ESCALATED",
+   "EXPIRED",
+   "CANCELLED"
+  ],
+  "DecisionType": [
+   "APPROVE",
+   "REJECT",
+   "ESCALATE"
+  ],
+  "OperatorStatus": [
+   "ACTIVE",
+   "ON_LEAVE",
+   "SUSPENDED",
+   "TERMINATED",
+   "TRAINING"
+  ],
+  "SkillLevel": [
+   "NOVICE",
+   "STANDARD",
+   "ADVANCED",
+   "EXPERT"
+  ],
+  "ShiftType": [
+   "DAY",
+   "NIGHT",
+   "SWING",
+   "SPLIT",
+   "OVERTIME"
+  ],
+  "ShiftStatus": [
+   "SCHEDULED",
+   "ACTIVE",
+   "COMPLETED",
+   "CANCELLED",
+   "NO_SHOW"
+  ],
+  "OrgType": [
+   "MILL",
+   "SERVICE_CENTER",
+   "DISTRIBUTOR",
+   "BROKER",
+   "FABRICATOR",
+   "OEM"
+  ],
+  "UserRole": [
+   "SUPER_ADMIN",
+   "TENANT_OWNER",
+   "EXECUTIVE",
+   "CFO",
+   "COO",
+   "CIO",
+   "DIVISION_DIRECTOR",
+   "BRANCH_MANAGER",
+   "SALES_DIRECTOR",
+   "SALES_REP",
+   "CSR",
+   "ESTIMATOR",
+   "CREDIT_MANAGER",
+   "OPS_MANAGER",
+   "PRODUCTION_MANAGER",
+   "SCHEDULER",
+   "INVENTORY_MANAGER",
+   "BUYER",
+   "WORKCENTER_LEAD",
+   "OPERATOR_SAW",
+   "OPERATOR_ROUTER",
+   "OPERATOR_SHEAR",
+   "OPERATOR_PLASMA",
+   "OPERATOR_GENERAL",
+   "MATERIAL_HANDLER",
+   "RECEIVING_CLERK",
+   "SHIPPING_COORDINATOR",
+   "PACKAGING_LEAD",
+   "QC_MANAGER",
+   "QC_INSPECTOR",
+   "MAINTENANCE_MANAGER",
+   "INTEGRATION_ADMIN",
+   "DATA_ANALYST",
+   "SUPPORT_AGENT",
+   "AUDITOR",
+   "CUSTOMER_ADMIN",
+   "CUSTOMER_BUYER",
+   "CUSTOMER_VIEWER",
+   "SUPPLIER_USER",
+   "CARRIER_USER",
+   "ADMIN",
+   "MILL_OPERATOR",
+   "SERVICE_CENTER",
+   "SALES",
+   "QUALITY",
+   "LOGISTICS",
+   "FINANCE",
+   "VIEWER"
+  ],
+  "GradeFamily": [
+   "CARBON",
+   "ALLOY",
+   "STAINLESS",
+   "TOOL",
+   "HSLA",
+   "ALUMINUM",
+   "NONFERROUS",
+   "PLASTIC",
+   "OTHER"
+  ],
+  "ProductType": [
+   "FLAT",
+   "LONG",
+   "TUBE",
+   "STRUCTURAL",
+   "OTHER"
+  ],
+  "ProductForm": [
+   "COIL",
+   "SHEET",
+   "PLATE",
+   "BAR",
+   "TUBE",
+   "BEAM",
+   "REBAR",
+   "WIRE",
+   "ROD",
+   "SUPPLY"
+  ],
+  "PriceUnit": [
+   "CWT",
+   "LB",
+   "TON",
+   "EACH",
+   "LF"
+  ],
+  "MeltType": [
+   "BOF",
+   "EAF",
+   "AOD"
+  ],
+  "CastType": [
+   "CONTINUOUS",
+   "INGOT"
+  ],
+  "HeatStatus": [
+   "ACTIVE",
+   "CONSUMED",
+   "ARCHIVED"
+  ],
+  "EdgeCondition": [
+   "MILL",
+   "SLIT",
+   "TRIMMED"
+  ],
+  "CoilStatus": [
+   "AVAILABLE",
+   "ALLOCATED",
+   "IN_PROCESS",
+   "HOLD",
+   "SHIPPED",
+   "CONSUMED"
+  ],
+  "QCStatus": [
+   "PENDING",
+   "PASSED",
+   "FAILED",
+   "HOLD"
+  ],
+  "LocationType": [
+   "WAREHOUSE",
+   "YARD",
+   "RACK",
+   "BIN",
+   "FLOOR"
+  ],
+  "MovementType": [
+   "RECEIVE",
+   "SHIP",
+   "TRANSFER",
+   "ADJUST",
+   "PROCESS",
+   "CONSUME",
+   "SCRAP",
+   "COUNT"
+  ],
+  "TestType": [
+   "CHEMISTRY",
+   "MECHANICAL",
+   "DIMENSIONAL",
+   "SURFACE",
+   "COATING",
+   "OTHER"
+  ],
+  "PassFail": [
+   "PASS",
+   "FAIL",
+   "CONDITIONAL"
+  ],
+  "HoldType": [
+   "QUALITY",
+   "CUSTOMER",
+   "PENDING_TEST",
+   "DAMAGE",
+   "DISPUTE",
+   "OTHER"
+  ],
+  "HoldStatus": [
+   "ACTIVE",
+   "RELEASED",
+   "SCRAPPED",
+   "RETURNED"
+  ],
+  "Disposition": [
+   "USE_AS_IS",
+   "REWORK",
+   "SCRAP",
+   "RETURN",
+   "SELL_SECONDARY",
+   "PENDING"
+  ],
+  "RFQStatus": [
+   "DRAFT",
+   "SUBMITTED",
+   "IN_REVIEW",
+   "QUOTED",
+   "ACCEPTED",
+   "REJECTED",
+   "EXPIRED",
+   "WITHDRAWN"
+  ],
+  "QuoteStatus": [
+   "DRAFT",
+   "PENDING_APPROVAL",
+   "SENT",
+   "COUNTERED",
+   "ACCEPTED",
+   "REJECTED",
+   "EXPIRED"
+  ],
+  "JobStatus": [
+   "ORDERED",
+   "SCHEDULED",
+   "IN_PROCESS",
+   "WAITING_QC",
+   "PACKAGING",
+   "READY_TO_SHIP",
+   "SHIPPED",
+   "COMPLETED",
+   "CANCELLED",
+   "ON_HOLD"
+  ],
+  "OrderType": [
+   "RFQ",
+   "QUOTE",
+   "SO",
+   "PO",
+   "RETURN"
+  ],
+  "OrderStatus": [
+   "DRAFT",
+   "PENDING",
+   "CONFIRMED",
+   "PARTIAL",
+   "COMPLETE",
+   "CANCELLED",
+   "HOLD"
+  ],
+  "FreightTerms": [
+   "PREPAID",
+   "COLLECT",
+   "THIRD_PARTY"
+  ],
+  "LineStatus": [
+   "OPEN",
+   "PARTIAL",
+   "COMPLETE",
+   "CANCELLED"
+  ],
+  "WOType": [
+   "SLIT",
+   "CTL",
+   "BLANK",
+   "LEVELCUT",
+   "MULTIBLANKING",
+   "SHEAR"
+  ],
+  "WOStatus": [
+   "DRAFT",
+   "READY",
+   "IN_PROGRESS",
+   "QC_HOLD",
+   "COMPLETE",
+   "CANCELLED"
+  ],
+  "ShipmentStatus": [
+   "PENDING",
+   "LOADING",
+   "IN_TRANSIT",
+   "DELIVERED",
+   "EXCEPTION",
+   "CANCELLED"
+  ],
+  "InvoiceStatus": [
+   "DRAFT",
+   "SENT",
+   "PARTIAL",
+   "PAID",
+   "OVERDUE",
+   "CANCELLED"
+  ],
+  "DocumentType": [
+   "MTR",
+   "CERT",
+   "BOL",
+   "POD",
+   "INVOICE",
+   "SPEC",
+   "COA",
+   "MSDS",
+   "DRAWING",
+   "OTHER"
+  ],
+  "BomRecipeStatus": [
+   "DRAFT",
+   "REVIEW",
+   "ACTIVE",
+   "DEPRECATED",
+   "ARCHIVED"
+  ],
+  "AssetStatus": [
+   "IN_SERVICE",
+   "OUT_OF_SERVICE",
+   "MAINTENANCE",
+   "SAFETY_HOLD",
+   "QUALITY_HOLD",
+   "PENDING_RETURN",
+   "DECOMMISSIONED"
+  ],
+  "AssetCriticality": [
+   "A // Critical - Production stops",
+   "B // Important - Workaround exists",
+   "C // Standard - Minimal impact"
+  ],
+  "ComponentStatus": [
+   "ACTIVE",
+   "WORN",
+   "FAILED",
+   "REPLACED"
+  ],
+  "MeterType": [
+   "HOURS",
+   "CYCLES",
+   "MILES",
+   "UNITS_PRODUCED"
+  ],
+  "MaintenanceOrderType": [
+   "PM // Preventive Maintenance",
+   "CORRECTIVE // Scheduled repair",
+   "BREAKDOWN // Emergency repair",
+   "INSPECTION // Planned inspection",
+   "CALIBRATION // Calibration",
+   "MODIFICATION // Asset modification",
+   "SAFETY_RELATED // Safety-related work",
+   "QUALITY_RELATED // Quality-triggered work"
+  ],
+  "MaintenancePriority": [
+   "EMERGENCY // Immediate response",
+   "HIGH // Same day",
+   "NORMAL // Within 3 days",
+   "LOW // Within week",
+   "SCHEDULED // Planned"
+  ],
+  "MaintenanceOrderStatus": [
+   "DRAFT // Being created",
+   "PENDING_APPROVAL // Waiting approval",
+   "APPROVED // Approved, not started",
+   "SCHEDULED // Scheduled for work",
+   "WAITING_PARTS // Parts on order",
+   "IN_PROGRESS // Work underway",
+   "COMPLETED // Work done, pending verification",
+   "VERIFIED // Verified, pending return to service",
+   "CLOSED // Fully closed",
+   "CANCELLED // Cancelled"
+  ],
+  "TaskStatus": [
+   "PENDING",
+   "IN_PROGRESS",
+   "COMPLETED",
+   "SKIPPED"
+  ],
+  "AttachmentType": [
+   "PHOTO_BEFORE",
+   "PHOTO_AFTER",
+   "CHECKLIST",
+   "PERMIT",
+   "DOCUMENT",
+   "TEST_RESULT",
+   "SIGNATURE",
+   "OTHER"
+  ],
+  "PMIntervalType": [
+   "TIME_BASED // Calendar days",
+   "METER_BASED // Hours, miles, cycles",
+   "CONDITION_BASED // Sensor/inspection trigger",
+   "HYBRID // Whichever comes first"
+  ],
+  "PMScheduleStatus": [
+   "ACTIVE",
+   "SUSPENDED",
+   "COMPLETED",
+   "CANCELLED"
+  ],
+  "OverdueAction": [
+   "ALERT // Send notification only",
+   "ESCALATE // Escalate to manager",
+   "BLOCK // Put asset out of service"
+  ],
+  "PMComplianceStatus": [
+   "CURRENT",
+   "DUE_SOON",
+   "OVERDUE",
+   "SEVERELY_OVERDUE"
+  ],
+  "DowntimeType": [
+   "BREAKDOWN // Unplanned failure",
+   "PLANNED_MAINTENANCE // Scheduled PM",
+   "CORRECTIVE // Scheduled repair",
+   "SETUP_CHANGEOVER // Setup time",
+   "QUALITY_HOLD // Quality issue",
+   "SAFETY_HOLD // Safety issue",
+   "NO_WORK // No work scheduled",
+   "OTHER // Other reason"
+  ],
+  "PartTransactionType": [
+   "RECEIVE // Received from supplier",
+   "ISSUE // Issued to work order",
+   "RETURN // Returned from work order",
+   "ADJUST // Inventory adjustment",
+   "TRANSFER // Transfer between locations",
+   "SCRAP // Scrapped"
+  ],
+  "RFQSourceType": [
+   "EMAIL",
+   "PHONE",
+   "PORTAL",
+   "EDI",
+   "MANUAL",
+   "ECOMMERCE"
+  ],
+  "DropTagStatus": [
+   "DRAFT // Just created, not yet ready",
+   "READY_TO_PRINT // All validations passed, ready for printing",
+   "PRINTED // Tag printed but not yet applied",
+   "APPLIED // Tag physically applied to package",
+   "SEALED // Package sealed, identity immutable",
+   "STAGED // Package in staging area",
+   "LOADED // Package loaded on truck",
+   "SHIPPED // Truck departed",
+   "DELIVERED // Delivery confirmed",
+   "VOID // Voided (before ship only without escalation)"
+  ],
+  "DropTagListingStatus": [
+   "DRAFT // Being assembled",
+   "READY // All tags assigned, ready for print",
+   "PRINTED // Manifest printed",
+   "LOADED // All packages loaded",
+   "DEPARTED // Truck left",
+   "DELIVERED // All stops confirmed",
+   "CLOSED // Custody chain closed"
+  ],
+  "PackageStatus": [
+   "OPEN // Being created",
+   "PACKING // Items being added",
+   "READY_FOR_QC // Awaiting QC inspection",
+   "QC_RELEASED // QC approved, ready for tagging",
+   "QC_HOLD // QC hold",
+   "SEALED // Sealed with tamper-evident seal",
+   "STAGED // In staging area",
+   "LOADED // On truck",
+   "SHIPPED // In transit",
+   "DELIVERED // At customer"
+  ],
+  "PackageQCStatus": [
+   "PENDING // Not yet reviewed",
+   "RELEASED // Full release",
+   "CONDITIONAL // Released with conditions (needs approval)",
+   "HOLD // On hold, cannot proceed",
+   "REJECTED // Failed inspection"
+  ],
+  "IdentifierType": [
+   "BARCODE // 1D barcode",
+   "QR // QR code",
+   "RFID // RFID tag",
+   "ETCH // Steel etching",
+   "DATAMATRIX // DataMatrix code"
+  ],
+  "PartnerType": [
+   "CUSTOMER",
+   "SUPPLIER",
+   "CARRIER",
+   "STRATEGIC"
+  ],
+  "PartnerStatus": [
+   "PENDING",
+   "ACTIVE",
+   "SUSPENDED",
+   "REVOKED"
+  ],
+  "PartnerTier": [
+   "STANDARD",
+   "STRATEGIC",
+   "INTERNAL"
+  ],
+  "ApiKeyStatus": [
+   "ACTIVE",
+   "REVOKED",
+   "EXPIRED"
+  ],
+  "WebhookStatus": [
+   "ACTIVE",
+   "PAUSED",
+   "DISABLED",
+   "FAILED"
+  ],
+  "WebhookDeliveryStatus": [
+   "PENDING",
+   "DELIVERED",
+   "FAILED",
+   "RETRYING"
+  ],
+  "PolicyStatus": [
+   "DRAFT",
+   "PENDING_REVIEW",
+   "APPROVED",
+   "PUBLISHED",
+   "SUPERSEDED",
+   "ARCHIVED"
+  ],
+  "PolicyType": [
+   "SAFETY_PROGRAM",
+   "LOTO_PROGRAM",
+   "HOT_WORK",
+   "ELECTRICAL_SAFETY",
+   "CONFINED_SPACE",
+   "CHEMICAL_SAFETY",
+   "EMERGENCY_RESPONSE",
+   "PPE_POLICY",
+   "GENERAL_SAFETY",
+   "CONTRACTOR_SAFETY",
+   "ENVIRONMENTAL",
+   "OTHER"
+  ],
+  "TrainingCategory": [
+   "ONBOARDING",
+   "LOTO",
+   "FORKLIFT",
+   "CRANE_RIGGING",
+   "HOT_WORK",
+   "ELECTRICAL",
+   "CONFINED_SPACE",
+   "CHEMICAL_HAZMAT",
+   "PPE",
+   "ERGONOMICS",
+   "FALL_PROTECTION",
+   "MACHINE_GUARDING",
+   "EMERGENCY_RESPONSE",
+   "FIRST_AID",
+   "SUPERVISOR",
+   "ANNUAL_REFRESHER",
+   "OTHER"
+  ],
+  "TrainingDeliveryMethod": [
+   "IN_PERSON",
+   "VIRTUAL_LIVE",
+   "E_LEARNING",
+   "ON_THE_JOB",
+   "BLENDED",
+   "SELF_STUDY",
+   "EXTERNAL"
+  ],
+  "TrainingAssignmentStatus": [
+   "ASSIGNED",
+   "IN_PROGRESS",
+   "COMPLETED",
+   "OVERDUE",
+   "ESCALATED",
+   "WAIVED",
+   "CANCELLED"
+  ],
+  "IncidentType": [
+   "INJURY",
+   "ILLNESS",
+   "NEAR_MISS",
+   "PROPERTY_DAMAGE",
+   "ENVIRONMENTAL",
+   "VEHICLE",
+   "SECURITY",
+   "FIRE",
+   "OTHER"
+  ],
+  "IncidentSeverity": [
+   "NEAR_MISS",
+   "FIRST_AID",
+   "MINOR",
+   "MODERATE",
+   "SERIOUS",
+   "SEVERE",
+   "FATALITY"
+  ],
+  "IncidentStatus": [
+   "DRAFT",
+   "SUBMITTED",
+   "TRIAGED",
+   "INVESTIGATING",
+   "CAPA_ASSIGNED",
+   "VERIFICATION",
+   "CLOSED",
+   "REOPENED"
+  ],
+  "OshaClassification": [
+   "NOT_RECORDABLE",
+   "RECORDABLE_OTHER",
+   "RECORDABLE_RESTRICTED",
+   "RECORDABLE_DAW",
+   "FATALITY"
+  ],
+  "AffectedPersonType": [
+   "EMPLOYEE",
+   "CONTRACTOR",
+   "VISITOR",
+   "CUSTOMER",
+   "OTHER"
+  ],
+  "CapaStatus": [
+   "DRAFT",
+   "ASSIGNED",
+   "IN_PROGRESS",
+   "PENDING_VERIFICATION",
+   "VERIFIED",
+   "CLOSED",
+   "OVERDUE",
+   "ESCALATED"
+  ],
+  "CapaType": [
+   "CORRECTIVE",
+   "PREVENTIVE"
+  ],
+  "CapaSourceType": [
+   "INCIDENT",
+   "INSPECTION",
+   "AUDIT",
+   "OBSERVATION",
+   "MANAGEMENT_REVIEW",
+   "REGULATORY",
+   "OTHER"
+  ],
+  "CapaPriority": [
+   "LOW",
+   "MEDIUM",
+   "HIGH",
+   "CRITICAL"
+  ],
+  "VerificationResult": [
+   "EFFECTIVE",
+   "PARTIALLY_EFFECTIVE",
+   "NOT_EFFECTIVE",
+   "NOT_VERIFIED"
+  ],
+  "InspectionType": [
+   "FORKLIFT_DAILY",
+   "FORKLIFT_MONTHLY",
+   "CRANE_DAILY",
+   "CRANE_MONTHLY",
+   "CRANE_ANNUAL",
+   "FIRE_EXTINGUISHER",
+   "EYEWASH_SHOWER",
+   "GUARD_CHECK",
+   "HOUSEKEEPING",
+   "PPE_STATION",
+   "FIRST_AID",
+   "AED",
+   "GENERAL_AREA",
+   "ELECTRICAL_EQUIPMENT",
+   "LADDER",
+   "DOCK_LEVELER",
+   "OTHER"
+  ],
+  "InspectionStatus": [
+   "SCHEDULED",
+   "IN_PROGRESS",
+   "PENDING_REVIEW",
+   "COMPLETED",
+   "OVERDUE",
+   "CANCELLED"
+  ],
+  "DefectSeverity": [
+   "MINOR",
+   "MODERATE",
+   "MAJOR",
+   "CRITICAL"
+  ],
+  "DefectStatus": [
+   "OPEN",
+   "IN_PROGRESS",
+   "RESOLVED",
+   "DEFERRED"
+  ],
+  "PermitType": [
+   "LOTO",
+   "HOT_WORK",
+   "ELECTRICAL",
+   "CONFINED_SPACE",
+   "EXCAVATION",
+   "ELEVATED_WORK",
+   "CRANE_LIFT",
+   "OTHER"
+  ],
+  "PermitStatus": [
+   "DRAFT",
+   "PENDING_REVIEW",
+   "APPROVED",
+   "ACTIVE",
+   "SUSPENDED",
+   "COMPLETED",
+   "EXPIRED",
+   "CANCELLED"
+  ],
+  "ElectricalWorkType": [
+   "DE_ENERGIZED",
+   "ENERGIZED"
+  ],
+  "ConfinedSpaceType": [
+   "PERMIT_REQUIRED",
+   "NON_PERMIT"
+  ],
+  "StopWorkStatus": [
+   "ISSUED",
+   "ACKNOWLEDGED",
+   "MITIGATION",
+   "RESUME_AUTHORIZED",
+   "CLOSED"
+  ],
+  "SafetyObservationType": [
+   "SAFE_BEHAVIOR",
+   "AT_RISK_BEHAVIOR",
+   "HAZARD",
+   "POSITIVE_RECOGNITION"
+  ],
+  "ObservationCategory": [
+   "PPE",
+   "BODY_MECHANICS",
+   "HOUSEKEEPING",
+   "TOOLS_EQUIPMENT",
+   "PROCEDURE_COMPLIANCE",
+   "COMMUNICATION",
+   "LINE_OF_FIRE",
+   "EYES_ON_TASK",
+   "OTHER"
+  ],
+  "EquipmentSafetyStatus": [
+   "SAFE",
+   "REQUIRES_INSPECTION",
+   "DEFECT_REPORTED",
+   "OUT_OF_SERVICE_SAFETY",
+   "LOCKED_OUT"
+  ],
+  "AuditType": [
+   "INTERNAL",
+   "EXTERNAL",
+   "REGULATORY",
+   "INSURANCE",
+   "CORPORATE"
+  ],
+  "AuditStatus": [
+   "PLANNED",
+   "IN_PROGRESS",
+   "COMPLETED",
+   "CANCELLED"
+  ],
+  "AuditFindingSeverity": [
+   "OBSERVATION",
+   "MINOR",
+   "MAJOR",
+   "CRITICAL"
+  ],
+  "AuditFindingStatus": [
+   "OPEN",
+   "CAPA_ASSIGNED",
+   "CLOSED"
+  ]
+ },
+ "routes": [
+  "/login",
+  "/shop-floor",
+  "/mobile-rep",
+  "intake",
+  "inventory",
+  "promise",
+  "place-order",
+  "/",
+  "ops-cockpit",
+  "role-dashboard/*",
+  "orderhub/*",
+  "heats",
+  "heats/:id",
+  "units",
+  "units/:id",
+  "work-orders",
+  "work-orders/new",
+  "work-orders/:id",
+  "logistics/shipments",
+  "logistics/shipments/:id",
+  "pricing",
+  "pricing/quotes/new",
+  "commercial/demand-shaping",
+  "qaqc",
+  "qaqc/test-entry",
+  "sqm/receiving",
+  "sqm/inspections",
+  "sqm/snc",
+  "sqm/scar",
+  "sqm/scorecards",
+  "sqm/suppliers",
+  "customer-quality/claims",
+  "customer-quality/rma",
+  "customer-quality/car",
+  "customer-quality/credits",
+  "contractors/active",
+  "contractors/registry",
+  "contractors/invitations",
+  "contractors/kiosk",
+  "training/dashboard",
+  "training/courses",
+  "training/my-certs",
+  "training/matrix",
+  "qc",
+  "qc/inspect/:id",
+  "production-quality/dashboard",
+  "production-quality/inspections",
+  "production-quality/ncr",
+  "production-quality/spc",
+  "production-quality/trace",
+  "maintenance/dashboard",
+  "maintenance/work-orders",
+  "maintenance/assets",
+  "maintenance/pm-schedules",
+  "maintenance/parts",
+  "provenance",
+  "safety/*",
+  "production",
+  "production/shop-floor",
+  "production/shipping",
+  "order-board",
+  "schedule",
+  "jobs/:id",
+  "receiving",
+  "material-tracking",
+  "material-tracking/packaging",
+  "material-tracking/tags",
+  "material-tracking/staging",
+  "material-tracking/traceability",
+  "material-tracking/traceability/:jobId",
+  "freight/planner",
+  "freight/comparison",
+  "freight/comparison/:shipmentId",
+  "freight/route/:shipmentId",
+  "freight/tracking",
+  "freight/exceptions",
+  "freight/pod/:shipmentId",
+  "sales/rfq-inbox",
+  "sales/quote/new",
+  "sales/quote/:quoteId",
+  "sales/dashboard",
+  "portal/quote/:quoteToken",
+  "executive/cockpit",
+  "executive/simulation",
+  "executive/forecast",
+  "executive/decisions",
+  "executive/digital-twin",
+  "executive/compression-metrics",
+  "shipping",
+  "time-tracking",
+  "shopfloor",
+  "shopfloor/:workCenterId",
+  "logistics/route-optimization",
+  "logistics/tracking",
+  "logistics/dispatch",
+  "orders",
+  "boms",
+  "inventory/*",
+  "bom/*",
+  "optimization/*",
+  "planning/*",
+  "orders/intake",
+  "orders/online-inbox",
+  "orders/:id",
+  "pos",
+  "pos/retail",
+  "customers",
+  "customers/preferences",
+  "admin/users",
+  "admin/partners",
+  "admin/audit-log",
+  "admin/processing-recipes",
+  "admin/staff",
+  "shop",
+  "shop/search",
+  "shop/remnants",
+  "shop/products/:id",
+  "shop/cart",
+  "shop/checkout",
+  "shop/orders",
+  "shop/orders/:id",
+  "account/dashboard",
+  "account/orders",
+  "account/shipments",
+  "account/documents",
+  "admin/catalog",
+  "admin/online-settings",
+  "help/manual",
+  "*"
+ ],
+ "mockServices": [
+  "branchComparisonApi.js",
+  "cutoffRulesApi.js",
+  "intakeCustomersApi.js",
+  "overrideApi.js",
+  "splitShipmentApi.js"
+ ]
+}

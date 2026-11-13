@@ -722,8 +722,10 @@ router.get('/sessions/:sessionId/progress', async (req, res) => {
  */
 router.post('/sessions', async (req, res) => {
   try {
-    const { userId, entryPoint, terminalId } = req.body;
-    
+    const { entryPoint, terminalId } = req.body;
+    // A session belongs to whoever is signed in, not to a user id sent by the browser.
+    const userId = req.user?.id || req.body.userId;
+
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
     }
@@ -1365,7 +1367,8 @@ router.get('/sessions/:sessionId/pricing', async (req, res) => {
  * POST /api/pos/sessions/:sessionId/submit
  * Submit the order
  */
-router.post('/sessions/:sessionId/submit', async (req, res) => {
+// The counter screen posts to .../order/submit; both paths do the same thing.
+router.post(['/sessions/:sessionId/submit', '/sessions/:sessionId/order/submit'], async (req, res) => {
   try {
     const result = await posWorkflowService.submitOrder(req.params.sessionId);
     

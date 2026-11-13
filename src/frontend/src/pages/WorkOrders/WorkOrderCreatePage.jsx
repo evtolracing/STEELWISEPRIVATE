@@ -25,7 +25,6 @@ import {
   Inventory as CoilIcon,
   ContentCut as SlitIcon,
   Straighten as CTLIcon,
-  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { createWorkOrder, getUnits } from '../../api'
 
@@ -347,19 +346,6 @@ export default function WorkOrderCreatePage() {
                 </CardContent>
               </Card>
             )}
-
-            {/* AI Suggestion */}
-            <Paper sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: 'secondary.50', border: '1px solid', borderColor: 'secondary.200' }}>
-              <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-                <AIIcon color="secondary" />
-                <Typography variant="subtitle2" color="secondary.main">
-                  AI Tip
-                </Typography>
-              </Stack>
-              <Typography variant="body2" color="text.secondary">
-                Based on current production capacity, scheduling this work order for tomorrow morning would optimize machine utilization.
-              </Typography>
-            </Paper>
 
             {/* Submit Button */}
             <Button

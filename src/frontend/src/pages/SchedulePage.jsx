@@ -140,7 +140,7 @@ const SchedulePage = () => {
               <Stack direction="row" spacing={1} alignItems="center">
                 <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
                 <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                  View and manage machine schedules • AI-optimized
+                  Jobs scheduled for the day, by work center
                 </Typography>
               </Stack>
             </Box>

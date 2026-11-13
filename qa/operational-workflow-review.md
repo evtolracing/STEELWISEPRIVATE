@@ -23,10 +23,32 @@ How it was examined: every sales screen read with its server routes; the journey
 
 Not examined in this workstream: credit application and new-account approval (no screen exists), commission, sales targets, customer statements (Workstream 5).
 
+## Journey 2: supplier purchase order, receiving, inspection, stock, availability (Workstream 3)
+
+| Question | Answer |
+|---|---|
+| Who starts it? | Nobody can, in the system. There is no purchase order (I-007). The journey begins when the truck arrives |
+| How is material received? | Receiving > Receive item, or Upload file. One receipt makes the stock item, its balance and a movement record. Verified: Sweep 18, Browser |
+| What must be on file first? | The heat, the grade and the location; the customer for toll material. A missing one is refused with the reason (rule 36) |
+| Is it inspected? | New stock arrives "inspection pending". An inspector can put it on hold from its screen; a hold removes availability and blocks shipping (rule 34). There is no inbound inspection record: the supplier quality screens are samples (I-011) |
+| When can it be sold? | At once: pending inspection does not block reserving or shipping. Whether it should is a rule for the owner (see the gate report) |
+| Does anyone match it to what was ordered or invoiced? | No. The PO number is free text on the receipt |
+| How many steps? | One form for one item (9 fields, 5 required), or one file for up to 2,000 |
+| What can go wrong silently? | Nothing found in receiving after the fix: the upload used to report success and save nothing (I-005) |
+
+## Journey 3: shortage, alternate branch, transfer, receiving, processing, fulfilment (Workstream 3)
+
+| Question | Answer |
+|---|---|
+| How does a rep see a shortage? | The order screen's stock picker lists stock items with their location and list price. The promise date shown is not computed (S-010) |
+| How is stock moved between branches? | Inventory > open the item > Move. The whole item moves and a TRANSFER movement is recorded. Verified: Browser |
+| Is the move a two-step ship and receive? | No. The item changes location at once; there is no "in transit" state and no receiving at the far end |
+| Can part of an item be moved? | No. A tracked item moves whole; cutting it is a processing job (Workstream 4) |
+| Who is told? | Nobody. No transfer request, approval or notice exists |
+| What happens to reservations? | They travel with the item |
+
 ## Journeys queued
 
-2. Supplier purchase order, receiving, inspection, stock, availability (Workstream 3)
-3. Shortage, alternate branch, transfer, receiving, processing, fulfilment (Workstream 3)
 4. Customer return, inspection, credit, stock disposition (Workstream 5)
 
 Known from Phase 1, to be re-examined there: a return has no inspection step before credit; there is no purchasing workflow in the simulation.

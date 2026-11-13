@@ -2,10 +2,14 @@
 
 There are no ticket files in the repository, so each commit is treated as one ticket. Commits #1–#28 are squashed pull requests; older commits came before the PR workflow. Requested scope is taken from the commit or PR title; "implemented" is what the diff touched.
 
-Commits: 195. Commits that changed the database schema: 56. Commits that added tests: 14.
+Commits: 199. Commits that changed the database schema: 56. Commits that added tests: 18.
 
 | Commit | Date | Ticket (title) | Files | Schema | API areas | UI areas | Tests added |
 |---|---|---|---:|:-:|---|---|---:|
+| 31e569a | 2026-11-13 | Receiving: a receipt makes real stock, and an upload says what it saved | 11 |  | api:receiving, api:receivingRules, api:inventory, api:receivingRules.test | ui:components, ui:ReceivingPage, ui:Units | 5 |
+| 9292e6c | 2026-11-13 | Heats, products and grades: real screens, checked input, price changes recorded | 11 |  | api:fieldRules, api:grades, api:heats, api:products, api:fieldRules.test | ui:Heats | 5 |
+| 3134bf5 | 2026-11-13 | Credit hold on over-limit orders; stock items on real data with working holds | 33 |  | api:creditControl, api:creditRules, api:roleAccess, api:coils, api:intakeOrders, api:inventory, api:onlineOrders, api:orders | ui:components, ui:help, ui:MobileRep, ui:Orders, ui:Units, ui:router | 12 |
+| 13c427d | 2026-11-13 | Sales workstream: real data on sales screens, customer tiers, price book, branch-state tax | 44 |  | api:app, api:orderTax, api:priceRules, api:customers, api:intakeOrders, api:intakePricing, api:overrides, api:salesDashboard | ui:components, ui:help, ui:Customers, ui:MobileRep, ui:Pricing, ui:Sales, ui:overrideApi | 25 |
 | 54278f7 | 2026-11-13 | Sales: one price rule for every channel, hardened order entry API, sales tax on entry-screen orders | 22 |  | api:customerPricing, api:orderTax, api:priceRules, api:ecom, api:intakeOrders, api:intakePricing, api:onlineOrders, api:orders | ui:Orders, ui:intakeOrdersApi, ui:intakePricingApi | 4 |
 | d85617f | 2026-11-13 | Adopt the permanent engineering standard: safeguard checks, dispositions, phase gate report | 9 |  |  |  | 8 |
 | 805bc0b | 2026-11-13 | Operations cockpit counts in the database instead of loading whole tables | 16 |  | api:opsCockpit |  | 15 |

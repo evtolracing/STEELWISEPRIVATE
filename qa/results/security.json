@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T09:04:59.385Z",
- "endpointsInInventory": 587,
- "endpointsSwept": 587,
+ "at": "2026-11-13T09:11:22.117Z",
+ "endpointsInInventory": 593,
+ "endpointsSwept": 593,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "548 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
-   "tested": 548,
+   "summary": "554 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 554,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "525 staff routes tried as a customer, 0 not refused",
-   "tested": 525,
+   "summary": "531 staff routes tried as a customer, 0 not refused",
+   "tested": 531,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -40,8 +40,8 @@
   },
   "Read routes do not crash on bad input": {
    "pass": true,
-   "summary": "777 reads, 0 server errors",
-   "tested": 777,
+   "summary": "786 reads, 0 server errors",
+   "tested": 786,
    "byFile": {},
    "findings": []
   },
@@ -63,7 +63,7 @@
   },
   "Platform safeguards: bounded lists, tracing, real figures, database rules": {
    "pass": true,
-   "summary": "31 checks, 0 problems",
+   "summary": "33 checks, 0 problems",
    "findings": []
   },
   "Error replies do not expose internals": {

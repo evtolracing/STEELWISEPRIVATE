@@ -134,6 +134,21 @@ const OUT = arg('out', 'qa/results/ui-inventory.json');
     check('receiving: search filters the list and says when nothing matches', /No receipts match your search/.test(await body(page)), await body(page));
     check('receiving: no script errors', page.errors.length === 0, page.errors.join(' | '));
     await page.close();
+
+    // The item just received is moved to another location from its own screen.
+    if (stock) {
+      const item = await open(bossContext, `/units/${stock.id}`);
+      await item.getByRole('button', { name: 'Move' }).click({ timeout: 10000 }).catch(() => {});
+      await item.getByRole('combobox', { name: /Move to/ }).click().catch(() => {});
+      await item.getByRole('option').first().click().catch(() => {});
+      await item.getByRole('button', { name: 'Move item' }).click({ timeout: 5000 }).catch(() => {});
+      await item.getByText('Item moved').waitFor({ timeout: 8000 }).catch(() => {});
+      const moved = await api(`/api/coils/${stock.id}`, boss);
+      const history = await api(`/api/coils/${stock.id}/history`, boss);
+      check('units: an item is moved to another location and the move is in its history', moved.locationId && moved.locationId !== stock.locationId && (history.events || []).some((e) => e.type === 'TRANSFER'), `${stock.locationId} -> ${moved.locationId}; ${(history.events || []).map((e) => e.type).join(',')}`);
+      check('units: the move screen has no script errors', item.errors.length === 0, item.errors.join(' | '));
+      await item.close();
+    }
   }
 
   await browser.close();

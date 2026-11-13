@@ -25,7 +25,7 @@ Target is 95. The platform layer is not there. The largest gaps are a tested res
 | Module group | Workstream | Score |
 |---|---|---|
 | Sales and customer operations | 2 | 73 (was 45), see below |
-| Inventory and purchasing | 3 | Not yet audited |
+| Inventory and purchasing | 3 | 68 (was 30), see below |
 | Manufacturing and processing | 4 | Not yet audited |
 | Logistics and financial operations | 5 | Not yet audited |
 | Enterprise administration, reporting, navigation | 6 | Not yet audited |
@@ -39,7 +39,7 @@ Covers customers, pricing, RFQs and quotes, order entry, Retail POS and counter 
 | Functional correctness | 40 | 80 | Placeholder counter price, tier prices, mobile orders, customer preferences save and the Pricing screen all repaired (S-001, S-002, S-005, S-014, S-017). Promise dates are still invented (S-010) |
 | Data integrity | 40 | 82 | Order entry validated and transactional, tax saved, field allow-lists (S-006, S-007, S-016). 150 of 150 jobs, reconciliation 0 problems |
 | Reliability | 50 | 65 | A failed edit no longer destroys order lines. No retry or offline behaviour on mobile; says so |
-| Security | 55 | 82 | Server decides the price level; staff-only fields hidden from customer logins; tier, credit limit and list price need a manager and are audited (S-003, S-013, S-015, S-018). Cost still visible to sales roles (S-023) |
+| Security | 55 | 82 | Server decides the price level; staff-only fields hidden from customer logins; tier, credit limit and list price need a manager and are audited (S-003, S-013, S-015, S-018). Cost is no longer sent to sales roles (S-023, fixed in Workstream 3) |
 | Operational efficiency | 45 | 62 | One price everywhere removes re-keying. Quotes still priced by hand (S-027). Credit limits are now enforced with a manager release (rule 32) |
 | User experience | 45 | 68 | Screens show the server's own error text; sample data removed from four screen groups. Branch list on entry screens still fixed (S-008) |
 | Performance | Not measured | Not measured | New routes are counted or capped (200 rows). No benchmark of sales routes was run in this workstream |
@@ -50,4 +50,27 @@ Covers customers, pricing, RFQs and quotes, order entry, Retail POS and counter 
 | **Weighted** | **45** | **73** | Performance and accessibility left out and the other weights rescaled to 100 |
 
 Target is 95. The module is not there. The largest gaps are the promise engine (S-010), quote pricing (S-027), outside services, and the fact that none of this is live.
+
+## Inventory and purchasing (Workstream 3)
+
+Covers stock items, heats, grades, products, receiving, the stock upload, holds, transfers, stock balances and the supplier quality screens. Purchasing itself does not exist (I-007), which caps this module.
+
+| Category | Before | After | Evidence |
+|---|---:|---:|---|
+| Functional correctness | 20 | 72 | Stock, heat and receiving screens showed sample data and the upload saved nothing; all now run on real records (I-001, I-002, I-005, I-006). No purchase orders, adjustments or counts (I-007, I-016) |
+| Data integrity | 40 | 85 | Field allow-lists on every stock and catalog write; receipt is one transaction; the database enforces the balance identity (I-004, I-013). 150 of 150 jobs, reconciliation 0 problems |
+| Reliability | 45 | 70 | Upload reports each failed row and keeps the good ones; concurrent hold and transfer guarded by conditional updates. No retry or resume for a large upload |
+| Security | 40 | 85 | Cost limited to buying and managing roles; list price changes need a manager and are recorded; identities come from the sign-in (I-009, I-010, I-004) |
+| Operational efficiency | 25 | 62 | Receive, hold, release and move can be done on screen. Heats must be added before stock (I-017); no expected deliveries (I-007) |
+| User experience | 30 | 70 | Screens state errors in the server's words, say "not recorded" instead of inventing values, and the sample screens are labelled (I-011) |
+| Performance | Not measured | Not measured | Lists are capped (500) and paged with a total count. An upload is capped at 2,000 rows and runs one row at a time; not timed |
+| Integration quality | 30 | 60 | One stock list behind orders, receiving, shipping and the Inventory menu (I-012, pending confirmation). 15 dead calls removed (I-015). No supplier or carrier connection |
+| Maintainability | 40 | 75 | One receiving rule and one field reader, pure and unit tested (79 tests in all). The unused RFID stock screens remain in the code |
+| Observability | 35 | 70 | Every receipt, move, hold and release is a movement or hold record with the person; list price changes are in the audit log |
+| Accessibility | Not measured | Not measured | New screens use labelled tables and controls. No keyboard or contrast audit was run |
+| **Weighted** | **30** | **68** | Performance and accessibility left out and the other weights rescaled to 100 |
+
+Target is 95. The module is not there. The largest gaps are purchasing (I-007), stock adjustments and counts (I-016), supplier quality (I-011), and the fact that none of this is live.
+
+Not examined in this workstream: cycle counting, reorder points and replenishment, stock valuation and costing method, consignment stock, whether customer-owned stock can be reserved for another customer, the remnant marketplace, RFID and etched-ID scanning, bin-level capacity.
 

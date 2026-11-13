@@ -177,9 +177,8 @@ const navSections = [
   {
     title: 'Inventory & Materials',
     items: [
-      { path: '/inventory', label: 'Inventory', icon: InventoryIcon },
+      { path: '/units', label: 'Inventory', icon: InventoryIcon },
       { path: '/heats', label: 'Heats', icon: HeatIcon },
-      { path: '/units', label: 'Units', icon: UnitsIcon },
     ],
   },
 

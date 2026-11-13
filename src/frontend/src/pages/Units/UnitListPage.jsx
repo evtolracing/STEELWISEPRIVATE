@@ -79,7 +79,7 @@ export default function UnitListPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar sx={{ width: 56, height: 56, background: 'rgba(255,255,255,0.15)' }}><UnitIcon sx={{ fontSize: 30 }} /></Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700}>Units</Typography>
+              <Typography variant="h4" fontWeight={700}>Inventory</Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>Every tracked stock item, with its heat, size, location and status</Typography>
             </Box>
           </Box>

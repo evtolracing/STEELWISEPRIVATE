@@ -410,6 +410,16 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
       });
     } catch (e) { refused = !String(e.message).includes('ROLLBACK_PROBE'); }
     check('E-004 the database refuses negative stock', refused, 'the update was accepted');
+    // E-020: on hand = available + reserved + on hold, enforced by the database.
+    check('E-020 database check Inventory_balance_identity exists', rules.includes('Inventory_balance_identity'), 'missing');
+    let unbalanced = false;
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`update "Inventory" set "qtyAvailable" = "qtyAvailable" + 1 where id = $1`, anyStock.id);
+        throw new Error('ROLLBACK_PROBE');
+      });
+    } catch (e) { unbalanced = !String(e.message).includes('ROLLBACK_PROBE'); }
+    check('E-020 the database refuses a stock balance that does not add up', unbalanced, 'the update was accepted');
   }
 
   section('Platform safeguards: bounded lists, tracing, real figures, database rules', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });

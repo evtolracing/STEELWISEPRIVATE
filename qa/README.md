@@ -16,6 +16,8 @@ Everything here runs against a **local** database whose name contains `qa`. The 
 | `sim/run.mjs` | The 50-job simulation cycle |
 | `sim/security.mjs` | Security, isolation and robustness sweep over every route |
 | `sim/ui-smoke.cjs` | Opens every screen in a browser |
+| `sim/ui-sales.cjs` | Operates the sales screens and the credit hold in a browser, as a clerk and as a manager |
+| `sim/ui-inventory.cjs` | Operates the stock, heat and receiving screens in a browser |
 | `sim/fixtures.mjs` | Builds the QA data set (80 branches) |
 | `tools/*.mjs` | Generators for the documents above |
 

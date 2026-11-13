@@ -1,5 +1,5 @@
 {
- "total": 355,
+ "total": 345,
  "missing": [
   {
    "call": "PUT /api/auth/profile",
@@ -105,30 +105,6 @@
    ]
   },
   {
-   "call": "GET /api/coils/:x/genealogy",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
-   "call": "GET /api/coils/:x/history",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
-   "call": "POST /api/coils/:x/release",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
-   "call": "GET /api/coils/:x/trace",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
    "call": "GET /api/fabrication-work-orders",
    "files": [
     "src/frontend/src/api/fabrication.js"
@@ -180,66 +156,6 @@
    "call": "PATCH /api/fabrication-work-orders/:x/status",
    "files": [
     "src/frontend/src/api/fabrication.js"
-   ]
-  },
-  {
-   "call": "PUT /api/heats/:x",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "GET /api/heats/:x/chemistry",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "GET /api/heats/:x/tests",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "GET /api/heats/number/:x",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "POST /api/inventory/adjust",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/aggregate",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "POST /api/inventory/locations",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/locations/:x",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/locations/:x/stock",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/movements",
-   "files": [
-    "src/frontend/src/api/inventory.js"
    ]
   },
   {
@@ -693,12 +609,6 @@
    ]
   },
   {
-   "call": "GET /api/units/:x",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
    "call": "GET /api/units/:x/certifications",
    "files": [
     "src/frontend/src/api/qaqc.js"
@@ -744,12 +654,6 @@
    "call": "PUT /api/units/:x/tests/:x",
    "files": [
     "src/frontend/src/api/qaqc.js"
-   ]
-  },
-  {
-   "call": "GET /api/units/tag/:x",
-   "files": [
-    "src/frontend/src/api/units.js"
    ]
   },
   {

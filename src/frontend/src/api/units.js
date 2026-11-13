@@ -5,12 +5,7 @@ export const getUnits = (params) => client.get('/coils', { params }).then(r => r
 
 export const getUnit = (id) => client.get(`/coils/${id}`).then(r => r.data)
 
-// Alias for getUnit
-export const getUnitById = (id) => client.get(`/units/${id}`).then(r => r.data)
-
 export const getUnitByNumber = (unitNumber) => client.get(`/coils/number/${unitNumber}`).then(r => r.data)
-
-export const getUnitByTag = (unitTag) => client.get(`/units/tag/${unitTag}`).then(r => r.data)
 
 export const createUnit = (data) => client.post('/coils', data).then(r => r.data)
 
@@ -22,10 +17,6 @@ export const releaseHold = (id) => client.post(`/coils/${id}/release`).then(r =>
 
 export const getUnitHistory = (id) => client.get(`/coils/${id}/history`).then(r => r.data)
 
-export const getUnitTrace = (id) => client.get(`/coils/${id}/trace`).then(r => r.data)
-
-export const getUnitGenealogy = (id) => client.get(`/coils/${id}/genealogy`).then(r => r.data)
-
 export default {
   getUnits,
   getUnit,
@@ -35,5 +26,4 @@ export default {
   placeHold,
   releaseHold,
   getUnitHistory,
-  getUnitGenealogy,
 }

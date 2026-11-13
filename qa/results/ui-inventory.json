@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T09:05:39.173Z",
- "checks": 20,
+ "at": "2026-11-13T09:18:37.640Z",
+ "checks": 22,
  "failed": 0,
  "results": [
   {
@@ -101,6 +101,16 @@
   },
   {
    "name": "receiving: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: an item is moved to another location and the move is in its history",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: the move screen has no script errors",
    "ok": true,
    "detail": ""
   }

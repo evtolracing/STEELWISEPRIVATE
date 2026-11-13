@@ -4,6 +4,7 @@ import { canAccessPath } from '../config/roleAccess'
 import { Box, CircularProgress } from '@mui/material'
 import { AppLayout } from '../components/layout'
 import { RouteErrorPage } from '../components/common'
+import SampleScreen from '../components/common/SampleScreen'
 import { useAuth } from '../hooks/useAuth'
 
 // Lazy load pages for code splitting
@@ -475,7 +476,7 @@ const router = createBrowserRouter([
         path: 'sqm/receiving',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <InboundReceivingPage />
+            <SampleScreen what="Supplier quality"><InboundReceivingPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -484,7 +485,7 @@ const router = createBrowserRouter([
         path: 'sqm/inspections',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <IQCInspectionsPage />
+            <SampleScreen what="Supplier quality"><IQCInspectionsPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -493,7 +494,7 @@ const router = createBrowserRouter([
         path: 'sqm/snc',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SupplierNonconformancePage />
+            <SampleScreen what="Supplier quality"><SupplierNonconformancePage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -502,7 +503,7 @@ const router = createBrowserRouter([
         path: 'sqm/scar',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SCARManagementPage />
+            <SampleScreen what="Supplier quality"><SCARManagementPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -511,7 +512,7 @@ const router = createBrowserRouter([
         path: 'sqm/scorecards',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SupplierScorecardsPage />
+            <SampleScreen what="Supplier quality"><SupplierScorecardsPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -520,7 +521,7 @@ const router = createBrowserRouter([
         path: 'sqm/suppliers',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SupplierListPage />
+            <SampleScreen what="Supplier quality"><SupplierListPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T08:32:34.522Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T09:21:11.335Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -51,12 +51,12 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
 - Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
+- Pass: one shipment dispatched three times at once: counted once. statuses 409,200,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
 - Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
-- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
+- Pass: one return received three times at once: counted once, one credit. statuses 409,200,409; 1 credit memo(s); source coil on hand 2640 → 3630
 
 The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
@@ -76,31 +76,35 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T08:22:56.484Z. 585 of 585 routes swept.
+Run 2026-11-13T09:11:22.117Z. 593 of 593 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
-| No access without signing in | Pass | 546 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
+| No access without signing in | Pass | 554 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
 | Partner API needs a partner token | Pass | 60 calls, 0 let in |
 | Forged and invalid sign-ins are refused | Pass | 5 cases, 0 problems |
-| Customer logins are held to the store | Pass | 523 staff routes tried as a customer, 0 not refused |
+| Customer logins are held to the store | Pass | 531 staff routes tried as a customer, 0 not refused |
 | Customers and divisions cannot see each other | Pass | 31 checks, 0 problems |
 | Staff roles and departments | Pass | 18 checks, 0 problems |
-| Read routes do not crash on bad input | Pass | 774 reads, 0 server errors |
+| Read routes do not crash on bad input | Pass | 786 reads, 0 server errors |
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
 | Web checkout uses the system price, not the browser's | Pass | 4 checks, 0 problems |
-| Platform safeguards: bounded lists, tracing, real figures, database rules | Pass | 31 checks, 0 problems |
+| Platform safeguards: bounded lists, tracing, real figures, database rules | Pass | 33 checks, 0 problems |
 | Error replies do not expose internals | Pass | 0 replies exposed internal detail |
 | One customer, one price in every sales channel | Pass | 47 checks, 0 problems |
 | Order entry screen follows the order rules | Pass | 43 checks, 0 problems |
+| Stock items: lists, cost, edits, holds | Pass | 29 checks, 0 problems |
+| Credit hold: over the limit waits for a manager | Pass | 22 checks, 0 problems |
+| Heats, products and grades: checked input, right people, prices recorded | Pass | 47 checks, 0 problems |
+| Receiving: a receipt is real stock, and an upload says what it saved | Pass | 32 checks, 0 problems |
 
 ## Screen check
 
-Run 2026-11-13T08:28:51.060Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T09:17:57.219Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
-- Screens opened: 123
-- OK: 123
+- Screens opened: 124
+- OK: 124
 - Screens that made at least one failing API call: 7
 
 ### API calls that failed while screens loaded
@@ -108,6 +112,7 @@ Run 2026-11-13T08:28:51.060Z as qa-admin@qa.test. Every route in the app's route
 | Call | Screens |
 |---|---|
 | `GET /api/heats/:id → 404` | `/heats/:id` |
+| `GET /api/coils/:id/history → 404` | `/units/:id` |
 | `GET /api/coils/:id → 404` | `/units/:id` |
 | `GET /api/work-orders/:id → 404` | `/work-orders/:id` |
 | `GET /api/qc/inspections/:id → 404` | `/qc/inspect/:id` |
@@ -119,9 +124,9 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-13T08:30:05.144Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard and Pricing were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T09:12:10.659Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
-- Checks: 18
+- Checks: 24
 - Failed: 0
 
 | Check | Result |
@@ -144,10 +149,48 @@ Run 2026-11-13T08:30:05.144Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 | pricing: a clerk is not offered a way to change a list price | Pass |
 | pricing: a manager can open the change-price box | Pass |
 | pricing: no script errors | Pass |
+| credit hold: a manager can set a credit limit on the customer | Pass |
+| credit hold: the rep is told the order is on credit hold and why | Pass |
+| credit hold: the held order is on the Credit holds list | Pass |
+| credit hold: a clerk is not offered Release | Pass |
+| credit hold: a manager releases it and it leaves the list | Pass |
+| credit hold: the server agrees the order is no longer held | Pass |
+
+## Stock screens operated in a browser
+
+Run 2026-11-13T09:18:37.640Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+
+- Checks: 22
+- Failed: 0
+
+| Check | Result |
+|---|---|
+| units: the list shows real stock items | Pass |
+| units: search narrows the list on the server | Pass |
+| units: an item opens with its own details | Pass |
+| units: a clerk is not shown what the stock cost | Pass |
+| units: no script errors | Pass |
+| units: an item that does not exist says so instead of showing a sample | Pass |
+| heats: the list shows real heats, not samples | Pass |
+| heats: search narrows the list on the server | Pass |
+| heats: a heat opens with its own mill and grade | Pass |
+| heats: the stock items tab lists the items from this heat | Pass |
+| heats: no script errors | Pass |
+| heats: a heat that does not exist says so instead of showing a sample | Pass |
+| heats: a manager adds a heat and lands on it | Pass |
+| heats: an edit is saved and shown | Pass |
+| receiving: no sample deliveries are shown | Pass |
+| receiving: a heat that is not on file is said before saving | Pass |
+| receiving: a heat on file fills in its grade | Pass |
+| receiving: the form receives a real stock item and lists it | Pass |
+| receiving: search filters the list and says when nothing matches | Pass |
+| receiving: no script errors | Pass |
+| units: an item is moved to another location and the move is in its history | Pass |
+| units: the move screen has no script errors | Pass |
 
 ## Screen-to-server contract
 
-354 distinct API calls are written in the screens; 155 have no matching server route. Full list in `qa/api-contract.md`.
+345 distinct API calls are written in the screens; 139 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

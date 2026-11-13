@@ -19,3 +19,13 @@ Filled in per workstream. Workstream 2 covered the sales and customer screens.
 | U-013 | Help manual, sales pages | Described features that do not exist | Fixed for pricing, dashboard, mobile and customers (S-024) |
 
 Not reviewed yet: keyboard-only use, screen-reader labels and colour contrast on any screen (Workstream 6).
+| U-014 | Inventory (stock items), Heats | Sample rows on every screen | Fixed (I-001, I-002): real records, server-side search, honest empty states |
+| U-015 | Order entry, stock picker | Showed our cost and priced the line at it | Fixed (I-003): list price |
+| U-016 | Stock upload | Said "Successfully uploaded N items" whatever happened | Fixed (I-005): the count saved, and each failed row with its reason |
+| U-017 | Receiving | Sample deliveries; the form saved nothing | Fixed (I-006). Says plainly that expected deliveries need purchase orders (I-007) |
+| U-018 | Stock item | A hold could not be released; no way to move an item | Fixed (I-008, I-014): Release hold and Move |
+| U-019 | Supplier quality, six screens | Invented data presented as real | Labelled as samples (I-011); build is a decision |
+| U-020 | Menu | "Inventory" and "Units" were two different stock lists | One entry, Inventory, on the real list (I-012, pending the owner's answer) |
+| U-021 | Orders | No sign that an order was over the credit limit | Fixed (rule 32): warning on entry, a Credit Holds list, Release for managers |
+| U-022 | Receiving | A heat must be added before its stock, one at a time | Open (I-017) |
+

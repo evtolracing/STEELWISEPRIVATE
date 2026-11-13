@@ -1,15 +1,18 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T08:28:51.060Z",
+ "at": "2026-11-13T09:17:57.219Z",
  "who": "qa-admin@qa.test",
- "screens": 123,
+ "screens": 124,
  "tally": {
-  "OK": 123
+  "OK": 124
  },
  "screensWithFailedApiCalls": 7,
  "failedApiCalls": {
   "GET /api/heats/:id → 404": [
    "/heats/:id"
+  ],
+  "GET /api/coils/:id/history → 404": [
+   "/units/:id"
   ],
   "GET /api/coils/:id → 404": [
    "/units/:id"
@@ -60,7 +63,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/",
-   "textLength": 2308,
+   "textLength": 2316,
    "hasParam": false
   },
   {
@@ -69,8 +72,8 @@
    "consoleErrors": [],
    "apiFailures": [],
    "status": "OK",
-   "landedOn": "/inventory",
-   "textLength": 4343,
+   "landedOn": "/units",
+   "textLength": 4579,
    "hasParam": false
   },
   {
@@ -80,7 +83,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/",
-   "textLength": 2308,
+   "textLength": 2316,
    "hasParam": false
   },
   {
@@ -90,7 +93,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/",
-   "textLength": 2308,
+   "textLength": 2316,
    "hasParam": false
   },
   {
@@ -100,7 +103,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/",
-   "textLength": 2308,
+   "textLength": 2316,
    "hasParam": false
   },
   {
@@ -110,7 +113,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/ops-cockpit",
-   "textLength": 15720,
+   "textLength": 15767,
    "hasParam": false
   },
   {
@@ -120,21 +123,23 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/heats",
-   "textLength": 2146,
+   "textLength": 3134,
    "hasParam": false
   },
   {
    "route": "/heats/:id",
    "pageErrors": [],
    "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)"
    ],
    "apiFailures": [
+    "GET /api/heats/00000000-0000-4000-8000-000000000000 → 404",
     "GET /api/heats/00000000-0000-4000-8000-000000000000 → 404"
    ],
    "status": "OK",
    "landedOn": "/heats/00000000-0000-4000-8000-000000000000",
-   "textLength": 2075,
+   "textLength": 1652,
    "hasParam": true
   },
   {
@@ -144,21 +149,27 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/units",
-   "textLength": 2251,
+   "textLength": 4579,
    "hasParam": false
   },
   {
    "route": "/units/:id",
    "pageErrors": [],
    "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
     "Failed to load resource: the server responded with a status of 404 (Not Found)"
    ],
    "apiFailures": [
+    "GET /api/coils/00000000-0000-4000-8000-000000000000/history → 404",
+    "GET /api/coils/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/coils/00000000-0000-4000-8000-000000000000/history → 404",
     "GET /api/coils/00000000-0000-4000-8000-000000000000 → 404"
    ],
    "status": "OK",
    "landedOn": "/units/00000000-0000-4000-8000-000000000000",
-   "textLength": 2165,
+   "textLength": 1644,
    "hasParam": true
   },
   {
@@ -168,7 +179,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/work-orders",
-   "textLength": 1848,
+   "textLength": 1856,
    "hasParam": false
   },
   {
@@ -178,7 +189,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/work-orders/new",
-   "textLength": 1972,
+   "textLength": 1980,
    "hasParam": false
   },
   {
@@ -192,7 +203,7 @@
    ],
    "status": "OK",
    "landedOn": "/work-orders/00000000-0000-4000-8000-000000000000",
-   "textLength": 2234,
+   "textLength": 2241,
    "hasParam": true
   },
   {
@@ -202,7 +213,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/shipments",
-   "textLength": 2155,
+   "textLength": 2163,
    "hasParam": false
   },
   {
@@ -212,7 +223,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/shipments/00000000-0000-4000-8000-000000000000",
-   "textLength": 2042,
+   "textLength": 2050,
    "hasParam": true
   },
   {
@@ -222,7 +233,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/pricing",
-   "textLength": 3527,
+   "textLength": 3613,
    "hasParam": false
   },
   {
@@ -232,7 +243,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1821,
+   "textLength": 1829,
    "hasParam": false
   },
   {
@@ -242,7 +253,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/commercial/demand-shaping",
-   "textLength": 2541,
+   "textLength": 2549,
    "hasParam": false
   },
   {
@@ -252,7 +263,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/qaqc",
-   "textLength": 2514,
+   "textLength": 2521,
    "hasParam": false
   },
   {
@@ -262,7 +273,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/qaqc/test-entry",
-   "textLength": 1835,
+   "textLength": 1843,
    "hasParam": false
   },
   {
@@ -272,7 +283,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/receiving",
-   "textLength": 2594,
+   "textLength": 2806,
    "hasParam": false
   },
   {
@@ -282,7 +293,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/inspections",
-   "textLength": 2250,
+   "textLength": 2462,
    "hasParam": false
   },
   {
@@ -292,7 +303,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/snc",
-   "textLength": 2743,
+   "textLength": 2955,
    "hasParam": false
   },
   {
@@ -302,7 +313,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/scar",
-   "textLength": 2481,
+   "textLength": 2693,
    "hasParam": false
   },
   {
@@ -312,7 +323,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/scorecards",
-   "textLength": 2428,
+   "textLength": 2640,
    "hasParam": false
   },
   {
@@ -322,7 +333,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sqm/suppliers",
-   "textLength": 2656,
+   "textLength": 2868,
    "hasParam": false
   },
   {
@@ -332,7 +343,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/claims",
-   "textLength": 2601,
+   "textLength": 2609,
    "hasParam": false
   },
   {
@@ -342,7 +353,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/rma",
-   "textLength": 2465,
+   "textLength": 2473,
    "hasParam": false
   },
   {
@@ -352,7 +363,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/car",
-   "textLength": 2501,
+   "textLength": 2509,
    "hasParam": false
   },
   {
@@ -362,7 +373,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customer-quality/credits",
-   "textLength": 2480,
+   "textLength": 2488,
    "hasParam": false
   },
   {
@@ -372,7 +383,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/active",
-   "textLength": 2637,
+   "textLength": 2645,
    "hasParam": false
   },
   {
@@ -382,7 +393,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/registry",
-   "textLength": 2592,
+   "textLength": 2600,
    "hasParam": false
   },
   {
@@ -392,7 +403,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/invitations",
-   "textLength": 2622,
+   "textLength": 2630,
    "hasParam": false
   },
   {
@@ -402,7 +413,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/contractors/kiosk",
-   "textLength": 2119,
+   "textLength": 2127,
    "hasParam": false
   },
   {
@@ -412,7 +423,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/dashboard",
-   "textLength": 2658,
+   "textLength": 2666,
    "hasParam": false
   },
   {
@@ -422,7 +433,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/courses",
-   "textLength": 3426,
+   "textLength": 3434,
    "hasParam": false
   },
   {
@@ -432,7 +443,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/my-certs",
-   "textLength": 2788,
+   "textLength": 2796,
    "hasParam": false
   },
   {
@@ -442,7 +453,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/training/matrix",
-   "textLength": 3311,
+   "textLength": 3319,
    "hasParam": false
   },
   {
@@ -452,7 +463,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/qc",
-   "textLength": 1911,
+   "textLength": 1919,
    "hasParam": false
   },
   {
@@ -468,7 +479,7 @@
    ],
    "status": "OK",
    "landedOn": "/qc/inspect/00000000-0000-4000-8000-000000000000",
-   "textLength": 1646,
+   "textLength": 1654,
    "hasParam": true
   },
   {
@@ -478,7 +489,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/dashboard",
-   "textLength": 3615,
+   "textLength": 3623,
    "hasParam": false
   },
   {
@@ -488,7 +499,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/inspections",
-   "textLength": 2396,
+   "textLength": 2404,
    "hasParam": false
   },
   {
@@ -498,7 +509,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/ncr",
-   "textLength": 2338,
+   "textLength": 2346,
    "hasParam": false
   },
   {
@@ -508,7 +519,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/spc",
-   "textLength": 2433,
+   "textLength": 2441,
    "hasParam": false
   },
   {
@@ -518,7 +529,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production-quality/trace",
-   "textLength": 2028,
+   "textLength": 2036,
    "hasParam": false
   },
   {
@@ -528,7 +539,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/dashboard",
-   "textLength": 3623,
+   "textLength": 3631,
    "hasParam": false
   },
   {
@@ -538,7 +549,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/work-orders",
-   "textLength": 1994,
+   "textLength": 2002,
    "hasParam": false
   },
   {
@@ -548,7 +559,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/assets",
-   "textLength": 2102,
+   "textLength": 2110,
    "hasParam": false
   },
   {
@@ -558,7 +569,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/pm-schedules",
-   "textLength": 2836,
+   "textLength": 2844,
    "hasParam": false
   },
   {
@@ -568,7 +579,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/maintenance/parts",
-   "textLength": 2733,
+   "textLength": 2741,
    "hasParam": false
   },
   {
@@ -578,7 +589,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/provenance",
-   "textLength": 1857,
+   "textLength": 1865,
    "hasParam": false
   },
   {
@@ -588,7 +599,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production",
-   "textLength": 16763,
+   "textLength": 16771,
    "hasParam": false
   },
   {
@@ -598,7 +609,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production/shop-floor",
-   "textLength": 4617,
+   "textLength": 4625,
    "hasParam": false
   },
   {
@@ -608,7 +619,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production/shipping",
-   "textLength": 12810,
+   "textLength": 12818,
    "hasParam": false
   },
   {
@@ -618,7 +629,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/order-board",
-   "textLength": 20590,
+   "textLength": 20598,
    "hasParam": false
   },
   {
@@ -628,7 +639,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/schedule",
-   "textLength": 2497,
+   "textLength": 2446,
    "hasParam": false
   },
   {
@@ -638,7 +649,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/jobs/00000000-0000-4000-8000-000000000000",
-   "textLength": 2299,
+   "textLength": 2307,
    "hasParam": true
   },
   {
@@ -648,7 +659,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/receiving",
-   "textLength": 2071,
+   "textLength": 3059,
    "hasParam": false
   },
   {
@@ -658,7 +669,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking",
-   "textLength": 2747,
+   "textLength": 2755,
    "hasParam": false
   },
   {
@@ -668,7 +679,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/packaging",
-   "textLength": 12505,
+   "textLength": 12513,
    "hasParam": false
   },
   {
@@ -678,7 +689,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/tags",
-   "textLength": 1885,
+   "textLength": 1893,
    "hasParam": false
   },
   {
@@ -688,7 +699,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/staging",
-   "textLength": 12637,
+   "textLength": 12646,
    "hasParam": false
   },
   {
@@ -698,7 +709,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/traceability",
-   "textLength": 1956,
+   "textLength": 1964,
    "hasParam": false
   },
   {
@@ -708,7 +719,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/traceability/00000000-0000-4000-8000-000000000000",
-   "textLength": 1956,
+   "textLength": 1964,
    "hasParam": true
   },
   {
@@ -718,7 +729,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/planner",
-   "textLength": 2653,
+   "textLength": 2661,
    "hasParam": false
   },
   {
@@ -728,7 +739,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/comparison",
-   "textLength": 2950,
+   "textLength": 2958,
    "hasParam": false
   },
   {
@@ -738,7 +749,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/comparison/00000000-0000-4000-8000-000000000000",
-   "textLength": 2950,
+   "textLength": 2958,
    "hasParam": true
   },
   {
@@ -748,7 +759,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/route/00000000-0000-4000-8000-000000000000",
-   "textLength": 2734,
+   "textLength": 2742,
    "hasParam": true
   },
   {
@@ -758,7 +769,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/tracking",
-   "textLength": 3057,
+   "textLength": 3065,
    "hasParam": false
   },
   {
@@ -771,7 +782,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/exceptions",
-   "textLength": 2908,
+   "textLength": 2916,
    "hasParam": false
   },
   {
@@ -781,7 +792,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/freight/pod/00000000-0000-4000-8000-000000000000",
-   "textLength": 2503,
+   "textLength": 2511,
    "hasParam": true
   },
   {
@@ -791,7 +802,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1821,
+   "textLength": 1829,
    "hasParam": false
   },
   {
@@ -801,7 +812,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1821,
+   "textLength": 1829,
    "hasParam": false
   },
   {
@@ -811,7 +822,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1821,
+   "textLength": 1829,
    "hasParam": true
   },
   {
@@ -821,7 +832,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/dashboard",
-   "textLength": 2798,
+   "textLength": 2806,
    "hasParam": false
   },
   {
@@ -831,7 +842,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/sales/rfq-inbox",
-   "textLength": 1821,
+   "textLength": 1829,
    "hasParam": true
   },
   {
@@ -841,7 +852,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/cockpit",
-   "textLength": 2897,
+   "textLength": 2905,
    "hasParam": false
   },
   {
@@ -851,7 +862,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/simulation",
-   "textLength": 2108,
+   "textLength": 2116,
    "hasParam": false
   },
   {
@@ -861,7 +872,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/forecast",
-   "textLength": 2500,
+   "textLength": 2508,
    "hasParam": false
   },
   {
@@ -871,7 +882,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/decisions",
-   "textLength": 2844,
+   "textLength": 2852,
    "hasParam": false
   },
   {
@@ -881,7 +892,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/digital-twin",
-   "textLength": 2476,
+   "textLength": 2484,
    "hasParam": false
   },
   {
@@ -891,7 +902,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/compression-metrics",
-   "textLength": 6524,
+   "textLength": 6532,
    "hasParam": false
   },
   {
@@ -901,7 +912,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shipping",
-   "textLength": 2600,
+   "textLength": 2608,
    "hasParam": false
   },
   {
@@ -911,7 +922,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/time-tracking",
-   "textLength": 2088,
+   "textLength": 2096,
    "hasParam": false
   },
   {
@@ -921,7 +932,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shopfloor",
-   "textLength": 2046,
+   "textLength": 2054,
    "hasParam": false
   },
   {
@@ -931,7 +942,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shopfloor/00000000-0000-4000-8000-000000000000",
-   "textLength": 1831,
+   "textLength": 1839,
    "hasParam": true
   },
   {
@@ -941,7 +952,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/route-optimization",
-   "textLength": 2018,
+   "textLength": 2026,
    "hasParam": false
   },
   {
@@ -951,7 +962,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/tracking",
-   "textLength": 2797,
+   "textLength": 2805,
    "hasParam": false
   },
   {
@@ -961,7 +972,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/logistics/dispatch",
-   "textLength": 2201,
+   "textLength": 2209,
    "hasParam": false
   },
   {
@@ -971,7 +982,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/invoices",
-   "textLength": 6925,
+   "textLength": 7012,
    "hasParam": false
   },
   {
@@ -981,7 +992,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/returns",
-   "textLength": 2602,
+   "textLength": 2610,
    "hasParam": false
   },
   {
@@ -991,7 +1002,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders",
-   "textLength": 5546,
+   "textLength": 5503,
    "hasParam": false
   },
   {
@@ -1001,7 +1012,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/boms",
-   "textLength": 2954,
+   "textLength": 2962,
    "hasParam": false
   },
   {
@@ -1011,7 +1022,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/intake",
-   "textLength": 2678,
+   "textLength": 2687,
    "hasParam": false
   },
   {
@@ -1021,7 +1032,17 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/online-inbox",
-   "textLength": 4088,
+   "textLength": 4096,
+   "hasParam": false
+  },
+  {
+   "route": "/orders/credit-holds",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/credit-holds",
+   "textLength": 1857,
    "hasParam": false
   },
   {
@@ -1037,7 +1058,7 @@
    ],
    "status": "OK",
    "landedOn": "/orders/00000000-0000-4000-8000-000000000000",
-   "textLength": 1628,
+   "textLength": 1636,
    "hasParam": true
   },
   {
@@ -1047,7 +1068,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/pos",
-   "textLength": 2127,
+   "textLength": 2135,
    "hasParam": false
   },
   {
@@ -1057,7 +1078,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/pos/retail",
-   "textLength": 2369,
+   "textLength": 2377,
    "hasParam": false
   },
   {
@@ -1067,7 +1088,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customers",
-   "textLength": 3989,
+   "textLength": 3976,
    "hasParam": false
   },
   {
@@ -1077,7 +1098,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/customers/preferences",
-   "textLength": 2893,
+   "textLength": 2939,
    "hasParam": false
   },
   {
@@ -1087,7 +1108,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/users",
-   "textLength": 2432,
+   "textLength": 2440,
    "hasParam": false
   },
   {
@@ -1097,7 +1118,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/partners",
-   "textLength": 1991,
+   "textLength": 1999,
    "hasParam": false
   },
   {
@@ -1107,7 +1128,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/tax-rates",
-   "textLength": 2079,
+   "textLength": 2087,
    "hasParam": false
   },
   {
@@ -1117,7 +1138,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/audit-log",
-   "textLength": 2097,
+   "textLength": 2105,
    "hasParam": false
   },
   {
@@ -1127,7 +1148,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/processing-recipes",
-   "textLength": 3659,
+   "textLength": 3667,
    "hasParam": false
   },
   {
@@ -1137,7 +1158,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/staff",
-   "textLength": 1989,
+   "textLength": 1997,
    "hasParam": false
   },
   {
@@ -1147,7 +1168,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shop",
-   "textLength": 2841,
+   "textLength": 2849,
    "hasParam": false
   },
   {
@@ -1157,7 +1178,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shop/search",
-   "textLength": 2653,
+   "textLength": 2661,
    "hasParam": false
   },
   {
@@ -1167,7 +1188,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shop/remnants",
-   "textLength": 4426,
+   "textLength": 4434,
    "hasParam": false
   },
   {
@@ -1183,7 +1204,7 @@
    ],
    "status": "OK",
    "landedOn": "/shop/products/00000000-0000-4000-8000-000000000000",
-   "textLength": 1635,
+   "textLength": 1643,
    "hasParam": true
   },
   {
@@ -1193,7 +1214,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shop/cart",
-   "textLength": 1713,
+   "textLength": 1721,
    "hasParam": false
   },
   {
@@ -1203,7 +1224,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shop/checkout",
-   "textLength": 1637,
+   "textLength": 1645,
    "hasParam": false
   },
   {
@@ -1213,7 +1234,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shop/orders",
-   "textLength": 1906,
+   "textLength": 1914,
    "hasParam": false
   },
   {
@@ -1229,7 +1250,7 @@
    ],
    "status": "OK",
    "landedOn": "/shop/orders/00000000-0000-4000-8000-000000000000",
-   "textLength": 1635,
+   "textLength": 1643,
    "hasParam": true
   },
   {
@@ -1239,7 +1260,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/account/dashboard",
-   "textLength": 2179,
+   "textLength": 2187,
    "hasParam": false
   },
   {
@@ -1249,7 +1270,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/account/orders",
-   "textLength": 10359,
+   "textLength": 10367,
    "hasParam": false
   },
   {
@@ -1259,7 +1280,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/account/shipments",
-   "textLength": 13852,
+   "textLength": 13860,
    "hasParam": false
   },
   {
@@ -1269,7 +1290,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/account/documents",
-   "textLength": 9177,
+   "textLength": 9185,
    "hasParam": false
   },
   {
@@ -1279,7 +1300,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/catalog",
-   "textLength": 3120,
+   "textLength": 3128,
    "hasParam": false
   },
   {
@@ -1291,7 +1312,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/admin/online-settings",
-   "textLength": 3492,
+   "textLength": 3500,
    "hasParam": false
   },
   {
@@ -1301,7 +1322,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/help/manual",
-   "textLength": 1604,
+   "textLength": 1612,
    "hasParam": false
   }
  ]

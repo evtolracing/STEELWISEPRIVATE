@@ -2,9 +2,9 @@
 
 Generated 2026-11-13 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
 
-- Distinct API calls found in the screens: **355**
-- Matched to a server route: **200**
-- No matching server route (the call would get a 404): **155**
+- Distinct API calls found in the screens: **345**
+- Matched to a server route: **206**
+- No matching server route (the call would get a 404): **139**
 
 Calls built from variables (a base URL constant plus a suffix) are not seen by this scan, so the real number of calls is higher.
 
@@ -127,21 +127,6 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `GET /api/provenance/units/:x` | api/provenance.js |
 | `GET /api/provenance/verify/:x` | api/provenance.js |
 
-### /api/units (10)
-
-| Call | Used in |
-|---|---|
-| `GET /api/units/:x` | api/units.js |
-| `GET /api/units/:x/certifications` | api/qaqc.js |
-| `POST /api/units/:x/certifications` | api/qaqc.js |
-| `GET /api/units/:x/certifications/:x` | api/qaqc.js |
-| `DELETE /api/units/:x/certifications/:x` | api/qaqc.js |
-| `GET /api/units/:x/tests` | api/qaqc.js |
-| `POST /api/units/:x/tests` | api/qaqc.js |
-| `GET /api/units/:x/tests/:x` | api/qaqc.js |
-| `PUT /api/units/:x/tests/:x` | api/qaqc.js |
-| `GET /api/units/tag/:x` | api/units.js |
-
 ### /api/fabrication-work-orders (9)
 
 | Call | Used in |
@@ -170,16 +155,18 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `PUT /api/work-orders/:x/steps/:x` | api/workOrders.js |
 | `PATCH /api/work-orders/:x/steps/:x/status` | api/workOrders.js |
 
-### /api/inventory (6)
+### /api/units (8)
 
 | Call | Used in |
 |---|---|
-| `POST /api/inventory/adjust` | api/inventory.js |
-| `GET /api/inventory/aggregate` | api/inventory.js |
-| `POST /api/inventory/locations` | api/inventory.js |
-| `GET /api/inventory/locations/:x` | api/inventory.js |
-| `GET /api/inventory/locations/:x/stock` | api/inventory.js |
-| `GET /api/inventory/movements` | api/inventory.js |
+| `GET /api/units/:x/certifications` | api/qaqc.js |
+| `POST /api/units/:x/certifications` | api/qaqc.js |
+| `GET /api/units/:x/certifications/:x` | api/qaqc.js |
+| `DELETE /api/units/:x/certifications/:x` | api/qaqc.js |
+| `GET /api/units/:x/tests` | api/qaqc.js |
+| `POST /api/units/:x/tests` | api/qaqc.js |
+| `GET /api/units/:x/tests/:x` | api/qaqc.js |
+| `PUT /api/units/:x/tests/:x` | api/qaqc.js |
 
 ### /api/batches (5)
 
@@ -200,24 +187,6 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `POST /api/shipments/:x/plan-loading` | api/logistics.js |
 | `GET /api/shipments/:x/tracking` | api/logistics.js |
 | `PUT /api/shipments/splits/:x/status` | services/splitShipmentApi.js |
-
-### /api/coils (4)
-
-| Call | Used in |
-|---|---|
-| `GET /api/coils/:x/genealogy` | api/units.js |
-| `GET /api/coils/:x/history` | api/units.js |
-| `POST /api/coils/:x/release` | api/units.js |
-| `GET /api/coils/:x/trace` | api/units.js |
-
-### /api/heats (4)
-
-| Call | Used in |
-|---|---|
-| `PUT /api/heats/:x` | api/heats.js |
-| `GET /api/heats/:x/chemistry` | api/heats.js |
-| `GET /api/heats/:x/tests` | api/heats.js |
-| `GET /api/heats/number/:x` | api/heats.js |
 
 ### /api/orders (4)
 

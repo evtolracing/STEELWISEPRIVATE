@@ -11,7 +11,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Snackbar,
   Table, TableBody, TableCell, TableHead, TableRow,
 } from '@mui/material'
-import { ArrowBack as BackIcon, Inventory as InventoryIcon, Edit as EditIcon, Block as HoldIcon, LockOpen as ReleaseIcon } from '@mui/icons-material'
+import { ArrowBack as BackIcon, Inventory as InventoryIcon, Edit as EditIcon, Block as HoldIcon, LockOpen as ReleaseIcon, SwapHoriz as MoveIcon } from '@mui/icons-material'
 import { StatusChip } from '../../components/common'
 import { unitSize } from './UnitListPage'
 
@@ -54,6 +54,7 @@ export default function UnitDetailPage() {
   const [dialogError, setDialogError] = useState('')
   const [saving, setSaving] = useState(false)
   const [notice, setNotice] = useState('')
+  const [locations, setLocations] = useState([])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -74,6 +75,10 @@ export default function UnitDetailPage() {
     setDialogError('')
     if (name === 'hold') setForm({ holdType: 'QUALITY', holdReason: '' })
     if (name === 'release') setForm({ notes: '' })
+    if (name === 'move') {
+      setForm({ toLocationId: '' })
+      call('/api/inventory/locations').then((l) => setLocations(Array.isArray(l) ? l : [])).catch(() => setDialogError('The locations could not be loaded.'))
+    }
     if (name === 'edit') setForm(Object.fromEntries([...EDIT_FIELDS.map(([k]) => [k, unit[k] ?? '']), ['edgeCondition', unit.edgeCondition || '']]))
     setDialog(name)
   }
@@ -83,7 +88,8 @@ export default function UnitDetailPage() {
       if (dialog === 'hold') await call(`/api/coils/${id}/hold`, 'POST', form)
       if (dialog === 'release') await call(`/api/coils/${id}/release`, 'POST', form)
       if (dialog === 'edit') await call(`/api/coils/${id}`, 'PUT', form)
-      setNotice(dialog === 'hold' ? 'Item put on hold' : dialog === 'release' ? 'Hold released' : 'Changes saved')
+      if (dialog === 'move') await call('/api/inventory/transfer', 'POST', { coilId: id, fromLocationId: unit.locationId, toLocationId: form.toLocationId })
+      setNotice(dialog === 'hold' ? 'Item put on hold' : dialog === 'release' ? 'Hold released' : dialog === 'move' ? 'Item moved' : 'Changes saved')
       setDialog(null)
       load()
     } catch (e) {
@@ -118,6 +124,7 @@ export default function UnitDetailPage() {
           {unit && (
             <Stack direction="row" spacing={1}>
               <Button startIcon={<EditIcon />} variant="outlined" onClick={() => open('edit')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Edit</Button>
+              <Button startIcon={<MoveIcon />} variant="outlined" disabled={closed || !unit.inventory} onClick={() => open('move')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Move</Button>
               {onHold
                 ? <Button startIcon={<ReleaseIcon />} variant="contained" color="success" onClick={() => open('release')}>Release hold</Button>
                 : <Button startIcon={<HoldIcon />} variant="contained" color="warning" disabled={closed} onClick={() => open('hold')}>Put on hold</Button>}
@@ -224,7 +231,7 @@ export default function UnitDetailPage() {
       </Box>
 
       <Dialog open={Boolean(dialog)} onClose={() => !saving && setDialog(null)} maxWidth={dialog === 'edit' ? 'sm' : 'xs'} fullWidth>
-        <DialogTitle>{dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release hold' : 'Edit item details'}</DialogTitle>
+        <DialogTitle>{dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release hold' : dialog === 'move' ? 'Move to another location' : 'Edit item details'}</DialogTitle>
         <DialogContent>
           {dialog === 'hold' && (
             <Stack spacing={2} sx={{ mt: 1 }}>
@@ -239,6 +246,14 @@ export default function UnitDetailPage() {
             <Stack spacing={2} sx={{ mt: 1 }}>
               <Typography variant="body2">The held quantity becomes available again and the item can be reserved and shipped. Your name is recorded on the release.</Typography>
               <TextField fullWidth multiline minRows={2} label="Note (optional)" {...field('notes')} />
+            </Stack>
+          )}
+          {dialog === 'move' && (
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <Typography variant="body2">The whole item moves, with anything reserved on it. It is now at {unit?.location?.name || unit?.location?.code || 'no recorded location'}. The move is recorded in the item history.</Typography>
+              <TextField select fullWidth label="Move to" required {...field('toLocationId')}>
+                {locations.filter((l) => l.id !== unit?.locationId).map((l) => <MenuItem key={l.id} value={l.id}>{l.code}{l.name && l.name !== l.code ? `: ${l.name}` : ''}</MenuItem>)}
+              </TextField>
             </Stack>
           )}
           {dialog === 'edit' && (
@@ -262,8 +277,8 @@ export default function UnitDetailPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialog(null)} disabled={saving}>Cancel</Button>
-          <Button variant="contained" onClick={submit} disabled={saving || (dialog === 'hold' && !String(form.holdReason || '').trim())}>
-            {dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release' : 'Save'}
+          <Button variant="contained" onClick={submit} disabled={saving || (dialog === 'hold' && !String(form.holdReason || '').trim()) || (dialog === 'move' && !form.toLocationId)}>
+            {dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release' : dialog === 'move' ? 'Move item' : 'Save'}
           </Button>
         </DialogActions>
       </Dialog>

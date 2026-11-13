@@ -113,11 +113,19 @@
    "file": "src/backend/src/routes/heats.js"
   },
   {
+   "ep": "GET /api/heats/mills",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
    "ep": "GET /api/heats/:id",
    "file": "src/backend/src/routes/heats.js"
   },
   {
    "ep": "POST /api/heats",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
+   "ep": "PUT /api/heats/:id",
    "file": "src/backend/src/routes/heats.js"
   },
   {
@@ -178,6 +186,14 @@
   },
   {
    "ep": "GET /api/inventory/locations",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/receipts",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "GET /api/inventory/receipts",
    "file": "src/backend/src/routes/inventory.js"
   },
   {
@@ -434,6 +450,14 @@
   },
   {
    "ep": "GET /api/orders",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/orders/credit-holds",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "POST /api/orders/:id/credit-release",
    "file": "src/backend/src/routes/orders.js"
   },
   {
@@ -4191,6 +4215,7 @@
   "planning/*",
   "orders/intake",
   "orders/online-inbox",
+  "orders/credit-holds",
   "orders/:id",
   "pos",
   "pos/retail",

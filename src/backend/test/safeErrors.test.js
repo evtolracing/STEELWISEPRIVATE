@@ -51,3 +51,12 @@ test('pagingGuard refuses paging values that are not whole numbers', () => {
     assert.equal(r.code, 400);
   }
 });
+
+test('a rejected filter value is the caller\'s mistake only when the caller sent it', async () => {
+  const { blamesCaller } = await import('../src/middleware/safeErrors.js');
+  const message = 'Invalid value for argument `status`. Expected OrderStatus.\n  where: { status: "\';--" }';
+  assert.equal(blamesCaller(message, { query: { status: "';--" }, params: {} }), true);
+  assert.equal(blamesCaller(message, { query: {}, params: {} }), false);
+  assert.equal(blamesCaller('Invalid value for argument `status`. where: { status: { in: ["CONVERTED"] } }', { query: { period: 'week' }, params: {} }), false);
+  assert.equal(blamesCaller(undefined, { query: { status: 'x' } }), false);
+});

@@ -18,12 +18,24 @@ export function looksInternal(text) {
 
 const READS = new Set(['GET', 'HEAD']);
 
+/**
+ * True when the database client rejected a value that came from the request's
+ * own query string or path. A rejected value the code supplied is our bug and
+ * stays a server error.
+ */
+export function blamesCaller(message, req) {
+  if (!message) return false;
+  const sent = [...Object.values(req.query || {}), ...Object.values(req.params || {})]
+    .flat().filter((v) => typeof v === 'string' && v.length > 0);
+  return sent.some((v) => message.includes(JSON.stringify(v)) || message.includes(`'${v}'`));
+}
+
 export function safeErrors(req, res, next) {
   const json = res.json.bind(res);
   const store = {};
   res.json = (body) => {
     // A read that failed only because a filter value was the wrong kind is the caller's mistake, not ours.
-    if (res.statusCode === 500 && store.badFilterValue && READS.has(req.method)) {
+    if (res.statusCode === 500 && READS.has(req.method) && blamesCaller(store.badFilterValue, req)) {
       res.status(400);
       return json({ error: 'One of the filter values in this request is not valid.' });
     }

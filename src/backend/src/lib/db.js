@@ -21,7 +21,7 @@ const withBadFilterNote = (client) => client.$extends({
         return await query(args);
       } catch (error) {
         const store = requestContext.getStore();
-        if (store && isBadFilterValue(error)) store.badFilterValue = true;
+        if (store && isBadFilterValue(error)) store.badFilterValue = String(error.message || '');
         throw error;
       }
     },

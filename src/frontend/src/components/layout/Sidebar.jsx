@@ -143,7 +143,7 @@ const navSections = [
     items: [
       { path: '/customers', label: 'Customers', icon: CustomersIcon },
       { path: '/customers/preferences', label: 'Preferences', icon: PreferencesIcon },
-      { path: '/sales/rfq-inbox', label: 'RFQ Inbox', icon: RFQIcon },
+      { path: '/sales/rfq-inbox', label: 'RFQs & Quotes', icon: RFQIcon },
       { path: '/sales/dashboard', label: 'Sales Dashboard', icon: SalesDashIcon },
       { path: '/commercial/demand-shaping', label: 'Demand Shaping', icon: DemandShapingIcon },
     ],

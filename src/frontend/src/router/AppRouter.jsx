@@ -18,7 +18,6 @@ const WorkOrderCreatePage = lazy(() => import('../pages/WorkOrders/WorkOrderCrea
 const ShipmentListPage = lazy(() => import('../pages/Logistics/ShipmentListPage'))
 const ShipmentDetailPage = lazy(() => import('../pages/Logistics/ShipmentDetailPage'))
 const PricingDashboardPage = lazy(() => import('../pages/Pricing/PricingDashboardPage'))
-const QuoteBuilderPage = lazy(() => import('../pages/Pricing/QuoteBuilderPage'))
 const DemandShapingDashboard = lazy(() => import('../pages/Commercial/DemandShapingDashboard'))
 const QualityDashboardPage = lazy(() => import('../pages/QAQC/QualityDashboardPage'))
 const TestEntryPage = lazy(() => import('../pages/QAQC/TestEntryPage'))
@@ -81,10 +80,8 @@ const PODViewer = lazy(() => import('../pages/Freight/PODViewer'))
 // Sales & Pricing Pages
 const InvoicesPage = lazy(() => import('../pages/Orders/InvoicesPage'))
 const ReturnsPage = lazy(() => import('../pages/Orders/ReturnsPage'))
-const RFQInbox = lazy(() => import('../pages/Sales/RFQInbox'))
-const SalesQuoteBuilder = lazy(() => import('../pages/Sales/QuoteBuilder'))
+const QuotesPage = lazy(() => import('../pages/Sales/QuotesPage'))
 const SalesDashboard = lazy(() => import('../pages/Sales/SalesDashboard'))
-const CustomerQuotePortal = lazy(() => import('../pages/Sales/CustomerQuotePortal'))
 
 // Executive Ops Cockpit & Digital Twin Pages
 const ExecutiveCockpit = lazy(() => import('../pages/Executive/ExecutiveCockpit'))
@@ -438,11 +435,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'pricing/quotes/new',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <QuoteBuilderPage />
-          </Suspense>
-        ),
+        element: <Navigate to="/sales/rfq-inbox" replace />,
         errorElement: <RouteErrorPage />,
       },
       {
@@ -989,27 +982,19 @@ const router = createBrowserRouter([
         path: 'sales/rfq-inbox',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <RFQInbox />
+            <QuotesPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
       },
       {
         path: 'sales/quote/new',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <SalesQuoteBuilder />
-          </Suspense>
-        ),
+        element: <Navigate to="/sales/rfq-inbox" replace />,
         errorElement: <RouteErrorPage />,
       },
       {
         path: 'sales/quote/:quoteId',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <SalesQuoteBuilder />
-          </Suspense>
-        ),
+        element: <Navigate to="/sales/rfq-inbox" replace />,
         errorElement: <RouteErrorPage />,
       },
       {
@@ -1023,11 +1008,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'portal/quote/:quoteToken',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <CustomerQuotePortal />
-          </Suspense>
-        ),
+        element: <Navigate to="/sales/rfq-inbox" replace />,
         errorElement: <RouteErrorPage />,
       },
 

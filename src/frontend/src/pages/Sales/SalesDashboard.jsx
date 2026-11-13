@@ -351,7 +351,7 @@ const SalesDashboard = () => {
                     key={quote.id}
                     hover
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/sales/quote/${quote.id}`)}
+                    onClick={() => navigate('/sales/rfq-inbox')}
                   >
                     <TableCell>
                       <Typography variant="body2" fontWeight={500} color="primary.main">

@@ -49,9 +49,12 @@ export function safeErrors(req, res, next) {
         } else delete cleaned[field];
       }
       if (cleaned) {
-        console.error(`[safeErrors] ${req.method} ${req.originalUrl} → ${res.statusCode}:`, FIELDS.map((f) => body[f]).filter(Boolean).join(' | ').slice(0, 2000));
+        if (res.statusCode >= 500 && req.id) cleaned.requestId = req.id;
+        console.error(`[safeErrors] ${req.id || '-'} ${req.method} ${req.originalUrl.split('?')[0]} → ${res.statusCode}:`, FIELDS.map((f) => body[f]).filter(Boolean).join(' | ').slice(0, 2000));
         return json(cleaned);
       }
+      // Every server-error reply carries the request id so it can be found in the logs.
+      if (res.statusCode >= 500 && req.id && body.requestId === undefined) return json({ ...body, requestId: req.id });
     }
     return json(body);
   };

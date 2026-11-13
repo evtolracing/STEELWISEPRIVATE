@@ -506,6 +506,14 @@ export function MarginInsightsWidget({ title = 'Margin Insights', data, loading,
       <Card sx={{ height: '100%' }}>
         <CardHeader title={title} titleTypographyProps={{ variant: 'h6' }} />
         <CardContent sx={{ pt: 0 }}>
+          {insights.marginAvailable === false ? (
+            <Stack spacing={1}>
+              <Typography variant="h6" color="text.secondary">Not available yet</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Margin needs the cost of each order line, which is not recorded. Revenue today: <strong>${(insights.revenueToday || 0).toLocaleString()}</strong>
+              </Typography>
+            </Stack>
+          ) : (
           <Stack spacing={2}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="h3" fontWeight={600} color="success.main">
@@ -544,6 +552,7 @@ export function MarginInsightsWidget({ title = 'Margin Insights', data, loading,
             />
           )}
         </Stack>
+          )}
       </CardContent>
     </Card>
     </WidgetWrapper>

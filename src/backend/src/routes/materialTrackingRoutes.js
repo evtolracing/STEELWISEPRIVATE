@@ -365,11 +365,8 @@ router.get('/jobs/:jobId/timeline', async (req, res) => {
 router.get('/staging', async (req, res) => {
   try {
     // Get jobs that are ready to ship or being staged
-    const jobs = await prisma.job.findMany({
-      where: {
-        status: { in: ['READY_TO_SHIP', 'SHIPPED'] },
-      },
-      include: {
+    // Everything waiting to ship (capped), plus the 200 most recently shipped.
+    const include = {
         order: {
           select: {
             orderNumber: true,
@@ -390,9 +387,12 @@ router.get('/staging', async (req, res) => {
             netWeightLbs: true,
           },
         },
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
+    };
+    const [ready, shipped] = await Promise.all([
+      prisma.job.findMany({ where: { status: 'READY_TO_SHIP' }, include, orderBy: { updatedAt: 'desc' }, take: 1000 }),
+      prisma.job.findMany({ where: { status: 'SHIPPED' }, include, orderBy: { updatedAt: 'desc' }, take: 200 }),
+    ]);
+    const jobs = [...ready, ...shipped].sort((x, y) => y.updatedAt - x.updatedAt);
 
     // Map to frontend format
     const staged = jobs.map((job) => ({

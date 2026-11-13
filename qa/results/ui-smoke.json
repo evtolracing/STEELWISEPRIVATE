@@ -1,6 +1,6 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T06:07:55.844Z",
+ "at": "2026-11-13T06:42:30.789Z",
  "who": "qa-admin@qa.test",
  "screens": 123,
  "tally": {
@@ -35,7 +35,7 @@
    "route": "/shop-floor",
    "pageErrors": [],
    "consoleErrors": [
-    "Warning: validateDOMNesting(...): %s cannot appear as a child of <%s>.%s%s%s <h5> h2   \n    at h5\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=25579222:4218:49\n    at Typog"
+    "Warning: validateDOMNesting(...): %s cannot appear as a child of <%s>.%s%s%s <h5> h2   \n    at h5\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=e22db364:4218:49\n    at Typog"
    ],
    "apiFailures": [],
    "status": "OK",
@@ -110,7 +110,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/ops-cockpit",
-   "textLength": 15747,
+   "textLength": 15707,
    "hasParam": false
   },
   {
@@ -588,7 +588,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production",
-   "textLength": 16661,
+   "textLength": 16612,
    "hasParam": false
   },
   {
@@ -608,7 +608,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production/shipping",
-   "textLength": 12787,
+   "textLength": 12731,
    "hasParam": false
   },
   {
@@ -618,7 +618,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/order-board",
-   "textLength": 20307,
+   "textLength": 20353,
    "hasParam": false
   },
   {
@@ -628,7 +628,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/schedule",
-   "textLength": 2530,
+   "textLength": 2471,
    "hasParam": false
   },
   {
@@ -668,7 +668,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/packaging",
-   "textLength": 12332,
+   "textLength": 12391,
    "hasParam": false
   },
   {
@@ -688,7 +688,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/material-tracking/staging",
-   "textLength": 12551,
+   "textLength": 12612,
    "hasParam": false
   },
   {
@@ -765,8 +765,8 @@
    "route": "/freight/exceptions",
    "pageErrors": [],
    "consoleErrors": [
-    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <p> p \n    at p\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=25579222:4218:49\n    at Typograph",
-    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=25579222:4218:49\n    at Box3 "
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <p> p \n    at p\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=e22db364:4218:49\n    at Typograph",
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=e22db364:4218:49\n    at Box3 "
    ],
    "apiFailures": [],
    "status": "OK",
@@ -891,7 +891,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/executive/compression-metrics",
-   "textLength": 7074,
+   "textLength": 7124,
    "hasParam": false
   },
   {
@@ -971,7 +971,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/invoices",
-   "textLength": 6786,
+   "textLength": 6947,
    "hasParam": false
   },
   {
@@ -981,7 +981,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/returns",
-   "textLength": 2600,
+   "textLength": 2598,
    "hasParam": false
   },
   {
@@ -991,7 +991,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders",
-   "textLength": 5493,
+   "textLength": 5537,
    "hasParam": false
   },
   {

@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T06:07:55.944Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T06:42:30.916Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -21,11 +21,14 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 | `r7-4001.json` | 4001 | 50 | 49 | 0 | 0 | 1 | 593 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 56 orders |
 | `r7-4002.json` | 4002 | 50 | 49 | 0 | 0 | 1 | 583 | 492 | 5 of 5 pass | 0 problems in 323 stock items and 112 orders |
 | `r7-4003.json` | 4003 | 50 | 49 | 0 | 0 | 1 | 595 | 494 | 5 of 5 pass | 0 problems in 323 stock items and 168 orders |
-| `final-7001.json` | 7001 | 50 | 50 | 0 | 0 | 0 | 712 | 776 | 8 of 8 pass | 0 problems in 323 stock items and 59 orders |
-| `final-7002.json` | 7002 | 50 | 50 | 0 | 0 | 0 | 708 | 771 | 8 of 8 pass | 0 problems in 323 stock items and 118 orders |
-| `final-7003.json` | 7003 | 50 | 50 | 0 | 0 | 0 | 700 | 769 | 8 of 8 pass | 0 problems in 323 stock items and 177 orders |
+| `r8-7001.json` | 7001 | 50 | 50 | 0 | 0 | 0 | 712 | 776 | 8 of 8 pass | 0 problems in 323 stock items and 59 orders |
+| `r8-7002.json` | 7002 | 50 | 50 | 0 | 0 | 0 | 708 | 771 | 8 of 8 pass | 0 problems in 323 stock items and 118 orders |
+| `r8-7003.json` | 7003 | 50 | 50 | 0 | 0 | 0 | 700 | 769 | 8 of 8 pass | 0 problems in 323 stock items and 177 orders |
+| `final-8001.json` | 8001 | 50 | 50 | 0 | 0 | 0 | 715 | 783 | 8 of 8 pass | 0 problems in 323 stock items and 59 orders |
+| `final-8002.json` | 8002 | 50 | 50 | 0 | 0 | 0 | 699 | 778 | 8 of 8 pass | 0 problems in 323 stock items and 118 orders |
+| `final-8003.json` | 8003 | 50 | 50 | 0 | 0 | 0 | 693 | 770 | 8 of 8 pass | 0 problems in 323 stock items and 177 orders |
 
-**Final consecutive cycles:** 3 cycles, 150 jobs: 150 passed, 0 failed, 0 blocked. 2120 API steps and 2316 checks. Seeds 7001, 7002, 7003.
+**Final consecutive cycles:** 3 cycles, 150 jobs: 150 passed, 0 failed, 0 blocked. 2107 API steps and 2331 checks. Seeds 8001, 8002, 8003.
 
 ### By category across the final cycles
 
@@ -46,13 +49,13 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 ### Simultaneous-request probes (last final cycle)
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
-- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
+- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 4800
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
+- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 7200 of 7200; on hand 12000 → 4800
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
-- Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
-- Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
-- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
+- Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 7200 billed of 7200 shipped
+- Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 4680 of 4680
+- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 4800 → 6600
 
 The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
@@ -72,7 +75,7 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T06:03:03.088Z. 574 of 574 routes swept.
+Run 2026-11-13T06:37:38.853Z. 574 of 574 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
@@ -90,7 +93,7 @@ Run 2026-11-13T06:03:03.088Z. 574 of 574 routes swept.
 
 ## Screen check
 
-Run 2026-11-13T06:07:55.844Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T06:42:30.789Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 123
 - OK: 123
@@ -112,7 +115,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Screen-to-server contract
 
-332 distinct API calls are written in the screens; 152 have no matching server route. Full list in `qa/api-contract.md`.
+352 distinct API calls are written in the screens; 155 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

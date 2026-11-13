@@ -32,7 +32,7 @@ cd ../.. && node qa/sim/fixtures.mjs
 # every time
 qa/tools/start-qa-server.sh &                       # backend on port 3011, QA database only
 (cd src/backend && npm test)                        # unit tests
-node qa/sim/run.mjs --seed 7001 --out qa/results/my-run.json
+node qa/sim/run.mjs --seed 8001 --out qa/results/my-run.json
 node qa/sim/security.mjs
 node qa/tools/report.mjs                            # rebuild test-execution-results.md
 ```

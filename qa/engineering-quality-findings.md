@@ -1,0 +1,38 @@
+# Quality improvement register (Phase 2)
+
+Risk: **Critical** security, data integrity, money or an essential workflow. **High** significant reliability, operational or performance weakness. **Medium** substandard implementation or inefficient workflow. **Low** minor.
+
+Evidence files are in `qa/results/`. "Bench" is `qa/perf/bench.mjs` on the scaled database.
+
+## Workstream 1: architecture and infrastructure
+
+| ID | Module | Category | What it did | Standard expected | Evidence | Impact | Risk | Status | Proof of fix |
+|---|---|---|---|---|---|---|---|---|---|
+| E-001 | Jobs | Performance | `GET /api/jobs` returned every job with no limit | Lists are bounded | Bench before: 104 MB, 9.6 s median; 20 simultaneous requests all failed after 30 s | Job board and every screen that lists jobs stops working as history grows | High | Fixed | Bench after: 1.2 MB, 121 ms; 20 simultaneous in 1.4 s, 0 failed. `routes/jobs.js` |
+| E-002 | Jobs | Consistency | When a second database client was configured, the job list used it instead: 100 rows, no filters, no order or work-center detail | One code path per route | Code read, `routes/jobs.js` before this change | A filter such as "jobs for this order" could silently return unrelated jobs | High | Fixed | Path removed. Sim rework jobs and UI check pass |
+| E-003 | Database | Performance | 87 of 170 foreign keys had no index | Every foreign key is indexed | Catalog query on the test database | Lookups by parent (lines of an order, jobs of an order, movements of a stock item) scan the whole table | High | Fixed | Migration `20261113062621`. Order detail 20 ms to 9 ms; jobs for an order 12 ms to 6 ms |
+| E-004 | Database | Data integrity | No check constraints anywhere | Impossible values are refused by the database, not only by the code | Catalog query: 0 | A bug or a manual edit could leave negative stock | High | Fixed in part | Eight checks added, each only if existing rows already pass. Three cycles pass with them on. The stock balance identity is still code-only (E-020) |
+| E-005 | Staging | Performance | Staging list returned every ready or shipped job | Bounded | Bench before: 18 MB, 6.0 s | Staging screen slows with history | Medium | Fixed | Bench after: 0.3 MB, 100 ms |
+| E-006 | Analytics | Correctness, performance | RFQ funnel and margin loaded all orders into memory. Margin returned invented figures | Reports show measured figures or say "not available" | Code read; Bench before: 7.7 s and 2.5 s | Managers see numbers that are not real | High | Fixed | Counted in the database, 23 ms each. Margin shows "not available" on the dashboard |
+| E-007 | Shipping summary | Correctness | Counted shipment statuses that do not exist, so "staged" and "ready" were always zero | Summary matches the real statuses | Code read against the status list | Dashboard tiles always zero | Medium | Fixed | Staged = waiting, ready = loading, late = past scheduled date and still on the dock. Rule 23, to confirm |
+| E-008 | Platform | Observability | No request id and no request log | Every request traceable | Code read | A reported error could not be tied to a log line | High | Fixed | `middleware/requestLog.js`, unit `requestLog.test.js`. Header and log line seen on the test server |
+| E-009 | Platform | Safety | The standalone server loaded demo companies into any empty non-local database at start | Demo data is never loaded implicitly | `server.js` | A new production database would start with demo customers | High | Fixed | Now only with `SEED_ON_START=true`. Does not affect the current hosted site, which does not use this file |
+| E-010 | Platform | Reliability | After an unexpected error the server kept running; shutdown left database connections open | Exit cleanly and let the process manager restart | `server.js` | Undefined behaviour after a crash; connection leaks on restart | Medium | Fixed | Code change; not exercised by a test |
+| E-011 | Platform | Security | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | No known high or critical | `npm audit --omit=dev` | Exposure to published exploits in the web framework's dependencies | High | Fixed in part | Backend 1 moderate (uuid), frontend 2 moderate (react-router). Each needs a major version change, so left for a decision. Full suite passes on the updated packages |
+| E-012 | API | Consistency | 39 routes send the raw error text on a server error | Errors written for people | grep | Already masked by the reply filter, so no leak; the code is still inconsistent | Low | Open | |
+| E-014 | Platform | Security | The request rate limit counts per server instance | Shared counter | Phase 1 D-027 | On the hosted site the real limit is several times the configured one | High | Open: needs a shared store, which is a new service | |
+| E-015 | Platform | Disaster recovery | No evidence that a backup has ever been restored | A restore is tested | No runbook or record in the repository | Unknown recovery time and data loss after an incident | High | Open: needs the owner (see `production-readiness-checklist.md`) | |
+| E-016 | Platform | Maintainability | No lint configuration | Lint runs on every change | No config file in either package | Gate 1 "lint passes" cannot be run | Medium | Open: adding a linter is a new development dependency, so it needs approval | |
+| E-017 | Platform | Observability | No error tracking or alerting service; logs only | Someone is told when errors spike | Code read | Failures are found by users | Medium | Open: needs a provider choice | |
+| E-018 | Code | Maintainability | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Smaller units | Line counts | Harder to change safely | Low | Open. Not refactored for style alone | |
+| E-019 | Database | Isolation | Some tables carry a tenant id; whether every query honours it has not been audited | Tenant scoping proven by test | Schema read | Unknown | Medium | Open: audit in Workstream 6 | |
+| E-020 | Inventory | Data integrity | "On hand = available + reserved + on hold" is kept by code and checked by the reconciliation, not by the database | Database-enforced once every write path is known to update the figures together | Schema read | A future code path could break the identity unnoticed until reconciliation | Medium | Open: Workstream 3 | |
+| E-021 | API | Consistency | List routes answer in two shapes: a bare list, or `{ data, meta }` | One shape | Bench responses | Screens need per-route handling; totals unavailable on bare lists | Medium | Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header | |
+| E-023 | Operations cockpit | Performance | `GET /api/ops-cockpit` loads every job, order with lines, stock item and shipment on each call | Aggregated in the database | Bench: no reply within 30 s on the scaled database, before and after | The cockpit page will stop loading as history grows. It answers today at current volume | High | Open: next item. An 870-line route; needs a careful rewrite so the figures do not change | |
+
+## Rules this phase introduces (to confirm)
+
+22. The job list with no status filter shows every open job (up to 1,000) plus the 200 most recently finished. Asking for a status or an order pages through all of them.
+23. Shipping summary: "staged" counts shipments waiting on the dock, "ready" counts shipments being loaded, "late risk" counts those past their scheduled date and not yet dispatched.
+24. Margin is shown as not available until cost is recorded on order lines.
+25. The staging list shows everything ready to ship (up to 1,000) and the 200 most recently shipped.

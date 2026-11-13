@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import { supabase } from '../config/supabaseClient.js';
 import { onJobStatusChange } from '../services/printAutomationService.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
@@ -107,26 +106,15 @@ async function editJob(req, res) {
 }
 
 // GET /jobs - List jobs with optional filters
+// List limits. With no status filter the list is every open job plus the most
+// recently finished ones; ask for a status (or an order) to page through history.
+const JOB_LIST_DEFAULT = 1000;
+const JOB_LIST_MAX = 5000;
+const JOB_LIST_RECENT_FINISHED = 200;
+const FINISHED_JOB_STATUSES = ['SHIPPED', 'COMPLETED', 'CANCELLED'];
+
 router.get('/', async (req, res) => {
   try {
-    // Try Supabase JS client first if available
-    if (supabase) {
-      try {
-        const { data: jobs, error } = await supabase
-          .from('Job')  // Prisma uses PascalCase (capital J)
-          .select('*')
-          .order('createdAt', { ascending: false })
-          .limit(100);
-
-        if (!error && jobs) {
-          return res.json(jobs);
-        }
-        console.error('Supabase query failed, falling back:', error);
-      } catch (supabaseError) {
-        console.error('Supabase query failed, falling back:', supabaseError);
-      }
-    }
-
     // Return mock data if Prisma is not configured
     if (!prisma) {
       const mockJobs = [
@@ -166,25 +154,48 @@ router.get('/', async (req, res) => {
     if (workCenterId) where.workCenterId = workCenterId;
     if (orderId) where.orderId = orderId;
     
-    const jobs = await prisma.job.findMany({
-      where,
-      orderBy: [
-        { priority: 'desc' },
-        { scheduledStart: 'asc' },
-      ],
-      include: {
-        order: {
-          select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
-        },
-        workCenter: {
-          select: { id: true, code: true, name: true, locationId: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
+    const include = {
+      order: {
+        select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
       },
-    });
-    
+      workCenter: {
+        select: { id: true, code: true, name: true, locationId: true },
+      },
+      assignedTo: {
+        select: { id: true, firstName: true, lastName: true },
+      },
+    };
+    const orderBy = [{ priority: 'desc' }, { scheduledStart: 'asc' }, { id: 'asc' }];
+    // The reply is capped so a board never downloads the whole job history.
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || JOB_LIST_DEFAULT, 1), JOB_LIST_MAX);
+    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
+
+    let jobs;
+    let total;
+    if (status || orderId) {
+      [jobs, total] = await Promise.all([
+        prisma.job.findMany({ where, orderBy, include, take: limit, skip: offset }),
+        prisma.job.count({ where }),
+      ]);
+    } else {
+      // No status asked for: every open job first, then the most recently finished ones.
+      const open = { ...where, status: { notIn: FINISHED_JOB_STATUSES } };
+      const finished = { ...where, status: { in: FINISHED_JOB_STATUSES } };
+      const [openJobs, openCount, finishedCount] = await Promise.all([
+        prisma.job.findMany({ where: open, orderBy, include, take: limit, skip: offset }),
+        prisma.job.count({ where: open }),
+        prisma.job.count({ where: finished }),
+      ]);
+      const room = Math.min(limit - openJobs.length, JOB_LIST_RECENT_FINISHED);
+      const recent = room > 0 && offset === 0
+        ? await prisma.job.findMany({ where: finished, orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }], include, take: room })
+        : [];
+      jobs = [...openJobs, ...recent];
+      total = openCount + finishedCount;
+    }
+    res.setHeader('X-Total-Count', String(total));
+    if (jobs.length < total) res.setHeader('X-Result-Limited', 'true');
+
     const mapped = jobs.map(mapJobForFrontend);
     res.json(mapped);
   } catch (error) {

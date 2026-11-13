@@ -1,8 +1,20 @@
+import { acrossBranches, currentScope } from '../lib/branchScope.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { positiveQty } from '../lib/workflowRules.js';
 import { ci } from '../lib/dbText.js';
 import { searchStock } from '../services/intakeCatalogService.js';
+import { COST_VIEWERS } from '../lib/roleAccess.js';
+import { receiveStock, recentReceipts } from '../lib/receiving.js';
+import { TEMPLATE_FORMS, MAX_UPLOAD_ROWS } from '../lib/receivingRules.js';
+
+/** Cost goes only to the roles that manage it. */
+const withoutCost = (req, row) => {
+  if (!row || COST_VIEWERS.has(req.user?.role)) return row;
+  const { unitCost, landedCost, avgCost, ...rest } = row;
+  if (rest.coil) { const { unitCost: c1, landedCost: c2, ...coil } = rest.coil; rest.coil = coil; }
+  return rest;
+};
 
 const router = Router();
 
@@ -21,7 +33,7 @@ router.get('/', async (req, res) => {
       orderBy: { updatedAt: 'desc' },
       take: 200
     });
-    res.json(inventory);
+    res.json(inventory.map((row) => withoutCost(req, row)));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch inventory' });
   }
@@ -32,13 +44,14 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
   try {
     const { search, locationId, division, isRemnant, limit } = req.query;
-    res.json(await searchStock({
+    const found = await searchStock({
       search,
       locationId,
       division,
       isRemnant: isRemnant === undefined ? undefined : isRemnant === 'true',
       limit,
-    }));
+    });
+    res.json({ ...found, data: (found.data || []).map((row) => withoutCost(req, row)) });
   } catch (error) {
     console.error('Stock search failed:', error);
     res.status(500).json({ error: 'Stock search failed' });
@@ -125,7 +138,8 @@ router.post('/transfer', async (req, res) => {
       const movement = await tx.materialMovement.create({
         data: { coilId, fromLocationId: inv.locationId, toLocationId, movementType: 'TRANSFER', qtyMoved: onHand, unit: inv.unit, createdById: req.user.id },
       });
-      return { inventory: await tx.inventory.findUnique({ where: { coilId } }), movement };
+      // The item is now at the other branch; the sender is shown the result of their own transfer once.
+      return { inventory: await acrossBranches(() => tx.inventory.findUnique({ where: { coilId } })), movement };
     });
     if (!result) return res.status(409).json({ error: 'This item was just moved by someone else. Reload and try again.' });
     res.json(result);
@@ -137,8 +151,11 @@ router.post('/transfer', async (req, res) => {
 
 router.get('/locations', async (req, res) => {
   try {
+    // The branches to offer in a "which branch" list: the user's own (lib/branchScope.js).
+    // ?all=true lists every branch, for choosing where a transfer goes.
+    const mine = req.query.all === 'true' ? null : currentScope()?.branches;
     const locations = await prisma.location.findMany({
-      where: { isActive: true },
+      where: { isActive: true, ...(mine && { id: { in: mine } }) },
       orderBy: { code: 'asc' }
     });
     res.json(locations);
@@ -147,129 +164,64 @@ router.get('/locations', async (req, res) => {
   }
 });
 
-// Bulk inventory upload endpoint
+// POST /api/inventory/receipts: receive one stock item (the Receive form).
+router.post('/receipts', async (req, res) => {
+  try {
+    const done = await receiveStock({ input: req.body, user: req.user });
+    res.status(201).json({ item: withoutCost(req, done.coil), inventory: withoutCost(req, done.inventory), movement: done.movement, ...(done.warning && { warning: done.warning }) });
+  } catch (error) {
+    if (error?.refuse) return res.status(error.status).json({ error: error.message });
+    console.error('Inventory: receipt failed:', error);
+    res.status(500).json({ error: 'The item could not be received' });
+  }
+});
+
+// GET /api/inventory/receipts?limit=&days=: what was received lately, newest first.
+router.get('/receipts', async (req, res) => {
+  try {
+    res.json({ data: await recentReceipts({ limit: req.query.limit, days: req.query.days }) });
+  } catch (error) {
+    console.error('Inventory: receipts list failed:', error);
+    res.status(500).json({ error: 'The receipts could not be loaded' });
+  }
+});
+
+// POST /api/inventory/bulk-upload { templateType, items, locationCode? }
+// Each row is received by the same rule as the Receive form. A row that cannot be received is
+// reported with its reason; the reply says how many rows were really saved.
 router.post('/bulk-upload', async (req, res) => {
   try {
-    const { templateType, items, locationCode, userId } = req.body;
-    
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: 'No items provided for upload' });
-    }
-    
-    const results = {
-      imported: 0,
-      skipped: 0,
-      errors: [],
-    };
-    
-    // Process each item
-    for (const item of items) {
+    const { templateType, items, locationCode } = req.body || {};
+    if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ error: 'No items provided for upload' });
+    if (items.length > MAX_UPLOAD_ROWS) return res.status(400).json({ error: `An upload can hold ${MAX_UPLOAD_ROWS} rows at most. Split the file and upload it in parts.` });
+    if (!Object.prototype.hasOwnProperty.call(TEMPLATE_FORMS, templateType)) return res.status(400).json({ error: `Unknown upload type. Use one of: ${Object.keys(TEMPLATE_FORMS).join(', ')}` });
+    const results = { imported: 0, skipped: 0, errors: [], warnings: [] };
+    for (const [index, item] of items.entries()) {
+      const row = item && typeof item === 'object' ? { ...item, location_code: item.location_code || locationCode } : item;
       try {
-        // Find or use provided location
-        const locCode = item.location_code || locationCode;
-        let location = null;
-        
-        if (locCode) {
-          location = await prisma.location.findFirst({
-            where: { 
-              OR: [
-                { code: locCode },
-                { name: { contains: locCode, ...ci } }
-              ]
-            }
-          });
-        }
-        
-        // Map ownership to enum value
-        let ownership = 'HOUSE_OWNED';
-        if (item.ownership) {
-          const ownershipUpper = item.ownership.toUpperCase();
-          if (ownershipUpper === 'CUSTOMER_OWNED' || ownershipUpper === 'TOLL') {
-            ownership = 'CUSTOMER_OWNED';
-          } else if (ownershipUpper === 'CONSIGNMENT') {
-            ownership = 'CONSIGNMENT';
-          }
-        }
-        
-        // Create inventory record based on template type
-        const inventoryData = {
-          tagNumber: item.tag_number || `TAG-${Date.now()}-${results.imported}`,
-          materialCode: item.material_code,
-          heatNumber: item.heat_number || null,
-          grade: item.grade || null,
-          weight: parseFloat(item.weight_lbs) || 0,
-          thickness: parseFloat(item.thickness) || null,
-          width: parseFloat(item.width) || null,
-          length: parseFloat(item.length) || null,
-          quantity: parseInt(item.quantity_pcs) || 1,
-          locationId: location?.id || null,
-          bayPosition: item.bay_position || null,
-          ownership,
-          customerName: item.customer_name || null,
-          poNumber: item.po_number || null,
-          millName: item.mill_name || null,
-          notes: item.notes || null,
-          status: 'AVAILABLE',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        
-        // Additional fields based on template type
-        if (templateType === 'coils') {
-          inventoryData.coilOd = parseFloat(item.coil_od) || null;
-          inventoryData.coilId = parseFloat(item.coil_id) || null;
-        } else if (templateType === 'remnants') {
-          inventoryData.parentTag = item.parent_tag || null;
-          inventoryData.isRemnant = true;
-          inventoryData.priceOverride = parseFloat(item.price_override) || null;
-          inventoryData.condition = item.condition || 'GOOD';
-        } else if (templateType === 'bars') {
-          inventoryData.bundleNumber = item.bundle_number || null;
-          inventoryData.lengthFt = parseFloat(item.length_ft) || null;
-          inventoryData.sizeDescription = item.size_description || null;
-        } else if (templateType === 'plastics') {
-          inventoryData.lotNumber = item.lot_number || null;
-          inventoryData.materialType = item.material_type || null;
-          inventoryData.color = item.color || null;
-        }
-        
-        // For now, store in a generic inventory table or create movement
-        // This is a simplified version - in production would create proper coil/unit records
-        await prisma.materialMovement.create({
-          data: {
-            movementType: 'RECEIVE',
-            qtyMoved: inventoryData.quantity,
-            weightMoved: inventoryData.weight,
-            toLocationId: location?.id,
-            notes: JSON.stringify({
-              bulkUpload: true,
-              templateType,
-              ...inventoryData,
-            }),
-            createdAt: new Date(),
-          }
-        });
-        
+        const done = await receiveStock({ input: row, templateType, user: req.user, source: 'UPLOAD' });
         results.imported++;
-      } catch (itemError) {
+        if (done.warning) results.warnings.push({ row: index + 1, tag: done.coil.coilNumber, warning: done.warning });
+      } catch (rowError) {
+        if (!rowError?.refuse) console.error('Inventory: upload row failed:', rowError);
         results.skipped++;
-        results.errors.push({
-          tag: item.tag_number,
-          error: itemError.message,
-        });
+        results.errors.push({ row: index + 1, tag: item?.tag_number ? String(item.tag_number).slice(0, 60) : null, error: rowError?.refuse ? rowError.message : 'This row could not be saved' });
       }
     }
-    
-    res.status(201).json({
-      success: true,
+    res.status(results.imported ? 201 : 400).json({
+      success: results.imported > 0,
       imported: results.imported,
       skipped: results.skipped,
-      errors: results.errors.slice(0, 10), // Limit error details
-      message: `Successfully imported ${results.imported} of ${items.length} items`,
+      errors: results.errors.slice(0, 200),
+      warnings: results.warnings.slice(0, 200),
+      message: results.skipped
+        ? `${results.imported} of ${items.length} items were received. ${results.skipped} could not be received.`
+        : `${results.imported} items were received.`,
+      ...(results.imported === 0 && { error: `None of the ${items.length} items could be received. First reason: ${results.errors[0]?.error}` }),
     });
   } catch (error) {
     console.error('Bulk upload error:', error);
-    res.status(500).json({ error: 'Failed to process bulk upload', details: error.message });
+    res.status(500).json({ error: 'The upload could not be processed' });
   }
 });
 
@@ -287,6 +239,11 @@ router.get('/templates/:type', (req, res) => {
       filename: 'inventory_sheets_template.csv',
       headers: ['tag_number', 'heat_number', 'material_code', 'grade', 'thickness', 'width', 'length', 'quantity_pcs', 'weight_lbs', 'location_code', 'bay_position', 'ownership', 'customer_name', 'po_number', 'notes'],
       example: ['SHT-001', 'HT-2024-002', 'CR-SHT-16GA-48-96', 'CQ', '0.060', '48', '96', '50', '2450', 'DET-B', 'B-12', 'HOUSE_OWNED', '', 'PO-12346', ''],
+    },
+    plates: {
+      filename: 'inventory_plates_template.csv',
+      headers: ['tag_number', 'heat_number', 'material_code', 'grade', 'thickness', 'width', 'length', 'quantity_pcs', 'weight_lbs', 'location_code', 'bay_position', 'ownership', 'customer_name', 'po_number', 'notes'],
+      example: ['PLT-001', 'HT-2024-004', 'HR-PLT-500-96-240', 'A36', '0.500', '96', '240', '1', '3267', 'DET-B', 'B-02', 'HOUSE_OWNED', '', 'PO-12348', ''],
     },
     bars: {
       filename: 'inventory_bars_template.csv',

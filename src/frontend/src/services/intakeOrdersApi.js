@@ -47,7 +47,7 @@ export async function updateIntakeOrder(id, payload) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-  if (!res.ok) throw new Error('Failed to update order')
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to update order') }
   return res.json()
 }
 
@@ -58,7 +58,7 @@ export async function submitOrder(id) {
     return { data: _mockOrders[idx] || { id, status: 'SUBMITTED' } }
   }
   const res = await fetch(`${API_BASE}/orders/intake/${id}/submit`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-  if (!res.ok) throw new Error('Failed to submit order')
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to submit order') }
   return res.json()
 }
 
@@ -130,6 +130,6 @@ export async function createWorkOrdersFromOrder(orderId) {
     return { data: { workOrders, count: workOrders.length } }
   }
   const res = await fetch(`${API_BASE}/orders/intake/${orderId}/create-work-orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-  if (!res.ok) throw new Error('Failed to create work orders')
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to create work orders') }
   return res.json()
 }

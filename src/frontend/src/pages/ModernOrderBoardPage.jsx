@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Box,
   Typography,
@@ -84,12 +85,14 @@ const ModernOrderBoardPage = () => {
     loadJobs()
   }, [loadJobs])
 
+  const navigate = useNavigate()
   const handleJobClick = (job) => {
     setSelectedJob(job)
-    console.log('Selected job:', job)
-    // Open planning dialog for ORDERED and SCHEDULED jobs
+    // Open planning dialog for ORDERED and SCHEDULED jobs; any other job opens its own screen
     if (job.status === 'ORDERED' || job.status === 'SCHEDULED') {
       setPlanningJob(job)
+    } else {
+      navigate(`/jobs/${job.id}`)
     }
   }
 
@@ -229,7 +232,7 @@ const ModernOrderBoardPage = () => {
                 Order Board
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                Real-time production scheduling • AI-powered insights
+                Real-time production scheduling
               </Typography>
             </Box>
           </Box>

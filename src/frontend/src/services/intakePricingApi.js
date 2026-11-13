@@ -15,11 +15,12 @@ export async function calculateLinePrice({ productId, priceLevel = 'RETAIL', wei
   return res.json()
 }
 
-export async function estimateTax({ subtotal, customerId, shipToState = 'MI' }) {
+// The server decides which state's rate applies (customer, ship-to or branch), the same way the order is saved.
+export async function estimateTax({ subtotal = 0, customerId, shipToState, location, source } = {}) {
   const res = await fetch(`${API_BASE}/pricing/tax-estimate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ subtotal, customerId, shipToState }),
+    body: JSON.stringify({ subtotal, customerId, shipToState, location, source }),
   })
   if (!res.ok) throw new Error('Tax estimate failed')
   return res.json()

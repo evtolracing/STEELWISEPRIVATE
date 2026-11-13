@@ -2,38 +2,129 @@
 
 There are no ticket files in the repository, so each commit is treated as one ticket. Commits #1–#28 are squashed pull requests; older commits came before the PR workflow. Requested scope is taken from the commit or PR title; "implemented" is what the diff touched.
 
-Commits: 117. Commits that changed the database schema: 35. Commits that added tests: 0.
+Commits: 208. Commits that changed the database schema: 57. Commits that added tests: 26.
 
 | Commit | Date | Ticket (title) | Files | Schema | API areas | UI areas | Tests added |
 |---|---|---|---:|:-:|---|---|---:|
+| 2d801ff | 2026-11-13 | CI: generate the database client before the unit tests | 1 |  |  |  | 0 |
+| 3158ed1 | 2026-11-13 | Workstream 6 gate report and Phase 2 summary | 20 |  |  |  | 20 |
+| 3a7b7a7 | 2026-11-13 | No made-up data shown as real: 36 more screens labelled, dashboard fallbacks removed, lint gate | 24 |  |  | ui:eslint.config.js, ui:package-lock.json, ui:package.json, ui:components, ui:Commercial, ui:Executive, ui:ModernOrderBoardPage, ui:router | 5 |
+| 061c996 | 2026-11-13 | Workstream 5 gate report; counter sales record the cashier for the invoice and payment | 25 |  | api:quickSale, api:billing |  | 23 |
+| 9caf03c | 2026-11-13 | Shipping: real screens to create, dispatch and deliver; web orders carry tax; money actions record who | 28 |  | api:invoices, api:onlineOrders, api:quickSale, api:returns, api:shipments, api:billing | ui:apps, ui:help, ui:mocks, ui:Logistics, ui:Orders, ui:Shipping, ui:ShippingDeskPage, ui:router | 6 |
+| 3d1c6bc | 2026-11-13 | Workstream 4: inspection reply fix, checks, manual, registers and gate report | 27 |  | api:qcRoutes | ui:help | 25 |
+| fbbacf6 | 2026-11-13 | Shop screens browser check; remove made-up AI tip and claim | 4 |  |  | ui:SchedulePage, ui:WorkOrders | 2 |
+| e27d4d9 | 2026-11-13 | Shop floor: record who moved each job, real job, schedule and work order screens | 28 |  | api:jobHistory, api:workOrderRules, api:jobs, api:materialTrackingRoutes, api:operationsRoutes, api:qcRoutes, api:shipments, api:workOrders | ui:api, ui:components, ui:constants, ui:JobDetailPage, ui:ModernOrderBoardPage, ui:OrderBoardPage, ui:SchedulePage, ui:ShopFloorPage | 2 |
+| f2c1c76 | 2026-11-13 | Workstream 3 gate: one stock list, balance rule in the database, sample screens labelled | 37 | yes |  | ui:api, ui:apps, ui:components, ui:help, ui:Units, ui:router | 25 |
+| 31e569a | 2026-11-13 | Receiving: a receipt makes real stock, and an upload says what it saved | 11 |  | api:receiving, api:receivingRules, api:inventory, api:receivingRules.test | ui:components, ui:ReceivingPage, ui:Units | 5 |
+| 9292e6c | 2026-11-13 | Heats, products and grades: real screens, checked input, price changes recorded | 11 |  | api:fieldRules, api:grades, api:heats, api:products, api:fieldRules.test | ui:Heats | 5 |
+| 3134bf5 | 2026-11-13 | Credit hold on over-limit orders; stock items on real data with working holds | 33 |  | api:creditControl, api:creditRules, api:roleAccess, api:coils, api:intakeOrders, api:inventory, api:onlineOrders, api:orders | ui:components, ui:help, ui:MobileRep, ui:Orders, ui:Units, ui:router | 12 |
+| 13c427d | 2026-11-13 | Sales workstream: real data on sales screens, customer tiers, price book, branch-state tax | 44 |  | api:app, api:orderTax, api:priceRules, api:customers, api:intakeOrders, api:intakePricing, api:overrides, api:salesDashboard | ui:components, ui:help, ui:Customers, ui:MobileRep, ui:Pricing, ui:Sales, ui:overrideApi | 25 |
+| 54278f7 | 2026-11-13 | Sales: one price rule for every channel, hardened order entry API, sales tax on entry-screen orders | 22 |  | api:customerPricing, api:orderTax, api:priceRules, api:ecom, api:intakeOrders, api:intakePricing, api:onlineOrders, api:orders | ui:Orders, ui:intakeOrdersApi, ui:intakePricingApi | 4 |
+| d85617f | 2026-11-13 | Adopt the permanent engineering standard: safeguard checks, dispositions, phase gate report | 9 |  |  |  | 8 |
+| 805bc0b | 2026-11-13 | Operations cockpit counts in the database instead of loading whole tables | 16 |  | api:opsCockpit |  | 15 |
+| ec86163 | 2026-11-13 | Phase 2 workstream 1: bounded lists, indexes, value checks, request tracing, dependency fixes, reports | 41 | yes | api:package-lock.json, api:app, api:requestLog, api:safeErrors, api:analyticsV1, api:jobs, api:materialTrackingRoutes, api:shippingV1 | ui:package-lock.json, ui:dashboard | 27 |
+| a775ff5 | 2026-11-13 | Sales tax rates screen, quick-sale and quote simulations, money race probes, QA documents | 29 |  | api:app, api:roleAccess, api:taxRates, api:roleAccess.test | ui:components, ui:help, ui:Admin, ui:router | 21 |
+| 35fb137 | 2026-11-13 | Uploaded files are kept in the database when the host has no disk | 1 |  | api:documents |  | 0 |
+| 55dd63a | 2026-11-13 | Jobs and shipments are tied; shop-floor Ship makes the shipment | 6 |  | api:workflowRules, api:jobs, api:materialTrackingRoutes, api:shipments, api:workflowRules.test |  | 2 |
+| a4fd843 | 2026-11-13 | Division logins see only their own division | 5 |  | api:portalService |  | 4 |
+| bc09fcd | 2026-11-13 | Staff can only change the records their department owns | 4 |  | api:roleAccess, api:roleAccess.test |  | 3 |
+| 8fa89b1 | 2026-11-13 | Web checkout: server price, price level and tax are what get saved | 6 |  | api:ecomService, api:portalService |  | 4 |
+| a81a1ad | 2026-11-13 | Quotes and RFQs: one working implementation with a real screen | 17 |  | api:db, api:quoteRules, api:safeErrors, api:quotes, api:rfqs, api:salesRoutes, api:quoteRules.test, api:safeErrors.test | ui:components, ui:Pricing, ui:Sales, ui:router | 2 |
+| ec13ee7 | 2026-11-13 | Counter quick sale saved as a real sale; invoices and returns pages | 15 |  | api:app, api:pos, api:quickSale, api:returns | ui:components, ui:Orders, ui:POSPage, ui:router | 0 |
+| f562b37 | 2026-11-13 | Invoices, payments, credit memos and customer returns | 12 | yes | api:app, api:billingRules, api:invoices, api:orders, api:returns, api:shipments, api:billing, api:billingRules.test |  | 3 |
+| 3f3c799 | 2026-11-13 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| f3db70a | 2026-11-13 | Fix open audit items: numbering, bad filters, checkout price check, CI | 22 |  | api:db, api:requestContext, api:safeErrors, api:maintenanceOrders, api:qcRoutes, api:staff, api:workOrders, api:ecomService |  | 13 |
+| 9967c56 | 2026-11-12 | System audit: simulation suite and core workflow repairs (#29) | 59 | yes | api:package.json, api:app, api:numbering, api:workflowRules, api:safeErrors, api:documents, api:intakeOrders, api:inventory | ui:components, ui:partnerApi | 37 |
+| 650a0af | 2026-11-13 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 9bb89da | 2026-11-13 | Audit, simulation suite and core workflow repairs | 59 | yes | api:package.json, api:app, api:numbering, api:workflowRules, api:safeErrors, api:documents, api:intakeOrders, api:inventory | ui:components, ui:partnerApi | 37 |
 | d23fb7a | 2026-11-11 | Show each role only its own chapters of the help manual (#28) | 4 |  |  | ui:components, ui:help, ui:Help | 0 |
+| a440fad | 2026-11-12 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| ad19d9d | 2026-11-12 | Show each role only its own chapters of the help manual | 4 |  |  | ui:components, ui:help, ui:Help | 0 |
 | a725ec5 | 2026-11-11 | Fix empty customer list on the user form (#27) | 2 |  | api:users | ui:Admin | 0 |
+| 4cf5535 | 2026-11-12 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 19d849a | 2026-11-12 | Fix empty customer list on the user form | 2 |  | api:users | ui:Admin | 0 |
 | 0bfb7b5 | 2026-11-11 | Tie customer logins to one customer account (#26) | 14 | yes | api:customerScope, api:roleAccess, api:apiGate, api:auth, api:ecom, api:portal, api:users, api:portalService | ui:contexts, ui:Admin | 0 |
+| ad9302b | 2026-11-12 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 59d6f01 | 2026-11-12 | Tie customer logins to one customer account | 14 | yes | api:customerScope, api:roleAccess, api:apiGate, api:auth, api:ecom, api:portal, api:users, api:portalService | ui:contexts, ui:Admin | 0 |
 | 65bd1f9 | 2026-11-11 | Limit pages and APIs by role (#25) | 6 |  | api:roleAccess, api:apiGate | ui:components, ui:config, ui:router | 0 |
+| 34aa6db | 2026-11-12 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 9e2586c | 2026-11-12 | Limit pages and APIs by role | 6 |  | api:roleAccess, api:apiGate | ui:components, ui:config, ui:router | 0 |
 | 6efa8bd | 2026-11-10 | Fix store cart totals, product sizing, and logout on refresh (#24) | 9 |  |  | ui:contexts, ui:hooks, ui:Ecommerce | 0 |
+| 55d1bb4 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 327689d | 2026-11-11 | Fix store cart totals, product sizing, and logout on refresh | 9 |  |  | ui:contexts, ui:hooks, ui:Ecommerce | 0 |
 | 639d098 | 2026-11-10 | Require sign-in on every API route (#23) | 5 |  | api:app, api:apiGate | ui:api, ui:src, ui:printQueueApi | 0 |
+| a264663 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| fab95cf | 2026-11-11 | Require sign-in on every API route | 5 |  | api:app, api:apiGate | ui:api, ui:src, ui:printQueueApi | 0 |
 | 0b37091 | 2026-11-10 | Real analytics: online settings, demand shaping, compression metrics (#22) | 16 | yes | api:app, api:settings, api:compressionMetrics, api:demandShaping, api:onlineSettings, api:demo | ui:hooks, ui:Executive, ui:Orders, ui:compressionMetricsApi, ui:demandShapingApi, ui:onlineEventsApi | 0 |
+| b9615ce | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 5ae81cb | 2026-11-11 | Real analytics: online settings, demand shaping, compression metrics | 16 | yes | api:app, api:settings, api:compressionMetrics, api:demandShaping, api:onlineSettings, api:demo | ui:hooks, ui:Executive, ui:Orders, ui:compressionMetricsApi, ui:demandShapingApi, ui:onlineEventsApi | 0 |
 | af6af20 | 2026-11-10 | Real processing recipes and routing templates (#21) | 8 | yes | api:app, api:processingRecipes, api:demo | ui:processingRecipesApi | 0 |
+| 94773d3 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| c02c8cc | 2026-11-11 | Real processing recipes and routing templates | 8 | yes | api:app, api:processingRecipes, api:demo | ui:processingRecipesApi | 0 |
 | 0989591 | 2026-11-10 | Real customer portal: My Orders, account orders, shipments and documents (#20) | 13 |  | api:app, api:zip, api:intakeOrders, api:portal, api:demo, api:ecomService, api:portalService | ui:contexts, ui:hooks, ui:Ecommerce, ui:customerAccountApi, ui:customerOrdersApi | 0 |
+| b19e64a | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| c735024 | 2026-11-11 | Real customer portal: My Orders, account orders, shipments and documents | 13 |  | api:app, api:zip, api:intakeOrders, api:portal, api:demo, api:ecomService, api:portalService | ui:contexts, ui:hooks, ui:Ecommerce, ui:customerAccountApi, ui:customerOrdersApi | 0 |
 | 724f614 | 2026-11-10 | Real online store: catalog, pricing, cart and checkout (#19) | 14 | yes | api:app, api:ecom, api:onlineOrders, api:demo, api:ecomService | ui:adminCatalogApi, ui:cartApi, ui:checkoutApi, ui:ecomCatalogApi, ui:ecomPricingApi | 0 |
+| 518739c | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| e84d215 | 2026-11-11 | Real online store: catalog, pricing, cart and checkout | 14 | yes | api:app, api:ecom, api:onlineOrders, api:demo, api:ecomService | ui:adminCatalogApi, ui:cartApi, ui:checkoutApi, ui:ecomCatalogApi, ui:ecomPricingApi | 0 |
 | 88eaaa5 | 2026-11-10 | Real remnant inventory and aging-based remnant pricing (#18) | 10 | yes | api:app, api:remnants, api:demo, api:remnantService | ui:remnantInventoryApi, ui:remnantPricingApi | 0 |
+| 1802584 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 38575e6 | 2026-11-11 | Real remnant inventory and aging-based remnant pricing | 10 | yes | api:app, api:remnants, api:demo, api:remnantService | ui:remnantInventoryApi, ui:remnantPricingApi | 0 |
 | 1249c9d | 2026-11-10 | Real online order inbox backed by the database (#17) | 9 | yes | api:app, api:intakeOrders, api:onlineOrders, api:demo | ui:intakeOnlineOrdersApi | 0 |
+| 19bb6fd | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 60aa26a | 2026-11-11 | Real online order inbox backed by the database | 9 | yes | api:app, api:intakeOrders, api:onlineOrders, api:demo | ui:intakeOnlineOrdersApi | 0 |
 | 31a0dd7 | 2026-11-10 | Real pricing, tax and processing menus for order intake (#16) | 11 | yes | api:app, api:intakePricing, api:intakeProcessing, api:demo, api:intakeCatalogService | ui:intakePricingApi, ui:intakeProcessingApi | 0 |
+| 021b4ef | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| b23f597 | 2026-11-11 | Real pricing, tax and processing menus for order intake | 11 | yes | api:app, api:intakePricing, api:intakeProcessing, api:demo, api:intakeCatalogService | ui:intakePricingApi, ui:intakeProcessingApi | 0 |
 | 78cb1d2 | 2026-11-10 | Real product and stock search for order intake; seed demo data in parts (#15) | 12 | yes | api:admin, api:inventory, api:products, api:demo, api:intakeCatalogService | ui:intakeInventoryApi, ui:intakeProductsApi | 0 |
+| 0bd5354 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 07275d8 | 2026-11-11 | Real product and stock search for order intake; seed demo data in parts | 12 | yes | api:admin, api:inventory, api:products, api:demo, api:intakeCatalogService | ui:intakeInventoryApi, ui:intakeProductsApi | 0 |
 | 61a621a | 2026-11-10 | Save the print queue in the database (#14) | 5 | yes | api:printQueue, api:printAutomationService |  | 0 |
+| ff7e14c | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 0b8c580 | 2026-11-11 | Save the print queue in the database | 5 | yes | api:printQueue, api:printAutomationService |  | 0 |
 | 893f4c3 | 2026-11-10 | Save v1 inventory (RFID, etched IDs, transfers) in the database (#13) | 7 | yes | api:inventoryV1, api:inventoryV1Store, api:demo |  | 0 |
+| eaf47f1 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| c1aa9d8 | 2026-11-11 | Save v1 inventory (RFID, etched IDs, transfers) in the database | 7 | yes | api:inventoryV1, api:inventoryV1Store, api:demo |  | 0 |
 | 7f53311 | 2026-11-10 | Run the schedule optimizer on real jobs and work centers (#12) | 3 |  | api:optimizationV1, api:demo |  | 0 |
+| 5adce37 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 81785f3 | 2026-11-11 | Run the schedule optimizer on real jobs and work centers | 3 |  | api:optimizationV1, api:demo |  | 0 |
 | a0bf3cd | 2026-11-10 | Save the exceptions feed in the database (#11) | 6 | yes | api:eventsV1, api:demo |  | 0 |
+| f337c50 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 5dc2817 | 2026-11-11 | Save the exceptions feed in the database | 6 | yes | api:eventsV1, api:demo |  | 0 |
+| 9b30977 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
 | c8ac84a | 2026-11-10 | Let the app through RLS with a policy (#10) | 4 |  | api:sql-editor-bundle |  | 0 |
+| aff68fa | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 9e70b8e | 2026-11-11 | Let the app through RLS with a policy instead of changing table owners | 4 |  | api:sql-editor-bundle |  | 0 |
 | 5b43b9c | 2026-11-10 | Fix RLS blocking the app on SQL Editor-created tables (#9) | 3 |  | api:sql-editor-bundle |  | 0 |
+| e69a71e | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 05a1d93 | 2026-11-11 | Give SQL Editor-created tables the app's owner so RLS doesn't block it | 3 |  | api:sql-editor-bundle |  | 0 |
 | 355204c | 2026-11-10 | Save pipeline runs and dispatch divisions in the database (#8) | 8 | yes | api:orchestrator, api:dispatchRoutes, api:opsCockpit, api:pipelineRoutes |  | 0 |
+| 2dbe9b2 | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| d08602d | 2026-11-11 | Save pipeline runs and dispatch divisions in the database | 8 | yes | api:orchestrator, api:dispatchRoutes, api:opsCockpit, api:pipelineRoutes |  | 0 |
 | 4586388 | 2026-11-10 | Save Stop-Work events in the database (#7) | 5 | yes | api:stopWork, api:stopWorkStore |  | 0 |
+| f02a41b | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| 7974f52 | 2026-11-11 | Save Stop-Work events, audit trail, clearance steps and evidence | 5 | yes | api:stopWork, api:stopWorkStore |  | 0 |
 | 71b194a | 2026-11-10 | Save POS counter sessions in the database (#6) | 8 | yes | api:pos |  | 0 |
+| 3c147eb | 2026-11-11 | Merge old branch history (already in main via squash) | 0 |  |  |  | 0 |
+| e19e0ed | 2026-11-11 | Save POS counter sessions in the database | 8 | yes | api:pos |  | 0 |
 | 6eb229d | 2026-11-10 | Save OrderHub (order intake) data in the database (#5) | 12 | yes | api:app, api:handlers, api:aiOrderHubRoutes, api:ingestRoutes, api:orderHubRoutes, api:orderHubStore, api:demo |  | 0 |
+| 8f10636 | 2026-11-11 | Save OrderHub contacts, RFQs, quotes, orders and jobs in the database | 12 | yes | api:app, api:handlers, api:aiOrderHubRoutes, api:ingestRoutes, api:orderHubRoutes, api:orderHubStore, api:demo |  | 0 |
+| a573a93 | 2026-11-11 | Merge main after PR #4 | 0 |  |  |  | 0 |
 | 888141b | 2026-11-10 | Make logout, login errors and password change work (#4) | 5 |  | api:auth | ui:api, ui:components, ui:hooks | 0 |
+| 171289b | 2026-11-10 | Make logout, login errors and password change work | 5 |  | api:auth | ui:api, ui:components, ui:hooks | 0 |
+| 820c574 | 2026-11-10 | Merge main after PR #3 | 0 |  |  |  | 0 |
 | e75d965 | 2026-11-10 | Phase 1b: customer divisions, ship-tos and executive data in the database (#3) | 17 | yes | api:package.json, api:sql-editor-bundle, api:app, api:admin, api:pos, api:demo, api:decisionService, api:forecastService |  | 0 |
+| 2febbf7 | 2026-11-10 | Turn on Row Level Security for every table in SQL Editor updates | 3 |  | api:sql-editor-bundle |  | 0 |
+| 159c5fa | 2026-11-10 | Phase 1b: customer divisions, ship-tos and executive data in the database | 17 | yes | api:package.json, api:sql-editor-bundle, api:app, api:admin, api:pos, api:demo, api:decisionService, api:forecastService |  | 0 |
+| d372975 | 2026-11-10 | Merge main after PR #2 | 0 |  |  |  | 0 |
 | 1f6c950 | 2026-11-10 | Phase 1a: one MySQL-ready schema with a baseline migration (#2) | 18 | yes | api:package.json, api:dbText, api:bomV1, api:customers, api:inventory, api:staff, api:users, api:webhookService |  | 0 |
+| 8dedbc5 | 2026-11-10 | Add a one-paste Supabase SQL Editor version of the database upgrade | 2 |  |  |  | 0 |
+| 407f245 | 2026-11-10 | Join already-merged Phase 0 branch history | 0 |  |  |  | 0 |
+| a9d3808 | 2026-11-10 | Phase 1a: one MySQL-ready schema with a baseline migration | 17 | yes | api:package.json, api:dbText, api:bomV1, api:customers, api:inventory, api:staff, api:users, api:webhookService |  | 0 |
 | cc13a6f | 2026-11-10 | Phase 0: security hardening and repo cleanup (#1) | 52 |  | api:.env.example, api:check-db.mjs, api:check-schema, api:fix-permissions, api:package-lock.json, api:package.json, api:app, api:env | ui:.env.example, ui:apps, ui:config, ui:hooks, ui:screens, ui:aiService, ui:mapService | 0 |
+| 3db9f57 | 2026-11-10 | Show which settings are missing when the API fails to start | 1 |  |  |  | 0 |
+| 3b1c3ca | 2026-11-10 | Health check reports database connectivity | 1 |  | api:app |  | 0 |
+| e6f664b | 2026-11-10 | Phase 0: security hardening and repo cleanup | 52 |  | api:.env.example, api:check-db.mjs, api:check-schema, api:fix-permissions, api:package-lock.json, api:package.json, api:app, api:env | ui:.env.example, ui:apps, ui:config, ui:hooks, ui:screens, ui:aiService, ui:mapService | 0 |
 | a92396a | 2026-02-25 | Merge remote changes and resolve conflicts | 0 |  |  |  | 0 |
 | a092628 | 2026-02-25 | Update project files and configuration | 30 |  | api:.env.example, api:check-schema, api:fix-permissions, api:package-lock.json, api:package.json, api:env, api:supabaseClient, api:db | ui:.env.example, ui:package.json, ui:config | 0 |
 | 65f679e | 2026-02-24 | chore: update Node engine to >=22.x | 1 |  |  |  | 0 |

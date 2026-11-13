@@ -65,10 +65,10 @@ export async function getRfqFunnelStats(params = {}) {
   
   try {
     const response = await fetch(`${API_BASE}/v1/analytics/rfq-funnel?${queryParams.toString()}`);
-    if (!response.ok) return getMockRfqFunnel(params);
+    if (!response.ok) throw new Error('Not available right now. The server did not answer.');
     return response.json();
   } catch (error) {
-    return getMockRfqFunnel(params);
+    throw new Error('Not available right now. The server did not answer.');
   }
 }
 
@@ -86,21 +86,3 @@ export async function getRfqs(params = {}) {
   }
 }
 
-// Mock data fallback
-function getMockRfqFunnel(params) {
-  return {
-    rfqCount: 45,
-    quotedCount: 32,
-    orderedCount: 18,
-    rfqToQuoteRate: 71,
-    quoteToOrderRate: 56,
-    avgQuoteValue: 4500,
-    totalPipelineValue: 144000,
-    avgResponseTime: 4.2, // hours
-    topCustomers: [
-      { name: 'Acme Corp', rfqs: 8, converted: 6 },
-      { name: 'BuildRight', rfqs: 5, converted: 4 },
-      { name: 'Metro Fab', rfqs: 4, converted: 2 },
-    ],
-  };
-}

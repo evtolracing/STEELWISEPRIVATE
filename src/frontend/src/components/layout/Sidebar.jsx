@@ -57,6 +57,7 @@ import {
   // Customer Quality
   Inbox as ClaimsIcon,
   AssignmentReturn as RMAIcon,
+  ReceiptLong as InvoicesIcon,
   BugReport as CARIcon,
   CreditCard as CreditsIcon,
   // Contractor Portal
@@ -120,6 +121,7 @@ import {
   Tune as PreferencesIcon,
   BusinessCenter as AccountIcon,
   HelpOutline as HelpManualIcon,
+  LocalOffer as PricingNavIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -142,8 +144,9 @@ const navSections = [
     items: [
       { path: '/customers', label: 'Customers', icon: CustomersIcon },
       { path: '/customers/preferences', label: 'Preferences', icon: PreferencesIcon },
-      { path: '/sales/rfq-inbox', label: 'RFQ Inbox', icon: RFQIcon },
+      { path: '/sales/rfq-inbox', label: 'RFQs & Quotes', icon: RFQIcon },
       { path: '/sales/dashboard', label: 'Sales Dashboard', icon: SalesDashIcon },
+      { path: '/pricing', label: 'Pricing', icon: PricingNavIcon },
       { path: '/commercial/demand-shaping', label: 'Demand Shaping', icon: DemandShapingIcon },
     ],
   },
@@ -152,9 +155,12 @@ const navSections = [
     items: [
       { path: '/order-board', label: 'Order Board', icon: KanbanIcon },
       { path: '/orders', label: 'All Orders', icon: OrdersIcon },
+      { path: '/orders/credit-holds', label: 'Credit Holds', icon: PricingNavIcon },
       { path: '/orders/intake', label: 'CSR Intake', icon: CSRIntakeIcon, highlight: true },
       { path: '/orders/online-inbox', label: 'Online Inbox', icon: OnlineInboxIcon },
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },
+      { path: '/orders/invoices', label: 'Invoices', icon: InvoicesIcon },
+      { path: '/orders/returns', label: 'Returns', icon: RMAIcon },
     ],
   },
 
@@ -171,9 +177,8 @@ const navSections = [
   {
     title: 'Inventory & Materials',
     items: [
-      { path: '/inventory', label: 'Inventory', icon: InventoryIcon },
+      { path: '/units', label: 'Inventory', icon: InventoryIcon },
       { path: '/heats', label: 'Heats', icon: HeatIcon },
-      { path: '/units', label: 'Units', icon: UnitsIcon },
     ],
   },
 
@@ -311,6 +316,7 @@ const navSections = [
       { path: '/admin/staff', label: 'Staff & Operators', icon: StaffIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
       { path: '/admin/audit-log', label: 'Audit Log', icon: AuditLogIcon },
+      { path: '/admin/tax-rates', label: 'Sales Tax Rates', icon: InvoicesIcon },
       { path: '/admin/processing-recipes', label: 'Processing Recipes', icon: RecipesIcon },
     ],
   },

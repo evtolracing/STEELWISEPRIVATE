@@ -1,5 +1,5 @@
 {
- "total": 332,
+ "total": 283,
  "missing": [
   {
    "call": "PUT /api/auth/profile",
@@ -8,124 +8,9 @@
    ]
   },
   {
-   "call": "GET /api/batches",
-   "files": [
-    "src/frontend/src/api/batches.js"
-   ]
-  },
-  {
-   "call": "POST /api/batches",
-   "files": [
-    "src/frontend/src/api/batches.js"
-   ]
-  },
-  {
-   "call": "GET /api/batches/:x",
-   "files": [
-    "src/frontend/src/api/batches.js"
-   ]
-  },
-  {
-   "call": "PUT /api/batches/:x",
-   "files": [
-    "src/frontend/src/api/batches.js"
-   ]
-  },
-  {
-   "call": "DELETE /api/batches/:x",
-   "files": [
-    "src/frontend/src/api/batches.js"
-   ]
-  },
-  {
    "call": "GET /api/boms",
    "files": [
-    "src/frontend/src/api/boms.js",
     "src/frontend/src/apps/boms/BOMsPage.jsx"
-   ]
-  },
-  {
-   "call": "POST /api/boms",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "GET /api/boms/:x",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "PUT /api/boms/:x",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "DELETE /api/boms/:x",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "GET /api/boms/:x/items",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "POST /api/boms/:x/items",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "PUT /api/boms/:x/items/:x",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "DELETE /api/boms/:x/items/:x",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "GET /api/boms/:x/versions",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "POST /api/boms/:x/versions",
-   "files": [
-    "src/frontend/src/api/boms.js"
-   ]
-  },
-  {
-   "call": "GET /api/coils/:x/genealogy",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
-   "call": "GET /api/coils/:x/history",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
-   "call": "POST /api/coils/:x/release",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
-   "call": "GET /api/coils/:x/trace",
-   "files": [
-    "src/frontend/src/api/units.js"
    ]
   },
   {
@@ -183,168 +68,6 @@
    ]
   },
   {
-   "call": "PUT /api/heats/:x",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "GET /api/heats/:x/chemistry",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "GET /api/heats/:x/tests",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "GET /api/heats/number/:x",
-   "files": [
-    "src/frontend/src/api/heats.js"
-   ]
-  },
-  {
-   "call": "POST /api/inventory/adjust",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/aggregate",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "POST /api/inventory/locations",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/locations/:x",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/locations/:x/stock",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "GET /api/inventory/movements",
-   "files": [
-    "src/frontend/src/api/inventory.js"
-   ]
-  },
-  {
-   "call": "DELETE /api/jobs/:x",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/cancel",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "GET /api/jobs/:x/documents",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/documents",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/measurements",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "GET /api/jobs/:x/notes",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/notes",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/pause",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "PATCH /api/jobs/:x/priority",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/resume",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/schedule",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "PUT /api/jobs/:x/schedule",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/scrap",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/split",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "GET /api/jobs/:x/timeline",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/:x/unassign",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "POST /api/jobs/merge",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
    "call": "GET /api/logistics/carriers",
    "files": [
     "src/frontend/src/api/logistics.js"
@@ -387,9 +110,21 @@
    ]
   },
   {
-   "call": "GET /api/pos/quick-sale/lookup",
+   "call": "POST /api/pos/will-call/:x/complete",
    "files": [
-    "src/frontend/src/components/pos/screens/QuickSaleScreen.jsx"
+    "src/frontend/src/components/pos/screens/WillCallLoadScreen.jsx"
+   ]
+  },
+  {
+   "call": "POST /api/pos/will-call/:x/verify",
+   "files": [
+    "src/frontend/src/components/pos/screens/WillCallVerifyScreen.jsx"
+   ]
+  },
+  {
+   "call": "GET /api/pos/will-call/queue",
+   "files": [
+    "src/frontend/src/components/pos/screens/WillCallQueueScreen.jsx"
    ]
   },
   {
@@ -645,6 +380,12 @@
    ]
   },
   {
+   "call": "POST /api/returns/:x/:x",
+   "files": [
+    "src/frontend/src/pages/Orders/ReturnsPage.jsx"
+   ]
+  },
+  {
    "call": "GET /api/shipments/:x/loading-plan",
    "files": [
     "src/frontend/src/api/logistics.js"
@@ -672,12 +413,6 @@
    "call": "PUT /api/shipments/splits/:x/status",
    "files": [
     "src/frontend/src/services/splitShipmentApi.js"
-   ]
-  },
-  {
-   "call": "GET /api/units/:x",
-   "files": [
-    "src/frontend/src/api/units.js"
    ]
   },
   {
@@ -729,12 +464,6 @@
    ]
   },
   {
-   "call": "GET /api/units/tag/:x",
-   "files": [
-    "src/frontend/src/api/units.js"
-   ]
-  },
-  {
    "call": "PUT /api/work-centers/:x",
    "files": [
     "src/frontend/src/api/workCenters.js"
@@ -747,171 +476,9 @@
    ]
   },
   {
-   "call": "GET /api/work-centers/:x/capabilities",
+   "call": "PUT /api/work-orders/:x/:x",
    "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "PUT /api/work-centers/:x/capabilities",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/capacity",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/current-job",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/downtime",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "POST /api/work-centers/:x/downtime",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "POST /api/work-centers/:x/downtime/:x/end",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/jobs",
-   "files": [
-    "src/frontend/src/api/jobs.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/maintenance",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "POST /api/work-centers/:x/maintenance",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "POST /api/work-centers/:x/maintenance/:x/complete",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/metrics",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/operators",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "POST /api/work-centers/:x/operators",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "DELETE /api/work-centers/:x/operators/:x",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/queue",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "PUT /api/work-centers/:x/queue",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "PATCH /api/work-centers/:x/status",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-centers/:x/utilization",
-   "files": [
-    "src/frontend/src/api/workCenters.js"
-   ]
-  },
-  {
-   "call": "PUT /api/work-orders/:x",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "PUT /api/work-orders/:x/cancel",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-orders/:x/outputs",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "POST /api/work-orders/:x/outputs",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "PATCH /api/work-orders/:x/status",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "GET /api/work-orders/:x/steps",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "POST /api/work-orders/:x/steps",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "PUT /api/work-orders/:x/steps/:x",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
-   ]
-  },
-  {
-   "call": "PATCH /api/work-orders/:x/steps/:x/status",
-   "files": [
-    "src/frontend/src/api/workOrders.js"
+    "src/frontend/src/pages/WorkOrders/WorkOrderDetailPage.jsx"
    ]
   }
  ]

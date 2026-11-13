@@ -113,11 +113,19 @@
    "file": "src/backend/src/routes/heats.js"
   },
   {
+   "ep": "GET /api/heats/mills",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
    "ep": "GET /api/heats/:id",
    "file": "src/backend/src/routes/heats.js"
   },
   {
    "ep": "POST /api/heats",
+   "file": "src/backend/src/routes/heats.js"
+  },
+  {
+   "ep": "PUT /api/heats/:id",
    "file": "src/backend/src/routes/heats.js"
   },
   {
@@ -129,11 +137,15 @@
    "file": "src/backend/src/routes/coils.js"
   },
   {
+   "ep": "GET /api/coils/number/:coilNumber",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
    "ep": "GET /api/coils/:id",
    "file": "src/backend/src/routes/coils.js"
   },
   {
-   "ep": "GET /api/coils/number/:coilNumber",
+   "ep": "GET /api/coils/:id/history",
    "file": "src/backend/src/routes/coils.js"
   },
   {
@@ -146,6 +158,10 @@
   },
   {
    "ep": "POST /api/coils/:id/hold",
+   "file": "src/backend/src/routes/coils.js"
+  },
+  {
+   "ep": "POST /api/coils/:id/release",
    "file": "src/backend/src/routes/coils.js"
   },
   {
@@ -173,6 +189,14 @@
    "file": "src/backend/src/routes/inventory.js"
   },
   {
+   "ep": "POST /api/inventory/receipts",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "GET /api/inventory/receipts",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
    "ep": "POST /api/inventory/bulk-upload",
    "file": "src/backend/src/routes/inventory.js"
   },
@@ -186,6 +210,10 @@
   },
   {
    "ep": "GET /api/orders/intake",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "GET /api/orders/intake/summary",
    "file": "src/backend/src/routes/intakeOrders.js"
   },
   {
@@ -397,6 +425,18 @@
    "file": "src/backend/src/routes/intakePricing.js"
   },
   {
+   "ep": "GET /api/pricing/overview",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
+   "ep": "GET /api/pricing/price-list",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
+   "ep": "PUT /api/pricing/list-price/:productId",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
    "ep": "GET /api/processing/operations",
    "file": "src/backend/src/routes/intakeProcessing.js"
   },
@@ -410,6 +450,14 @@
   },
   {
    "ep": "GET /api/orders",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/orders/credit-holds",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "POST /api/orders/:id/credit-release",
    "file": "src/backend/src/routes/orders.js"
   },
   {
@@ -441,6 +489,10 @@
    "file": "src/backend/src/routes/workOrders.js"
   },
   {
+   "ep": "PUT /api/work-orders/:id/release",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
    "ep": "PUT /api/work-orders/:id/start",
    "file": "src/backend/src/routes/workOrders.js"
   },
@@ -449,7 +501,15 @@
    "file": "src/backend/src/routes/workOrders.js"
   },
   {
+   "ep": "PUT /api/work-orders/:id/cancel",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
    "ep": "GET /api/shipments",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "GET /api/shipments/shippable",
    "file": "src/backend/src/routes/shipments.js"
   },
   {
@@ -487,6 +547,98 @@
   {
    "ep": "PATCH /api/shipments/:id/status",
    "file": "src/backend/src/routes/shipments.js"
+  },
+  {
+   "ep": "GET /api/invoices",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "GET /api/invoices/:id",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "POST /api/invoices",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "POST /api/invoices/:id/payments",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "POST /api/invoices/:id/credit",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "POST /api/invoices/:id/refund",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "POST /api/invoices/:id/cancel",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "GET /api/returns",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "GET /api/returns/eligible",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "GET /api/returns/:id",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "POST /api/returns",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "POST /api/returns/:id/receive",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "POST /api/returns/:id/cancel",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "GET /api/tax-rates",
+   "file": "src/backend/src/routes/taxRates.js"
+  },
+  {
+   "ep": "PUT /api/tax-rates/:state",
+   "file": "src/backend/src/routes/taxRates.js"
+  },
+  {
+   "ep": "DELETE /api/tax-rates/:state",
+   "file": "src/backend/src/routes/taxRates.js"
+  },
+  {
+   "ep": "POST /api/overrides",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides/count",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides/audit",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides/stats",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "POST /api/overrides/:id/revoke",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/sales-dashboard",
+   "file": "src/backend/src/routes/salesDashboard.js"
   },
   {
    "ep": "GET /api/dashboard",
@@ -557,7 +709,11 @@
    "file": "src/backend/src/routes/quotes.js"
   },
   {
-   "ep": "POST /api/quotes/:id/accept",
+   "ep": "POST /api/quotes",
+   "file": "src/backend/src/routes/quotes.js"
+  },
+  {
+   "ep": "POST /api/quotes/:id/send",
    "file": "src/backend/src/routes/quotes.js"
   },
   {
@@ -565,7 +721,7 @@
    "file": "src/backend/src/routes/quotes.js"
   },
   {
-   "ep": "POST /api/quotes/:id/send",
+   "ep": "POST /api/quotes/:id/accept",
    "file": "src/backend/src/routes/quotes.js"
   },
   {
@@ -679,6 +835,46 @@
   {
    "ep": "DELETE /api/documents/:id",
    "file": "src/backend/src/routes/documents.js"
+  },
+  {
+   "ep": "GET /api/pos/quick-sale/items",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "GET /api/pos/quick-sale/lookup",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/lookup",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/price",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/process-payment",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "GET /api/pos/quick-sale/daily-stats",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "GET /api/pos/quick-sale/:saleId/receipt",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/:saleId/void",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/email-receipt",
+   "file": "src/backend/src/routes/quickSale.js"
+  },
+  {
+   "ep": "POST /api/pos/quick-sale/sms-receipt",
+   "file": "src/backend/src/routes/quickSale.js"
   },
   {
    "ep": "GET /api/pos/workflow/definition",
@@ -906,110 +1102,6 @@
   },
   {
    "ep": "GET /api/pos/sessions/:sessionId/pricing",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/sessions/:sessionId/quick-sale/scan",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/will-call/queue",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/will-call/:orderId",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/will-call/:orderId/verify",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/will-call/:orderId/checklist",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/will-call/:orderId/load-item",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/will-call/:orderId/signature",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/will-call/:orderId/vehicle-photo",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/will-call/:orderId/complete",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/will-call/:orderId/partial",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/will-call/stats",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/sessions/:sessionId/will-call/queue",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/create",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/lookup",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/:saleId/add-item",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "PUT /api/pos/quick-sale/:saleId/items/:lineNumber",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "DELETE /api/pos/quick-sale/:saleId/items/:lineNumber",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "DELETE /api/pos/quick-sale/:saleId/items",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/process-payment",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/quick-sale/:saleId/receipt",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/print-receipt",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/email-receipt",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/sms-receipt",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "POST /api/pos/quick-sale/:saleId/void",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/quick-sale/daily-stats",
-   "file": "src/backend/src/routes/pos.js"
-  },
-  {
-   "ep": "GET /api/pos/quick-sale/quick-amounts",
    "file": "src/backend/src/routes/pos.js"
   },
   {
@@ -1589,43 +1681,11 @@
    "file": "src/backend/src/routes/salesRoutes.js"
   },
   {
-   "ep": "GET /api/sales/rfqs",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
-   "ep": "POST /api/sales/rfqs",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
-   "ep": "POST /api/sales/rfqs/:id/parse",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
-   "ep": "GET /api/sales/quotes",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
-   "ep": "POST /api/sales/quotes",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
-   "ep": "POST /api/sales/quotes/:id/send",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
-   "ep": "POST /api/sales/quotes/:id/accept",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
    "ep": "GET /api/sales/dashboard/stats",
    "file": "src/backend/src/routes/salesRoutes.js"
   },
   {
    "ep": "GET /api/sales/dashboard/leaderboard",
-   "file": "src/backend/src/routes/salesRoutes.js"
-  },
-  {
-   "ep": "GET /api/sales/portal/quote/:token",
    "file": "src/backend/src/routes/salesRoutes.js"
   },
   {
@@ -2418,7 +2478,7 @@
   },
   {
    "name": "Location",
-   "fields": 34,
+   "fields": 35,
    "fks": 2,
    "status": null
   },
@@ -2532,13 +2592,13 @@
   },
   {
    "name": "Order",
-   "fields": 38,
-   "fks": 3,
+   "fields": 41,
+   "fks": 4,
    "status": "OrderStatus"
   },
   {
    "name": "OrderLine",
-   "fields": 41,
+   "fields": 43,
    "fks": 3,
    "status": null
   },
@@ -2580,9 +2640,21 @@
   },
   {
    "name": "Invoice",
-   "fields": 16,
+   "fields": 20,
    "fks": 1,
    "status": "InvoiceStatus"
+  },
+  {
+   "name": "InvoiceLine",
+   "fields": 12,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "DocumentBlob",
+   "fields": 4,
+   "fks": 1,
+   "status": null
   },
   {
    "name": "Payment",
@@ -2592,7 +2664,7 @@
   },
   {
    "name": "Document",
-   "fields": 21,
+   "fields": 22,
    "fks": 1,
    "status": null
   },
@@ -4139,12 +4211,15 @@
   "executive/digital-twin",
   "executive/compression-metrics",
   "shipping",
+  "shipping/:id",
   "time-tracking",
   "shopfloor",
   "shopfloor/:workCenterId",
   "logistics/route-optimization",
   "logistics/tracking",
   "logistics/dispatch",
+  "orders/invoices",
+  "orders/returns",
   "orders",
   "boms",
   "inventory/*",
@@ -4153,6 +4228,7 @@
   "planning/*",
   "orders/intake",
   "orders/online-inbox",
+  "orders/credit-holds",
   "orders/:id",
   "pos",
   "pos/retail",
@@ -4160,6 +4236,7 @@
   "customers/preferences",
   "admin/users",
   "admin/partners",
+  "admin/tax-rates",
   "admin/audit-log",
   "admin/processing-recipes",
   "admin/staff",
@@ -4184,7 +4261,6 @@
   "branchComparisonApi.js",
   "cutoffRulesApi.js",
   "intakeCustomersApi.js",
-  "overrideApi.js",
   "splitShipmentApi.js"
  ]
 }

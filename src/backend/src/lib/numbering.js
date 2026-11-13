@@ -1,10 +1,13 @@
+import { acrossBranches } from './branchScope.js';
+
 /**
  * Creates a record that needs the next number in a series (SO-00042, SHP-00007).
  * Numbers come from the row count, so two people saving at once can pick the
  * same one; when the database rejects the duplicate we try the next number.
  */
 export async function createNumbered({ count, format, create, attempts = 25 }) {
-  let n = (await count()) + 1;
+  // The series is company-wide, so the count ignores the branch boundary.
+  let n = (await acrossBranches(count)) + 1;
   for (let i = 0; i < attempts; i++, n++) {
     try {
       return await create(format(n));

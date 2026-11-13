@@ -155,38 +155,32 @@ router.get('/rfq-funnel', async (req, res) => {
     const rfqWhere = { createdAt: { gte: startDate } };
     const quoteWhere = { createdAt: { gte: startDate } };
 
-    // Get RFQ counts
-    const rfqs = await prisma.rFQ.findMany({ where: rfqWhere });
-    const quotes = await prisma.quote.findMany({ where: quoteWhere });
-    const orders = await prisma.order.findMany({ where: { createdAt: { gte: startDate } } });
-
-    const rfqCount = rfqs.length;
-    const quotedCount = quotes.length;
-    const orderedCount = orders.length;
+    // Counted in the database; nothing is loaded into memory.
+    const orderWhere = { createdAt: { gte: startDate }, orderType: 'SO' };
+    const [rfqCount, quotedCount, orderedCount, quoteAgg, pipelineAgg, byCustomer] = await Promise.all([
+      prisma.rFQ.count({ where: rfqWhere }),
+      prisma.quote.count({ where: quoteWhere }),
+      prisma.order.count({ where: orderWhere }),
+      prisma.quote.aggregate({ where: quoteWhere, _avg: { totalAmount: true } }),
+      prisma.quote.aggregate({ where: { ...quoteWhere, status: { in: ['DRAFT', 'PENDING_APPROVAL', 'SENT', 'COUNTERED'] } }, _sum: { totalAmount: true } }),
+      prisma.rFQ.groupBy({ by: ['customerId'], where: rfqWhere, _count: { _all: true }, orderBy: { _count: { customerId: 'desc' } }, take: 5 }),
+    ]);
 
     const rfqToQuoteRate = rfqCount > 0 ? Math.round((quotedCount / rfqCount) * 100) : 0;
     const quoteToOrderRate = quotedCount > 0 ? Math.round((orderedCount / quotedCount) * 100) : 0;
+    const avgQuoteValue = Math.round(Number(quoteAgg._avg.totalAmount || 0));
+    const totalPipelineValue = Number(pipelineAgg._sum.totalAmount || 0);
 
-    // Calculate avg quote value
-    const avgQuoteValue = quotes.length > 0
-      ? Math.round(quotes.reduce((sum, q) => sum + (q.totalAmount || 0), 0) / quotes.length)
-      : 0;
-
-    const totalPipelineValue = quotes
-      .filter(q => q.status === 'PENDING' || q.status === 'SENT')
-      .reduce((sum, q) => sum + (q.totalAmount || 0), 0);
-
-    // Top customers by RFQ
-    const customerRfqs = {};
-    rfqs.forEach(rfq => {
-      const cust = rfq.companyName || 'Unknown';
-      if (!customerRfqs[cust]) customerRfqs[cust] = { name: cust, rfqs: 0, converted: 0 };
-      customerRfqs[cust].rfqs++;
-    });
-
-    const topCustomers = Object.values(customerRfqs)
-      .sort((a, b) => b.rfqs - a.rfqs)
-      .slice(0, 5);
+    const ids = byCustomer.map((c) => c.customerId);
+    const [names, won] = await Promise.all([
+      prisma.organization.findMany({ where: { id: { in: ids } }, select: { id: true, name: true } }),
+      prisma.rFQ.groupBy({ by: ['customerId'], where: { ...rfqWhere, status: 'ACCEPTED', customerId: { in: ids } }, _count: { _all: true } }),
+    ]);
+    const topCustomers = byCustomer.map((c) => ({
+      name: names.find((n) => n.id === c.customerId)?.name || 'Unknown',
+      rfqs: c._count._all,
+      converted: won.find((w) => w.customerId === c.customerId)?._count._all || 0,
+    }));
 
     res.json({
       rfqCount,
@@ -196,7 +190,7 @@ router.get('/rfq-funnel', async (req, res) => {
       quoteToOrderRate,
       avgQuoteValue,
       totalPipelineValue,
-      avgResponseTime: 4.2, // Would calculate from actual timestamps
+      avgResponseTime: null, // not measured: RFQs do not record when the first quote went out
       topCustomers,
     });
   } catch (error) {
@@ -222,58 +216,31 @@ router.get('/margin', async (req, res) => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    const orders = await prisma.order.findMany({
-      where: { createdAt: { gte: startDate } },
-      include: { lines: true },
-    });
-
-    // Calculate margins
-    let totalRevenue = 0;
-    let totalCost = 0;
-    let discountedOrders = 0;
-    let totalDiscount = 0;
-
-    orders.forEach(order => {
-      const orderTotal = order.lines?.reduce((sum, line) => sum + (line.unitPrice || 0) * (line.quantity || 0), 0) || 0;
-      const orderCost = order.lines?.reduce((sum, line) => sum + (line.costPrice || line.unitPrice * 0.7) * (line.quantity || 0), 0) || 0;
-      totalRevenue += orderTotal;
-      totalCost += orderCost;
-
-      if (order.discountPercent > 0) {
-        discountedOrders++;
-        totalDiscount += order.discountPercent;
-      }
-    });
-
-    const avgMargin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 0;
-    const avgDiscount = discountedOrders > 0 ? totalDiscount / discountedOrders : 0;
-
-    // Today's numbers
+    // Revenue is summed in the database. Cost is not recorded on order
+    // lines, so margin cannot be worked out and is reported as null instead
+    // of an invented figure.
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
-    const todayOrders = orders.filter(o => new Date(o.createdAt) >= todayStart);
-    const revenueToday = todayOrders.reduce((sum, o) => {
-      return sum + (o.lines?.reduce((s, l) => s + (l.unitPrice || 0) * (l.quantity || 0), 0) || 0);
-    }, 0);
+    const sales = { orderType: 'SO', status: { not: 'CANCELLED' } };
+    const [orderCount, todayAgg] = await Promise.all([
+      prisma.order.count({ where: { ...sales, createdAt: { gte: startDate } } }),
+      prisma.order.aggregate({ where: { ...sales, createdAt: { gte: todayStart } }, _sum: { subtotal: true } }),
+    ]);
 
     res.json({
-      avgMargin: Math.round(avgMargin * 10) / 10,
-      marginTrend: 'STABLE',
-      marginChange: 0,
-      discountedOrdersPercent: orders.length > 0 ? Math.round((discountedOrders / orders.length) * 100) : 0,
-      avgDiscount: Math.round(avgDiscount * 10) / 10,
-      topMarginCustomer: 'Acme Corp',
-      lowMarginAlert: orders.filter(o => {
-        const rev = o.lines?.reduce((sum, l) => sum + (l.unitPrice || 0) * (l.quantity || 0), 0) || 0;
-        const cost = o.lines?.reduce((sum, l) => sum + (l.costPrice || l.unitPrice * 0.7) * (l.quantity || 0), 0) || 0;
-        return rev > 0 && ((rev - cost) / rev) < 0.15;
-      }).length,
-      revenueToday: Math.round(revenueToday),
-      marginToday: Math.round(revenueToday * (avgMargin / 100)),
-      byDivision: [
-        { division: 'METALS', margin: 29.2 },
-        { division: 'PLASTICS', margin: 26.8 },
-      ],
+      avgMargin: null,
+      marginTrend: null,
+      marginChange: null,
+      discountedOrdersPercent: 0,
+      avgDiscount: 0,
+      topMarginCustomer: null,
+      lowMarginAlert: 0,
+      revenueToday: Math.round(Number(todayAgg._sum.subtotal || 0)),
+      marginToday: null,
+      byDivision: [],
+      orderCount,
+      marginAvailable: false,
+      note: 'Margin is not available: order lines do not record cost.',
     });
   } catch (error) {
     console.error('Error fetching margin insights:', error);

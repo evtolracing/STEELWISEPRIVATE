@@ -1,400 +1,265 @@
+/**
+ * One heat: what the mill certified, the stock items cut from it, its test
+ * results and its documents. Everything is read from /api/heats/:id.
+ */
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Tabs,
-  Tab,
-  Button,
-  Stack,
-  Chip,
-  Divider,
-  IconButton,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListItemSecondaryAction,
-  Snackbar,
-  Alert,
+  Box, Typography, Paper, Grid, Button, Tabs, Tab, Divider, IconButton, List, ListItem, ListItemText, ListItemIcon,
+  ListItemSecondaryAction, Snackbar, Alert, CircularProgress, Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Chip,
 } from '@mui/material'
 import {
-  ArrowBack as BackIcon,
-  Edit as EditIcon,
-  Print as PrintIcon,
-  QrCode2 as QrCodeIcon,
-  Science as ChemistryIcon,
-  Inventory as InventoryIcon,
-  Description as DocIcon,
-  Timeline as TimelineIcon,
-  PictureAsPdf as PdfIcon,
-  InsertDriveFile as FileIcon,
-  Download as DownloadIcon,
-  Delete as DeleteIcon,
+  ArrowBack as BackIcon, Edit as EditIcon, Download as DownloadIcon, Delete as DeleteIcon,
+  PictureAsPdf as PdfIcon, InsertDriveFile as FileIcon,
 } from '@mui/icons-material'
-import { useApiQuery } from '../../hooks/useApiQuery'
-import { getHeat, getHeatTrace } from '../../api'
 import { getEntityDocuments, deleteDocument, getDocumentDownloadUrl } from '../../api/documents'
-import { DataTable, StatusChip, FileUploadZone } from '../../components/common'
-import { TraceTimeline, UnitCard } from '../../components/traceability'
+import { StatusChip, FileUploadZone } from '../../components/common'
+import { HEAT_STATUSES, MELT_TYPES, CAST_TYPES, day, pounds } from './HeatListPage'
+import { unitSize } from '../Units/UnitListPage'
 
-function TabPanel({ children, value, index, ...props }) {
+const label = (pairs, value) => (pairs.find(([v]) => v === value) || [])[1] || ''
+const Fact = ({ name, children }) => (
+  <Box sx={{ mb: 1.5 }}>
+    <Typography variant="caption" color="text.secondary" display="block">{name}</Typography>
+    <Typography variant="body1">{children || <Typography component="span" variant="body2" color="text.secondary">Not recorded</Typography>}</Typography>
+  </Box>
+)
+
+/** A set of named values (chemistry, mechanical properties) as a two-column table. */
+function Values({ values, empty }) {
+  const rows = Object.entries(values || {}).filter(([, v]) => v !== null && v !== '')
+  if (!rows.length) return <Typography variant="body2" color="text.secondary">{empty}</Typography>
   return (
-    <div hidden={value !== index} {...props}>
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  )
-}
-
-function ChemistryTable({ chemistry = {} }) {
-  const elements = [
-    { symbol: 'C', name: 'Carbon', value: chemistry.carbon },
-    { symbol: 'Mn', name: 'Manganese', value: chemistry.manganese },
-    { symbol: 'P', name: 'Phosphorus', value: chemistry.phosphorus },
-    { symbol: 'S', name: 'Sulfur', value: chemistry.sulfur },
-    { symbol: 'Si', name: 'Silicon', value: chemistry.silicon },
-    { symbol: 'Cu', name: 'Copper', value: chemistry.copper },
-    { symbol: 'Ni', name: 'Nickel', value: chemistry.nickel },
-    { symbol: 'Cr', name: 'Chromium', value: chemistry.chromium },
-    { symbol: 'Mo', name: 'Molybdenum', value: chemistry.molybdenum },
-    { symbol: 'V', name: 'Vanadium', value: chemistry.vanadium },
-    { symbol: 'Cb', name: 'Columbium', value: chemistry.columbium },
-    { symbol: 'Ti', name: 'Titanium', value: chemistry.titanium },
-    { symbol: 'Al', name: 'Aluminum', value: chemistry.aluminum },
-    { symbol: 'N', name: 'Nitrogen', value: chemistry.nitrogen },
-  ].filter(e => e.value !== undefined && e.value !== null)
-
-  return (
-    <Grid container spacing={2}>
-      {elements.map((element) => (
-        <Grid item xs={6} sm={4} md={3} key={element.symbol}>
-          <Card variant="outlined">
-            <CardContent sx={{ textAlign: 'center', py: 1.5 }}>
-              <Typography variant="h6" color="primary" fontWeight={600}>
-                {element.symbol}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {element.name}
-              </Typography>
-              <Typography variant="h5" fontWeight={500}>
-                {element.value}%
-              </Typography>
-            </CardContent>
-          </Card>
+    <Grid container spacing={1}>
+      {rows.map(([k, v]) => (
+        <Grid item xs={6} sm={4} md={3} key={k}>
+          <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">{k}</Typography>
+            <Typography variant="h6" fontWeight={600}>{typeof v === 'object' ? JSON.stringify(v) : String(v)}</Typography>
+          </Paper>
         </Grid>
       ))}
     </Grid>
   )
 }
 
+function EditHeatDialog({ heat, open, onClose, onSaved }) {
+  const [form, setForm] = useState({})
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    if (open && heat) {
+      setError('')
+      setForm({ status: heat.status, castDate: String(heat.castDate || '').slice(0, 10), meltType: heat.meltType || '', castType: heat.castType || '', totalWeightLb: heat.totalWeightLb ?? '' })
+    }
+  }, [open, heat])
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
+  const save = async () => {
+    setBusy(true); setError('')
+    try {
+      const res = await fetch(`/api/heats/${heat.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body.error || 'The heat could not be saved')
+      onSaved()
+    } catch (e) { setError(e.message) }
+    setBusy(false)
+  }
+  return (
+    <Dialog open={open} onClose={busy ? undefined : onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>Edit heat {heat?.heatNumber}</DialogTitle>
+      <DialogContent>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        <TextField select label="Status" value={form.status || ''} onChange={set('status')} fullWidth sx={{ mt: 1, mb: 2 }}>
+          {HEAT_STATUSES.map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+        </TextField>
+        <TextField label="Cast date" type="date" value={form.castDate || ''} onChange={set('castDate')} fullWidth required InputLabelProps={{ shrink: true }} sx={{ mb: 2 }} />
+        <TextField select label="Melt type" value={form.meltType || ''} onChange={set('meltType')} fullWidth sx={{ mb: 2 }}>
+          <MenuItem value="">Not recorded</MenuItem>
+          {MELT_TYPES.map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+        </TextField>
+        <TextField select label="Cast type" value={form.castType || ''} onChange={set('castType')} fullWidth sx={{ mb: 2 }}>
+          <MenuItem value="">Not recorded</MenuItem>
+          {CAST_TYPES.map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+        </TextField>
+        <TextField label="Total weight (lb)" type="number" value={form.totalWeightLb ?? ''} onChange={set('totalWeightLb')} fullWidth inputProps={{ min: 0 }} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={busy}>Cancel</Button>
+        <Button variant="contained" onClick={save} disabled={busy || !form.castDate}>{busy ? 'Saving…' : 'Save'}</Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 export default function HeatDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [tabValue, setTabValue] = useState(0)
+  const [heat, setHeat] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [tab, setTab] = useState(0)
   const [documents, setDocuments] = useState([])
+  const [docError, setDocError] = useState('')
+  const [editing, setEditing] = useState(false)
   const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' })
 
-  const { data: heat, isLoading } = useApiQuery(
-    ['heat', id],
-    () => getHeat(id)
-  )
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/heats/${id}`)
+      const body = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(res.status === 404 ? 'This heat does not exist.' : body?.error || 'The heat could not be loaded')
+      setHeat(body); setError('')
+    } catch (e) { setError(e.message) }
+    setLoading(false)
+  }, [id])
+  useEffect(() => { load() }, [load])
 
-  const { data: traceData } = useApiQuery(
-    ['heatTrace', id],
-    () => getHeatTrace(id),
-    { enabled: tabValue === 3 }
-  )
-
-  // Load documents linked to this heat
   const loadDocuments = useCallback(async () => {
     try {
       const res = await getEntityDocuments('HEAT', id)
-      setDocuments(res.data || [])
+      setDocuments(res.data || []); setDocError('')
     } catch {
-      // Use mock data on failure (e.g. no DocumentLink table yet)
-      setDocuments([])
+      setDocError('The documents could not be loaded.')
     }
   }, [id])
+  useEffect(() => { if (tab === 3) loadDocuments() }, [tab, loadDocuments])
 
-  useEffect(() => {
-    if (tabValue === 2) loadDocuments()
-  }, [tabValue, loadDocuments])
-
-  const handleDocUploaded = (doc) => {
-    setDocuments(prev => [{ ...doc, downloadUrl: `/api/documents/${doc.id}/download` }, ...prev])
-    setSnack({ open: true, msg: `"${doc.fileName}" uploaded successfully`, severity: 'success' })
-  }
-
-  const handleDeleteDoc = async (docId) => {
+  const removeDocument = async (docId) => {
     try {
       await deleteDocument(docId)
-      setDocuments(prev => prev.filter(d => d.id !== docId))
+      setDocuments((list) => list.filter((d) => d.id !== docId))
       setSnack({ open: true, msg: 'Document deleted', severity: 'success' })
     } catch {
-      setSnack({ open: true, msg: 'Failed to delete document', severity: 'error' })
+      setSnack({ open: true, msg: 'The document could not be deleted', severity: 'error' })
     }
   }
 
-  // Mock data for demo
-  const mockHeat = {
-    id: 1,
-    heatNumber: 'HT-2024-001',
-    millName: 'US Steel Gary Works',
-    millLocation: 'Gary, Indiana',
-    grade: 'A36',
-    specification: 'ASTM A36/A36M-19',
-    status: 'AVAILABLE',
-    receivedDate: new Date().toISOString(),
-    poNumber: 'PO-2024-00123',
-    chemistry: {
-      carbon: 0.25,
-      manganese: 0.85,
-      phosphorus: 0.012,
-      sulfur: 0.008,
-      silicon: 0.22,
-      copper: 0.20,
-      nickel: 0.08,
-      chromium: 0.10,
-    },
-    mechanicalProperties: {
-      yieldStrength: 36000,
-      tensileStrength: 58000,
-      elongation: 23,
-    },
-    units: [
-      { id: 1, unitNumber: 'U-001-01', weight: 12500, status: 'AVAILABLE', grade: 'A36', location: 'Bay A-01' },
-      { id: 2, unitNumber: 'U-001-02', weight: 11800, status: 'ALLOCATED', grade: 'A36', location: 'Bay A-02' },
-      { id: 3, unitNumber: 'U-001-03', weight: 13200, status: 'AVAILABLE', grade: 'A36', location: 'Bay A-03' },
-    ],
-    documents: [],
+  if (loading && !heat) return <Box sx={{ p: 6, textAlign: 'center' }}><CircularProgress /></Box>
+  if (error || !heat) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" action={<Button color="inherit" size="small" onClick={() => navigate('/heats')}>Back to heats</Button>}>{error || 'This heat does not exist.'}</Alert>
+      </Box>
+    )
   }
 
-  const mockTraceEvents = [
-    { id: 1, type: 'CREATED', title: 'Heat Created', timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), actor: 'System', location: 'US Steel Gary Works' },
-    { id: 2, type: 'RECEIVED', title: 'Material Received', timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), actor: 'John Smith', location: 'Main Warehouse' },
-    { id: 3, type: 'TESTED', title: 'QC Testing Complete', timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), actor: 'Lab Tech', description: 'All tests passed' },
-    { id: 4, type: 'APPROVED', title: 'Released for Sale', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), actor: 'QC Manager' },
-  ]
-
-  const displayHeat = heat || mockHeat
-  const displayTrace = traceData?.events || mockTraceEvents
-
-  const unitColumns = [
-    { id: 'unitNumber', label: 'Unit Number', minWidth: 120 },
-    { id: 'weight', label: 'Weight (lbs)', minWidth: 100, render: (row) => row.weight?.toLocaleString() },
-    { id: 'location', label: 'Location', minWidth: 120 },
-    { id: 'status', label: 'Status', minWidth: 100, render: (row) => <StatusChip status={row.status} /> },
-  ]
-
-  const docColumns = [] // Deprecated: Documents tab now uses FileUploadZone
-
+  const units = heat.coils || []
+  const tests = heat.testResults || []
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <IconButton onClick={() => navigate('/heats')}>
-          <BackIcon />
-        </IconButton>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 1, flexWrap: 'wrap' }}>
+        <IconButton onClick={() => navigate('/heats')} aria-label="Back to heats"><BackIcon /></IconButton>
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" fontWeight={600}>
-              {displayHeat.heatNumber}
-            </Typography>
-            <StatusChip status={displayHeat.status} />
+            <Typography variant="h4" fontWeight={600}>Heat {heat.heatNumber}</Typography>
+            <StatusChip status={heat.status} />
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            {displayHeat.millName} | {displayHeat.grade}
-          </Typography>
+          <Typography variant="body2" color="text.secondary">{[heat.mill?.name, heat.grade?.code, heat.grade?.specStandard].filter(Boolean).join(' · ')}</Typography>
         </Box>
-        <Stack direction="row" spacing={1}>
-          <Button startIcon={<QrCodeIcon />} variant="outlined">
-            QR Code
-          </Button>
-          <Button startIcon={<PrintIcon />} variant="outlined">
-            Print
-          </Button>
-          <Button startIcon={<EditIcon />} variant="contained">
-            Edit
-          </Button>
-        </Stack>
+        <Button variant="outlined" startIcon={<EditIcon />} onClick={() => setEditing(true)}>Edit</Button>
       </Box>
 
-      {/* Summary Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Grade</Typography>
-              <Typography variant="h5">{displayHeat.grade}</Typography>
-              <Typography variant="caption" color="text.secondary">{displayHeat.specification}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Total Units</Typography>
-              <Typography variant="h5">{displayHeat.units?.length || 0}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Total Weight</Typography>
-              <Typography variant="h5">
-                {displayHeat.units?.reduce((sum, u) => sum + (u.weight || 0), 0).toLocaleString()} lbs
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Received</Typography>
-              <Typography variant="h5">
-                {new Date(displayHeat.receivedDate).toLocaleDateString()}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Tabs */}
-      <Paper sx={{ mb: 2 }}>
-        <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
-          <Tab icon={<ChemistryIcon />} iconPosition="start" label="Chemistry" />
-          <Tab icon={<InventoryIcon />} iconPosition="start" label="Units" />
-          <Tab icon={<DocIcon />} iconPosition="start" label="Documents" />
-          <Tab icon={<TimelineIcon />} iconPosition="start" label="Trace History" />
+      <Paper sx={{ mb: 3 }}>
+        <Tabs value={tab} onChange={(_e, v) => setTab(v)}>
+          <Tab label="Overview" />
+          <Tab label={`Stock items (${units.length})`} />
+          <Tab label={`Tests (${tests.length})`} />
+          <Tab label="Documents" />
         </Tabs>
       </Paper>
 
-      {/* Tab Panels */}
-      <TabPanel value={tabValue} index={0}>
+      {tab === 0 && (
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>Chemical Composition</Typography>
-          <ChemistryTable chemistry={displayHeat.chemistry} />
-          
-          {displayHeat.mechanicalProperties && (
-            <>
-              <Divider sx={{ my: 3 }} />
-              <Typography variant="h6" gutterBottom>Mechanical Properties</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
-                  <Card variant="outlined">
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">Yield Strength</Typography>
-                      <Typography variant="h5">{displayHeat.mechanicalProperties.yieldStrength?.toLocaleString()} psi</Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Card variant="outlined">
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">Tensile Strength</Typography>
-                      <Typography variant="h5">{displayHeat.mechanicalProperties.tensileStrength?.toLocaleString()} psi</Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Card variant="outlined">
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">Elongation</Typography>
-                      <Typography variant="h5">{displayHeat.mechanicalProperties.elongation}%</Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-            </>
-          )}
+          <Grid container spacing={2}>
+            <Grid item xs={6} md={3}><Fact name="Mill">{heat.mill?.name}</Fact></Grid>
+            <Grid item xs={6} md={3}><Fact name="Grade">{heat.grade ? `${heat.grade.code}: ${heat.grade.name}` : ''}</Fact></Grid>
+            <Grid item xs={6} md={3}><Fact name="Cast date">{day(heat.castDate)}</Fact></Grid>
+            <Grid item xs={6} md={3}><Fact name="Heat weight">{pounds(heat.totalWeightLb)}</Fact></Grid>
+            <Grid item xs={6} md={3}><Fact name="Melt type">{label(MELT_TYPES, heat.meltType)}</Fact></Grid>
+            <Grid item xs={6} md={3}><Fact name="Cast type">{label(CAST_TYPES, heat.castType)}</Fact></Grid>
+            <Grid item xs={6} md={3}><Fact name="Mill certificate">{heat.mtrDocumentId ? 'On file (see Documents)' : ''}</Fact></Grid>
+          </Grid>
+          <Divider sx={{ my: 2 }} />
+          <Typography variant="h6" gutterBottom>Chemistry</Typography>
+          <Values values={heat.chemistry} empty="No chemistry is recorded for this heat." />
+          <Divider sx={{ my: 3 }} />
+          <Typography variant="h6" gutterBottom>Mechanical properties</Typography>
+          <Values values={heat.mechanicalProps} empty="No mechanical properties are recorded for this heat." />
         </Paper>
-      </TabPanel>
+      )}
 
-      <TabPanel value={tabValue} index={1}>
-        <Paper>
-          <DataTable
-            columns={unitColumns}
-            data={displayHeat.units || []}
-            onRowClick={(row) => navigate(`/units/${row.id}`)}
-          />
-        </Paper>
-      </TabPanel>
+      {tab === 1 && (
+        <TableContainer component={Paper}>
+          <Table size="small" aria-label="Stock items from this heat">
+            <TableHead><TableRow><TableCell>Item</TableCell><TableCell>Form</TableCell><TableCell>Size</TableCell><TableCell align="right">Weight</TableCell><TableCell>Location</TableCell><TableCell>Quality</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
+            <TableBody>
+              {units.map((u) => (
+                <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${u.id}`)}>
+                  <TableCell><Typography variant="body2" fontWeight={600} color="primary">{u.coilNumber}</Typography></TableCell>
+                  <TableCell>{u.form}</TableCell>
+                  <TableCell>{unitSize(u)}</TableCell>
+                  <TableCell align="right">{pounds(u.netWeightLb)}</TableCell>
+                  <TableCell>{u.location?.name || u.location?.code}</TableCell>
+                  <TableCell><StatusChip status={u.qcStatus} /></TableCell>
+                  <TableCell><StatusChip status={u.status} /></TableCell>
+                </TableRow>
+              ))}
+              {units.length === 0 && <TableRow><TableCell colSpan={7} align="center" sx={{ py: 4 }}>No stock has been received against this heat.</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-      <TabPanel value={tabValue} index={2}>
+      {tab === 2 && (
+        <TableContainer component={Paper}>
+          <Table size="small" aria-label="Test results for this heat">
+            <TableHead><TableRow><TableCell>Test</TableCell><TableCell>Date</TableCell><TableCell>Result</TableCell><TableCell>Certificate</TableCell><TableCell>Notes</TableCell></TableRow></TableHead>
+            <TableBody>
+              {tests.map((t) => (
+                <TableRow key={t.id}>
+                  <TableCell>{String(t.testType || '').replace(/_/g, ' ')}</TableCell>
+                  <TableCell>{day(t.testDate)}</TableCell>
+                  <TableCell><Chip size="small" label={t.passFail} color={t.passFail === 'PASS' ? 'success' : t.passFail === 'FAIL' ? 'error' : 'default'} /></TableCell>
+                  <TableCell>{t.certNumber}</TableCell>
+                  <TableCell>{t.notes}</TableCell>
+                </TableRow>
+              ))}
+              {tests.length === 0 && <TableRow><TableCell colSpan={5} align="center" sx={{ py: 4 }}>No test results are recorded for this heat.</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      {tab === 3 && (
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>Upload Documents</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Attach Mill Test Certificates (MTCs), Chemical Analysis Reports, or other heat documentation.
-          </Typography>
-          <FileUploadZone
-            entityType="HEAT"
-            entityId={id}
-            docType="MTC"
-            accept="application/pdf,image/*"
-            multiple
-            onUploaded={handleDocUploaded}
-            onError={(err) => setSnack({ open: true, msg: err, severity: 'error' })}
-          />
-
-          {/* Document list */}
+          <Typography variant="h6" gutterBottom>Documents</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Attach the mill test certificate, chemical analysis or other paperwork for this heat.</Typography>
+          <FileUploadZone entityType="HEAT" entityId={id} docType="MTC" accept="application/pdf,image/*" multiple
+            onUploaded={(doc) => { setDocuments((list) => [doc, ...list]); setSnack({ open: true, msg: `"${doc.fileName}" uploaded`, severity: 'success' }) }}
+            onError={(err) => setSnack({ open: true, msg: err, severity: 'error' })} />
+          {docError && <Alert severity="error" sx={{ mt: 2 }} action={<Button color="inherit" size="small" onClick={loadDocuments}>Try again</Button>}>{docError}</Alert>}
           {documents.length > 0 && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                Attached Documents ({documents.length})
-              </Typography>
-              <List dense>
-                {documents.map((doc) => (
-                  <ListItem
-                    key={doc.id}
-                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 0.5 }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      {doc.mimeType === 'application/pdf' ? <PdfIcon color="error" /> : <FileIcon color="action" />}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={doc.fileName}
-                      secondary={`${doc.type || 'Document'} • ${doc.sizeBytes ? (doc.sizeBytes / 1024).toFixed(1) + ' KB' : ''} • ${new Date(doc.createdAt).toLocaleDateString()}`}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        size="small"
-                        href={getDocumentDownloadUrl(doc.id)}
-                        target="_blank"
-                        title="Download"
-                      >
-                        <DownloadIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => handleDeleteDoc(doc.id)} title="Delete">
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
+            <List dense sx={{ mt: 2 }}>
+              {documents.map((doc) => (
+                <ListItem key={doc.id} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 0.5 }}>
+                  <ListItemIcon sx={{ minWidth: 36 }}>{doc.mimeType === 'application/pdf' ? <PdfIcon color="error" /> : <FileIcon color="action" />}</ListItemIcon>
+                  <ListItemText primary={doc.fileName} secondary={[doc.type || 'Document', doc.sizeBytes ? `${(doc.sizeBytes / 1024).toFixed(1)} KB` : '', day(doc.createdAt)].filter(Boolean).join(' · ')} />
+                  <ListItemSecondaryAction>
+                    <IconButton size="small" href={getDocumentDownloadUrl(doc.id)} target="_blank" aria-label={`Download ${doc.fileName}`}><DownloadIcon fontSize="small" /></IconButton>
+                    <IconButton size="small" onClick={() => removeDocument(doc.id)} aria-label={`Delete ${doc.fileName}`}><DeleteIcon fontSize="small" /></IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
           )}
-
-          {documents.length === 0 && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
-              No documents attached yet. Upload MTCs or other certifications above.
-            </Typography>
-          )}
+          {!docError && documents.length === 0 && <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>No documents are attached yet.</Typography>}
         </Paper>
-      </TabPanel>
+      )}
 
-      <TabPanel value={tabValue} index={3}>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>Trace History</Typography>
-          <TraceTimeline events={displayTrace} />
-        </Paper>
-      </TabPanel>
-
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))}>
+      <EditHeatDialog heat={heat} open={editing} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); setSnack({ open: true, msg: 'Heat saved', severity: 'success' }); load() }} />
+      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
         <Alert severity={snack.severity} variant="filled">{snack.msg}</Alert>
       </Snackbar>
     </Box>

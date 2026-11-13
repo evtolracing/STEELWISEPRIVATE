@@ -7,6 +7,8 @@
  * server and replaced with a plain sentence. Messages written for people
  * ("Order not found") pass through untouched.
  */
+import { requestContext } from '../lib/requestContext.js';
+
 const INTERNAL = /prisma|Invalid `|Unique constraint|Foreign key constraint|violates|relation "|column "|syntax error|ECONNREFUSED|ENOTFOUND|node_modules|\n\s+at |Cannot read properties|is not a function|is not defined/i;
 const FIELDS = ['error', 'details', 'message', 'stack'];
 
@@ -14,9 +16,50 @@ export function looksInternal(text) {
   return typeof text === 'string' && INTERNAL.test(text);
 }
 
+const READS = new Set(['GET', 'HEAD']);
+
+/**
+ * True when the database client rejected a value that came from the request's
+ * own query string or path. A rejected value the code supplied is our bug and
+ * stays a server error.
+ */
+export function blamesCaller(message, req) {
+  if (!message) return false;
+  const sent = [...Object.values(req.query || {}), ...Object.values(req.params || {})]
+    .flat().filter((v) => typeof v === 'string' && v.length > 0);
+  return sent.some((v) => message.includes(JSON.stringify(v)) || message.includes(`'${v}'`));
+}
+
+/**
+ * A change that failed for a reason that is the caller's, when the route answered 500 anyway.
+ *  - the record to change does not exist                       → 404
+ *  - the request carried values the database layer would not take (a required one missing, or
+ *    the wrong kind)                                           → 400, and the detail is logged
+ * Returns null for everything else, which stays a server error.
+ */
+export function callerMistake(statusCode, req, store) {
+  if (statusCode === 500 && store?.outsideBranch) return { status: 403, error: 'That record belongs to another branch.' };
+  if (statusCode !== 500 || READS.has(req.method)) return null;
+  if (store?.recordNotFound) return { status: 404, error: 'That record was not found.' };
+  if (store?.rejectedShape) return { status: 400, error: 'Some of the values in this request are missing or not valid.' };
+  return null;
+}
+
 export function safeErrors(req, res, next) {
   const json = res.json.bind(res);
+  const store = {};
   res.json = (body) => {
+    // A read that failed only because a filter value was the wrong kind is the caller's mistake, not ours.
+    if (res.statusCode === 500 && READS.has(req.method) && blamesCaller(store.badFilterValue, req)) {
+      res.status(400);
+      return json({ error: 'One of the filter values in this request is not valid.' });
+    }
+    const verdict = callerMistake(res.statusCode, req, store);
+    if (verdict) {
+      if (verdict.status === 400) console.error(`[safeErrors] ${req.id || '-'} ${req.method} ${req.originalUrl.split('?')[0]} → 400 (values refused by the database layer):`, store.rejectedShape);
+      res.status(verdict.status);
+      return json({ error: verdict.error, ...(req.id && { requestId: req.id }) });
+    }
     if (res.statusCode >= 400 && body && typeof body === 'object' && !Array.isArray(body)) {
       let cleaned = null;
       for (const field of FIELDS) {
@@ -27,13 +70,16 @@ export function safeErrors(req, res, next) {
         } else delete cleaned[field];
       }
       if (cleaned) {
-        console.error(`[safeErrors] ${req.method} ${req.originalUrl} → ${res.statusCode}:`, FIELDS.map((f) => body[f]).filter(Boolean).join(' | ').slice(0, 2000));
+        if (res.statusCode >= 500 && req.id) cleaned.requestId = req.id;
+        console.error(`[safeErrors] ${req.id || '-'} ${req.method} ${req.originalUrl.split('?')[0]} → ${res.statusCode}:`, FIELDS.map((f) => body[f]).filter(Boolean).join(' | ').slice(0, 2000));
         return json(cleaned);
       }
+      // Every server-error reply carries the request id so it can be found in the logs.
+      if (res.statusCode >= 500 && req.id && body.requestId === undefined) return json({ ...body, requestId: req.id });
     }
     return json(body);
   };
-  next();
+  requestContext.run(store, next);
 }
 
 const PAGING = ['limit', 'offset', 'page', 'pageSize', 'perPage', 'take', 'skip'];

@@ -5,7 +5,9 @@
  */
 
 import express from 'express';
+import { shipForJob } from './shipments.js';
 import prisma from '../lib/db.js';
+import { recordJobMove } from '../lib/jobHistory.js';
 
 const router = express.Router();
 
@@ -364,11 +366,8 @@ router.get('/jobs/:jobId/timeline', async (req, res) => {
 router.get('/staging', async (req, res) => {
   try {
     // Get jobs that are ready to ship or being staged
-    const jobs = await prisma.job.findMany({
-      where: {
-        status: { in: ['READY_TO_SHIP', 'SHIPPED'] },
-      },
-      include: {
+    // Everything waiting to ship (capped), plus the 200 most recently shipped.
+    const include = {
         order: {
           select: {
             orderNumber: true,
@@ -389,9 +388,12 @@ router.get('/staging', async (req, res) => {
             netWeightLbs: true,
           },
         },
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
+    };
+    const [ready, shipped] = await Promise.all([
+      prisma.job.findMany({ where: { status: 'READY_TO_SHIP' }, include, orderBy: { updatedAt: 'desc' }, take: 1000 }),
+      prisma.job.findMany({ where: { status: 'SHIPPED' }, include, orderBy: { updatedAt: 'desc' }, take: 200 }),
+    ]);
+    const jobs = [...ready, ...shipped].sort((x, y) => y.updatedAt - x.updatedAt);
 
     // Map to frontend format
     const staged = jobs.map((job) => ({
@@ -426,7 +428,20 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
     const { jobId } = req.params;
     const { carrier, trackingNumber } = req.body;
 
-    const job = await prisma.job.update({
+    const staged = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!staged) return res.status(404).json({ error: 'Job not found' });
+    if (staged.status !== 'READY_TO_SHIP') return res.status(409).json({ error: `Only a job that is ready to ship can be shipped. This one is ${staged.status}.` });
+    // For a customer order this is a real shipment: stock, the order and the invoice follow.
+    try {
+      await shipForJob(staged, { carrier, trackingNumber, userId: req.user.id });
+    } catch (error) {
+      if (error?.status && error.status < 500) return res.status(error.status).json({ error: error.message });
+      throw error;
+    }
+
+    // The job, its history and the custody record are one step (B-010).
+    const job = await prisma.$transaction(async (tx) => {
+    const job = await tx.job.update({
       where: { id: jobId },
       data: {
         status: 'SHIPPED',
@@ -435,9 +450,10 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
         shippedAt: new Date(),
       },
     });
+    await recordJobMove(tx, { job: staged, from: staged.status, to: 'SHIPPED', note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id });
 
     // Auto-log custody event
-    await prisma.traceEvent.create({
+    await tx.traceEvent.create({
       data: {
         eventType: 'JOB_SHIPPED',
         eventCategory: 'JOB',
@@ -450,6 +466,8 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
         metadata: { carrier, trackingNumber },
         occurredAt: new Date(),
       },
+    });
+    return job;
     });
 
     res.json(job);

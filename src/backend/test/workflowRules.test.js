@@ -115,3 +115,18 @@ test('line and order status follow shipped quantity', () => {
   assert.equal(orderStatusFromLines(['CANCELLED']), null);
   assert.equal(orderStatusFromLines([]), null);
 });
+
+test('unfinished jobs hold their line on the dock; lines without jobs ship freely', async () => {
+  const { jobsBlockingShipment } = await import('../src/lib/workflowRules.js');
+  const jobs = [
+    { jobNumber: 'JOB-1', status: 'IN_PROCESS', orderLineId: 'L1' },
+    { jobNumber: 'JOB-2', status: 'READY_TO_SHIP', orderLineId: 'L2' },
+    { jobNumber: 'JOB-3', status: 'CANCELLED', orderLineId: 'L3' },
+  ];
+  assert.match(jobsBlockingShipment(jobs, ['L1', 'L2']), /JOB-1 \(in process\) is not finished/);
+  assert.equal(jobsBlockingShipment(jobs, ['L2', 'L3', 'L4']), null);
+  assert.equal(jobsBlockingShipment([], ['L1']), null);
+  // A job for the whole order (no line) holds every line.
+  assert.match(jobsBlockingShipment([{ jobNumber: 'JOB-9', status: 'ON_HOLD', orderLineId: null }], ['L4']), /JOB-9/);
+  for (const status of ['READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED']) assert.equal(jobsBlockingShipment([{ jobNumber: 'J', status, orderLineId: 'L1' }], ['L1']), null);
+});

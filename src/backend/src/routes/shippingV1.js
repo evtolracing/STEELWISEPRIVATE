@@ -30,16 +30,17 @@ router.get('/summary', async (req, res) => {
     };
     if (locationId) where.fromLocationId = locationId;
 
-    const shipments = await prisma.shipment.findMany({ where });
-
-    const staged = shipments.filter(s => s.status === 'STAGED' || s.status === 'PICKING').length;
-    const readyToShip = shipments.filter(s => s.status === 'READY' || s.status === 'PACKED').length;
-    const dispatched = shipments.filter(s => s.status === 'IN_TRANSIT' || s.status === 'DELIVERED').length;
-    const lateRisk = shipments.filter(s => {
-      if (!s.scheduledShipDate) return false;
-      const scheduled = new Date(s.scheduledShipDate);
-      return scheduled < new Date() && s.status !== 'IN_TRANSIT' && s.status !== 'DELIVERED';
-    }).length;
+    const count = (statuses) => prisma.shipment.count({ where: { ...where, status: { in: statuses } } });
+    // STAGED, PICKING, READY and PACKED are not shipment statuses in the database, so those two are PENDING and LOADING.
+    const [todayTotal, staged, readyToShip, dispatched, lateRisk] = await Promise.all([
+      prisma.shipment.count({ where }),
+      count(['PENDING']),
+      count(['LOADING']),
+      count(['IN_TRANSIT', 'DELIVERED']),
+      // Late risk: past its scheduled date and still on the dock.
+      prisma.shipment.count({ where: { ...where, scheduledDate: { lt: new Date() }, status: { in: ['PENDING', 'LOADING'] } } }),
+    ]);
+    const shipments = { length: todayTotal };
 
     res.json({
       staged,

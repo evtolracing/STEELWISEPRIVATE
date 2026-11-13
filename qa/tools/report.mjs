@@ -35,8 +35,6 @@ if (finals.length) {
   const last = finals.at(-1).r;
   L.push('', '### Simultaneous-request probes (last final cycle)', '');
   for (const p of last.concurrency.probes) L.push(`- ${p.pass ? 'Pass' : 'FAIL'}: ${p.name}. ${p.detail}`);
-  L.push('', '### Known open defects re-checked every cycle', '');
-  for (const d of last.openDefectProbes || []) L.push(`- ${d.id}: ${d.what}. ${d.stillPresent ? 'Still present' : 'No longer reproduces'} (${d.evidence}).`);
   if (last.reconciliation?.demoSeedDataProblems?.count) L.push('', `The reconciliation also found ${last.reconciliation.demoSeedDataProblems.count} inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: ${last.reconciliation.demoSeedDataProblems.examples.slice(0, 3).join('; ')}.`);
 }
 const base = cycles.find((c) => c.f.startsWith('baseline'));
@@ -69,6 +67,33 @@ if (ui) {
   if (failing.length) { L.push('### API calls that failed while screens loaded', '', '| Call | Screens |', '|---|---|'); for (const [k, v] of failing) L.push(`| \`${k}\` | ${v.slice(0, 3).map((x) => `\`${x}\``).join(', ')}${v.length > 3 ? ` +${v.length - 3}` : ''} |`); L.push(''); }
   L.push('Screens with an id in the address were opened with an id that does not exist, so a "not found" call on those is expected.');
 }
+const sales = read('ui-sales.json');
+if (sales) {
+  L.push('', '## Sales screens operated in a browser', '', `Run ${sales.at} with \`qa/sim/ui-sales.cjs\`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.`, '', `- Checks: ${sales.checks}`, `- Failed: ${sales.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of sales.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
+const stock = read('ui-inventory.json');
+if (stock) {
+  L.push('', '## Stock screens operated in a browser', '', `Run ${stock.at} with \`qa/sim/ui-inventory.cjs\`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.`, '', `- Checks: ${stock.checks}`, `- Failed: ${stock.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of stock.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
+const shop = read('ui-shop.json');
+if (shop) {
+  L.push('', '## Shop screens operated in a browser', '', `Run ${shop.at} with \`qa/sim/ui-shop.cjs\`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.`, '', `- Checks: ${shop.checks}`, `- Failed: ${shop.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of shop.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
+const shipping = read('ui-shipping.json');
+if (shipping) {
+  L.push('', '## Shipping and invoice screens operated in a browser', '', `Run ${shipping.at} with \`qa/sim/ui-shipping.cjs\`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.`, '', `- Checks: ${shipping.checks}`, `- Failed: ${shipping.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of shipping.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
+const experience = read('ui-experience.json');
+if (experience) {
+  L.push('', '## Sample notices and invented figures checked in a browser', '', `Run ${experience.at} with \`qa/sim/ui-experience.cjs\`.`, '', `- Checks: ${experience.checks}`, `- Failed: ${experience.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of experience.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
+const audit = (() => { try { return JSON.parse(fs.readFileSync(path.join(root, '.screen-audit.json'), 'utf8')); } catch { return null; } })();
+if (audit) L.push('', '## Screen audit', '', `${audit.screens} screens: ${Object.entries(audit.tally).map(([k, v]) => `${v} ${k}`).join(', ')}. ${audit.unlabelled.length} show made-up data with no notice. Full list in \`qa/screen-audit.md\`.`);
 const contract = (() => { try { return JSON.parse(fs.readFileSync(path.join(root, '.api-contract.json'), 'utf8')); } catch { return null; } })();
 if (contract) L.push('', '## Screen-to-server contract', '', `${contract.total} distinct API calls are written in the screens; ${contract.missing.length} have no matching server route. Full list in \`qa/api-contract.md\`.`);
 L.push('', '## Unit tests', '', 'Run with `npm test` in `src/backend` (Node built-in test runner). The count and result are printed by the runner; see the pull request for the latest run.');

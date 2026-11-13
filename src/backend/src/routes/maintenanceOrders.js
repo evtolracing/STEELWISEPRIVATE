@@ -1,5 +1,7 @@
+import { readFields } from '../lib/fieldRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { createNumbered, padded } from '../lib/numbering.js';
 
 const router = Router();
 
@@ -95,8 +97,6 @@ router.get('/:id', async (req, res) => {
 // POST /api/maintenance-orders — Create a new maintenance order
 router.post('/', async (req, res) => {
   try {
-    const count = await prisma.maintenanceOrder.count();
-    const woNumber = `MO-${new Date().getFullYear()}-${String(count + 1).padStart(4, '0')}`;
 
     const {
       assetId,
@@ -127,7 +127,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'title is required' });
     }
 
-    const mo = await prisma.maintenanceOrder.create({
+    const mo = await createNumbered({ count: () => prisma.maintenanceOrder.count(), format: (n) => `MO-${new Date().getFullYear()}-${String(n).padStart(4, '0')}`, create: (woNumber) => prisma.maintenanceOrder.create({
       data: {
         woNumber,
         assetId,
@@ -152,7 +152,7 @@ router.post('/', async (req, res) => {
           select: { id: true, assetNumber: true, name: true, workCenterId: true }
         },
       },
-    });
+    }) });
     res.status(201).json(mo);
   } catch (error) {
     console.error('Failed to create maintenance order:', error);
@@ -160,12 +160,26 @@ router.post('/', async (req, res) => {
   }
 });
 
+// What can be changed on a maintenance order. Anything else in the request is ignored (B-007):
+// the number, the asset, who created it and the completion fields are not editable here.
+const ORDER_FIELDS = {
+  type: { type: 'string', required: true, maxLength: 30 }, priority: { type: 'string', required: true, maxLength: 20 },
+  title: { type: 'string', required: true, maxLength: 200 }, description: { type: 'string', maxLength: 4000 },
+  problemCode: { type: 'string', maxLength: 60 }, failureCode: { type: 'string', maxLength: 60 },
+  status: { type: 'string', required: true, maxLength: 30 }, scheduledStart: { type: 'date' }, scheduledEnd: { type: 'date' },
+  estimatedHours: { type: 'number', min: 0, max: 10000 }, assignedToId: { type: 'id' }, assignedTeam: { type: 'string', maxLength: 120 },
+  lotoRequired: { type: 'boolean' }, permitRequired: { type: 'boolean' }, hotWorkRequired: { type: 'boolean' }, confinedSpaceRequired: { type: 'boolean' },
+};
+
 // PATCH /api/maintenance-orders/:id — Update a maintenance order
 router.patch('/:id', async (req, res) => {
   try {
+    const { data, error } = readFields(req.body, ORDER_FIELDS);
+    if (error) return res.status(400).json({ error });
+    if (!Object.keys(data).length) return res.status(400).json({ error: 'Nothing to change' });
     const mo = await prisma.maintenanceOrder.update({
       where: { id: req.params.id },
-      data: req.body,
+      data,
       include: {
         asset: {
           select: { id: true, assetNumber: true, name: true, workCenterId: true }

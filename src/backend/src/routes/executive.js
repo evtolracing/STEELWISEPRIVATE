@@ -101,6 +101,7 @@ router.get('/simulation/scenarios', async (req, res) => {
 router.post('/simulation/scenarios', async (req, res) => {
   try {
     const userId = req.user?.id || 'anonymous';
+    if (typeof req.body?.name !== 'string' || !req.body.name.trim()) return res.status(400).json({ error: 'A scenario needs a name' });
     const scenario = await simulationService.createScenario(userId, req.body);
     res.status(201).json(scenario);
   } catch (error) {
@@ -347,8 +348,9 @@ router.post('/decisions', async (req, res) => {
   try {
     const decisionData = {
       ...req.body,
-      decisionMaker: req.user?.name || req.body.decisionMaker,
-      role: req.user?.role || req.body.role,
+      // The signed-in person, never a name typed into the request.
+      decisionMaker: [req.user?.firstName, req.user?.lastName].filter(Boolean).join(' ') || req.user?.email,
+      role: req.user?.role,
     };
     
     const decision = await decisionService.logDecision(decisionData);

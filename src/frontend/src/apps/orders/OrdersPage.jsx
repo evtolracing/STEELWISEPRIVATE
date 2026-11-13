@@ -30,7 +30,6 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { mockOrders } from '../../mocks/ordersData';
 import { listIntakeOrders } from '../../services/intakeOrdersApi';
 
 const statusColors = {
@@ -95,19 +94,20 @@ function OrdersPage() {
           pricePerLb: l.unitPrice || 0,
           totalPrice: l.extPrice || 0,
         })),
-        subtotal: (io.lines || []).reduce((s, l) => s + (l.extPrice || 0), 0),
+        subtotal: io.subtotal ?? (io.lines || []).reduce((s, l) => s + (l.extPrice || 0), 0),
         processingFees: 0,
         shippingCost: 0,
-        tax: 0,
-        total: (io.lines || []).reduce((s, l) => s + (l.extPrice || 0), 0),
+        // What was saved on the order: tax by the tax rule, and the total owed.
+        tax: io.taxAmount ?? 0,
+        total: io.totalAmount ?? io.subtotal ?? (io.lines || []).reduce((s, l) => s + (l.extPrice || 0), 0),
         notes: io.notes || '',
         source: io.source || 'PHONE',
         location: io.location || '',
         division: io.division || 'METALS',
       }));
 
-      // Fall back to static mocks only if no real orders exist yet
-      const allOrders = intakeOrders.length > 0 ? intakeOrders : [...mockOrders];
+      // Only real orders are shown. With none, the list is empty and says so.
+      const allOrders = intakeOrders;
 
       setOrders(allOrders);
       if (allOrders.length > 0) {
@@ -153,6 +153,9 @@ function OrdersPage() {
         <Grid item xs={12} md={4}>
           <Paper sx={{ height: '100%', overflow: 'auto' }}>
             <List>
+              {!orders.length && (
+                <Typography variant="body2" color="text.secondary" sx={{ p: 3, textAlign: 'center' }}>No orders yet.</Typography>
+              )}
               {orders.map((order, index) => (
                 <React.Fragment key={order.id}>
                   {index > 0 && <Divider />}

@@ -1,0 +1,34 @@
+# Remaining risks
+
+Ordered by how much they should worry you.
+
+| Risk | Why it matters | What closes it |
+|---|---|---|
+| None of the Phase 1 or Phase 2 work is live | The hosted site still has the defects these fixes address | Run the four database updates, merge pull request 30, deploy |
+| No tested restore | A database loss today has an unknown outcome | One restore test (E-015) |
+| No staging environment | Every result here is from a local database, not production data | A staging copy, then rerun the cycles and the benchmark there |
+| Rate limit is per server instance | The login throttle is weaker than configured on the hosted site | Shared store (E-014) |
+| No alerting | Errors are found by users | Error tracking (E-017) |
+| Most screens were opened, not operated | A form or button could be broken without a test noticing | Click-through tests exist for the sales screens (24 checks), the stock screens (22) and the shop screens (30); Workstreams 5 and 6 add the rest |
+| Outside services not connected | Card, email and text steps are manual | Provider choices |
+| Delivery promise dates are not computed | A customer can be shown a date at web checkout that no rule produced | Cutoff and capacity rules from the owner, then the promise engine (S-010) |
+| Sample data still shown on some secondary screens | People may read invented figures as real | D-020, D-024, S-010, S-026, Workstreams 3 to 6 |
+| Tax depends on rates being entered | A branch state with no rate charges no tax (the screen says so) | Enter every branch state's rate under Admin > Sales Tax Rates (D-035) |
+| Workstreams 5 and 6 not yet audited | Operational, UX, accessibility and traceability quality is unmeasured | Continue the phase |
+| No purchasing | Nothing records what was ordered from a supplier, so receipts and supplier invoices cannot be matched | Decision and build (I-007) |
+| No stock adjustment or count | A wrong weight or a lost item cannot be corrected in the system | Decision on who may adjust, then build (I-016) |
+| Supplier quality screens are samples | They are labelled, but the work they describe is not being recorded anywhere | Decision and build (I-011) |
+| Stock pending inspection can be sold and shipped | Uninspected material could reach a customer | A rule from the owner (gate report, Workstream 3) |
+| Production quality and BOM screens are samples | They are labelled, but in-process inspection, NCRs and SPC are not being recorded anywhere | Decision and build (M-011) |
+| Completing a coil work order does not move stock | Stock is wrong after a work order unless corrected, and it cannot be corrected (I-016) | Decision on whether work orders stay beside jobs (M-016) |
+| Much of the shop floor was not examined | Dispatch, planning, recipes, packaging, maintenance and capacity may hold defects like those found here | Listed in the scorecard; to be scheduled |
+| Job history starts now | Moves made before this change show times only, with no name | None: the past was not recorded |
+| Web orders accepted before this change have no tax or total | Their invoices carry no tax | Owner: list them (orders with a web order number and no total) and decide whether to correct each. Nothing was changed on existing orders |
+| Store tax estimate can differ from the invoice | A buyer is shown one tax and billed another when ship-to and branch states differ | Decision (F-008) |
+| Any staff login can read invoices and payments | Shop staff can see customer balances | Decision (F-009) |
+| Freight planning screens are samples | They are labelled, but rates, routes, tracking and exceptions are not being recorded anywhere | Decision and build (F-007) |
+| Shipping documents not examined | A bill of lading or packing list may not be printable from the shipment | Workstream 6 (F-011) |
+| Shipment and money history starts now | Shipments and payments made before this change show no name | None: the past was not recorded |
+| 58 of 143 screens are samples | They say so, but the work they describe (safety, maintenance, training, visitors, claims, freight and more) is recorded nowhere | A decision per module (X-009) |
+| Promise dates, cut-off times and branch suggestions come from sample rules in the browser | A customer may be promised a date the business never set | The owner's rules, then a build (X-007) |
+| The screen audit reads code, not behaviour | A screen it marks REAL may still show something made up | Operate each in a browser |

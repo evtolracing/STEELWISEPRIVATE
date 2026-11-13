@@ -21,6 +21,12 @@ import inventoryRoutes from './routes/inventory.js';
 import orderRoutes from './routes/orders.js';
 import workOrderRoutes from './routes/workOrders.js';
 import shipmentRoutes from './routes/shipments.js';
+import invoiceRoutes from './routes/invoices.js';
+import quickSaleRoutes from './routes/quickSale.js';
+import returnRoutes from './routes/returns.js';
+import taxRateRoutes from './routes/taxRates.js';
+import overrideRoutes from './routes/overrides.js';
+import salesDashboardRoutes from './routes/salesDashboard.js';
 import dashboardRoutes from './routes/dashboard.js';
 import customerRoutes from './routes/customers.js';
 import rfqRoutes from './routes/rfqs.js';
@@ -45,6 +51,7 @@ import { enterpriseRouter, myOrdersRouter } from './routes/portal.js';
 import processingRecipeRoutes from './routes/processingRecipes.js';
 import { apiGate } from './middleware/apiGate.js';
 import { safeErrors, pagingGuard } from './middleware/safeErrors.js';
+import { requestLog } from './middleware/requestLog.js';
 import onlineSettingsRoutes from './routes/onlineSettings.js';
 import demandShapingRoutes from './routes/demandShaping.js';
 import compressionMetricsRoutes from './routes/compressionMetrics.js';
@@ -87,6 +94,9 @@ export { prisma };
 // Behind Vercel / Nginx: trust the first proxy so client IPs are correct
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
+
+// Request id and one log line per request, before anything can refuse it.
+app.use(requestLog);
 
 // Security headers. Cross-origin resource policy is relaxed so the frontend
 // can load uploaded files when it runs on a different origin.
@@ -152,7 +162,7 @@ app.get('/api/health', async (req, res) => {
       prisma.$queryRaw`SELECT 1`,
       new Promise((_, reject) => setTimeout(() => reject(new Error('Database check timed out')), 5000)),
     ]);
-    res.json({ status: 'ok', database: 'connected', databaseLatencyMs: Date.now() - started, timestamp });
+    res.json({ status: 'ok', database: 'connected', databaseLatencyMs: Date.now() - started, timestamp, uptimeSeconds: Math.round(process.uptime()), ...(process.env.VERCEL_GIT_COMMIT_SHA && { version: process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7) }) });
   } catch (error) {
     console.error('Health check database error:', error.message);
     res.status(503).json({ status: 'degraded', database: 'unreachable', timestamp });
@@ -187,6 +197,11 @@ app.use('/api/processing', intakeProcessingRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/work-orders', workOrderRoutes);
 app.use('/api/shipments', shipmentRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/returns', returnRoutes);
+app.use('/api/tax-rates', taxRateRoutes);
+app.use('/api/overrides', overrideRoutes);
+app.use('/api/sales-dashboard', salesDashboardRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/rfqs', rfqRoutes);
@@ -194,6 +209,7 @@ app.use('/api/quotes', quoteRoutes);
 app.use('/api/work-centers', workCenterRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/pos/quick-sale', quickSaleRoutes);
 app.use('/api/pos', posRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/ai/tts', ttsRoutes);
@@ -273,8 +289,9 @@ app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
-  console.error(err.stack || err);
-  res.status(500).json({ error: 'Internal server error' });
+  console.error(JSON.stringify({ t: new Date().toISOString(), level: 'error', msg: 'unhandled', id: req.id, method: req.method, path: (req.originalUrl || '').split('?')[0] }), err.stack || err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: 'Internal server error', requestId: req.id });
 });
 
 export default app;

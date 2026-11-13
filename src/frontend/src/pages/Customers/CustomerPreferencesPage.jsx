@@ -11,7 +11,7 @@ import {
   Box, Typography, Paper, Grid, Chip, Button, Divider, Avatar, TextField,
   Alert, Snackbar, Stack, FormControl, InputLabel, Select, MenuItem, Switch,
   FormControlLabel, IconButton, Tooltip, CircularProgress, List, ListItem,
-  ListItemAvatar, ListItemText, InputAdornment, Checkbox, FormGroup, Tabs, Tab,
+  ListItemAvatar, ListItemText, InputAdornment, Checkbox, FormGroup, Tabs, Tab, FormHelperText,
 } from '@mui/material'
 import {
   Tune, Save, Search, Person, LocationOn, LocalShipping, Speed,
@@ -142,8 +142,8 @@ export default function CustomerPreferencesPage() {
       setDirty(false)
       setHasPreferences(true)
       loadCustomers()
-    } catch {
-      setSnack({ open: true, msg: 'Failed to save preferences', severity: 'error' })
+    } catch (e) {
+      setSnack({ open: true, msg: e?.response?.data?.error || e?.message || 'The preferences could not be saved', severity: 'error' })
     } finally {
       setSaving(false)
     }
@@ -273,9 +273,10 @@ export default function CustomerPreferencesPage() {
             <InputLabel>Pricing Tier</InputLabel>
             <Select value={prefs.pricingTier || ''} label="Pricing Tier"
               onChange={e => updateField('pricingTier', e.target.value)}>
-              <MenuItem value="">No tier</MenuItem>
+              <MenuItem value="">No tier (list price)</MenuItem>
               {PRICING_TIERS.map(t => <MenuItem key={t.value} value={t.value}>{t.label}</MenuItem>)}
             </Select>
+            <FormHelperText>Sets what this account pays on every order, quote, counter sale and web order. A manager saves a change to the tier or the credit limit.</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={4}>

@@ -534,7 +534,7 @@ const ModernJobCard = ({
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
                       <AIIcon sx={{ fontSize: 14, color: 'secondary.main' }} />
                       <Typography variant="caption" fontWeight={600} color="secondary.main">
-                        AI Insights
+                        Hints
                       </Typography>
                     </Box>
                     {hints.map((hint, idx) => (

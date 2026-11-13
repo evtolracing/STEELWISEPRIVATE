@@ -196,66 +196,16 @@ function TimeTrackingPage() {
       setError(null)
     } catch (err) {
       console.error('Failed to load time tracking data:', err)
-      setError(err.message)
-      
-      // Generate mock data for demo
-      generateMockData()
+      setError(err.response?.data?.error || err.message)
+      // Show nothing rather than made-up hours: these figures feed payroll and job costing.
+      setLocationsState([])
+      setWorkCentersState([])
+      setOperatorsState([])
+      setOperations([])
+      setTimeLogs([])
     } finally {
       setLoading(false)
     }
-  }
-
-  // Generate mock data for demo/development
-  const generateMockData = () => {
-    const mockWorkCenters = [
-      { id: 'SAW-01', name: 'Saw Station 1', locationId: 'FWA' },
-      { id: 'SAW-02', name: 'Saw Station 2', locationId: 'FWA' },
-      { id: 'SHEAR-01', name: 'Shear Station 1', locationId: 'FWA' },
-      { id: 'WATERJET-01', name: 'Waterjet 1', locationId: 'FWA' },
-    ]
-    const mockOperators = [
-      { id: 'OP-001', name: 'Mike Chen' },
-      { id: 'OP-002', name: 'Sarah Johnson' },
-      { id: 'OP-003', name: 'Carlos Rodriguez' },
-    ]
-    const mockLocations = [
-      { id: 'FWA', name: 'Fort Wayne' },
-      { id: 'CHI', name: 'Chicago' },
-    ]
-    
-    const statuses = ['RUNNING', 'PAUSED', 'COMPLETE']
-    const jobs = ['JOB-2024-0142', 'JOB-2024-0143', 'JOB-2024-0144', 'JOB-2024-0145']
-    const operations = ['Cut to Length', 'Deburr', 'Pack Out', 'Shear']
-    const materials = ['AL-6061-T6', 'SS-304', 'CS-A36', 'AL-7075']
-    
-    const mockLogs = []
-    for (let i = 0; i < 25; i++) {
-      const startAt = new Date()
-      startAt.setHours(startAt.getHours() - Math.random() * 168) // Random within last week
-      const durationSec = Math.floor(Math.random() * 7200) + 300 // 5 min to 2 hours
-      const endAt = new Date(startAt.getTime() + durationSec * 1000)
-      const status = statuses[Math.floor(Math.random() * statuses.length)]
-      
-      mockLogs.push({
-        id: `TL-${1000 + i}`,
-        jobOperationId: `OP-${100 + i}`,
-        jobId: jobs[Math.floor(Math.random() * jobs.length)],
-        operatorId: mockOperators[Math.floor(Math.random() * mockOperators.length)].id,
-        workCenterId: mockWorkCenters[Math.floor(Math.random() * mockWorkCenters.length)].id,
-        status: status,
-        startAt: startAt.toISOString(),
-        endAt: status === 'RUNNING' ? null : endAt.toISOString(),
-        durationSeconds: status === 'RUNNING' ? null : durationSec,
-        downtimeReason: status === 'PAUSED' ? ['Machine maintenance', 'Material shortage', 'Break'][Math.floor(Math.random() * 3)] : null,
-        operationName: operations[Math.floor(Math.random() * operations.length)],
-        materialCode: materials[Math.floor(Math.random() * materials.length)],
-      })
-    }
-    
-    setLocationsState(mockLocations)
-    setWorkCentersState(mockWorkCenters)
-    setOperatorsState(mockOperators)
-    setTimeLogs(mockLogs.sort((a, b) => new Date(b.startAt) - new Date(a.startAt)))
   }
 
   useEffect(() => {
@@ -427,7 +377,7 @@ function TimeTrackingPage() {
         
         {error && (
           <Alert severity="warning" sx={{ mb: 2 }}>
-            Using demo data. Backend: {error}
+            Time records could not be loaded, so nothing is shown. {error}
           </Alert>
         )}
 

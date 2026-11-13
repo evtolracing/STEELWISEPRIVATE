@@ -51,3 +51,28 @@ test('pagingGuard refuses paging values that are not whole numbers', () => {
     assert.equal(r.code, 400);
   }
 });
+
+test('a rejected filter value is the caller\'s mistake only when the caller sent it', async () => {
+  const { blamesCaller } = await import('../src/middleware/safeErrors.js');
+  const message = 'Invalid value for argument `status`. Expected OrderStatus.\n  where: { status: "\';--" }';
+  assert.equal(blamesCaller(message, { query: { status: "';--" }, params: {} }), true);
+  assert.equal(blamesCaller(message, { query: {}, params: {} }), false);
+  assert.equal(blamesCaller('Invalid value for argument `status`. where: { status: { in: ["CONVERTED"] } }', { query: { period: 'week' }, params: {} }), false);
+  assert.equal(blamesCaller(undefined, { query: { status: 'x' } }), false);
+});
+
+test('a change aimed at a missing record, or carrying values the database will not take, is not a server error', async () => {
+  const { callerMistake } = await import('../src/middleware/safeErrors.js');
+  const { isRecordNotFound, isRejectedShape } = await import('../src/lib/requestContext.js');
+  assert.equal(isRecordNotFound({ code: 'P2025' }), true);
+  assert.equal(isRecordNotFound({ code: 'P2002' }), false);
+  assert.equal(isRejectedShape({ name: 'PrismaClientValidationError' }), true);
+  assert.equal(isRejectedShape(new Error('boom')), false);
+  assert.deepEqual(callerMistake(500, { method: 'PATCH' }, { recordNotFound: true }), { status: 404, error: 'That record was not found.' });
+  assert.equal(callerMistake(500, { method: 'POST' }, { rejectedShape: 'Argument `code` is missing.' }).status, 400);
+  // Not found wins over a refused value; a real failure stays a server error; reads are handled elsewhere; other statuses are left alone.
+  assert.equal(callerMistake(500, { method: 'PUT' }, { recordNotFound: true, rejectedShape: 'x' }).status, 404);
+  assert.equal(callerMistake(500, { method: 'POST' }, {}), null);
+  assert.equal(callerMistake(500, { method: 'GET' }, { recordNotFound: true }), null);
+  assert.equal(callerMistake(409, { method: 'POST' }, { recordNotFound: true }), null);
+});

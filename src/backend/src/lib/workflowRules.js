@@ -45,6 +45,23 @@ export function jobMoveError(from, to) {
   return null;
 }
 
+/**
+ * Jobs and shipments.
+ *  - Material cannot leave the dock while a job that makes it is unfinished.
+ *    Order lines with no job (stock sales) ship freely.
+ *  - A job tied to an order is marked SHIPPED by the shipment, not by hand.
+ */
+export const UNFINISHED_JOB_STATUSES = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'ON_HOLD'];
+
+/** null when the lines can ship, otherwise why not. jobs: [{ jobNumber, status, orderLineId }] for the order. */
+export function jobsBlockingShipment(jobs, shippedLineIds) {
+  const lines = new Set(shippedLineIds);
+  const blocking = jobs.filter((j) => UNFINISHED_JOB_STATUSES.includes(j.status) && (!j.orderLineId || lines.has(j.orderLineId)));
+  if (!blocking.length) return null;
+  const names = blocking.slice(0, 3).map((j) => `${j.jobNumber} (${j.status.toLowerCase().replace(/_/g, ' ')})`).join(', ');
+  return `This shipment cannot go out yet: ${names}${blocking.length > 3 ? ` and ${blocking.length - 3} more` : ''} ${blocking.length === 1 ? 'is' : 'are'} not finished. Finish or cancel the job first.`;
+}
+
 const SHIPMENT_MOVES = {
   PENDING: ['LOADING', 'IN_TRANSIT', 'CANCELLED'],
   LOADING: ['IN_TRANSIT', 'PENDING', 'CANCELLED'],

@@ -1,0 +1,118 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-13T18:50:12.021Z",
+ "checks": 22,
+ "failed": 0,
+ "results": [
+  {
+   "name": "units: the list shows real stock items",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: search narrows the list on the server",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: an item opens with its own details",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: a clerk is not shown what the stock cost",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: an item that does not exist says so instead of showing a sample",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: the list shows real heats, not samples",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: search narrows the list on the server",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: a heat opens with its own mill and grade",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: the stock items tab lists the items from this heat",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: a heat that does not exist says so instead of showing a sample",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: a manager adds a heat and lands on it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "heats: an edit is saved and shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: no sample deliveries are shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: a heat that is not on file is said before saving",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: a heat on file fills in its grade",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: the form receives a real stock item and lists it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: search filters the list and says when nothing matches",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: an item is moved to another location and the move is in its history",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: the move screen has no script errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

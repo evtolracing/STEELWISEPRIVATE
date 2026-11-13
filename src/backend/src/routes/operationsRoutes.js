@@ -6,6 +6,7 @@
 
 import express from 'express'
 import prisma from '../lib/db.js'
+import { moveJob, moveJobsWhere } from '../lib/jobHistory.js'
 
 const router = express.Router()
 
@@ -159,6 +160,14 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+// An operation cannot be worked once its job is finished or cancelled (finding C-005).
+const CLOSED_JOB = ['SHIPPED', 'COMPLETED', 'CANCELLED']
+async function closedJobOf(db, dispatchJob) {
+  if (!dispatchJob?.jobId) return null
+  const job = await db.job.findUnique({ where: { id: dispatchJob.jobId }, select: { status: true } })
+  return job && CLOSED_JOB.includes(job.status) ? job.status : null
+}
+
 /**
  * POST /v1/operations/:id/start
  * Start working on an operation
@@ -179,6 +188,8 @@ router.post('/:id/start', async (req, res) => {
     if (!operatorId) {
       return res.status(400).json({ success: false, error: 'operatorId is required' })
     }
+    const closed = await closedJobOf(prisma, operation.dispatchJob)
+    if (closed) return res.status(409).json({ success: false, error: `This job is ${closed.toLowerCase()}; its operations cannot be started` })
     
     // Validate operator exists
     const operator = await prisma.operator.findUnique({ where: { id: operatorId } })
@@ -192,14 +203,16 @@ router.post('/:id/start', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Work center not assigned' })
     }
     
+    // One step: the time log, the operation and the job move together or not at all (B-010).
+    const { updated, newLog } = await prisma.$transaction(async (tx) => {
     // Close any existing active (RUNNING) time log
-    await prisma.dispatchTimeLog.updateMany({
+    await tx.dispatchTimeLog.updateMany({
       where: { dispatchOperationId: operation.id, status: 'RUNNING' },
       data: { status: 'PAUSED', endAt: new Date() },
     })
     
     // Update operation status
-    const updated = await prisma.dispatchOperation.update({
+    const updated = await tx.dispatchOperation.update({
       where: { id: operation.id },
       data: {
         status: 'IN_PROCESS',
@@ -210,7 +223,7 @@ router.post('/:id/start', async (req, res) => {
     })
     
     // Create new time log
-    const newLog = await prisma.dispatchTimeLog.create({
+    const newLog = await tx.dispatchTimeLog.create({
       data: {
         dispatchOperationId: operation.id,
         jobId: operation.dispatchJobId,
@@ -223,11 +236,10 @@ router.post('/:id/start', async (req, res) => {
     
     // Also update the parent Job status to IN_PROCESS if it's still SCHEDULED
     if (operation.dispatchJob?.jobId) {
-      await prisma.job.updateMany({
-        where: { id: operation.dispatchJob.jobId, status: 'SCHEDULED' },
-        data: { status: 'IN_PROCESS' },
-      })
+      await moveJobsWhere(tx, { id: operation.dispatchJob.jobId, status: 'SCHEDULED' }, 'IN_PROCESS', { note: 'First operation started', via: 'operation', userId: req.user?.id })
     }
+    return { updated, newLog }
+    })
     
     console.log(`[OPERATIONS] Started operation ${operation.id} by operator ${operatorId}`)
     
@@ -326,36 +338,45 @@ router.post('/:id/complete', async (req, res) => {
       return res.status(404).json({ success: false, error: 'Operation not found' })
     }
     
+    // One step (B-010). The dispatch job row is locked first, so two operators finishing the last two
+    // operations at the same moment cannot both conclude that the other one is still open.
+    const updated = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "DispatchJob" WHERE id = ${operation.dispatchJobId} FOR UPDATE`
+    // The job row is locked too, so a cancellation and a completion cannot pass each other.
+    if (operation.dispatchJob?.jobId) await tx.$queryRaw`SELECT id FROM "Job" WHERE id = ${operation.dispatchJob.jobId} FOR UPDATE`
+    const closed = await closedJobOf(tx, operation.dispatchJob)
+    if (closed) { const e = new Error(`This job is ${closed.toLowerCase()}; its operations cannot be completed`); e.status = 409; throw e }
+    // A repeated request for an operation that is already complete changes nothing.
+    const now = await tx.dispatchOperation.findUnique({ where: { id: operation.id } })
+    if (now.status === 'COMPLETE') return now
     // Close any active time log
-    await prisma.dispatchTimeLog.updateMany({
+    await tx.dispatchTimeLog.updateMany({
       where: { dispatchOperationId: operation.id, status: 'RUNNING' },
       data: { status: 'COMPLETE', endAt: new Date() },
     })
     
     // Update operation status
-    const updated = await prisma.dispatchOperation.update({
+    const updated = await tx.dispatchOperation.update({
       where: { id: operation.id },
       data: { status: 'COMPLETE', actualEnd: new Date() },
     })
     
     // Check if ALL operations for this dispatch job are complete → move job to QC
     if (operation.dispatchJob?.jobId) {
-      const remaining = await prisma.dispatchOperation.count({
+      const remaining = await tx.dispatchOperation.count({
         where: {
           dispatchJobId: operation.dispatchJobId,
           status: { not: 'COMPLETE' },
-          id: { not: operation.id },
         },
       })
       if (remaining === 0) {
         // All operations done → job goes to QC inspection queue (not directly to COMPLETE)
-        await prisma.job.update({
-          where: { id: operation.dispatchJob.jobId },
-          data: { status: 'WAITING_QC' },
-        })
+        await moveJob(tx, operation.dispatchJob.jobId, { status: 'WAITING_QC' }, { note: 'All operations finished', via: 'operation', userId: req.user?.id })
         console.log(`[OPERATIONS] All ops complete for job ${operation.dispatchJob.jobId} — moved to WAITING_QC`)
       }
     }
+    return updated
+    })
     
     const allLogs = await prisma.dispatchTimeLog.findMany({
       where: { dispatchOperationId: operation.id },
@@ -392,6 +413,7 @@ router.post('/:id/complete', async (req, res) => {
       },
     })
   } catch (error) {
+    if (error.status === 409) return res.status(409).json({ success: false, error: error.message })
     console.error('Error completing operation:', error)
     res.status(500).json({ success: false, error: 'Failed to complete operation' })
   }
@@ -475,12 +497,6 @@ router.post('/:id/reassign', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Cannot reassign completed operation' })
     }
     
-    // If currently running, pause first
-    await prisma.dispatchTimeLog.updateMany({
-      where: { dispatchOperationId: operation.id, status: 'RUNNING' },
-      data: { status: 'PAUSED', endAt: new Date() },
-    })
-    
     const updateData = {}
     
     if (workCenterId) {
@@ -499,11 +515,19 @@ router.post('/:id/reassign', async (req, res) => {
       updateData.assignedOperatorId = operatorId
     }
     
-    const updated = await prisma.dispatchOperation.update({
-      where: { id: operation.id },
-      data: updateData,
-      include: { dispatchJob: true },
-    })
+    // The input is checked above before anything is saved. Pausing the running time log and
+    // moving the operation are one step (B-010).
+    const [, updated] = await prisma.$transaction([
+      prisma.dispatchTimeLog.updateMany({
+        where: { dispatchOperationId: operation.id, status: 'RUNNING' },
+        data: { status: 'PAUSED', endAt: new Date() },
+      }),
+      prisma.dispatchOperation.update({
+        where: { id: operation.id },
+        data: updateData,
+        include: { dispatchJob: true },
+      }),
+    ])
     
     // Look up operator and work center
     let operatorData = null

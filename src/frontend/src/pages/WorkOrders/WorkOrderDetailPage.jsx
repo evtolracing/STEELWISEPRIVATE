@@ -1,353 +1,194 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+/**
+ * One coil work order, read from /api/work-orders/:id. The buttons call the
+ * server; a move the work order's status does not allow is refused there and
+ * the reason is shown. Nothing on this screen is sample data.
+ */
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom'
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Tabs,
-  Tab,
-  Button,
-  Stack,
-  Divider,
-  IconButton,
-  Card,
-  CardContent,
-  LinearProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Avatar,
-  alpha,
+  Box, Typography, Paper, Grid, Button, IconButton, Chip, Alert, CircularProgress, Snackbar, Link,
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
 } from '@mui/material'
-import {
-  ArrowBack as BackIcon,
-  Edit as EditIcon,
-  Print as PrintIcon,
-  PlayArrow as StartIcon,
-  Pause as PauseIcon,
-  Stop as StopIcon,
-  CheckCircle as CompleteIcon,
-  Assignment as BOMIcon,
-  Timeline as TimelineIcon,
-  Build as BuildIcon,
-  AutoAwesome as AIIcon,
-} from '@mui/icons-material'
-import { useApiQuery } from '../../hooks/useApiQuery'
-import { getWorkOrder } from '../../api'
-import { StatusChip, DataTable } from '../../components/common'
-import { TraceTimeline } from '../../components/traceability'
+import { ArrowBack as BackIcon, PlayArrow as StartIcon, CheckCircle as CompleteIcon, Cancel as CancelIcon, Send as ReleaseIcon } from '@mui/icons-material'
+import client from '../../api/client'
 
-function TabPanel({ children, value, index, ...props }) {
+export const WO_TYPE_LABELS = { SLIT: 'Slitting', CTL: 'Cut to length', BLANK: 'Blanking', LEVELCUT: 'Level cut', MULTIBLANKING: 'Multi-blanking', SHEAR: 'Shearing' }
+export const WO_STATUS_LABELS = { DRAFT: 'Draft', READY: 'Ready', IN_PROGRESS: 'In progress', QC_HOLD: 'Quality hold', COMPLETE: 'Complete', CANCELLED: 'Cancelled' }
+const WO_STATUS_COLORS = { DRAFT: 'default', READY: 'info', IN_PROGRESS: 'primary', QC_HOLD: 'warning', COMPLETE: 'success', CANCELLED: 'error' }
+export const WO_PRIORITY_LABELS = { 1: 'Critical', 2: 'High', 3: 'Normal', 4: 'Low', 5: 'Low' }
+
+export const WorkOrderStatusChip = ({ status }) => <Chip size="small" label={WO_STATUS_LABELS[status] || status} color={WO_STATUS_COLORS[status] || 'default'} />
+const when = (v) => (v ? new Date(v).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '')
+const pounds = (v) => (v == null || v === '' ? '' : `${Number(v).toLocaleString()} lb`)
+const Fact = ({ name, children }) => (
+  <Box sx={{ mb: 1.5 }}>
+    <Typography variant="caption" color="text.secondary" display="block">{name}</Typography>
+    <Typography variant="body1" component="div">{children || <Typography component="span" variant="body2" color="text.secondary">Not recorded</Typography>}</Typography>
+  </Box>
+)
+
+function CompleteDialog({ wo, open, onClose, onDone }) {
+  const [out, setOut] = useState('')
+  const [scrap, setScrap] = useState('')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  useEffect(() => { if (open) { setOut(''); setScrap(''); setError('') } }, [open])
+  const save = async () => {
+    setBusy(true); setError('')
+    try {
+      await client.put(`/work-orders/${wo.id}/complete`, { outputWeightLb: out, scrapWeightLb: scrap === '' ? 0 : scrap })
+      onDone('Work order completed')
+    } catch (e) {
+      setError(e.response?.data?.error || 'The work order could not be completed')
+    } finally {
+      setBusy(false)
+    }
+  }
   return (
-    <div hidden={value !== index} {...props}>
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
+    <Dialog open={open} onClose={busy ? undefined : onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>Complete {wo.woNumber}</DialogTitle>
+      <DialogContent>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Weight in: {pounds(wo.inputWeightLb) || 'not recorded'}. Yield is worked out from what you enter.
+        </Typography>
+        <TextField fullWidth type="number" label="Good weight out (lb)" value={out} onChange={(e) => setOut(e.target.value)} inputProps={{ min: 0, step: 'any' }} sx={{ mb: 2 }} />
+        <TextField fullWidth type="number" label="Scrap (lb)" value={scrap} onChange={(e) => setScrap(e.target.value)} inputProps={{ min: 0, step: 'any' }} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={busy}>Cancel</Button>
+        <Button variant="contained" color="success" onClick={save} disabled={busy || out === ''}>{busy ? 'Saving…' : 'Complete work order'}</Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 
 export default function WorkOrderDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [tabValue, setTabValue] = useState(0)
+  const [wo, setWo] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [actionError, setActionError] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [completing, setCompleting] = useState(false)
+  const [toast, setToast] = useState('')
 
-  const { data: workOrder, isLoading } = useApiQuery(
-    ['workOrder', id],
-    () => getWorkOrder(id)
-  )
+  const load = useCallback(async () => {
+    setLoading(true); setError('')
+    try {
+      const { data } = await client.get(`/work-orders/${id}`)
+      setWo(data)
+    } catch (e) {
+      setWo(null)
+      setError(e.response?.status === 404 ? 'This work order is not on file.' : (e.response?.data?.error || 'The work order could not be loaded.'))
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+  useEffect(() => { load() }, [load])
 
-  // Mock data for demo
-  const mockWorkOrder = {
-    id: 1,
-    workOrderNumber: 'WO-2024-001',
-    type: 'Slitting',
-    product: '48" x 0.075" A36 Coils to 12" Slit Coils',
-    status: 'RUNNING',
-    priority: 'HIGH',
-    scheduledDate: new Date().toISOString(),
-    startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    estimatedCompletion: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
-    progress: 45,
-    quantity: {
-      planned: 25000,
-      completed: 11250,
-      unit: 'lbs',
-    },
-    machine: 'Slitter Line #2',
-    operator: 'Mike Johnson',
-    salesOrder: 'SO-2024-001',
-    customer: 'Acme Steel Co',
-    inputMaterials: [
-      { id: 1, unitNumber: 'U-2024-0001', grade: 'A36', weight: 12500, status: 'IN_USE' },
-      { id: 2, unitNumber: 'U-2024-0002', grade: 'A36', weight: 12500, status: 'QUEUED' },
-    ],
-    outputProducts: [
-      { id: 1, product: '12" x 0.075" A36', quantity: 4500, status: 'COMPLETED' },
-      { id: 2, product: '12" x 0.075" A36', quantity: 3500, status: 'IN_PROGRESS' },
-    ],
-    scrap: {
-      weight: 125,
-      percentage: 0.5,
-    },
-    bom: [
-      { id: 1, item: 'A36 Master Coil', specification: '48" x 0.075"', quantity: 25000, unit: 'lbs', source: 'Inventory' },
-    ],
-    events: [
-      { id: 1, type: 'CREATED', title: 'Work Order Created', timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), actor: 'Jane Doe' },
-      { id: 2, type: 'SCHEDULED', title: 'Scheduled for Production', timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), actor: 'Production Manager' },
-      { id: 3, type: 'RUNNING', title: 'Production Started', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), actor: 'Mike Johnson', description: 'Started on Slitter Line #2' },
-    ],
-  }
-
-  const displayWO = workOrder || mockWorkOrder
-
-  const inputColumns = [
-    { id: 'unitNumber', label: 'Unit Number', minWidth: 120 },
-    { id: 'grade', label: 'Grade', minWidth: 100 },
-    { id: 'weight', label: 'Weight', minWidth: 100, render: (row) => `${row.weight?.toLocaleString()} lbs` },
-    { id: 'status', label: 'Status', minWidth: 100, render: (row) => <StatusChip status={row.status} /> },
-  ]
-
-  const outputColumns = [
-    { id: 'product', label: 'Product', minWidth: 200 },
-    { id: 'quantity', label: 'Quantity', minWidth: 100, render: (row) => `${row.quantity?.toLocaleString()} lbs` },
-    { id: 'status', label: 'Status', minWidth: 100, render: (row) => <StatusChip status={row.status} /> },
-  ]
-
-  const getStatusActions = () => {
-    switch (displayWO.status) {
-      case 'SCHEDULED':
-        return (
-          <Button startIcon={<StartIcon />} variant="contained" color="success">
-            Start Production
-          </Button>
-        )
-      case 'RUNNING':
-        return (
-          <>
-            <Button startIcon={<PauseIcon />} variant="outlined" color="warning">
-              Pause
-            </Button>
-            <Button startIcon={<CompleteIcon />} variant="contained" color="success">
-              Complete
-            </Button>
-          </>
-        )
-      case 'PAUSED':
-        return (
-          <Button startIcon={<StartIcon />} variant="contained" color="success">
-            Resume
-          </Button>
-        )
-      default:
-        return null
+  const act = async (action, done) => {
+    setBusy(true); setActionError('')
+    try {
+      await client.put(`/work-orders/${id}/${action}`, {})
+      setToast(done)
+      await load()
+    } catch (e) {
+      setActionError(e.response?.data?.error || 'That could not be done')
+    } finally {
+      setBusy(false)
     }
   }
 
+  if (loading && !wo) return <Box sx={{ p: 6, textAlign: 'center' }}><CircularProgress /></Box>
+  if (!wo) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" action={<Button color="inherit" onClick={() => navigate('/work-orders')}>Work orders</Button>}>{error}</Alert>
+      </Box>
+    )
+  }
+
+  const coil = wo.sourceCoil
+  const open = !['COMPLETE', 'CANCELLED'].includes(wo.status)
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
-      {/* Modern Header */}
-      <Box sx={{ 
-        px: 3, 
-        py: 2.5, 
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
-        color: 'white',
-        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
-        mb: 3,
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton onClick={() => navigate('/work-orders')} sx={{ color: 'white' }}>
-            <BackIcon />
-          </IconButton>
-          <Avatar sx={{ 
-            width: 56, 
-            height: 56, 
-            background: 'rgba(255,255,255,0.15)',
-            backdropFilter: 'blur(10px)',
-          }}>
-            <BuildIcon sx={{ fontSize: 30 }} />
-          </Avatar>
-          <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
-                {displayWO.workOrderNumber}
-              </Typography>
-              <StatusChip status={displayWO.status} />
-              <StatusChip status={displayWO.priority} />
-            </Box>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-              <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                {displayWO.type} | {displayWO.product}
-              </Typography>
-            </Stack>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3, flexWrap: 'wrap' }}>
+        <IconButton onClick={() => navigate('/work-orders')} aria-label="Back to work orders"><BackIcon /></IconButton>
+        <Box sx={{ flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+            <Typography variant="h5" fontWeight={700}>{wo.woNumber}</Typography>
+            <WorkOrderStatusChip status={wo.status} />
+            <Chip size="small" variant="outlined" label={`${WO_PRIORITY_LABELS[wo.priority] || 'Normal'} priority`} />
           </Box>
-          <Stack direction="row" spacing={1}>
-            {getStatusActions()}
-            <Button 
-              startIcon={<PrintIcon />} 
-              variant="outlined"
-              sx={{
-                borderColor: 'rgba(255,255,255,0.5)',
-                color: 'white',
-                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              Print
-            </Button>
-            <Button 
-              startIcon={<EditIcon />} 
-              variant="outlined"
-              sx={{
-                borderColor: 'rgba(255,255,255,0.5)',
-                color: 'white',
-                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              Edit
-            </Button>
-          </Stack>
+          <Typography variant="body2" color="text.secondary">{WO_TYPE_LABELS[wo.woType] || wo.woType}</Typography>
         </Box>
+        {wo.status === 'DRAFT' && <Button startIcon={<ReleaseIcon />} variant="outlined" disabled={busy} onClick={() => act('release', 'Released to the floor')}>Release</Button>}
+        {['DRAFT', 'READY', 'QC_HOLD'].includes(wo.status) && <Button startIcon={<StartIcon />} variant="contained" color="success" disabled={busy} onClick={() => act('start', 'Work started')}>Start</Button>}
+        {['IN_PROGRESS', 'QC_HOLD'].includes(wo.status) && <Button startIcon={<CompleteIcon />} variant="contained" color="success" disabled={busy} onClick={() => setCompleting(true)}>Complete</Button>}
+        {open && <Button startIcon={<CancelIcon />} color="error" disabled={busy} onClick={() => act('cancel', 'Work order cancelled')}>Cancel work order</Button>}
       </Box>
 
-      <Box sx={{ px: 3, pb: 3 }}>
-      {/* Progress Bar */}
-      {displayWO.status === 'RUNNING' && (
-        <Paper sx={{ p: 2, mb: 3, borderRadius: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="body2" fontWeight={500}>
-              Production Progress
-            </Typography>
-            <Typography variant="body2" fontWeight={600} color="primary">
-              {displayWO.progress}%
-            </Typography>
-          </Box>
-          <LinearProgress 
-            variant="determinate" 
-            value={displayWO.progress} 
-            sx={{ height: 10, borderRadius: 5 }}
-          />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-            <Typography variant="caption" color="text.secondary">
-              {displayWO.quantity?.completed?.toLocaleString()} / {displayWO.quantity?.planned?.toLocaleString()} {displayWO.quantity?.unit}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Est. completion: {new Date(displayWO.estimatedCompletion).toLocaleTimeString()}
-            </Typography>
-          </Box>
-        </Paper>
-      )}
+      {actionError && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setActionError('')}>{actionError}</Alert>}
+      <Alert severity="info" sx={{ mb: 2 }}>
+        A work order records the plan and the weights. It does not yet change stock: the source item is not used up and the pieces made are not added to inventory by completing it.
+      </Alert>
 
-      {/* Summary Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Machine</Typography>
-              <Typography variant="h6">{displayWO.machine}</Typography>
-            </CardContent>
-          </Card>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>Source stock item</Typography>
+            <Fact name="Item">{coil ? <Link component={RouterLink} to={`/units/${coil.id}`}>{coil.coilNumber}</Link> : ''}</Fact>
+            <Fact name="Grade">{coil?.grade?.code}</Fact>
+            <Fact name="Heat">{coil?.heat?.heatNumber}</Fact>
+            <Fact name="Location">{coil?.location ? `${coil.location.name} (${coil.location.code})` : ''}</Fact>
+            <Fact name="Item weight">{pounds(coil?.netWeightLb)}</Fact>
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Operator</Typography>
-              <Typography variant="h6">{displayWO.operator || '-'}</Typography>
-            </CardContent>
-          </Card>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <Typography variant="h6" gutterBottom>Plan and result</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}><Fact name="Scheduled for">{wo.scheduledDate ? new Date(wo.scheduledDate).toLocaleDateString() : ''}</Fact></Grid>
+              <Grid item xs={6}><Fact name="Weight in">{pounds(wo.inputWeightLb)}</Fact></Grid>
+              <Grid item xs={6}><Fact name="Started">{when(wo.startedAt)}</Fact></Grid>
+              <Grid item xs={6}><Fact name="Completed">{when(wo.completedAt)}</Fact></Grid>
+              <Grid item xs={4}><Fact name="Good weight out">{pounds(wo.outputWeightLb)}</Fact></Grid>
+              <Grid item xs={4}><Fact name="Scrap">{pounds(wo.scrapWeightLb)}</Fact></Grid>
+              <Grid item xs={4}><Fact name="Yield">{wo.yieldPct == null ? '' : `${Number(wo.yieldPct)}%`}</Fact></Grid>
+              <Grid item xs={12}><Fact name="Notes"><span style={{ whiteSpace: 'pre-wrap' }}>{wo.notes}</span></Fact></Grid>
+            </Grid>
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Sales Order</Typography>
-              <Typography variant="h6">{displayWO.salesOrder}</Typography>
-              <Typography variant="caption" color="text.secondary">{displayWO.customer}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Scrap</Typography>
-              <Typography variant="h6">{displayWO.scrap?.weight?.toLocaleString()} lbs</Typography>
-              <Typography variant="caption" color="text.secondary">{displayWO.scrap?.percentage}%</Typography>
-            </CardContent>
-          </Card>
+        <Grid item xs={12}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>History</Typography>
+            {wo.history?.length ? (
+              <TableContainer>
+                <Table size="small" aria-label="Work order history">
+                  <TableHead><TableRow><TableCell>When</TableCell><TableCell>What happened</TableCell><TableCell>By</TableCell><TableCell>Note</TableCell></TableRow></TableHead>
+                  <TableBody>
+                    {wo.history.map((h, i) => (
+                      <TableRow key={i}>
+                        <TableCell sx={{ whiteSpace: 'nowrap' }}>{when(h.timestamp)}</TableCell>
+                        <TableCell>{h.type === 'CREATED' ? 'Work order created' : <>{WO_STATUS_LABELS[h.from] || h.from} to <strong>{WO_STATUS_LABELS[h.to] || h.to}</strong></>}</TableCell>
+                        <TableCell>{h.by || 'Not recorded'}</TableCell>
+                        <TableCell>{h.note}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Typography variant="body2" color="text.secondary">Created {when(wo.createdAt)}. No changes have been recorded since.</Typography>
+            )}
+          </Paper>
         </Grid>
       </Grid>
 
-      {/* Tabs */}
-      <Paper sx={{ mb: 2 }}>
-        <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
-          <Tab icon={<BuildIcon />} iconPosition="start" label="Production" />
-          <Tab icon={<BOMIcon />} iconPosition="start" label="BOM" />
-          <Tab icon={<TimelineIcon />} iconPosition="start" label="History" />
-        </Tabs>
-      </Paper>
-
-      {/* Tab Panels */}
-      <TabPanel value={tabValue} index={0}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>Input Materials</Typography>
-              <DataTable
-                columns={inputColumns}
-                data={displayWO.inputMaterials || []}
-                pageSize={5}
-                showSearch={false}
-              />
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>Output Products</Typography>
-              <DataTable
-                columns={outputColumns}
-                data={displayWO.outputProducts || []}
-                pageSize={5}
-                showSearch={false}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
-      </TabPanel>
-
-      <TabPanel value={tabValue} index={1}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>Bill of Materials</Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Item</TableCell>
-                <TableCell>Specification</TableCell>
-                <TableCell>Quantity</TableCell>
-                <TableCell>Source</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {displayWO.bom?.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.item}</TableCell>
-                  <TableCell>{item.specification}</TableCell>
-                  <TableCell>{item.quantity?.toLocaleString()} {item.unit}</TableCell>
-                  <TableCell>{item.source}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-      </TabPanel>
-
-      <TabPanel value={tabValue} index={2}>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>Work Order History</Typography>
-          <TraceTimeline events={displayWO.events || []} />
-        </Paper>
-      </TabPanel>
-      </Box>
+      <CompleteDialog wo={wo} open={completing} onClose={() => setCompleting(false)} onDone={(m) => { setCompleting(false); setToast(m); load() }} />
+      <Snackbar open={!!toast} autoHideDuration={4000} onClose={() => setToast('')} message={toast} />
     </Box>
   )
 }

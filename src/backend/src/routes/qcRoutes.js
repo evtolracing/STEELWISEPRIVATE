@@ -10,14 +10,10 @@
 
 import express from 'express'
 import prisma from '../lib/db.js'
+import { moveJob } from '../lib/jobHistory.js'
+import { createNumbered, padded } from '../lib/numbering.js';
 
 const router = express.Router()
-
-// ── Helper: Generate inspection number ──────────────────────────────────────
-async function nextInspectionNumber() {
-  const count = await prisma.jobInspection.count()
-  return `INS-${String(count + 1).padStart(5, '0')}`
-}
 
 // ── GET /queue ── Jobs waiting for QC inspection ────────────────────────────
 router.get('/queue', async (req, res) => {
@@ -222,9 +218,7 @@ router.post('/inspections', async (req, res) => {
       })
     }
 
-    const inspectionNumber = await nextInspectionNumber()
-
-    const inspection = await prisma.jobInspection.create({
+    const inspection = await createNumbered({ count: () => prisma.jobInspection.count(), format: padded('INS'), create: (inspectionNumber) => prisma.jobInspection.create({
       data: {
         inspectionNumber,
         jobId,
@@ -239,9 +233,9 @@ router.post('/inspections', async (req, res) => {
         job: { select: { jobNumber: true, status: true } },
         inspector: { select: { id: true, firstName: true, lastName: true } },
       },
-    })
+    }) })
 
-    console.log(`[QC] Created inspection ${inspectionNumber} for job ${job.jobNumber}`)
+    console.log(`[QC] Created inspection ${inspection.inspectionNumber} for job ${job.jobNumber}`)
     res.status(201).json({ success: true, data: inspection })
   } catch (err) {
     console.error('[QC] Error creating inspection:', err)
@@ -325,10 +319,7 @@ router.post('/inspections/:id/pass', async (req, res) => {
     })
 
     // Advance job to PACKAGING
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: { status: 'PACKAGING' },
-    })
+    await moveJob(prisma, inspection.jobId, { status: 'PACKAGING' }, { note: `Inspection ${inspection.inspectionNumber} passed`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} PASSED — job ${inspection.job.jobNumber} → PACKAGING`)
     res.json({ success: true, data: updated })
@@ -373,10 +364,7 @@ router.post('/inspections/:id/fail', async (req, res) => {
     })
 
     // Put job on hold
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: { status: 'ON_HOLD' },
-    })
+    await moveJob(prisma, inspection.jobId, { status: 'ON_HOLD' }, { note: `Inspection ${inspection.inspectionNumber} failed`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} FAILED — job ${inspection.job.jobNumber} → ON_HOLD`)
     res.json({ success: true, data: updated })
@@ -420,13 +408,10 @@ router.post('/inspections/:id/rework', async (req, res) => {
     })
 
     // Send job back to SCHEDULED for re-planning
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: {
+    await moveJob(prisma, inspection.jobId, {
         status: 'SCHEDULED',
         notes: `REWORK: ${reworkInstructions || 'Rework required per QC inspector'}${inspection.job.notes ? '\n\n' + inspection.job.notes : ''}`,
-      },
-    })
+      }, { note: `Inspection ${inspection.inspectionNumber}: rework`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} REWORK — job ${inspection.job.jobNumber} → SCHEDULED`)
     res.json({ success: true, data: updated })
@@ -468,10 +453,7 @@ router.post('/inspections/:id/conditional', async (req, res) => {
     })
 
     // Advance job to PACKAGING (conditional pass still moves forward)
-    await prisma.job.update({
-      where: { id: inspection.jobId },
-      data: { status: 'PACKAGING' },
-    })
+    await moveJob(prisma, inspection.jobId, { status: 'PACKAGING' }, { note: `Inspection ${inspection.inspectionNumber} passed with conditions`, via: 'inspection', userId: req.user?.id })
 
     console.log(`[QC] Inspection ${inspection.inspectionNumber} CONDITIONAL — job ${inspection.job.jobNumber} → PACKAGING`)
     res.json({ success: true, data: updated })

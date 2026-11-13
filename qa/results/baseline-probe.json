@@ -1,0 +1,47 @@
+{
+ "base": "http://localhost:3011",
+ "at": "2026-11-13T18:54:54.291Z",
+ "sections": {
+  "Read-only roles cannot change anything": {
+   "pass": true,
+   "summary": "540 write calls as auditor and data analyst, 0 not refused",
+   "tested": 540,
+   "findings": []
+  },
+  "A second address follows the same department rules": {
+   "pass": true,
+   "summary": "4 checks, 0 problems",
+   "findings": []
+  },
+  "Write routes sent an empty body do not crash": {
+   "pass": true,
+   "summary": "275 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing",
+   "tested": 275,
+   "byStatus": {
+    "200": 13,
+    "201": 1,
+    "400": 156,
+    "403": 1,
+    "404": 101,
+    "501": 3
+   },
+   "findings": [],
+   "savedFromNothing": [
+    "POST /api/demand-shaping/suggestions → 200",
+    "POST /api/pos/sessions → 201"
+   ]
+  },
+  "Branch to branch access (reported, not judged)": {
+   "pass": true,
+   "summary": "a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0",
+   "observations": [
+    "a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200",
+    "the same login listed orders of every branch → 200",
+    "it opened one order by id → 404",
+    "it placed a hold on a stock item at the other branch → 400",
+    "rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0"
+   ]
+  }
+ },
+ "pass": true
+}

@@ -1,0 +1,118 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-13T18:48:41.233Z",
+ "checks": 22,
+ "failed": 0,
+ "results": [
+  {
+   "name": "/safety: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/safety/incidents: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/safety/stop-work: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/maintenance/dashboard: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/maintenance/parts: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/provenance: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/executive/cockpit: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/executive/forecast: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/training/dashboard: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/contractors/active: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/customer-quality/claims: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/customer-quality/rma: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/qaqc: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/shipping: a real screen carries no sample notice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/orders/invoices: a real screen carries no sample notice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/schedule: a real screen carries no sample notice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/admin/users: a real screen carries no sample notice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order board: no invented assistant or AI claim on the board",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "role dashboard: opens",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "role dashboard: a failed figure is not replaced by an invented one",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "role dashboard: failed figures say they are not available",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "role dashboard: the assistant says it is not connected and invents nothing",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

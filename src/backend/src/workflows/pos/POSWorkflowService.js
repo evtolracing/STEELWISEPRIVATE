@@ -571,6 +571,7 @@ class POSWorkflowService {
     
     // Get current pricing for the product
     const pricingResult = await this.calculateLinePrice(sessionId, productData);
+    if (pricingResult.error) return { error: pricingResult.error };
     const pricing = pricingResult.pricing || pricingResult;
     
     // The transition copies the payload into the session, so the line's price
@@ -578,7 +579,7 @@ class POSWorkflowService {
     const payload = {
       ...productData,
       unitPrice: pricing.unitPrice ?? pricing.adjustedPrice ?? pricing.basePrice ?? 0,
-      priceUnit: productData.priceUnit || pricing.priceUnit || pricing.basePriceUnit || 'CWT',
+      priceUnit: pricing.priceUnit || pricing.basePriceUnit || 'CWT',
       extendedPrice: pricing.extendedPrice,
       linePricing: pricing
     };
@@ -700,82 +701,31 @@ class POSWorkflowService {
     const customer = machine?.context?.customer || null;
     const division = machine?.context?.division || null;
     
-    // Use the pricing service for full calculation
-    try {
-      const pricing = await pricingService.calculatePrice({
-        productId: lineData.productId,
-        quantity: lineData.quantity,
-        weight: lineData.weight,
-        uom: lineData.uom || 'LB',
-        processingType: lineData.processingType,
-        processingConfig: lineData.processing,
-        certifications: lineData.certifications
-      }, {
-        customerId: customer?.id,
-        divisionId: division?.id,
-        customerTier: customer?.tier,
-        contractId: customer?.contractId
-      });
-      
-      // Check for warnings
-      const warnings = [];
-      const marginResult = pricingService.calculateMargin(
-        pricing.extendedPrice,
-        pricing.baseCost || pricing.basePrice * 0.75, // Estimate cost if not provided
-        lineData.category || 'HOT_ROLL'
-      );
-      
-      if (!marginResult.meetsMinimum) {
-        warnings.push({
-          type: 'LOW_MARGIN',
-          message: marginResult.message,
-          severity: marginResult.margin < marginResult.minimumMargin * 0.5 ? 'ERROR' : 'WARNING'
-        });
-      }
-      
-      return {
-        success: true,
-        pricing: {
-          ...pricing,
-          margin: marginResult.margin,
-          marginWarning: warnings.length > 0
-        },
-        warnings,
-        requiresApproval: !marginResult.meetsTarget,
-        approvalReason: marginResult.message
-      };
-    } catch (error) {
-      console.error('Pricing calculation error:', error);
-      
-      // Fallback to simple calculation
-      const product = lineData.productId 
-        ? await prisma.product.findUnique({ where: { id: lineData.productId } })
-        : null;
-      
-      const basePrice = product?.basePriceCwt || lineData.unitPrice || 0;
-      const qty = parseFloat(lineData.quantity) || 0;
-      const priceUnit = lineData.priceUnit || 'CWT';
-      
-      let extendedPrice = 0;
-      if (priceUnit === 'CWT') {
-        extendedPrice = (qty / 100) * basePrice;
-      } else {
-        extendedPrice = qty * basePrice;
-      }
-      
-      return {
-        success: true,
-        pricing: {
-          basePrice,
-          unitPrice: basePrice,
-          priceUnit,
-          extendedPrice: Math.round(extendedPrice * 100) / 100,
-          priceSource: 'CATALOG'
-        },
-        warnings: [],
-        requiresApproval: false
-      };
+    // The catalog list price at this customer's price level (lib/customerPricing.js).
+    const pricing = await pricingService.calculatePrice({
+      customerId: customer?.id,
+      divisionId: division?.id,
+      productId: lineData.productId,
+      productSku: lineData.productSku || lineData.sku,
+      quantity: lineData.quantity,
+      unit: lineData.unit || lineData.uom || 'LB',
+      certifications: lineData.certifications,
+    });
+    if (pricing.error) throw new Error(pricing.error);
+    if (pricing.basePriceSource === 'NOT_FOUND') {
+      return { success: false, error: 'This product has no list price on file. Add a price to the product before selling it at the counter.' };
     }
+    return {
+      success: true,
+      pricing: {
+        ...pricing,
+        unitPrice: pricing.adjustedPrice,
+        priceUnit: pricing.basePriceUnit,
+        priceSource: pricing.basePriceSource,
+      },
+      warnings: [],
+      requiresApproval: false,
+    };
   }
   
   /**
@@ -833,16 +783,25 @@ class POSWorkflowService {
       type: discountData.type || 'PERCENTAGE', // PERCENTAGE, FIXED, LINE
       code: discountData.code || null,
       description: discountData.description || 'Manual discount',
-      percentage: discountData.percentage || null,
-      amount: discountData.amount || 0,
+      percentage: discountData.percentage ?? ((discountData.type || 'PERCENTAGE') === 'PERCENTAGE' ? discountData.value : null) ?? null,
+      amount: discountData.amount ?? ((discountData.type || 'PERCENTAGE') === 'PERCENTAGE' ? 0 : discountData.value) ?? 0,
       appliedBy: machine.context.currentUser?.id,
       appliedAt: new Date()
     };
     
     // Calculate discount amount
-    if (discount.type === 'PERCENTAGE' && discount.percentage) {
-      discount.amount = (machine.context.pricing.subtotal * discount.percentage) / 100;
+    const subtotal = Number(machine.context.pricing?.subtotal) || 0;
+    if (discount.type === 'PERCENTAGE') {
+      const pct = Number(discount.percentage);
+      if (!(pct > 0 && pct <= 100)) return { error: 'A percentage discount must be more than 0 and at most 100' };
+      discount.percentage = pct;
+      discount.amount = Math.round(subtotal * pct) / 100;
+    } else {
+      discount.amount = Number(discount.amount);
+      if (!(discount.amount > 0)) return { error: 'A discount amount must be more than zero' };
     }
+    const already = (machine.context.pricing?.discounts || []).reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+    if (already + discount.amount > subtotal + 0.005) return { error: 'Discounts cannot be more than the sale subtotal' };
     
     const discounts = [...(machine.context.pricing.discounts || []), discount];
     const pricing = recalculatePricing(machine.context.lines, {
@@ -1190,6 +1149,7 @@ class POSWorkflowService {
     
     // Get current price
     const pricingResult = await this.calculateLinePrice(sessionId, line);
+    if (pricingResult.error) return;
     const pricing = pricingResult.pricing || pricingResult;
     line.unitPrice = pricing.unitPrice;
     line.extendedPrice = pricing.extendedPrice;

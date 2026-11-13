@@ -1,0 +1,158 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-13T18:49:30.284Z",
+ "checks": 30,
+ "failed": 0,
+ "results": [
+  {
+   "name": "job: the screen shows the real job, not a sample",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: the history names who started it and why",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: a status change is saved on the server",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: the change appears in the history with the reason",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: the change is still there after reloading",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: a move that is not allowed is refused with the reason",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: a job that does not exist says so instead of showing a sample",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "schedule: shows the real work centers and makes no claim it cannot back",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "schedule: shows the job really scheduled today",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "schedule: a job on the schedule opens its own screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "schedule: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order board: clicking a job opens its screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time tracking: opens without sample data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time tracking: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: the list opens",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: the form carries no made-up scheduling tip",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: the form creates a real work order and opens it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: the screen shows the real work order, not a sample",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: Start is saved on the server",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: more weight out than went in is refused with the reason",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: Complete is saved with a yield worked out by the server",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: the history names who did each step",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: a finished work order offers no more actions",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work orders: one that does not exist says so instead of showing a sample",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "the old sample operator screen now opens the real shop floor",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/production-quality/dashboard: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/production-quality/ncr: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/boms: says it is a sample screen",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

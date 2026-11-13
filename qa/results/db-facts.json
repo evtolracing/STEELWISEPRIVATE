@@ -1,0 +1,993 @@
+{
+ "at": "2026-11-13T18:47:39.200Z",
+ "database": "postgresql://localhost:5432/steelwise_qa",
+ "tables": 158,
+ "totalRows": 5727,
+ "emptyTables": [
+  "AppSetting",
+  "ApprovalDecision",
+  "ApprovalRequest",
+  "Asset",
+  "AssetComponent",
+  "AssetType",
+  "BomOperation",
+  "BomRecipe",
+  "CommodityPrice",
+  "CustomerPreference",
+  "CustomerTagRequirement",
+  "DispatchDivision",
+  "DispatchJob",
+  "DispatchOperation",
+  "DispatchTimeLog",
+  "Division",
+  "Document",
+  "DocumentBlob",
+  "DocumentLink",
+  "DowntimeRecord",
+  "DropTag",
+  "DropTagListing",
+  "ForecastSnapshot",
+  "InventoryAdjustment",
+  "JobInspection",
+  "LabelTemplate",
+  "MaintenanceAttachment",
+  "MaintenanceAuditLog",
+  "MaintenanceOrder",
+  "MaintenanceOrderLabor",
+  "MaintenanceOrderPart",
+  "MaintenanceTask",
+  "MeterReading",
+  "Operator",
+  "OperatorSkill",
+  "PMSchedule",
+  "PMTemplate",
+  "Package",
+  "PackageItem",
+  "Partner",
+  "PartnerApiKey",
+  "PartnerApiLog",
+  "PartnerWebhook",
+  "PipelineRun",
+  "PricingAnalytics",
+  "PricingOverride",
+  "PricingRecommendation",
+  "PrintQueueJob",
+  "QCHold",
+  "QuoteAcceptance",
+  "RFQSource",
+  "SafetyAttachment",
+  "SafetyAudit",
+  "SafetyAuditEvent",
+  "SafetyAuditFinding",
+  "SafetyContractorCompany",
+  "SafetyContractorWorker",
+  "SafetyCorrectiveAction",
+  "SafetyElectronicSignature",
+  "SafetyEquipmentAsset",
+  "SafetyEquipmentGuard",
+  "SafetyIncident",
+  "SafetyIncidentInvestigation",
+  "SafetyInjuryDetails",
+  "SafetyInspection",
+  "SafetyInspectionDefect",
+  "SafetyInspectionTemplate",
+  "SafetyJobHazardAnalysis",
+  "SafetyLotoProcedure",
+  "SafetyMeeting",
+  "SafetyMeetingAttendee",
+  "SafetyObservation",
+  "SafetyPPEMatrix",
+  "SafetyPermit",
+  "SafetyPermitConfinedSpace",
+  "SafetyPermitElectrical",
+  "SafetyPermitHotWork",
+  "SafetyPermitLoto",
+  "SafetyPermitSignoff",
+  "SafetyPolicyAcknowledgement",
+  "SafetyPolicyDocument",
+  "SafetySDSRecord",
+  "SafetySDSRevision",
+  "SafetyStopWorkEvent",
+  "SafetyTrainingAssignment",
+  "SafetyTrainingCompletion",
+  "SafetyTrainingCourse",
+  "SafetyVisitorSignIn",
+  "Shift",
+  "ShipmentStop",
+  "SparePart",
+  "SparePartTransaction",
+  "StopWorkAudit",
+  "StopWorkEvent",
+  "StopWorkEvidence",
+  "StopWorkStep",
+  "TagIdentifier",
+  "TestResult",
+  "TraceEvent",
+  "UserDivision",
+  "UserRoleAssignment",
+  "WebhookDelivery",
+  "WorkCenterType",
+  "WorkOrder",
+  "WorkOrderOutput"
+ ],
+ "rows": [
+  {
+   "table": "Address",
+   "rows": 4
+  },
+  {
+   "table": "AppSetting",
+   "rows": 0
+  },
+  {
+   "table": "ApprovalDecision",
+   "rows": 0
+  },
+  {
+   "table": "ApprovalRequest",
+   "rows": 0
+  },
+  {
+   "table": "Asset",
+   "rows": 0
+  },
+  {
+   "table": "AssetComponent",
+   "rows": 0
+  },
+  {
+   "table": "AssetType",
+   "rows": 0
+  },
+  {
+   "table": "AuditLog",
+   "rows": 1336
+  },
+  {
+   "table": "BomOperation",
+   "rows": 0
+  },
+  {
+   "table": "BomRecipe",
+   "rows": 0
+  },
+  {
+   "table": "Coil",
+   "rows": 333
+  },
+  {
+   "table": "CommodityPrice",
+   "rows": 0
+  },
+  {
+   "table": "CustomerPreference",
+   "rows": 0
+  },
+  {
+   "table": "CustomerPricingTier",
+   "rows": 1
+  },
+  {
+   "table": "CustomerTagRequirement",
+   "rows": 0
+  },
+  {
+   "table": "DemandSuggestionEvent",
+   "rows": 1242
+  },
+  {
+   "table": "DispatchDivision",
+   "rows": 0
+  },
+  {
+   "table": "DispatchJob",
+   "rows": 0
+  },
+  {
+   "table": "DispatchOperation",
+   "rows": 0
+  },
+  {
+   "table": "DispatchTimeLog",
+   "rows": 0
+  },
+  {
+   "table": "Division",
+   "rows": 0
+  },
+  {
+   "table": "Document",
+   "rows": 0
+  },
+  {
+   "table": "DocumentBlob",
+   "rows": 0
+  },
+  {
+   "table": "DocumentLink",
+   "rows": 0
+  },
+  {
+   "table": "DowntimeRecord",
+   "rows": 0
+  },
+  {
+   "table": "DropTag",
+   "rows": 0
+  },
+  {
+   "table": "DropTagListing",
+   "rows": 0
+  },
+  {
+   "table": "ExceptionEvent",
+   "rows": 8
+  },
+  {
+   "table": "ExecutiveDecision",
+   "rows": 3
+  },
+  {
+   "table": "ForecastSnapshot",
+   "rows": 0
+  },
+  {
+   "table": "Grade",
+   "rows": 8
+  },
+  {
+   "table": "Heat",
+   "rows": 15
+  },
+  {
+   "table": "IntakeContact",
+   "rows": 4
+  },
+  {
+   "table": "IntakeJob",
+   "rows": 1
+  },
+  {
+   "table": "IntakeOrder",
+   "rows": 2
+  },
+  {
+   "table": "IntakeQuote",
+   "rows": 1
+  },
+  {
+   "table": "IntakeRfq",
+   "rows": 3
+  },
+  {
+   "table": "Inventory",
+   "rows": 333
+  },
+  {
+   "table": "InventoryAdjustment",
+   "rows": 0
+  },
+  {
+   "table": "InventoryCatalogItem",
+   "rows": 8
+  },
+  {
+   "table": "InventorySite",
+   "rows": 13
+  },
+  {
+   "table": "InventoryTransfer",
+   "rows": 3
+  },
+  {
+   "table": "InventoryUnit",
+   "rows": 15
+  },
+  {
+   "table": "Invoice",
+   "rows": 125
+  },
+  {
+   "table": "InvoiceLine",
+   "rows": 135
+  },
+  {
+   "table": "Job",
+   "rows": 242
+  },
+  {
+   "table": "JobInspection",
+   "rows": 0
+  },
+  {
+   "table": "LabelTemplate",
+   "rows": 0
+  },
+  {
+   "table": "Location",
+   "rows": 85
+  },
+  {
+   "table": "MaintenanceAttachment",
+   "rows": 0
+  },
+  {
+   "table": "MaintenanceAuditLog",
+   "rows": 0
+  },
+  {
+   "table": "MaintenanceOrder",
+   "rows": 0
+  },
+  {
+   "table": "MaintenanceOrderLabor",
+   "rows": 0
+  },
+  {
+   "table": "MaintenanceOrderPart",
+   "rows": 0
+  },
+  {
+   "table": "MaintenanceTask",
+   "rows": 0
+  },
+  {
+   "table": "MaterialMovement",
+   "rows": 142
+  },
+  {
+   "table": "MeterReading",
+   "rows": 0
+  },
+  {
+   "table": "OnlineOrder",
+   "rows": 35
+  },
+  {
+   "table": "Operator",
+   "rows": 0
+  },
+  {
+   "table": "OperatorSkill",
+   "rows": 0
+  },
+  {
+   "table": "Order",
+   "rows": 236
+  },
+  {
+   "table": "OrderLine",
+   "rows": 248
+  },
+  {
+   "table": "OrderLineAllocation",
+   "rows": 6
+  },
+  {
+   "table": "Organization",
+   "rows": 27
+  },
+  {
+   "table": "PMSchedule",
+   "rows": 0
+  },
+  {
+   "table": "PMTemplate",
+   "rows": 0
+  },
+  {
+   "table": "Package",
+   "rows": 0
+  },
+  {
+   "table": "PackageItem",
+   "rows": 0
+  },
+  {
+   "table": "Partner",
+   "rows": 0
+  },
+  {
+   "table": "PartnerApiKey",
+   "rows": 0
+  },
+  {
+   "table": "PartnerApiLog",
+   "rows": 0
+  },
+  {
+   "table": "PartnerWebhook",
+   "rows": 0
+  },
+  {
+   "table": "Payment",
+   "rows": 85
+  },
+  {
+   "table": "PipelineRun",
+   "rows": 0
+  },
+  {
+   "table": "PosSession",
+   "rows": 6
+  },
+  {
+   "table": "PriceLevel",
+   "rows": 4
+  },
+  {
+   "table": "PricingAnalytics",
+   "rows": 0
+  },
+  {
+   "table": "PricingOverride",
+   "rows": 0
+  },
+  {
+   "table": "PricingRecommendation",
+   "rows": 0
+  },
+  {
+   "table": "PrintQueueJob",
+   "rows": 0
+  },
+  {
+   "table": "ProcessingOperation",
+   "rows": 10
+  },
+  {
+   "table": "ProcessingRecipe",
+   "rows": 12
+  },
+  {
+   "table": "ProcessingTemplate",
+   "rows": 6
+  },
+  {
+   "table": "Product",
+   "rows": 12
+  },
+  {
+   "table": "QCHold",
+   "rows": 0
+  },
+  {
+   "table": "Quote",
+   "rows": 25
+  },
+  {
+   "table": "QuoteAcceptance",
+   "rows": 0
+  },
+  {
+   "table": "QuoteLine",
+   "rows": 6
+  },
+  {
+   "table": "RFQ",
+   "rows": 22
+  },
+  {
+   "table": "RFQLine",
+   "rows": 3
+  },
+  {
+   "table": "RFQSource",
+   "rows": 0
+  },
+  {
+   "table": "RecipeRoutingTemplate",
+   "rows": 6
+  },
+  {
+   "table": "Remnant",
+   "rows": 10
+  },
+  {
+   "table": "RfidScanEvent",
+   "rows": 5
+  },
+  {
+   "table": "Role",
+   "rows": 10
+  },
+  {
+   "table": "SafetyAttachment",
+   "rows": 0
+  },
+  {
+   "table": "SafetyAudit",
+   "rows": 0
+  },
+  {
+   "table": "SafetyAuditEvent",
+   "rows": 0
+  },
+  {
+   "table": "SafetyAuditFinding",
+   "rows": 0
+  },
+  {
+   "table": "SafetyContractorCompany",
+   "rows": 0
+  },
+  {
+   "table": "SafetyContractorWorker",
+   "rows": 0
+  },
+  {
+   "table": "SafetyCorrectiveAction",
+   "rows": 0
+  },
+  {
+   "table": "SafetyElectronicSignature",
+   "rows": 0
+  },
+  {
+   "table": "SafetyEquipmentAsset",
+   "rows": 0
+  },
+  {
+   "table": "SafetyEquipmentGuard",
+   "rows": 0
+  },
+  {
+   "table": "SafetyIncident",
+   "rows": 0
+  },
+  {
+   "table": "SafetyIncidentInvestigation",
+   "rows": 0
+  },
+  {
+   "table": "SafetyInjuryDetails",
+   "rows": 0
+  },
+  {
+   "table": "SafetyInspection",
+   "rows": 0
+  },
+  {
+   "table": "SafetyInspectionDefect",
+   "rows": 0
+  },
+  {
+   "table": "SafetyInspectionTemplate",
+   "rows": 0
+  },
+  {
+   "table": "SafetyJobHazardAnalysis",
+   "rows": 0
+  },
+  {
+   "table": "SafetyLotoProcedure",
+   "rows": 0
+  },
+  {
+   "table": "SafetyMeeting",
+   "rows": 0
+  },
+  {
+   "table": "SafetyMeetingAttendee",
+   "rows": 0
+  },
+  {
+   "table": "SafetyObservation",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPPEMatrix",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPermit",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPermitConfinedSpace",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPermitElectrical",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPermitHotWork",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPermitLoto",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPermitSignoff",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPolicyAcknowledgement",
+   "rows": 0
+  },
+  {
+   "table": "SafetyPolicyDocument",
+   "rows": 0
+  },
+  {
+   "table": "SafetySDSRecord",
+   "rows": 0
+  },
+  {
+   "table": "SafetySDSRevision",
+   "rows": 0
+  },
+  {
+   "table": "SafetyStopWorkEvent",
+   "rows": 0
+  },
+  {
+   "table": "SafetyTrainingAssignment",
+   "rows": 0
+  },
+  {
+   "table": "SafetyTrainingCompletion",
+   "rows": 0
+  },
+  {
+   "table": "SafetyTrainingCourse",
+   "rows": 0
+  },
+  {
+   "table": "SafetyVisitorSignIn",
+   "rows": 0
+  },
+  {
+   "table": "SalesTaxRate",
+   "rows": 4
+  },
+  {
+   "table": "Shift",
+   "rows": 0
+  },
+  {
+   "table": "Shipment",
+   "rows": 169
+  },
+  {
+   "table": "ShipmentItem",
+   "rows": 137
+  },
+  {
+   "table": "ShipmentStop",
+   "rows": 0
+  },
+  {
+   "table": "SimulationScenario",
+   "rows": 1
+  },
+  {
+   "table": "SparePart",
+   "rows": 0
+  },
+  {
+   "table": "SparePartTransaction",
+   "rows": 0
+  },
+  {
+   "table": "StopWorkAudit",
+   "rows": 0
+  },
+  {
+   "table": "StopWorkEvent",
+   "rows": 0
+  },
+  {
+   "table": "StopWorkEvidence",
+   "rows": 0
+  },
+  {
+   "table": "StopWorkStep",
+   "rows": 0
+  },
+  {
+   "table": "StoreListing",
+   "rows": 10
+  },
+  {
+   "table": "TagIdentifier",
+   "rows": 0
+  },
+  {
+   "table": "TestResult",
+   "rows": 0
+  },
+  {
+   "table": "TraceEvent",
+   "rows": 0
+  },
+  {
+   "table": "User",
+   "rows": 17
+  },
+  {
+   "table": "UserDivision",
+   "rows": 0
+  },
+  {
+   "table": "UserLocation",
+   "rows": 246
+  },
+  {
+   "table": "UserRoleAssignment",
+   "rows": 0
+  },
+  {
+   "table": "WebhookDelivery",
+   "rows": 0
+  },
+  {
+   "table": "WorkCenter",
+   "rows": 284
+  },
+  {
+   "table": "WorkCenterType",
+   "rows": 0
+  },
+  {
+   "table": "WorkOrder",
+   "rows": 0
+  },
+  {
+   "table": "WorkOrderOutput",
+   "rows": 0
+  },
+  {
+   "table": "_prisma_migrations",
+   "rows": 23
+  }
+ ],
+ "indexes": 578,
+ "views": [],
+ "triggers": [],
+ "jsonCols": [
+  "AppSetting.value",
+  "ApprovalRequest.requestData",
+  "AuditLog.details",
+  "AuditLog.fieldChanges",
+  "BomOperation.parameters",
+  "CustomerPreference.approvedGrades",
+  "CustomerPreference.certRequirements",
+  "CustomerPreference.shipToAddress",
+  "Document.extractedData",
+  "DowntimeRecord.impactedJobs",
+  "DropTag.dimensions",
+  "DropTag.operatorIds",
+  "DropTag.shipToAddress",
+  "DropTag.workCenters",
+  "DropTagListing.stopSequence",
+  "ExecutiveDecision.actualOutcome",
+  "ExecutiveDecision.conditions",
+  "ExecutiveDecision.predictedOutcome",
+  "ExecutiveDecision.variance",
+  "ForecastSnapshot.data",
+  "Grade.chemistryMax",
+  "Grade.chemistryMin",
+  "Heat.chemistry",
+  "Heat.mechanicalProps",
+  "IntakeJob.details",
+  "IntakeOrder.lines",
+  "IntakeQuote.lines",
+  "IntakeRfq.lines",
+  "InventoryAdjustment.data",
+  "InventoryCatalogItem.data",
+  "InventorySite.data",
+  "InventoryTransfer.data",
+  "InventoryUnit.data",
+  "Job.certRequirements",
+  "JobInspection.checklist",
+  "JobInspection.defects",
+  "JobInspection.dimensionalChecks",
+  "LabelTemplate.barcodePosition",
+  "MaintenanceAuditLog.changedFields",
+  "MaintenanceAuditLog.newState",
+  "MaintenanceAuditLog.previousState",
+  "OnlineOrder.items",
+  "OrderLine.certRequirements",
+  "PMTemplate.conditionThreshold",
+  "PMTemplate.defaultParts",
+  "PMTemplate.taskList",
+  "Package.dimensions",
+  "PackageItem.dimensions",
+  "PackageItem.pieceMarks",
+  "Partner.ipAllowList",
+  "PartnerApiKey.scopes",
+  "PartnerApiLog.requestBody",
+  "PartnerWebhook.events",
+  "PipelineRun.data",
+  "PosSession.data",
+  "PricingRecommendation.alternatives",
+  "PricingRecommendation.dimensions",
+  "PricingRecommendation.modelInputs",
+  "PrintQueueJob.payload",
+  "ProcessingOperation.machines",
+  "ProcessingOperation.params",
+  "ProcessingRecipe.applicableForms",
+  "ProcessingRecipe.applicableMaterials",
+  "ProcessingTemplate.steps",
+  "QuoteLine.certRequirements",
+  "RFQLine.specifications",
+  "RFQSource.parseErrors",
+  "RFQSource.parsedData",
+  "RecipeRoutingTemplate.steps",
+  "RfidScanEvent.data",
+  "Role.permissions",
+  "SafetyAudit.auditTeam",
+  "SafetyAudit.locationIds",
+  "SafetyAuditEvent.changes",
+  "SafetyAuditEvent.metadata",
+  "SafetyAuditEvent.newState",
+  "SafetyAuditEvent.previousState",
+  "SafetyEquipmentAsset.hazards",
+  "SafetyEquipmentAsset.ppeRequired",
+  "SafetyEquipmentAsset.requiredTraining",
+  "SafetyEquipmentAsset.safetyFeatures",
+  "SafetyIncident.witnessNames",
+  "SafetyIncidentInvestigation.contributingFactors",
+  "SafetyIncidentInvestigation.findings",
+  "SafetyIncidentInvestigation.fishboneAnalysis",
+  "SafetyIncidentInvestigation.fiveWhysAnalysis",
+  "SafetyIncidentInvestigation.recommendations",
+  "SafetyIncidentInvestigation.rootCauseCategories",
+  "SafetyIncidentInvestigation.teamMemberIds",
+  "SafetyInjuryDetails.bodyPartAffected",
+  "SafetyInjuryDetails.injuryNature",
+  "SafetyInspection.responses",
+  "SafetyInspectionDefect.photoUrls",
+  "SafetyInspectionTemplate.appliesToAssetTypes",
+  "SafetyInspectionTemplate.sections",
+  "SafetyJobHazardAnalysis.equipmentAssetIds",
+  "SafetyJobHazardAnalysis.permitsRequired",
+  "SafetyJobHazardAnalysis.ppeRequired",
+  "SafetyJobHazardAnalysis.steps",
+  "SafetyJobHazardAnalysis.trainingRequired",
+  "SafetyLotoProcedure.authorizedByIds",
+  "SafetyLotoProcedure.energySources",
+  "SafetyLotoProcedure.isolationSteps",
+  "SafetyLotoProcedure.photoUrls",
+  "SafetyLotoProcedure.ppeRequired",
+  "SafetyLotoProcedure.requiredTraining",
+  "SafetyLotoProcedure.restorationSteps",
+  "SafetyLotoProcedure.verificationSteps",
+  "SafetyMeeting.actionItems",
+  "SafetyObservation.photoUrls",
+  "SafetyPPEMatrix.entries",
+  "SafetyPermit.controlMeasures",
+  "SafetyPermit.equipmentAssetIds",
+  "SafetyPermit.hazardsIdentified",
+  "SafetyPermit.ppeRequired",
+  "SafetyPermit.workerIds",
+  "SafetyPermitConfinedSpace.atmosphereTestResults",
+  "SafetyPermitConfinedSpace.entrantIds",
+  "SafetyPermitConfinedSpace.knownHazards",
+  "SafetyPermitElectrical.arcFlashPPE",
+  "SafetyPermitHotWork.atmosphereTestResults",
+  "SafetyPermitHotWork.ignitionSources",
+  "SafetyPermitLoto.energySources",
+  "SafetyPermitLoto.locks",
+  "SafetyPolicyDocument.appliesToLocations",
+  "SafetyPolicyDocument.appliesToRoles",
+  "SafetySDSRecord.firefightingMeasures",
+  "SafetySDSRecord.firstAidMeasures",
+  "SafetySDSRecord.ghs_classification",
+  "SafetySDSRecord.hazardStatements",
+  "SafetySDSRecord.locations",
+  "SafetySDSRecord.pictogramCodes",
+  "SafetySDSRecord.ppeRequired",
+  "SafetySDSRecord.precautionaryStatements",
+  "SafetyStopWorkEvent.affectedJobIds",
+  "SafetyStopWorkEvent.equipmentAssetIds",
+  "SafetyTrainingCourse.assessmentQuestions",
+  "SafetyTrainingCourse.prerequisites",
+  "SafetyTrainingCourse.requiredForRoles",
+  "SimulationScenario.baseline",
+  "SimulationScenario.changes",
+  "SimulationScenario.results",
+  "StopWorkAudit.data",
+  "StopWorkEvent.data",
+  "StopWorkEvidence.data",
+  "StopWorkStep.data",
+  "StoreListing.lengthOptions",
+  "StoreListing.tags",
+  "StoreListing.thicknessOptions",
+  "StoreListing.widthOptions",
+  "TestResult.results",
+  "TestResult.specLimits",
+  "TraceEvent.afterSnapshot",
+  "TraceEvent.beforeSnapshot",
+  "TraceEvent.metadata",
+  "WebhookDelivery.payload",
+  "WorkCenter.capabilities",
+  "WorkCenter.capacity",
+  "WorkCenterType.divisions",
+  "WorkOrder.slitPattern"
+ ],
+ "fkNoIndex": [],
+ "constraintCounts": {
+  "foreign key": 171,
+  "primary key": 158,
+  "check": 9
+ },
+ "checkConstraints": [
+  {
+   "table": "Inventory",
+   "name": "Inventory_balance_identity",
+   "kind": "check",
+   "def": "CHECK ((abs((\"qtyOnHand\" - ((\"qtyAvailable\" + \"qtyAllocated\") + \"qtyOnHold\"))) <= 0.0001))"
+  },
+  {
+   "table": "Inventory",
+   "name": "Inventory_qtyAllocated_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"qtyAllocated\" >= (0)::numeric))"
+  },
+  {
+   "table": "Inventory",
+   "name": "Inventory_qtyAvailable_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"qtyAvailable\" >= (0)::numeric))"
+  },
+  {
+   "table": "Inventory",
+   "name": "Inventory_qtyOnHand_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"qtyOnHand\" >= (0)::numeric))"
+  },
+  {
+   "table": "Inventory",
+   "name": "Inventory_qtyOnHold_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"qtyOnHold\" >= (0)::numeric))"
+  },
+  {
+   "table": "Invoice",
+   "name": "Invoice_paid_within_total",
+   "kind": "check",
+   "def": "CHECK ((abs(\"paidAmount\") <= (abs(\"totalAmount\") + 0.005)))"
+  },
+  {
+   "table": "OrderLine",
+   "name": "OrderLine_qtyOrdered_positive",
+   "kind": "check",
+   "def": "CHECK ((\"qtyOrdered\" > (0)::numeric))"
+  },
+  {
+   "table": "OrderLine",
+   "name": "OrderLine_qtyShipped_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"qtyShipped\" >= (0)::numeric))"
+  },
+  {
+   "table": "ShipmentItem",
+   "name": "ShipmentItem_qtyShipped_positive",
+   "kind": "check",
+   "def": "CHECK ((\"qtyShipped\" > (0)::numeric))"
+  }
+ ],
+ "checks": {
+  "stock balance: on hand = available + allocated + on hold": 0,
+  "stock: any quantity below zero": 0,
+  "order lines shipped more than ordered": 0,
+  "order line shipped quantity differs from its dispatched shipment items": 47,
+  "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 3,
+  "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
+  "invoices paid more than their total": 0,
+  "invoice total differs from subtotal + tax + freight": 0,
+  "invoice paid amount differs from its payments": 1,
+  "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
+  "jobs with no order and no order line": 31,
+  "stock items (coils) with no heat": 0,
+  "stock items with no location": 0,
+  "shipments delivered with no proof of delivery name": 47,
+  "users with no home branch": 2,
+  "invoices and credit memos with no record of who raised them, outside the demo seed": 0
+ }
+}

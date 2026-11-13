@@ -4,6 +4,7 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/db.js';
 import config from '../config/index.js';
+import { setBranchScope } from '../lib/branchScope.js';
 
 export const ADMIN_ROLES = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER', 'OPS_MANAGER'];
 
@@ -39,13 +40,14 @@ export async function authenticate(req, res, next) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      include: { organization: true, customer: { select: { id: true, code: true, name: true } } },
+      include: { organization: true, customer: { select: { id: true, code: true, name: true } }, userLocations: { select: { locationId: true } } },
     });
 
     if (!user) return res.status(401).json({ error: 'User not found' });
     if (user.isActive === false) return res.status(403).json({ error: 'User account is disabled' });
 
     req.user = user;
+    setBranchScope(user);
     next();
   } catch (error) {
     next(error);

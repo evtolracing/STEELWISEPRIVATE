@@ -42,20 +42,27 @@ import {
   ContentCut as RemnantIcon,
 } from '@mui/icons-material'
 import useMobileMode from '../../hooks/useMobileMode'
+import { searchInventory } from '../../services/intakeInventoryApi'
 
-// ── Mock inventory data ────────────────────────────────────────────────────
-const MOCK_INVENTORY = [
-  { id: 'inv-1', materialCode: 'HR-A36-PLT-0.25', description: 'HR A36 Plate 1/4"', form: 'Plate', grade: 'A36', division: 'METALS', location: 'JACKSON', qtyOnHand: 4200, unit: 'LB', status: 'IN_STOCK', isRemnant: false, dims: '48" × 96"', heatNumber: 'H-2026-0142' },
-  { id: 'inv-2', materialCode: 'HR-A36-PLT-0.50', description: 'HR A36 Plate 1/2"', form: 'Plate', grade: 'A36', division: 'METALS', location: 'JACKSON', qtyOnHand: 1800, unit: 'LB', status: 'IN_STOCK', isRemnant: false, dims: '48" × 120"', heatNumber: 'H-2026-0138' },
-  { id: 'inv-3', materialCode: 'CR-1018-SHT-16GA', description: 'CR 1018 Sheet 16 Ga', form: 'Sheet', grade: '1018', division: 'METALS', location: 'DETROIT', qtyOnHand: 620, unit: 'LB', status: 'LOW', isRemnant: false, dims: '48" × 96"', heatNumber: 'H-2026-0155' },
-  { id: 'inv-4', materialCode: 'SS-304-BAR-1.0', description: 'SS 304 Round Bar 1"', form: 'Bar', grade: '304', division: 'METALS', location: 'KALAMAZOO', qtyOnHand: 350, unit: 'LB', status: 'IN_STOCK', isRemnant: false, dims: '1" dia × 12\'', heatNumber: 'H-2026-0161' },
-  { id: 'inv-5', materialCode: 'HR-A572-BM-W8X31', description: 'HR A572 W8×31 Beam', form: 'Beam', grade: 'A572-50', division: 'METALS', location: 'GRAND_RAPIDS', qtyOnHand: 2400, unit: 'LB', status: 'IN_STOCK', isRemnant: false, dims: 'W8×31 × 40\'', heatNumber: 'H-2026-0170' },
-  { id: 'inv-6', materialCode: 'HR-A36-ANG-3X3', description: 'HR A36 Angle 3×3×1/4', form: 'Angle', grade: 'A36', division: 'METALS', location: 'JACKSON', qtyOnHand: 980, unit: 'LB', status: 'IN_STOCK', isRemnant: false, dims: '3" × 3" × 1/4"', heatNumber: 'H-2026-0175' },
-  { id: 'inv-7', materialCode: 'AL-6061-PLT-0.50', description: 'Al 6061 Plate 1/2"', form: 'Plate', grade: '6061', division: 'METALS', location: 'DETROIT', qtyOnHand: 150, unit: 'LB', status: 'LOW', isRemnant: false, dims: '48" × 48"', heatNumber: 'H-2026-0180' },
-  { id: 'inv-8', materialCode: 'HR-A500-TUBE-4X4', description: 'HR A500 Square Tube 4×4', form: 'Tube', grade: 'A500', division: 'METALS', location: 'JACKSON', qtyOnHand: 0, unit: 'FT', status: 'OUT', isRemnant: false, dims: '4" × 4" × 0.25" wall', heatNumber: null },
-  { id: 'inv-9', materialCode: 'REM-A36-PLT-12X36', description: 'Remnant A36 Plate 12"×36"', form: 'Plate', grade: 'A36', division: 'METALS', location: 'JACKSON', qtyOnHand: 85, unit: 'LB', status: 'IN_STOCK', isRemnant: true, dims: '12" × 36" × 3/8"', heatNumber: 'H-2025-0988' },
-  { id: 'inv-10', materialCode: 'REM-304-SHT-24X48', description: 'Remnant 304 Sheet 24"×48"', form: 'Sheet', grade: '304', division: 'METALS', location: 'KALAMAZOO', qtyOnHand: 42, unit: 'LB', status: 'IN_STOCK', isRemnant: true, dims: '24" × 48" × 16 Ga', heatNumber: 'H-2025-1012' },
-]
+// Stock comes from the live inventory search (/api/inventory/search).
+const num = (v) => (v == null ? null : Number(v))
+const dimsOf = (r) => [num(r.thickness), num(r.width), num(r.length)].filter(v => v > 0).map(v => `${v}"`).join(' × ')
+const toItem = (r) => ({
+  id: r.id,
+  materialCode: r.sku || r.lotNumber || '',
+  description: r.description || r.name || '',
+  form: r.form || '—',
+  grade: r.grade || '—',
+  division: r.division || '—',
+  location: r.locationName || '—',
+  qtyOnHand: Number(r.weight) || 0,
+  unit: r.unit || 'LB',
+  status: r.status === 'AVAILABLE' ? (Number(r.weight) > 0 ? 'IN_STOCK' : 'OUT') : 'LOW',
+  statusLabel: r.status === 'AVAILABLE' ? null : String(r.status || '').replace(/_/g, ' '),
+  isRemnant: Boolean(r.isRemnant),
+  dims: dimsOf(r) || '—',
+  heatNumber: r.heatNumber || null,
+})
 
 const STATUS_CFG = {
   IN_STOCK: { label: 'In Stock', color: 'success', icon: InStockIcon },
@@ -63,8 +70,7 @@ const STATUS_CFG = {
   OUT:      { label: 'Out',      color: 'error',   icon: OutIcon },
 }
 
-const LOCATIONS = ['ALL', 'JACKSON', 'DETROIT', 'KALAMAZOO', 'GRAND_RAPIDS']
-const FORMS    = ['ALL', 'Plate', 'Sheet', 'Bar', 'Beam', 'Angle', 'Tube', 'Flat Bar']
+const FORMS    = ['ALL', 'PLATE', 'SHEET', 'BAR', 'BEAM', 'ANGLE', 'TUBE', 'COIL']
 
 export default function MobileInventoryLookup() {
   const { isOnline } = useMobileMode()
@@ -76,19 +82,39 @@ export default function MobileInventoryLookup() {
   const [loading, setLoading] = useState(false)
   const [expandedId, setExpandedId] = useState(null)
 
-  // ── Filter logic ─────────────────────────────────────────────────────
-  const results = MOCK_INVENTORY.filter(item => {
-    if (search && !item.description.toLowerCase().includes(search.toLowerCase()) && !item.materialCode.toLowerCase().includes(search.toLowerCase())) return false
-    if (locationFilter !== 'ALL' && item.location !== locationFilter) return false
-    if (formFilter !== 'ALL' && item.form !== formFilter) return false
-    if (remnantOnly && !item.isRemnant) return false
-    return true
-  })
+  const [items, setItems] = useState([])
+  const [branches, setBranches] = useState([])
+  const [error, setError] = useState('')
 
-  const handleRefresh = () => {
+  useEffect(() => {
+    fetch('/api/inventory/locations').then(r => (r.ok ? r.json() : [])).then(rows => setBranches(Array.isArray(rows) ? rows : [])).catch(() => setBranches([]))
+  }, [])
+
+  const runSearch = useCallback(async () => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 800)
-  }
+    try {
+      const res = await searchInventory(search, {
+        locationId: locationFilter === 'ALL' ? undefined : locationFilter,
+        isRemnant: remnantOnly ? true : undefined,
+        limit: 50,
+      })
+      setItems((res.data || []).map(toItem))
+      setError('')
+    } catch {
+      setItems([])
+      setError('Inventory could not be loaded. Check your connection and try again.')
+    }
+    setLoading(false)
+  }, [search, locationFilter, remnantOnly])
+
+  useEffect(() => {
+    const timer = setTimeout(runSearch, 300)
+    return () => clearTimeout(timer)
+  }, [runSearch])
+
+  const results = items.filter(item => formFilter === 'ALL' || String(item.form).toUpperCase() === formFilter)
+
+  const handleRefresh = () => { runSearch() }
 
   return (
     <Box>
@@ -145,7 +171,8 @@ export default function MobileInventoryLookup() {
               <FormControl fullWidth size="small">
                 <InputLabel>Location</InputLabel>
                 <Select value={locationFilter} onChange={e => setLocationFilter(e.target.value)} label="Location" sx={{ minHeight: 44 }}>
-                  {LOCATIONS.map(l => <MenuItem key={l} value={l}>{l === 'ALL' ? 'All Locations' : l.replace(/_/g, ' ')}</MenuItem>)}
+                  <MenuItem value="ALL">All Locations</MenuItem>
+                  {branches.map(b => <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>
@@ -153,7 +180,7 @@ export default function MobileInventoryLookup() {
               <FormControl fullWidth size="small">
                 <InputLabel>Form</InputLabel>
                 <Select value={formFilter} onChange={e => setFormFilter(e.target.value)} label="Form" sx={{ minHeight: 44 }}>
-                  {FORMS.map(f => <MenuItem key={f} value={f}>{f === 'ALL' ? 'All Forms' : f}</MenuItem>)}
+                  {FORMS.map(f => <MenuItem key={f} value={f}>{f === 'ALL' ? 'All Forms' : f.charAt(0) + f.slice(1).toLowerCase()}</MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>
@@ -215,7 +242,7 @@ export default function MobileInventoryLookup() {
                   />
                   <Chip
                     icon={<LocationIcon sx={{ fontSize: 14 }} />}
-                    label={item.location.replace(/_/g, ' ')}
+                    label={item.location}
                     size="small"
                     variant="outlined"
                     sx={{ fontSize: 11 }}
@@ -253,7 +280,7 @@ export default function MobileInventoryLookup() {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="caption" color="text.secondary">Status</Typography>
-                  <Chip label={sCfg.label} size="small" color={sCfg.color} sx={{ fontWeight: 600 }} />
+                  <Chip label={item.statusLabel || sCfg.label} size="small" color={sCfg.color} sx={{ fontWeight: 600 }} />
                 </Grid>
               </Grid>
             </Collapse>
@@ -261,7 +288,8 @@ export default function MobileInventoryLookup() {
         )
       })}
 
-      {results.length === 0 && (
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
+      {results.length === 0 && !error && !loading && (
         <Box sx={{ textAlign: 'center', py: 6 }}>
           <StockIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="body1" color="text.secondary">No inventory matches your search.</Typography>

@@ -100,6 +100,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
       if (formFilter) params.set('form', formFilter)
       if (statusFilter) params.set('status', statusFilter)
       if (gradeFilter) params.set('gradeId', gradeFilter)
+      params.set('limit', '300')
       const url = `${API_BASE}/coils?${params.toString()}`
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to load inventory')
@@ -187,8 +188,9 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
       heatNumber: coil.heat?.heatNumber || '',
       dimensions: formatDimensions(coil),
       weight: Number(coil.netWeightLb || coil.grossWeightLb),
-      unitPrice: Number(coil.landedCost || coil.unitCost || 0),
-      uom: 'LB',
+      // The list price of the item's product. Never what was paid for it.
+      unitPrice: Number(coil.listPrice || 0),
+      uom: coil.listPriceUnit || 'LB',
       location: coil.location?.code || '',
       locationName: coil.location?.name || '',
       binLocation: coil.binLocation || '',
@@ -308,7 +310,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
                   <TableCell sx={{ fontWeight: 600 }}>Dimensions</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Finish</TableCell>
                   <TableCell sx={{ fontWeight: 600 }} align="right">Weight (lb)</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }} align="right">$/lb</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }} align="right">List price</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Location</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Heat #</TableCell>
@@ -348,7 +350,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="body2">
-                        ${Number(coil.landedCost || coil.unitCost || 0).toFixed(2)}
+                        {coil.listPrice == null ? 'Not set' : `$${Number(coil.listPrice).toFixed(2)} / ${String(coil.listPriceUnit || 'LB').toLowerCase()}`}
                       </Typography>
                     </TableCell>
                     <TableCell>

@@ -45,8 +45,12 @@ async function withContacts(items) {
 // CONTACT ENDPOINTS
 // ============================================================================
 
+// Nothing was sent, or only empty values (B-008).
+const hasNothing = (body) => !body || typeof body !== 'object' || !Object.values(body).some((v) => (Array.isArray(v) ? v.length : v !== null && v !== undefined && String(v).trim() !== ''));
+
 // POST /v1/contacts - Create a new contact
 router.post('/contacts', handle(async (req, res) => {
+  if (hasNothing(req.body)) return res.status(400).json({ error: 'A contact needs at least a name, a company or an email' });
   res.status(201).json(await createContact(req.body || {}));
 }));
 
@@ -137,6 +141,7 @@ router.post('/quotes/:id/accept', handle(async (req, res) => {
 
 // POST /v1/orders - Create a direct order (web/CSR)
 router.post('/orders', handle(async (req, res) => {
+  if (hasNothing(req.body)) return res.status(400).json({ error: 'An order needs a contact or at least one line' });
   const order = await createOrder(req.body || {});
   res.status(201).json({ ...order, contact: await findContactById(order.contactId) });
 }, 400));

@@ -178,9 +178,10 @@ function WorkCenterQueuePage() {
         }
       } catch (err) {
         console.error('Failed to load operators:', err)
-        // Use placeholder on total failure
-        setOperatorsState([{ id: 'OP-001', name: 'Default Operator' }])
-        setSelectedOperator('OP-001')
+        // No made-up operator: an operation cannot be started under a name that is not on file.
+        setOperatorsState([])
+        setSelectedOperator('')
+        setError('The operator list could not be loaded, so operations cannot be started. Reload the page to try again.')
       }
     }
     loadOperators()

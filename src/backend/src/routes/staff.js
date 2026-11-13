@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import prisma from '../lib/db.js'
+import { createNumbered, padded } from '../lib/numbering.js';
 import { ci } from '../lib/dbText.js'
 
 const router = Router()
@@ -149,7 +150,6 @@ router.post('/operators', async (req, res) => {
       const match = lastOp.employeeCode.match(/OP-(\d+)/)
       if (match) nextNum = parseInt(match[1], 10) + 1
     }
-    const employeeCode = `OP-${String(nextNum).padStart(4, '0')}`
 
     // Check for duplicate userId link
     if (userId) {
@@ -178,7 +178,7 @@ router.post('/operators', async (req, res) => {
       }
     }
 
-    const operator = await prisma.operator.create({
+    const operator = await createNumbered({ count: async () => nextNum - 1, format: padded('OP', 4), create: (employeeCode) => prisma.operator.create({
       data: {
         employeeCode,
         firstName: firstName.trim(),
@@ -213,7 +213,7 @@ router.post('/operators', async (req, res) => {
         homeLocation: { select: { id: true, code: true, name: true } },
         homeWorkCenter: { select: { id: true, code: true, name: true, type: true } },
       },
-    })
+    }) })
 
     res.status(201).json({ success: true, data: operator })
   } catch (error) {

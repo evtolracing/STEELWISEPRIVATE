@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Box,
   Container,
@@ -30,40 +31,6 @@ import { PRIORITY_LEVELS } from '../constants/materials'
 import { getJobs, createJob, updateJobStatus, updateJob, planJob } from '../services/jobsApi'
 import { runDispatch } from '../services/dispatchApi'
 
-// Mock data for demo mode
-const generateMockJobs = () => {
-  const statuses = Object.values(JOB_STATUSES)
-  const processingTypes = Object.values(PROCESSING_TYPES)
-  const priorities = Object.values(PRIORITY_LEVELS)
-  const customers = ['ABC Steel', 'Metro Manufacturing', 'Industrial Corp', 'Steel Solutions', 'Precision Parts']
-  const materials = [
-    'HR Coil 0.125" x 48"',
-    'CR Sheet 16ga x 60"',
-    'Galv Coil 0.060" x 36"',
-    'Stainless 304 0.048" x 48"',
-    'HR P&O 0.250" x 72"',
-  ]
-
-  return Array.from({ length: 25 }, (_, i) => ({
-    id: `JOB-${String(1000 + i).padStart(4, '0')}`,
-    jobNumber: `JOB-${String(1000 + i).padStart(4, '0')}`,
-    customerName: customers[i % customers.length],
-    status: statuses[i % statuses.length],
-    priority: priorities[i % priorities.length],
-    processingType: Object.keys(PROCESSING_TYPES)[i % Object.keys(PROCESSING_TYPES).length],
-    material: materials[i % materials.length],
-    materialDescription: materials[i % materials.length],
-    dimensions: `${(Math.random() * 0.5 + 0.05).toFixed(3)}" x ${[36, 48, 60, 72][i % 4]}" x Coil`,
-    weight: Math.floor(Math.random() * 40000 + 5000),
-    targetPieces: Math.floor(Math.random() * 500 + 50),
-    completedPieces: Math.floor(Math.random() * 200),
-    dueDate: new Date(Date.now() + (i - 10) * 24 * 60 * 60 * 1000).toISOString(),
-    workCenterId: `WC-${(i % 5) + 1}`,
-    workCenterName: ['Slitter #1', 'CTL Line', 'Shear', 'Press Brake', 'Leveler'][i % 5],
-    operators: i % 3 === 0 ? [{ name: 'John D.', initials: 'JD' }] : [],
-  }))
-}
-
 const OrderBoardPage = () => {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
@@ -83,12 +50,13 @@ const OrderBoardPage = () => {
     notes: '',
   })
 
+  const navigate = useNavigate()
+
   const loadJobs = useCallback(async () => {
     setLoading(true)
     try {
       const data = await getJobs()
       setJobs(data)
-      console.log('Loaded jobs from database:', data.length, 'Jobs:', data)
     } catch (error) {
       console.error('Failed to load jobs:', error)
       setSnackbar({ open: true, message: `Failed to load jobs: ${error.message}`, severity: 'error' })
@@ -110,7 +78,7 @@ const OrderBoardPage = () => {
       setPlanningJob(job)
       setPlanDialogOpen(true)
     } else {
-      console.log('Selected job:', job)
+      navigate(`/jobs/${job.id}`)
     }
   }
 

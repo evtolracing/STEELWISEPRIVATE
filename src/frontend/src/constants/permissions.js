@@ -86,7 +86,7 @@ export const MODULE_CONFIG = {
   [MODULES.RECEIVING]: { label: 'Receiving', icon: 'MoveToInbox', path: '/receiving' },
   [MODULES.PROCESSING]: { label: 'Processing', icon: 'PrecisionManufacturing', path: '/work-orders' },
   [MODULES.SCHEDULING]: { label: 'Scheduling', icon: 'CalendarMonth', path: '/schedule' },
-  [MODULES.SHOP_FLOOR]: { label: 'Shop Floor', icon: 'Factory', path: '/shop-floor' },
+  [MODULES.SHOP_FLOOR]: { label: 'Shop Floor', icon: 'Factory', path: '/shopfloor' },
   [MODULES.QC]: { label: 'Quality Control', icon: 'FactCheck', path: '/qaqc' },
   [MODULES.PACKAGING]: { label: 'Packaging', icon: 'Inventory2', path: '/packaging' },
   [MODULES.SHIPPING]: { label: 'Shipping', icon: 'LocalShipping', path: '/logistics/shipments' },

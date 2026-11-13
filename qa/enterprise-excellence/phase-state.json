@@ -1,0 +1,160 @@
+{
+  "phaseStatus": "PARTIALLY COMPLETE",
+  "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
+  "workflowsMapped": 17,
+  "jobTypesIdentified": {
+    "orderTypesInSchema": 5,
+    "salesChannels": 6,
+    "simulatedScenarioFamilies": 9,
+    "kindsOfShopWork": 2
+  },
+  "testsExecuted": [
+    {
+      "test": "Order-to-cash simulation, seeds 8001 to 8003, rebuilt QA database",
+      "result": "150 of 150 jobs pass (50 per seed); 714, 709 and 711 steps; 784, 785 and 788 checks; 8 concurrency probes pass in each; reconciliation 0 problems",
+      "before": "150 of 150 at the Phase 2 baseline"
+    },
+    {
+      "test": "Security and safeguards sweep",
+      "result": "20 of 20 sections pass",
+      "before": "20 of 20"
+    },
+    {
+      "test": "Branch boundary (qa/sim/branch-boundary.mjs, new in Phase 2)",
+      "result": "37 of 37 checks pass",
+      "before": "Did not exist. 25 of the checks fail with the boundary switched off"
+    },
+    {
+      "test": "Phase 2 integrity and concurrency (qa/sim/phase2-integrity.mjs, new in Phase 2)",
+      "result": "80 of 80 checks pass",
+      "before": "Did not exist. 32 of the first 43 checks fail on the code before the corrections"
+    },
+    {
+      "test": "Unit tests (src/backend, npm test)",
+      "result": "105 of 105 pass",
+      "before": "90 of 90"
+    },
+    {
+      "test": "Browser suites: experience, shipping, shop, sales, inventory",
+      "result": "22, 27, 30, 24 and 22 checks, 0 failed",
+      "before": "Same counts, 0 failed"
+    },
+    {
+      "test": "Every route opens in a browser",
+      "result": "125 routes open with no crash",
+      "before": "125"
+    },
+    {
+      "test": "Baseline probe",
+      "result": "4 of 4 sections pass: 540 changing calls by view-only roles, 0 not refused; 275 changing routes sent an empty body, 0 server errors; 2 saved a record from nothing, both by design",
+      "before": "3 server errors and 7 saves from nothing at the Phase 2 baseline"
+    },
+    {
+      "test": "Department rule coverage (qa/tools/access-coverage.mjs, new in Phase 2)",
+      "result": "319 changing routes, 0 with no rule or stated reason",
+      "before": "Did not exist. 16 areas had no rule (B-004)"
+    },
+    {
+      "test": "Screen audit",
+      "result": "143 screens, 0 show made-up data with no notice (76 real, 58 labelled samples, 5 static, 4 mixed)",
+      "before": "Same"
+    },
+    {
+      "test": "Screen ratchets (qa/tools/frontend-checks.mjs, new in Phase 2)",
+      "result": "38 effect-dependency warnings (ceiling 38), 0 screens that invent records on failure (ceiling 0)",
+      "before": "Did not exist. 2 inventing screens on the code before"
+    },
+    {
+      "test": "Lint, frontend and whole repository",
+      "result": "Frontend passes; repository 0 errors, 1,524 warnings",
+      "before": "Same"
+    },
+    {
+      "test": "Frontend production build",
+      "result": "passes",
+      "before": "passes"
+    },
+    {
+      "test": "Database consistency checks on the QA database after the simulation (read-only)",
+      "result": "0 problems outside the demo seed rows; every counter-sale line of a stocked product has its stock movement",
+      "before": "Counter-sale lines moved no stock (B-025)"
+    },
+    {
+      "test": "SQL Editor file 20261113190000_order_branch.sql, run twice on a populated copy",
+      "result": "First run gave 163 of 170 orders a branch; second run changed nothing",
+      "before": "Did not exist"
+    },
+    {
+      "test": "Package audit (npm audit, both packages)",
+      "result": "0 critical. Backend 1 moderate; frontend 1 high and 3 moderate, the high one in the development server only",
+      "before": "Not re-measured since Workstream 3"
+    },
+    {
+      "test": "Pull-request workflow on GitHub for the final Phase 2 commit",
+      "result": "NOT VERIFIED at the time of writing; see the pull request"
+    }
+  ],
+  "unverifiedAreas": [
+    "Forty-five route files and 18 service files were examined by tool only, not read line by line",
+    "Remnant creation from processing: a completed work order moves no stock, so the scenario cannot run (M-016)",
+    "Background jobs, retries and schedules: none exist (B-018, B-019)",
+    "Dashboard and report figures against the records they summarise",
+    "Records with no branch column: quotes, requests for quotation, packages, drop tags, documents, the second stock list and the order hub (C-009)",
+    "Cost of the branch filter at 80 branches and real volume; resource use; many users at once",
+    "Partner API success paths and webhook delivery; carrier partner routes (C-002)",
+    "Planning and optimization, customer specifications, AI assistant and voice (need provider keys)",
+    "Shipping documents and printing (F-011)",
+    "Accessibility, tablet and mobile layouts",
+    "Test coverage by line was not measured; reach is counted by route (see testReach)",
+    "The live database and the host: not touched. Nothing in Phase 2 was run against production"
+  ],
+  "currentBlockers": [
+    "B-018 and B-019: no scheduler; whether the host may run a scheduled trigger is undecided",
+    "Rules only the owner can give: what a completed work order consumes and produces (M-016), stock adjustment (I-016), promise dates and cut-offs (X-007), purchasing (I-007), scheduling rules behind the cockpit (C-013)",
+    "E-011: package upgrades are major versions and need the owner's approval",
+    "E-015: a restore test needs the owner's database"
+  ],
+  "nextActions": [
+    "Owner: issue the Phase 3 prompt. Phase 3 has not been started",
+    "Owner: apply the five SQL Editor files in order before merging pull request 30; the fifth is 20261113190000_order_branch.sql",
+    "Owner: give every staff login a home branch before merging; a login with none and no all-branch role sees no orders, stock, jobs or shipments",
+    "Owner: review the list of roles that see every branch and the department table (phase-02-service-boundaries.md)",
+    "Phase 3: see the handoff in phase-02-report.md"
+  ],
+  "lastCompletedCheckpoint": "Phase 2: five correction batches committed and tested; full gate run on the final code (qa/tools/run-gates.sh) all green; nine Phase 2 files written; registers rebuilt",
+  "currentPhase": 2,
+  "findingPrefix": "C-",
+  "phase2BaselineCommit": "0ad7857",
+  "scoreAdjustments": [
+    {
+      "group": "Manufacturing and processing",
+      "category": "Data integrity",
+      "score": 82,
+      "evidence": "Phase 2: shop-floor start, complete, reassign and job planning are all-or-nothing; job status moves are conditional on the status they were checked in (phase2-integrity, 80 checks; 8 of 8 race trials left a job stuck before the fix, 0 of 8 after). Held at 82 because a completed work order still moves no stock (M-016)"
+    },
+    {
+      "group": "Manufacturing and processing",
+      "category": "Reliability",
+      "score": 78,
+      "evidence": "Phase 2: simultaneous completion, start after cancel and double status moves are refused with a plain 409; work centers can be created again (C-004). Held at 78: 65 of 91 changing routes still have no success-path test"
+    },
+    {
+      "group": "Platform infrastructure",
+      "category": "Maintainability",
+      "score": 65,
+      "evidence": "Phase 2: the branch boundary, the department table and the login rules each live in one tested file; a coverage check fails the gates when a changing route has no rule. Held at 65: most rules still live in route handlers (B-014) and 1,524 lint warnings remain"
+    },
+    {
+      "group": "Sales and customer operations",
+      "category": "Data integrity",
+      "score": 84,
+      "evidence": "Phase 2: a counter sale takes shelf stock and a void returns it in the sale's own transaction; orders carry a branch. Held at 84: no duplicate-request protection on order creation (C-006) and a void's credit is a second transaction (C-010)"
+    },
+    {
+      "group": "Enterprise experience",
+      "category": "Data integrity",
+      "score": 72,
+      "evidence": "Phase 2: two real screens no longer invent records when the server fails (C-007); an executive decision records the signed-in person. Held at 72: dashboard figures are not checked against the records"
+    }
+  ]
+}

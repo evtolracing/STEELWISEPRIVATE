@@ -30,15 +30,9 @@ import {
 } from '@mui/icons-material'
 import useMobileMode from '../../hooks/useMobileMode'
 
-// ── Quick-stats mock data ──────────────────────────────────────────────────
-const MOCK_STATS = {
-  ordersToday: 7,
-  quotesOpen: 3,
-  revenueMTD: 284500,
-  avgOrderValue: 6420,
-  topProduct: 'HR A36 Plate',
-  pendingPromise: 2,
-}
+// Figures are the signed-in person's own orders, from /api/orders/intake/summary.
+const NO_STATS = { ordersToday: null, quotesOpen: null, revenueMTD: null, avgOrderValue: null, drafts: 0 }
+const count = (v) => (v == null ? '—' : v)
 
 const TILES = [
   {
@@ -78,7 +72,15 @@ function formatCurrency(n) {
 export default function MobileRepHomePage() {
   const navigate = useNavigate()
   const { isOnline, orientation } = useMobileMode()
-  const [stats] = useState(MOCK_STATS)
+  const [stats, setStats] = useState(NO_STATS)
+  useEffect(() => {
+    let live = true
+    fetch('/api/orders/intake/summary')
+      .then(r => (r.ok ? r.json() : null))
+      .then(body => { if (live && body?.data) setStats(body.data) })
+      .catch(() => {})
+    return () => { live = false }
+  }, [])
 
   return (
     <Box>
@@ -111,8 +113,8 @@ export default function MobileRepHomePage() {
                 <DoneIcon sx={{ fontSize: 20 }} />
               </Avatar>
               <Box>
-                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{stats.ordersToday}</Typography>
-                <Typography variant="caption" color="text.secondary">Orders Today</Typography>
+                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{count(stats.ordersToday)}</Typography>
+                <Typography variant="caption" color="text.secondary">My Orders Today</Typography>
               </Box>
             </Box>
           </Grid>
@@ -122,8 +124,8 @@ export default function MobileRepHomePage() {
                 <TrendIcon sx={{ fontSize: 20 }} />
               </Avatar>
               <Box>
-                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{formatCurrency(stats.revenueMTD)}</Typography>
-                <Typography variant="caption" color="text.secondary">Revenue MTD</Typography>
+                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{stats.revenueMTD == null ? '—' : formatCurrency(stats.revenueMTD)}</Typography>
+                <Typography variant="caption" color="text.secondary">My Sales This Month</Typography>
               </Box>
             </Box>
           </Grid>
@@ -133,7 +135,7 @@ export default function MobileRepHomePage() {
                 <ClockIcon sx={{ fontSize: 20 }} />
               </Avatar>
               <Box>
-                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{stats.quotesOpen}</Typography>
+                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{count(stats.quotesOpen)}</Typography>
                 <Typography variant="caption" color="text.secondary">Open Quotes</Typography>
               </Box>
             </Box>
@@ -144,7 +146,7 @@ export default function MobileRepHomePage() {
                 <InvIcon sx={{ fontSize: 20 }} />
               </Avatar>
               <Box>
-                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{formatCurrency(stats.avgOrderValue)}</Typography>
+                <Typography variant="h6" fontWeight={700} lineHeight={1.1}>{stats.avgOrderValue == null ? '—' : formatCurrency(stats.avgOrderValue)}</Typography>
                 <Typography variant="caption" color="text.secondary">Avg Order</Typography>
               </Box>
             </Box>
@@ -204,15 +206,15 @@ export default function MobileRepHomePage() {
       {/* ── Offline hint ────────────────────────────────────── */}
       {!isOnline && (
         <Alert severity="warning" sx={{ mt: 3, borderRadius: 2 }}>
-          You are offline. Recent data is cached. Orders placed now will queue and sync automatically when connectivity returns.
+          You are offline. Orders cannot be saved or submitted until the connection is back.
         </Alert>
       )}
 
       {/* ── Pending promise badge ───────────────────────────── */}
-      {stats.pendingPromise > 0 && (
+      {stats.drafts > 0 && (
         <Paper
           elevation={0}
-          onClick={() => navigate('/mobile-rep/promise')}
+          onClick={() => navigate('/mobile-rep/place-order')}
           sx={{
             mt: 2.5,
             p: 2,
@@ -230,10 +232,10 @@ export default function MobileRepHomePage() {
           <PromiseIcon color="info" />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="subtitle2" fontWeight={600}>
-              {stats.pendingPromise} promise checks pending
+              {stats.drafts} draft order{stats.drafts === 1 ? '' : 's'} not submitted yet
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Tap to review delivery commitments
+              Tap to review and submit
             </Typography>
           </Box>
           <Chip label="Review" size="small" color="info" />

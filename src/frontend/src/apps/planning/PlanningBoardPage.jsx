@@ -21,7 +21,6 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { getJobs, getWorkCenters } from '../../api/planning';
-import { mockJobs, getWorkCenterStats } from '../../mocks/planningData';
 
 function PlanningBoardPage() {
   const navigate = useNavigate();

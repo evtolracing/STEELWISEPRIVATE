@@ -5,7 +5,7 @@
  * Steps: Customer → Items → Review.
  * Designed for one-handed phone use.
  */
-import { useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -44,6 +44,9 @@ import {
   Edit as EditIcon,
 } from '@mui/icons-material'
 import { createIntakeOrder, submitOrder } from '../../services/intakeOrdersApi'
+import { searchCustomers } from '../../services/intakeCustomersApi'
+import { searchProducts } from '../../services/intakeProductsApi'
+import { getContractPricing } from '../../services/intakePricingApi'
 import useMobileMode from '../../hooks/useMobileMode'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
@@ -52,32 +55,10 @@ const LOCATIONS = ['JACKSON', 'KALAMAZOO', 'GRAND_RAPIDS', 'DETROIT']
 
 const STEP_LABELS = ['Customer', 'Line Items', 'Review']
 
-// ── Mock customer search (same pattern as intakeCustomersApi) ──────────
-const MOCK_CUSTOMERS = [
-  { id: 'cust-1', name: 'Great Lakes Fabrication', account: 'GLF-2024', priceLevel: 'CONTRACT_A' },
-  { id: 'cust-2', name: 'Motor City Steel Works', account: 'MCS-2024', priceLevel: 'CONTRACT_B' },
-  { id: 'cust-3', name: 'Midwest Manufacturing Co', account: 'MMC-2024', priceLevel: 'VOLUME' },
-  { id: 'cust-4', name: 'Harbor Industries', account: 'HAR-2024', priceLevel: 'RETAIL' },
-  { id: 'cust-5', name: 'Precision Parts Inc', account: 'PPI-2024', priceLevel: 'CONTRACT_A' },
-]
-
-function searchCustomers(q) {
-  if (!q || q.length < 2) return []
-  const lc = q.toLowerCase()
-  return MOCK_CUSTOMERS.filter(c => c.name.toLowerCase().includes(lc) || c.account.toLowerCase().includes(lc))
-}
-
-// ── Mock product catalog (minimal for mobile) ──────────────────────────
-const QUICK_PRODUCTS = [
-  { id: 'prod-1', name: 'HR A36 Plate', form: 'Plate', grade: 'A36', unit: 'LB', unitPrice: 0.42 },
-  { id: 'prod-2', name: 'CR 1018 Sheet', form: 'Sheet', grade: '1018', unit: 'LB', unitPrice: 0.58 },
-  { id: 'prod-3', name: 'HR A572 Beam', form: 'Beam', grade: 'A572-50', unit: 'LB', unitPrice: 0.51 },
-  { id: 'prod-4', name: 'SS 304 Bar', form: 'Bar', grade: '304', unit: 'LB', unitPrice: 1.85 },
-  { id: 'prod-5', name: 'Aluminum 6061 Plate', form: 'Plate', grade: '6061', unit: 'LB', unitPrice: 2.15 },
-  { id: 'prod-6', name: 'HR A36 Angle', form: 'Angle', grade: 'A36', unit: 'LB', unitPrice: 0.48 },
-  { id: 'prod-7', name: 'HR A500 Tube', form: 'Tube', grade: 'A500', unit: 'FT', unitPrice: 3.25 },
-  { id: 'prod-8', name: 'HR A36 Flat Bar', form: 'Flat Bar', grade: 'A36', unit: 'LB', unitPrice: 0.44 },
-]
+// Customers and products come from the live system. A product's price is its
+// list price at the customer's price level.
+const toCustomer = (c) => ({ id: c.id, name: c.name, account: c.code || '', priceLevel: 'RETAIL', multiplier: 1 })
+const UNIT = { LB: 'LB', EA: 'EA', LF: 'FT' }
 
 export default function MobileRepIntakePage() {
   const { isOnline } = useMobileMode()
@@ -104,25 +85,61 @@ export default function MobileRepIntakePage() {
   // ── Submission ───────────────────────────────────────────────────────
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [holdWarning, setHoldWarning] = useState('')
   const [orderNumber, setOrderNumber] = useState('')
 
   // ── Customer search handler ──────────────────────────────────────────
-  const handleCustomerSearch = (val) => {
+  const [error, setError] = useState('')
+  const [products, setProducts] = useState([])
+
+  const handleCustomerSearch = async (val) => {
     setCustomerSearch(val)
-    setCustomerResults(searchCustomers(val))
+    if (!val || val.length < 2) { setCustomerResults([]); return }
+    try {
+      const res = await searchCustomers(val, { limit: 10 })
+      setCustomerResults((res.data || []).filter(c => c.isActive !== false).map(toCustomer))
+    } catch {
+      setCustomerResults([])
+      setError('Customer search failed. Check your connection and try again.')
+    }
   }
 
-  const selectCustomer = (c) => {
+  const selectCustomer = async (c) => {
     setCustomer(c)
     setCustomerSearch(c.name)
     setCustomerResults([])
+    setLines([]) // prices depend on the customer
+    try {
+      const res = await getContractPricing(c.id)
+      setCustomer({ ...c, priceLevel: res.priceLevel || 'RETAIL', multiplier: Number(res.multiplier) > 0 ? Number(res.multiplier) : 1 })
+    } catch { /* stays at list price */ }
   }
+
+  // Products for the chosen division, searched on the server.
+  useEffect(() => {
+    let live = true
+    const timer = setTimeout(async () => {
+      try {
+        const res = await searchProducts(productSearch, { division, limit: 20 })
+        if (!live) return
+        const multiplier = customer?.multiplier || 1
+        setProducts((res.data || []).filter(p => p.basePrice > 0).map(p => ({
+          id: p.id, name: p.name, form: p.form, grade: p.grade,
+          unit: UNIT[p.priceUnit] || 'LB',
+          unitPrice: +(p.basePrice * (p.isRemnant ? 1 : multiplier)).toFixed(4),
+        })))
+      } catch {
+        if (live) { setProducts([]); setError('Product search failed. Check your connection and try again.') }
+      }
+    }, 250)
+    return () => { live = false; clearTimeout(timer) }
+  }, [productSearch, division, customer?.multiplier])
 
   // ── Line item management ─────────────────────────────────────────────
   const addProduct = (p) => {
     const existing = lines.find(l => l.productId === p.id)
     if (existing) {
-      setLines(lines.map(l => l.productId === p.id ? { ...l, qty: l.qty + 100 } : l))
+      setLines(lines.map(l => l.productId === p.id ? { ...l, qty: l.qty + (p.unit === 'LB' ? 100 : 1) } : l))
     } else {
       setLines([...lines, {
         id: `line-${Date.now()}`,
@@ -132,7 +149,7 @@ export default function MobileRepIntakePage() {
         grade: p.grade,
         unit: p.unit,
         unitPrice: p.unitPrice,
-        qty: 100,
+        qty: p.unit === 'LB' ? 100 : 1,
       }])
     }
     setProductSearch('')
@@ -151,6 +168,7 @@ export default function MobileRepIntakePage() {
   // ── Submission ───────────────────────────────────────────────────────
   const handleSubmit = async () => {
     setSubmitting(true)
+    setError('')
     try {
       const payload = {
         source: 'REP',
@@ -159,26 +177,28 @@ export default function MobileRepIntakePage() {
         priority,
         poNumber,
         notes,
-        customer: customer ? { id: customer.id, name: customer.name, account: customer.account, priceLevel: customer.priceLevel } : null,
+        customerId: customer?.id,
+        customerName: customer?.name,
         lines: lines.map(l => ({
           productId: l.productId,
-          name: l.name,
-          form: l.form,
-          grade: l.grade,
-          unit: l.unit,
-          quantity: l.qty,
+          description: l.name,
+          lineType: 'MATERIAL',
+          qty: l.qty,
+          uom: l.unit,
           unitPrice: l.unitPrice,
-          extended: l.qty * l.unitPrice,
+          extPrice: +(l.qty * l.unitPrice).toFixed(2),
         })),
-        subtotal,
         status: 'DRAFT',
       }
-      const order = await createIntakeOrder(payload)
-      await submitOrder(order.id)
+      const res = await createIntakeOrder(payload)
+      const order = res.data
+      if (!order?.id) throw new Error('The order was not saved')
+      const sent = await submitOrder(order.id)
+      setHoldWarning(sent?.warning || '')
       setOrderNumber(order.orderNumber)
       setSubmitted(true)
     } catch (e) {
-      console.error('Submit error:', e)
+      setError(e?.message || 'The order could not be submitted. Nothing was placed.')
     } finally {
       setSubmitting(false)
     }
@@ -192,14 +212,12 @@ export default function MobileRepIntakePage() {
     setPoNumber('')
     setNotes('')
     setPriority('STANDARD')
-    setSubmitted(false)
+    setSubmitted(false); setHoldWarning('')
     setOrderNumber('')
   }
 
   // ── Filtered products ────────────────────────────────────────────────
-  const filteredProducts = productSearch.length >= 1
-    ? QUICK_PRODUCTS.filter(p => p.name.toLowerCase().includes(productSearch.toLowerCase()))
-    : QUICK_PRODUCTS
+  const filteredProducts = products
 
   // ── Can proceed? ─────────────────────────────────────────────────────
   const canNext = activeStep === 0 ? !!customer : activeStep === 1 ? lines.length > 0 : true
@@ -207,11 +225,12 @@ export default function MobileRepIntakePage() {
   if (submitted) {
     return (
       <Box sx={{ textAlign: 'center', py: 6 }}>
-        <CheckIcon sx={{ fontSize: 72, color: 'success.main', mb: 2 }} />
-        <Typography variant="h5" fontWeight={700} gutterBottom>Order Submitted!</Typography>
+        <CheckIcon sx={{ fontSize: 72, color: holdWarning ? 'warning.main' : 'success.main', mb: 2 }} />
+        <Typography variant="h5" fontWeight={700} gutterBottom>{holdWarning ? 'Order saved on credit hold' : 'Order Submitted!'}</Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
-          Order <strong>{orderNumber}</strong> has been placed.
+          Order <strong>{orderNumber}</strong> has been {holdWarning ? 'saved' : 'placed'}.
         </Typography>
+        {holdWarning && <Alert severity="warning" sx={{ mb: 2, textAlign: 'left', borderRadius: 2 }}>{holdWarning}</Alert>}
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Customer: {customer?.name}
         </Typography>
@@ -224,6 +243,7 @@ export default function MobileRepIntakePage() {
 
   return (
     <Box>
+      {error && <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
       {/* ── Header chips ──────────────────────────────────── */}
       <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
         <Chip label={division} size="small" color="primary" variant="outlined" />
@@ -357,6 +377,9 @@ export default function MobileRepIntakePage() {
                 }}
               />
             ))}
+            {filteredProducts.length === 0 && (
+              <Typography variant="body2" color="text.secondary">No priced products match in {division}.</Typography>
+            )}
           </Box>
 
           <Divider sx={{ my: 2 }} />

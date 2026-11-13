@@ -1,302 +1,111 @@
-import { useState } from 'react'
+/**
+ * Coil work orders, read from /api/work-orders. Search and the filters are
+ * applied by the server, and the count shown is the server's count.
+ */
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Stack,
-  Chip,
-  IconButton,
-  Menu,
-  MenuItem,
-  TextField,
-  InputAdornment,
-  Avatar,
-  alpha,
+  Box, Typography, Paper, Button, TextField, MenuItem, Alert, LinearProgress,
+  Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
 } from '@mui/material'
-import {
-  Add as AddIcon,
-  FilterList as FilterIcon,
-  Download as DownloadIcon,
-  MoreVert as MoreIcon,
-  Search as SearchIcon,
-  PlayArrow as StartIcon,
-  Pause as PauseIcon,
-  Stop as StopIcon,
-  Assignment as WorkOrderIcon,
-  AutoAwesome as AIIcon,
-} from '@mui/icons-material'
-import { useApiQuery } from '../../hooks/useApiQuery'
-import { getWorkOrders } from '../../api'
-import { DataTable, StatusChip } from '../../components/common'
+import { Add as AddIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import client from '../../api/client'
+import { WO_TYPE_LABELS, WO_STATUS_LABELS, WO_PRIORITY_LABELS, WorkOrderStatusChip } from './WorkOrderDetailPage'
+
+const LIMIT = 100
 
 export default function WorkOrderListPage() {
   const navigate = useNavigate()
-  const [filters, setFilters] = useState({
-    search: '',
-    status: '',
-    type: '',
-  })
-  const [anchorEl, setAnchorEl] = useState(null)
+  const [rows, setRows] = useState([])
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [search, setSearch] = useState('')
+  const [typed, setTyped] = useState('')
+  const [status, setStatus] = useState('')
+  const [woType, setWoType] = useState('')
 
-  const { data, isLoading, refetch } = useApiQuery(
-    ['workOrders', filters],
-    () => getWorkOrders(filters)
-  )
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(typed.trim()), 300)
+    return () => clearTimeout(t)
+  }, [typed])
 
-  const columns = [
-    { 
-      id: 'workOrderNumber', 
-      label: 'WO Number', 
-      minWidth: 120,
-      render: (row) => (
-        <Typography variant="body2" fontWeight={600} color="primary">
-          {row.workOrderNumber}
-        </Typography>
-      ),
-    },
-    { id: 'type', label: 'Type', minWidth: 100 },
-    { id: 'product', label: 'Product', minWidth: 150 },
-    { 
-      id: 'quantity', 
-      label: 'Quantity', 
-      minWidth: 100,
-      render: (row) => `${row.quantity?.toLocaleString() || 0} ${row.unit || 'pcs'}`,
-    },
-    { 
-      id: 'scheduledDate', 
-      label: 'Scheduled', 
-      minWidth: 100,
-      render: (row) => row.scheduledDate 
-        ? new Date(row.scheduledDate).toLocaleDateString() 
-        : '-',
-    },
-    { 
-      id: 'progress', 
-      label: 'Progress', 
-      minWidth: 100,
-      render: (row) => (
-        <Chip 
-          label={`${row.progress || 0}%`} 
-          size="small" 
-          color={row.progress >= 100 ? 'success' : row.progress > 0 ? 'primary' : 'default'}
-          variant="outlined"
-        />
-      ),
-    },
-    { 
-      id: 'status', 
-      label: 'Status', 
-      minWidth: 100,
-      render: (row) => <StatusChip status={row.status} />,
-    },
-    {
-      id: 'actions',
-      label: '',
-      minWidth: 80,
-      render: (row) => (
-        <Stack direction="row" spacing={0.5}>
-          {row.status === 'SCHEDULED' && (
-            <IconButton size="small" color="success" title="Start">
-              <StartIcon fontSize="small" />
-            </IconButton>
-          )}
-          {row.status === 'RUNNING' && (
-            <IconButton size="small" color="warning" title="Pause">
-              <PauseIcon fontSize="small" />
-            </IconButton>
-          )}
-          <IconButton size="small" onClick={(e) => handleMenuOpen(e, row)}>
-            <MoreIcon />
-          </IconButton>
-        </Stack>
-      ),
-    },
-  ]
-
-  const handleMenuOpen = (event, row) => {
-    event.stopPropagation()
-    setAnchorEl({ element: event.currentTarget, row })
-  }
-
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleRowClick = (row) => {
-    navigate(`/work-orders/${row.id}`)
-  }
-
-  // Use real data from database
-  const workOrders = data?.workOrders || data || []
-  
-  // Transform data to match table format
-  const displayData = workOrders.map(wo => ({
-    id: wo.id,
-    workOrderNumber: wo.woNumber,
-    type: wo.woType,
-    product: wo.sourceCoil?.coilNumber || 'Unknown',
-    quantity: wo.inputWeightLb || wo.sourceCoil?.weightLb || 0,
-    unit: 'lbs',
-    scheduledDate: wo.scheduledDate,
-    progress: wo.status === 'COMPLETE' ? 100 : wo.status === 'IN_PROGRESS' ? 50 : 0,
-    status: wo.status,
-  }))
+  const load = useCallback(async () => {
+    setLoading(true); setError('')
+    try {
+      const res = await client.get('/work-orders', { params: { limit: LIMIT, ...(search && { search }), ...(status && { status }), ...(woType && { woType }) } })
+      setRows(Array.isArray(res.data) ? res.data : [])
+      setTotal(Number(res.headers?.['x-total-count']) || (Array.isArray(res.data) ? res.data.length : 0))
+    } catch (e) {
+      setRows([]); setTotal(0)
+      setError(e.response?.data?.error || 'Work orders could not be loaded.')
+    } finally {
+      setLoading(false)
+    }
+  }, [search, status, woType])
+  useEffect(() => { load() }, [load])
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
-      {/* Modern Header */}
-      <Box sx={{ 
-        px: 3, 
-        py: 2.5, 
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
-        color: 'white',
-        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
-        mb: 3,
-      }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ 
-              width: 56, 
-              height: 56, 
-              background: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(10px)',
-            }}>
-              <WorkOrderIcon sx={{ fontSize: 30 }} />
-            </Avatar>
-            <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
-                Work Orders
-              </Typography>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                  Manage production and processing work orders
-                </Typography>
-              </Stack>
-            </Box>
-          </Box>
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              sx={{
-                borderColor: 'rgba(255,255,255,0.5)',
-                color: 'white',
-                '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' },
-              }}
-            >
-              Export
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => navigate('/work-orders/new')}
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(10px)',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
-              }}
-            >
-              New Work Order
-            </Button>
-          </Stack>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography variant="h5" fontWeight={700}>Work Orders</Typography>
+          <Typography variant="body2" color="text.secondary">Slitting, cut-to-length and other processing planned against a stock item</Typography>
         </Box>
+        <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/work-orders/new')}>New work order</Button>
       </Box>
 
-      <Box sx={{ px: 3, pb: 3 }}>
-      {/* Filters */}
-      <Paper sx={{ p: 2, mb: 3, borderRadius: 3 }}>
-        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-          <TextField
-            placeholder="Search work orders..."
-            size="small"
-            value={filters.search}
-            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="action" />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ minWidth: 250 }}
-          />
-          
-          <TextField
-            select
-            label="Status"
-            size="small"
-            value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            sx={{ minWidth: 150 }}
-          >
-            <MenuItem value="">All Statuses</MenuItem>
-            <MenuItem value="DRAFT">Draft</MenuItem>
-            <MenuItem value="SCHEDULED">Scheduled</MenuItem>
-            <MenuItem value="RUNNING">Running</MenuItem>
-            <MenuItem value="PAUSED">Paused</MenuItem>
-            <MenuItem value="COMPLETED">Completed</MenuItem>
-            <MenuItem value="CANCELLED">Cancelled</MenuItem>
-          </TextField>
-
-          <TextField
-            select
-            label="Type"
-            size="small"
-            value={filters.type}
-            onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-            sx={{ minWidth: 150 }}
-          >
-            <MenuItem value="">All Types</MenuItem>
-            <MenuItem value="Slitting">Slitting</MenuItem>
-            <MenuItem value="Cut-to-Length">Cut-to-Length</MenuItem>
-            <MenuItem value="Blanking">Blanking</MenuItem>
-            <MenuItem value="Leveling">Leveling</MenuItem>
-          </TextField>
-
-          <Box sx={{ flex: 1 }} />
-          
-          <Button startIcon={<FilterIcon />} size="small">
-            More Filters
-          </Button>
-        </Stack>
+      <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <TextField size="small" label="Search" placeholder="Work order or item number" value={typed} onChange={(e) => setTyped(e.target.value)} sx={{ minWidth: 260 }} />
+        <TextField size="small" select label="Status" value={status} onChange={(e) => setStatus(e.target.value)} sx={{ minWidth: 160 }}>
+          <MenuItem value="">All</MenuItem>
+          {Object.entries(WO_STATUS_LABELS).map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+        </TextField>
+        <TextField size="small" select label="Type" value={woType} onChange={(e) => setWoType(e.target.value)} sx={{ minWidth: 160 }}>
+          <MenuItem value="">All</MenuItem>
+          {Object.entries(WO_TYPE_LABELS).map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
+        </TextField>
       </Paper>
 
-      {/* Data Table */}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       <Paper>
-        <DataTable
-          columns={columns}
-          data={displayData}
-          loading={isLoading}
-          onRowClick={handleRowClick}
-          pageSize={10}
-          showSearch={false}
-        />
+        {loading && <LinearProgress />}
+        <TableContainer>
+          <Table size="small" aria-label="Work orders">
+            <TableHead>
+              <TableRow>
+                <TableCell>Work order</TableCell><TableCell>Type</TableCell><TableCell>Source item</TableCell><TableCell>Grade</TableCell>
+                <TableCell align="right">Weight in</TableCell><TableCell>Scheduled</TableCell><TableCell>Priority</TableCell><TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((wo) => (
+                <TableRow key={wo.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/work-orders/${wo.id}`)}>
+                  <TableCell><Typography variant="body2" fontWeight={600} color="primary">{wo.woNumber}</Typography></TableCell>
+                  <TableCell>{WO_TYPE_LABELS[wo.woType] || wo.woType}</TableCell>
+                  <TableCell>{wo.sourceCoil?.coilNumber || ''}</TableCell>
+                  <TableCell>{wo.sourceCoil?.grade?.code || ''}</TableCell>
+                  <TableCell align="right">{wo.inputWeightLb == null ? '' : `${Number(wo.inputWeightLb).toLocaleString()} lb`}</TableCell>
+                  <TableCell>{wo.scheduledDate ? new Date(wo.scheduledDate).toLocaleDateString() : ''}</TableCell>
+                  <TableCell>{WO_PRIORITY_LABELS[wo.priority] || 'Normal'}</TableCell>
+                  <TableCell><WorkOrderStatusChip status={wo.status} /></TableCell>
+                </TableRow>
+              ))}
+              {!loading && !rows.length && !error && (
+                <TableRow><TableCell colSpan={8} align="center" sx={{ py: 5, color: 'text.secondary' }}>
+                  {search || status || woType ? 'No work orders match.' : 'No work orders yet.'}
+                </TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box sx={{ px: 2, py: 1.5 }}>
+          <Typography variant="caption" color="text.secondary">
+            {total > rows.length ? `Showing the newest ${rows.length} of ${total.toLocaleString()}. Search or filter to narrow the list.` : `${total.toLocaleString()} work order${total === 1 ? '' : 's'}`}
+          </Typography>
+        </Box>
       </Paper>
-
-      {/* Context Menu */}
-      <Menu
-        anchorEl={anchorEl?.element}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={() => { navigate(`/work-orders/${anchorEl?.row?.id}`); handleMenuClose(); }}>
-          View Details
-        </MenuItem>
-        <MenuItem onClick={() => { navigate(`/work-orders/${anchorEl?.row?.id}/edit`); handleMenuClose(); }}>
-          Edit Work Order
-        </MenuItem>
-        <MenuItem onClick={handleMenuClose}>Start Production</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Pause Production</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Complete Work Order</MenuItem>
-        <MenuItem onClick={handleMenuClose}>View BOM</MenuItem>
-        <MenuItem onClick={handleMenuClose} sx={{ color: 'error.main' }}>
-          Cancel Work Order
-        </MenuItem>
-      </Menu>
-      </Box>
     </Box>
   )
 }

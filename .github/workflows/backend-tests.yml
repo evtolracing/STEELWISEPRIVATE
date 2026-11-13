@@ -1,0 +1,42 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/backend/package-lock.json
+      - run: npm ci --ignore-scripts
+      # Builds the database client from the schema. It needs no database. Without it any test
+      # that loads a file which imports the client fails to load.
+      - run: npx prisma generate
+      - run: npm test
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+      # No screen may show made-up data without the "sample screen" notice.
+      - run: node qa/tools/screen-audit.mjs
+      - run: npm ci --ignore-scripts
+        working-directory: src/frontend
+      # A name that is used and never defined passes the build and breaks the screen.
+      - run: npm run lint
+        working-directory: src/frontend

@@ -18,9 +18,9 @@ Status key: **Covered** = exercised end to end with checks on the database after
 | Dispatch | `PUT /api/shipments/:id/dispatch` | Only from PENDING or LOADING, once. Updates line shipped quantity, line status, order status, takes reserved stock out, writes a SHIP movement. | Covered (Sim incl. triple dispatch) |
 | Deliver | `PUT /api/shipments/:id/deliver` | Only after dispatch. | Covered |
 | Partial shipments | same | Order becomes PARTIAL then COMPLETE. | Covered |
-| Invoice | none | No route creates an invoice. | **Blocked** (D-016) |
-| Payment, credit | none | No route. | **Blocked** (D-016) |
-| Return, RMA | none | Order type RETURN exists, nothing processes one. | **Blocked** (D-015) |
+| Invoice | `POST /api/invoices`, and automatically at dispatch | Bills what shipped, once. Terms, tax and freight per rules 11 to 13. | Covered by every shipping job |
+| Payment, credit | `/api/invoices/:id/payments`, `/credit`, `/refund`, `/cancel` | No overpayment; credits and refunds need a manager. | Covered |
+| Return, RMA | `/api/returns` | Against shipped quantity only; restock or scrap; credit on receipt. | Covered by the return jobs |
 
 ## Inventory
 
@@ -41,7 +41,7 @@ Status key: **Covered** = exercised end to end with checks on the database after
 | CSR accepts the web order into a sales order | Covered |
 | One customer cannot open another customer's order | Covered (Sim and Sweep) |
 | Customer login cannot reach any staff route (519 routes tried) | Covered (Sweep) |
-| Price at checkout | Partial: the price is taken from the browser (D-017) |
+| Price at checkout | The server saves the system price for the customer's level (D-017 fixed) |
 
 ## Counter sales (POS)
 
@@ -49,15 +49,15 @@ Status key: **Covered** = exercised end to end with checks on the database after
 |---|---|
 | POS session: pick customer, add product, price, submit as a sales order | Covered after repair (D-010) |
 | Delivery, will-call, payment steps of the session | Not covered |
-| Quick sale (walk-in, cash or card) | **Blocked**: cannot add an item or pay, nothing is saved (D-014) |
+| Quick sale (walk-in, cash or card) | Covered: priced and taxed by the server, saved once, void by a manager. Cards are recorded, not charged (D-033) |
 
 ## Quotes and RFQs
 
-Blocked. The server routes do not match the database and the screens call routes that do not exist (D-019).
+Covered. RFQ, quote, send, accept into a sales order, with one working screen (D-019 fixed). A quote-to-order job runs in every cycle.
 
 ## Documents (mill certs)
 
-List, upload, download, delete repaired (D-011) and checked by the sweep for bad input. Upload on the hosted site is blocked until file storage is chosen (D-011b). Not part of the 50-job cycle.
+List, upload, download, delete repaired (D-011) and checked by the sweep for bad input. On the hosted site files are stored in the database (D-011b fixed, run locally in hosted mode). Not part of the 50-job cycle.
 
 ## Not examined in this audit
 
@@ -77,4 +77,4 @@ Scheduling and dispatch planning, QC inspections, maintenance, drop tags, BOM re
 | Partial, rework, return | 5 | Two-part shipment, rework loop in the shop, double-ship refused; 1 return scenario is blocked |
 | Mixed division | 4 | Metals and plastics lines on one order |
 
-Every cycle also runs five simultaneous-request probes and a whole-database reconciliation.
+Every cycle also runs eight simultaneous-request probes and a whole-database reconciliation.

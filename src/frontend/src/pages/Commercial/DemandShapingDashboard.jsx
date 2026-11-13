@@ -261,7 +261,7 @@ export default function DemandShapingDashboard() {
       {/* ─── FOOTER ─────────────────────────────────────────────── */}
       <Box sx={{ textAlign: 'center', pt: 2, pb: 4 }}>
         <Typography variant="caption" color="text.secondary">
-          Demand Shaping Dashboard • Using mock data • {new Date().toLocaleTimeString()}
+          Demand Shaping Dashboard • {new Date().toLocaleTimeString()}
         </Typography>
       </Box>
     </Box>

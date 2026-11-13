@@ -75,7 +75,7 @@ export const INVENTORY_TEMPLATES = {
       'mill_name',
       'notes',
     ],
-    required: ['tag_number', 'material_code', 'weight_lbs', 'location_code'],
+    required: ['tag_number', 'heat_number', 'grade', 'weight_lbs', 'location_code'],
     example: [
       'TAG-001',
       'HT-2024-001',
@@ -116,7 +116,7 @@ export const INVENTORY_TEMPLATES = {
       'po_number',
       'notes',
     ],
-    required: ['tag_number', 'material_code', 'quantity_pcs', 'location_code'],
+    required: ['tag_number', 'heat_number', 'grade', 'weight_lbs', 'location_code'],
     example: [
       'SHT-001',
       'HT-2024-002',
@@ -156,7 +156,7 @@ export const INVENTORY_TEMPLATES = {
       'po_number',
       'notes',
     ],
-    required: ['tag_number', 'material_code', 'quantity_pcs', 'location_code'],
+    required: ['tag_number', 'heat_number', 'grade', 'weight_lbs', 'location_code'],
     example: [
       'BAR-001',
       'HT-2024-003',
@@ -194,7 +194,7 @@ export const INVENTORY_TEMPLATES = {
       'price_override',
       'notes',
     ],
-    required: ['tag_number', 'material_code', 'weight_lbs', 'location_code'],
+    required: ['tag_number', 'parent_tag', 'weight_lbs', 'location_code'],
     example: [
       'REM-001',
       'TAG-001',
@@ -232,7 +232,7 @@ export const INVENTORY_TEMPLATES = {
       'customer_name',
       'notes',
     ],
-    required: ['tag_number', 'material_code', 'quantity_pcs', 'location_code'],
+    required: ['tag_number', 'lot_number', 'material_type', 'weight_lbs', 'location_code'],
     example: [
       'PLS-001',
       'LOT-2024-001',
@@ -400,16 +400,22 @@ export default function InventoryUpload({
         totalRows: parsedData.rows.length,
         validRows: validRows.length,
       })
+      // Say what the server really saved. Rows it could not receive come back with their reasons.
+      const imported = Number(result?.imported) || 0
       setUploadResult({
-        success: true,
-        message: `Successfully uploaded ${result.imported || validRows.length} items`,
-        details: result,
+        success: imported > 0,
+        partial: imported > 0 && (result?.skipped || 0) > 0,
+        message: result?.message || (imported > 0 ? `${imported} items were received.` : 'Nothing was received.'),
+        errors: result?.errors || [],
+        warnings: result?.warnings || [],
       })
-      setActiveTab(0) // Reset to template tab
     } catch (error) {
+      const reply = error?.response?.data
       setUploadResult({
         success: false,
-        message: error.message || 'Upload failed',
+        message: reply?.error || error.message || 'The upload failed. Nothing was received.',
+        errors: reply?.errors || [],
+        warnings: [],
       })
     } finally {
       setUploading(false)
@@ -626,17 +632,36 @@ export default function InventoryUpload({
           {activeTab === 2 && parsedData && (
             <Box>
               {uploadResult && (
-                <Alert 
-                  severity={uploadResult.success ? 'success' : 'error'} 
-                  sx={{ mb: 2 }}
-                  action={
-                    <Button color="inherit" size="small" onClick={handleReset}>
-                      Upload More
-                    </Button>
-                  }
-                >
-                  {uploadResult.message}
-                </Alert>
+                <>
+                  <Alert
+                    severity={uploadResult.success ? (uploadResult.partial ? 'warning' : 'success') : 'error'}
+                    sx={{ mb: 2 }}
+                    action={
+                      <Button color="inherit" size="small" onClick={handleReset}>
+                        Upload More
+                      </Button>
+                    }
+                  >
+                    {uploadResult.message}
+                  </Alert>
+                  {(uploadResult.errors?.length > 0 || uploadResult.warnings?.length > 0) && (
+                    <TableContainer component={Paper} variant="outlined" sx={{ maxHeight: 320, mb: 2 }}>
+                      <Table size="small" stickyHeader aria-label="Rows that need attention">
+                        <TableHead>
+                          <TableRow><TableCell>Row</TableCell><TableCell>Tag</TableCell><TableCell>What happened</TableCell></TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {uploadResult.errors.map((e, i) => (
+                            <TableRow key={`e${i}`}><TableCell>{e.row}</TableCell><TableCell>{e.tag}</TableCell><TableCell sx={{ color: 'error.main' }}>Not received: {e.error}</TableCell></TableRow>
+                          ))}
+                          {uploadResult.warnings.map((w, i) => (
+                            <TableRow key={`w${i}`}><TableCell>{w.row}</TableCell><TableCell>{w.tag}</TableCell><TableCell>Received. {w.warning}</TableCell></TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                </>
               )}
               
               {!uploadResult && (
@@ -776,7 +801,7 @@ export default function InventoryUpload({
             {uploading ? 'Importing...' : `Import ${stats?.valid} Items`}
           </Button>
         )}
-        {uploadResult?.success && (
+        {uploadResult && (
           <Button variant="contained" onClick={handleClose}>
             Done
           </Button>

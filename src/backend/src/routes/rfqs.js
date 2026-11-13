@@ -1,235 +1,119 @@
+/**
+ * Requests for quote.
+ *
+ *   GET   /api/rfqs?status=&customerId=     list
+ *   GET   /api/rfqs/:id                     one RFQ with its lines and quotes
+ *   POST  /api/rfqs                         { customerId, contactName?, requestedDate?, notes?, lines: [{ description, requestedQty, unit?, productId? }] }
+ *   PATCH /api/rfqs/:id                     notes, contact, dates; status WITHDRAWN or REJECTED to close it
+ *   POST  /api/rfqs/:id/quotes              price the RFQ: see routes/quotes.js (same as POST /api/quotes)
+ */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { createNumbered, padded } from '../lib/numbering.js';
+import { positiveQty } from '../lib/workflowRules.js';
+import { RFQ_OPEN } from '../lib/quoteRules.js';
+import { createQuote, handle, refuse } from './quotes.js';
 
 const router = Router();
+const STATUSES = ['DRAFT', 'SUBMITTED', 'IN_REVIEW', 'QUOTED', 'ACCEPTED', 'REJECTED', 'EXPIRED', 'WITHDRAWN'];
+const INCLUDE = {
+  customer: { select: { id: true, name: true, code: true } },
+  lines: { orderBy: { lineNumber: 'asc' } },
+  quotes: { orderBy: { createdAt: 'desc' }, select: { id: true, quoteNumber: true, version: true, status: true, totalAmount: true, validUntil: true, convertedOrderId: true } },
+};
+const dateOrNull = (v, name) => {
+  if (v == null || v === '') return null;
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) refuse(400, `${name} is not a valid date`);
+  return d;
+};
 
-// GET /rfqs - List RFQs with optional filters
-router.get('/', async (req, res) => {
-  try {
-    const { status, customerId, limit = '50', offset = '0' } = req.query;
-    
-    const where = {};
-    
-    if (status) {
-      where.status = status;
-    }
-    
-    if (customerId) {
-      where.customerId = customerId;
-    }
-    
-    const [rfqs, total] = await Promise.all([
-      prisma.rFQ.findMany({
-        where,
-        take: parseInt(limit),
-        skip: parseInt(offset),
-        orderBy: { createdAt: 'desc' },
-        include: {
-          customer: {
-            select: { id: true, name: true, code: true },
-          },
-          lines: true,
-          quotes: {
-            select: { id: true, quoteNumber: true, status: true, totalAmount: true },
-          },
-        },
-      }),
-      prisma.rFQ.count({ where }),
-    ]);
-    
-    res.json({
-      data: rfqs,
-      meta: {
-        total,
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-      },
-    });
-  } catch (error) {
-    console.error('Error fetching RFQs:', error);
-    res.status(500).json({ error: 'Failed to fetch RFQs' });
+router.get('/', handle('fetch RFQs', async (req, res) => {
+  const take = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
+  const skip = Math.max(parseInt(req.query.offset, 10) || 0, 0);
+  const where = {};
+  if (req.query.status) {
+    const status = String(req.query.status).toUpperCase();
+    if (status === 'OPEN') where.status = { in: RFQ_OPEN };
+    else if (!STATUSES.includes(status)) refuse(400, `status must be OPEN or one of: ${STATUSES.join(', ')}`);
+    else where.status = status;
   }
-});
+  if (req.query.customerId) where.customerId = String(req.query.customerId);
+  const [data, total] = await Promise.all([
+    prisma.rFQ.findMany({ where, take, skip, orderBy: { createdAt: 'desc' }, include: INCLUDE }),
+    prisma.rFQ.count({ where }),
+  ]);
+  res.json({ data, meta: { total, limit: take, offset: skip } });
+}));
 
-// GET /rfqs/:id - Get RFQ details
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    const rfq = await prisma.rFQ.findUnique({
-      where: { id },
-      include: {
-        customer: true,
-        lines: true,
-        quotes: {
-          include: {
-            lines: true,
-          },
-        },
-        createdBy: {
-          select: { id: true, firstName: true, lastName: true, email: true },
-        },
-      },
-    });
-    
-    if (!rfq) {
-      return res.status(404).json({ error: 'RFQ not found' });
-    }
-    
-    res.json(rfq);
-  } catch (error) {
-    console.error('Error fetching RFQ:', error);
-    res.status(500).json({ error: 'Failed to fetch RFQ' });
-  }
-});
+router.get('/:id', handle('fetch RFQ', async (req, res) => {
+  const rfq = await prisma.rFQ.findUnique({ where: { id: req.params.id }, include: { ...INCLUDE, quotes: { orderBy: { createdAt: 'desc' }, include: { lines: { orderBy: { lineNumber: 'asc' } } } } } });
+  if (!rfq) refuse(404, 'RFQ not found');
+  res.json(rfq);
+}));
 
-// POST /rfqs - Create a new RFQ
-router.post('/', async (req, res) => {
-  try {
-    const { customerId, requiredDate, expiresAt, notes, lines, createdById } = req.body;
-    
-    // Generate RFQ number
-    const rfqCount = await prisma.rFQ.count();
-    const rfqNumber = `RFQ-${String(rfqCount + 1).padStart(6, '0')}`;
-    
-    const rfq = await prisma.rFQ.create({
+router.post('/', handle('create RFQ', async (req, res) => {
+  const body = req.body || {};
+  if (!body.customerId) refuse(400, 'customerId is required');
+  const customer = await prisma.organization.findUnique({ where: { id: String(body.customerId) }, select: { id: true } });
+  if (!customer) refuse(400, 'Customer not found');
+  if (!Array.isArray(body.lines) || !body.lines.length) refuse(400, 'An RFQ needs at least one line');
+  const lines = body.lines.map((raw, i) => {
+    const qty = positiveQty(raw?.requestedQty ?? raw?.quantity);
+    if (qty === null) refuse(400, `Line ${i + 1}: requestedQty must be more than zero`);
+    const description = String(raw.description || raw.productDescription || '').trim();
+    if (!description && !raw.productId) refuse(400, `Line ${i + 1}: say what is being asked for`);
+    return {
+      lineNumber: i + 1, description: description || null, productId: raw.productId ? String(raw.productId) : null,
+      requestedQty: qty, unit: String(raw.unit || 'LB').toUpperCase().slice(0, 10), notes: raw.notes ? String(raw.notes) : null,
+      materialCode: raw.materialCode ? String(raw.materialCode) : null, division: raw.division ? String(raw.division) : null,
+    };
+  });
+  const rfq = await createNumbered({
+    count: () => prisma.rFQ.count(),
+    format: padded('RFQ', 6),
+    create: (rfqNumber) => prisma.rFQ.create({
       data: {
-        rfqNumber,
-        customerId,
-        requiredDate: requiredDate ? new Date(requiredDate) : null,
-        expiresAt: expiresAt ? new Date(expiresAt) : null,
-        notes,
-        createdById,
-        lines: lines ? {
-          create: lines.map((line, index) => ({
-            lineNumber: index + 1,
-            productDescription: line.productDescription,
-            gradeSpec: line.gradeSpec,
-            thickness: line.thickness,
-            width: line.width,
-            length: line.length,
-            quantity: line.quantity,
-            unit: line.unit || 'LB',
-            notes: line.notes,
-          })),
-        } : undefined,
+        rfqNumber, customerId: customer.id, status: 'SUBMITTED', submittedAt: new Date(),
+        contactName: body.contactName ? String(body.contactName) : null, contactEmail: body.contactEmail ? String(body.contactEmail) : null,
+        contactPhone: body.contactPhone ? String(body.contactPhone) : null,
+        requestedDate: dateOrNull(body.requestedDate ?? body.requiredDate, 'requestedDate'), expiresAt: dateOrNull(body.expiresAt, 'expiresAt'),
+        notes: body.notes ? String(body.notes) : null, lines: { create: lines },
       },
-      include: {
-        customer: true,
-        lines: true,
-      },
-    });
-    
-    res.status(201).json(rfq);
-  } catch (error) {
-    console.error('Error creating RFQ:', error);
-    res.status(500).json({ error: 'Failed to create RFQ' });
-  }
-});
+      include: INCLUDE,
+    }),
+  });
+  res.status(201).json(rfq);
+}));
 
-// PATCH /rfqs/:id - Update RFQ status or details
-router.patch('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status, notes, requiredDate, expiresAt } = req.body;
-    
-    const updateData = {};
-    if (status) updateData.status = status;
-    if (notes !== undefined) updateData.notes = notes;
-    if (requiredDate) updateData.requiredDate = new Date(requiredDate);
-    if (expiresAt) updateData.expiresAt = new Date(expiresAt);
-    
-    const rfq = await prisma.rFQ.update({
-      where: { id },
-      data: updateData,
-      include: {
-        customer: true,
-        lines: true,
-        quotes: true,
-      },
-    });
-    
-    res.json(rfq);
-  } catch (error) {
-    console.error('Error updating RFQ:', error);
-    res.status(500).json({ error: 'Failed to update RFQ' });
+router.patch('/:id', handle('update RFQ', async (req, res) => {
+  const body = req.body || {};
+  const rfq = await prisma.rFQ.findUnique({ where: { id: req.params.id }, select: { id: true, status: true } });
+  if (!rfq) refuse(404, 'RFQ not found');
+  const data = {};
+  for (const f of ['notes', 'contactName', 'contactEmail', 'contactPhone']) if (body[f] !== undefined) data[f] = body[f] === null ? null : String(body[f]);
+  if (body.requestedDate !== undefined) data.requestedDate = dateOrNull(body.requestedDate, 'requestedDate');
+  if (body.expiresAt !== undefined) data.expiresAt = dateOrNull(body.expiresAt, 'expiresAt');
+  if (body.status !== undefined && body.status !== rfq.status) {
+    const to = String(body.status).toUpperCase();
+    if (!['WITHDRAWN', 'REJECTED', 'IN_REVIEW'].includes(to)) refuse(400, 'An RFQ can be set to IN_REVIEW, WITHDRAWN or REJECTED here. Quoting and accepting change it on their own.');
+    if (!RFQ_OPEN.includes(rfq.status)) refuse(409, `This RFQ is ${rfq.status} and cannot be changed`);
+    data.status = to;
   }
-});
-
-// POST /rfqs/:id/quotes - Create a quote for an RFQ
-router.post('/:id/quotes', async (req, res) => {
-  try {
-    const { id: rfqId } = req.params;
-    const { validUntil, notes, lines, createdById } = req.body;
-    
-    // Get RFQ to validate and get customer info
-    const rfq = await prisma.rFQ.findUnique({
-      where: { id: rfqId },
-      include: { lines: true },
-    });
-    
-    if (!rfq) {
-      return res.status(404).json({ error: 'RFQ not found' });
+  if (!Object.keys(data).length) refuse(400, 'Nothing to update');
+  const updated = await prisma.$transaction(async (tx) => {
+    const saved = await tx.rFQ.update({ where: { id: rfq.id }, data, include: INCLUDE });
+    // Closing an RFQ closes its open quotes too.
+    if (['WITHDRAWN', 'REJECTED'].includes(data.status)) {
+      await tx.quote.updateMany({ where: { rfqId: rfq.id, status: { in: ['DRAFT', 'PENDING_APPROVAL', 'SENT', 'COUNTERED'] } }, data: { status: 'REJECTED' } });
     }
-    
-    // Generate quote number
-    const quoteCount = await prisma.quote.count();
-    const quoteNumber = `QT-${String(quoteCount + 1).padStart(6, '0')}`;
-    
-    // Calculate totals
-    let subtotal = 0;
-    const quoteLines = lines.map((line, index) => {
-      const lineTotal = (line.quantity || 0) * (line.unitPrice || 0);
-      subtotal += lineTotal;
-      return {
-        lineNumber: index + 1,
-        rfqLineId: line.rfqLineId,
-        productDescription: line.productDescription,
-        gradeSpec: line.gradeSpec,
-        thickness: line.thickness,
-        width: line.width,
-        length: line.length,
-        quantity: line.quantity,
-        unit: line.unit || 'LB',
-        unitPrice: line.unitPrice,
-        extendedPrice: lineTotal,
-        leadTimeDays: line.leadTimeDays,
-        notes: line.notes,
-      };
-    });
-    
-    const quote = await prisma.quote.create({
-      data: {
-        quoteNumber,
-        rfqId,
-        customerId: rfq.customerId,
-        validUntil: validUntil ? new Date(validUntil) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        subtotal,
-        totalAmount: subtotal,
-        notes,
-        createdById,
-        lines: {
-          create: quoteLines,
-        },
-      },
-      include: {
-        customer: true,
-        rfq: true,
-        lines: true,
-      },
-    });
-    
-    // Update RFQ status to QUOTED
-    await prisma.rFQ.update({
-      where: { id: rfqId },
-      data: { status: 'QUOTED' },
-    });
-    
-    res.status(201).json(quote);
-  } catch (error) {
-    console.error('Error creating quote:', error);
-    res.status(500).json({ error: 'Failed to create quote' });
-  }
-});
+    return saved;
+  });
+  res.json(updated);
+}));
+
+router.post('/:id/quotes', handle('create quote', async (req, res) => {
+  res.status(201).json(await createQuote({ ...(req.body || {}), rfqId: req.params.id }, req.user.id));
+}));
 
 export default router;

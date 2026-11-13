@@ -25,7 +25,6 @@ import {
   Inventory as CoilIcon,
   ContentCut as SlitIcon,
   Straighten as CTLIcon,
-  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { createWorkOrder, getUnits } from '../../api'
 
@@ -231,7 +230,7 @@ export default function WorkOrderCreatePage() {
                     onChange={handleCoilSelect}
                     loading={coilsLoading}
                     getOptionLabel={(coil) => 
-                      `${coil.coilNumber || coil.unitNumber || coil.id} - ${coil.grade?.name || 'Unknown'} (${coil.widthIn || '?'}" x ${coil.gaugeIn || '?'}")`
+                      `${coil.coilNumber || coil.unitNumber || coil.id} - ${coil.grade?.code || coil.grade?.name || 'Unknown'} (${coil.widthIn || '?'}" x ${coil.gaugeIn || '?'}")`
                     }
                     renderOption={(props, coil) => (
                       <li {...props} key={coil.id}>
@@ -240,7 +239,7 @@ export default function WorkOrderCreatePage() {
                             {coil.coilNumber || coil.unitNumber || coil.id}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {coil.grade?.name || 'Unknown Grade'} • {coil.widthIn || '?'}" x {coil.gaugeIn || '?'}" • {coil.weightLb?.toLocaleString() || '?'} lbs
+                            {coil.grade?.name || 'Unknown Grade'} • {coil.widthIn || '?'}" x {coil.gaugeIn || '?'}" • {coil.netWeightLb != null ? Number(coil.netWeightLb).toLocaleString() : '?'} lbs
                           </Typography>
                         </Stack>
                       </li>
@@ -347,19 +346,6 @@ export default function WorkOrderCreatePage() {
                 </CardContent>
               </Card>
             )}
-
-            {/* AI Suggestion */}
-            <Paper sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: 'secondary.50', border: '1px solid', borderColor: 'secondary.200' }}>
-              <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-                <AIIcon color="secondary" />
-                <Typography variant="subtitle2" color="secondary.main">
-                  AI Tip
-                </Typography>
-              </Stack>
-              <Typography variant="body2" color="text.secondary">
-                Based on current production capacity, scheduling this work order for tomorrow morning would optimize machine utilization.
-              </Typography>
-            </Paper>
 
             {/* Submit Button */}
             <Button

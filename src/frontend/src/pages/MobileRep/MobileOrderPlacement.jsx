@@ -43,55 +43,23 @@ import {
   Inventory2 as ItemsIcon,
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { listIntakeOrders, submitOrder } from '../../services/intakeOrdersApi'
 import useMobileMode from '../../hooks/useMobileMode'
 
-// ── Mock draft orders (simulates what intakeOrdersApi tracks in-memory) ────
-const MOCK_DRAFTS = [
-  {
-    id: 'ord-d1',
-    orderNumber: 'ORD-2026-1001',
-    status: 'DRAFT',
-    customer: { name: 'Great Lakes Fabrication', account: 'GLF-2024' },
-    division: 'METALS',
-    location: 'JACKSON',
-    priority: 'STANDARD',
-    lineCount: 3,
-    subtotal: 2840,
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: 'ord-d2',
-    orderNumber: 'ORD-2026-1002',
-    status: 'DRAFT',
-    customer: { name: 'Motor City Steel Works', account: 'MCS-2024' },
-    division: 'METALS',
-    location: 'DETROIT',
-    priority: 'RUSH',
-    lineCount: 1,
-    subtotal: 1250,
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-  },
-  {
-    id: 'ord-d3',
-    orderNumber: 'ORD-2026-0998',
-    status: 'SUBMITTED',
-    customer: { name: 'Midwest Manufacturing Co', account: 'MMC-2024' },
-    division: 'METALS',
-    location: 'KALAMAZOO',
-    priority: 'STANDARD',
-    lineCount: 5,
-    subtotal: 8920,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    submittedAt: new Date(Date.now() - 82800000).toISOString(),
-  },
-]
-
-// ── Offline queue stub ─────────────────────────────────────────────────────
-let _offlineQueue = []
-
-function queueForSync(orderId) {
-  _offlineQueue.push({ orderId, queuedAt: new Date().toISOString() })
-}
+// Orders come from the live system (the same list the order entry screen saves to).
+const toCard = (o) => ({
+  id: o.id,
+  orderNumber: o.orderNumber,
+  status: o.status,
+  customer: { name: o.customerName || '' },
+  division: o.division,
+  location: o.location || '',
+  priority: o.priority || 'STANDARD',
+  lineCount: (o.lines || []).length,
+  subtotal: o.subtotal ?? (o.lines || []).reduce((sum, l) => sum + (l.extPrice || 0), 0),
+  createdAt: o.createdAt,
+  submittedAt: o.submittedAt,
+})
 
 function formatCurrency(n) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n)
@@ -110,7 +78,25 @@ export default function MobileOrderPlacement() {
   const { isOnline } = useMobileMode()
   const navigate = useNavigate()
 
-  const [orders, setOrders] = useState(MOCK_DRAFTS)
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const loadOrders = useCallback(async () => {
+    setLoading(true)
+    try {
+      const [drafts, sent] = await Promise.all([
+        listIntakeOrders({ status: 'DRAFT', limit: 50 }),
+        listIntakeOrders({ status: 'SUBMITTED', limit: 20 }),
+      ])
+      setOrders([...(drafts.data || []), ...(sent.data || [])].map(toCard))
+      setErrorMsg('')
+    } catch {
+      setErrorMsg('Orders could not be loaded. Check your connection and try again.')
+    }
+    setLoading(false)
+  }, [])
+  useEffect(() => { loadOrders() }, [loadOrders])
   const [submitting, setSubmitting] = useState(null) // order id being submitted
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -118,37 +104,44 @@ export default function MobileOrderPlacement() {
 
   const drafts = orders.filter(o => o.status === 'DRAFT')
   const submitted = orders.filter(o => o.status === 'SUBMITTED')
-  const offlineCount = _offlineQueue.length
 
   // ── Submit handler ───────────────────────────────────────────────────
   const handleSubmit = useCallback(async (order) => {
-    setSubmitting(order.id)
     setConfirmOpen(false)
-
-    // Simulate submission delay
-    await new Promise(r => setTimeout(r, 1000))
-
+    setSuccessMsg('')
+    // Nothing is queued on the phone: an order is either sent now or not sent.
     if (!isOnline) {
-      // Queue for offline sync
-      queueForSync(order.id)
-      setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'QUEUED' } : o))
-      setSuccessMsg(`${order.orderNumber} queued for sync when online`)
-    } else {
-      setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'SUBMITTED', submittedAt: new Date().toISOString() } : o))
-      setSuccessMsg(`${order.orderNumber} submitted successfully!`)
+      setErrorMsg(`You are offline. ${order.orderNumber} was not submitted. Try again when you have a connection.`)
+      return
     }
-
+    setSubmitting(order.id)
+    try {
+      await submitOrder(order.id)
+      setErrorMsg('')
+      setSuccessMsg(`${order.orderNumber} submitted`)
+      await loadOrders()
+    } catch (e) {
+      setErrorMsg(`${order.orderNumber} was not submitted: ${e?.message || 'the server did not accept it'}`)
+    }
     setSubmitting(null)
-    setTimeout(() => setSuccessMsg(''), 4000)
-  }, [isOnline])
+  }, [isOnline, loadOrders])
 
   const openConfirm = (order) => {
     setSelectedOrder(order)
     setConfirmOpen(true)
   }
 
-  const handleDelete = (orderId) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId))
+  // Cancels the draft on the server.
+  const handleDelete = async (orderId) => {
+    const order = orders.find(o => o.id === orderId)
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'CANCELLED' }) })
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'the server did not accept it')
+      setSuccessMsg(`${order?.orderNumber || 'Draft'} cancelled`)
+      await loadOrders()
+    } catch (e) {
+      setErrorMsg(`The draft was not cancelled: ${e?.message}`)
+    }
   }
 
   return (
@@ -163,10 +156,12 @@ export default function MobileOrderPlacement() {
         </Alert>
       )}
 
+      {errorMsg && (
+        <Alert severity="error" onClose={() => setErrorMsg('')} sx={{ mb: 2, borderRadius: 2 }}>{errorMsg}</Alert>
+      )}
       {!isOnline && (
         <Alert severity="warning" icon={<OfflineIcon />} sx={{ mb: 2, borderRadius: 2 }}>
-          Offline mode — orders will queue and auto-submit when connectivity returns.
-          {offlineCount > 0 && <strong> ({offlineCount} queued)</strong>}
+          You are offline. Orders cannot be submitted until the connection is back. Nothing is queued on this phone.
         </Alert>
       )}
 
@@ -197,7 +192,7 @@ export default function MobileOrderPlacement() {
 
       {drafts.length === 0 ? (
         <Paper elevation={0} sx={{ p: 3, textAlign: 'center', borderRadius: 2, border: '1px solid', borderColor: 'divider', mb: 3 }}>
-          <Typography variant="body2" color="text.secondary">No draft orders. Create one to get started.</Typography>
+          <Typography variant="body2" color="text.secondary">{loading ? 'Loading…' : 'No draft orders. Create one to get started.'}</Typography>
         </Paper>
       ) : (
         <Box sx={{ mb: 3 }}>
@@ -339,7 +334,7 @@ export default function MobileOrderPlacement() {
               </Typography>
               {!isOnline && (
                 <Alert severity="warning" sx={{ mt: 2, borderRadius: 2 }}>
-                  Offline — order will be queued for sync.
+                  You are offline. This order cannot be submitted until the connection is back.
                 </Alert>
               )}
             </Box>

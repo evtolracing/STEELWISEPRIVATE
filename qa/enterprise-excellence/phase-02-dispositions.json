@@ -1,0 +1,181 @@
+{
+ "note": "Dispositions decided in Phase 2. findings-import.mjs applies them after the owner decisions. Add to this file; never remove an entry.",
+ "dispositions": {
+  "B-003": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2: enforced in the database client (lib/branchScope.js, lib/db.js) for orders, order lines, invoices, invoice lines, payments, stock items, stock levels, shipments, shipment items, jobs, work orders, work centers, dispatch jobs, dispatch operations and stock movements. Roles that see every branch: super admin, tenant owner, admin, executive, CFO, COO, CIO, division director, operations manager, sales director, credit manager, data analyst, auditor, integration admin. What it does not yet cover is finding C-009.",
+   "verification": "qa/sim/branch-boundary.mjs: 37 checks, 0 problems (25 fail with the boundary switched off). test/branchScope.test.js: 9 unit tests. Simulation 150 of 150 and sweep 20 of 20 with the boundary on."
+  },
+  "B-004": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2, under the owner's decision 3: every area now has a department or role (lib/roleAccess.js WRITE_RULES; the table is in phase-02-service-boundaries.md and permissions-matrix.md). The owner can change any line.",
+   "verification": "test/roleAccess.test.js \"the areas that had no department now have one\"; qa/sim/phase2-integrity.mjs: 10 refusals through the API; qa/tools/access-coverage.mjs: 319 changing routes, 0 with no rule or stated reason (it fails the gates if one appears)."
+  },
+  "B-006": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2: the three routes answer 501 with a plain sentence instead of crashing. Nothing was removed; whether the session counter flow is finished or retired stays with X-008.",
+   "verification": "Baseline probe section 3: 275 changing routes, 0 server errors (ceiling lowered from 3 to 0 in qa/tools/run-gates.sh)."
+  },
+  "B-007": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2: work centers (create and change), equipment (change) and maintenance orders (change) read a field list (lib/fieldRules.js). Creating a work center used to fail every time because it named two columns that do not exist; it works now (C-004). The executive decision route was not mass assignment (its service picks the fields); only who made the decision was wrong, and that now comes from the signed-in user.",
+   "verification": "qa/sim/phase2-integrity.mjs: 9 checks on work centers, equipment and maintenance orders. The executive decision change has no automated check: FIXED, NOT VERIFIED for that one line."
+  },
+  "B-008": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2: jobs (both addresses), order hub contacts and orders, and intake drafts refuse a save with nothing in it. Two of the seven are by design and stay: a counter session needs only the signed-in user (it now ignores a user id sent by the browser), and demand-shaping suggestions log which suggestions were shown.",
+   "verification": "qa/sim/phase2-integrity.mjs: 6 checks. Baseline probe section 3: records saved from nothing fell from 7 routes to the 2 that are by design."
+  },
+  "B-009": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them.",
+   "deferral": {
+    "reason": "Connecting or retiring the second stock list and the order hub means moving or discarding the records they hold as JSON and changing nine screens. That is a data migration, which Phase 3 owns, and the owner applies database changes himself.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+    "correction": "For each of the two: either read and write the real tables through the existing routes, or switch its changing routes off and label its screens. Then remove the JSON stores.",
+    "dependencies": "Owner decision 1 (given). I-012, S-021, U-002, U-020. The JSON stores in AppSetting.",
+    "acceptance": "No changing route writes stock or orders anywhere but the Inventory, Coil, Order and OrderLine tables; db-facts shows 0 rows in the JSON stores.",
+    "verification": "A sweep section that changes stock and an order through every remaining route and finds each change in the real tables; the 125-screen check."
+   }
+  },
+  "B-010": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2: 10 of the 16 handlers now save in one transaction: users (create, edit, delete, reset password), job plan, operation start, complete and reassign, staging ship, recipe change. One was never a multi-step save (deleting a work center type is a single write). Three are separate findings: accepting a cockpit recommendation (C-013), the equipment seed and demand shaping (repeatable set-up writes, by design), and the carrier proof of delivery (C-002).",
+   "verification": "qa/sim/phase2-integrity.mjs: start, complete, reassign and plan checked against the database, including a refused reassign that leaves the clock running. 32 of the first 43 checks fail on the code before the change."
+  },
+  "B-013": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Reviewed in Phase 2. Not deleted.",
+   "deferral": {
+    "reason": "The owner decided on 13 November that every sample module is to be built (decision 4). Most of the 45 unused screen files belong to those modules, so deleting them now would remove material the build will start from. The six unused packages are left for the same change, so the lock files change once.",
+    "targetPhase": "The phase the owner issues for each module that is built (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "When a module is built, delete the files it replaced. Remove the packages no file imports.",
+    "dependencies": "Decision 4. X-001, X-002.",
+    "acceptance": "Discovery reports 0 files imported by nothing and 0 unused packages.",
+    "verification": "qa/tools/discover.mjs; build, lint and the 125-screen check after each removal."
+   }
+  },
+  "B-014": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Phase 2 moved three rules into testable units: the branch boundary (lib/branchScope.js), who may change a login (lib/userAdminRules.js) and the department table (lib/roleAccess.js). phase-02-business-rule-ownership.md lists every critical rule, its owner file and whether a unit test reaches it.",
+   "deferral": {
+    "reason": "The remaining rules sit in 14 route files of 500 to 1,390 lines. Moving them is a refactor of working, tested code, and the Phase 2 instruction is not to refactor in bulk. Each move is safest when its module is being worked on anyway.",
+    "targetPhase": "The phase the owner issues for each module (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Per module: move the rule out of the handler into lib/ as a pure function with unit tests; the handler calls it.",
+    "dependencies": "E-018.",
+    "acceptance": "Every rule in phase-02-business-rule-ownership.md has a named owner file and a unit test.",
+    "verification": "Unit tests per rule; the simulation and sweep unchanged."
+   }
+  },
+  "B-020": {
+   "status": "NOT APPLICABLE",
+   "statusNote": "Phase 2: the finding was wrong. MILL_OPERATOR is in the role list of the database schema (an older role kept for existing logins), so the name does match.",
+   "verification": "Read prisma/schema.prisma, enum UserRole."
+  },
+  "B-024": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Phase 2 read all 39. One was a defect and is fixed: on the order entry screen the override confirmation could submit through an older copy of the submit handler (C-008). 28 are the same harmless shape (load once when the screen opens). 10 are in the session counter flow, the map and the voice assistant.",
+   "deferral": {
+    "reason": "The other 38 change no saved data. Rewriting each effect is screen work with a visual check, which belongs to the screen phase.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "Rewrite each effect so it lists what it reads, screen by screen.",
+    "dependencies": "X-008 for the session counter files.",
+    "acceptance": "qa/tools/frontend-checks.mjs reports 0.",
+    "verification": "The ratchet in the gates: the ceiling is 38 and can only go down."
+   }
+  },
+  "B-025": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2, owner's decision 6: a counter sale takes its pieces from the shelf stock of the selling branch and a void puts them back. What is still missing is a way to receive shelf items by the piece (C-011), so in practice a product has shelf stock only once that exists.",
+   "verification": "qa/sim/phase2-integrity.mjs: 13 checks, including three sales at once for the last pieces and one sale sent three times."
+  },
+  "E-004": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Database constraints are Phase 3 work and every database change is applied by the owner from a SQL Editor file.",
+    "targetPhase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+    "correction": "Add the remaining value checks listed in database-inventory.md.",
+    "dependencies": "The four SQL Editor files already waiting.",
+    "acceptance": "Every money, quantity and status column the code relies on has a database rule.",
+    "verification": "Each constraint proven by an insert that it refuses; the migration run twice on a copy."
+   }
+  },
+  "E-011": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Audited again in Phase 2 (13 November). Server: 1 moderate (uuid; the affected functions are not used, only v4 is). Screens: 1 high and 3 moderate (vite and esbuild, which run only on a developer machine; react-router, an open redirect through a crafted link). None is critical. Every fix is a major-version upgrade (uuid 14, vite 8, react-router-dom 7), which needs the owner's approval.",
+   "verification": "npm audit in src/backend and src/frontend, this session."
+  },
+  "E-012": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "The reply layer (middleware/safeErrors.js) removes internal text from every error reply, whatever the route sent.",
+   "verification": "Sweep section \"Error replies do not expose internals\": 0 replies exposed internal detail, this session."
+  },
+  "E-014": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "A shared counter needs a store on the host or a firewall rule, and host settings are the owner's.",
+    "targetPhase": "Phase 10: security and infrastructure",
+    "correction": "A shared rate counter (the database or the host's firewall).",
+    "dependencies": "Owner: host settings.",
+    "acceptance": "The limit holds across server instances.",
+    "verification": "A burst test against two instances."
+   }
+  },
+  "E-016": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "A lint configuration exists and runs on every pull request.",
+   "verification": "Lint, frontend: passes. Lint, whole repository: 0 errors. Both run this session."
+  },
+  "E-018": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Splitting large working files is a refactor with no change in behaviour; Phase 2 is told not to refactor in bulk.",
+    "targetPhase": "The phase the owner issues for each module (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Split a file when its module is worked on.",
+    "dependencies": "B-014.",
+    "acceptance": "No route file over 600 lines.",
+    "verification": "Simulation, sweep and unit tests unchanged after each split."
+   }
+  },
+  "E-019": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited.",
+   "deferral": {
+    "reason": "The product runs one company. Whether a second tenant will ever share the database is not decided, and the audit is a per-table review.",
+    "targetPhase": "Phase 10: security and infrastructure",
+    "correction": "Decide whether more than one tenant will share a database; if so, scope every query the way the branch boundary does.",
+    "dependencies": "C-009.",
+    "acceptance": "Every table with a tenant id is either scoped or documented as unused.",
+    "verification": "A sweep section with two tenants."
+   }
+  },
+  "E-021": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "phase-02-api-contracts.md records both shapes and which routes use each.",
+   "deferral": {
+    "reason": "Changing a list reply from a bare list to { data, meta } breaks every screen that reads it. Phase 2 may not introduce an incompatible contract.",
+    "targetPhase": "Phase 9: user experience",
+    "correction": "Move the screens to one reader that accepts both, then change the routes.",
+    "dependencies": "E-008 (paging).",
+    "acceptance": "One list shape on every route.",
+    "verification": "qa/tools/api-contract.mjs extended to check the shape."
+   }
+  },
+  "E-023": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "It is a performance defect that needs measuring at volume.",
+    "targetPhase": "Phase 11: performance and full simulation cycles",
+    "correction": "Load the cockpit from counted queries.",
+    "dependencies": "B-012.",
+    "acceptance": "Measured under the target at 80-branch volume.",
+    "verification": "The benchmark with a stated environment."
+   }
+  },
+  "I-018": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 2 register correction: this was fixed in Workstream 5 as F-001 and the Phase 1 import carried the older \"open\" line.",
+   "verification": "Sweep section \"Shipping and money records: web order tax, shipments and who did what\": 37 checks, 0 problems, this session."
+  }
+ }
+}

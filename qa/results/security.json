@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T08:57:07.530Z",
+ "at": "2026-11-13T09:04:59.385Z",
  "endpointsInInventory": 587,
  "endpointsSwept": 587,
  "sections": {
@@ -94,6 +94,11 @@
   "Heats, products and grades: checked input, right people, prices recorded": {
    "pass": true,
    "summary": "47 checks, 0 problems",
+   "findings": []
+  },
+  "Receiving: a receipt is real stock, and an upload says what it saved": {
+   "pass": true,
+   "summary": "32 checks, 0 problems",
    "findings": []
   }
  },

@@ -102,6 +102,40 @@ const OUT = arg('out', 'qa/results/ui-inventory.json');
     await add.close();
   }
 
+  // Receiving: what was really received, and a receipt through the form becomes stock.
+  {
+    const heats = await api('/api/heats?limit=50');
+    const heat = heats.find((h) => h.unitCount > 0) || heats[0];
+    const number = `QA-UI-R${Date.now().toString(36).toUpperCase()}`;
+    const page = await open(bossContext, '/receiving');
+    await page.getByText('Received in the last 30 days').first().waitFor({ timeout: 10000 }).catch(() => {});
+    const first = await body(page);
+    check('receiving: no sample deliveries are shown', !/Outokumpu|TAG-10001|ABC Steel|INV-10001/.test(first) && /Expected deliveries are not listed here yet/.test(first), first.slice(0, 400));
+    await page.getByRole('button', { name: 'Receive item' }).click({ timeout: 8000 }).catch(() => {});
+    await page.getByLabel(/Item number/).fill(number).catch(() => {});
+    await page.getByLabel(/Weight \(lb\)/).fill('1234').catch(() => {});
+    await page.getByLabel(/Heat or lot number/).fill('NO-SUCH-HEAT-XYZ').catch(() => {});
+    await page.getByLabel(/Heat or lot number/).blur().catch(() => {});
+    const warned = await page.getByText(/This heat is not on file/).waitFor({ timeout: 8000 }).then(() => true).catch(() => false);
+    check('receiving: a heat that is not on file is said before saving', warned && await page.getByRole('button', { name: 'Receive item', exact: true }).last().isDisabled(), await body(page));
+    await page.getByLabel(/Heat or lot number/).fill(heat.heatNumber).catch(() => {});
+    await page.getByLabel(/Heat or lot number/).blur().catch(() => {});
+    await page.getByText(new RegExp(`On file: .*grade ${heat.grade.code}`)).waitFor({ timeout: 8000 }).catch(() => {});
+    check('receiving: a heat on file fills in its grade', /Set by the heat/.test(await body(page)), await body(page));
+    await page.getByLabel(/^Location/).click().catch(() => {});
+    await page.getByRole('option').first().click().catch(() => {});
+    await page.getByRole('button', { name: 'Receive item', exact: true }).last().click({ timeout: 5000 }).catch(() => {});
+    await page.getByText(`${number} received`).first().waitFor({ timeout: 10000 }).catch(() => {});
+    await page.getByRole('button', { name: number }).waitFor({ timeout: 10000 }).catch(() => {});
+    const after = await body(page);
+    const stock = (await api(`/api/coils?search=${number}`, boss)).find((c) => c.coilNumber === number);
+    check('receiving: the form receives a real stock item and lists it', Boolean(stock) && after.includes(number) && /1,234 lb/.test(after), after.slice(0, 500));
+    await page.getByLabel('Search receipts').fill('zz-no-such-receipt');
+    check('receiving: search filters the list and says when nothing matches', /No receipts match your search/.test(await body(page)), await body(page));
+    check('receiving: no script errors', page.errors.length === 0, page.errors.join(' | '));
+    await page.close();
+  }
+
   await browser.close();
   const failed = checks.filter((c) => !c.ok);
   fs.mkdirSync(path.dirname(OUT), { recursive: true });

@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T08:58:14.771Z",
- "checks": 14,
+ "at": "2026-11-13T09:05:39.173Z",
+ "checks": 20,
  "failed": 0,
  "results": [
   {
@@ -71,6 +71,36 @@
   },
   {
    "name": "heats: an edit is saved and shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: no sample deliveries are shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: a heat that is not on file is said before saving",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: a heat on file fills in its grade",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: the form receives a real stock item and lists it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: search filters the list and says when nothing matches",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: no script errors",
    "ok": true,
    "detail": ""
   }

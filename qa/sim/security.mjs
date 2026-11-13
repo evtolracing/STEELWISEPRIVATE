@@ -1091,6 +1091,90 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   section('Heats, products and grades: checked input, right people, prices recorded', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
 }
 
+// 18. Receiving stock (findings I-005, I-006): the upload used to answer "imported" and save
+// nothing, and the Receiving screen showed sample deliveries. A receipt now makes a real stock
+// item, its balance and a movement in one step, by one rule for the form and the upload file.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const [adminT, csrT, shippingT] = await Promise.all(['admin', 'csr', 'shipping'].map(tokenFor));
+  const send = async (method, url, token, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(30000) });
+    return { status: res.status, body: await res.json().catch(() => null) };
+  };
+  const tag = `QA18-${Date.now().toString(36).toUpperCase()}`;
+  const heat = await prisma.heat.findFirst({ where: { coils: { some: {} } }, include: { grade: true } });
+  const otherGrade = await prisma.grade.findFirst({ where: { id: { not: heat.gradeId } } });
+  const location = await prisma.location.findFirst({ where: { isActive: true }, orderBy: { code: 'asc' } });
+  const customer = await prisma.organization.findUnique({ where: { code: 'QA-C09' } });
+  const shipper = await prisma.user.findUnique({ where: { email: QA_USERS.shipping } });
+  const good = { coilNumber: `${tag}-1`, form: 'PLATE', heatNumber: heat.heatNumber, gradeCode: heat.grade.code, thicknessIn: 0.5, widthIn: 96, lengthIn: 240, weightLb: 3267, locationId: location.id, binLocation: 'B-02', poReference: 'QA-PO-18', notes: 'QA sweep' };
+  try {
+    check('sales staff cannot receive stock', (await send('POST', '/api/inventory/receipts', csrT, good)).status === 403, 'accepted');
+    const r1 = await send('POST', '/api/inventory/receipts', shippingT, { ...good, id: 'forged', status: 'SHIPPED', qcStatus: 'PASSED', createdById: 'someone', unitCost: 1 });
+    const coil = await prisma.coil.findUnique({ where: { coilNumber: good.coilNumber }, include: { inventory: true } });
+    const moves = coil ? await prisma.materialMovement.findMany({ where: { coilId: coil.id } }) : [];
+    check('a receipt makes the stock item, with fields the form does not have ignored', r1.status === 201 && coil && coil.id !== 'forged' && coil.status === 'AVAILABLE' && coil.qcStatus === 'PENDING' && coil.createdById === shipper.id && coil.unitCost === null && coil.heatId === heat.id && coil.gradeId === heat.gradeId && coil.locationId === location.id, `status ${r1.status} ${JSON.stringify(r1.body).slice(0, 200)}`);
+    check('the item has a stock balance equal to what was received', Number(coil?.inventory?.qtyOnHand) === 3267 && Number(coil?.inventory?.qtyAvailable) === 3267 && Number(coil?.inventory?.qtyAllocated) === 0 && coil?.inventory?.locationId === location.id, JSON.stringify(coil?.inventory ?? null).slice(0, 200));
+    check('one RECEIVE movement records who received it, where, and the reference', moves.length === 1 && moves[0].movementType === 'RECEIVE' && Number(moves[0].qtyMoved) === 3267 && moves[0].createdById === shipper.id && moves[0].toLocationId === location.id && /QA-PO-18/.test(moves[0].notes || ''), JSON.stringify(moves).slice(0, 200));
+    check('the same item number cannot be received twice', (await send('POST', '/api/inventory/receipts', shippingT, good)).status === 409 && (await prisma.coil.count({ where: { coilNumber: good.coilNumber } })) === 1, 'accepted');
+    for (const [why, body] of [
+      ['no item number', { ...good, coilNumber: '' }], ['no weight', { ...good, coilNumber: `${tag}-X`, weightLb: '' }], ['a weight of zero', { ...good, coilNumber: `${tag}-X`, weightLb: 0 }],
+      ['a heat that is not on file', { ...good, coilNumber: `${tag}-X`, heatNumber: 'NO-SUCH-HEAT' }], ['a grade that is not on file', { ...good, coilNumber: `${tag}-X`, gradeCode: 'NO-SUCH-GRADE' }],
+      ['a grade that is not the heat\'s grade', { ...good, coilNumber: `${tag}-X`, gradeCode: otherGrade.code }], ['a location that is not on file', { ...good, coilNumber: `${tag}-X`, locationId: 'no-such-location' }],
+      ['no location', { ...good, coilNumber: `${tag}-X`, locationId: '' }], ['an unknown form', { ...good, coilNumber: `${tag}-X`, form: 'CLOUD' }],
+      ['customer-owned stock with no customer', { ...good, coilNumber: `${tag}-X`, ownership: 'CUSTOMER_OWNED' }], ['a customer that is not on file', { ...good, coilNumber: `${tag}-X`, ownership: 'CUSTOMER_OWNED', customerName: 'No Such Customer Inc' }],
+    ]) {
+      const r = await send('POST', '/api/inventory/receipts', shippingT, body);
+      check(`a receipt with ${why} is refused with a reason`, r.status === 400 && typeof r.body?.error === 'string' && r.body.error.length > 8, `status ${r.status} ${r.body?.error || ''}`);
+    }
+    check('a refused receipt leaves nothing behind', (await prisma.coil.count({ where: { coilNumber: `${tag}-X` } })) === 0, 'a stock item was created');
+    const toll = await send('POST', '/api/inventory/receipts', shippingT, { ...good, coilNumber: `${tag}-2`, ownership: 'CUSTOMER_OWNED', customerName: customer.code, productSku: 'NO-SUCH-SKU' });
+    const tollCoil = await prisma.coil.findUnique({ where: { coilNumber: `${tag}-2` } });
+    check('customer-owned stock is received under the customer', toll.status === 201 && tollCoil?.ownerId === customer.id, `status ${toll.status} ${toll.body?.error || ''}`);
+    check('a product that is not in the catalog is said, not silently dropped', /not in the catalog/.test(toll.body?.warning || '') && tollCoil?.productId === null, JSON.stringify(toll.body?.warning ?? null));
+    const clerkView = await send('GET', '/api/inventory/receipts?limit=20', csrT);
+    const mine = clerkView.body?.data?.find((r) => r.item?.coilNumber === good.coilNumber);
+    check('the receipts list shows what was really received', clerkView.status === 200 && mine && mine.qty === 3267 && mine.item.heatNumber === heat.heatNumber && mine.location?.id === location.id && /QA-PO-18/.test(mine.notes || ''), `status ${clerkView.status} ${JSON.stringify(mine ?? null).slice(0, 160)}`);
+    check('the receipts list carries no cost', !/unitCost|landedCost|avgCost/.test(JSON.stringify(clerkView.body)), 'cost present');
+    const listed = await send('GET', `/api/coils?search=${encodeURIComponent(good.coilNumber)}`, csrT);
+    check('a received item is on the stock list straight away', Array.isArray(listed.body) && listed.body.some((c) => c.coilNumber === good.coilNumber), 'not listed');
+
+    // The upload file follows the same rule, row by row, and says what it really did.
+    const rows = [
+      { tag_number: `${tag}-U1`, heat_number: heat.heatNumber, grade: heat.grade.code, thickness: '0.125', width: '48', weight_lbs: '45,000', coil_od: '72', coil_id: '24', location_code: location.code, bay_position: 'A-01', ownership: 'HOUSE_OWNED', po_number: 'QA-PO-19' },
+      { tag_number: `${tag}-U2`, heat_number: 'NO-SUCH-HEAT', grade: heat.grade.code, weight_lbs: '100', location_code: location.code },
+      { tag_number: `${tag}-U1`, heat_number: heat.heatNumber, grade: heat.grade.code, weight_lbs: '100', location_code: location.code },
+      { tag_number: `${tag}-U3`, heat_number: heat.heatNumber, grade: heat.grade.code, weight_lbs: 'heavy', location_code: location.code },
+      { tag_number: `${tag}-U4`, heat_number: heat.heatNumber.toLowerCase(), grade: heat.grade.code.toLowerCase(), weight_lbs: '500', location_code: location.code.toLowerCase() },
+    ];
+    const up = await send('POST', '/api/inventory/bulk-upload', shippingT, { templateType: 'coils', items: rows });
+    const saved = await prisma.coil.findMany({ where: { coilNumber: { startsWith: `${tag}-U` } }, include: { inventory: true } });
+    check('an upload saves the good rows as real stock', up.status === 201 && up.body?.imported === 2 && saved.length === 2 && saved.every((c) => c.inventory && Number(c.inventory.qtyOnHand) === Number(c.netWeightLb)) && saved.some((c) => Number(c.netWeightLb) === 45000 && c.form === 'COIL'), `status ${up.status}, said ${up.body?.imported}, saved ${saved.length}`);
+    check('the count the upload reports is the count that was saved', up.body?.imported === saved.length && up.body?.skipped === 3, `said ${up.body?.imported} imported and ${up.body?.skipped} skipped; ${saved.length} saved`);
+    check('each row that was not received comes back with its row number and reason', Array.isArray(up.body?.errors) && up.body.errors.length === 3 && [2, 3, 4].every((n) => up.body.errors.some((e) => e.row === n && e.error?.length > 8)) && /not on file/.test(up.body.errors.find((e) => e.row === 2)?.error || '') && /already in use/.test(up.body.errors.find((e) => e.row === 3)?.error || ''), JSON.stringify(up.body?.errors ?? null).slice(0, 300));
+    const none = await send('POST', '/api/inventory/bulk-upload', shippingT, { templateType: 'coils', items: [rows[1]] });
+    check('an upload that saves nothing is an error, not a success', none.status === 400 && none.body?.imported === 0 && none.body?.success === false && /None of the 1 items/.test(none.body?.error || ''), `status ${none.status} ${JSON.stringify(none.body).slice(0, 160)}`);
+    check('an upload of an unknown type is refused', (await send('POST', '/api/inventory/bulk-upload', shippingT, { templateType: 'pallets', items: [rows[0]] })).status === 400, 'accepted');
+    check('an upload with no rows is refused', (await send('POST', '/api/inventory/bulk-upload', shippingT, { templateType: 'coils', items: [] })).status === 400, 'accepted');
+    check('an upload over the row limit is refused before anything is saved', (await send('POST', '/api/inventory/bulk-upload', shippingT, { templateType: 'coils', items: Array.from({ length: 2001 }, (_, i) => ({ tag_number: `${tag}-BIG${i}` })) })).status === 400 && (await prisma.coil.count({ where: { coilNumber: { startsWith: `${tag}-BIG` } } })) === 0, 'accepted');
+    check('sales staff cannot upload stock', (await send('POST', '/api/inventory/bulk-upload', csrT, { templateType: 'coils', items: [rows[0]] })).status === 403, 'accepted');
+    const rem = await send('POST', '/api/inventory/bulk-upload', shippingT, { templateType: 'remnants', items: [{ tag_number: `${tag}-U5`, parent_tag: good.coilNumber, thickness: '0.5', width: '36', length: '48', weight_lbs: '350', location_code: location.code, condition: 'GOOD' }] });
+    const remCoil = await prisma.coil.findUnique({ where: { coilNumber: `${tag}-U5` } });
+    check('a remnant takes its heat, grade and form from its parent item', rem.status === 201 && remCoil && coil && remCoil.parentCoilId === coil.id && remCoil.heatId === heat.id && remCoil.gradeId === heat.gradeId && remCoil.form === 'PLATE', `status ${rem.status} ${JSON.stringify(rem.body?.errors ?? null).slice(0, 160)}`);
+    const template = await fetch(`${BASE}/api/inventory/templates/plates`, { headers: { authorization: `Bearer ${adminT}` } });
+    check('every upload type has a template to download', template.status === 200 && /tag_number,heat_number/.test(await template.text()), `status ${template.status}`);
+  } finally {
+    const mine = await prisma.coil.findMany({ where: { coilNumber: { startsWith: tag } }, select: { id: true } });
+    const ids = mine.map((c) => c.id);
+    await prisma.materialMovement.deleteMany({ where: { coilId: { in: ids } } });
+    await prisma.inventory.deleteMany({ where: { coilId: { in: ids } } });
+    await prisma.coil.deleteMany({ where: { id: { in: ids }, parentCoilId: { not: null } } });
+    await prisma.coil.deleteMany({ where: { id: { in: ids } } });
+  }
+  section('Receiving: a receipt is real stock, and an upload says what it saved', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
 report.pass = Object.values(report.sections).every((s) => s.pass);
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(report, null, 1));

@@ -66,13 +66,10 @@ export default function UnitListPage() {
   const setFilter = (key) => (e) => { setFilters((f) => ({ ...f, [key]: e.target.value })); setPage(0) }
 
   const handleBulkUpload = async (data) => {
-    try {
-      const result = await bulkUploadInventory(data)
-      setNotice(`Uploaded ${result.created ?? data.items.length} items`)
-      load()
-    } catch (e) {
-      setError(`Upload failed: ${e?.response?.data?.error || e.message}`)
-    }
+    // The upload box shows what was received and why any row was not; this screen only refreshes.
+    const result = await bulkUploadInventory(data)
+    if (result?.imported) { setNotice(result.message || `${result.imported} items were received.`); load() }
+    return result
   }
 
   return (

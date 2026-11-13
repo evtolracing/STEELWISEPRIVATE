@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit 181a874. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit c4da120. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 

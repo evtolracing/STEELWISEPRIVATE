@@ -1,6 +1,6 @@
 # Permissions matrix
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit 181a874. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit c4da120. Do not edit by hand: change the source and rerun.
 
 How access is decided today, read from `src/backend/src/middleware/apiGate.js`, `lib/roleAccess.js`, `lib/customerScope.js` and the route guards, and checked by the sweep and the baseline probe.
 

@@ -2,7 +2,7 @@
 
 **Forensic database audit, transactional correctness, inventory and financial reconciliation, concurrency hardening and 80-location scalability**
 
-Date: 2026-11-13. Branch `claude/project-thread-25z3jd`, restarted from `main` at `181a874` (the merge of pull request 30). A new pull request carries Phase 3; it is not merged.
+Date: 2026-11-13. Branch `claude/project-thread-25z3jd`, restarted from `main` at `181a874` (the merge of pull request 30). Pull request 31 carries Phase 3; it is not merged.
 
 All testing ran on local databases: `steelwise_qa` for function and `steelwise_qa_scale3` for volume. This environment holds no connection to the live database; nothing was read from it, written to it or run against it. A statement in this report that says a test passed refers to a run in this session; anything else is marked NOT VERIFIED or NOT EXECUTED.
 

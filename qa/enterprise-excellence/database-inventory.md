@@ -1,8 +1,8 @@
 # Database inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit d8a3a2a. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
 
-Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-13 21:44 UTC); they describe test data, not the live database, which was not touched.
+Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-13 23:01 UTC); they describe test data, not the live database, which was not touched.
 
 ## Totals
 
@@ -10,9 +10,9 @@ Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are re
 |---|---:|
 | Tables | 159 |
 | Tables no server code reads or writes | 53 |
-| Tables empty after a full test run | 92 of 160 |
-| Rows in the QA database | 7,966 |
-| Indexes | 582 |
+| Tables empty after a full test run | 84 of 160 |
+| Rows in the QA database | 9,134 |
+| Indexes | 584 |
 | Foreign keys | 188 |
 | Foreign keys with no index | 0 |
 | Value rules the database enforces (CHECK) | 25 |
@@ -37,15 +37,15 @@ Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are re
 | Primary keys | 160 |
 | Foreign keys | 188 (cascade 39, restrict 78, set null 71) |
 | Foreign keys not validated | 0 |
-| Unique indexes | 82 |
+| Unique indexes | 83 |
 | Value checks | 25 |
-| Indexes | 582 |
+| Indexes | 584 |
 | Exact duplicate indexes | 0 |
 | Views, materialized views, triggers, functions, partitioned tables | 0, 0, 0, 0, 0 |
 | Row-level security policies in the QA database | 0 (the SQL Editor files add one per table on the host; see phase-03-schema-audit.md) |
 | Sequences | 1 |
 | Enumerations | 96 |
-| Migrations applied, failed | 27, 0 |
+| Migrations applied, failed | 28, 0 |
 | Columns named like a reference with no foreign key | 217 (target evident for 79; G-003) |
 | Floating-point columns | 9 (ProcessingRecipe.setupMinutes, ProcessingRecipe.runMinutesPerUnit, ProcessingRecipe.minRunMinutes, ProcessingRecipe.thicknessMin, ProcessingRecipe.thicknessMax, Remnant.thickness, Remnant.width, Remnant.length, Remnant.estimatedWeight) |
 | Deletes that cascade into money or stock rows | InvoiceLine.invoiceId → Invoice; ShipmentItem.shipmentId → Shipment |
@@ -115,7 +115,7 @@ Run by `qa/tools/db-facts.mjs`. Each number is how many rows break the rule. The
 | credit memos larger than the invoice they credit | 0 |
 | two live invoices for the same shipment | 0 |
 | quotes or requests whose branch does not exist | 0 |
-| orders with no branch | 62 |
+| orders with no branch | 63 |
 | order lines shipped more than ordered | 0 |
 | order line shipped quantity differs from its dispatched shipment items | 47 |
 | order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders | 0 |
@@ -163,8 +163,9 @@ Run by `qa/tools/db-facts.mjs`. Each number is how many rows break the rule. The
 | 20261113211000_request_keys | 17 | 1 | 0 | 2 |
 | 20261113212000_quote_branch | 30 | 0 | 0 | 2 |
 | 20261113220000_document_counters | 26 | 1 | 0 | 0 |
+| 20261113230000_webhook_delivery_once | 17 | 0 | 0 | 2 |
 
-SQL Editor files for the owner to apply are under `src/backend/prisma/upgrades/` (28 files). Phase 1 made no database change.
+SQL Editor files for the owner to apply are under `src/backend/prisma/upgrades/` (29 files). Phase 1 made no database change.
 
 ## Tables no server code reads or writes (B-017)
 
@@ -178,7 +179,7 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 
 | Table | Columns | Foreign keys | Unique | Indexes | Status | Branch | Org | Rows (QA) | Read by | Written by |
 |---|---:|---:|---:|---:|---|:-:|:-:|---:|---|---|
-| Organization | 17 | 1 | 1 | 1 |  |  |  | 29 | creditControl, customerPricing, orderTax, receiving, … | customers, quickSale, index, supabaseSeed, … |
+| Organization | 17 | 1 | 1 | 1 |  |  |  | 34 | creditControl, customerPricing, orderTax, receiving, … | customers, quickSale, index, supabaseSeed, … |
 | CustomerPreference | 49 | 1 | 1 | 0 |  |  |  | 0 | customers, specInheritance | customers |
 | User | 17 | 3 | 1 | 3 |  | yes | yes | 18 | jobHistory, orderTax, receiving, auth, … | auth, users, index, supabaseSeed |
 | Role | 9 | 0 | 1 | 0 |  |  |  | 10 | users | users |
@@ -188,20 +189,20 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | Division | 7 | 0 | 1 | 0 |  |  | yes | 0 | users | nothing |
 | ApprovalRequest | 12 | 1 | 0 | 2 | ApprovalStatus |  | yes | 0 | nothing | nothing |
 | ApprovalDecision | 6 | 2 | 0 | 2 |  |  |  | 0 | nothing | nothing |
-| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 2019 | creditControl, jobHistory, opsCockpit, overrides, … | creditControl, jobHistory, stockChanges, customers, … |
+| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 2281 | creditControl, integrationReport, jobHistory, opsCockpit, … | creditControl, jobHistory, stockChanges, customers, … |
 | Grade | 17 | 0 | 1 | 0 |  |  |  | 8 | receiving, aiAssistant, coils, grades, … | grades, index, supabaseSeed |
 | Product | 20 | 1 | 1 | 1 |  |  |  | 12 | receiving, aiAssistant, coils, intakeOrders, … | intakePricing, products, index, ecomService |
 | Heat | 15 | 4 | 1 | 4 | HeatStatus |  |  | 15 | receiving, aiAssistant, coils, heats | documents, heats, index, supabaseSeed |
-| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 448 | receiving, stockChanges, aiAssistant, coils, … | receiving, stockChanges, coils, inventory, … |
+| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 493 | receiving, stockChanges, aiAssistant, coils, … | receiving, stockChanges, coils, inventory, … |
 | Location | 19 | 2 | 1 | 2 |  |  | yes | 85 | orderTax, receiving, coils, compressionMetrics, … | dispatchRoutes, index, supabaseSeed |
-| Inventory | 16 | 2 | 1 | 1 |  | yes |  | 448 | dashboard, inventory, quickSale, returns, … | receiving, stockChanges, coils, inventory, … |
-| MaterialMovement | 14 | 7 | 0 | 7 |  | yes |  | 356 | receiving, coils, opsCockpit, quickSale, … | receiving, stockChanges, inventory, quickSale, … |
+| Inventory | 16 | 2 | 1 | 1 |  | yes |  | 493 | dashboard, inventory, quickSale, returns, … | receiving, stockChanges, coils, inventory, … |
+| MaterialMovement | 14 | 7 | 0 | 7 |  | yes |  | 443 | receiving, coils, heats, opsCockpit, … | receiving, stockChanges, inventory, quickSale, … |
 | TestResult | 16 | 4 | 0 | 4 |  |  |  | 0 | (with its parent) | (with its parent) |
 | QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 6 | coils, dashboard, opsCockpit | coils |
-| RFQ | 14 | 2 | 1 | 2 | RFQStatus | yes |  | 23 | aiAssistant, analyticsV1, customerRoutes, quotes, … | customerRoutes, quotes, rfqs, index |
-| RFQLine | 12 | 1 | 0 | 1 |  |  |  | 4 | (with its parent) | (with its parent) |
-| Quote | 23 | 4 | 2 | 3 | QuoteStatus | yes |  | 26 | aiAssistant, analyticsV1, intakeOrders, customerRoutes, … | customerRoutes, quotes, rfqs, index |
-| QuoteLine | 28 | 3 | 0 | 3 |  |  |  | 7 | (with its parent) | (with its parent) |
+| RFQ | 14 | 2 | 1 | 2 | RFQStatus | yes |  | 30 | aiAssistant, analyticsV1, customerRoutes, quotes, … | quotes, rfqs, index |
+| RFQLine | 12 | 1 | 0 | 1 |  |  |  | 12 | (with its parent) | (with its parent) |
+| Quote | 23 | 4 | 2 | 3 | QuoteStatus | yes |  | 29 | aiAssistant, analyticsV1, intakeOrders, customerRoutes, … | quotes, rfqs, index |
+| QuoteLine | 28 | 3 | 0 | 3 |  |  |  | 11 | (with its parent) | (with its parent) |
 | Operator | 21 | 3 | 2 | 3 | OperatorStatus | yes |  | 2 | dispatchRoutes, operationsRoutes, qcRoutes, staff | staff |
 | OperatorSkill | 10 | 1 | 1 | 1 |  |  |  | 0 | staff | staff |
 | Shift | 13 | 1 | 0 | 2 | ShiftStatus | yes |  | 0 | staff | staff |
@@ -212,19 +213,19 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | WorkCenterType | 9 | 0 | 0 | 0 |  |  |  | 1 | dispatchRoutes, jobs, staff | dispatchRoutes |
 | WorkCenter | 10 | 1 | 1 | 1 |  | yes |  | 285 | aiAssistant, analyticsV1, assets, dispatchRoutes, … | dispatchRoutes, workCenters, index |
 | Job | 44 | 7 | 1 | 7 | JobStatus |  |  | 271 | jobHistory, aiAssistant, analyticsV1, intakeOrders, … | jobHistory, intakeOrders, jobs, materialTrackingRoutes, … |
-| Order | 28 | 5 | 1 | 5 | OrderStatus | yes |  | 437 | creditControl, aiAssistant, analyticsV1, compressionMetrics, … | creditControl, intakeOrders, onlineOrders, orders, … |
-| OrderLine | 36 | 4 | 0 | 4 |  |  |  | 454 | jobs, orders, returns, shipments, … | intakeOrders, orders, returns, shipments, … |
-| OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 32 | stockChanges, coils, orders, shipments | stockChanges, orders, shipments |
-| WorkOrder | 19 | 3 | 1 | 3 | WOStatus |  |  | 15 | workOrders | workOrders |
-| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 12 | nothing | stockChanges |
-| Shipment | 21 | 3 | 1 | 3 | ShipmentStatus | yes |  | 207 | aiAssistant, dashboard, jobs, opsCockpit, … | carrierRoutes, supplierRoutes, shipments, index |
-| ShipmentItem | 6 | 2 | 0 | 2 |  |  |  | 176 | shipments | shipments, index |
+| Order | 28 | 5 | 1 | 5 | OrderStatus | yes |  | 532 | creditControl, aiAssistant, analyticsV1, compressionMetrics, … | creditControl, intakeOrders, onlineOrders, orders, … |
+| OrderLine | 36 | 4 | 0 | 4 |  |  |  | 549 | jobs, orders, returns, shipments, … | intakeOrders, orders, returns, shipments, … |
+| OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 35 | stockChanges, coils, orders, shipments | stockChanges, orders, shipments |
+| WorkOrder | 19 | 3 | 1 | 3 | WOStatus |  |  | 17 | workOrders | workOrders |
+| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 16 | nothing | stockChanges |
+| Shipment | 21 | 3 | 1 | 3 | ShipmentStatus | yes |  | 245 | aiAssistant, dashboard, jobs, opsCockpit, … | shipments, index |
+| ShipmentItem | 6 | 2 | 0 | 2 |  |  |  | 214 | shipments | shipments, index |
 | ShipmentStop | 12 | 1 | 0 | 1 |  |  |  | 0 | (with its parent) | (with its parent) |
-| Invoice | 17 | 3 | 1 | 3 | InvoiceStatus |  |  | 177 | creditControl, customerRoutes, quickSale, returns, … | quickSale, index, billing |
-| InvoiceLine | 11 | 2 | 0 | 2 |  |  |  | 187 | quickSale, returns, billing | nothing |
-| DocumentBlob | 3 | 1 | 0 | 0 |  |  |  | 0 | documents | nothing |
-| Payment | 8 | 1 | 0 | 1 |  |  |  | 113 | nothing | quickSale, billing |
-| Document | 18 | 1 | 0 | 1 |  |  | yes | 0 | aiAssistant, documents, customerRoutes, portalService | documents, carrierRoutes, supplierRoutes |
+| Invoice | 17 | 3 | 1 | 3 | InvoiceStatus |  |  | 213 | creditControl, customerRoutes, quickSale, returns, … | quickSale, index, billing |
+| InvoiceLine | 11 | 2 | 0 | 2 |  |  |  | 223 | quickSale, returns, billing | nothing |
+| DocumentBlob | 3 | 1 | 0 | 0 |  |  |  | 1 | documents, customerRoutes | nothing |
+| Payment | 8 | 1 | 0 | 1 |  |  |  | 121 | nothing | quickSale, billing |
+| Document | 18 | 1 | 0 | 1 |  |  | yes | 1 | aiAssistant, documents, customerRoutes, portalService | documents |
 | DocumentLink | 6 | 1 | 0 | 2 |  |  |  | 0 | documents | documents |
 | CommodityPrice | 8 | 0 | 0 | 1 |  |  |  | 0 | nothing | nothing |
 | BomRecipe | 14 | 0 | 0 | 4 | BomRecipeStatus |  |  | 0 | operations, bomV1 | bomV1 |
@@ -258,11 +259,11 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | LabelTemplate | 17 | 0 | 1 | 2 |  |  | yes | 0 | templateService | templateService |
 | TraceEvent | 23 | 1 | 1 | 8 |  | yes |  | 0 | materialTrackingRoutes | materialTrackingRoutes, dropTagListingService, dropTagService, scanService |
 | CustomerTagRequirement | 19 | 1 | 1 | 0 |  |  |  | 0 | nothing | nothing |
-| Partner | 19 | 1 | 1 | 3 | PartnerStatus |  | yes | 0 | partnerAuth, partnerRateLimit, adminRoutes, carrierRoutes | partnerAuth, adminRoutes |
-| PartnerApiKey | 14 | 1 | 0 | 3 | ApiKeyStatus |  |  | 0 | partnerAuth, adminRoutes | partnerAuth, adminRoutes |
-| PartnerWebhook | 13 | 1 | 0 | 2 | WebhookStatus |  |  | 0 | webhookRoutes, webhookService | webhookRoutes, webhookService |
-| WebhookDelivery | 15 | 1 | 0 | 4 | WebhookDeliveryStatus |  |  | 0 | webhookRoutes, webhookService | webhookService |
-| PartnerApiLog | 15 | 1 | 0 | 5 |  |  |  | 0 | adminRoutes | partnerAuth |
+| Partner | 19 | 1 | 1 | 3 | PartnerStatus |  | yes | 8 | partnerAuth, partnerRateLimit, adminRoutes, webhookService | partnerAuth, adminRoutes |
+| PartnerApiKey | 14 | 1 | 0 | 3 | ApiKeyStatus |  |  | 12 | partnerAuth, adminRoutes | partnerAuth, adminRoutes |
+| PartnerWebhook | 13 | 1 | 0 | 2 | WebhookStatus |  |  | 15 | webhookRoutes, webhookService | webhookRoutes, webhookService |
+| WebhookDelivery | 15 | 1 | 1 | 5 | WebhookDeliveryStatus |  |  | 146 | integrationReport, integrations, webhookRoutes, webhookService | webhookService |
+| PartnerApiLog | 15 | 1 | 0 | 5 |  |  |  | 148 | adminRoutes | partnerAuth |
 | SafetyPolicyDocument | 24 | 1 | 1 | 3 | PolicyStatus |  | yes | 0 | nothing | nothing |
 | SafetyPolicyAcknowledgement | 7 | 1 | 1 | 1 |  |  |  | 0 | nothing | nothing |
 | SafetyTrainingCourse | 20 | 0 | 1 | 2 |  |  | yes | 0 | nothing | nothing |
@@ -333,8 +334,8 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | StoreListing | 14 | 1 | 0 | 0 |  |  |  | 10 | nothing | index, ecomService |
 | ProcessingRecipe | 23 | 0 | 1 | 1 |  |  |  | 12 | processingRecipes | processingRecipes, index |
 | RecipeRoutingTemplate | 5 | 0 | 0 | 0 |  |  |  | 6 | processingRecipes | index |
-| AppSetting | 3 | 0 | 0 | 0 |  |  |  | 0 | retention, settings | settings |
+| AppSetting | 3 | 0 | 0 | 0 |  |  |  | 1 | retention, settings | settings |
 | DemandSuggestionEvent | 10 | 0 | 0 | 2 |  |  |  | 1242 | demandShaping | demandShaping, index |
 | DocumentCounter | 3 | 0 | 0 | 0 |  |  |  | 2 | nothing | nothing |
-| RequestKey | 8 | 0 | 1 | 1 |  |  |  | 4 | requestKeys | requestKeys |
+| RequestKey | 8 | 0 | 1 | 1 |  |  |  | 18 | integrationReport, requestKeys | integrationReport, requestKeys |
 

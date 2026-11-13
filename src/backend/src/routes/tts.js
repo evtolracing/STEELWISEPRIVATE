@@ -3,8 +3,16 @@
  * Proxies TTS requests through backend to keep API key secure
  */
 
+import { callOut } from '../lib/outbound.js';
 import express from 'express';
 import { getSupabaseSecret } from '../config/supabaseClient.js';
+
+const SPEECH_URL = (process.env.ELEVENLABS_BASE_URL || 'https://api.elevenlabs.io').replace(/\/$/, '');
+const SPEECH_TIMEOUT_MS = Number(process.env.SPEECH_TIMEOUT_MS) || 20_000;
+/** A provider failure is ours to report as "the speech service failed", never as the caller's own 401 or 403. */
+const speechFailure = (error) => (error?.kind === 'TIMEOUT' ? { status: 504, error: 'The speech service took too long to answer. Try again.' }
+  : error?.kind === 'BREAKER_OPEN' ? { status: 503, error: 'The speech service is not answering right now. Try again in a minute.' }
+  : { status: 502, error: 'The speech service could not produce audio.' });
 
 const router = express.Router();
 
@@ -61,16 +69,13 @@ router.get('/test', async (req, res) => {
     }
 
     // Test the API key by making a minimal request
-    const testRes = await fetch(`https://api.elevenlabs.io/v1/user`, {
-      headers: { 'xi-api-key': apiKey }
-    });
-
-    if (!testRes.ok) {
-      const error = await testRes.text();
+    let testRes;
+    try {
+      testRes = await callOut('speech', `${SPEECH_URL}/v1/user`, { headers: { 'xi-api-key': apiKey } }, { timeoutMs: 8000, repeatable: true, tries: 2 });
+    } catch (error) {
       return res.json({
         configured: false,
-        message: `API key is set but invalid (${testRes.status})`,
-        error,
+        message: error?.kind === 'HTTP' && error.status ? `API key is set but was refused by the speech service (${error.status})` : 'The speech service could not be reached',
         instructions: 'Check that your ElevenLabs API key is correct'
       });
     }
@@ -84,8 +89,7 @@ router.get('/test', async (req, res) => {
         email: userData.email || 'N/A',
         characterCount: userData.character_count || 0,
         characterLimit: userData.character_limit || 0,
-      },
-      apiKeyPrefix: apiKey.substring(0, 8) + '...'
+      }
     });
 
   } catch (error) {
@@ -146,8 +150,7 @@ router.post('/speak', async (req, res) => {
     console.log('🔊 TTS Request:', {
       textLength: text.length,
       voiceId,
-      hasApiKey: !!apiKey,
-      apiKeyPrefix: apiKey ? apiKey.substring(0, 8) + '...' : 'none'
+      hasApiKey: !!apiKey
     });
     
     if (!apiKey) {
@@ -156,34 +159,18 @@ router.post('/speak', async (req, res) => {
     }
 
     // Call ElevenLabs API directly via fetch
-    const elevenLabsRes = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-      {
+    // One try: a repeat of a request that timed out could be charged twice by the provider.
+    let elevenLabsRes;
+    try {
+      elevenLabsRes = await callOut('speech', `${SPEECH_URL}/v1/text-to-speech/${encodeURIComponent(voiceId)}`, {
         method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          text: cleanText,
-          model_id: modelId,
-          voice_settings: voiceSettings,
-        }),
-      }
-    );
-
-    if (!elevenLabsRes.ok) {
-      const errText = await elevenLabsRes.text();
-      console.error('❌ ElevenLabs API error:', {
-        status: elevenLabsRes.status,
-        statusText: elevenLabsRes.statusText,
-        error: errText
-      });
-      return res.status(elevenLabsRes.status).json({ 
-        error: `ElevenLabs error: ${elevenLabsRes.status}`,
-        details: errText,
-      });
+        headers: { 'Accept': 'audio/mpeg', 'Content-Type': 'application/json', 'xi-api-key': apiKey },
+        body: JSON.stringify({ text: cleanText, model_id: modelId, voice_settings: voiceSettings }),
+      }, { timeoutMs: SPEECH_TIMEOUT_MS });
+    } catch (error) {
+      const failure = speechFailure(error);
+      console.error(JSON.stringify({ level: 'error', msg: 'speech_failed', id: req.id, kind: error?.kind || 'UNKNOWN', providerStatus: error?.status || null }));
+      return res.status(failure.status).json({ error: failure.error, requestId: req.id });
     }
 
     // Buffer the full audio before sending (prevents partial playback issues)

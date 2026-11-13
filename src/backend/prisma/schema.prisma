@@ -3288,10 +3288,12 @@ model WebhookDelivery {
 
   createdAt DateTime @default(now())
 
+  @@unique([webhookId, eventId])
   @@index([webhookId])
   @@index([eventId])
   @@index([status])
   @@index([nextRetryAt])
+  @@index([status, nextRetryAt])
 }
 
 // PartnerApiLog - Audit log for every partner API call

@@ -1,509 +1,176 @@
 /**
- * Carrier Partner API Routes
- * External-facing endpoints for carrier/logistics integrations.
- * All routes require partner auth with CARRIER type.
- * 
- * Mount: /api/v1/partner/carrier
+ * Carrier partner API. Mount: /api/v1/partner/carrier
+ *
+ * A carrier sees the shipments assigned to its own organisation (Shipment.carrierId) and
+ * reports on them. Rules (finding C-002):
+ *   - A carrier never dispatches. Stock, the order and the invoice change only when the
+ *     service center dispatches the shipment. A carrier report on a shipment that has not been
+ *     dispatched is refused.
+ *   - "Delivered" and "exception" go through the same step staff use, so the same history is
+ *     written and the same events are raised.
+ *   - Reports can arrive twice or late. A repeat of the current state answers 200 with
+ *     `duplicate: true` and changes nothing. A report that is older than the shipment's state
+ *     (in transit after delivered) is refused with 409.
+ *   - A carrier sees what it needs to move the load: no prices.
  */
-
 import { Router } from 'express';
 import prisma from '../../lib/db.js';
-import { partnerAuth, requireScope, requirePartnerType } from '../../middleware/partnerAuth.js';
-import { partnerRateLimit, loadPartnerTier } from '../../middleware/partnerRateLimit.js';
-import { dispatchWebhookEvent } from '../../services/webhookService.js';
+import { requireScope } from '../../middleware/partnerAuth.js';
+import { deliver, moveShipment } from '../shipments.js';
+import { recordBusinessEvent, kick } from '../../services/webhookService.js';
+import { partnerStack, wrap, refuse, paging, pageOf, num, oneOf, text, partnerNote } from './common.js';
 
 const router = Router();
+router.use(...partnerStack('CARRIER'));
 
-// Apply partner middleware stack
-router.use(partnerAuth());
-router.use(requirePartnerType('CARRIER'));
-router.use(loadPartnerTier());
-router.use(partnerRateLimit());
+const STATUSES = ['PENDING', 'LOADING', 'IN_TRANSIT', 'DELIVERED', 'EXCEPTION', 'CANCELLED'];
+const REPORTS = ['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED', 'DELAYED', 'EXCEPTION'];
+const INCLUDE = {
+  items: { include: { orderLine: { select: { lineNumber: true, description: true, unit: true } } } },
+  stops: { orderBy: { stopNumber: 'asc' } },
+  fromLocation: { select: { code: true, name: true, addressLine1: true, city: true, state: true, postalCode: true } },
+  order: { select: { orderNumber: true, shipToAddress: true, shipToCity: true, shipToState: true, shipToZip: true, buyerId: true, buyer: { select: { name: true } } } },
+};
+const mine = (req, id) => ({ carrierId: req.partner.orgId, ...(id && { id }) });
 
-// ─── Shipments ─────────────────────────────────────────────────────────────────
-
-// GET /shipments — List shipments assigned to this carrier
-router.get('/shipments', requireScope('shipments:read'), async (req, res) => {
-  try {
-    const { status, page = 1, limit = 25 } = req.query;
-
-    // Carrier org name is stored as the carrier field on shipments
-    // In production, there would be a carrierId FK. Using org name match for now.
-    const org = await prisma.organization.findUnique({
-      where: { id: req.partner.orgId },
-      select: { name: true, code: true },
-    });
-
-    const where = {
-      OR: [
-        { carrier: org.name },
-        { carrier: org.code },
-        { carrierId: req.partner.orgId },
-      ],
-    };
-    if (status) where.status = status;
-
-    const [shipments, total] = await Promise.all([
-      prisma.shipment.findMany({
-        where,
-        include: {
-          items: { select: { id: true, description: true, quantity: true, weight: true } },
-          stops: { orderBy: { sequence: 'asc' } },
-        },
-        orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * limit,
-        take: parseInt(limit),
-      }),
-      prisma.shipment.count({ where }),
-    ]);
-
-    res.json({
-      data: shipments.map(s => ({
-        id: s.id,
-        status: s.status,
-        trackingNumber: s.trackingNumber,
-        estimatedDelivery: s.estimatedDelivery,
-        itemCount: s.items.length,
-        totalWeight: s.items.reduce((sum, i) => sum + (i.weight || 0), 0),
-        stopCount: s.stops.length,
-        createdAt: s.createdAt,
-      })),
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    });
-  } catch (error) {
-    console.error('Carrier shipments list error:', error);
-    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to list shipments' } });
-  }
+const toApi = (s) => ({
+  id: s.id, shipmentNumber: s.shipmentNumber, status: s.status, orderNumber: s.order?.orderNumber || null,
+  scheduledDate: s.scheduledDate, shippedAt: s.shippedAt, deliveredAt: s.deliveredAt,
+  totalWeightLb: num(s.totalWeightLb), bolNumber: s.bolNumber, truckNumber: s.truckNumber, driverName: s.driverName,
+  proofOfDelivery: s.podCaptured,
+  origin: s.fromLocation ? { code: s.fromLocation.code, name: s.fromLocation.name, address: s.fromLocation.addressLine1, city: s.fromLocation.city, state: s.fromLocation.state, postalCode: s.fromLocation.postalCode } : null,
+  destination: s.order ? { name: s.order.buyer?.name || null, address: s.order.shipToAddress, city: s.order.shipToCity, state: s.order.shipToState, postalCode: s.order.shipToZip } : null,
+  items: (s.items || []).map((i) => ({ id: i.id, lineNumber: i.orderLine?.lineNumber ?? null, description: i.orderLine?.description || null, quantity: num(i.qtyShipped), unit: i.orderLine?.unit || null, weightLb: num(i.weightLb) })),
+  stops: (s.stops || []).map((p) => ({ sequence: p.stopNumber, address: p.address, city: p.city, state: p.state, postalCode: p.zipCode, scheduledTime: p.scheduledTime, arrivedAt: p.arrivedAt, departedAt: p.departedAt, notes: p.notes })),
+  createdAt: s.createdAt, updatedAt: s.updatedAt,
 });
 
-// GET /shipments/:id — Shipment detail
-router.get('/shipments/:id', requireScope('shipments:read'), async (req, res) => {
-  try {
-    const org = await prisma.organization.findUnique({
-      where: { id: req.partner.orgId },
-      select: { name: true, code: true },
-    });
+async function own(req) {
+  const shipment = await prisma.shipment.findFirst({ where: mine(req, String(req.params.id || req.body?.shipmentId || '')), include: INCLUDE });
+  if (!shipment) refuse(404, 'NOT_FOUND', 'Shipment not found');
+  req.partnerResourceType = 'Shipment';
+  req.partnerResourceId = shipment.id;
+  return shipment;
+}
 
-    const shipment = await prisma.shipment.findFirst({
-      where: {
-        id: req.params.id,
-        OR: [
-          { carrier: org.name },
-          { carrier: org.code },
-          { carrierId: req.partner.orgId },
-        ],
-      },
-      include: {
-        items: true,
-        stops: { orderBy: { sequence: 'asc' } },
-      },
-    });
-
-    if (!shipment) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Shipment not found' } });
-    }
-
-    req.partnerResourceType = 'Shipment';
-    req.partnerResourceId = shipment.id;
-
-    res.json({
-      id: shipment.id,
-      status: shipment.status,
-      trackingNumber: shipment.trackingNumber,
-      estimatedDelivery: shipment.estimatedDelivery,
-      actualDelivery: shipment.actualDelivery,
-      items: shipment.items.map(item => ({
-        id: item.id,
-        description: item.description,
-        quantity: item.quantity,
-        weight: item.weight,
-      })),
-      stops: shipment.stops.map(stop => ({
-        sequence: stop.sequence,
-        type: stop.type,
-        address: stop.address,
-        city: stop.city,
-        state: stop.state,
-        postalCode: stop.postalCode,
-        contactName: stop.contactName,
-        contactPhone: stop.contactPhone,
-        scheduledArrival: stop.estimatedArrival,
-        actualArrival: stop.actualArrival,
-        notes: stop.notes,
-      })),
-      notes: shipment.notes,
-      createdAt: shipment.createdAt,
-    });
-  } catch (error) {
-    console.error('Carrier shipment detail error:', error);
-    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get shipment' } });
-  }
+/** A report that changes nothing on the shipment itself is still kept, with who sent it. */
+const track = (db, req, shipment, report, details = {}) => db.auditLog.create({
+  data: {
+    category: 'WORKFLOW', eventType: 'CARRIER_REPORT', severity: report === 'DELAYED' ? 'WARNING' : 'INFO', action: 'UPDATE', userId: null,
+    resourceType: 'Shipment', resourceId: shipment.id,
+    details: { shipmentNumber: shipment.shipmentNumber, report, partnerId: req.partner.id, ...details },
+  },
 });
 
-// POST /shipments/:id/respond — Accept or decline a shipment assignment
-router.post('/shipments/:id/respond', requireScope('shipments:respond'), async (req, res) => {
-  try {
-    const { action, reason, estimatedPickup } = req.body;
+router.get('/shipments', requireScope('shipments:read'), wrap('list shipments', async (req, res) => {
+  const p = paging(req.query);
+  const status = oneOf(req.query.status, STATUSES, 'status');
+  const where = { ...mine(req), ...(status && { status }) };
+  const [rows, total] = await Promise.all([
+    prisma.shipment.findMany({ where, include: INCLUDE, orderBy: { createdAt: 'desc' }, skip: p.skip, take: p.take }),
+    prisma.shipment.count({ where }),
+  ]);
+  res.json(pageOf(rows.map(toApi), total, p));
+}));
 
-    if (!['accept', 'decline'].includes(action)) {
-      return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: 'action must be "accept" or "decline"' }
-      });
-    }
+router.get('/shipments/:id', requireScope('shipments:read'), wrap('get shipment', async (req, res) => {
+  res.json(toApi(await own(req)));
+}));
 
-    const org = await prisma.organization.findUnique({
-      where: { id: req.partner.orgId },
-      select: { name: true, code: true },
-    });
+// Accept or decline a load. Recorded for the shipping desk; the shipment itself is not changed,
+// because reassigning or cancelling a load is the service center's decision.
+router.post('/shipments/:id/respond', requireScope('shipments:respond'), wrap('respond to shipment', async (req, res) => {
+  const action = String(req.body?.action || '').toLowerCase();
+  if (!['accept', 'decline'].includes(action)) refuse(400, 'VALIDATION_ERROR', 'action must be "accept" or "decline"');
+  const reason = text(req.body?.reason, 'reason');
+  const shipment = await own(req);
+  if (!['PENDING', 'LOADING'].includes(shipment.status)) refuse(409, 'CONFLICT', `This shipment is ${shipment.status}, so it can no longer be accepted or declined`);
+  await track(prisma, req, shipment, action === 'accept' ? 'ACCEPTED' : 'DECLINED', { reason, estimatedPickup: text(req.body?.estimatedPickup, 'estimatedPickup', 40) });
+  res.json({ id: shipment.id, status: shipment.status, response: action === 'accept' ? 'ACCEPTED' : 'DECLINED', message: action === 'accept' ? 'Acceptance recorded' : 'Decline recorded. The shipping desk will reassign the load.' });
+}));
 
-    const shipment = await prisma.shipment.findFirst({
-      where: {
-        id: req.params.id,
-        OR: [
-          { carrier: org.name },
-          { carrier: org.code },
-          { carrierId: req.partner.orgId },
-        ],
-      },
-    });
+async function report(req, shipment, status, body) {
+  const location = text(body.location, 'location', 200);
+  const notes = text(body.notes, 'notes', 1000);
+  const at = body.timestamp ? new Date(body.timestamp) : new Date();
+  if (Number.isNaN(at.getTime())) refuse(400, 'VALIDATION_ERROR', 'timestamp is not a valid date');
+  const details = { location, notes, reportedAt: at.toISOString() };
+  const done = (extra = {}) => ({ id: shipment.id, carrierStatus: status, message: 'Status recorded', ...extra });
 
-    if (!shipment) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Shipment not found' } });
-    }
-
-    const newStatus = action === 'accept' ? 'CONFIRMED' : 'CANCELLED';
-
-    const updated = await prisma.shipment.update({
-      where: { id: shipment.id },
-      data: {
-        status: newStatus,
-        notes: `${shipment.notes || ''}\n[Carrier API] ${action === 'accept' ? 'Accepted' : `Declined: ${reason || 'No reason given'}`}`.trim(),
-      },
-    });
-
-    req.partnerResourceType = 'Shipment';
-    req.partnerResourceId = shipment.id;
-
-    res.json({
-      id: updated.id,
-      status: updated.status,
-      message: `Shipment ${action}ed`,
-    });
-  } catch (error) {
-    console.error('Carrier shipment respond error:', error);
-    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to respond to shipment' } });
+  if (['PENDING', 'LOADING'].includes(shipment.status)) refuse(409, 'NOT_DISPATCHED', 'The service center has not dispatched this shipment yet');
+  if (shipment.status === 'CANCELLED') refuse(409, 'CONFLICT', 'This shipment was cancelled');
+  if (shipment.status === 'DELIVERED') {
+    if (status === 'DELIVERED') return done({ status: 'DELIVERED', duplicate: true, message: 'Already recorded as delivered' });
+    refuse(409, 'ALREADY_DELIVERED', 'This shipment is already delivered, so an earlier status cannot be applied');
   }
-});
 
-// POST /shipments/:id/status — Update shipment status
-router.post('/shipments/:id/status', requireScope('shipments:status'), async (req, res) => {
-  try {
-    const { status, location, notes, timestamp } = req.body;
-
-    const validStatuses = ['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED', 'DELAYED', 'EXCEPTION'];
-    if (!status || !validStatuses.includes(status)) {
-      return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: `status must be one of: ${validStatuses.join(', ')}` }
-      });
-    }
-
-    const org = await prisma.organization.findUnique({
-      where: { id: req.partner.orgId },
-      select: { name: true, code: true },
-    });
-
-    const shipment = await prisma.shipment.findFirst({
-      where: {
-        id: req.params.id,
-        OR: [
-          { carrier: org.name },
-          { carrier: org.code },
-          { carrierId: req.partner.orgId },
-        ],
-      },
-    });
-
-    if (!shipment) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Shipment not found' } });
-    }
-
-    // Map carrier statuses to internal shipment statuses
-    const statusMap = {
-      'PICKED_UP': 'IN_TRANSIT',
-      'IN_TRANSIT': 'IN_TRANSIT',
-      'OUT_FOR_DELIVERY': 'IN_TRANSIT',
-      'DELIVERED': 'DELIVERED',
-      'DELAYED': 'DELAYED',
-      'EXCEPTION': 'EXCEPTION',
-    };
-
-    const updateData = {
-      status: statusMap[status] || shipment.status,
-      notes: `${shipment.notes || ''}\n[Carrier API ${new Date().toISOString()}] Status: ${status}${location ? ` at ${location}` : ''}${notes ? ` - ${notes}` : ''}`.trim(),
-    };
-
-    if (status === 'DELIVERED') {
-      updateData.actualDelivery = timestamp ? new Date(timestamp) : new Date();
-    }
-
-    const updated = await prisma.shipment.update({
-      where: { id: shipment.id },
-      data: updateData,
-    });
-
-    req.partnerResourceType = 'Shipment';
-    req.partnerResourceId = shipment.id;
-
-    // Dispatch webhook events based on status
-    const eventMap = {
-      'PICKED_UP': 'shipment.dispatched',
-      'DELIVERED': 'shipment.delivered',
-      'DELAYED': 'shipment.exception',
-      'EXCEPTION': 'shipment.exception',
-    };
-
-    const eventType = eventMap[status];
-    if (eventType) {
-      // Find customer partner for this order
-      const order = shipment.orderId ? await prisma.order.findUnique({
-        where: { id: shipment.orderId },
-        select: { buyerOrgId: true },
-      }) : null;
-
-      const customerPartner = order ? await prisma.partner.findFirst({
-        where: { organizationId: order.buyerOrgId, partnerType: 'CUSTOMER', status: 'ACTIVE' },
-        select: { id: true },
-      }) : null;
-
-      const targetPartnerIds = [req.partner.id];
-      if (customerPartner) targetPartnerIds.push(customerPartner.id);
-
-      dispatchWebhookEvent(eventType, {
-        shipmentId: shipment.id,
-        status,
-        location,
-        timestamp: timestamp || new Date().toISOString(),
-      }, targetPartnerIds).catch(console.error);
-    }
-
-    res.json({
-      id: updated.id,
-      status: updated.status,
-      carrierStatus: status,
-      message: 'Status updated',
-    });
-  } catch (error) {
-    console.error('Carrier status update error:', error);
-    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update status' } });
+  if (status === 'DELIVERED') {
+    const updated = await deliver(shipment.id, { podSignature: text(body.signedBy ?? body.podSignature, 'signedBy', 200) || undefined, podImageUrl: text(body.podImageUrl ?? body.imageUrl, 'podImageUrl', 2000) || undefined }, null, partnerNote(req, `delivered${location ? ` at ${location}` : ''}`));
+    await track(prisma, req, shipment, status, details);
+    return done({ status: updated.status });
   }
-});
-
-// POST /shipments/:id/pod — Upload Proof of Delivery
-router.post('/shipments/:id/pod', requireScope('pod:write'), async (req, res) => {
-  try {
-    const { signedBy, signatureUrl, photoUrls, notes, deliveredAt } = req.body;
-
-    if (!signedBy) {
-      return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: 'signedBy is required' }
-      });
-    }
-
-    const org = await prisma.organization.findUnique({
-      where: { id: req.partner.orgId },
-      select: { name: true, code: true },
-    });
-
-    const shipment = await prisma.shipment.findFirst({
-      where: {
-        id: req.params.id,
-        OR: [
-          { carrier: org.name },
-          { carrier: org.code },
-          { carrierId: req.partner.orgId },
-        ],
-      },
-    });
-
-    if (!shipment) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Shipment not found' } });
-    }
-
-    // Create POD as a document
-    const podDoc = await prisma.document.create({
-      data: {
-        organizationId: req.partner.orgId,
-        type: 'POD',
-        title: `POD - Shipment ${shipment.trackingNumber || shipment.id}`,
-        fileName: `pod_${shipment.id}.json`,
-        fileUrl: signatureUrl || null,
-        mimeType: 'application/json',
-        notes: JSON.stringify({
-          signedBy,
-          signatureUrl,
-          photoUrls: photoUrls || [],
-          deliveredAt: deliveredAt || new Date().toISOString(),
-          notes,
-        }),
-      },
-    });
-
-    // Update shipment status to delivered
-    await prisma.shipment.update({
-      where: { id: shipment.id },
-      data: {
-        status: 'DELIVERED',
-        actualDelivery: deliveredAt ? new Date(deliveredAt) : new Date(),
-        notes: `${shipment.notes || ''}\n[Carrier API] POD uploaded - Signed by: ${signedBy}`.trim(),
-      },
-    });
-
-    req.partnerResourceType = 'Shipment';
-    req.partnerResourceId = shipment.id;
-
-    // Dispatch delivery event
-    dispatchWebhookEvent('shipment.delivered', {
-      shipmentId: shipment.id,
-      signedBy,
-      deliveredAt: deliveredAt || new Date().toISOString(),
-    }).catch(console.error);
-
-    res.status(201).json({
-      id: podDoc.id,
-      shipmentId: shipment.id,
-      signedBy,
-      message: 'Proof of delivery uploaded',
-      createdAt: podDoc.createdAt,
-    });
-  } catch (error) {
-    console.error('Carrier POD upload error:', error);
-    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to upload POD' } });
+  if (status === 'EXCEPTION') {
+    if (shipment.status === 'EXCEPTION') { await track(prisma, req, shipment, status, details); return done({ status: 'EXCEPTION', duplicate: true }); }
+    const updated = await moveShipment(shipment.id, 'EXCEPTION', {}, null, partnerNote(req, notes || 'exception reported'));
+    await track(prisma, req, shipment, status, details);
+    return done({ status: updated.status });
   }
-});
-
-// ─── Exceptions ────────────────────────────────────────────────────────────────
-
-// POST /exceptions — Report a shipment exception
-router.post('/exceptions', requireScope('exceptions:write'), async (req, res) => {
-  try {
-    const { shipmentId, type, description, location, severity, photoUrls } = req.body;
-
-    if (!shipmentId || !type || !description) {
-      return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: 'shipmentId, type, and description are required' }
-      });
-    }
-
-    const validTypes = ['DAMAGE', 'DELAY', 'REFUSED', 'ADDRESS_ISSUE', 'WEATHER', 'MECHANICAL', 'OTHER'];
-    if (!validTypes.includes(type)) {
-      return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: `type must be one of: ${validTypes.join(', ')}` }
-      });
-    }
-
-    const org = await prisma.organization.findUnique({
-      where: { id: req.partner.orgId },
-      select: { name: true, code: true },
+  if (status === 'DELAYED') {
+    // A delay does not change where the shipment is. It is recorded and the customer's system is told.
+    await prisma.$transaction(async (tx) => {
+      await track(tx, req, shipment, status, details);
+      await recordBusinessEvent(tx, 'order.delayed', `${shipment.id}:${at.getTime()}`, { shipmentId: shipment.id, shipmentNumber: shipment.shipmentNumber, orderNumber: shipment.order?.orderNumber || null, reason: notes, location }, { customerOrgId: shipment.order?.buyerId });
     });
-
-    const shipment = await prisma.shipment.findFirst({
-      where: {
-        id: shipmentId,
-        OR: [
-          { carrier: org.name },
-          { carrier: org.code },
-          { carrierId: req.partner.orgId },
-        ],
-      },
-    });
-
-    if (!shipment) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Shipment not found' } });
-    }
-
-    // Update shipment with exception
-    await prisma.shipment.update({
-      where: { id: shipment.id },
-      data: {
-        status: 'EXCEPTION',
-        notes: `${shipment.notes || ''}\n[EXCEPTION ${new Date().toISOString()}] ${type}: ${description}${location ? ` at ${location}` : ''}`.trim(),
-      },
-    });
-
-    req.partnerResourceType = 'Shipment';
-    req.partnerResourceId = shipment.id;
-
-    // Dispatch exception event
-    dispatchWebhookEvent('shipment.exception', {
-      shipmentId: shipment.id,
-      type,
-      description,
-      location,
-      severity: severity || 'MEDIUM',
-    }).catch(console.error);
-
-    res.status(201).json({
-      shipmentId: shipment.id,
-      exceptionType: type,
-      severity: severity || 'MEDIUM',
-      message: 'Exception reported',
-    });
-  } catch (error) {
-    console.error('Carrier exception report error:', error);
-    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to report exception' } });
+    kick();
+    return done({ status: shipment.status });
   }
-});
-
-// ─── Performance ───────────────────────────────────────────────────────────────
-
-// GET /performance — Carrier performance metrics
-router.get('/performance', requireScope('performance:read'), async (req, res) => {
-  try {
-    const org = await prisma.organization.findUnique({
-      where: { id: req.partner.orgId },
-      select: { name: true, code: true },
-    });
-
-    const shipments = await prisma.shipment.findMany({
-      where: {
-        OR: [
-          { carrier: org.name },
-          { carrier: org.code },
-          { carrierId: req.partner.orgId },
-        ],
-      },
-      select: { status: true, estimatedDelivery: true, actualDelivery: true, createdAt: true },
-    });
-
-    const total = shipments.length;
-    const delivered = shipments.filter(s => s.status === 'DELIVERED').length;
-    const onTime = shipments.filter(s =>
-      s.status === 'DELIVERED' &&
-      s.actualDelivery &&
-      s.estimatedDelivery &&
-      new Date(s.actualDelivery) <= new Date(s.estimatedDelivery)
-    ).length;
-    const exceptions = shipments.filter(s => s.status === 'EXCEPTION').length;
-
-    res.json({
-      partnerId: req.partner.id,
-      period: 'ALL_TIME',
-      metrics: {
-        totalShipments: total,
-        deliveredShipments: delivered,
-        onTimeDeliveryRate: delivered > 0 ? Math.round((onTime / delivered) * 100) : null,
-        exceptionRate: total > 0 ? Math.round((exceptions / total) * 100) : null,
-      },
-    });
-  } catch (error) {
-    console.error('Carrier performance error:', error);
-    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get performance' } });
+  // PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY: the shipment is on the road.
+  if (shipment.status === 'EXCEPTION') {
+    const updated = await moveShipment(shipment.id, 'IN_TRANSIT', {}, null, partnerNote(req, 'back on the road'));
+    await track(prisma, req, shipment, status, details);
+    return done({ status: updated.status });
   }
-});
+  await track(prisma, req, shipment, status, details);
+  return done({ status: shipment.status });
+}
+
+router.post('/shipments/:id/status', requireScope('shipments:status'), wrap('update shipment status', async (req, res) => {
+  const status = oneOf(req.body?.status, REPORTS, 'status');
+  if (!status) refuse(400, 'VALIDATION_ERROR', `status must be one of: ${REPORTS.join(', ')}`);
+  res.json(await report(req, await own(req), status, req.body || {}));
+}));
+
+// Proof of delivery. Same step as a "delivered" report, with who signed.
+router.post('/shipments/:id/pod', requireScope('pod:write'), wrap('record proof of delivery', async (req, res) => {
+  const body = req.body || {};
+  if (!text(body.signedBy ?? body.podSignature, 'signedBy', 200) && !text(body.podImageUrl ?? body.imageUrl, 'podImageUrl', 2000)) {
+    refuse(400, 'VALIDATION_ERROR', 'signedBy or podImageUrl is required');
+  }
+  res.json(await report(req, await own(req), 'DELIVERED', body));
+}));
+
+router.post('/exceptions', requireScope('exceptions:write'), wrap('report exception', async (req, res) => {
+  const body = req.body || {};
+  if (!body.shipmentId) refuse(400, 'VALIDATION_ERROR', 'shipmentId is required');
+  const description = text(body.description ?? body.notes, 'description', 1000);
+  if (!description) refuse(400, 'VALIDATION_ERROR', 'description is required');
+  const result = await report(req, await own(req), 'EXCEPTION', { ...body, notes: [text(body.type, 'type', 60), description].filter(Boolean).join(': ') });
+  res.status(result.duplicate ? 200 : 201).json(result);
+}));
+
+router.get('/performance', requireScope('performance:read'), wrap('get performance', async (req, res) => {
+  const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+  const rows = await prisma.shipment.findMany({ where: { ...mine(req), createdAt: { gte: since } }, select: { status: true, scheduledDate: true, deliveredAt: true } });
+  const delivered = rows.filter((r) => r.status === 'DELIVERED');
+  const dated = delivered.filter((r) => r.scheduledDate && r.deliveredAt);
+  // On time: delivered by the end of the scheduled day.
+  const onTime = dated.filter((r) => r.deliveredAt.getTime() <= new Date(r.scheduledDate).setUTCHours(23, 59, 59, 999)).length;
+  res.json({
+    periodDays: 90, total: rows.length, delivered: delivered.length,
+    inTransit: rows.filter((r) => r.status === 'IN_TRANSIT').length, exceptions: rows.filter((r) => r.status === 'EXCEPTION').length,
+    cancelled: rows.filter((r) => r.status === 'CANCELLED').length,
+    onTimeDeliveryPct: dated.length ? Math.round((onTime / dated.length) * 1000) / 10 : null, measuredDeliveries: dated.length,
+  });
+}));
 
 export default router;

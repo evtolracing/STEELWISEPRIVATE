@@ -20,3 +20,15 @@ export function isRecordNotFound(error) {
 export function isRejectedShape(error) {
   return error?.name === 'PrismaClientValidationError';
 }
+
+/**
+ * The database itself refused a change: a reference to a row that does not exist (or the
+ * removal of one still in use), or a value check such as "the total equals its parts".
+ * Returns 'REFERENCE', 'CHECK' or null.
+ */
+export function ruleRefusal(error) {
+  if (!error) return null;
+  if (error.code === 'P2003') return 'REFERENCE';
+  if (error.code === 'P2004' || /violates check constraint|code: "23514"|SqlState\(E?23514\)/.test(String(error.message || ''))) return 'CHECK';
+  return null;
+}

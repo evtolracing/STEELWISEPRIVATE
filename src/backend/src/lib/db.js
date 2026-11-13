@@ -5,7 +5,7 @@
 import '../config/env.js';
 import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
-import { requestContext, isBadFilterValue, isRecordNotFound, isRejectedShape } from './requestContext.js';
+import { requestContext, isBadFilterValue, isRecordNotFound, isRejectedShape, ruleRefusal } from './requestContext.js';
 import { scopedArgs } from './branchScope.js';
 import { roundedArgs } from './moneyColumns.js';
 
@@ -32,6 +32,7 @@ const withBadFilterNote = (client) => client.$extends({
         if (store && isBadFilterValue(error)) store.badFilterValue = String(error.message || '');
         if (store && isRecordNotFound(error)) store.recordNotFound = true;
         if (store && isRejectedShape(error)) store.rejectedShape = String(error.message || '').slice(-400);
+        if (store && ruleRefusal(error)) { store.ruleRefusal = ruleRefusal(error); store.ruleRefusalDetail = String(error.message || '').slice(-300); }
         throw error;
       }
     },

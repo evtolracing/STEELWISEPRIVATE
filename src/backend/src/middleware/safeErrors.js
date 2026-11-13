@@ -42,6 +42,10 @@ export function callerMistake(statusCode, req, store) {
   if (statusCode !== 500 || READS.has(req.method)) return null;
   if (store?.recordNotFound) return { status: 404, error: 'That record was not found.' };
   if (store?.rejectedShape) return { status: 400, error: 'Some of the values in this request are missing or not valid.' };
+  // The database's own rules refused the change (finding H-017). The route did not expect it,
+  // but nothing was saved, and the caller can act on a 409 where a 500 says nothing.
+  if (store?.ruleRefusal === 'REFERENCE') return { status: 409, code: 'RULE_REFUSED', error: 'This change refers to a record that does not exist, or would remove one that other records still use.' };
+  if (store?.ruleRefusal === 'CHECK') return { status: 409, code: 'RULE_REFUSED', error: 'This change was refused because the values do not agree with each other (for example a total that does not equal its parts, or a quantity below zero).' };
   return null;
 }
 
@@ -57,8 +61,9 @@ export function safeErrors(req, res, next) {
     const verdict = callerMistake(res.statusCode, req, store);
     if (verdict) {
       if (verdict.status === 400) console.error(`[safeErrors] ${req.id || '-'} ${req.method} ${req.originalUrl.split('?')[0]} → 400 (values refused by the database layer):`, store.rejectedShape);
+      if (verdict.code === 'RULE_REFUSED') console.error(`[safeErrors] ${req.id || '-'} ${req.method} ${req.originalUrl.split('?')[0]} → 409 (refused by a database rule; the route should check this first):`, store.ruleRefusalDetail);
       res.status(verdict.status);
-      return json({ error: verdict.error, ...(req.id && { requestId: req.id }) });
+      return json({ error: verdict.error, ...(verdict.code && { code: verdict.code }), ...(req.id && { requestId: req.id }) });
     }
     if (res.statusCode >= 400 && body && typeof body === 'object' && !Array.isArray(body)) {
       let cleaned = null;

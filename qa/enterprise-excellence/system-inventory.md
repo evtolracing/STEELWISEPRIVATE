@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit d8a3a2a. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -8,16 +8,16 @@ Every figure here is counted from the code or measured in a test run. The module
 
 | Item | Count |
 |---|---:|
-| Modules | 47 |
-| Server route files | 72 |
-| API routes (each address counted; two route files are mounted twice) | 613 |
-| API routes that change data | 320 |
+| Modules | 48 |
+| Server route files | 74 |
+| API routes (each address counted; two route files are mounted twice) | 618 |
+| API routes that change data | 323 |
 | Database tables in the schema | 159 |
 | Enumerations | 96 |
-| Migrations | 27 |
-| Screens (routes in the browser) | 143 |
-| Frontend source files | 389 (117,968 lines) |
-| Server route code | 25,559 lines |
+| Migrations | 28 |
+| Screens (routes in the browser) | 144 |
+| Frontend source files | 390 (118,209 lines) |
+| Server route code | 24,731 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -27,12 +27,11 @@ Every figure here is counted from the code or measured in a test run. The module
 
 | Classification | Modules |
 |---|---:|
-| IMPLEMENTED AND VERIFIED | 22 |
-| IMPLEMENTED BUT NOT VERIFIED | 12 |
+| IMPLEMENTED AND VERIFIED | 23 |
+| IMPLEMENTED BUT NOT VERIFIED | 11 |
+| PARTIALLY IMPLEMENTED | 6 |
 | PLACEHOLDER OR MOCK | 5 |
-| PARTIALLY IMPLEMENTED | 4 |
 | DISCONNECTED | 3 |
-| NOT APPLICABLE | 1 |
 
 IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfully by an automated test in this session and the result was checked. It does not mean the module is complete: see the findings listed against it.
 
@@ -103,7 +102,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** PARTIALLY IMPLEMENTED
 - **Basis:** Tax rates verified (sweep, browser). Online cut-off settings are lost on reload (X-007)
 - **Purpose:** Sales tax by state, store rules, catalogue visibility, demo seed switch
-- **Screens:** 8 (7 real, 1 mixed): /admin/users, /admin/partners, /admin/tax-rates, /admin/audit-log, /admin/processing-recipes, /admin/staff, /admin/catalog, /admin/online-settings
+- **Screens:** 9 (8 real, 1 mixed): /admin/integrations, /admin/users, /admin/partners, /admin/tax-rates, /admin/audit-log, /admin/processing-recipes, /admin/staff, /admin/catalog, /admin/online-settings
 - **Server:** `src/backend/src/routes/taxRates.js`, `src/backend/src/routes/onlineSettings.js`, `src/backend/src/routes/admin.js`; served at /api/tax-rates, /api/admin/online-settings, /api/admin
 - **Routes:** 12, of which 6 change data. Returned a success in a test this session: 6 of 12; of the changing routes, 0 of 6
 - **Tables:** SalesTaxRate, Location
@@ -136,7 +135,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Requests for quote, quotes, accept and convert to an order
 - **Screens:** 3 (3 real): /commercial/demand-shaping, /sales/rfq-inbox, /sales/dashboard
 - **Server:** `src/backend/src/routes/rfqs.js`, `src/backend/src/routes/quotes.js`, `src/backend/src/routes/salesRoutes.js`, `src/backend/src/routes/salesDashboard.js`; served at /api/sales-dashboard, /api/rfqs, /api/quotes, /api/sales
-- **Routes:** 18, of which 9 change data. Returned a success in a test this session: 11 of 18; of the changing routes, 4 of 9
+- **Routes:** 18, of which 9 change data. Returned a success in a test this session: 13 of 18; of the changing routes, 5 of 9
 - **Tables:** RFQ, Quote, User, Organization, Order
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Customers, products, pricing
@@ -167,7 +166,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 7 (6 real, 1 mixed): /orders/invoices, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
 - **Server:** `src/backend/src/routes/orders.js`; served at /api/orders
 - **Routes:** 7, of which 4 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 4 of 4
-- **Tables:** Order, OrderLineAllocation, Inventory, Coil, AuditLog, OrderLine
+- **Tables:** Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Order entry, quotes, web store, counter
 - **Feeds:** Jobs, shipments, invoices
@@ -316,7 +315,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 2 (2 real): /heats, /heats/:id
 - **Server:** `src/backend/src/routes/products.js`, `src/backend/src/routes/grades.js`, `src/backend/src/routes/heats.js`; served at /api/grades, /api/products, /api/heats
 - **Routes:** 16, of which 6 change data. Returned a success in a test this session: 14 of 16; of the changing routes, 6 of 6
-- **Tables:** Grade, Product, Heat, Organization
+- **Tables:** Grade, Product, Heat, Organization, MaterialMovement
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Access control
 - **Feeds:** Stock, pricing, order entry, receiving
@@ -570,18 +569,33 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 
 ### Partner API
 
-- **Status:** IMPLEMENTED BUT NOT VERIFIED
-- **Basis:** Sweep proves a call with no partner token is refused. No test signs in as a partner and succeeds. 0 of 18 write routes succeed in a test
-- **Purpose:** Token-protected API for customers, suppliers and carriers; webhooks
+- **Status:** PARTIALLY IMPLEMENTED
+- **Basis:** Phase 4: qa/sim/phase4-integration.mjs signs in as customer, carrier and supplier partners and succeeds on every working route; isolation between partners, scopes, revoked keys, rate limit, request keys and event delivery are tested. Supplier shipping notices, corrective actions, scorecard and document upload answer 501 (not built)
+- **Purpose:** Token-protected API for customers, suppliers and carriers; events sent to partner systems (webhooks)
 - **Screens:** none
 - **Server:** `src/backend/src/routes/partner/partnerAuthRoutes.js`, `src/backend/src/routes/partner/customerRoutes.js`, `src/backend/src/routes/partner/supplierRoutes.js`, `src/backend/src/routes/partner/carrierRoutes.js`, `src/backend/src/routes/partner/webhookRoutes.js`, `src/backend/src/routes/partner/adminRoutes.js`; served at /api/v1/partner/auth, /api/v1/partner/customer, /api/v1/partner/supplier, /api/v1/partner/carrier, /api/v1/partner/webhooks, /api/v1/admin/partners
-- **Routes:** 46, of which 19 change data. Returned a success in a test this session: 3 of 46; of the changing routes, 0 of 19
-- **Tables:** RFQ, Quote, Order, Job, Document, Shipment, Invoice, Organization, Partner, PartnerWebhook, WebhookDelivery, PartnerApiKey, PartnerApiLog
+- **Routes:** 47, of which 20 change data. Returned a success in a test this session: 36 of 47; of the changing routes, 15 of 20
+- **Tables:** RFQ, Quote, Order, Shipment, Invoice, Document, DocumentBlob, AuditLog, PartnerWebhook, WebhookDelivery, Partner, Organization, PartnerApiKey, PartnerApiLog
 - **Who may change it:** see permissions-matrix.md
-- **Depends on:** Sales orders, shipments, invoices
+- **Depends on:** Sales orders, quotes, shipments, invoices, purchase orders
 - **Feeds:** Outside systems
-- **Findings:** B-018
-- **Production concern:** Failed webhook deliveries are never retried
+- **Findings:** H-014, B-019
+- **Production concern:** Failed events are retried only when the host calls the scheduled address (B-019)
+
+### Integrations and scheduled work
+
+- **Status:** IMPLEMENTED AND VERIFIED
+- **Basis:** qa/sim/phase4-integration.mjs (report, replay, scheduled run, secrets not shown); qa/sim/ui-integration.cjs (the screen, Run now, a clerk is refused)
+- **Purpose:** The integration report (what is connected, calls to outside services, events waiting or failed, orders shipped but not invoiced), replay of a failed event, and the address the host calls on a schedule
+- **Screens:** 1 (1 real): /admin/integrations
+- **Server:** `src/backend/src/routes/integrations.js`; served at /api/admin/integrations
+- **Routes:** 4, of which 2 change data. Returned a success in a test this session: 4 of 4; of the changing routes, 2 of 2
+- **Tables:** WebhookDelivery
+- **Who may change it:** see permissions-matrix.md
+- **Depends on:** Partner API, shipments, invoices, request keys
+- **Feeds:** Company administrators; the host scheduler
+- **Findings:** B-019, E-017
+- **Production concern:** Counters for outside calls are per server instance; no alert is sent anywhere (E-017)
 
 ### Freight and logistics planning
 
@@ -649,17 +663,17 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 ### AI assistant and voice
 
 - **Status:** IMPLEMENTED BUT NOT VERIFIED
-- **Basis:** Needs provider keys that are not in the QA environment. Not run
+- **Basis:** Phase 4: the calls out to the speech and AI providers are tested against a local stand-in for success, hang, error, wrong key and repeated failure (qa/sim/phase4-integration.mjs). No real provider was called, so the answers themselves are not verified
 - **Purpose:** Top-bar assistant, chat, quote assistant, text to speech
 - **Screens:** none
 - **Server:** `src/backend/src/routes/ai.js`, `src/backend/src/routes/aiAssistant.js`, `src/backend/src/routes/tts.js`; served at /api/ai, /api/ai/tts, /api/ai/assistant
-- **Routes:** 14, of which 10 change data. Returned a success in a test this session: 4 of 14; of the changing routes, 0 of 10
+- **Routes:** 14, of which 10 change data. Returned a success in a test this session: 6 of 14; of the changing routes, 2 of 10
 - **Tables:** none directly in the route files (through a service, or none)
 - **Who may change it:** see permissions-matrix.md
-- **Depends on:** Read access to records
+- **Depends on:** Read access to records; outside providers
 - **Feeds:** None
-- **Findings:** none open
-- **Production concern:** What the assistant may read and say has not been examined
+- **Findings:** H-012
+- **Production concern:** What the assistant may read and say has not been examined; real providers not exercised
 
 ### Help manual
 
@@ -677,18 +691,18 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 
 ### Background work, notifications, schedules
 
-- **Status:** NOT APPLICABLE
-- **Basis:** Does not exist in the code (B-019)
+- **Status:** PARTIALLY IMPLEMENTED
+- **Basis:** Phase 4: one scheduled address exists and is tested (it sends waiting partner events and clears old request keys); see "Integrations and scheduled work". Nothing else runs on a schedule, and no email or text message is sent (owner decision 5: later). The host schedule is not set (B-019)
 - **Purpose:** Anything that happens without a person pressing a button
 - **Screens:** none
 - **Server:** none
 - **Routes:** 0
 - **Tables:** none directly in the route files (through a service, or none)
 - **Who may change it:** see permissions-matrix.md
-- **Depends on:** nothing
+- **Depends on:** Integrations and scheduled work
 - **Feeds:** nothing
-- **Findings:** B-019, B-018, D-034
-- **Production concern:** Nothing is sent, retried, escalated or changed by time
+- **Findings:** B-019, D-034, H-015
+- **Production concern:** Until the host schedule is set, a failed event waits for a person; nothing is escalated or changed by time
 
 ## Analytics and executive
 
@@ -776,7 +790,7 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 
 ## Code nothing uses
 
-Found by following imports from the application entry points. 45 frontend files (7,063 lines) and 5 server files. Finding B-013.
+Found by following imports from the application entry points. 45 frontend files (7,079 lines) and 5 server files. Finding B-013.
 
 | File | Lines |
 |---|---:|
@@ -801,8 +815,8 @@ Found by following imports from the application entry points. 45 frontend files 
 | src/frontend/src/services/aiService.js | 124 |
 | src/frontend/src/apps/shopfloor/ShopFloorApp.jsx | 121 |
 | src/frontend/src/components/help/HelpDrawer.jsx | 98 |
+| src/frontend/src/api/authFetch.js | 82 |
 | src/frontend/src/components/production/ProductionLayout.jsx | 76 |
-| src/frontend/src/api/authFetch.js | 66 |
 | src/frontend/src/services/inventoryAiApi.js | 31 |
 | src/frontend/src/components/logistics/index.js | 29 |
 | src/frontend/src/config/supabaseClient.js | 28 |
@@ -840,7 +854,7 @@ Finding B-014.
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
 | src/frontend/src/help/manualContent.js | 3546 | 0 |
-| src/frontend/src/router/AppRouter.jsx | 1529 | 0 |
+| src/frontend/src/router/AppRouter.jsx | 1541 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1335 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
@@ -866,11 +880,11 @@ Finding B-014.
 | src/backend/src/routes/opsCockpit.js | 868 | |
 | src/backend/src/routes/inventoryV1.js | 864 | |
 | src/backend/src/routes/staff.js | 720 | |
-| src/backend/src/routes/partner/customerRoutes.js | 718 | |
 | src/backend/src/routes/dropTagRoutes.js | 716 | |
 | src/backend/src/routes/users.js | 692 | |
 | src/backend/src/routes/bomV1.js | 671 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
+| src/backend/src/routes/intakeOrders.js | 606 | |
 
 ## Other counts from the frontend
 
@@ -880,10 +894,10 @@ Finding B-014.
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
 | Icon-only buttons | 301 |
-| aria-label attributes | 33 |
+| aria-label attributes | 38 |
 | Browser alert or confirm calls | 25 in 15 files |
-| Timers started (setInterval, setTimeout) | 66 |
-| Timers cleared | 36 |
+| Timers started (setInterval, setTimeout) | 67 |
+| Timers cleared | 37 |
 | console.log calls | 18 |
 | Dialogs | 123 |
 | Frontend unit test files | 0 |

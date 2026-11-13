@@ -183,6 +183,7 @@ const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 
 // Admin Pages
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
+const IntegrationsPage = lazy(() => import('../pages/Admin/IntegrationsPage'))
 const AuditLogPage = lazy(() => import('../pages/Admin/AuditLogPage'))
 const TaxRatesPage = lazy(() => import('../pages/Admin/TaxRatesPage'))
 const RecipeEditorPage = lazy(() => import('../pages/Admin/RecipeEditorPage'))
@@ -1300,6 +1301,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <CustomerPreferencesPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Admin - Integrations report
+      {
+        path: 'admin/integrations',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <IntegrationsPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

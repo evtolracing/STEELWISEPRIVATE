@@ -20,6 +20,11 @@ function isApiRequest(url) {
 
 const isCredentialCheck = (url) => /\/auth\/(login|password)/.test(url)
 
+// No request waits for ever. Answers that arrive as a stream (the assistant) and file uploads
+// are left alone: they are long by nature and have their own controls.
+const REQUEST_TIMEOUT_MS = 60_000
+const isLong = (url, body) => /\/stream(\?|$)|\/upload|\/bulk-upload|\/tts\//.test(url) || (typeof FormData !== 'undefined' && body instanceof FormData)
+
 if (typeof window !== 'undefined' && window.fetch && !window.fetch.__steelwiseAuth) {
   const originalFetch = window.fetch.bind(window)
   const authFetch = async (input, init = {}) => {
@@ -46,12 +51,23 @@ if (typeof window !== 'undefined' && window.fetch && !window.fetch.__steelwiseAu
       }
     }
 
+    // A time limit, unless the caller brought its own way to stop the request.
+    let timer = null
+    if (!options.signal && !(input instanceof Request) && !isLong(url, options.body) && typeof AbortController !== 'undefined') {
+      const controller = new AbortController()
+      timer = setTimeout(() => controller.abort(new DOMException('The server took too long to answer.', 'TimeoutError')), REQUEST_TIMEOUT_MS)
+      options = { ...options, signal: controller.signal }
+    }
+
     let res
     try {
       res = await originalFetch(input, options)
     } catch (error) {
+      // No answer: the key is kept, so sending the same request again cannot run it twice.
       keyed?.settle(false)
       throw error
+    } finally {
+      if (timer) clearTimeout(timer)
     }
     keyed?.settle(res.status < 500 && res.status !== 409, res.ok)
     if (res.status === 401 && !isCredentialCheck(url) && window.location.pathname !== '/login') {

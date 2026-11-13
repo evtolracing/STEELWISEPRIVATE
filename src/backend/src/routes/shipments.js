@@ -21,6 +21,7 @@ import {
 
 import { invoiceShipment } from '../services/billing.js';
 import { moveJobsWhere } from '../lib/jobHistory.js';
+import { recordBusinessEvent, kick } from '../services/webhookService.js';
 const router = Router();
 
 const EDIT_FIELDS = ['carrierId', 'carrierName', 'truckNumber', 'driverName', 'driverPhone', 'scheduledDate', 'totalWeightLb', 'bolNumber', 'notes'];
@@ -305,7 +306,7 @@ async function consumeReserved(tx, shipment, item, userId) {
 }
 
 async function dispatch(id, body, userId) {
-  const shipment = await prisma.shipment.findUnique({ where: { id }, include: { items: true, order: { select: { status: true, orderNumber: true } } } });
+  const shipment = await prisma.shipment.findUnique({ where: { id }, include: { items: true, order: { select: { status: true, orderNumber: true, buyerId: true } } } });
   if (!shipment) refuse(404, 'Shipment not found');
   const why = shipmentMoveError(shipment.status, 'IN_TRANSIT');
   if (why) refuse(409, why);
@@ -349,18 +350,33 @@ async function dispatch(id, body, userId) {
       const status = orderStatusFromLines(lines.map((l) => l.lineStatus));
       if (status) await tx.order.update({ where: { id: shipment.orderId }, data: { status } });
     }
+    // Partners are told in the same save: the event exists if and only if the dispatch does.
+    if (!resuming) {
+      await recordBusinessEvent(tx, 'shipment.dispatched', shipment.id, { shipmentId: shipment.id, shipmentNumber: shipment.shipmentNumber, orderId: shipment.orderId, orderNumber: shipment.order.orderNumber, status: 'IN_TRANSIT' }, { customerOrgId: shipment.order.buyerId, carrierOrgId: edits.carrierId || shipment.carrierId });
+    }
     return tx.shipment.findUnique({ where: { id }, include: { items: true, order: { select: { id: true, status: true } } } });
   }));
 }
 
-async function move(id, to, extra = {}, userId = null) {
-  const shipment = await prisma.shipment.findUnique({ where: { id }, select: { id: true, status: true, shipmentNumber: true } });
+export async function moveShipment(id, to, extra, userId, note) { return move(id, to, extra, userId, note); }
+
+async function move(id, to, extra = {}, userId = null, note = null) {
+  const shipment = await prisma.shipment.findUnique({ where: { id }, select: { id: true, status: true, shipmentNumber: true, orderId: true, carrierId: true, order: { select: { buyerId: true, orderNumber: true } } } });
   if (!shipment) refuse(404, 'Shipment not found');
   const why = shipmentMoveError(shipment.status, to);
   if (why) refuse(409, why);
-  const changed = await prisma.shipment.updateMany({ where: { id, status: shipment.status }, data: { ...extra, status: to } });
-  if (!changed.count) refuse(409, 'This shipment was just changed by someone else. Reload and try again.');
-  await recordShipmentEvent(prisma, { shipment, from: shipment.status, to, userId, note: extra.podSignature ? `Signed for by ${extra.podSignature}` : null });
+  // The move, who made it and the event for partners are one save.
+  await prisma.$transaction(async (tx) => {
+    const changed = await tx.shipment.updateMany({ where: { id, status: shipment.status }, data: { ...extra, status: to } });
+    if (!changed.count) refuse(409, 'This shipment was just changed by someone else. Reload and try again.');
+    await recordShipmentEvent(tx, { shipment, from: shipment.status, to, userId, note: note || (extra.podSignature ? `Signed for by ${extra.podSignature}` : null) });
+    const event = { DELIVERED: 'shipment.delivered', EXCEPTION: 'shipment.exception' }[to];
+    if (event) {
+      const key = to === 'DELIVERED' ? shipment.id : `${shipment.id}:${Date.now()}`;
+      await recordBusinessEvent(tx, event, key, { shipmentId: shipment.id, shipmentNumber: shipment.shipmentNumber, orderId: shipment.orderId, orderNumber: shipment.order?.orderNumber || null, status: to }, { customerOrgId: shipment.order?.buyerId, carrierOrgId: shipment.carrierId });
+    }
+  });
+  kick();
   return prisma.shipment.findUnique({ where: { id }, include: { items: true } });
 }
 
@@ -372,7 +388,7 @@ function podText(value, name, max) {
   return text || undefined;
 }
 
-function deliver(id, body, userId) {
+export function deliver(id, body, userId, note = null) {
   const podSignature = podText(body.podSignature, 'podSignature', 200);
   const podImageUrl = podText(body.podImageUrl, 'podImageUrl', 2000);
   if (podImageUrl && !/^(https:\/\/|\/api\/documents\/)/.test(podImageUrl)) refuse(400, 'podImageUrl must be an https address or a stored document');
@@ -381,7 +397,7 @@ function deliver(id, body, userId) {
     podCaptured: Boolean(podSignature || podImageUrl),
     ...(podSignature !== undefined && { podSignature }),
     ...(podImageUrl !== undefined && { podImageUrl }),
-  }, userId);
+  }, userId, note);
 }
 
 /**
@@ -390,13 +406,19 @@ function deliver(id, body, userId) {
  */
 async function dispatchAndInvoice(id, body, userId) {
   const shipment = await dispatch(id, body, userId);
+  kick();
   let invoice = null;
+  let invoiceWarning = null;
   try {
     invoice = await invoiceShipment(id, userId);
   } catch (error) {
-    console.error(`Shipments: could not invoice shipment ${id}:`, error?.message || error);
+    // The shipment has left and stays left. The missing invoice is put on record, said in the
+    // answer, and listed in the integration report until it is raised (finding H-006).
+    console.error(JSON.stringify({ level: 'error', msg: 'invoice_not_raised', shipmentId: id, reason: String(error?.message || error).slice(0, 300) }));
+    invoiceWarning = 'The shipment has left, but its invoice could not be raised. Raise it from the invoices page.';
+    await prisma.auditLog.create({ data: { category: 'FINANCIAL', eventType: 'INVOICE_NOT_RAISED', severity: 'ERROR', action: 'CREATE', userId: userId || null, resourceType: 'Shipment', resourceId: id, details: { shipmentNumber: shipment.shipmentNumber || null, orderId: shipment.orderId || shipment.order?.id || null, reason: String(error?.message || error).slice(0, 300) } } }).catch(() => {});
   }
-  return { ...shipment, invoice: invoice && { id: invoice.id, invoiceNumber: invoice.invoiceNumber, totalAmount: invoice.totalAmount } };
+  return { ...shipment, invoice: invoice && { id: invoice.id, invoiceNumber: invoice.invoiceNumber, totalAmount: invoice.totalAmount }, ...(invoiceWarning && { invoiceWarning, warning: invoiceWarning }) };
 }
 
 /**

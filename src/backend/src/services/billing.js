@@ -14,6 +14,7 @@
  */
 import prisma from '../lib/db.js';
 import { retryOverlap } from '../lib/numbering.js';
+import { recordBusinessEvent, kick } from './webhookService.js';
 import {
   money, lineAmount, chargesFor, dueDateFor, invoiceStatusFor, balanceOf, paymentError, PAYMENT_METHODS,
 } from '../lib/billingRules.js';
@@ -117,7 +118,7 @@ async function buildInvoice(tx, order, wanted, { shipmentId, notes, next }) {
   const total = money(subtotal + tax + freight);
   // The number is taken last, once it is certain an invoice will be written.
   const invoiceNumber = await next();
-  return tx.invoice.create({
+  const invoice = await tx.invoice.create({
     data: {
       invoiceNumber, orderId: order.id, shipmentId: shipmentId || null, kind: 'INVOICE', status: invoiceStatusFor(total, 0),
       invoiceDate: now, dueDate: dueDateFor(order.paymentTerms, now),
@@ -126,6 +127,9 @@ async function buildInvoice(tx, order, wanted, { shipmentId, notes, next }) {
     },
     include: INCLUDE,
   });
+  // The customer's own system is told in the same save, so an invoice cannot exist without its event.
+  await recordBusinessEvent(tx, 'invoice.issued', invoice.id, { invoiceId: invoice.id, invoiceNumber, orderId: order.id, orderNumber: order.orderNumber, totalAmount: total, dueDate: invoice.dueDate }, { customerOrgId: order.buyerId });
+  return invoice;
 }
 
 /**
@@ -186,6 +190,7 @@ export async function invoiceShipment(shipmentId, userId = null) {
     if (made) await recordMoney(tx, { invoice: made, eventType: 'INVOICE_ISSUED', userId, details: { amount: num(made.totalAmount), note: `Shipment ${shipment.shipmentNumber || ''}`.trim() } });
     return made;
   });
+  kick();
   return toApi(invoice);
 }
 
@@ -201,6 +206,7 @@ export async function invoiceOrder(orderId, { notes } = {}, userId = null) {
     return made;
   });
   if (!invoice) refuse(409, 'Nothing has shipped on this order that is not already invoiced');
+  kick();
   return toApi(invoice);
 }
 

@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit d8a3a2a. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,16 +11,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 76 | 14 |
-| P2 | 80 | 40 |
-| P3 | 67 | 28 |
-| Total | 243 | 84 |
+| P1 | 82 | 14 |
+| P2 | 91 | 42 |
+| P3 | 69 | 29 |
+| Total | 262 | 87 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 158 |
-| DEFERRED TO SPECIFIC PHASE | 63 |
-| REQUIRES BUSINESS DECISION | 16 |
+| VERIFIED FIXED | 174 |
+| DEFERRED TO SPECIFIC PHASE | 64 |
+| REQUIRES BUSINESS DECISION | 18 |
 | BLOCKED | 2 |
 | IN PROGRESS | 2 |
 | NOT APPLICABLE | 1 |
@@ -34,7 +34,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | X-002 | P0 | DEFERRED TO SPECIFIC PHASE | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
 | B-009 | P1 | DEFERRED TO SPECIFIC PHASE | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 2: architecture and code quality (after the decision) |
 | B-016 | P1 | DEFERRED TO SPECIFIC PHASE | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
-| B-019 | P1 | REQUIRES BUSINESS DECISION | Platform | Everything happens only when someone opens a screen or presses a button. | Integration phase |
+| B-019 | P1 | BLOCKED | Platform | Everything happens only when someone opens a screen or presses a button. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
 | E-014 | P1 | DEFERRED TO SPECIFIC PHASE | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
 | E-015 | P1 | ACCEPTED RISK WITH APPROVAL | Platform | No evidence that a backup has ever been restored | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
@@ -51,9 +51,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-014 | P2 | DEFERRED TO SPECIFIC PHASE | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
 | B-015 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend | Most icon buttons have no name (some have tooltips, which were not counted). | Phase 9: user experience |
 | B-017 | P2 | DEFERRED TO SPECIFIC PHASE | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
-| B-018 | P2 | BLOCKED | Partner API | It is marked for retry and never sent again. | Integration phase |
 | B-021 | P2 | DEFERRED TO SPECIFIC PHASE | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
-| C-002 | P2 | DEFERRED TO SPECIFIC PHASE | Partner API: carriers | The carrier routes cannot work as written, and if repaired in place would skip those rules. | Integration phase |
 | C-009 | P2 | DEFERRED TO SPECIFIC PHASE | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | C-011 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | They cannot. The counter rule built in Phase 2 takes effect only where piece-counted stock exists; elsewhere the sale goes through and the receipt says no stock was reduced. | Inventory and purchasing |
 | C-013 | P2 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | Any text shaped like a recommendation moves jobs. | Manufacturing and processing |
@@ -73,6 +71,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | G-007 | P2 | DEFERRED TO SPECIFIC PHASE | Inventory | The item is at the destination the moment the sender presses the button. What is on the road is counted as on the receiver's shelf. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-011 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-015 | P2 | BLOCKED | Platform | Unknown. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| H-012 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | With N instances a limit is up to N times its number, and the report shows the calls of the instance that answered. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
+| H-013 | P2 | REQUIRES BUSINESS DECISION | Web shop | A payment method is collected and has no effect. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
+| H-014 | P2 | DEFERRED TO SPECIFIC PHASE | Partner API | They answered 500. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
+| H-015 | P2 | REQUIRES BUSINESS DECISION | Platform | Not connected. Since Phase 4 the integration report lists each one with its state and what happens without it. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Manufacturing and processing |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
@@ -99,6 +101,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | G-014 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Each order comes with its full lines and customer record. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-018 | P3 | DEFERRED TO SPECIFIC PHASE | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| H-011 | P3 | REQUIRES BUSINESS DECISION | Orders | Accepted. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | U-002 | P3 | DEFERRED TO SPECIFIC PHASE | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
 | U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
@@ -133,6 +136,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The rule now judges the second address as if it were the first (ruledPath).
 - **Required tests:** Unit test and probe section 2.
 - **Assigned phase:** Phase 1 (done)
+- **Status note:** Phase 4: a contract test now holds the two addresses for jobs and work centers to the same answer and the same rules.
 - **Verification evidence:** Probe section 2: 4 problems before, 0 after. Unit test "the second address for jobs and work centers is judged by the same rule as the first".
 - **First recorded in:** Phase 1 discovery
 
@@ -358,7 +362,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The existing "bounded lists" sweep check extended to these routes.
 - **Required tests:** The existing "bounded lists" sweep check extended to these routes.
 - **Assigned phase:** Performance phase
-- **Status note:** Phase 3 measured the branch list screens on the 85-branch copy: every one answered in under 160 ms at the 95th percentile for a branch login and under 270 ms for an all-branch login (qa/results/phase3-branch-bench-before.json). The unlimited lists were not changed in this phase.
+- **Status note:** Phase 3 measured the branch list screens on the 85-branch copy: every one answered in under 160 ms at the 95th percentile for a branch login and under 270 ms for an all-branch login (qa/results/phase3-branch-bench-before.json). The unlimited lists were not changed in this phase. Phase 4: orders and stock now honour limit and offset and report their total (H-010). The other unbounded lists are unchanged.
 - **First recorded in:** Phase 1 discovery
 
 ### B-013 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -453,6 +457,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The measured number rises each phase; it is recorded in progress.json.
 - **Required tests:** The measured number rises each phase; it is recorded in progress.json.
 - **Assigned phase:** Testing phase; each phase for its own area
+- **Status note:** Phase 4: success-path tests now exist for the partner API (customer, carrier, supplier, webhooks, sign-in, administration), the integration report and replay, the scheduled address, and request keys on shipments, payments, receipts, transfers, credits, work order completion, purchase orders, quotes and counter sales. The count of changing routes with a success-path test is in progress.json.
 - **First recorded in:** Phase 1 discovery
 
 ### B-017 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -478,7 +483,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** Phase 1 discovery
 
-### B-018 · P2 · BLOCKED
+### B-018 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Partner API
@@ -493,11 +498,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** Any future integration that needs scheduled work (email, statements, replenishment, overdue invoices).
 - **Recommended correction:** A scheduled trigger on the host that calls the retry function. Setting up a schedule on the host is the owner's.
 - **Required tests:** A test that fails a delivery, runs the retry and sees it delivered.
-- **Assigned phase:** Integration phase
-- **Status note:** Needs a scheduled trigger on the host, which is the owner's setting
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Needs a scheduled trigger on the host, which is the owner's setting Phase 4: delivery is now durable (see H-002): a failed event waits in the database for 1, 5, 30 and 120 minutes and is kept as failed after five tries. The retries are carried out when the scheduled address is called; setting that schedule on the host is B-019.
+- **Verification evidence:** qa/sim/phase4-integration.mjs, group "Event processing and background jobs".
 - **First recorded in:** Phase 1 discovery
 
-### B-019 · P1 · REQUIRES BUSINESS DECISION
+### B-019 · P1 · BLOCKED
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -511,7 +517,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** D-033, D-034, B-018, E-017.
 - **Recommended correction:** Choose the provider and the host schedule; then build each timed function.
 - **Required tests:** Per function.
-- **Assigned phase:** Integration phase
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Phase 4: the scheduled work now exists as one address, GET or POST /api/internal/tasks/run, protected by a secret (CRON_SECRET). It sends waiting partner events and clears old request keys, is safe to call from several places at once, and records when it last ran; the Integrations screen shows that time and has a "Run now" button. Blocked on two host settings that are the owner's: (1) set CRON_SECRET to a long random value; (2) add a schedule that calls the address every 5 minutes with "Authorization: Bearer <CRON_SECRET>". It was not added to vercel.json because a schedule the plan does not allow can fail the deployment. Until then nothing is lost: events are sent right after each action, and a failed one waits for "Run now".
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "the scheduled run needs its secret, does the periodic work and records that it ran", "five delivery runs at the same moment send each event once". The host schedule itself is NOT VERIFIED.
 - **First recorded in:** Phase 1 discovery
 
 ### B-020 · P3 · NOT APPLICABLE
@@ -660,7 +668,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** test/userAdminRules.test.js (5 tests). qa/sim/phase2-integrity.mjs: 14 checks through the API; 10 of them fail on the code before the fix.
 - **First recorded in:** Phase 2 architecture review
 
-### C-002 · P2 · DEFERRED TO SPECIFIC PHASE
+### C-002 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Partner API: carriers
@@ -674,14 +682,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** None today: no carrier has a token and the sweep shows the partner API refuses every call without one. A risk the day a carrier is connected.
 - **Affected dependencies:** B-018, B-019 (partner messages and the scheduled trigger).
 - **Recommended correction:** Export the dispatch and deliver steps from routes/shipments.js and have the carrier routes call them.
-- **Deferred: reason:** It needs a carrier connection to test against, and the owner has deferred partner messaging (decision 5). Nothing reaches these routes today.
-- **Deferred: target phase:** The phase the owner issues for integrations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: required correction:** Call the core dispatch and deliver steps; remove the two statuses that do not exist.
-- **Deferred: dependencies:** Decision 5; B-018; B-019.
-- **Deferred: acceptance criteria:** A carrier update produces exactly the records a staff dispatch or delivery does.
-- **Deferred: verification:** A sweep section using a carrier token; reconciliation 0 problems.
 - **Required tests:** A carrier token dispatches and delivers a shipment and the simulation's reconciliation stays at zero problems.
-- **Assigned phase:** Integration phase
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Phase 4: the carrier routes were rewritten on the real schema and on the staff dispatch and delivery steps (see H-001). A carrier can never dispatch; a report on a shipment that has not left is refused; a repeated report changes nothing.
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "a carrier reports delivery through the partner API: shipping, history and the customer all see it", "a carrier reports delivered twice, and again late", "a carrier sees only its own loads, and no prices".
 - **First recorded in:** Phase 2 architecture review
 
 ### C-003 · P2 · VERIFIED FIXED
@@ -755,7 +759,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** An Idempotency-Key header on order creation, stored with a unique rule per user, answering a repeat with the first reply.
 - **Required tests:** The same key twice, in sequence and at once: one order, the same answer.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 3: a RequestKey table with a unique rule on (user and route, key); middleware on every changing route that honours an Idempotency-Key header; the screens send a key for every request that creates a document (src/frontend/src/api/requestKey.js). A repeat gets the first answer back; the same key with a different body is refused (422); a refused request is not remembered.
+- **Status note:** Phase 3: a RequestKey table with a unique rule on (user and route, key); middleware on every changing route that honours an Idempotency-Key header; the screens send a key for every request that creates a document (src/frontend/src/api/requestKey.js). A repeat gets the first answer back; the same key with a different body is refused (422); a refused request is not remembered. Phase 4: the request-key middleware is now exercised on shipments (create, dispatch, deliver), payments, receipts, transfers, credits, work order completion, purchase orders, quote acceptance and counter sales, and by partners; two defects in it were found and fixed (H-003, H-004). A browser test asserts that the screens send the key and reuse it on a retry.
 - **Verification evidence:** qa/sim/phase3-db.mjs: the same order sent three times at once with one key saves one order and the retry is marked as a replay; different body 422; another user's same key is separate; a stale claim is taken over after a minute. test/requestKeys.test.js (3 tests). Order creation only was exercised through the API; the web checkout and order intake use the same middleware and were not separately run (NOT VERIFIED for those two routes).
 - **First recorded in:** Phase 2 architecture review
 
@@ -878,12 +882,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** Left from the first customer set-up.
 - **Operational impact:** None while the code matches.
 - **Recommended correction:** Use the user's organization.
-- **Deferred: reason:** Changing it changes which company appears on existing order documents; it should be done with the sales module and checked against live data the engineer does not have.
-- **Deferred: target phase:** The phase the owner issues for sales and customer operations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: required correction:** As above.
+- **Deferred: reason:** Order intake is the subject of Phase 5.
+- **Deferred: target phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Deferred: required correction:** Read the selling company from the company record instead of a fixed code.
 - **Deferred: dependencies:** None.
-- **Deferred: acceptance criteria:** No company code in the source.
-- **Deferred: verification:** A sweep check.
+- **Deferred: acceptance criteria:** An order taken through intake always has a seller, whatever the company code is.
+- **Deferred: verification:** An intake scenario on a database whose company code differs from the fixed one.
 - **Required tests:** An intake order by a login of another company carries that company as seller.
 - **Assigned phase:** Sales and customer operations
 - **First recorded in:** Phase 2 architecture review
@@ -1626,7 +1630,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The limit holds across server instances.
 - **Deferred: verification:** A burst test against two instances.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: needs a shared store, which is a new service
+- **Status note:** Open: needs a shared store, which is a new service Phase 4: the same per-instance limit applies to the partner request limit and to the new breaker for outside services (H-012).
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-015 · P1 · ACCEPTED RISK WITH APPROVAL
@@ -1679,7 +1683,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** A forced server error raises an alert
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: needs a provider choice
+- **Status note:** Open: needs a provider choice Phase 4: an Integrations screen and report now show failed and waiting events, outside-service failures, orders shipped but not invoiced, requests never answered and when the scheduled work last ran; failures are written as structured log lines with the request id. Nothing is sent to anyone: there is still no alert and no error tracker. That remains the owner's choice of service.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-018 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -1766,7 +1770,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/tools/api-contract.mjs extended to check the shape.
 - **Required tests:** Every list route in the module answers `{ data, meta }` and its screens are updated; contract scan shows no mismatch
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each.
+- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each. Phase 4: the present reply shapes are now pinned by contract tests, so they cannot drift further unnoticed, and paging was added to the bare-array lists through headers without changing a body (H-010). Making every list one shape is still a change to every screen and stays where it was assigned.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-023 · P1 · DEFERRED TO SPECIFIC PHASE
@@ -2273,14 +2277,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** One include clause for list and detail.
 - **Operational impact:** Bandwidth and server time on the busiest screen; the limit on requests per second is the size of the replies, not the database (it peaked at 16 connections).
 - **Recommended correction:** A list shape with the columns the screen shows.
-- **Deferred: reason:** It changes the reply of an endpoint the screens depend on, which is the subject of the API contract phase.
-- **Deferred: target phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Deferred: required correction:** As above.
-- **Deferred: dependencies:** E-021 (reply shapes).
-- **Deferred: acceptance criteria:** 50 orders in under 50 KB; no screen loses a field it shows.
-- **Deferred: verification:** qa/perf/branch-bench.mjs; the five browser suites.
+- **Deferred: reason:** Switching a screen to the summary means checking every field that screen and its dialogs read from the list. The order screens are the subject of Phase 5.
+- **Deferred: target phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Deferred: required correction:** The order list screens ask for view=summary and page with X-Total-Count; the detail screen keeps the full record.
+- **Deferred: dependencies:** H-010 (done).
+- **Deferred: acceptance criteria:** The order list loads in under 50 KB per page and shows every column it shows today.
+- **Deferred: verification:** The sales browser suite, plus a check of the request the list makes.
 - **Required tests:** Reply size and requests per second before and after.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 4: the API half is done and tested (H-010): GET /api/orders?view=summary answers 50 orders in 41 KB against 95 KB in full (qa/results/phase4-load.json), and limit and offset are honoured. No screen was switched to it in this phase.
 - **First recorded in:** Phase 3 database audit
 
 ### G-015 · P2 · BLOCKED
@@ -2397,15 +2402,369 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** No version or updated-at check on edits.
 - **Operational impact:** An edit can be lost without notice. No quantity or amount is at risk: totals are recomputed and checked by the database.
 - **Recommended correction:** Send the record's updatedAt with an edit and refuse the edit if it has changed (409).
-- **Deferred: reason:** It changes the request contract of every edit route and the screens that call them, which is the subject of the API contract phase.
-- **Deferred: target phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Deferred: required correction:** As above.
-- **Deferred: dependencies:** E-021.
-- **Deferred: acceptance criteria:** No edit route accepts a change based on a stale copy.
-- **Deferred: verification:** A database scenario per record type.
+- **Deferred: reason:** The remaining edit routes belong to modules whose screens are reworked in later phases; adding the check there without the screen sending the value would protect nothing.
+- **Deferred: target phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Deferred: required correction:** Each edit screen sends the updatedAt it loaded; each edit route refuses a stale copy the same way.
+- **Deferred: dependencies:** The edit screens of each module.
+- **Deferred: acceptance criteria:** Two people saving different edits to one record: one is saved, the other is told to reload.
+- **Deferred: verification:** qa/sim/phase4-integration.mjs: "an edit made from an old copy of an order is refused instead of overwriting" and "two edits of the same order at the same moment" already cover orders; the same pair per module.
 - **Required tests:** Two edits at once: one 200, one 409.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged.
+- **Verification evidence:** qa/sim/phase4-integration.mjs: the two scenarios named above (orders only).
 - **First recorded in:** Phase 3 database audit
+
+### H-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API
+- **Workflow:** Customers, carriers and suppliers reading and acting through the API
+- **Category:** Broken code; rule bypass
+- **Source file or endpoint:** src/backend/src/routes/partner/customerRoutes.js, carrierRoutes.js, supplierRoutes.js
+- **Evidence:** First success-path run of the partner API in this program, with a real partner key and token: almost every route answered 500. The handlers filtered on columns that do not exist, set statuses that do not exist and read relations by the wrong name. Where a carrier route could have run, it changed a shipment directly and skipped the dispatch and delivery rules staff go through. Extends C-002 from carriers to all three partner kinds.
+- **Expected:** A partner reads its own records and acts through the same rules as staff.
+- **Actual:** The API could not be used; had it been repaired in place it would have bypassed stock, order and invoice rules.
+- **Root cause or suspected cause:** Written against an earlier idea of the schema and never run.
+- **Operational impact:** No partner integration could go live; a repaired-in-place carrier update could mark a load delivered that never left.
+- **Affected dependencies:** C-002.
+- **Recommended correction:** The three route files were rewritten on the real schema and on the staff steps themselves: a carrier report calls the same deliver and move steps as the shipping desk and can never dispatch; a customer creates a request for quote and accepts or declines a quote through the same functions as the sales desk; a supplier reads and acknowledges its own purchase orders. Shared parsing, paging and refusal shape in routes/partner/common.js.
+- **Required tests:** Success path and refusal path for every working route; isolation between two partners of the same kind.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "a carrier reports delivery through the partner API", "a supplier reads and acknowledges only purchase orders placed with it", "what a partner reads equals what staff see", "a carrier sees only its own loads, and no prices", "scopes and partner types are enforced on every kind of route", "the partner API keeps one shape for lists, one for errors". On the code before, the same calls answered 500.
+- **First recorded in:** Phase 4 integration audit
+
+### H-002 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API
+- **Workflow:** Events sent to partner systems (webhooks)
+- **Category:** Reliability: lost events
+- **Source file or endpoint:** src/backend/src/services/webhookService.js; table WebhookDelivery
+- **Evidence:** Code read and test: a failed delivery was marked for retry and the retry lived only in the memory of the server instance, so it was lost on restart and never resumed (B-018). No staff action raised an event at all: a dispatch at the shipping desk told no partner. Nothing stopped the same event being recorded twice for a subscriber. A row was written after the business change, so a crash between the two lost the event.
+- **Expected:** A business change and the events about it are saved together; each event reaches each subscriber once, is retried on a schedule, stops after a limit and can be sent again by a person.
+- **Actual:** Events were best effort, raised only by partner calls, and lost on any failure.
+- **Root cause or suspected cause:** No durable queue and no link from the staff routes.
+- **Operational impact:** A customer or carrier system that relies on events silently misses dispatches, deliveries and invoices.
+- **Affected dependencies:** B-018, B-019.
+- **Recommended correction:** The existing WebhookDelivery table is used as an outbox. The row is written inside the transaction that makes the change (order confirmed, status changed, shipment dispatched, delivered, exception, invoice issued). Delivery claims a row with a conditional update, so several servers can run it at once; failures wait 1, 5, 30 and 120 minutes; after five tries the event is kept as failed; an administrator can send it again; a unique rule on (subscription, event) makes a second recording impossible (migration 20261113230000_webhook_delivery_once). No new infrastructure.
+- **Required tests:** Delivered once; refused change leaves no event; backoff honoured; dead letter after five; replay; five runs at once; claim taken over after a crash.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** The retry schedule runs only when the host calls the scheduled address (B-019, the owner's setting). Without it, an event is still sent right after the action, and a failed one waits until an administrator presses "Run now" on the Integrations screen.
+- **Verification evidence:** qa/sim/phase4-integration.mjs, group "Event processing and background jobs": 13 scenarios, all pass. SQL Editor file 10 ran twice on the 85-branch copy with duplicate rows planted: the later duplicates were renamed, none deleted, and the second run changed nothing.
+- **First recorded in:** Phase 4 integration audit
+
+### H-003 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Platform
+- **Workflow:** Request keys on the partner API
+- **Category:** Security: one caller receiving another's answer
+- **Source file or endpoint:** src/backend/src/middleware/requestKeys.js
+- **Evidence:** qa/sim/phase4-integration.mjs on the code before: two different partners sent the same Idempotency-Key to the same address. The request-key middleware ran before partner sign-in and filed both under "anonymous", so the second partner was answered with the first partner's stored reply.
+- **Expected:** A key belongs to the caller who sent it.
+- **Actual:** All partner calls shared one scope.
+- **Root cause or suspected cause:** The middleware is mounted globally, before the partner token is read.
+- **Operational impact:** One partner could be shown another partner's created record, and its own request was not carried out.
+- **Recommended correction:** At the global mount the middleware steps aside for partner addresses; the partner route stack runs it after sign-in, scoped to the partner.
+- **Required tests:** Same key from two partners: two separate requests.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "the same key with a different request is refused, and the same key from another person is their own request" and the partner checks in "a quote accepted by the customer and the sales desk at the same moment makes one order".
+- **First recorded in:** Phase 4 integration audit
+
+### H-004 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Platform
+- **Workflow:** A request whose connection drops
+- **Category:** Reliability: duplicate business transaction
+- **Source file or endpoint:** src/backend/src/middleware/requestKeys.js
+- **Evidence:** qa/sim/phase4-integration.mjs on the code before: a client sent an order with a key and hung up before the answer. The middleware released the key when the connection closed, while the handler was still running. The client's retry with the same key was treated as new and a second order was saved.
+- **Expected:** A retry after a lost answer gets the first result.
+- **Actual:** Two orders.
+- **Root cause or suspected cause:** The key was released on connection close rather than when the handler finished.
+- **Operational impact:** Duplicate orders, shipments or payments exactly when the network is poor, which is when people retry.
+- **Recommended correction:** A dropped connection no longer releases the key. The handler finishes and its answer is stored; the retry is answered with it. A claim whose server died is taken over after a minute, once.
+- **Required tests:** Send and hang up, then retry: one record.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "the answer is lost after the server saved: the retry gets the same order back, not a second one", "a request whose first attempt died is taken over once, not twice". qa/sim/ui-integration.cjs: "answer lost after saving (new shipment)": one shipment, same key on both attempts.
+- **First recorded in:** Phase 4 integration audit
+
+### H-005 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Platform
+- **Workflow:** Calls to outside services (speech, AI providers, partner addresses)
+- **Category:** Reliability and security: no time limit; provider answers passed through
+- **Source file or endpoint:** src/backend/src/routes/tts.js, services/ai/AIProviderService.js and providers, routes/aiAssistant.js, routes/ai.js
+- **Evidence:** Code read and test against a local stand-in: (1) no outside call had a time limit, so a provider that hangs holds the request open until the host kills it; (2) the speech route passed the provider's own status to the browser, and the screens treat any 401 as "your session ended", so a wrong provider key signed the user out; (3) the AI routes returned the provider's error text to the caller; (4) the first characters of the speech key were written to the log and returned by a test route; (5) the AI client library retried on its own, with no bound set by us.
+- **Expected:** Every outside call has a time limit, a bounded number of tries, a breaker, and a plain answer of our own on failure.
+- **Actual:** None of these.
+- **Root cause or suspected cause:** Each call site was written on its own.
+- **Operational impact:** A slow provider ties up the server; a provider fault signs users out; provider messages and part of a key leak.
+- **Recommended correction:** One guard for every outside call (lib/outbound.js): time limit, at most five tries and only where the caller marks the call as safe to repeat, a breaker per service, and counters for the integration report. A provider failure is answered 502, 503 or 504 with a sentence written here. The key is no longer logged or returned. The library's own retries are turned off.
+- **Required tests:** Hang, error, wrong key, repeated failure and recovery, each against a stand-in.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** The breaker and its counters are per server instance (H-012). No real provider was called in any test; the real providers' behaviour is NOT VERIFIED.
+- **Verification evidence:** test/outbound.test.js (8 tests). qa/sim/phase4-integration.mjs, group "Webhooks and external service failures": 11 scenarios, including "the speech provider hangs: the user gets a plain answer at the time limit and stays signed in" and "the server log holds request ids and reasons, and no key, token or signing secret".
+- **First recorded in:** Phase 4 integration audit
+
+### H-006 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Shipments
+- **Workflow:** Dispatch raises the invoice
+- **Category:** Partial failure concealed
+- **Source file or endpoint:** src/backend/src/routes/shipments.js (dispatchAndInvoice)
+- **Evidence:** qa/sim/phase4-integration.mjs with billing made to fail for one order: the dispatch answered 200 with no invoice and no word about it. The failure went to the server console only. Nothing listed orders that had shipped and were never billed.
+- **Expected:** The truck leaving is not undone by a billing fault, but the gap is said, recorded and listed until it is closed.
+- **Actual:** Silent.
+- **Root cause or suspected cause:** The invoice step runs after the dispatch commits and its failure was caught and dropped.
+- **Operational impact:** Material leaves and is never billed, and nobody knows.
+- **Recommended correction:** The dispatch answer carries a warning in words; the shipment screen shows it; an audit entry INVOICE_NOT_RAISED and a structured log line are written; the integration report lists every order shipped but not invoiced, newest first, with the count under "Needs action".
+- **Required tests:** Forced billing failure: stock and order move, warning shown, listed, then closed by raising the invoice.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** On the QA database the list also shows 51 seeded demo orders that the seed never billed. How many live orders are in this state is NOT VERIFIED (no access); the report will show it once deployed.
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "shipping succeeds and billing fails: the gap is said, recorded, reported and closed". qa/sim/ui-integration.cjs: "part of a step failed" (3 checks).
+- **First recorded in:** Phase 4 integration audit
+
+### H-007 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API
+- **Workflow:** Partner sign-in
+- **Category:** Security: disclosure and late revocation
+- **Source file or endpoint:** src/backend/src/middleware/partnerAuth.js
+- **Evidence:** Code read and test: the token route answered differently for an unknown key, a revoked key and a wrong secret, so a caller could learn which key ids exist and their state; the secret was compared only after the key was found, so timing differed too. A token stayed valid until it expired after its key was revoked. The accepted signing algorithm was not pinned.
+- **Expected:** One answer for every failed sign-in; a revoked key stops at once.
+- **Actual:** Three answers; up to an hour of use after revocation.
+- **Operational impact:** Key enumeration; a leaked key cannot be cut off promptly.
+- **Recommended correction:** The secret is always checked, against a dummy hash when the key is unknown, and every failure gets the same answer. Each call checks that the key behind the token is still active (401 KEY_REVOKED). The algorithm is fixed to HS256.
+- **Required tests:** Unknown, revoked, expired and wrong-secret sign-ins are indistinguishable; a revoked key's token is refused on the next call.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "a revoked key, a suspended partner and a wrong secret all stop at once and say the same little", "staff and partner credentials do not work on each other's API".
+- **First recorded in:** Phase 4 integration audit
+
+### H-008 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API
+- **Workflow:** Where events may be sent and how they are signed
+- **Category:** Security: request forgery from the server; replay
+- **Source file or endpoint:** src/backend/src/services/webhookService.js, routes/partner/webhookRoutes.js
+- **Evidence:** Code read: a partner could register any address, including one inside the host's network; redirects were followed; the signature covered the body only, so a captured event could be sent again later and still verify.
+- **Expected:** Events go to public https addresses only, redirects are not followed, and a signature is tied to its time.
+- **Actual:** None of the three.
+- **Operational impact:** A partner key could be used to make the server call internal addresses; a receiver could not tell a replay.
+- **Recommended correction:** In production an address must be https and public, checked when registered and again when sent (the name is resolved); a redirect is a failed delivery; a second header X-SteelWise-Signature-Timestamp signs the time with the body. The older header is still sent, unchanged, for receivers already using it.
+- **Required tests:** Private and redirecting addresses refused; forged, altered and old events fail verification.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** The public-address rule is on only when NODE_ENV is production, so the local stand-in can be used in tests. The rule itself is unit tested with production set.
+- **Verification evidence:** test/webhookRules.test.js (6 tests). qa/sim/phase4-integration.mjs: "a webhook address must be one this server may call", "a partner address that redirects is not followed", "a forged, altered or old event fails the signature check a receiver would make".
+- **First recorded in:** Phase 4 integration audit
+
+### H-009 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Screens
+- **Workflow:** What a screen does when the server is slow, silent or gone
+- **Category:** Error recovery in the browser
+- **Source file or endpoint:** src/frontend/src/api/client.js, api/authFetch.js, api/requestKey.js, pages/Shipping/ShippingPage.jsx, ShipmentPage.jsx
+- **Evidence:** qa/sim/ui-integration.cjs on the code before: 7 of 33 checks fail. A request had no time limit and waited for ever; a lost connection showed nothing or the words "Network Error"; an answer for an old search arriving late replaced the list for the current one; after a step whose answer was lost, the screen kept showing the old state; dispatch, delivery and work order completion are sent with PUT and carried no request key.
+- **Expected:** A time limit, a sentence that says what happened and what to check, the newest filter wins, and the screen re-reads the record after a lost answer.
+- **Actual:** As above.
+- **Operational impact:** People wait on a dead request, repeat a step that was saved, or act on a stale list.
+- **Recommended correction:** A 60-second limit on every request; a plain sentence for "no answer" and "took too long" that tells the user it may have been saved; list loads are numbered so a late answer is dropped; after a lost answer the shipment screen reads the shipment again; PUT steps that must not run twice carry a request key.
+- **Required tests:** The ten cases of Phase 4 section 7 in a browser.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** The late-answer guard and the re-read after a lost answer were added to the shipping screens, which the test drives. Other list screens share the time limit, the messages and the request keys through the API client; their own late-answer handling was not audited one by one.
+- **Verification evidence:** qa/sim/ui-integration.cjs: 33 checks, 0 failed (7 fail with the four changed files reverted).
+- **First recorded in:** Phase 4 integration audit
+
+### H-010 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** API
+- **Workflow:** Lists of orders and stock
+- **Category:** Contract: limit ignored; reply larger than needed
+- **Source file or endpoint:** GET /api/orders, GET /api/inventory; src/backend/src/lib/listing.js
+- **Evidence:** Phase 3 measured 244 KB for 50 orders. The routes ignored ?limit and ?offset, always returned their fixed maximum, and gave no total, so a screen could not page (E-021, B-012, G-014).
+- **Expected:** A caller can ask for a page and learn how many there are, without the body changing shape for existing screens.
+- **Actual:** Fixed maximum, no total.
+- **Operational impact:** Slow list screens at 80 branches; no way to reach older records.
+- **Recommended correction:** The bare-array body is kept. limit and offset are honoured up to the route maximum; X-Total-Count, X-Limit and X-Offset carry the window. GET /api/orders?view=summary returns the header, the customer and a line count instead of every line. A call with no parameters answers exactly as before.
+- **Required tests:** Window honoured; body still an array; summary holds what the list shows.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Applied to orders and stock, the two lists the handoff measured. The other bare-array lists are unchanged and stay under B-012. The screens do not yet ask for the summary view; that is a screen change for the phase that owns each screen. During the load measurement the summary was first slower than the full list, because the line count was computed for every order in the database; corrected in this phase (see phase-04-performance-results.md).
+- **Verification evidence:** test/listing.test.js (3 tests). qa/sim/phase4-integration.mjs: "a bare-array list can be windowed without changing its body, and says how many there are". qa/results/phase4-load.json: 50 orders for an all-branch login, 95 KB in full and 41 KB as a summary.
+- **First recorded in:** Phase 4 integration audit
+
+### H-011 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-13
+- **Module:** Orders
+- **Workflow:** Order entry
+- **Category:** Business rule not decided
+- **Source file or endpoint:** POST /api/orders
+- **Evidence:** qa/sim/phase4-integration.mjs, exploration: an order with a customer and no lines is accepted and saved as a draft. There is no route to add a line afterwards.
+- **Expected:** Not decided.
+- **Actual:** Accepted.
+- **Operational impact:** Empty orders can accumulate; none can be confirmed into work.
+- **Recommended correction:** Either refuse an order with no lines, or keep it as a draft and add a way to add lines.
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Question for the owner: should an order with no lines be refused, or kept as a draft to fill in later? Left unchanged because changing it is a business rule. Belongs with order intake in Phase 5.
+- **First recorded in:** Phase 4 integration audit
+
+### H-012 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Platform
+- **Workflow:** Protection that counts in memory
+- **Category:** Scalability: per-instance state
+- **Source file or endpoint:** src/backend/src/lib/outbound.js (breaker and counters), middleware rate limits, partner rate limit
+- **Evidence:** Code read: the breaker for outside services, its counters on the integration report, and the staff and partner request limits all live in the memory of one server instance. On a host that runs several instances each keeps its own.
+- **Expected:** A limit that holds across instances, or a stated bound.
+- **Actual:** With N instances a limit is up to N times its number, and the report shows the calls of the instance that answered.
+- **Operational impact:** A provider that is down is tried by each instance before each one backs off; a partner can exceed its limit by the number of instances. Nothing is lost or duplicated.
+- **Affected dependencies:** E-014.
+- **Recommended correction:** A shared counter (a database row or the host's firewall rule) for the limits; the breaker can stay per instance.
+- **Deferred: reason:** It needs a shared store or a host firewall rule, which is infrastructure and the owner's host setting; adding a store only for this would be new infrastructure the phase rules ask not to introduce without need.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** As above, together with E-014.
+- **Deferred: dependencies:** E-014; the owner's choice between a firewall rule on the host and a shared counter.
+- **Deferred: acceptance criteria:** A limit of N per minute holds at N with two instances running.
+- **Deferred: verification:** A test that starts two servers on one database and sends 2N requests.
+- **Required tests:** Two instances behind one address hold one limit.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **First recorded in:** Phase 4 integration audit
+
+### H-013 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-13
+- **Module:** Web shop
+- **Workflow:** Checkout
+- **Category:** Payment not connected
+- **Source file or endpoint:** src/backend/src/services/ecomService.js (checkout); POST /api/ecom/checkout/:id
+- **Evidence:** Code read: the web shop checkout takes a payment method from the customer and writes it into the order notes ("Payment: ..."). No payment is authorised, captured or recorded, and the order is not marked paid. Every web order is in effect on account. At the counter, a card sale needs the approval code typed from the card terminal by staff; that is a member of staff attesting, not a customer's browser.
+- **Expected:** Either the shop sells on account only and says so, or a card is authorised by a processor and the order is marked paid only on the processor's confirmed notification.
+- **Actual:** A payment method is collected and has no effect.
+- **Operational impact:** A customer may believe a card was charged. No order is wrongly marked paid: the risk is unpaid orders shipped to customers without terms.
+- **Recommended correction:** Per the decision: remove the choice and state "on account", or connect a processor with a sandbox, verify its notifications by signature, and make them idempotent.
+- **Required tests:** Per the decision; for a processor: approved, declined, timeout, duplicate notification, refund, and reconciliation against invoices.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Question for the owner: do web shop customers pay by card at checkout, or only on account? No order is marked paid on the word of a browser anywhere in the code (checked: web checkout, counter sale, invoice payments). Belongs with ecommerce in Phase 5.
+- **First recorded in:** Phase 4 integration audit
+
+### H-014 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API
+- **Workflow:** Supplier shipping notices, corrective actions, scorecard and document upload
+- **Category:** Placeholder
+- **Source file or endpoint:** src/backend/src/routes/partner/supplierRoutes.js
+- **Evidence:** Code read: these supplier routes were written against tables and columns that do not exist (there is no table for an advance shipping notice from a supplier, and the corrective-action and scorecard screens are labelled samples).
+- **Expected:** A route either works or says it is not available.
+- **Actual:** They answered 500.
+- **Operational impact:** A supplier integration would fail in a way that looks like our fault on every call.
+- **Recommended correction:** They now answer 501 with the code NOT_AVAILABLE and a sentence. Building them needs the purchasing and supplier-quality records to exist first.
+- **Deferred: reason:** The records these routes would read and write (supplier shipping notices, corrective actions, scorecards) are sample screens with no tables. They are built with purchasing and supplier quality, not in the integration layer.
+- **Deferred: target phase:** The phase the owner issues for purchasing, receiving and supplier quality (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Build the tables and staff screens, then the partner routes on the same service functions.
+- **Deferred: dependencies:** X-009; owner decision 4 (build everything).
+- **Deferred: acceptance criteria:** A supplier posts a shipping notice that the receiving desk sees; none of the four answers 501.
+- **Deferred: verification:** Scenarios in the style of the Phase 4 supplier scenario.
+- **Required tests:** Each answers 501, never 500, and changes nothing.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "services that are not connected say so instead of pretending".
+- **First recorded in:** Phase 4 integration audit
+
+### H-015 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-13
+- **Module:** Platform
+- **Workflow:** Outside services that are not connected
+- **Category:** Disconnected integrations
+- **Source file or endpoint:** .env.example; src/backend/src/lib/integrationReport.js
+- **Evidence:** Search of the whole repository for outbound calls and provider libraries: the server calls a speech provider, up to three AI providers and partner webhook addresses, and nothing else. Email, text messages, a card processor, carrier rating and labels, a tax service and an accounting system are not connected. The counter-sale "email receipt" route answers 501. Card payments are recorded as an amount and a reference typed by staff; no processor confirms them.
+- **Expected:** Each is connected, or the system says plainly that it is not.
+- **Actual:** Not connected. Since Phase 4 the integration report lists each one with its state and what happens without it.
+- **Operational impact:** Customers get no order, shipping or invoice messages; a card payment is only as true as what was typed; freight is entered by hand; tax is a rate on the order; invoices are re-keyed into accounting.
+- **Recommended correction:** For each, the owner picks a provider; the call then goes through the outside-call guard, with a sandbox account for tests.
+- **Required tests:** Per provider: success, refusal, time limit, duplicate notification, and a reconciliation.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Owner decision 5 (2026-11-13) puts email and text messages later. Questions for the owner: which card processor, carrier service, tax service and accounting system, if any, and in what order. Payment, shipping-carrier and notification scenarios against a provider sandbox were NOT EXECUTED because no provider exists to test against; nothing was simulated as if it were connected.
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "services that are not connected say so instead of pretending" checks the report and the 501 answers.
+- **First recorded in:** Phase 4 integration audit
+
+### H-016 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API
+- **Workflow:** Events that have waited a long time
+- **Category:** Reliability: stale events
+- **Source file or endpoint:** src/backend/src/services/webhookService.js (deliverDue)
+- **Evidence:** Found while testing SQL Editor file 10: rows left waiting by the old code (and any that wait while the scheduler is not running) would all be sent the first time delivery runs, however old. A partner system would be told days later that a shipment "was dispatched".
+- **Expected:** An event too old to be useful is not sent on its own.
+- **Actual:** Sent whenever delivery next ran.
+- **Operational impact:** A partner system acts on old news; on first deployment, every leftover row is sent at once.
+- **Recommended correction:** An event that has waited more than 72 hours (WEBHOOK_MAX_AGE_HOURS) is moved to the failed list with the reason in words. An administrator can still send it.
+- **Required tests:** A four-day-old event is not sent, is listed, and can be replayed; a fresh one beside it is delivered.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "an event that waited for days is not sent on its own; a person can still send it".
+- **First recorded in:** Phase 4 integration audit
+
+### H-017 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** API
+- **Workflow:** A change the database refuses
+- **Category:** Contract: server error for a refusal
+- **Source file or endpoint:** src/backend/src/middleware/safeErrors.js, lib/db.js, lib/requestContext.js
+- **Evidence:** Probe of 22 routes with references to rows that do not exist: the audited modules check first and answer 400. POST /api/users with a home branch that does not exist answered 500. Phase 3 added 16 value checks and 17 foreign keys; any route that does not check first surfaces them as 500.
+- **Expected:** A refusal by a database rule is a 4xx with a reason.
+- **Actual:** 500 "Something went wrong".
+- **Operational impact:** The caller cannot tell a mistake of theirs from a fault of ours; monitoring counts a refusal as an outage.
+- **Recommended correction:** When the database refuses a change for a missing reference or a value check and the route answered 500, the reply becomes 409 with the code RULE_REFUSED, a sentence, and the request id. The detail is logged with the note that the route should check first.
+- **Required tests:** A unit test of the mapping and a route that used to answer 500.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** This is a safety net, not a replacement for checking in the route. Each such log line names a route to tighten.
+- **Verification evidence:** test/safeErrors.test.js (new test). qa/sim/phase4-integration.mjs: "a change the database itself refuses is answered 409 with a reason, not a server error".
+- **First recorded in:** Phase 4 integration audit
+
+### H-018 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Heats and traceability
+- **Workflow:** Where a heat went
+- **Category:** Missing endpoint data
+- **Source file or endpoint:** GET /api/heats/:heatNumber/trace (src/backend/src/routes/heats.js)
+- **Evidence:** Phase 3 traceability audit: the trace listed the stock items and cut pieces of a heat, not the shipments or customers that received them. The data exists: every shipment takes stock from a named item and writes a movement.
+- **Expected:** A heat number returns every shipment and customer that received it, including through pieces cut on a work order.
+- **Actual:** Backward trace only.
+- **Operational impact:** A recall or a mill-certificate question needed a database query.
+- **Recommended correction:** The reply gains two lists, shipments (shipment, order, customer, item, quantity) and customers. Everything it returned before is unchanged.
+- **Required tests:** A plate cut on a work order, the pieces shipped: the trace names the shipment, the pounds and the customer.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Shipments dispatched on the live system before reservations became mandatory (owner decision of 2026-11-13) wrote no movement and will not appear. Their number is NOT VERIFIED.
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "a work order feeds an order line, and the pieces ship under the same order" (3 trace checks; they fail on the code before).
+- **First recorded in:** Phase 4 integration audit
+
+### H-019 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-13
+- **Module:** Partner API
+- **Workflow:** Many events at the same moment
+- **Category:** Scalability: events left waiting
+- **Source file or endpoint:** src/backend/src/services/webhookService.js (kick, deliverDue)
+- **Evidence:** qa/perf/phase4-load.mjs on the 85-branch copy, before: 80 orders confirmed at once for a subscribed customer recorded 80 events per subscription, and only about 12 of 160 were sent; the rest waited for the scheduled run. Each finished request started its own delivery run and all of them reached for the same ten oldest rows. A backlog of 200 events to a partner that takes 200 ms to answer took 42 seconds, one at a time.
+- **Expected:** A burst is sent promptly; one slow partner does not hold up the rest; a run fits in the host's time limit.
+- **Actual:** As measured.
+- **Operational impact:** At a busy moment most events are late by up to the scheduler interval, or indefinitely if the scheduler is not set up.
+- **Recommended correction:** One drain per server instance that keeps going until nothing is due; eight deliveries in flight at a time; the scheduled run stops claiming after 20 seconds and reports what it left.
+- **Required tests:** Forty confirmations at once: forty events delivered within ten seconds with no scheduled run.
+- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Verification evidence:** qa/sim/phase4-integration.mjs: "forty orders confirmed in the same second: every event is sent, once, without waiting for the scheduled run". qa/results/phase4-load.json against phase4-load-before.json: all 80 delivered after 0.6 s (before: 20.8 s and only after a scheduled run); 500 waiting events cleared at 489 a second (before 119); slow partner 36 a second (before 5).
+- **First recorded in:** Phase 4 integration audit
 
 ### I-001 · P0 · VERIFIED FIXED
 
@@ -4172,7 +4531,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The audit shows the screen as REAL, or the route is gone
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 4: the screen-to-route contract check stays in the gates. Supplier shipping notices, corrective actions and scorecards in the partner API now answer 501 instead of failing (H-014).
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### X-010 · P2 · DEFERRED TO SPECIFIC PHASE

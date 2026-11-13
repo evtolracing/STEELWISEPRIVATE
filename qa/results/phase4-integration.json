@@ -1,0 +1,2785 @@
+{
+ "at": "2026-11-13T23:01:09.185Z",
+ "base": "http://localhost:3011",
+ "scenarios": 66,
+ "passed": 66,
+ "checks": 554,
+ "groups": {
+  "Internal API contracts and validation": {
+   "scenarios": 11,
+   "passed": 11,
+   "checks": 141
+  },
+  "Cross-module workflow communication": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 96
+  },
+  "Event processing and background jobs": {
+   "scenarios": 13,
+   "passed": 13,
+   "checks": 81
+  },
+  "Webhooks and external service failures": {
+   "scenarios": 11,
+   "passed": 11,
+   "checks": 73
+  },
+  "Idempotency, retries and concurrency": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 47
+  },
+  "Security, isolation and recovery": {
+   "scenarios": 11,
+   "passed": 11,
+   "checks": 116
+  }
+ },
+ "results": [
+  {
+   "group": "Internal API contracts and validation",
+   "name": "every critical list answers in its documented shape, with the fields the screens read",
+   "asserts": [
+    {
+     "what": "/api/orders: 200 and a list",
+     "ok": true
+    },
+    {
+     "what": "/api/orders: rows carry id, orderNumber, status, orderType, totalAmount, lines, buyer",
+     "ok": true
+    },
+    {
+     "what": "/api/orders: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/inventory: 200 and a list",
+     "ok": true
+    },
+    {
+     "what": "/api/inventory: rows carry id, coilId, qtyOnHand, qtyAvailable, qtyAllocated, coil, location",
+     "ok": true
+    },
+    {
+     "what": "/api/inventory: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/shipments: 200 and a list",
+     "ok": true
+    },
+    {
+     "what": "/api/shipments: rows carry id, shipmentNumber, status, orderId",
+     "ok": true
+    },
+    {
+     "what": "/api/shipments: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/coils: 200 and a list",
+     "ok": true
+    },
+    {
+     "what": "/api/coils: rows carry id, coilNumber, status",
+     "ok": true
+    },
+    {
+     "what": "/api/coils: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/jobs: 200 and a list",
+     "ok": true
+    },
+    {
+     "what": "/api/jobs: rows carry id, jobNumber, status",
+     "ok": true
+    },
+    {
+     "what": "/api/jobs: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/work-centers: 200 and a list",
+     "ok": true
+    },
+    {
+     "what": "/api/work-centers: rows carry id, code, name",
+     "ok": true
+    },
+    {
+     "what": "/api/work-centers: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/invoices: 200 and { data, meta }",
+     "ok": true
+    },
+    {
+     "what": "/api/invoices: rows carry id, invoiceNumber, status, totalAmount, paidAmount",
+     "ok": true
+    },
+    {
+     "what": "/api/invoices: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/customers: 200 and { data, meta }",
+     "ok": true
+    },
+    {
+     "what": "/api/customers: rows carry id, code, name",
+     "ok": true
+    },
+    {
+     "what": "/api/customers: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/quotes: 200 and { data, meta }",
+     "ok": true
+    },
+    {
+     "what": "/api/quotes: rows carry id, quoteNumber, status",
+     "ok": true
+    },
+    {
+     "what": "/api/quotes: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/rfqs: 200 and { data, meta }",
+     "ok": true
+    },
+    {
+     "what": "/api/rfqs: rows carry id, rfqNumber, status",
+     "ok": true
+    },
+    {
+     "what": "/api/rfqs: answers as JSON",
+     "ok": true
+    },
+    {
+     "what": "/api/returns: 200 and { data, meta }",
+     "ok": true
+    },
+    {
+     "what": "/api/returns: answers as JSON",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 233
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "a bare-array list can be windowed without changing its body, and says how many there are",
+   "asserts": [
+    {
+     "what": "with no parameters the answer is what it always was: a list, no more than 100",
+     "ok": true
+    },
+    {
+     "what": "limit=5 returns five",
+     "ok": true
+    },
+    {
+     "what": "the total is in a header and matches the database for this login",
+     "ok": true
+    },
+    {
+     "what": "offset moves the window with no overlap",
+     "ok": true
+    },
+    {
+     "what": "a limit over the maximum is cut to the maximum, not refused",
+     "ok": true
+    },
+    {
+     "what": "view=summary carries the header, the customer and a line count, and no lines",
+     "ok": true
+    },
+    {
+     "what": "the summary is the same orders in the same order",
+     "ok": true
+    },
+    {
+     "what": "and is less than half the size (41762 against 98501 bytes)",
+     "ok": true
+    },
+    {
+     "what": "an unknown view is refused",
+     "ok": true
+    },
+    {
+     "what": "stock windows the same way",
+     "ok": true
+    },
+    {
+     "what": "a branch login's total counts only its own branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 201
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "every kind of refusal has the same shape: a status and a plain sentence",
+   "asserts": [
+    {
+     "what": "no token: 401 { error }",
+     "ok": true
+    },
+    {
+     "what": "a bad token: 401",
+     "ok": true
+    },
+    {
+     "what": "not allowed: 403 { error }",
+     "ok": true
+    },
+    {
+     "what": "not found: 404 { error }",
+     "ok": true
+    },
+    {
+     "what": "an id that is not an id: 404 or 400, never 500",
+     "ok": true
+    },
+    {
+     "what": "an address that does not exist: 404",
+     "ok": true
+    },
+    {
+     "what": "a body that is not JSON: 400 { error }",
+     "ok": true
+    },
+    {
+     "what": "a body that is too large: 413",
+     "ok": true
+    },
+    {
+     "what": "a paging value that is not a number: 400",
+     "ok": true
+    },
+    {
+     "what": "a filter value that does not exist: 400",
+     "ok": true
+    },
+    {
+     "what": "401: nothing internal in the message",
+     "ok": true
+    },
+    {
+     "what": "401: nothing internal in the message",
+     "ok": true
+    },
+    {
+     "what": "403: nothing internal in the message",
+     "ok": true
+    },
+    {
+     "what": "404: nothing internal in the message",
+     "ok": true
+    },
+    {
+     "what": "404: nothing internal in the message",
+     "ok": true
+    },
+    {
+     "what": "400: nothing internal in the message",
+     "ok": true
+    },
+    {
+     "what": "400: nothing internal in the message",
+     "ok": true
+    },
+    {
+     "what": "400: nothing internal in the message",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 214
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "a change the database itself refuses is answered 409 with a reason, not a server error",
+   "asserts": [
+    {
+     "what": "the answer is 409 with the code RULE_REFUSED",
+     "ok": true
+    },
+    {
+     "what": "the reason is a sentence and names no table, column or constraint",
+     "ok": true
+    },
+    {
+     "what": "it carries the request id so the detail can be found in the log",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 84
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "an order with bad values is refused with a reason and nothing is saved",
+   "asserts": [
+    {
+     "what": "a negative quantity: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "a quantity that is text: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "a negative price: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "a customer that does not exist: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "an order type that does not exist: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "a total that is not a number: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "a date that is not a date: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "lines that are not a list: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "an empty body: refused with 4xx and a sentence",
+     "ok": true
+    },
+    {
+     "what": "none of them saved an order",
+     "ok": true
+    },
+    {
+     "what": "the same order with good values is accepted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 81
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "shipments, payments, stock corrections and transfers refuse bad values without a server error",
+   "asserts": [
+    {
+     "what": "a shipment for an order that does not exist: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a shipment with a negative quantity: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a shipment whose items are not a list: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a payment of zero: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a payment that is text: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a negative payment: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a payment of more than is owed: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a payment on an invoice that does not exist: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a stock correction with no reason: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a stock correction below zero: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a transfer to nowhere: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a transfer of an item that does not exist: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a credit with no reason: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a delivery signed with a number: 4xx with a sentence",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved by any of them",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 274
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "an edit made from an old copy of an order is refused instead of overwriting",
+   "asserts": [
+    {
+     "what": "the order carries the time it was last saved",
+     "ok": true
+    },
+    {
+     "what": "the first edit, made from the current copy, is saved",
+     "ok": true
+    },
+    {
+     "what": "the second edit, made from the old copy, is refused",
+     "ok": true
+    },
+    {
+     "what": "the refusal says when the order was last saved",
+     "ok": true
+    },
+    {
+     "what": "the other person's change is still there",
+     "ok": true
+    },
+    {
+     "what": "after reloading, the edit goes through",
+     "ok": true
+    },
+    {
+     "what": "a date that is not a date is refused",
+     "ok": true
+    },
+    {
+     "what": "a caller that sends no version behaves as before",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 110
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "two edits of the same order at the same moment: one is saved, one is told to reload",
+   "asserts": [
+    {
+     "what": "exactly one is saved",
+     "ok": true
+    },
+    {
+     "what": "the others get 409 and the stale-edit code",
+     "ok": true
+    },
+    {
+     "what": "what is on file is the one that was accepted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 71
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "the two addresses for jobs and work centers give the same answer",
+   "asserts": [
+    {
+     "what": "jobs: same status",
+     "ok": true
+    },
+    {
+     "what": "jobs: same rows",
+     "ok": true
+    },
+    {
+     "what": "jobs: same fields",
+     "ok": true
+    },
+    {
+     "what": "jobs: both refuse a caller with no token",
+     "ok": true
+    },
+    {
+     "what": "jobs: both give a customer login the same answer",
+     "ok": true
+    },
+    {
+     "what": "work-centers: same status",
+     "ok": true
+    },
+    {
+     "what": "work-centers: same rows",
+     "ok": true
+    },
+    {
+     "what": "work-centers: same fields",
+     "ok": true
+    },
+    {
+     "what": "work-centers: both refuse a caller with no token",
+     "ok": true
+    },
+    {
+     "what": "work-centers: both give a customer login the same answer",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 187
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "the partner API keeps one shape for lists, one for errors",
+   "asserts": [
+    {
+     "what": "/customer/rfqs: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/customer/rfqs: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "/customer/quotes: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/customer/quotes: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "/customer/orders: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/customer/orders: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "/customer/shipments: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/customer/shipments: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "/customer/invoices: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/customer/invoices: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "/customer/documents: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/customer/documents: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "/carrier/shipments: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/carrier/shipments: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "/supplier/purchase-orders: { data, pagination }",
+     "ok": true
+    },
+    {
+     "what": "/supplier/purchase-orders: tells the caller its request allowance",
+     "ok": true
+    },
+    {
+     "what": "no token: 401 { error: { code: MISSING_TOKEN, message } }",
+     "ok": true
+    },
+    {
+     "what": "a bad token: 401 { error: { code: INVALID_TOKEN, message } }",
+     "ok": true
+    },
+    {
+     "what": "the wrong kind of partner: 403 { error: { code: WRONG_PARTNER_TYPE, message } }",
+     "ok": true
+    },
+    {
+     "what": "a record that is not theirs: 404 { error: { code: NOT_FOUND, message } }",
+     "ok": true
+    },
+    {
+     "what": "a bad status filter: 400 { error: { code: VALIDATION_ERROR, message } }",
+     "ok": true
+    },
+    {
+     "what": "a bad body: 400 { error: { code: VALIDATION_ERROR, message } }",
+     "ok": true
+    },
+    {
+     "what": "a part that is not built: 501 { error: { code: NOT_AVAILABLE, message } }",
+     "ok": true
+    },
+    {
+     "what": "a wrong grant type: 400 { error: { code: UNSUPPORTED_GRANT_TYPE, message } }",
+     "ok": true
+    },
+    {
+     "what": "a huge limit is cut to 100",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 108
+  },
+  {
+   "group": "Internal API contracts and validation",
+   "name": "fields a caller must not set are ignored or refused, never applied",
+   "asserts": [
+    {
+     "what": "the request did not fail the server",
+     "ok": true
+    },
+    {
+     "what": "the order kept its id, number, creator, date and type",
+     "ok": true
+    },
+    {
+     "what": "a new order gets its own number and its real creator",
+     "ok": true
+    },
+    {
+     "what": "a payment cannot set the invoice status or the amount paid directly",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 136
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "request for quote to payment: every module holds the same facts at the end",
+   "asserts": [
+    {
+     "what": "RFQ created",
+     "ok": true
+    },
+    {
+     "what": "quote priced by the server",
+     "ok": true
+    },
+    {
+     "what": "accepting makes the order",
+     "ok": true
+    },
+    {
+     "what": "sales: the RFQ is closed, the quote points at the order, the order carries the quoted total",
+     "ok": true
+    },
+    {
+     "what": "stock reserved",
+     "ok": true
+    },
+    {
+     "what": "dispatched",
+     "ok": true
+    },
+    {
+     "what": "inventory: 1,000 lb left the item and nothing is reserved",
+     "ok": true
+    },
+    {
+     "what": "inventory: the movement names the shipment and the order",
+     "ok": true
+    },
+    {
+     "what": "orders: the line is shipped in full and the order is complete",
+     "ok": true
+    },
+    {
+     "what": "billing: one invoice for what shipped, at the quoted price",
+     "ok": true
+    },
+    {
+     "what": "payment recorded",
+     "ok": true
+    },
+    {
+     "what": "billing: the invoice is paid and the payments add up to it",
+     "ok": true
+    },
+    {
+     "what": "shipping: delivered with a signature",
+     "ok": true
+    },
+    {
+     "what": "history: the shipment moves, the invoice and the payment are each on record",
+     "ok": true
+    },
+    {
+     "what": "reconciliation: this order is not listed as shipped but not invoiced",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 313
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "a dispatch and everything that follows from it are saved together or not at all",
+   "asserts": [
+    {
+     "what": "refused, with the line and the shortfall",
+     "ok": true
+    },
+    {
+     "what": "shipping: the shipment has not left",
+     "ok": true
+    },
+    {
+     "what": "orders: nothing counted as shipped",
+     "ok": true
+    },
+    {
+     "what": "inventory: balance untouched, no movement",
+     "ok": true
+    },
+    {
+     "what": "billing: no invoice",
+     "ok": true
+    },
+    {
+     "what": "history: no \"left the dock\" entry",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 151
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "shipping succeeds and billing fails: the gap is said, recorded, reported and closed",
+   "asserts": [
+    {
+     "what": "the dispatch itself succeeds",
+     "ok": true
+    },
+    {
+     "what": "the answer says plainly that the invoice was not raised",
+     "ok": true
+    },
+    {
+     "what": "the answer does not show the database error",
+     "ok": true
+    },
+    {
+     "what": "stock and the order moved (the truck has left)",
+     "ok": true
+    },
+    {
+     "what": "the missing invoice is on record with the reason",
+     "ok": true
+    },
+    {
+     "what": "the integration report lists the order as shipped but not invoiced",
+     "ok": true
+    },
+    {
+     "what": "and puts it under \"needs action\"",
+     "ok": true
+    },
+    {
+     "what": "while the cause remains, raising it by hand fails cleanly too",
+     "ok": true
+    },
+    {
+     "what": "once the cause is gone, the invoice is raised from the invoices page",
+     "ok": true
+    },
+    {
+     "what": "exactly one invoice, for what shipped",
+     "ok": true
+    },
+    {
+     "what": "the order leaves the report",
+     "ok": true
+    },
+    {
+     "what": "asking again does not bill it twice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 264
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "a carrier reports delivery through the partner API: shipping, history and the customer all see it",
+   "asserts": [
+    {
+     "what": "before the service center dispatches, a carrier report is refused",
+     "ok": true
+    },
+    {
+     "what": "and nothing moved: no invoice, order still open",
+     "ok": true
+    },
+    {
+     "what": "an on-the-road report is recorded without changing the status",
+     "ok": true
+    },
+    {
+     "what": "proof of delivery is accepted",
+     "ok": true
+    },
+    {
+     "what": "shipping: delivered, signed, with the time",
+     "ok": true
+    },
+    {
+     "what": "the shipping desk sees the same",
+     "ok": true
+    },
+    {
+     "what": "history: the move is recorded as coming from the carrier, with no staff user",
+     "ok": true
+    },
+    {
+     "what": "history: each carrier report is kept",
+     "ok": true
+    },
+    {
+     "what": "the customer's system reads it as delivered",
+     "ok": true
+    },
+    {
+     "what": "and was told by event",
+     "ok": true
+    },
+    {
+     "what": "billing was not touched by the delivery: still the one invoice from dispatch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 282
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "a partner's request for quote becomes an order through the same steps staff use",
+   "asserts": [
+    {
+     "what": "the request is accepted and numbered",
+     "ok": true
+    },
+    {
+     "what": "it belongs to the partner's own organisation and is submitted",
+     "ok": true
+    },
+    {
+     "what": "the structured item became a description staff can price",
+     "ok": true
+    },
+    {
+     "what": "the sales desk sees it",
+     "ok": true
+    },
+    {
+     "what": "a draft quote is not visible to the customer",
+     "ok": true
+    },
+    {
+     "what": "once sent, the customer reads it with its prices and no internal notes",
+     "ok": true
+    },
+    {
+     "what": "the customer accepts",
+     "ok": true
+    },
+    {
+     "what": "the order has the quoted lines, prices, total, terms and the customer PO",
+     "ok": true
+    },
+    {
+     "what": "the order is credited to the person who wrote the quote",
+     "ok": true
+    },
+    {
+     "what": "the quote and RFQ are closed",
+     "ok": true
+    },
+    {
+     "what": "accepting again is refused and makes no second order",
+     "ok": true
+    },
+    {
+     "what": "the customer reads the order back",
+     "ok": true
+    },
+    {
+     "what": "events: the request was acknowledged and the order confirmed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 250
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "cancelling an order gives its stock back, and shipping and billing can no longer use it",
+   "asserts": [
+    {
+     "what": "cancel is accepted",
+     "ok": true
+    },
+    {
+     "what": "inventory: the reservation is released",
+     "ok": true
+    },
+    {
+     "what": "shipping: the shipment for the cancelled order cannot leave",
+     "ok": true
+    },
+    {
+     "what": "billing: nothing to invoice",
+     "ok": true
+    },
+    {
+     "what": "stock can be reserved for another order straight away",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 255
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "a work order feeds an order line, and the pieces ship under the same order",
+   "asserts": [
+    {
+     "what": "source reserved for the line",
+     "ok": true
+    },
+    {
+     "what": "work order raised for the line",
+     "ok": true
+    },
+    {
+     "what": "completed with two pieces and scrap",
+     "ok": true
+    },
+    {
+     "what": "manufacturing → inventory: the pieces exist with the source heat",
+     "ok": true
+    },
+    {
+     "what": "manufacturing → orders: the pieces are reserved for the same line",
+     "ok": true
+    },
+    {
+     "what": "orders → shipping: the pieces ship",
+     "ok": true
+    },
+    {
+     "what": "shipping → inventory: one movement per piece, naming the piece",
+     "ok": true
+    },
+    {
+     "what": "shipping → billing: the invoice is for the 980 lb that left",
+     "ok": true
+    },
+    {
+     "what": "orders: the line is part shipped, the order partial",
+     "ok": true
+    },
+    {
+     "what": "quality: the heat trace answers",
+     "ok": true
+    },
+    {
+     "what": "quality: the heat trace names the shipment once per piece that left, with the pounds",
+     "ok": true
+    },
+    {
+     "what": "quality: and the customer who received it, through the pieces cut on the work order",
+     "ok": true
+    },
+    {
+     "what": "quality: the trace still carries what it did before (items, grade, tests)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 324
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "what a partner reads equals what staff see: totals, balances and counts",
+   "asserts": [
+    {
+     "what": "the invoice count is the count on file",
+     "ok": true
+    },
+    {
+     "what": "every invoice total, amount paid and balance matches the record",
+     "ok": true
+    },
+    {
+     "what": "the order count is the count on file",
+     "ok": true
+    },
+    {
+     "what": "the newest orders are the same ones staff see, with the same totals",
+     "ok": true
+    },
+    {
+     "what": "milestones are built from the records: one \"shipped\" per shipment that left",
+     "ok": true
+    },
+    {
+     "what": "in time order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 59
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "a counter sale reaches stock, billing and payment in one step, and a repeat is the same sale",
+   "asserts": [
+    {
+     "what": "the server prices the sale",
+     "ok": true
+    },
+    {
+     "what": "payment taken",
+     "ok": true
+    },
+    {
+     "what": "billing: one invoice in the main number series, paid in full",
+     "ok": true
+    },
+    {
+     "what": "payments: one payment for the total",
+     "ok": true
+    },
+    {
+     "what": "inventory: four came off the shelf, with a movement naming the sale",
+     "ok": true
+    },
+    {
+     "what": "the repeat answers with the first sale",
+     "ok": true
+    },
+    {
+     "what": "and nothing was doubled: one order, one invoice, one payment, four off the shelf",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 161
+  },
+  {
+   "group": "Cross-module workflow communication",
+   "name": "a supplier reads and acknowledges only purchase orders placed with it",
+   "asserts": [
+    {
+     "what": "the list has its own purchase order",
+     "ok": true
+    },
+    {
+     "what": "not another supplier's, and not a draft",
+     "ok": true
+    },
+    {
+     "what": "with its lines and prices",
+     "ok": true
+    },
+    {
+     "what": "another supplier's purchase order answers 404",
+     "ok": true
+    },
+    {
+     "what": "an acknowledgement is recorded",
+     "ok": true
+    },
+    {
+     "what": "with the ship date and who sent it, and the purchase order status is unchanged",
+     "ok": true
+    },
+    {
+     "what": "a date that is not a date is refused",
+     "ok": true
+    },
+    {
+     "what": "a sales order is never shown as a purchase order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 65
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "an event is delivered once, signed, with the same id in the body and the header",
+   "asserts": [
+    {
+     "what": "dispatch accepted",
+     "ok": true
+    },
+    {
+     "what": "two events on file, both delivered",
+     "ok": true
+    },
+    {
+     "what": "the partner address was called once per event",
+     "ok": true
+    },
+    {
+     "what": "shipment.dispatched: the plain signature matches the body",
+     "ok": true
+    },
+    {
+     "what": "shipment.dispatched: the timed signature matches the send time and the body",
+     "ok": true
+    },
+    {
+     "what": "shipment.dispatched: the event id is the same in the body and the header",
+     "ok": true
+    },
+    {
+     "what": "shipment.dispatched: says which partner it is for and when it happened",
+     "ok": true
+    },
+    {
+     "what": "invoice.issued: the plain signature matches the body",
+     "ok": true
+    },
+    {
+     "what": "invoice.issued: the timed signature matches the send time and the body",
+     "ok": true
+    },
+    {
+     "what": "invoice.issued: the event id is the same in the body and the header",
+     "ok": true
+    },
+    {
+     "what": "invoice.issued: says which partner it is for and when it happened",
+     "ok": true
+    },
+    {
+     "what": "the events are the dispatch and its invoice",
+     "ok": true
+    },
+    {
+     "what": "the invoice event carries the number and total that are on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 309
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "a change that is refused leaves no event behind",
+   "asserts": [
+    {
+     "what": "confirming the order queued its events",
+     "ok": true
+    },
+    {
+     "what": "dispatch with nothing reserved is refused",
+     "ok": true
+    },
+    {
+     "what": "no event was recorded for the refused dispatch",
+     "ok": true
+    },
+    {
+     "what": "no invoice was raised",
+     "ok": true
+    },
+    {
+     "what": "a stale cancel is refused",
+     "ok": true
+    },
+    {
+     "what": "and queued nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 656
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "a failed delivery waits its turn and is not sent again before it is due",
+   "asserts": [
+    {
+     "what": "the delivery is waiting to be tried again",
+     "ok": true
+    },
+    {
+     "what": "one attempt is counted",
+     "ok": true
+    },
+    {
+     "what": "the next try is about a minute away",
+     "ok": true
+    },
+    {
+     "what": "the reason is on record",
+     "ok": true
+    },
+    {
+     "what": "a run before it is due sends nothing",
+     "ok": true
+    },
+    {
+     "what": "once due, the run delivers it",
+     "ok": true
+    },
+    {
+     "what": "the second attempt carries the same event id as the first",
+     "ok": true
+    },
+    {
+     "what": "and says it is attempt 2",
+     "ok": true
+    },
+    {
+     "what": "the body is byte for byte the same, so the receiver can recognise the repeat",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 274
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "an event that can never be delivered stops after five tries and is kept as failed",
+   "asserts": [
+    {
+     "what": "it is marked failed",
+     "ok": true
+    },
+    {
+     "what": "after exactly five attempts",
+     "ok": true
+    },
+    {
+     "what": "a failed event is not sent again by itself",
+     "ok": true
+    },
+    {
+     "what": "the integration report counts it and says what to do",
+     "ok": true
+    },
+    {
+     "what": "the report lists the failed event",
+     "ok": true
+    },
+    {
+     "what": "a sales login cannot replay",
+     "ok": true
+    },
+    {
+     "what": "an administrator sends it again and it is delivered",
+     "ok": true
+    },
+    {
+     "what": "with the same event id",
+     "ok": true
+    },
+    {
+     "what": "who replayed it is on record",
+     "ok": true
+    },
+    {
+     "what": "a delivered event cannot be replayed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 315
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "an event that waited for days is not sent on its own; a person can still send it",
+   "asserts": [
+    {
+     "what": "the four-day-old event is not sent",
+     "ok": true
+    },
+    {
+     "what": "it is kept as failed with the reason in words",
+     "ok": true
+    },
+    {
+     "what": "the run reports how many it set aside",
+     "ok": true
+    },
+    {
+     "what": "the fresh event beside it is delivered",
+     "ok": true
+    },
+    {
+     "what": "an administrator can still send it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 51
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "forty orders confirmed in the same second: every event is sent, once, without waiting for the scheduled run",
+   "asserts": [
+    {
+     "what": "all forty are confirmed",
+     "ok": true
+    },
+    {
+     "what": "forty events were recorded",
+     "ok": true
+    },
+    {
+     "what": "all forty were delivered within ten seconds, with no scheduled run",
+     "ok": true
+    },
+    {
+     "what": "the partner received forty calls for forty different events",
+     "ok": true
+    },
+    {
+     "what": "each on its first attempt",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1009
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "five delivery runs at the same moment send each event once",
+   "asserts": [
+    {
+     "what": "every run answered",
+     "ok": true
+    },
+    {
+     "what": "all four events are delivered",
+     "ok": true
+    },
+    {
+     "what": "the partner was called exactly four times, once per event",
+     "ok": true
+    },
+    {
+     "what": "each was counted as attempt 2, not more",
+     "ok": true
+    },
+    {
+     "what": "the runs together claimed four",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 934
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "a delivery claimed by a server that stopped is picked up when its claim runs out",
+   "asserts": [
+    {
+     "what": "while the claim is held, no other run sends it",
+     "ok": true
+    },
+    {
+     "what": "when the claim runs out it is sent and delivered",
+     "ok": true
+    },
+    {
+     "what": "the abandoned attempt still counts toward the limit",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 236
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "the same business fact is recorded once per subscriber",
+   "asserts": [
+    {
+     "what": "one delivery wins, the other is refused",
+     "ok": true
+    },
+    {
+     "what": "one delivered event is on file",
+     "ok": true
+    },
+    {
+     "what": "the database refuses a second copy of the same event for the same subscriber",
+     "ok": true
+    },
+    {
+     "what": "one dispatched event too",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 549
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "a subscription that keeps failing is stopped, says why, and resumes when turned back on",
+   "asserts": [
+    {
+     "what": "after five events in a row failed for good, the subscription is stopped",
+     "ok": true
+    },
+    {
+     "what": "business carries on: the next shipment still dispatches and invoices",
+     "ok": true
+    },
+    {
+     "what": "nothing is sent to a stopped subscription",
+     "ok": true
+    },
+    {
+     "what": "the partner can see that it was stopped",
+     "ok": true
+    },
+    {
+     "what": "the partner turns it back on",
+     "ok": true
+    },
+    {
+     "what": "new events are delivered again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2042
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "the scheduled run needs its secret, does the periodic work and records that it ran",
+   "asserts": [
+    {
+     "what": "no secret: refused",
+     "ok": true
+    },
+    {
+     "what": "wrong secret: refused",
+     "ok": true
+    },
+    {
+     "what": "a staff token is not the secret",
+     "ok": true
+    },
+    {
+     "what": "with the secret it runs (a scheduler calls with GET)",
+     "ok": true
+    },
+    {
+     "what": "request keys older than a day are cleared",
+     "ok": true
+    },
+    {
+     "what": "the report shows when it last ran",
+     "ok": true
+    },
+    {
+     "what": "an administrator can run it by hand",
+     "ok": true
+    },
+    {
+     "what": "a branch login cannot",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 40
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "events that arrive out of order can be put back in order by the receiver",
+   "asserts": [
+    {
+     "what": "the delivered event reached the partner before the dispatched one",
+     "ok": true
+    },
+    {
+     "what": "each carries when it happened, so the receiver can order them",
+     "ok": true
+    },
+    {
+     "what": "the late one still says the shipment was dispatched, not a newer state",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 374
+  },
+  {
+   "group": "Event processing and background jobs",
+   "name": "a slow partner address is given up on at the time limit and tried again later",
+   "asserts": [
+    {
+     "what": "the dispatch does not wait for the partner",
+     "ok": true
+    },
+    {
+     "what": "the invoice is raised regardless",
+     "ok": true
+    },
+    {
+     "what": "the attempt is abandoned at the time limit and queued again",
+     "ok": true
+    },
+    {
+     "what": "the time limit was the configured 1.5 seconds, not the 4 the partner took",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1728
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "the speech provider answers: audio comes back, and no real provider is called",
+   "asserts": [
+    {
+     "what": "audio is returned",
+     "ok": true
+    },
+    {
+     "what": "the call went to the local stand-in",
+     "ok": true
+    },
+    {
+     "what": "with the key in its header, never in the address",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 108
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "the speech provider hangs: the user gets a plain answer at the time limit and stays signed in",
+   "asserts": [
+    {
+     "what": "answered 504, not left waiting",
+     "ok": true
+    },
+    {
+     "what": "within the 1.5 second limit, not the 5 seconds the provider took",
+     "ok": true
+    },
+    {
+     "what": "the message is plain and has a request id",
+     "ok": true
+    },
+    {
+     "what": "the same session still works afterwards",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 4728
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "the provider refuses our key: that is our 502, never the user's 401",
+   "asserts": [
+    {
+     "what": "answered 502",
+     "ok": true
+    },
+    {
+     "what": "not 401, which would sign the user out of the screen",
+     "ok": true
+    },
+    {
+     "what": "the provider's own message, which can quote a key, is not passed on",
+     "ok": true
+    },
+    {
+     "what": "the set-up check says the key was refused, without showing any of it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "a provider that keeps failing is left alone for a while, then tried again",
+   "asserts": [
+    {
+     "what": "five failures in a row each answer 502",
+     "ok": true
+    },
+    {
+     "what": "each of those five reached the provider",
+     "ok": true
+    },
+    {
+     "what": "after that the answer is an immediate 503",
+     "ok": true
+    },
+    {
+     "what": "without calling the provider at all",
+     "ok": true
+    },
+    {
+     "what": "and without delay",
+     "ok": true
+    },
+    {
+     "what": "the integration report shows the provider as not being called",
+     "ok": true
+    },
+    {
+     "what": "orders are not affected while the provider is down",
+     "ok": true
+    },
+    {
+     "what": "after the rest it is tried again and works",
+     "ok": true
+    },
+    {
+     "what": "and the report shows it healthy",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 6526
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "the AI provider fails: one repeat at most, then a plain answer with nothing from the provider in it",
+   "asserts": [
+    {
+     "what": "with the provider up the assistant answers",
+     "ok": true
+    },
+    {
+     "what": "a failing provider gives 502",
+     "ok": true
+    },
+    {
+     "what": "it was tried twice, not more",
+     "ok": true
+    },
+    {
+     "what": "the provider's own words are not passed on",
+     "ok": true
+    },
+    {
+     "what": "a request the provider refuses is not repeated",
+     "ok": true
+    },
+    {
+     "what": "a provider that hangs is given up on",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 6918
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "a webhook address must be one this server may call",
+   "asserts": [
+    {
+     "what": "in production, http://example.com/hook is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://localhost/hook is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://127.0.0.1/hook is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://10.1.2.3/hook is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://192.168.1.5/h is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://169.254.169.254/latest/meta-data is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://[::1]/h is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://app.internal/h is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, https://user:pw@example.com/h is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, ftp://example.com/x is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, not a url is refused",
+     "ok": true
+    },
+    {
+     "what": "in production, a public https address is accepted",
+     "ok": true
+    },
+    {
+     "what": "private ranges are recognised",
+     "ok": true
+    },
+    {
+     "what": "a production key cannot subscribe a local address",
+     "ok": true
+    },
+    {
+     "what": "a supplier cannot subscribe to customer events",
+     "ok": true
+    },
+    {
+     "what": "a signing secret that is too short is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 224
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "a partner address that redirects is not followed",
+   "asserts": [
+    {
+     "what": "the redirect counts as a failed attempt",
+     "ok": true
+    },
+    {
+     "what": "the address it pointed to was never called",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 223
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "a forged, altered or old event fails the signature check a receiver would make",
+   "asserts": [
+    {
+     "what": "the real event verifies",
+     "ok": true
+    },
+    {
+     "what": "an altered body does not",
+     "ok": true
+    },
+    {
+     "what": "a different secret does not",
+     "ok": true
+    },
+    {
+     "what": "the same event presented ten minutes later does not",
+     "ok": true
+    },
+    {
+     "what": "a missing or malformed header does not",
+     "ok": true
+    },
+    {
+     "what": "the body-only signature is still sent for receivers that use it",
+     "ok": true
+    },
+    {
+     "what": "the signing secret is shown once and never again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 236
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "a partner's test event goes to that one address and reports honestly",
+   "asserts": [
+    {
+     "what": "a test is delivered and says so",
+     "ok": true
+    },
+    {
+     "what": "only the tested address was called",
+     "ok": true
+    },
+    {
+     "what": "the partner's reply is kept, cut to a safe length",
+     "ok": true
+    },
+    {
+     "what": "a failed test says it was not delivered, with the reason",
+     "ok": true
+    },
+    {
+     "what": "another partner cannot test someone else's subscription",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 87
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "services that are not connected say so instead of pretending",
+   "asserts": [
+    {
+     "what": "Email is listed as not connected, with what that means",
+     "ok": true
+    },
+    {
+     "what": "Text messages is listed as not connected, with what that means",
+     "ok": true
+    },
+    {
+     "what": "Card payments is listed as not connected, with what that means",
+     "ok": true
+    },
+    {
+     "what": "Carrier rates and labels is listed as not connected, with what that means",
+     "ok": true
+    },
+    {
+     "what": "Sales tax service is listed as not connected, with what that means",
+     "ok": true
+    },
+    {
+     "what": "Accounting system is listed as not connected, with what that means",
+     "ok": true
+    },
+    {
+     "what": "emailing a receipt answers \"not available\", not a false success",
+     "ok": true
+    },
+    {
+     "what": "GET /supplier/asn answers 501 with a reason",
+     "ok": true
+    },
+    {
+     "what": "POST /supplier/asn answers 501 with a reason",
+     "ok": true
+    },
+    {
+     "what": "GET /supplier/scorecard answers 501 with a reason",
+     "ok": true
+    },
+    {
+     "what": "GET /supplier/scars answers 501 with a reason",
+     "ok": true
+    },
+    {
+     "what": "POST /supplier/documents answers 501 with a reason",
+     "ok": true
+    },
+    {
+     "what": "nothing left the server for any of these",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 41
+  },
+  {
+   "group": "Webhooks and external service failures",
+   "name": "with the database unreachable the server says so and gives nothing away",
+   "asserts": [
+    {
+     "what": "health answers 503 \"degraded\"",
+     "ok": true
+    },
+    {
+     "what": "and says the database is unreachable, without the address or the error",
+     "ok": true
+    },
+    {
+     "what": "sign-in fails with a server error, not a wrong-password answer",
+     "ok": true
+    },
+    {
+     "what": "the reply names no table, address or stack",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 684
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "the answer is lost after the server saved: the retry gets the same order back, not a second one",
+   "asserts": [
+    {
+     "what": "the server finished the work although nobody was listening",
+     "ok": true
+    },
+    {
+     "what": "and kept the answer under the request key",
+     "ok": true
+    },
+    {
+     "what": "the retry is answered with the first result",
+     "ok": true
+    },
+    {
+     "what": "there is one order, not two",
+     "ok": true
+    },
+    {
+     "what": "the answer names the order, so the screen can show the true outcome",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 124
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "the same key with a different request is refused, and the same key from another person is their own request",
+   "asserts": [
+    {
+     "what": "the first payment is recorded",
+     "ok": true
+    },
+    {
+     "what": "the same key with another amount is refused with 422",
+     "ok": true
+    },
+    {
+     "what": "the same key with the same request gets the first answer",
+     "ok": true
+    },
+    {
+     "what": "the same key from another person is a separate payment",
+     "ok": true
+    },
+    {
+     "what": "two payments on file, 200 paid: nothing doubled, nothing lost",
+     "ok": true
+    },
+    {
+     "what": "a key that is too short is refused before anything runs",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 273
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "ten copies of one payment at the same moment record one payment",
+   "asserts": [
+    {
+     "what": "exactly one ran",
+     "ok": true
+    },
+    {
+     "what": "the rest were told it is in progress (409) or got the first answer back",
+     "ok": true
+    },
+    {
+     "what": "one payment of 60 is on file",
+     "ok": true
+    },
+    {
+     "what": "a late copy still does not pay twice",
+     "ok": true
+    },
+    {
+     "what": "four keyless payments of the whole balance at once: one is taken, the invoice is never overpaid",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 370
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "a shipment dispatched from two screens at once leaves once",
+   "asserts": [
+    {
+     "what": "one dispatch succeeds, four are refused",
+     "ok": true
+    },
+    {
+     "what": "stock left once",
+     "ok": true
+    },
+    {
+     "what": "the line shipped once",
+     "ok": true
+    },
+    {
+     "what": "one invoice",
+     "ok": true
+    },
+    {
+     "what": "one dispatched event and one invoice event",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 520
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "a partner's repeat is run once, and one partner's key never answers another",
+   "asserts": [
+    {
+     "what": "partner A: created once",
+     "ok": true
+    },
+    {
+     "what": "partner B, same key and same body: its own request, not A's answer",
+     "ok": true
+    },
+    {
+     "what": "each request belongs to the partner that sent it",
+     "ok": true
+    },
+    {
+     "what": "partner A, same key, different body: 422",
+     "ok": true
+    },
+    {
+     "what": "five at once with one key: one request for quote",
+     "ok": true
+    },
+    {
+     "what": "the keys are filed under each partner, not under \"anonymous\"",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 77
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "a quote accepted by the customer and the sales desk at the same moment makes one order",
+   "asserts": [
+    {
+     "what": "one answer wins",
+     "ok": true
+    },
+    {
+     "what": "the others are refused, not failed",
+     "ok": true
+    },
+    {
+     "what": "the quote ends in one state, and an order exists only if it was accepted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 74
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "a carrier reports \"delivered\" twice, and again late: one delivery, the rest recognised",
+   "asserts": [
+    {
+     "what": "all three are answered without a server error",
+     "ok": true
+    },
+    {
+     "what": "the shipment was delivered once",
+     "ok": true
+    },
+    {
+     "what": "a later repeat answers 200 and says it is a duplicate",
+     "ok": true
+    },
+    {
+     "what": "an older status arriving after delivery is refused and changes nothing",
+     "ok": true
+    },
+    {
+     "what": "an exception after delivery is refused too",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 264
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "receiving, transfers, credits and work order completion are each done once when sent twice",
+   "asserts": [
+    {
+     "what": "a receipt sent three times is one item",
+     "ok": true
+    },
+    {
+     "what": "with one receipt movement",
+     "ok": true
+    },
+    {
+     "what": "the same item number again, with no key, is refused",
+     "ok": true
+    },
+    {
+     "what": "a transfer sent twice moves the item once",
+     "ok": true
+    },
+    {
+     "what": "a credit sent three times is one credit memo",
+     "ok": true
+    },
+    {
+     "what": "a work order completed three times at once completes once",
+     "ok": true
+    },
+    {
+     "what": "one piece, 900 lb, and the source at zero",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 388
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "a purchase order and a sales order created with a key are each created once",
+   "asserts": [
+    {
+     "what": "PO: four copies, one order",
+     "ok": true
+    },
+    {
+     "what": "SO: four copies, one order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 57
+  },
+  {
+   "group": "Idempotency, retries and concurrency",
+   "name": "a request whose first attempt died is taken over once, not twice",
+   "asserts": [
+    {
+     "what": "one of three retries takes the abandoned request over and runs it",
+     "ok": true
+    },
+    {
+     "what": "one order exists",
+     "ok": true
+    },
+    {
+     "what": "a request that is still running is not run a second time",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 75
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "one customer's system cannot read another customer's records",
+   "asserts": [
+    {
+     "what": "another customer's order answers 404, the same as one that does not exist",
+     "ok": true
+    },
+    {
+     "what": "another customer's order milestones answers 404, the same as one that does not exist",
+     "ok": true
+    },
+    {
+     "what": "another customer's shipment answers 404, the same as one that does not exist",
+     "ok": true
+    },
+    {
+     "what": "/customer/orders: nothing of customer B in customer A's list",
+     "ok": true
+    },
+    {
+     "what": "/customer/shipments: nothing of customer B in customer A's list",
+     "ok": true
+    },
+    {
+     "what": "/customer/invoices: nothing of customer B in customer A's list",
+     "ok": true
+    },
+    {
+     "what": "/customer/quotes: nothing of customer B in customer A's list",
+     "ok": true
+    },
+    {
+     "what": "/customer/rfqs: nothing of customer B in customer A's list",
+     "ok": true
+    },
+    {
+     "what": "customer B reads its own order",
+     "ok": true
+    },
+    {
+     "what": "customer A cannot list or download customer B's document",
+     "ok": true
+    },
+    {
+     "what": "customer B downloads its own",
+     "ok": true
+    },
+    {
+     "what": "a request for quote that names another customer is still filed under the sender",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 134
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "a carrier sees only its own loads, and no prices",
+   "asserts": [
+    {
+     "what": "its own shipment is listed",
+     "ok": true
+    },
+    {
+     "what": "another carrier's is not",
+     "ok": true
+    },
+    {
+     "what": "a shipment with no carrier assigned is not",
+     "ok": true
+    },
+    {
+     "what": "GET /carrier/shipments/:other: 404",
+     "ok": true
+    },
+    {
+     "what": "POST /carrier/shipments/:other/status: 404",
+     "ok": true
+    },
+    {
+     "what": "POST /carrier/shipments/:other/pod: 404",
+     "ok": true
+    },
+    {
+     "what": "POST /carrier/exceptions: 404",
+     "ok": true
+    },
+    {
+     "what": "the other carrier's shipment was not touched",
+     "ok": true
+    },
+    {
+     "what": "the load shows where from, where to, what and how heavy",
+     "ok": true
+    },
+    {
+     "what": "and no price, total, credit terms or customer id",
+     "ok": true
+    },
+    {
+     "what": "its performance counts only its own shipments",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 62
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "scopes and partner types are enforced on every kind of route",
+   "asserts": [
+    {
+     "what": "a key with only orders:read reads orders",
+     "ok": true
+    },
+    {
+     "what": "GET /customer/invoices: 403 INSUFFICIENT_SCOPE",
+     "ok": true
+    },
+    {
+     "what": "GET /customer/quotes: 403 INSUFFICIENT_SCOPE",
+     "ok": true
+    },
+    {
+     "what": "GET /customer/shipments: 403 INSUFFICIENT_SCOPE",
+     "ok": true
+    },
+    {
+     "what": "GET /customer/documents: 403 INSUFFICIENT_SCOPE",
+     "ok": true
+    },
+    {
+     "what": "POST /customer/rfqs: 403 INSUFFICIENT_SCOPE",
+     "ok": true
+    },
+    {
+     "what": "POST /customer/quotes: 403 INSUFFICIENT_SCOPE",
+     "ok": true
+    },
+    {
+     "what": "nothing was created by the refused write",
+     "ok": true
+    },
+    {
+     "what": "a customer on /carrier/shipments: 403 WRONG_PARTNER_TYPE",
+     "ok": true
+    },
+    {
+     "what": "a customer on /supplier/purchase-orders: 403 WRONG_PARTNER_TYPE",
+     "ok": true
+    },
+    {
+     "what": "a carrier on /customer/orders: 403 WRONG_PARTNER_TYPE",
+     "ok": true
+    },
+    {
+     "what": "a carrier on /supplier/purchase-orders: 403 WRONG_PARTNER_TYPE",
+     "ok": true
+    },
+    {
+     "what": "a supplier on /customer/invoices: 403 WRONG_PARTNER_TYPE",
+     "ok": true
+    },
+    {
+     "what": "a supplier on /carrier/shipments: 403 WRONG_PARTNER_TYPE",
+     "ok": true
+    },
+    {
+     "what": "a carrier key cannot be given a customer scope",
+     "ok": true
+    },
+    {
+     "what": "only administrators create partners and keys",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 246
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "staff and partner credentials do not work on each other's API",
+   "asserts": [
+    {
+     "what": "a staff token is refused by the partner API",
+     "ok": true
+    },
+    {
+     "what": "a partner token is refused by /api/orders",
+     "ok": true
+    },
+    {
+     "what": "a partner token is refused by /api/inventory",
+     "ok": true
+    },
+    {
+     "what": "a partner token is refused by /api/invoices",
+     "ok": true
+    },
+    {
+     "what": "a partner token is refused by /api/admin/integrations",
+     "ok": true
+    },
+    {
+     "what": "a partner token is refused by /api/users",
+     "ok": true
+    },
+    {
+     "what": "a customer portal login cannot list partners",
+     "ok": true
+    },
+    {
+     "what": "a token whose contents were changed is refused",
+     "ok": true
+    },
+    {
+     "what": "an unsigned token is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 17
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "a revoked key, a suspended partner and a wrong secret all stop at once and say the same little",
+   "asserts": [
+    {
+     "what": "the key works",
+     "ok": true
+    },
+    {
+     "what": "a wrong secret and an unknown key get the same answer",
+     "ok": true
+    },
+    {
+     "what": "an id that is not text is refused, not run as a query",
+     "ok": true
+    },
+    {
+     "what": "an administrator revokes the key",
+     "ok": true
+    },
+    {
+     "what": "the token it issued stops working at once, an hour before it would expire",
+     "ok": true
+    },
+    {
+     "what": "and no new token is issued for it",
+     "ok": true
+    },
+    {
+     "what": "a suspended partner is refused on the next call",
+     "ok": true
+    },
+    {
+     "what": "partner calls are logged with the address, never the secret",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 710
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "a partner is slowed down at its limit and told when to come back",
+   "asserts": [
+    {
+     "what": "the first six calls in the minute are served, the rest get 429",
+     "ok": true
+    },
+    {
+     "what": "with the error shape and when to retry",
+     "ok": true
+    },
+    {
+     "what": "another partner is not slowed by it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 273
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "one partner cannot see, change, test or replay another partner's subscriptions and events",
+   "asserts": [
+    {
+     "what": "partner B's list does not show A's subscription",
+     "ok": true
+    },
+    {
+     "what": "PUT :id: 404",
+     "ok": true
+    },
+    {
+     "what": "DELETE :id: 404",
+     "ok": true
+    },
+    {
+     "what": "GET :id/deliveries: 404",
+     "ok": true
+    },
+    {
+     "what": "POST :id/test: 404",
+     "ok": true
+    },
+    {
+     "what": "POST :id/deliveries/:id/replay: 404",
+     "ok": true
+    },
+    {
+     "what": "A's subscription is untouched",
+     "ok": true
+    },
+    {
+     "what": "partner A sees its own delivery with the reason it failed and when it will be tried again",
+     "ok": true
+    },
+    {
+     "what": "the delivery list never includes the payload of other partners or any secret",
+     "ok": true
+    },
+    {
+     "what": "partner A can replay its own failed event",
+     "ok": true
+    },
+    {
+     "what": "customer B's subscription receives nothing about customer A's shipment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1104
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "the integration report is for company administrators and holds no secret",
+   "asserts": [
+    {
+     "what": "csr cannot read it",
+     "ok": true
+    },
+    {
+     "what": "csr cannot list partner events",
+     "ok": true
+    },
+    {
+     "what": "operator cannot read it",
+     "ok": true
+    },
+    {
+     "what": "operator cannot list partner events",
+     "ok": true
+    },
+    {
+     "what": "shipping cannot read it",
+     "ok": true
+    },
+    {
+     "what": "shipping cannot list partner events",
+     "ok": true
+    },
+    {
+     "what": "branchA cannot read it",
+     "ok": true
+    },
+    {
+     "what": "branchA cannot list partner events",
+     "ok": true
+    },
+    {
+     "what": "branchWh cannot read it",
+     "ok": true
+    },
+    {
+     "what": "branchWh cannot list partner events",
+     "ok": true
+    },
+    {
+     "what": "regional cannot read it",
+     "ok": true
+    },
+    {
+     "what": "regional cannot list partner events",
+     "ok": true
+    },
+    {
+     "what": "custA cannot read it",
+     "ok": true
+    },
+    {
+     "what": "custA cannot list partner events",
+     "ok": true
+    },
+    {
+     "what": "an administrator reads it",
+     "ok": true
+    },
+    {
+     "what": "no key, secret, database address or partner address in it",
+     "ok": true
+    },
+    {
+     "what": "the event list is { data, meta }, limited, and shows no signing secret or address",
+     "ok": true
+    },
+    {
+     "what": "a bad status filter is refused",
+     "ok": true
+    },
+    {
+     "what": "every integration says what state it is in and what happens when it is down",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 78
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "the server log holds request ids and reasons, and no key, token or signing secret",
+   "asserts": [
+    {
+     "what": "the log is being written",
+     "ok": true
+    },
+    {
+     "what": "the speech key does not appear",
+     "ok": true
+    },
+    {
+     "what": "the AI key does not appear",
+     "ok": true
+    },
+    {
+     "what": "the scheduler secret does not appear",
+     "ok": true
+    },
+    {
+     "what": "a partner's client secret does not appear",
+     "ok": true
+    },
+    {
+     "what": "a partner's token does not appear",
+     "ok": true
+    },
+    {
+     "what": "a staff token does not appear",
+     "ok": true
+    },
+    {
+     "what": "the QA sign-in password does not appear",
+     "ok": true
+    },
+    {
+     "what": "no webhook signing secret appears",
+     "ok": true
+    },
+    {
+     "what": "failures are written as one line with what failed and why",
+     "ok": true
+    },
+    {
+     "what": "the provider's own error text (which quoted a key) was not copied into the log",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 17
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "a branch login cannot act on another branch through the integration paths",
+   "asserts": [
+    {
+     "what": "dispatching another branch's shipment is refused",
+     "ok": true
+    },
+    {
+     "what": "and nothing left",
+     "ok": true
+    },
+    {
+     "what": "editing another branch's order is refused",
+     "ok": true
+    },
+    {
+     "what": "a request key used at one branch does not answer a request from another",
+     "ok": true
+    },
+    {
+     "what": "the windowed order list of branch B holds only branch B's orders",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 322
+  },
+  {
+   "group": "Security, isolation and recovery",
+   "name": "after everything above, the books still reconcile",
+   "asserts": [
+    {
+     "what": "no invoice number is repeated",
+     "ok": true
+    },
+    {
+     "what": "no stock balance is negative",
+     "ok": true
+    },
+    {
+     "what": "every balance is available plus reserved plus on hold",
+     "ok": true
+    },
+    {
+     "what": "reserved stock equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "no invoice is paid for more than its total",
+     "ok": true
+    },
+    {
+     "what": "for every invoice raised in this run, the payments add up to the amount paid",
+     "ok": true
+    },
+    {
+     "what": "no line has shipped more than was ordered",
+     "ok": true
+    },
+    {
+     "what": "no event is on file twice for one subscriber",
+     "ok": true
+    },
+    {
+     "what": "no delivery has been tried more than its limit",
+     "ok": true
+    },
+    {
+     "what": "no request key is left claimed and unanswered from this run",
+     "ok": true
+    },
+    {
+     "what": "every shipment that left in this run has its stock movement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 15
+  }
+ ]
+}

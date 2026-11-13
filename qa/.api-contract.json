@@ -1,6 +1,24 @@
 {
- "total": 284,
+ "total": 287,
  "missing": [
+  {
+   "call": "GET /api/admin/integrations",
+   "files": [
+    "src/frontend/src/pages/Admin/IntegrationsPage.jsx"
+   ]
+  },
+  {
+   "call": "POST /api/admin/integrations/deliveries/:x/replay",
+   "files": [
+    "src/frontend/src/pages/Admin/IntegrationsPage.jsx"
+   ]
+  },
+  {
+   "call": "POST /api/admin/integrations/run",
+   "files": [
+    "src/frontend/src/pages/Admin/IntegrationsPage.jsx"
+   ]
+  },
   {
    "call": "PUT /api/auth/profile",
    "files": [

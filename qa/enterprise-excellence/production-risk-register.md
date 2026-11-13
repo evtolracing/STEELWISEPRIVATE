@@ -1,6 +1,6 @@
 # Production risk register
 
-Written by hand in Phase 1 and updated at the end of Phase 2 and Phase 3 (all 2026-11-13). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
+Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
 
 Likelihood and impact are a judgement from the evidence named in the row. "Blocks go-live" means the product should not carry real work for more than one branch until the risk is closed or the owner accepts it in writing.
 
@@ -18,6 +18,17 @@ What still stands between this code and 80 branches:
 4. 58 of 143 screens are labelled samples; two modules keep their own copy of stock and orders (R-03, R-04).
 5. Nothing runs on a schedule; most changing routes outside order-to-cash have no success-path test.
 6. Three more database updates wait for the owner (R-15).
+
+### Phase 4 update
+
+Phase 4 closed, with proof: a partner API that could not run and would have bypassed stock and billing rules had it been patched (H-001); partner events that were lost on any failure (H-002); two defects in the request-key mechanism, one that let one partner receive another's answer and one that created duplicates when a connection dropped (H-003, H-004); outside calls with no time limit, where a provider fault could sign users out (H-005); and a shipment that could leave with no invoice and no word about it (H-006).
+
+What Phase 4 adds to the list of things that stand in the way:
+
+1. **The host schedule is not set** (R-06, R-30). Events are sent right after each action; a failed one waits for a person until the owner sets the secret and the schedule.
+2. **Nothing alerts anyone** (R-18). There is now a screen that shows every integration failure, and it must be opened to be seen.
+3. **No outside service for email, text, cards, carriers, tax or accounting is connected** (R-16, R-31), and web checkout takes no payment (R-32).
+4. **Five database updates now wait for the owner** (R-15): files 6 to 10.
 
 ## Risks
 
@@ -53,6 +64,24 @@ What still stands between this code and 80 branches:
 | R-27 | Live rows break the new rules | **New in Phase 3.** The files skip any rule that existing rows break and print a notice; they cannot fail. But a skipped rule is a rule not in force | Possible for totals (old stray digits) and `DispatchJob` branches ("FWA") | Low: the files say exactly which | No | Send the notices back; a repair plan follows, for approval | Owner, then engineering |
 | R-28 | The audit trail can be rewritten | **New in Phase 3.** G-011: no database rule protects `AuditLog`; two code paths change or delete lines | Unlikely | Medium to high for a dispute or an audit | No | Revoke update and delete from the application's database role | Phase 10, owner (roles) |
 | R-29 | Search and job lists slow down as the company's data grows | **New in Phase 3, measured.** G-013: stock search 140 ms at 100,233 items, growing in step; fine today | Certain eventually | Low to medium | No | Re-measure at ten times the volume; index and query change if needed | Phase 11 |
+| R-30 | A partner system misses an event because a failed delivery is never tried again | **New in Phase 4; reduced.** H-002: events are now saved with the change, retried and replayable. The retries run only when the host calls the scheduled address (B-019) | Likely until the schedule is set | Medium: a customer or carrier system is out of step; the failed list shows which | No, while no partner is live | The owner sets `CRON_SECRET` and a 5-minute schedule; the Integrations screen then shows "Scheduled work last ran" | Owner (host) |
+| R-31 | Customers get no order, shipping or invoice messages; freight, tax and accounting are by hand | H-015: none of these services is connected. The Integrations screen says so | Certain | Medium: manual work and re-keying at 80 branches | A business decision | The owner picks providers and an order; each is built through the outside-call guard with a sandbox | Owner |
+| R-32 | A web shop customer believes a card was charged | H-013: the payment method chosen at checkout is a note; no payment is taken. No order is marked paid | Possible | Medium: unpaid orders shipped to customers without terms | Before the shop is opened to customers without terms | The owner decides: on account only (and say so), or a processor | Owner |
+| R-33 | A limit or a breaker does not hold across server instances | H-012, with E-014 (R-13): partner limits, staff limits and the outside-service breaker count per instance | Likely on the host | Low to medium: a limit is looser by the number of instances; nothing is lost or duplicated | No | A shared counter or a firewall rule on the host (Phase 10) | Engineer, with the owner's host choice |
+| R-34 | Orders shipped and never invoiced already exist on the live system | H-006: before Phase 4 a billing failure at dispatch was silent. How many live orders are in that state is unknown | Possible | Medium: unbilled material | No | After deployment the owner opens Admin > Integrations and reads "Shipped but not invoiced"; each is invoiced from its shipment | Owner |
+| R-35 | A partner integration goes live against routes that say "not built" | H-014: supplier shipping notices, corrective actions, scorecard and document upload answer 501 | Unlikely: they say so | Low | No | Built with purchasing and supplier quality | Engineer, in that phase |
+
+## Earlier risks changed by Phase 4
+
+| Risk | Change |
+|---|---|
+| R-06 Nothing happens without a person | **Reduced.** One scheduled address exists and is tested; partner events are retried by it. Nothing else runs on a schedule, and the host schedule is not set (R-30) |
+| R-13 Request limits do not hold on the host | Unchanged; now also applies to the partner limit and the breaker (R-33) |
+| R-14 Slow or failing screens at volume | **Reduced.** Orders and stock honour `limit` and `offset`; an order summary is under half the size. The screens do not use it yet (G-014) |
+| R-15 Database updates waiting | **Now five: files 6 to 10.** File 10 adds a unique rule and an index on partner event rows; it renames later duplicates and deletes nothing; it ran twice on the 85-branch copy |
+| R-16 Card payments and receipts | Unchanged; restated as R-31 and R-32 with the evidence that no order is marked paid on a browser's word |
+| R-18 Nobody is told when the system fails | **Reduced.** The Integrations screen shows failed events, failing outside services, orders shipped but not invoiced and requests never answered. Still no alert (E-017) |
+| R-22 A repeated request creates a second document | **Reduced again.** Two defects in the key mechanism fixed (H-003, H-004); dispatch, delivery and work order completion now carry a key from the screens |
 
 ## What is not a risk today, with the evidence
 
@@ -70,11 +99,17 @@ What still stands between this code and 80 branches:
 - The branch screens answer within half a second at 85 branches, 72,240 orders and 100,233 stock items, on a small machine (this session). The host was not measured.
 - No deadlock occurred in any test of the session.
 
+- No order is marked paid on the word of a browser: web checkout records no payment, a counter card sale needs staff to enter the terminal's approval code, and invoice payments are checked against the balance by the server and the database (Phase 4).
+- A retry after a lost answer or a dropped connection gets the first result; ten copies of one payment record one payment; five overlapping delivery runs send each event once (Phase 4).
+- No key, token or signing secret appears in the server log of a full test run (Phase 4).
+
 ## Conditions for a single-branch pilot
 
 Unchanged in substance from Phase 1, with two additions from Phase 2 and two from Phase 3 (the rule on shipping without a reservation, R-25, is settled; the host's connection settings are confirmed, R-26). A pilot at one branch is reasonable once: all eight database files are applied (R-15); every pilot login has a home branch (R-21); a restore has been tried once (R-11); only one stock list is in use (R-03); the sample modules the pilot branch does not need are off the menu (R-04); and the web store's promise dates are either real or hidden (R-05). That is a recommendation, not a decision made here.
 
 ## Rollback
+
+Phase 4 adds one unique index and one index on `WebhookDelivery` (file 10) and renames the event id of any later duplicate row; it deletes nothing. The previous code runs on the new schema. The code changes are additive or opt-in on every route a screen calls; the partner routes had no working caller. The pull request can be reverted without touching the database.
 
 Phase 3's database changes are additive: foreign keys, checks, indexes, one new table and two new optional columns. None removes or rewrites data. The previous code runs on the new schema, so the pull request can be reverted without touching the database. Each constraint can be dropped by name with no effect on data. Detail: `phase-03-migration-review.md`, section 5.
 

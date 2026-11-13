@@ -61,6 +61,19 @@ The owner's permanent standard is `qa/ENGINEERING-STANDARD.md` and governs every
 | `phase-03-quality-scorecard.md` | Scores before and after Phase 3 | By hand, from `progress.json` |
 | `phase-03-owner-decisions.md` | The owner's six answers of 2026-11-13, what was built from each, the evidence and what is not covered | By hand |
 | `phase-03-dispositions.json` | Phase 3's status for each earlier finding it touched | By hand. Applied by `findings-import.mjs` |
+| `phase-04-report.md` | What Phase 4 did, with evidence, the final status, the eighteen completion conditions and the Phase 5 handoff | By hand |
+| `phase-04-integration-inventory.md` | Every integration, inside and outside, with 20 fields each and a dependency graph | By hand |
+| `phase-04-api-contract-audit.md` | The contracts as they are, the contract tests, and the compatibility of each change | By hand |
+| `phase-04-event-reliability.md` | How partner events are recorded, sent, retried, stopped and replayed; background work | By hand |
+| `phase-04-webhook-security.md` | Signatures, address rules, partner sign-in and authorization, secrets | By hand |
+| `phase-04-idempotency-review.md` | Request keys, retries, time limits and the breaker, operation by operation | By hand |
+| `phase-04-failure-recovery.md` | Failure, detection and recovery for each critical integration | By hand |
+| `phase-04-external-integrations.md` | What is connected, what is not, and what was and was not tested | By hand |
+| `phase-04-observability.md` | Signals, the integration report, and what is missing | By hand |
+| `phase-04-performance-results.md` | Integration load on the 85-branch dataset, with the workload assumptions | By hand, from `qa/results/phase4-load*.json` |
+| `phase-04-regression-results.md` | The full run on the final code and the 66 scenarios | By hand, from `qa/results/` |
+| `phase-04-quality-scorecard.md` | Scores for the integration layer and the eight gates | By hand |
+| `phase-04-dispositions.json` | Phase 4's status for each earlier finding it touched | By hand. Applied by `findings-import.mjs` |
 | `progress.json` | Program state for a machine | Generated; phase fields come from `phase-state.json` |
 | `owner-decisions.json` | Decisions the owner has given, with the findings each one settles | By hand. Applied to `findings.json` by `findings-import.mjs` |
 | `phase-state.json` | The few facts a person sets at the end of a phase | By hand |

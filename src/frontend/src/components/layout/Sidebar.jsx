@@ -315,6 +315,7 @@ const navSections = [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
       { path: '/admin/staff', label: 'Staff & Operators', icon: StaffIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
+      { path: '/admin/integrations', label: 'Integrations', icon: PartnerApiIcon },
       { path: '/admin/audit-log', label: 'Audit Log', icon: AuditLogIcon },
       { path: '/admin/tax-rates', label: 'Sales Tax Rates', icon: InvoicesIcon },
       { path: '/admin/processing-recipes', label: 'Processing Recipes', icon: RecipesIcon },

@@ -1,10 +1,9 @@
 {
- "at": "2026-11-13T21:44:38.286Z",
+ "at": "2026-11-13T23:01:09.529Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 160,
- "totalRows": 7966,
+ "totalRows": 9134,
  "emptyTables": [
-  "AppSetting",
   "ApprovalDecision",
   "ApprovalRequest",
   "AssetComponent",
@@ -14,8 +13,6 @@
   "CustomerPreference",
   "CustomerTagRequirement",
   "Division",
-  "Document",
-  "DocumentBlob",
   "DocumentLink",
   "DowntimeRecord",
   "DropTag",
@@ -35,10 +32,6 @@
   "PMTemplate",
   "Package",
   "PackageItem",
-  "Partner",
-  "PartnerApiKey",
-  "PartnerApiLog",
-  "PartnerWebhook",
   "PipelineRun",
   "PricingAnalytics",
   "PricingOverride",
@@ -94,8 +87,7 @@
   "TestResult",
   "TraceEvent",
   "UserDivision",
-  "UserRoleAssignment",
-  "WebhookDelivery"
+  "UserRoleAssignment"
  ],
  "rows": [
   {
@@ -104,7 +96,7 @@
   },
   {
    "table": "AppSetting",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "ApprovalDecision",
@@ -128,7 +120,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 2019
+   "rows": 2281
   },
   {
    "table": "BomOperation",
@@ -140,7 +132,7 @@
   },
   {
    "table": "Coil",
-   "rows": 448
+   "rows": 493
   },
   {
    "table": "CommodityPrice",
@@ -184,11 +176,11 @@
   },
   {
    "table": "Document",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "DocumentBlob",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "DocumentCounter",
@@ -252,7 +244,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 448
+   "rows": 493
   },
   {
    "table": "InventoryAdjustment",
@@ -276,11 +268,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 177
+   "rows": 213
   },
   {
    "table": "InvoiceLine",
-   "rows": 187
+   "rows": 223
   },
   {
    "table": "Job",
@@ -324,7 +316,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 356
+   "rows": 443
   },
   {
    "table": "MeterReading",
@@ -344,19 +336,19 @@
   },
   {
    "table": "Order",
-   "rows": 437
+   "rows": 532
   },
   {
    "table": "OrderLine",
-   "rows": 454
+   "rows": 549
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 32
+   "rows": 35
   },
   {
    "table": "Organization",
-   "rows": 29
+   "rows": 34
   },
   {
    "table": "PMSchedule",
@@ -376,23 +368,23 @@
   },
   {
    "table": "Partner",
-   "rows": 0
+   "rows": 8
   },
   {
    "table": "PartnerApiKey",
-   "rows": 0
+   "rows": 12
   },
   {
    "table": "PartnerApiLog",
-   "rows": 0
+   "rows": 148
   },
   {
    "table": "PartnerWebhook",
-   "rows": 0
+   "rows": 15
   },
   {
    "table": "Payment",
-   "rows": 113
+   "rows": 121
   },
   {
    "table": "PipelineRun",
@@ -444,7 +436,7 @@
   },
   {
    "table": "Quote",
-   "rows": 26
+   "rows": 29
   },
   {
    "table": "QuoteAcceptance",
@@ -452,15 +444,15 @@
   },
   {
    "table": "QuoteLine",
-   "rows": 7
+   "rows": 11
   },
   {
    "table": "RFQ",
-   "rows": 23
+   "rows": 30
   },
   {
    "table": "RFQLine",
-   "rows": 4
+   "rows": 12
   },
   {
    "table": "RFQSource",
@@ -476,7 +468,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 4
+   "rows": 18
   },
   {
    "table": "RfidScanEvent",
@@ -644,11 +636,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 207
+   "rows": 245
   },
   {
    "table": "ShipmentItem",
-   "rows": 176
+   "rows": 214
   },
   {
    "table": "ShipmentStop",
@@ -716,7 +708,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 0
+   "rows": 146
   },
   {
    "table": "WorkCenter",
@@ -728,18 +720,18 @@
   },
   {
    "table": "WorkOrder",
-   "rows": 15
+   "rows": 17
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 12
+   "rows": 16
   },
   {
    "table": "_prisma_migrations",
-   "rows": 27
+   "rows": 28
   }
  ],
- "indexes": 582,
+ "indexes": 584,
  "views": [],
  "triggers": [],
  "jsonCols": [
@@ -1091,7 +1083,7 @@
   "credit memos larger than the invoice they credit": 0,
   "two live invoices for the same shipment": 0,
   "quotes or requests whose branch does not exist": 0,
-  "orders with no branch": 62,
+  "orders with no branch": 63,
   "order lines shipped more than ordered": 0,
   "order line shipped quantity differs from its dispatched shipment items": 47,
   "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,

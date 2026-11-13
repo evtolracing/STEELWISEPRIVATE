@@ -11,6 +11,8 @@ import config from '../config/index.js';
 
 const JWT_SECRET = config.partnerJwtSecret;
 const TOKEN_EXPIRY = '1h';
+// A hash of nothing anyone can send, compared against when the key id is unknown.
+const NO_KEY_HASH = bcrypt.hashSync(`no-key-${Math.random()}-${Date.now()}`, 10);
 
 // ─── Scope Definitions by Partner Type ─────────────────────────────────────────
 export const PARTNER_SCOPES = {
@@ -49,11 +51,14 @@ export const PARTNER_SCOPES = {
 export async function generatePartnerToken(clientId, clientSecret) {
   // clientId = PartnerApiKey.id
   const apiKey = await prisma.partnerApiKey.findUnique({
-    where: { id: clientId },
+    where: { id: String(clientId) },
     include: { partner: true },
   });
 
-  if (!apiKey) {
+  // The secret is checked first, and a wrong id costs the same work as a wrong secret, so an
+  // answer never tells a caller without the secret whether a key exists or what state it is in.
+  const valid = await bcrypt.compare(String(clientSecret), apiKey?.clientSecret || NO_KEY_HASH);
+  if (!apiKey || !valid) {
     throw new Error('Invalid client credentials');
   }
 
@@ -71,12 +76,6 @@ export async function generatePartnerToken(clientId, clientSecret) {
 
   if (apiKey.partner.status !== 'ACTIVE') {
     throw new Error(`Partner account is ${apiKey.partner.status.toLowerCase()}`);
-  }
-
-  // Verify secret
-  const valid = await bcrypt.compare(clientSecret, apiKey.clientSecret);
-  if (!valid) {
-    throw new Error('Invalid client credentials');
   }
 
   // Update last used
@@ -130,7 +129,7 @@ export function partnerAuth(requiredScopes = []) {
       // Verify JWT
       let decoded;
       try {
-        decoded = jwt.verify(token, JWT_SECRET);
+        decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
       } catch (err) {
         if (err.name === 'TokenExpiredError') {
           return sendAuthError(req, res, 401, 'TOKEN_EXPIRED', 'Token has expired');
@@ -152,8 +151,15 @@ export function partnerAuth(requiredScopes = []) {
         return sendAuthError(req, res, 403, 'PARTNER_INACTIVE', 'Partner account is not active');
       }
 
+      // A key that was revoked or has expired stops working now, not when its token runs out.
+      const apiKey = await prisma.partnerApiKey.findUnique({ where: { id: String(decoded.sub || '') }, select: { status: true, expiresAt: true, partnerId: true } });
+      if (!apiKey || apiKey.partnerId !== partner.id || apiKey.status !== 'ACTIVE' || (apiKey.expiresAt && new Date(apiKey.expiresAt) < new Date())) {
+        req.partner = undefined;
+        return sendAuthError(req, res, 401, 'KEY_REVOKED', 'This API key is no longer valid');
+      }
+
       // IP allowlist check
-      if (partner.ipAllowList.length > 0) {
+      if (Array.isArray(partner.ipAllowList) && partner.ipAllowList.length > 0) {
         const clientIp = req.ip || req.connection?.remoteAddress;
         if (!partner.ipAllowList.includes(clientIp)) {
           return sendAuthError(req, res, 403, 'IP_BLOCKED', 'Request from unauthorized IP address');
@@ -162,7 +168,7 @@ export function partnerAuth(requiredScopes = []) {
 
       // Check scopes
       if (requiredScopes.length > 0) {
-        const hasScope = requiredScopes.some(scope => decoded.scopes.includes(scope));
+        const hasScope = requiredScopes.some(scope => (decoded.scopes || []).includes(scope));
         if (!hasScope) {
           return sendAuthError(req, res, 403, 'INSUFFICIENT_SCOPE',
             `Required scope: ${requiredScopes.join(' or ')}`);

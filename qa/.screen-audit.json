@@ -1,8 +1,8 @@
 {
- "screens": 143,
+ "screens": 144,
  "tally": {
   "STATIC": 5,
-  "REAL": 76,
+  "REAL": 77,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
  },
@@ -745,6 +745,12 @@
    "onMenu": true,
    "verdict": "REAL",
    "file": "pages/Customers/CustomerPreferencesPage.jsx"
+  },
+  {
+   "route": "admin/integrations",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/IntegrationsPage.jsx"
   },
   {
    "route": "admin/users",

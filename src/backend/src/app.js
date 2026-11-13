@@ -2,6 +2,7 @@
  * Express App - Separated from server startup for Vercel serverless compatibility
  * This file creates and configures the Express app WITHOUT calling app.listen()
  */
+import integrationRoutes, { scheduledRun } from './routes/integrations.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -170,6 +171,9 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// The scheduler's address. It carries no user and proves itself with a shared secret.
+app.all('/api/internal/tasks/run', (req, res, next) => (['GET', 'POST'].includes(req.method) ? scheduledRun(req, res) : next()));
+
 // Database and server internals never go out in an error reply.
 app.use('/api', safeErrors, pagingGuard);
 
@@ -247,6 +251,7 @@ app.use('/api/sales', salesRoutes);
 app.use('/api/executive', executiveRoutes);
 app.use('/api/admin/catalog', adminCatalogRouter);
 app.use('/api/admin/online-settings', onlineSettingsRoutes);
+app.use('/api/admin/integrations', integrationRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Drop Tag Engine

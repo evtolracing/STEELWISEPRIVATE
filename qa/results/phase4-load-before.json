@@ -1,0 +1,305 @@
+{
+ "at": "2026-11-13T22:54:37.843Z",
+ "base": "http://localhost:3021",
+ "assumed": {
+  "branches": 80,
+  "screens loaded at the same moment": "80 (one list per branch at once), repeated",
+  "orders confirmed at the same moment": "80 (one per branch)",
+  "partner systems subscribed": "1 customer system receiving every order event of its own orders",
+  "events waiting after an outage": "500 for one subscriber",
+  "delivery run": "up to 100 events per run; the host is expected to call it every 5 minutes",
+  "note": "These are test loads chosen to be above one busy minute at 80 branches. They are not measured production volumes."
+ },
+ "sizes": {
+  "order": 72240,
+  "orderLine": 74347,
+  "shipment": 50869,
+  "invoice": 37625,
+  "coil": 100233,
+  "location": 85,
+  "webhookDelivery": 0
+ },
+ "lists": [
+  {
+   "who": "admin",
+   "name": "admin GET /api/orders?limit=50",
+   "status": 200,
+   "bytes": 95389,
+   "p50": 43,
+   "p95": 50,
+   "burst": {
+    "requests": 80,
+    "wallMs": 1631,
+    "p50": 984,
+    "p95": 1611,
+    "failed": 0
+   }
+  },
+  {
+   "who": "admin",
+   "name": "admin GET /api/orders?limit=50&view=summary",
+   "status": 200,
+   "bytes": 40839,
+   "p50": 36,
+   "p95": 40,
+   "burst": {
+    "requests": 80,
+    "wallMs": 1331,
+    "p50": 1301,
+    "p95": 1326,
+    "failed": 0
+   }
+  },
+  {
+   "who": "admin",
+   "name": "admin GET /api/orders?limit=50&offset=5000&view=summary",
+   "status": 200,
+   "bytes": 40125,
+   "p50": 41,
+   "p95": 44,
+   "burst": {
+    "requests": 80,
+    "wallMs": 1626,
+    "p50": 1592,
+    "p95": 1621,
+    "failed": 0
+   }
+  },
+  {
+   "who": "admin",
+   "name": "admin GET /api/inventory?limit=50",
+   "status": 200,
+   "bytes": 129689,
+   "p50": 23,
+   "p95": 28,
+   "burst": {
+    "requests": 80,
+    "wallMs": 779,
+    "p50": 604,
+    "p95": 771,
+    "failed": 0
+   }
+  },
+  {
+   "who": "admin",
+   "name": "admin GET /api/shipments?limit=50",
+   "status": 200,
+   "bytes": 59395,
+   "p50": 33,
+   "p95": 41,
+   "burst": {
+    "requests": 80,
+    "wallMs": 747,
+    "p50": 427,
+    "p95": 728,
+    "failed": 0
+   }
+  },
+  {
+   "who": "branchA",
+   "name": "branchA GET /api/orders?limit=50",
+   "status": 200,
+   "bytes": 122135,
+   "p50": 18,
+   "p95": 20,
+   "burst": {
+    "requests": 80,
+    "wallMs": 514,
+    "p50": 361,
+    "p95": 503,
+    "failed": 0
+   }
+  },
+  {
+   "who": "branchA",
+   "name": "branchA GET /api/orders?limit=50&view=summary",
+   "status": 200,
+   "bytes": 43185,
+   "p50": 15,
+   "p95": 17,
+   "burst": {
+    "requests": 80,
+    "wallMs": 318,
+    "p50": 287,
+    "p95": 314,
+    "failed": 0
+   }
+  },
+  {
+   "who": "branchA",
+   "name": "branchA GET /api/orders?limit=50&offset=5000&view=summary",
+   "status": 200,
+   "bytes": 2,
+   "p50": 9,
+   "p95": 11,
+   "burst": {
+    "requests": 80,
+    "wallMs": 199,
+    "p50": 145,
+    "p95": 197,
+    "failed": 0
+   }
+  },
+  {
+   "who": "branchA",
+   "name": "branchA GET /api/inventory?limit=50",
+   "status": 200,
+   "bytes": 2,
+   "p50": 5,
+   "p95": 5,
+   "burst": {
+    "requests": 80,
+    "wallMs": 121,
+    "p50": 105,
+    "p95": 118,
+    "failed": 0
+   }
+  },
+  {
+   "who": "branchA",
+   "name": "branchA GET /api/shipments?limit=50",
+   "status": 200,
+   "bytes": 49421,
+   "p50": 14,
+   "p95": 15,
+   "burst": {
+    "requests": 80,
+    "wallMs": 316,
+    "p50": 214,
+    "p95": 308,
+    "failed": 0
+   }
+  }
+ ],
+ "partner": [
+  {
+   "name": "partner (customer) GET /customer/orders?limit=50",
+   "status": 200,
+   "bytes": 22613,
+   "p50": 15,
+   "p95": 23,
+   "burst": {
+    "requests": 80,
+    "wallMs": 424,
+    "p50": 298,
+    "p95": 413,
+    "failed": 0
+   }
+  },
+  {
+   "name": "partner (customer) GET /customer/invoices?limit=50",
+   "status": 200,
+   "bytes": 20050,
+   "p50": 29,
+   "p95": 34,
+   "burst": {
+    "requests": 80,
+    "wallMs": 769,
+    "p50": 497,
+    "p95": 761,
+    "failed": 0
+   }
+  },
+  {
+   "name": "partner (customer) GET /customer/shipments?limit=50",
+   "status": 200,
+   "bytes": 24284,
+   "p50": 24,
+   "p95": 28,
+   "burst": {
+    "requests": 80,
+    "wallMs": 659,
+    "p50": 416,
+    "p95": 653,
+    "failed": 0
+   }
+  },
+  {
+   "name": "partner (carrier) GET /carrier/shipments?limit=50",
+   "status": 200,
+   "bytes": 71,
+   "p50": 6,
+   "p95": 9,
+   "burst": {
+    "requests": 80,
+    "wallMs": 165,
+    "p50": 137,
+    "p95": 158,
+    "failed": 0
+   }
+  }
+ ],
+ "events": {
+  "subscribed": {
+   "confirmed": 80,
+   "wallMs": 420,
+   "p50": 278,
+   "p95": 406,
+   "eventsRecorded": 80,
+   "eventsDelivered": 59,
+   "callsReceived": 60,
+   "allDeliveredAfterMs": 20840
+  },
+  "notSubscribed": {
+   "confirmed": 80,
+   "wallMs": 437,
+   "p50": 280,
+   "p95": 417
+  }
+ },
+ "delivery": {
+  "fast": {
+   "events": 500,
+   "partnerAnswersIn": "at once",
+   "runsAtOnce": 1,
+   "runs": 6,
+   "wallMs": 4198,
+   "perSecond": 119,
+   "runP50": 779,
+   "runP95": 826,
+   "delivered": 500,
+   "callsReceived": 500,
+   "distinctEvents": 500
+  },
+  "slowPartner": {
+   "events": 200,
+   "partnerAnswersIn": "200 ms",
+   "runsAtOnce": 1,
+   "runs": 2,
+   "wallMs": 42327,
+   "perSecond": 5,
+   "runP50": 21183,
+   "runP95": 21183,
+   "delivered": 200,
+   "callsReceived": 200,
+   "distinctEvents": 200
+  },
+  "fourRunsAtOnce": {
+   "events": 500,
+   "partnerAnswersIn": "at once",
+   "runsAtOnce": 4,
+   "runs": 20,
+   "wallMs": 1923,
+   "perSecond": 260,
+   "runP50": 378,
+   "runP95": 407,
+   "delivered": 500,
+   "callsReceived": 500,
+   "distinctEvents": 500
+  }
+ },
+ "reportScreen": {
+  "name": "admin GET /api/admin/integrations",
+  "status": 200,
+  "bytes": 8725,
+  "p50": 164,
+  "p95": 181,
+  "burst": {
+   "requests": 10,
+   "wallMs": 746,
+   "p50": 630,
+   "p95": 745,
+   "failed": 0
+  }
+ }
+}

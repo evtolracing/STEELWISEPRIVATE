@@ -76,3 +76,21 @@ test('a change aimed at a missing record, or carrying values the database will n
   assert.equal(callerMistake(500, { method: 'GET' }, { recordNotFound: true }), null);
   assert.equal(callerMistake(409, { method: 'POST' }, { recordNotFound: true }), null);
 });
+
+test('a change the database rules refuse is a 409 with a reason, not a server error', async () => {
+  const { callerMistake } = await import('../src/middleware/safeErrors.js');
+  const { ruleRefusal } = await import('../src/lib/requestContext.js');
+  assert.equal(ruleRefusal({ code: 'P2003', message: 'Foreign key constraint violated' }), 'REFERENCE');
+  assert.equal(ruleRefusal({ message: 'new row for relation "Invoice" violates check constraint "Invoice_total_check"' }), 'CHECK');
+  assert.equal(ruleRefusal({ code: 'P2002' }), null);
+  assert.equal(ruleRefusal(new Error('boom')), null);
+  assert.equal(ruleRefusal(null), null);
+  const ref = callerMistake(500, { method: 'POST' }, { ruleRefusal: 'REFERENCE' });
+  assert.equal(ref.status, 409); assert.equal(ref.code, 'RULE_REFUSED'); assert.ok(!/constraint|relation|Invoice/.test(ref.error));
+  const chk = callerMistake(500, { method: 'PUT' }, { ruleRefusal: 'CHECK' });
+  assert.equal(chk.status, 409); assert.match(chk.error, /do not agree/);
+  // A missing record still wins; a read and a non-500 are left alone.
+  assert.equal(callerMistake(500, { method: 'PUT' }, { recordNotFound: true, ruleRefusal: 'CHECK' }).status, 404);
+  assert.equal(callerMistake(500, { method: 'GET' }, { ruleRefusal: 'CHECK' }), null);
+  assert.equal(callerMistake(400, { method: 'POST' }, { ruleRefusal: 'CHECK' }), null);
+});

@@ -1,0 +1,82 @@
+{
+ "note": "Dispositions decided in Phase 4. Applied over the findings source by qa/tools/findings-import.mjs. Never delete an entry.",
+ "dispositions": {
+  "C-002": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication",
+   "statusNote": "Phase 4: the carrier routes were rewritten on the real schema and on the staff dispatch and delivery steps (see H-001). A carrier can never dispatch; a report on a shipment that has not left is refused; a repeated report changes nothing.",
+   "verification": "qa/sim/phase4-integration.mjs: \"a carrier reports delivery through the partner API: shipping, history and the customer all see it\", \"a carrier reports delivered twice, and again late\", \"a carrier sees only its own loads, and no prices\"."
+  },
+  "B-018": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication",
+   "statusNote": "Phase 4: delivery is now durable (see H-002): a failed event waits in the database for 1, 5, 30 and 120 minutes and is kept as failed after five tries. The retries are carried out when the scheduled address is called; setting that schedule on the host is B-019.",
+   "verification": "qa/sim/phase4-integration.mjs, group \"Event processing and background jobs\"."
+  },
+  "B-019": {
+   "status": "BLOCKED",
+   "phase": "Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication",
+   "statusNote": "Phase 4: the scheduled work now exists as one address, GET or POST /api/internal/tasks/run, protected by a secret (CRON_SECRET). It sends waiting partner events and clears old request keys, is safe to call from several places at once, and records when it last ran; the Integrations screen shows that time and has a \"Run now\" button. Blocked on two host settings that are the owner's: (1) set CRON_SECRET to a long random value; (2) add a schedule that calls the address every 5 minutes with \"Authorization: Bearer <CRON_SECRET>\". It was not added to vercel.json because a schedule the plan does not allow can fail the deployment. Until then nothing is lost: events are sent right after each action, and a failed one waits for \"Run now\".",
+   "verification": "qa/sim/phase4-integration.mjs: \"the scheduled run needs its secret, does the periodic work and records that it ran\", \"five delivery runs at the same moment send each event once\". The host schedule itself is NOT VERIFIED."
+  },
+  "G-014": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Phase 4: the API half is done and tested (H-010): GET /api/orders?view=summary answers 50 orders in 41 KB against 95 KB in full (qa/results/phase4-load.json), and limit and offset are honoured. No screen was switched to it in this phase.",
+   "deferral": {
+    "reason": "Switching a screen to the summary means checking every field that screen and its dialogs read from the list. The order screens are the subject of Phase 5.",
+    "targetPhase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+    "correction": "The order list screens ask for view=summary and page with X-Total-Count; the detail screen keeps the full record.",
+    "dependencies": "H-010 (done).",
+    "acceptance": "The order list loads in under 50 KB per page and shows every column it shows today.",
+    "verification": "The sales browser suite, plus a check of the request the list makes."
+   }
+  },
+  "G-020": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged.",
+   "deferral": {
+    "reason": "The remaining edit routes belong to modules whose screens are reworked in later phases; adding the check there without the screen sending the value would protect nothing.",
+    "targetPhase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+    "correction": "Each edit screen sends the updatedAt it loaded; each edit route refuses a stale copy the same way.",
+    "dependencies": "The edit screens of each module.",
+    "acceptance": "Two people saving different edits to one record: one is saved, the other is told to reload.",
+    "verification": "qa/sim/phase4-integration.mjs: \"an edit made from an old copy of an order is refused instead of overwriting\" and \"two edits of the same order at the same moment\" already cover orders; the same pair per module."
+   },
+   "verification": "qa/sim/phase4-integration.mjs: the two scenarios named above (orders only)."
+  },
+  "E-021": {
+   "statusNote": "Phase 4: the present reply shapes are now pinned by contract tests, so they cannot drift further unnoticed, and paging was added to the bare-array lists through headers without changing a body (H-010). Making every list one shape is still a change to every screen and stays where it was assigned."
+  },
+  "B-012": {
+   "statusNote": "Phase 4: orders and stock now honour limit and offset and report their total (H-010). The other unbounded lists are unchanged."
+  },
+  "B-016": {
+   "statusNote": "Phase 4: success-path tests now exist for the partner API (customer, carrier, supplier, webhooks, sign-in, administration), the integration report and replay, the scheduled address, and request keys on shipments, payments, receipts, transfers, credits, work order completion, purchase orders, quotes and counter sales. The count of changing routes with a success-path test is in progress.json."
+  },
+  "C-006": {
+   "statusNote": "Phase 4: the request-key middleware is now exercised on shipments (create, dispatch, deliver), payments, receipts, transfers, credits, work order completion, purchase orders, quote acceptance and counter sales, and by partners; two defects in it were found and fixed (H-003, H-004). A browser test asserts that the screens send the key and reuse it on a retry."
+  },
+  "E-017": {
+   "statusNote": "Phase 4: an Integrations screen and report now show failed and waiting events, outside-service failures, orders shipped but not invoiced, requests never answered and when the scheduled work last ran; failures are written as structured log lines with the request id. Nothing is sent to anyone: there is still no alert and no error tracker. That remains the owner's choice of service."
+  },
+  "E-014": {
+   "statusNote": "Phase 4: the same per-instance limit applies to the partner request limit and to the new breaker for outside services (H-012)."
+  },
+  "B-001": {
+   "statusNote": "Phase 4: a contract test now holds the two addresses for jobs and work centers to the same answer and the same rules."
+  },
+  "X-009": {
+   "statusNote": "Phase 4: the screen-to-route contract check stays in the gates. Supplier shipping notices, corrective actions and scorecards in the partner API now answer 501 instead of failing (H-014)."
+  },
+  "C-012": {
+   "deferral": {
+    "reason": "Order intake is the subject of Phase 5.",
+    "targetPhase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+    "correction": "Read the selling company from the company record instead of a fixed code.",
+    "dependencies": "None.",
+    "acceptance": "An order taken through intake always has a seller, whatever the company code is.",
+    "verification": "An intake scenario on a database whose company code differs from the fixed one."
+   }
+  }
+ }
+}

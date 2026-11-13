@@ -1,3 +1,4 @@
+import { listWindow, sendWindow } from '../lib/listing.js';
 import { acrossBranches, currentScope } from '../lib/branchScope.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
@@ -23,19 +24,25 @@ const router = Router();
 router.get('/', async (req, res) => {
   try {
     const { locationId, status } = req.query;
-    const inventory = await prisma.inventory.findMany({
-      where: {
-        ...(locationId && { locationId }),
-        ...(status && { status })
-      },
-      include: {
-        coil: { include: { grade: true, product: true, heat: true } },
-        location: true
-      },
-      orderBy: { updatedAt: 'desc' },
-      take: 200
-    });
-    res.json(inventory.map((row) => withoutCost(req, row)));
+    const where = {
+      ...(locationId && { locationId }),
+      ...(status && { status })
+    };
+    const window = listWindow(req.query, { max: 200 });
+    const [inventory, total] = await Promise.all([
+      prisma.inventory.findMany({
+        where,
+        include: {
+          coil: { include: { grade: true, product: true, heat: true } },
+          location: true
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: window.take,
+        skip: window.skip,
+      }),
+      window.windowed ? prisma.inventory.count({ where }) : null,
+    ]);
+    sendWindow(res, inventory.map((row) => withoutCost(req, row)), { ...window, total });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch inventory' });
   }

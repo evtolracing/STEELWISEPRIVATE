@@ -6,6 +6,8 @@
  *   - it gets the first answer back (with `Idempotency-Replayed: true`) once that is saved;
  *   - it gets 409 while the first is still running;
  *   - it gets 422 if the body differs from the first one.
+ * A key belongs to the signed-in user or partner who sent it: the same key from someone else is
+ * a different request.
  * Only a success (2xx) is kept. A refusal or a failure clears the key, so the same request
  * can be sent again after the cause is fixed. Requests with no header behave as before.
  *
@@ -25,9 +27,14 @@ export const validKey = (key) => typeof key === 'string' && /^[\x21-\x7e]{8,200}
 export async function requestKeys(req, res, next) {
   const key = req.get('Idempotency-Key');
   if (!key || !CHANGING.has(req.method) || !prisma) return next();
+  const path = req.originalUrl.split('?')[0];
+  // The partner API signs callers in after the staff gate. Its routers run this again once
+  // the partner is known, so one partner's key can never answer another partner (H-003).
+  if (path.startsWith('/api/v1/partner/') && !req.partner) return next();
   if (!validKey(key)) return res.status(400).json({ error: 'Idempotency-Key must be 8 to 200 printable characters with no spaces' });
 
-  const scope = `${req.user?.id || req.user?.userId || 'anonymous'} ${req.method} ${req.originalUrl.split('?')[0]}`;
+  const actor = req.partner?.id ? `partner:${req.partner.id}` : (req.user?.id || req.user?.userId || 'anonymous');
+  const scope = `${actor} ${req.method} ${path}`;
   const bodyHash = bodyHashOf(req.body);
   let row;
   try {
@@ -63,8 +70,12 @@ export async function requestKeys(req, res, next) {
     save.catch((error) => console.error(`[requestKeys] ${req.id || '-'} could not save the answer: ${error?.message}`)).finally(() => send(body));
     return res;
   };
-  // An answer that did not go through res.json (a file, an empty 204, a dropped connection) is not kept.
-  res.on('close', () => { if (!settled) prisma.requestKey.deleteMany({ where: { id: row.id, status: 'IN_PROGRESS' } }).catch(() => {}); });
+  // An answer that was sent without res.json (a file, an empty 204) cannot be given back later, so its key is released.
+  res.on('finish', () => { if (!settled) prisma.requestKey.deleteMany({ where: { id: row.id, status: 'IN_PROGRESS' } }).catch(() => {}); });
+  // A connection that drops before the answer is NOT a reason to release the key: the work may
+  // still be running and may still be saved. The key stays claimed; when the work answers, the
+  // answer is kept as usual, and the caller's retry gets it back instead of running the work a
+  // second time (H-004). If the work never answers, the claim runs out after a minute.
 
   if (Math.random() < 0.01) prisma.requestKey.deleteMany({ where: { createdAt: { lt: new Date(Date.now() - KEEP_MS) } } }).catch(() => {});
   next();

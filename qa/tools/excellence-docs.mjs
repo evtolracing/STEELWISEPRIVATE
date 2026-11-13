@@ -337,7 +337,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
     workflowsMapped: state.workflowsMapped ?? null, jobTypesIdentified: state.jobTypesIdentified ?? null,
     findingsBySeverity: count(F, 'severity'), findingsByStatus: count(F, 'status'), openFindingsBySeverity: count(F.filter(open), 'severity'), findingsTotal: F.length, findingsAddedThisPhase: F.filter((f) => f.id.startsWith(state.findingPrefix || 'B-')).length,
     testsExecuted: state.testsExecuted || [], testReach: { routesWithSuccess: eps.filter(okOf).length, routes: eps.length, changingRoutesWithSuccess: w.filter(okOf).length, changingRoutes: w.length },
-    correctionsCompleted: F.filter((f) => /^[BCG]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
+    correctionsCompleted: F.filter((f) => /^[BCGH]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
     unverifiedAreas: state.unverifiedAreas || [], currentBlockers: state.currentBlockers || [], nextActions: state.nextActions || [], lastCompletedCheckpoint: state.lastCompletedCheckpoint || null,
   };
   fs.writeFileSync(path.join(DIR, 'progress.json'), `${JSON.stringify(progress, null, 2)}\n`);

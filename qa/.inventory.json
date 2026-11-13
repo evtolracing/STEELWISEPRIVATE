@@ -2249,14 +2249,6 @@
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
   {
-   "ep": "GET /api/v1/partner/customer/documents",
-   "file": "src/backend/src/routes/partner/customerRoutes.js"
-  },
-  {
-   "ep": "GET /api/v1/partner/customer/documents/:id/download",
-   "file": "src/backend/src/routes/partner/customerRoutes.js"
-  },
-  {
    "ep": "GET /api/v1/partner/customer/shipments",
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
@@ -2266,6 +2258,14 @@
   },
   {
    "ep": "GET /api/v1/partner/customer/invoices",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents/:id/download",
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
   {
@@ -2354,6 +2354,10 @@
   },
   {
    "ep": "POST /api/v1/partner/webhooks/:id/test",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
+   "ep": "POST /api/v1/partner/webhooks/:id/deliveries/:deliveryId/replay",
    "file": "src/backend/src/routes/partner/webhookRoutes.js"
   },
   {
@@ -4254,6 +4258,7 @@
   "pos/retail",
   "customers",
   "customers/preferences",
+  "admin/integrations",
   "admin/users",
   "admin/partners",
   "admin/tax-rates",

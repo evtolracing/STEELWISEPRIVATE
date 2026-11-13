@@ -30,6 +30,14 @@ const CREATES = [
   /\/api\/jobs$/,
   /\/api\/quotes$/,
   /\/api\/rfqs$/,
+  /\/api\/pos\/quick-sale\/process-payment$/,
+  /\/api\/work-orders\/[^/]+\/complete$/,
+  /\/api\/admin\/integrations\/deliveries\/[^/]+\/replay$/,
+]
+// Steps that are sent with PUT and must not run twice: a truck leaves once, a job is completed once.
+const STEPS = [
+  /\/api\/shipments\/[^/]+\/(dispatch|deliver)$/,
+  /\/api\/work-orders\/[^/]+\/complete$/,
 ]
 const KEEP_AFTER_SUCCESS_MS = 10_000
 const pending = new Map() // signature -> { key, doneAt }
@@ -37,11 +45,12 @@ const pending = new Map() // signature -> { key, doneAt }
 const newKey = () => (globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `k-${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`)
 
 export function needsRequestKey(method, url) {
-  if (String(method || 'GET').toUpperCase() !== 'POST') return false
+  const verb = String(method || 'GET').toUpperCase()
+  if (verb !== 'POST' && verb !== 'PUT') return false
   let path = String(url || '')
   try { path = new URL(path, 'http://x').pathname } catch { /* keep as given */ }
   if (!path.startsWith('/api')) path = `/api${path.startsWith('/') ? '' : '/'}${path}`
-  return CREATES.some((re) => re.test(path))
+  return (verb === 'POST' ? CREATES : STEPS).some((re) => re.test(path))
 }
 
 /** The key to send, and a function to call with the outcome. */

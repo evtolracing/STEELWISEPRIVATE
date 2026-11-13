@@ -150,18 +150,29 @@ router.post('/:id/send', handle('send quote', async (req, res) => {
   res.json({ message: 'Quote marked as sent. Nothing is emailed from here: send the customer the quote yourself.', quote: toApi(await prisma.quote.findUnique({ where: { id: quote.id }, include: INCLUDE })) });
 }));
 
-router.post('/:id/reject', handle('reject quote', async (req, res) => {
-  const quote = await prisma.quote.findUnique({ where: { id: req.params.id } });
-  if (!quote) refuse(404, 'Quote not found');
-  const reason = req.body?.reason ? String(req.body.reason) : null;
+/** Reject a quote. `customerId` limits the action to that customer's quotes (the partner API). */
+export async function rejectQuote(id, body = {}, { customerId } = {}) {
+  const quote = await prisma.quote.findUnique({ where: { id }, include: { rfq: { select: { customerId: true } } } });
+  if (!quote || (customerId && quote.rfq.customerId !== customerId)) refuse(404, 'Quote not found');
+  const reason = body?.reason ? String(body.reason).slice(0, 500) : null;
   await prisma.$transaction((tx) => move(tx, quote, 'REJECTED', reason ? { internalNotes: [quote.internalNotes, `Rejected: ${reason}`].filter(Boolean).join(' · ') } : {}));
-  res.json(toApi(await prisma.quote.findUnique({ where: { id: quote.id }, include: INCLUDE })));
+  return toApi(await prisma.quote.findUnique({ where: { id: quote.id }, include: INCLUDE }));
+}
+
+router.post('/:id/reject', handle('reject quote', async (req, res) => {
+  res.json(await rejectQuote(req.params.id, req.body || {}));
 }));
 
-router.post('/:id/accept', handle('accept quote', async (req, res) => {
-  const body = req.body || {};
-  const quote = await prisma.quote.findUnique({ where: { id: req.params.id }, include: { lines: { orderBy: { lineNumber: 'asc' } }, rfq: true } });
-  if (!quote) refuse(404, 'Quote not found');
+/**
+ * Accept a quote and create its sales order, in one transaction. `actor` is the staff user;
+ * for the partner API it is `{ id: <the user who wrote the quote>, via: 'partner' }` and
+ * `customerId` limits the action to that customer's quotes.
+ */
+export async function acceptQuote(id, body = {}, actor, { customerId, onOrder } = {}) {
+  const quote = await prisma.quote.findUnique({ where: { id }, include: { lines: { orderBy: { lineNumber: 'asc' } }, rfq: true } });
+  if (!quote || (customerId && quote.rfq.customerId !== customerId)) refuse(404, 'Quote not found');
+  const userId = actor?.id || quote.createdById;
+  if (!userId) refuse(409, 'This quote has to be accepted by the sales desk');
   const why = quoteMoveError(quote, 'ACCEPTED');
   if (why) refuse(409, why);
   if (!quote.lines.length) refuse(409, 'This quote has no lines');
@@ -180,7 +191,7 @@ router.post('/:id/accept', handle('accept quote', async (req, res) => {
           shipToState: body.shipToState ? String(body.shipToState) : null, shipToZip: body.shipToZip ? String(body.shipToZip) : null,
           subtotal: quote.subtotal, taxAmount: quote.taxAmount || 0, freightAmount: quote.freightAmount || 0, totalAmount: quote.totalAmount,
           paymentTerms: quote.paymentTerms, poReference: body.poReference ? String(body.poReference) : null,
-          requiredDate: quote.rfq.requestedDate, notes: `From quote ${quote.quoteNumber}`, createdById: req.user.id,
+          requiredDate: quote.rfq.requestedDate, notes: `From quote ${quote.quoteNumber}`, createdById: userId,
           lines: {
             create: quote.lines.map((l) => ({
               lineNumber: l.lineNumber, productId: l.productId, description: l.description,
@@ -192,14 +203,19 @@ router.post('/:id/accept', handle('accept quote', async (req, res) => {
         },
         include: { lines: true, buyer: { select: { id: true, name: true } } },
       });
-      if (gate.creditHold) await recordCreditHold(tx, { orderId: created.id, orderNumber: created.orderNumber, creditHold: gate.creditHold, user: req.user });
+      if (gate.creditHold) await recordCreditHold(tx, { orderId: created.id, orderNumber: created.orderNumber, creditHold: gate.creditHold, user: actor?.email ? actor : { id: userId } });
       await tx.quote.update({ where: { id: quote.id }, data: { convertedOrderId: created.id } });
       await tx.quote.updateMany({ where: { rfqId: quote.rfqId, id: { not: quote.id }, status: { in: OPEN } }, data: { status: 'REJECTED' } });
       await tx.rFQ.update({ where: { id: quote.rfqId }, data: { status: 'ACCEPTED' } });
+      if (onOrder) await onOrder(tx, created, quote);
       return created;
     })),
   });
-  res.status(201).json({ message: gate.creditHold ? 'Quote accepted. The order is on credit hold.' : 'Quote accepted and order created', ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }), order, quote: toApi(await prisma.quote.findUnique({ where: { id: quote.id }, include: INCLUDE })) });
+  return { message: gate.creditHold ? 'Quote accepted. The order is on credit hold.' : 'Quote accepted and order created', ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }), order, quote: toApi(await prisma.quote.findUnique({ where: { id: quote.id }, include: INCLUDE })) };
+}
+
+router.post('/:id/accept', handle('accept quote', async (req, res) => {
+  res.status(201).json(await acceptQuote(req.params.id, req.body || {}, req.user));
 }));
 
 export default router;

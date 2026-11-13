@@ -1,5 +1,5 @@
 {
- "at": "2026-11-13T21:44:38.770Z",
+ "at": "2026-11-13T23:01:09.948Z",
  "identity": {
   "db": "steelwise_qa",
   "usr": "postgres",
@@ -13,9 +13,9 @@
   "columns": 2465,
   "primaryKeys": 160,
   "foreignKeys": 188,
-  "uniqueIndexes": 82,
+  "uniqueIndexes": 83,
   "checks": 25,
-  "indexes": 582,
+  "indexes": 584,
   "schemas": 1,
   "views": 0,
   "materializedViews": 0,
@@ -25,7 +25,7 @@
   "partitionedTables": 0,
   "policies": 0,
   "enums": 96,
-  "migrationsApplied": 27,
+  "migrationsApplied": 28,
   "migrationsFailed": 0
  },
  "other": {
@@ -42,7 +42,7 @@
   "partitionedTables": [],
   "policies": [],
   "enums": 96,
-  "migrationsApplied": 27,
+  "migrationsApplied": 28,
   "migrationsFailed": 0
  },
  "tables": [
@@ -55,8 +55,8 @@
   {
    "name": "AppSetting",
    "rls": false,
-   "bytes": 16384,
-   "rows": 0
+   "bytes": 32768,
+   "rows": 1
   },
   {
    "name": "ApprovalDecision",
@@ -91,8 +91,8 @@
   {
    "name": "AuditLog",
    "rls": false,
-   "bytes": 1343488,
-   "rows": 2019
+   "bytes": 1548288,
+   "rows": 2281
   },
   {
    "name": "BomOperation",
@@ -109,8 +109,8 @@
   {
    "name": "Coil",
    "rls": false,
-   "bytes": 434176,
-   "rows": 448
+   "bytes": 466944,
+   "rows": 493
   },
   {
    "name": "CommodityPrice",
@@ -139,7 +139,7 @@
   {
    "name": "DemandSuggestionEvent",
    "rls": false,
-   "bytes": 417792,
+   "bytes": 409600,
    "rows": 1242
   },
   {
@@ -157,13 +157,13 @@
   {
    "name": "DispatchOperation",
    "rls": false,
-   "bytes": 139264,
+   "bytes": 147456,
    "rows": 36
   },
   {
    "name": "DispatchTimeLog",
    "rls": false,
-   "bytes": 122880,
+   "bytes": 114688,
    "rows": 35
   },
   {
@@ -176,13 +176,13 @@
    "name": "Document",
    "rls": false,
    "bytes": 49152,
-   "rows": 0
+   "rows": 1
   },
   {
    "name": "DocumentBlob",
    "rls": false,
-   "bytes": 16384,
-   "rows": 0
+   "bytes": 32768,
+   "rows": 1
   },
   {
    "name": "DocumentCounter",
@@ -277,8 +277,8 @@
   {
    "name": "Inventory",
    "rls": false,
-   "bytes": 294912,
-   "rows": 448
+   "bytes": 303104,
+   "rows": 493
   },
   {
    "name": "InventoryAdjustment",
@@ -313,19 +313,19 @@
   {
    "name": "Invoice",
    "rls": false,
-   "bytes": 237568,
-   "rows": 177
+   "bytes": 286720,
+   "rows": 213
   },
   {
    "name": "InvoiceLine",
    "rls": false,
-   "bytes": 221184,
-   "rows": 187
+   "bytes": 262144,
+   "rows": 223
   },
   {
    "name": "Job",
    "rls": false,
-   "bytes": 327680,
+   "bytes": 344064,
    "rows": 271
   },
   {
@@ -385,8 +385,8 @@
   {
    "name": "MaterialMovement",
    "rls": false,
-   "bytes": 409600,
-   "rows": 356
+   "bytes": 466944,
+   "rows": 443
   },
   {
    "name": "MeterReading",
@@ -415,26 +415,26 @@
   {
    "name": "Order",
    "rls": false,
-   "bytes": 524288,
-   "rows": 437
+   "bytes": 655360,
+   "rows": 532
   },
   {
    "name": "OrderLine",
    "rls": false,
-   "bytes": 385024,
-   "rows": 454
+   "bytes": 401408,
+   "rows": 549
   },
   {
    "name": "OrderLineAllocation",
    "rls": false,
    "bytes": 98304,
-   "rows": 32
+   "rows": 35
   },
   {
    "name": "Organization",
    "rls": false,
    "bytes": 65536,
-   "rows": 29
+   "rows": 34
   },
   {
    "name": "PMSchedule",
@@ -463,32 +463,32 @@
   {
    "name": "Partner",
    "rls": false,
-   "bytes": 49152,
-   "rows": 0
+   "bytes": 98304,
+   "rows": 8
   },
   {
    "name": "PartnerApiKey",
    "rls": false,
-   "bytes": 40960,
-   "rows": 0
+   "bytes": 81920,
+   "rows": 12
   },
   {
    "name": "PartnerApiLog",
    "rls": false,
-   "bytes": 57344,
-   "rows": 0
+   "bytes": 196608,
+   "rows": 148
   },
   {
    "name": "PartnerWebhook",
    "rls": false,
-   "bytes": 32768,
-   "rows": 0
+   "bytes": 65536,
+   "rows": 15
   },
   {
    "name": "Payment",
    "rls": false,
-   "bytes": 106496,
-   "rows": 113
+   "bytes": 98304,
+   "rows": 121
   },
   {
    "name": "PipelineRun",
@@ -499,7 +499,7 @@
   {
    "name": "PosSession",
    "rls": false,
-   "bytes": 229376,
+   "bytes": 262144,
    "rows": 9
   },
   {
@@ -566,7 +566,7 @@
    "name": "Quote",
    "rls": false,
    "bytes": 114688,
-   "rows": 26
+   "rows": 29
   },
   {
    "name": "QuoteAcceptance",
@@ -578,19 +578,19 @@
    "name": "QuoteLine",
    "rls": false,
    "bytes": 81920,
-   "rows": 7
+   "rows": 11
   },
   {
    "name": "RFQ",
    "rls": false,
    "bytes": 81920,
-   "rows": 23
+   "rows": 30
   },
   {
    "name": "RFQLine",
    "rls": false,
    "bytes": 49152,
-   "rows": 4
+   "rows": 12
   },
   {
    "name": "RFQSource",
@@ -613,8 +613,8 @@
   {
    "name": "RequestKey",
    "rls": false,
-   "bytes": 65536,
-   "rows": 4
+   "bytes": 131072,
+   "rows": 18
   },
   {
    "name": "RfidScanEvent",
@@ -866,13 +866,13 @@
    "name": "Shipment",
    "rls": false,
    "bytes": 237568,
-   "rows": 207
+   "rows": 245
   },
   {
    "name": "ShipmentItem",
    "rls": false,
-   "bytes": 180224,
-   "rows": 176
+   "bytes": 262144,
+   "rows": 214
   },
   {
    "name": "ShipmentStop",
@@ -961,7 +961,7 @@
   {
    "name": "UserLocation",
    "rls": false,
-   "bytes": 196608,
+   "bytes": 204800,
    "rows": 246
   },
   {
@@ -973,8 +973,8 @@
   {
    "name": "WebhookDelivery",
    "rls": false,
-   "bytes": 49152,
-   "rows": 0
+   "bytes": 425984,
+   "rows": 146
   },
   {
    "name": "WorkCenter",
@@ -992,19 +992,19 @@
    "name": "WorkOrder",
    "rls": false,
    "bytes": 98304,
-   "rows": 15
+   "rows": 17
   },
   {
    "name": "WorkOrderOutput",
    "rls": false,
    "bytes": 65536,
-   "rows": 12
+   "rows": 16
   },
   {
    "name": "_prisma_migrations",
    "rls": false,
    "bytes": 32768,
-   "rows": 27
+   "rows": 28
   }
  ],
  "columns": [
@@ -30187,7 +30187,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"AppSetting_pkey\" ON public.\"AppSetting\" USING btree (key)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "key"
    ],
@@ -30428,7 +30428,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_category_eventType_idx\" ON public.\"AuditLog\" USING btree (category, \"eventType\")",
-   "bytes": 40960,
+   "bytes": 49152,
    "cols": [
     "category",
     "eventType"
@@ -30453,7 +30453,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_resourceType_resourceId_idx\" ON public.\"AuditLog\" USING btree (\"resourceType\", \"resourceId\")",
-   "bytes": 98304,
+   "bytes": 139264,
    "cols": [
     "resourceType",
     "resourceId"
@@ -30466,7 +30466,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_tenantId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"tenantId\", \"timestamp\")",
-   "bytes": 81920,
+   "bytes": 90112,
    "cols": [
     "tenantId",
     "timestamp"
@@ -30479,7 +30479,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_userId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"userId\", \"timestamp\")",
-   "bytes": 229376,
+   "bytes": 245760,
    "cols": [
     "userId",
     "timestamp"
@@ -30809,7 +30809,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"DemandSuggestionEvent_pkey\" ON public.\"DemandSuggestionEvent\" USING btree (id)",
-   "bytes": 98304,
+   "bytes": 90112,
    "cols": [
     "id"
    ],
@@ -31062,7 +31062,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"DocumentBlob_pkey\" ON public.\"DocumentBlob\" USING btree (\"documentId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "documentId"
    ],
@@ -31958,7 +31958,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Invoice_orderId_idx\" ON public.\"Invoice\" USING btree (\"orderId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "orderId"
    ],
@@ -31982,7 +31982,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Invoice_shipmentId_idx\" ON public.\"Invoice\" USING btree (\"shipmentId\")",
-   "bytes": 16384,
+   "bytes": 40960,
    "cols": [
     "shipmentId"
    ],
@@ -32006,7 +32006,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"InvoiceLine_orderLineId_idx\" ON public.\"InvoiceLine\" USING btree (\"orderLineId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "orderLineId"
    ],
@@ -32620,7 +32620,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"MaterialMovement_pkey\" ON public.\"MaterialMovement\" USING btree (id)",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "id"
    ],
@@ -32632,7 +32632,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"MaterialMovement_shipmentId_idx\" ON public.\"MaterialMovement\" USING btree (\"shipmentId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "shipmentId"
    ],
@@ -32887,7 +32887,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"Order_orderNumber_key\" ON public.\"Order\" USING btree (\"orderNumber\")",
-   "bytes": 40960,
+   "bytes": 49152,
    "cols": [
     "orderNumber"
    ],
@@ -32899,7 +32899,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)",
-   "bytes": 90112,
+   "bytes": 155648,
    "cols": [
     "id"
    ],
@@ -33295,7 +33295,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"Partner_organizationId_partnerType_key\" ON public.\"Partner\" USING btree (\"organizationId\", \"partnerType\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "organizationId",
     "partnerType"
@@ -33308,7 +33308,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Partner_partnerType_idx\" ON public.\"Partner\" USING btree (\"partnerType\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "partnerType"
    ],
@@ -33320,7 +33320,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Partner_pkey\" ON public.\"Partner\" USING btree (id)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "id"
    ],
@@ -33332,7 +33332,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Partner_status_idx\" ON public.\"Partner\" USING btree (status)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "status"
    ],
@@ -33344,7 +33344,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Partner_tier_idx\" ON public.\"Partner\" USING btree (tier)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "tier"
    ],
@@ -33356,7 +33356,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiKey_environment_idx\" ON public.\"PartnerApiKey\" USING btree (environment)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "environment"
    ],
@@ -33368,7 +33368,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiKey_partnerId_idx\" ON public.\"PartnerApiKey\" USING btree (\"partnerId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "partnerId"
    ],
@@ -33380,7 +33380,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"PartnerApiKey_pkey\" ON public.\"PartnerApiKey\" USING btree (id)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "id"
    ],
@@ -33392,7 +33392,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiKey_status_idx\" ON public.\"PartnerApiKey\" USING btree (status)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "status"
    ],
@@ -33404,7 +33404,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiLog_apiKeyId_idx\" ON public.\"PartnerApiLog\" USING btree (\"apiKeyId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "apiKeyId"
    ],
@@ -33416,7 +33416,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiLog_createdAt_idx\" ON public.\"PartnerApiLog\" USING btree (\"createdAt\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "createdAt"
    ],
@@ -33428,7 +33428,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiLog_endpoint_idx\" ON public.\"PartnerApiLog\" USING btree (endpoint)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "endpoint"
    ],
@@ -33440,7 +33440,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiLog_partnerId_idx\" ON public.\"PartnerApiLog\" USING btree (\"partnerId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "partnerId"
    ],
@@ -33452,7 +33452,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"PartnerApiLog_pkey\" ON public.\"PartnerApiLog\" USING btree (id)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "id"
    ],
@@ -33464,7 +33464,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerApiLog_statusCode_idx\" ON public.\"PartnerApiLog\" USING btree (\"statusCode\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "statusCode"
    ],
@@ -33476,7 +33476,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerWebhook_partnerId_idx\" ON public.\"PartnerWebhook\" USING btree (\"partnerId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "partnerId"
    ],
@@ -33488,7 +33488,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"PartnerWebhook_pkey\" ON public.\"PartnerWebhook\" USING btree (id)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "id"
    ],
@@ -33500,7 +33500,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"PartnerWebhook_status_idx\" ON public.\"PartnerWebhook\" USING btree (status)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "status"
    ],
@@ -36261,7 +36261,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Shipment_orderId_idx\" ON public.\"Shipment\" USING btree (\"orderId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "orderId"
    ],
@@ -36297,7 +36297,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"ShipmentItem_orderLineId_idx\" ON public.\"ShipmentItem\" USING btree (\"orderLineId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "orderLineId"
    ],
@@ -36309,7 +36309,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"ShipmentItem_pkey\" ON public.\"ShipmentItem\" USING btree (id)",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "id"
    ],
@@ -36321,7 +36321,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"ShipmentItem_shipmentId_idx\" ON public.\"ShipmentItem\" USING btree (\"shipmentId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "shipmentId"
    ],
@@ -36961,7 +36961,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"UserLocation_userId_locationId_key\" ON public.\"UserLocation\" USING btree (\"userId\", \"locationId\")",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "userId",
     "locationId"
@@ -37023,7 +37023,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_eventId_idx\" ON public.\"WebhookDelivery\" USING btree (\"eventId\")",
-   "bytes": 8192,
+   "bytes": 32768,
    "cols": [
     "eventId"
    ],
@@ -37035,7 +37035,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (\"nextRetryAt\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "nextRetryAt"
    ],
@@ -37047,7 +37047,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_pkey\" ON public.\"WebhookDelivery\" USING btree (id)",
-   "bytes": 8192,
+   "bytes": 40960,
    "cols": [
     "id"
    ],
@@ -37059,9 +37059,35 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_idx\" ON public.\"WebhookDelivery\" USING btree (status)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "status"
+   ],
+   "partial": false
+  },
+  {
+   "t": "WebhookDelivery",
+   "name": "WebhookDelivery_status_nextRetryAt_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"WebhookDelivery_status_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (status, \"nextRetryAt\")",
+   "bytes": 16384,
+   "cols": [
+    "status",
+    "nextRetryAt"
+   ],
+   "partial": false
+  },
+  {
+   "t": "WebhookDelivery",
+   "name": "WebhookDelivery_webhookId_eventId_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"WebhookDelivery_webhookId_eventId_key\" ON public.\"WebhookDelivery\" USING btree (\"webhookId\", \"eventId\")",
+   "bytes": 57344,
+   "cols": [
+    "webhookId",
+    "eventId"
    ],
    "partial": false
   },
@@ -37071,7 +37097,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_webhookId_idx\" ON public.\"WebhookDelivery\" USING btree (\"webhookId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "webhookId"
    ],
@@ -37267,7 +37293,7 @@
    "column": "tenantId",
    "nullable": true,
    "target": null,
-   "rows": 2019,
+   "rows": 2281,
    "set": 2,
    "orphans": null
   },
@@ -37276,7 +37302,7 @@
    "column": "targetUserId",
    "nullable": true,
    "target": "User",
-   "rows": 2019,
+   "rows": 2281,
    "set": 0,
    "orphans": null
   },
@@ -37285,8 +37311,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 2019,
-   "set": 2019,
+   "rows": 2281,
+   "set": 2281,
    "orphans": null
   },
   {
@@ -37294,7 +37320,7 @@
    "column": "sessionId",
    "nullable": true,
    "target": null,
-   "rows": 2019,
+   "rows": 2281,
    "set": 0,
    "orphans": null
   },
@@ -37303,7 +37329,7 @@
    "column": "correlationId",
    "nullable": true,
    "target": null,
-   "rows": 2019,
+   "rows": 2281,
    "set": 0,
    "orphans": null
   },
@@ -37375,8 +37401,8 @@
    "column": "verifiedById",
    "nullable": true,
    "target": "User",
-   "rows": 0,
-   "set": null,
+   "rows": 1,
+   "set": 0,
    "orphans": null
   },
   {
@@ -37816,8 +37842,8 @@
    "column": "apiKeyId",
    "nullable": true,
    "target": null,
-   "rows": 0,
-   "set": null,
+   "rows": 148,
+   "set": 148,
    "orphans": null
   },
   {
@@ -37825,8 +37851,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 0,
-   "set": null,
+   "rows": 148,
+   "set": 0,
    "orphans": null
   },
   {
@@ -37969,7 +37995,7 @@
    "column": "productId",
    "nullable": true,
    "target": "Product",
-   "rows": 4,
+   "rows": 12,
    "set": 4,
    "orphans": 0
   },
@@ -39184,8 +39210,8 @@
    "column": "eventId",
    "nullable": false,
    "target": null,
-   "rows": 0,
-   "set": null,
+   "rows": 146,
+   "set": 146,
    "orphans": null
   }
  ],
@@ -39244,7 +39270,7 @@
    {
     "column": "Document.documentNumber",
     "unique": false,
-    "duplicates": null
+    "duplicates": 0
    },
    {
     "column": "Grade.code",
@@ -39362,7 +39388,9 @@
    "DispatchOperation: DispatchOperation_dispatchJobId_idx is covered by DispatchOperation_dispatchJobId_sequence_key",
    "UserDivision: UserDivision_userId_idx is covered by UserDivision_userId_divisionId_key",
    "UserLocation: UserLocation_userId_idx is covered by UserLocation_userId_locationId_key",
-   "UserRoleAssignment: UserRoleAssignment_userId_idx is covered by UserRoleAssignment_userId_roleId_key"
+   "UserRoleAssignment: UserRoleAssignment_userId_idx is covered by UserRoleAssignment_userId_roleId_key",
+   "WebhookDelivery: WebhookDelivery_status_idx is covered by WebhookDelivery_status_nextRetryAt_idx",
+   "WebhookDelivery: WebhookDelivery_webhookId_idx is covered by WebhookDelivery_webhookId_eventId_key"
   ],
   "foreignKeysNotValidated": [],
   "foreignKeyDeleteRules": {
@@ -39375,7 +39403,6 @@
    "ShipmentItem.shipmentId → Shipment"
   ],
   "emptyTables": [
-   "AppSetting",
    "ApprovalDecision",
    "ApprovalRequest",
    "AssetComponent",
@@ -39385,8 +39412,6 @@
    "CustomerPreference",
    "CustomerTagRequirement",
    "Division",
-   "Document",
-   "DocumentBlob",
    "DocumentLink",
    "DowntimeRecord",
    "DropTag",
@@ -39406,10 +39431,6 @@
    "PMTemplate",
    "Package",
    "PackageItem",
-   "Partner",
-   "PartnerApiKey",
-   "PartnerApiLog",
-   "PartnerWebhook",
    "PipelineRun",
    "PricingAnalytics",
    "PricingOverride",
@@ -39465,8 +39486,7 @@
    "TestResult",
    "TraceEvent",
    "UserDivision",
-   "UserRoleAssignment",
-   "WebhookDelivery"
+   "UserRoleAssignment"
   ],
   "tablesWithLocationColumnButNoForeignKey": [
    "ExceptionEvent.locationId",

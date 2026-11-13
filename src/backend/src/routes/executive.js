@@ -101,6 +101,7 @@ router.get('/simulation/scenarios', async (req, res) => {
 router.post('/simulation/scenarios', async (req, res) => {
   try {
     const userId = req.user?.id || 'anonymous';
+    if (typeof req.body?.name !== 'string' || !req.body.name.trim()) return res.status(400).json({ error: 'A scenario needs a name' });
     const scenario = await simulationService.createScenario(userId, req.body);
     res.status(201).json(scenario);
   } catch (error) {

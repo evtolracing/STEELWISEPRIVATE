@@ -5,7 +5,7 @@
 import '../config/env.js';
 import pkg from '@prisma/client';
 const { PrismaClient } = pkg;
-import { requestContext, isBadFilterValue } from './requestContext.js';
+import { requestContext, isBadFilterValue, isRecordNotFound, isRejectedShape } from './requestContext.js';
 
 const globalForPrisma = global;
 
@@ -22,6 +22,8 @@ const withBadFilterNote = (client) => client.$extends({
       } catch (error) {
         const store = requestContext.getStore();
         if (store && isBadFilterValue(error)) store.badFilterValue = String(error.message || '');
+        if (store && isRecordNotFound(error)) store.recordNotFound = true;
+        if (store && isRejectedShape(error)) store.rejectedShape = String(error.message || '').slice(-400);
         throw error;
       }
     },

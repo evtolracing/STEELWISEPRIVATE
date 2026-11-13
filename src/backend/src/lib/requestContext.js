@@ -10,3 +10,13 @@ export const requestContext = new AsyncLocalStorage();
 export function isBadFilterValue(error) {
   return error?.name === 'PrismaClientValidationError' && /Invalid value for argument|Invalid value provided/.test(error.message || '');
 }
+
+/** True when a change was aimed at a record that does not exist (update or delete of an unknown id). */
+export function isRecordNotFound(error) {
+  return error?.code === 'P2025';
+}
+
+/** True when the database client refused the shape of what it was given: a required value missing, or the wrong kind of value. */
+export function isRejectedShape(error) {
+  return error?.name === 'PrismaClientValidationError';
+}

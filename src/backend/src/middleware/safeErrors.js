@@ -30,6 +30,20 @@ export function blamesCaller(message, req) {
   return sent.some((v) => message.includes(JSON.stringify(v)) || message.includes(`'${v}'`));
 }
 
+/**
+ * A change that failed for a reason that is the caller's, when the route answered 500 anyway.
+ *  - the record to change does not exist                       → 404
+ *  - the request carried values the database layer would not take (a required one missing, or
+ *    the wrong kind)                                           → 400, and the detail is logged
+ * Returns null for everything else, which stays a server error.
+ */
+export function callerMistake(statusCode, req, store) {
+  if (statusCode !== 500 || READS.has(req.method)) return null;
+  if (store?.recordNotFound) return { status: 404, error: 'That record was not found.' };
+  if (store?.rejectedShape) return { status: 400, error: 'Some of the values in this request are missing or not valid.' };
+  return null;
+}
+
 export function safeErrors(req, res, next) {
   const json = res.json.bind(res);
   const store = {};
@@ -38,6 +52,12 @@ export function safeErrors(req, res, next) {
     if (res.statusCode === 500 && READS.has(req.method) && blamesCaller(store.badFilterValue, req)) {
       res.status(400);
       return json({ error: 'One of the filter values in this request is not valid.' });
+    }
+    const verdict = callerMistake(res.statusCode, req, store);
+    if (verdict) {
+      if (verdict.status === 400) console.error(`[safeErrors] ${req.id || '-'} ${req.method} ${req.originalUrl.split('?')[0]} → 400 (values refused by the database layer):`, store.rejectedShape);
+      res.status(verdict.status);
+      return json({ error: verdict.error, ...(req.id && { requestId: req.id }) });
     }
     if (res.statusCode >= 400 && body && typeof body === 'object' && !Array.isArray(body)) {
       let cleaned = null;

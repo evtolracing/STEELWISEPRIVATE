@@ -51,3 +51,21 @@ A cycle can be replayed exactly by passing the same `--seed` on a freshly built 
 - `FAIL`: a step or check did not.
 - `BLOCKED`: the app has no way to do that job at all. It is not a pass.
 - A cycle is "clean" when no job failed, all eight simultaneous-request probes passed and the whole-database reconciliation found nothing.
+
+## One command for every gate
+
+```
+qa/tools/run-gates.sh
+```
+
+Rebuilds the local QA database, starts the servers and runs, in order: three simulation cycles, the read-only database checks, the sweep, the unit tests, the five browser suites, the every-route-opens check, the record of which routes the tests reached, the baseline probe, the screen audit, both lints, the build, and the generated documents. It refuses any database that is not local and named with `qa`. Logs go to `qa/results/gate-logs/` (not committed).
+
+## Tools added in Phase 1 of the Enterprise Excellence Program
+
+| Tool | What it does |
+|---|---|
+| `qa/sim/baseline-probe.mjs --max-crash N` | Every changing route as a view-only role (must be refused) and with an empty body (server errors may not exceed N; today 3, see B-006) |
+| `qa/tools/discover.mjs` | Reads the schema, routes, screens and packages into `qa/enterprise-excellence/.discovery.json` |
+| `qa/tools/exercised.mjs <server logs>` | Which routes the tests reached and how they answered. Needs a server started with `LOG_REQUESTS=on` |
+| `qa/tools/db-facts.mjs` | Row counts, database rules and consistency checks from the local QA database. Read-only |
+| `qa/tools/excellence-docs.mjs` | Writes the generated files in `qa/enterprise-excellence/` (see its README) |

@@ -30,6 +30,15 @@ export default [
     languageOptions: { sourceType: 'commonjs', globals: { ...globals.node } },
   },
   {
+    // QA tools and simulations run in Node. The browser suites also pass functions into a page.
+    files: ['qa/**/*.mjs'],
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'module', globals: { ...globals.node } },
+  },
+  {
+    files: ['qa/**/*.cjs'],
+    languageOptions: { ecmaVersion: 'latest', sourceType: 'commonjs', globals: { ...globals.node, ...globals.browser } },
+  },
+  {
     files: ['src/frontend/**/*.{js,jsx}'],
     plugins: { react, 'react-hooks': reactHooks },
     languageOptions: {

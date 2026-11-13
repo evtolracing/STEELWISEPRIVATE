@@ -1,7 +1,7 @@
 {
  "seed": 8002,
  "base": "http://localhost:3011",
- "at": "2026-11-13T10:29:38.540Z",
+ "at": "2026-11-13T17:36:38.048Z",
  "scenarios": [
   {
    "id": "S8002-01",
@@ -174,7 +174,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 243
+   "ms": 343
   },
   {
    "id": "S8002-02",
@@ -347,7 +347,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 226
+   "ms": 284
   },
   {
    "id": "S8002-03",
@@ -378,25 +378,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00125 → IN_PROCESS",
+     "name": "job JOB-00124 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 → WAITING_QC",
+     "name": "job JOB-00124 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 → PACKAGING",
+     "name": "job JOB-00124 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 → READY_TO_SHIP",
+     "name": "job JOB-00124 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -520,7 +520,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 215
+   "ms": 282
   },
   {
    "id": "S8002-04",
@@ -551,25 +551,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00126 → IN_PROCESS",
+     "name": "job JOB-00125 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00126 → WAITING_QC",
+     "name": "job JOB-00125 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00126 → PACKAGING",
+     "name": "job JOB-00125 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00126 → READY_TO_SHIP",
+     "name": "job JOB-00125 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -693,7 +693,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 228
+   "ms": 266
   },
   {
    "id": "S8002-05",
@@ -876,7 +876,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 258
+   "ms": 282
   },
   {
    "id": "S8002-06",
@@ -1083,7 +1083,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 282
+   "ms": 289
   },
   {
    "id": "S8002-07",
@@ -1300,7 +1300,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 281
+   "ms": 335
   },
   {
    "id": "S8002-08",
@@ -1543,7 +1543,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 314
+   "ms": 368
   },
   {
    "id": "S8002-09",
@@ -1776,7 +1776,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 312
+   "ms": 407
   },
   {
    "id": "S8002-10",
@@ -2019,7 +2019,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 309
+   "ms": 365
   },
   {
    "id": "S8002-11",
@@ -2278,7 +2278,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 304
+   "ms": 409
   },
   {
    "id": "S8002-12",
@@ -2511,7 +2511,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 324
+   "ms": 367
   },
   {
    "id": "S8002-13",
@@ -2684,7 +2684,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 207
+   "ms": 242
   },
   {
    "id": "S8002-14",
@@ -2913,7 +2913,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 283
+   "ms": 307
   },
   {
    "id": "S8002-15",
@@ -3086,7 +3086,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 197
+   "ms": 236
   },
   {
    "id": "S8002-16",
@@ -3315,7 +3315,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 279
+   "ms": 358
   },
   {
    "id": "S8002-17",
@@ -3498,7 +3498,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 247
+   "ms": 306
   },
   {
    "id": "S8002-18",
@@ -3711,7 +3711,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 301
+   "ms": 356
   },
   {
    "id": "S8002-19",
@@ -3768,7 +3768,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 85
+   "ms": 103
   },
   {
    "id": "S8002-20",
@@ -3825,7 +3825,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 73
+   "ms": 83
   },
   {
    "id": "S8002-21",
@@ -3882,7 +3882,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 68
+   "ms": 81
   },
   {
    "id": "S8002-22",
@@ -3999,7 +3999,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 127
+   "ms": 139
   },
   {
    "id": "S8002-23",
@@ -4116,7 +4116,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 111
+   "ms": 132
   },
   {
    "id": "S8002-24",
@@ -4243,7 +4243,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 189
+   "ms": 250
   },
   {
    "id": "S8002-25",
@@ -4370,7 +4370,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 193
+   "ms": 254
   },
   {
    "id": "S8002-26",
@@ -4487,7 +4487,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 188
+   "ms": 192
   },
   {
    "id": "S8002-27",
@@ -4604,7 +4604,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 180
+   "ms": 200
   },
   {
    "id": "S8002-28",
@@ -4721,7 +4721,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 192
+   "ms": 204
   },
   {
    "id": "S8002-29",
@@ -4848,7 +4848,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 212
+   "ms": 228
   },
   {
    "id": "S8002-30",
@@ -4889,7 +4889,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 21
+   "ms": 26
   },
   {
    "id": "S8002-31",
@@ -4955,7 +4955,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 20
+   "ms": 27
   },
   {
    "id": "S8002-33",
@@ -4988,7 +4988,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 11
+   "ms": 16
   },
   {
    "id": "S8002-34",
@@ -5021,7 +5021,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 13
   },
   {
    "id": "S8002-35",
@@ -5220,7 +5220,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 256
+   "ms": 270
   },
   {
    "id": "S8002-36",
@@ -5285,7 +5285,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 48
+   "ms": 47
   },
   {
    "id": "S8002-37",
@@ -5366,7 +5366,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 83
+   "ms": 74
   },
   {
    "id": "S8002-38",
@@ -5485,7 +5485,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 138
+   "ms": 145
   },
   {
    "id": "S8002-39",
@@ -5562,7 +5562,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 86
+   "ms": 87
   },
   {
    "id": "S8002-40",
@@ -5819,7 +5819,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 301
+   "ms": 391
   },
   {
    "id": "S8002-41",
@@ -6066,7 +6066,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 273
+   "ms": 340
   },
   {
    "id": "S8002-42",
@@ -6249,7 +6249,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 214
+   "ms": 285
   },
   {
    "id": "S8002-43",
@@ -6448,7 +6448,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 276
+   "ms": 311
   },
   {
    "id": "S8002-44",
@@ -6635,22 +6635,6 @@
      "ok": true
     },
     {
-     "name": "CM-000004: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "CM-000004: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "CM-000004: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "CM-000004: never paid more than billed",
-     "ok": true
-    },
-    {
      "name": "INV-000072: total = subtotal + tax + freight",
      "ok": true
     },
@@ -6664,6 +6648,22 @@
     },
     {
      "name": "INV-000072: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "CM-000004: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "CM-000004: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "CM-000004: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "CM-000004: never paid more than billed",
      "ok": true
     },
     {
@@ -6697,7 +6697,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 286
+   "ms": 342
   },
   {
    "id": "S8002-45",
@@ -6938,7 +6938,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 317
+   "ms": 373
   },
   {
    "id": "S8002-46",
@@ -7189,7 +7189,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 320
+   "ms": 373
   },
   {
    "id": "S8002-47",
@@ -7456,7 +7456,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 310
+   "ms": 388
   },
   {
    "id": "S8002-48",
@@ -7723,7 +7723,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 285
+   "ms": 401
   },
   {
    "id": "S8002-49",
@@ -7842,7 +7842,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 122
+   "ms": 166
   },
   {
    "id": "S8002-50",
@@ -7945,7 +7945,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 95
+   "ms": 118
   }
  ],
  "concurrency": {
@@ -7959,7 +7959,7 @@
    {
     "name": "two reservations racing for the same stock: exactly one wins",
     "pass": true,
-    "detail": "statuses 409,201; available 4800"
+    "detail": "statuses 201,409; available 4800"
    },
    {
     "name": "two shipments racing for the same order line: exactly one is created",
@@ -7969,7 +7969,7 @@
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 409,200,409; line shipped 7200 of 7200; on hand 12000 → 4800"
+    "detail": "statuses 200,409,409; line shipped 7200 of 7200; on hand 12000 → 4800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",

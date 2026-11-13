@@ -12,5 +12,865 @@
   "pos",
   "shop/checkout",
   "admin/online-settings"
+ ],
+ "rows": [
+  {
+   "route": "login",
+   "onMenu": false,
+   "verdict": "STATIC",
+   "file": "pages/Auth/LoginPage.jsx"
+  },
+  {
+   "route": "mobile-rep",
+   "onMenu": false,
+   "verdict": "STATIC",
+   "file": "components/layout/MobileRepLayout.jsx"
+  },
+  {
+   "route": "intake",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/MobileRep/MobileRepIntakePage.jsx"
+  },
+  {
+   "route": "inventory",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/MobileRep/MobileInventoryLookup.jsx"
+  },
+  {
+   "route": "promise",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/MobileRep/MobilePromisePreview.jsx"
+  },
+  {
+   "route": "place-order",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/MobileRep/MobileOrderPlacement.jsx"
+  },
+  {
+   "route": "ops-cockpit",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/OpsCockpit/OpsCockpitPage.jsx"
+  },
+  {
+   "route": "role-dashboard//",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/dashboard/RoleDashboardPage.jsx"
+  },
+  {
+   "route": "orderhub",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/orderhub/RfqListPage.jsx"
+  },
+  {
+   "route": "orderhub/rfq/new",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/orderhub/RfqCreatePage.jsx"
+  },
+  {
+   "route": "orderhub/rfq/:rfqId",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/orderhub/RfqDetailPage.jsx"
+  },
+  {
+   "route": "orderhub/orders/:orderId",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/orderhub/OrderDetailPage.jsx"
+  },
+  {
+   "route": "heats",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Heats/HeatListPage.jsx"
+  },
+  {
+   "route": "heats/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Heats/HeatDetailPage.jsx"
+  },
+  {
+   "route": "units",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Units/UnitListPage.jsx"
+  },
+  {
+   "route": "units/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Units/UnitDetailPage.jsx"
+  },
+  {
+   "route": "work-orders",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/WorkOrders/WorkOrderListPage.jsx"
+  },
+  {
+   "route": "work-orders/new",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/WorkOrders/WorkOrderCreatePage.jsx"
+  },
+  {
+   "route": "work-orders/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/WorkOrders/WorkOrderDetailPage.jsx"
+  },
+  {
+   "route": "pricing",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Pricing/PricingDashboardPage.jsx"
+  },
+  {
+   "route": "commercial/demand-shaping",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Commercial/DemandShapingDashboard.jsx"
+  },
+  {
+   "route": "qaqc",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/QAQC/QualityDashboardPage.jsx"
+  },
+  {
+   "route": "qaqc/test-entry",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/QAQC/TestEntryPage.jsx"
+  },
+  {
+   "route": "sqm/receiving",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/SQM/InboundReceivingPage.jsx"
+  },
+  {
+   "route": "sqm/inspections",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/SQM/IQCInspectionsPage.jsx"
+  },
+  {
+   "route": "sqm/snc",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/SQM/SupplierNonconformancePage.jsx"
+  },
+  {
+   "route": "sqm/scar",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/SQM/SCARManagementPage.jsx"
+  },
+  {
+   "route": "sqm/scorecards",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/SQM/SupplierScorecardsPage.jsx"
+  },
+  {
+   "route": "sqm/suppliers",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/SQM/SupplierListPage.jsx"
+  },
+  {
+   "route": "customer-quality/claims",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/CustomerQuality/ClaimsInboxPage.jsx"
+  },
+  {
+   "route": "customer-quality/rma",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/CustomerQuality/RMAManagementPage.jsx"
+  },
+  {
+   "route": "customer-quality/car",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/CustomerQuality/CARManagementPage.jsx"
+  },
+  {
+   "route": "customer-quality/credits",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/CustomerQuality/CreditsApprovalsPage.jsx"
+  },
+  {
+   "route": "contractors/active",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ContractorPortal/ActiveVisitorsDashboard.jsx"
+  },
+  {
+   "route": "contractors/registry",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ContractorPortal/ContractorRegistryPage.jsx"
+  },
+  {
+   "route": "contractors/invitations",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ContractorPortal/PreRegistrationPage.jsx"
+  },
+  {
+   "route": "contractors/kiosk",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ContractorPortal/CheckInKiosk.jsx"
+  },
+  {
+   "route": "training/dashboard",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Training/TrainingDashboard.jsx"
+  },
+  {
+   "route": "training/courses",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Training/CourseCatalogPage.jsx"
+  },
+  {
+   "route": "training/my-certs",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Training/MyCertificationsPage.jsx"
+  },
+  {
+   "route": "training/matrix",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Training/CompetencyMatrixPage.jsx"
+  },
+  {
+   "route": "qc",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/QC/QCDashboardPage.jsx"
+  },
+  {
+   "route": "qc/inspect/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/QC/QCInspectionPage.jsx"
+  },
+  {
+   "route": "production-quality/dashboard",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ProductionQuality/QualityDashboard.jsx"
+  },
+  {
+   "route": "production-quality/inspections",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ProductionQuality/InspectionExecution.jsx"
+  },
+  {
+   "route": "production-quality/ncr",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ProductionQuality/NCRManagement.jsx"
+  },
+  {
+   "route": "production-quality/spc",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ProductionQuality/SPCChartsPage.jsx"
+  },
+  {
+   "route": "production-quality/trace",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/ProductionQuality/TraceabilitySearch.jsx"
+  },
+  {
+   "route": "maintenance/dashboard",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Maintenance/MaintenanceDashboard.jsx"
+  },
+  {
+   "route": "maintenance/work-orders",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Maintenance/WorkOrderCenter.jsx"
+  },
+  {
+   "route": "maintenance/assets",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Maintenance/AssetRegistry.jsx"
+  },
+  {
+   "route": "maintenance/pm-schedules",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Maintenance/PMSchedules.jsx"
+  },
+  {
+   "route": "maintenance/parts",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Maintenance/PartsInventory.jsx"
+  },
+  {
+   "route": "provenance",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Provenance/ProvenanceLookupPage.jsx"
+  },
+  {
+   "route": "safety",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/SafetyDashboard.jsx"
+  },
+  {
+   "route": "safety/incidents",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/IncidentsPage.jsx"
+  },
+  {
+   "route": "safety/incidents/:incidentId",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/IncidentDetailPage.jsx"
+  },
+  {
+   "route": "safety/inspections",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/InspectionsPage.jsx"
+  },
+  {
+   "route": "safety/inspections/:inspectionId",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/InspectionDetailPage.jsx"
+  },
+  {
+   "route": "safety/permits",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/PermitsPage.jsx"
+  },
+  {
+   "route": "safety/permits/:permitId",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/PermitDetailPage.jsx"
+  },
+  {
+   "route": "safety/training",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/TrainingPage.jsx"
+  },
+  {
+   "route": "safety/observations",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/ObservationsPage.jsx"
+  },
+  {
+   "route": "safety/capa",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/CorrectiveActionsPage.jsx"
+  },
+  {
+   "route": "safety/assistant",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/SafetyAssistantPage.jsx"
+  },
+  {
+   "route": "safety/stop-work",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/StopWorkDashboard.jsx"
+  },
+  {
+   "route": "safety/stop-work/:id",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/safety/StopWorkClearance.jsx"
+  },
+  {
+   "route": "production",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "components/production/ProductionWorkflowBoard.jsx"
+  },
+  {
+   "route": "production/shop-floor",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "components/production/ShopFloorScreen.jsx"
+  },
+  {
+   "route": "production/shipping",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "components/production/ShippingScreen.jsx"
+  },
+  {
+   "route": "order-board",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/ModernOrderBoardPage.jsx"
+  },
+  {
+   "route": "schedule",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/SchedulePage.jsx"
+  },
+  {
+   "route": "jobs/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/JobDetailPage.jsx"
+  },
+  {
+   "route": "receiving",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/ReceivingPage.jsx"
+  },
+  {
+   "route": "material-tracking",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/MaterialTrackingDashboard.jsx"
+  },
+  {
+   "route": "material-tracking/packaging",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/PackagingQueue.jsx"
+  },
+  {
+   "route": "material-tracking/tags",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/TagManagement.jsx"
+  },
+  {
+   "route": "material-tracking/staging",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/StagingLoading.jsx"
+  },
+  {
+   "route": "material-tracking/traceability",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/TraceabilityPage.jsx"
+  },
+  {
+   "route": "material-tracking/traceability/:jobId",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/TraceabilityPage.jsx"
+  },
+  {
+   "route": "freight/planner",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Freight/ShipmentPlanner.jsx"
+  },
+  {
+   "route": "freight/comparison",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Freight/FreightComparison.jsx"
+  },
+  {
+   "route": "freight/comparison/:shipmentId",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Freight/FreightComparison.jsx"
+  },
+  {
+   "route": "freight/route/:shipmentId",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Freight/RouteView.jsx"
+  },
+  {
+   "route": "freight/tracking",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Freight/ShipmentTrackingBoard.jsx"
+  },
+  {
+   "route": "freight/exceptions",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Freight/ExceptionInbox.jsx"
+  },
+  {
+   "route": "freight/pod/:shipmentId",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Freight/PODViewer.jsx"
+  },
+  {
+   "route": "sales/rfq-inbox",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Sales/QuotesPage.jsx"
+  },
+  {
+   "route": "sales/dashboard",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Sales/SalesDashboard.jsx"
+  },
+  {
+   "route": "executive/cockpit",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Executive/ExecutiveCockpit.jsx"
+  },
+  {
+   "route": "executive/simulation",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Executive/SimulationWorkspace.jsx"
+  },
+  {
+   "route": "executive/forecast",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Executive/ForecastExplorer.jsx"
+  },
+  {
+   "route": "executive/decisions",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Executive/DecisionLog.jsx"
+  },
+  {
+   "route": "executive/digital-twin",
+   "onMenu": true,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "pages/Executive/DigitalTwinViewer.jsx"
+  },
+  {
+   "route": "executive/compression-metrics",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Executive/CompressionMetricsDashboard.jsx"
+  },
+  {
+   "route": "shipping",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Shipping/ShippingPage.jsx"
+  },
+  {
+   "route": "shipping/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Shipping/ShipmentPage.jsx"
+  },
+  {
+   "route": "time-tracking",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/TimeTrackingPage.jsx"
+  },
+  {
+   "route": "shopfloor",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "apps/shopfloor/WorkCenterSelectPage.jsx"
+  },
+  {
+   "route": "shopfloor/:workCenterId",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/shopfloor/WorkCenterQueuePage.jsx"
+  },
+  {
+   "route": "logistics/route-optimization",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "screens/RouteOptimizationScreen.jsx"
+  },
+  {
+   "route": "logistics/tracking",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "screens/ShipmentTrackingScreen.jsx"
+  },
+  {
+   "route": "logistics/dispatch",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "screens/DispatchPlanningScreen.jsx"
+  },
+  {
+   "route": "orders/invoices",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Orders/InvoicesPage.jsx"
+  },
+  {
+   "route": "orders/returns",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Orders/ReturnsPage.jsx"
+  },
+  {
+   "route": "orders",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "apps/orders/OrdersPage.jsx"
+  },
+  {
+   "route": "boms",
+   "onMenu": false,
+   "verdict": "SAMPLE, LABELLED",
+   "file": "apps/boms/BOMsPage.jsx"
+  },
+  {
+   "route": "inventory/*",
+   "onMenu": false,
+   "verdict": "STATIC",
+   "file": "apps/inventory/InventoryApp.jsx"
+  },
+  {
+   "route": "bom//",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/bom/BomRecipeListPage.jsx"
+  },
+  {
+   "route": "bom//new",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/bom/BomRecipeEditorPage.jsx"
+  },
+  {
+   "route": "bom//:recipeId",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/bom/BomRecipeEditorPage.jsx"
+  },
+  {
+   "route": "optimization//",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/optimization/WorkOrderOptimizationPage.jsx"
+  },
+  {
+   "route": "planning//",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/planning/PlanningBoardPage.jsx"
+  },
+  {
+   "route": "planning//workflow",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "apps/planning/ProductionWorkflowBoardPage.jsx"
+  },
+  {
+   "route": "orders/intake",
+   "onMenu": true,
+   "verdict": "MIXED",
+   "file": "pages/Orders/CSRIntakePage.jsx"
+  },
+  {
+   "route": "orders/online-inbox",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Orders/OnlineInboxPage.jsx"
+  },
+  {
+   "route": "orders/credit-holds",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Orders/CreditHoldsPage.jsx"
+  },
+  {
+   "route": "orders/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Orders/OrderDetailPage.jsx"
+  },
+  {
+   "route": "pos",
+   "onMenu": false,
+   "verdict": "MIXED",
+   "file": "pages/POSPage.jsx"
+  },
+  {
+   "route": "pos/retail",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Orders/RetailPOSPage.jsx"
+  },
+  {
+   "route": "customers",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Customers/CustomersPage.jsx"
+  },
+  {
+   "route": "customers/preferences",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Customers/CustomerPreferencesPage.jsx"
+  },
+  {
+   "route": "admin/users",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/UserManagementPage.jsx"
+  },
+  {
+   "route": "admin/partners",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Partners/PartnerRegistryPage.jsx"
+  },
+  {
+   "route": "admin/tax-rates",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/TaxRatesPage.jsx"
+  },
+  {
+   "route": "admin/audit-log",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/AuditLogPage.jsx"
+  },
+  {
+   "route": "admin/processing-recipes",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/RecipeEditorPage.jsx"
+  },
+  {
+   "route": "admin/staff",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/StaffManagementPage.jsx"
+  },
+  {
+   "route": "shop",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/ShopHomePage.jsx"
+  },
+  {
+   "route": "shop/search",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/SearchResultsPage.jsx"
+  },
+  {
+   "route": "shop/remnants",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/RemnantCategoryPage.jsx"
+  },
+  {
+   "route": "shop/products/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/ProductDetailPage.jsx"
+  },
+  {
+   "route": "shop/cart",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/CartPage.jsx"
+  },
+  {
+   "route": "shop/checkout",
+   "onMenu": false,
+   "verdict": "MIXED",
+   "file": "pages/Ecommerce/CheckoutPage.jsx"
+  },
+  {
+   "route": "shop/orders",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/MyOrdersPage.jsx"
+  },
+  {
+   "route": "shop/orders/:id",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/MyOrderDetailPage.jsx"
+  },
+  {
+   "route": "account/dashboard",
+   "onMenu": true,
+   "verdict": "STATIC",
+   "file": "pages/Ecommerce/AccountDashboardPage.jsx"
+  },
+  {
+   "route": "account/orders",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/AccountOrdersPage.jsx"
+  },
+  {
+   "route": "account/shipments",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/AccountShipmentsPage.jsx"
+  },
+  {
+   "route": "account/documents",
+   "onMenu": false,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/AccountDocumentsPage.jsx"
+  },
+  {
+   "route": "admin/catalog",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Ecommerce/AdminCatalogPage.jsx"
+  },
+  {
+   "route": "admin/online-settings",
+   "onMenu": true,
+   "verdict": "MIXED",
+   "file": "pages/Ecommerce/OnlineSettingsPage.jsx"
+  },
+  {
+   "route": "help/manual",
+   "onMenu": true,
+   "verdict": "STATIC",
+   "file": "pages/Help/ManualPage.jsx"
+  }
  ]
 }

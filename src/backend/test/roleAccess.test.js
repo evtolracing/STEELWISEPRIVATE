@@ -79,3 +79,31 @@ test('the role gate applies the staff rules after the customer rules', () => {
   assert.equal(apiRoleDenial({ role: 'CSR' }, '/api/orders', 'POST'), null);
   assert.match(apiRoleDenial({ role: 'CUSTOMER_BUYER', customerId: 'c1' }, '/api/orders', 'POST'), /online store/);
 });
+
+test('read-only roles change nothing, and may still ask questions that change nothing', async () => {
+  const { staffWriteDenial, STAFF_GROUPS } = await import('../src/lib/roleAccess.js');
+  for (const role of STAFF_GROUPS.readOnly) {
+    for (const [method, path] of [['POST', '/api/products'], ['PUT', '/api/grades/x'], ['POST', '/api/work-centers'], ['POST', '/api/staff/operators'], ['POST', '/api/qc/inspections'], ['DELETE', '/api/documents/x'], ['POST', '/api/v1/orders'], ['POST', '/api/drop-tags'], ['PUT', '/api/demand-shaping/config'], ['POST', '/api/orders'], ['POST', '/api/v1/pipeline'], ['POST', '/api/overrides']]) {
+      assert.match(staffWriteDenial(role, path, method) || '', /cannot change/, `${role} ${method} ${path}`);
+    }
+    for (const [method, path] of [['GET', '/api/products'], ['POST', '/api/auth/logout'], ['POST', '/api/ai/assistant'], ['POST', '/api/pricing/calculate'], ['POST', '/api/pos/validation/order'], ['POST', '/api/v1/pipeline/simulate']]) {
+      assert.equal(staffWriteDenial(role, path, method), null, `${role} ${method} ${path}`);
+    }
+  }
+  // Other departments are unchanged by this rule.
+  assert.equal(staffWriteDenial('QC_INSPECTOR', '/api/qc/inspections', 'POST'), null);
+  assert.equal(staffWriteDenial('ADMIN', '/api/products', 'POST'), null);
+});
+
+test('the second address for jobs and work centers is judged by the same rule as the first', async () => {
+  const { staffWriteDenial, ruledPath } = await import('../src/lib/roleAccess.js');
+  assert.equal(ruledPath('/api/v1/jobs/abc/status'), '/api/jobs/abc/status');
+  assert.equal(ruledPath('/api/v1/work-centers'), '/api/work-centers');
+  assert.equal(ruledPath('/api/v1/jobsheet'), '/api/v1/jobsheet');
+  for (const [method, tail] of [['POST', ''], ['PATCH', '/abc'], ['POST', '/abc/status'], ['DELETE', '/abc']]) {
+    const first = staffWriteDenial('MAINTENANCE_MANAGER', `/api/jobs${tail}`, method);
+    assert.ok(first, 'a maintenance login may not change jobs');
+    assert.equal(staffWriteDenial('MAINTENANCE_MANAGER', `/api/v1/jobs${tail}`, method), first);
+    assert.equal(staffWriteDenial('OPERATOR_SAW', `/api/v1/jobs${tail}`, method), null);
+  }
+});

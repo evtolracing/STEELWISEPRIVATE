@@ -2,10 +2,12 @@
 
 There are no ticket files in the repository, so each commit is treated as one ticket. Commits #1–#28 are squashed pull requests; older commits came before the PR workflow. Requested scope is taken from the commit or PR title; "implemented" is what the diff touched.
 
-Commits: 206. Commits that changed the database schema: 57. Commits that added tests: 25.
+Commits: 208. Commits that changed the database schema: 57. Commits that added tests: 26.
 
 | Commit | Date | Ticket (title) | Files | Schema | API areas | UI areas | Tests added |
 |---|---|---|---:|:-:|---|---|---:|
+| 2d801ff | 2026-11-13 | CI: generate the database client before the unit tests | 1 |  |  |  | 0 |
+| 3158ed1 | 2026-11-13 | Workstream 6 gate report and Phase 2 summary | 20 |  |  |  | 20 |
 | 3a7b7a7 | 2026-11-13 | No made-up data shown as real: 36 more screens labelled, dashboard fallbacks removed, lint gate | 24 |  |  | ui:eslint.config.js, ui:package-lock.json, ui:package.json, ui:components, ui:Commercial, ui:Executive, ui:ModernOrderBoardPage, ui:router | 5 |
 | 061c996 | 2026-11-13 | Workstream 5 gate report; counter sales record the cashier for the invoice and payment | 25 |  | api:quickSale, api:billing |  | 23 |
 | 9caf03c | 2026-11-13 | Shipping: real screens to create, dispatch and deliver; web orders carry tax; money actions record who | 28 |  | api:invoices, api:onlineOrders, api:quickSale, api:returns, api:shipments, api:billing | ui:apps, ui:help, ui:mocks, ui:Logistics, ui:Orders, ui:Shipping, ui:ShippingDeskPage, ui:router | 6 |

@@ -67,11 +67,28 @@ const WRITE_RULES = [
 ];
 const READ_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
+// Some records answer at two addresses (app.js mounts the same routes twice). The rules are
+// written for the first address; a request to the second is judged as if it came to the first.
+const SAME_RECORDS = [[/^\/api\/v1\/(jobs|work-centers)(?=\/|$)/, '/api/$1']];
+export const ruledPath = (path) => SAME_RECORDS.reduce((p, [from, to]) => p.replace(from, to), path);
+
+// Requests that ask a question and change no record: signing in, asking the assistant, pricing a
+// basket, checking a form. Read-only roles may send these; every other change is refused for them.
+export const ASK_ONLY_PREFIXES = [
+  '/api/auth', '/api/ai', '/api/v1/ai', '/api/pricing', '/api/pos/validation',
+  '/api/pos/quick-sale/lookup', '/api/pos/quick-sale/price',
+  '/api/v1/bom/recipes/match', '/api/v1/bom/ai-suggest', '/api/v1/pipeline/simulate',
+];
+
 /** null when allowed, otherwise the reason for a 403. Only for staff roles and requests that change something. */
-export function staffWriteDenial(role, path, method) {
+export function staffWriteDenial(role, rawPath, method) {
   if (READ_METHODS.has(method)) return null;
+  const path = ruledPath(rawPath);
   const group = staffGroupOf(role);
   if (group === 'admin' || group === 'leadership') return null;
+  if (group === 'readOnly') {
+    return ASK_ONLY_PREFIXES.some((p) => under(path, p)) ? null : `Your role (${role}) can view records and cannot change them.`;
+  }
   if (MANAGER_ONLY.some((re) => re.test(path))) {
     return MONEY_MANAGERS.has(role) ? null : 'Credits, refunds, cancelling an invoice, voiding a sale and changing tax rates need a manager.';
   }

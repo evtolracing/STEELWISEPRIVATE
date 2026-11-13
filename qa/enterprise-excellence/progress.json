@@ -1,0 +1,197 @@
+{
+  "programVersion": "1.0",
+  "program": "Enterprise Excellence Program",
+  "currentPhase": 1,
+  "phaseStatus": "PARTIALLY COMPLETE",
+  "updated": "2026-11-13T17:47:03.794Z",
+  "repository": {
+    "branch": "claude/project-thread-25z3jd",
+    "commit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
+    "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
+    "pullRequest": 30,
+    "merged": false
+  },
+  "modulesDiscovered": 47,
+  "modulesAudited": 46,
+  "modulesByClassification": {
+    "IMPLEMENTED AND VERIFIED": 22,
+    "IMPLEMENTED BUT NOT VERIFIED": 12,
+    "PARTIALLY IMPLEMENTED": 4,
+    "PLACEHOLDER OR MOCK": 5,
+    "DISCONNECTED": 3,
+    "NOT APPLICABLE": 1
+  },
+  "discovered": {
+    "apiRoutes": 611,
+    "apiRoutesThatChangeData": 319,
+    "routeFiles": 72,
+    "databaseTables": 157,
+    "enumerations": 96,
+    "migrations": 22,
+    "screens": 143,
+    "frontendFiles": 387,
+    "roles": 48
+  },
+  "workflowsMapped": 17,
+  "jobTypesIdentified": {
+    "orderTypesInSchema": 5,
+    "salesChannels": 6,
+    "simulatedScenarioFamilies": 9,
+    "kindsOfShopWork": 2
+  },
+  "findingsBySeverity": {
+    "P1": 69,
+    "P2": 63,
+    "P3": 58,
+    "P0": 20
+  },
+  "findingsByStatus": {
+    "VERIFIED FIXED": 126,
+    "REQUIRES BUSINESS DECISION": 40,
+    "OPEN": 36,
+    "BLOCKED": 1,
+    "IN PROGRESS": 4,
+    "DEFERRED WITH JUSTIFICATION": 3
+  },
+  "openFindingsBySeverity": {
+    "P1": 20,
+    "P3": 25,
+    "P2": 37,
+    "P0": 2
+  },
+  "findingsTotal": 210,
+  "findingsAddedThisPhase": 25,
+  "testsExecuted": [
+    {
+      "test": "Unit tests (src/backend, npm test)",
+      "result": "90 of 90 pass",
+      "before": "87 of 87 at the baseline commit"
+    },
+    {
+      "test": "Order-to-cash simulation, seeds 8001 to 8003, rebuilt QA database",
+      "result": "150 of 150 jobs pass; reconciliation 0 problems"
+    },
+    {
+      "test": "Security and safeguards sweep",
+      "result": "20 of 20 sections pass"
+    },
+    {
+      "test": "Baseline probe (new in Phase 1)",
+      "result": "4 of 4 sections pass: 542 write calls by view-only roles, 0 not refused; 275 write routes sent an empty body, 3 server errors (the ceiling, B-006)",
+      "before": "290 not refused; 19 server errors at the baseline commit"
+    },
+    {
+      "test": "Browser suites: experience, shipping, shop, sales, inventory",
+      "result": "22, 27, 30, 24 and 22 checks, 0 failed"
+    },
+    {
+      "test": "Every route opens in a browser",
+      "result": "125 routes open with no crash"
+    },
+    {
+      "test": "Screen audit",
+      "result": "143 screens, 0 show made-up data with no notice"
+    },
+    {
+      "test": "Lint, frontend",
+      "result": "passes"
+    },
+    {
+      "test": "Lint, whole repository",
+      "result": "0 errors, 1,524 warnings",
+      "before": "201 errors at the baseline commit"
+    },
+    {
+      "test": "Frontend production build",
+      "result": "passes"
+    },
+    {
+      "test": "Database consistency checks on the QA database after the simulation (read-only)",
+      "result": "0 problems outside the demo seed rows; counter-sale lines reported under B-025"
+    },
+    {
+      "test": "Pull-request workflow on GitHub for the Phase 1 commit",
+      "result": "NOT VERIFIED at the time of writing: it runs after the push"
+    },
+    {
+      "test": "Performance benchmark, accessibility, tablet and mobile, restore from backup",
+      "result": "NOT RUN in Phase 1"
+    }
+  ],
+  "testReach": {
+    "routesWithSuccess": 269,
+    "routes": 611,
+    "changingRoutesWithSuccess": 72,
+    "changingRoutes": 319
+  },
+  "correctionsCompleted": [
+    "B-001",
+    "B-002",
+    "B-005",
+    "B-023"
+  ],
+  "scoreSummary": [
+    {
+      "group": "Platform infrastructure",
+      "weighted": 70,
+      "evidenceShare": 77,
+      "openP0P1": 2
+    },
+    {
+      "group": "Sales and customer operations",
+      "weighted": 70,
+      "evidenceShare": 89,
+      "openP0P1": 5
+    },
+    {
+      "group": "Inventory and purchasing",
+      "weighted": 70,
+      "evidenceShare": 89,
+      "openP0P1": 6
+    },
+    {
+      "group": "Manufacturing and processing",
+      "weighted": 69,
+      "evidenceShare": 89,
+      "openP0P1": 3
+    },
+    {
+      "group": "Logistics and financial operations",
+      "weighted": 73,
+      "evidenceShare": 89,
+      "openP0P1": 3
+    },
+    {
+      "group": "Enterprise experience",
+      "weighted": 57,
+      "evidenceShare": 89,
+      "openP0P1": 7
+    }
+  ],
+  "unverifiedAreas": [
+    "Shop-floor operations, time logs, packages, drop tags, print queue: no success-path test",
+    "Partner API success paths and webhook delivery",
+    "User administration success paths",
+    "Dashboard and report figures against the records they summarise",
+    "Planning and optimization, customer specifications, AI assistant and voice (need provider keys)",
+    "Shipping documents and printing (F-011)",
+    "Performance at 80-branch volume beyond the Workstream 1 benchmark; resource use; concurrent users",
+    "Accessibility, tablet and mobile layouts",
+    "Design files and docs/ against the code, line by line",
+    "The live database and the host: not touched"
+  ],
+  "currentBlockers": [
+    "B-003: the owner's rule for branch, division and region access",
+    "B-004: the owner department for 16 areas with no write rule",
+    "B-009 and the open decision card: which stock list and which order pipeline is the real one",
+    "X-009: build or remove, per sample module",
+    "B-018, B-019: a scheduled trigger on the host and an email or text provider"
+  ],
+  "nextActions": [
+    "Owner: answer the blockers above (B-003, B-004, B-009, X-009, B-018 and B-019), and B-025",
+    "Owner: issue the Phase 2 prompt. Phase 2 has not been started",
+    "Phase 2: see the handoff in phase-01-report.md",
+    "Apply the SQL Editor files from the earlier workstreams, in order, before merging pull request 30"
+  ],
+  "lastCompletedCheckpoint": "Phase 1 artifacts written; four corrections verified (B-001, B-002, B-005, B-023); full gate run on the final code with qa/tools/run-gates.sh"
+}

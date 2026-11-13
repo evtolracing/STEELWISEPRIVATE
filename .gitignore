@@ -48,3 +48,4 @@ templates/
 .env*.local
 tmpclaude-*
 nul
+qa/results/gate-logs/

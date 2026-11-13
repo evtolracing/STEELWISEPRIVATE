@@ -440,7 +440,7 @@ const router = createBrowserRouter([
         path: 'qaqc',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <QualityDashboardPage />
+            <SampleScreen what="The quality dashboard"><QualityDashboardPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -449,7 +449,7 @@ const router = createBrowserRouter([
         path: 'qaqc/test-entry',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <TestEntryPage />
+            <SampleScreen what="Test entry"><TestEntryPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -516,7 +516,7 @@ const router = createBrowserRouter([
         path: 'customer-quality/claims',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ClaimsInboxPage />
+            <SampleScreen what="Customer claims" instead="Real returns are opened, received and credited on the Returns screen."><ClaimsInboxPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -525,7 +525,7 @@ const router = createBrowserRouter([
         path: 'customer-quality/rma',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <RMAManagementPage />
+            <SampleScreen what="Customer returns (RMA)" instead="Real returns are opened, received and credited on the Returns screen."><RMAManagementPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -534,7 +534,7 @@ const router = createBrowserRouter([
         path: 'customer-quality/car',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <CARManagementPage />
+            <SampleScreen what="Corrective action requests"><CARManagementPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -543,7 +543,7 @@ const router = createBrowserRouter([
         path: 'customer-quality/credits',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <CreditsApprovalsPage />
+            <SampleScreen what="Quality credits and approvals" instead="Real credits are issued on the Invoices screen."><CreditsApprovalsPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -554,7 +554,7 @@ const router = createBrowserRouter([
         path: 'contractors/active',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ActiveVisitorsDashboard />
+            <SampleScreen what="Contractor and visitor management"><ActiveVisitorsDashboard /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -563,7 +563,7 @@ const router = createBrowserRouter([
         path: 'contractors/registry',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ContractorRegistryPage />
+            <SampleScreen what="Contractor and visitor management"><ContractorRegistryPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -572,7 +572,7 @@ const router = createBrowserRouter([
         path: 'contractors/invitations',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PreRegistrationPage />
+            <SampleScreen what="Contractor and visitor management"><PreRegistrationPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -581,7 +581,7 @@ const router = createBrowserRouter([
         path: 'contractors/kiosk',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <CheckInKiosk />
+            <SampleScreen what="Contractor and visitor management"><CheckInKiosk /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -592,7 +592,7 @@ const router = createBrowserRouter([
         path: 'training/dashboard',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <TrainingDashboard />
+            <SampleScreen what="Training and certifications"><TrainingDashboard /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -601,7 +601,7 @@ const router = createBrowserRouter([
         path: 'training/courses',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <CourseCatalogPage />
+            <SampleScreen what="Training and certifications"><CourseCatalogPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -610,7 +610,7 @@ const router = createBrowserRouter([
         path: 'training/my-certs',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <MyCertificationsPage />
+            <SampleScreen what="Training and certifications"><MyCertificationsPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -619,7 +619,7 @@ const router = createBrowserRouter([
         path: 'training/matrix',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <CompetencyMatrixPage />
+            <SampleScreen what="Training and certifications"><CompetencyMatrixPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -697,7 +697,7 @@ const router = createBrowserRouter([
         path: 'maintenance/dashboard',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <MaintenanceDashboard />
+            <SampleScreen what="Maintenance"><MaintenanceDashboard /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -724,7 +724,7 @@ const router = createBrowserRouter([
         path: 'maintenance/pm-schedules',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PMSchedules />
+            <SampleScreen what="Maintenance"><PMSchedules /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -733,7 +733,7 @@ const router = createBrowserRouter([
         path: 'maintenance/parts',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <PartsInventory />
+            <SampleScreen what="Maintenance"><PartsInventory /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -744,7 +744,7 @@ const router = createBrowserRouter([
         path: 'provenance',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ProvenanceLookupPage />
+            <SampleScreen what="Provenance lookup" instead="Every search here returns the same example record. Real heats and their stock are on the Heats screen."><ProvenanceLookupPage /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -755,7 +755,7 @@ const router = createBrowserRouter([
         path: 'safety/*',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SafetyApp />
+            <SampleScreen what="Safety (incidents, inspections, permits, training, observations and stop work)"><SafetyApp /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1004,7 +1004,7 @@ const router = createBrowserRouter([
         path: 'executive/cockpit',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ExecutiveCockpit />
+            <SampleScreen what="The executive cockpit"><ExecutiveCockpit /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1013,7 +1013,7 @@ const router = createBrowserRouter([
         path: 'executive/simulation',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SimulationWorkspace />
+            <SampleScreen what="Executive simulation"><SimulationWorkspace /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1022,7 +1022,7 @@ const router = createBrowserRouter([
         path: 'executive/forecast',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <ForecastExplorer />
+            <SampleScreen what="Executive forecasting"><ForecastExplorer /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1031,7 +1031,7 @@ const router = createBrowserRouter([
         path: 'executive/decisions',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <DecisionLog />
+            <SampleScreen what="The executive decision log"><DecisionLog /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1040,7 +1040,7 @@ const router = createBrowserRouter([
         path: 'executive/digital-twin',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <DigitalTwinViewer />
+            <SampleScreen what="The digital twin"><DigitalTwinViewer /></SampleScreen>
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

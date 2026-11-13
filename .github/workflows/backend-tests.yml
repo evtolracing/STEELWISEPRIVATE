@@ -1,4 +1,4 @@
-name: Backend tests
+name: Tests
 
 on:
   pull_request:
@@ -20,3 +20,20 @@ jobs:
           cache-dependency-path: src/backend/package-lock.json
       - run: npm ci --ignore-scripts
       - run: npm test
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+      # No screen may show made-up data without the "sample screen" notice.
+      - run: node qa/tools/screen-audit.mjs
+      - run: npm ci --ignore-scripts
+        working-directory: src/frontend
+      # A name that is used and never defined passes the build and breaks the screen.
+      - run: npm run lint
+        working-directory: src/frontend

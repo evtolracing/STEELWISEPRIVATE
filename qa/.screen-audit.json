@@ -1,0 +1,16 @@
+{
+ "screens": 143,
+ "tally": {
+  "STATIC": 5,
+  "REAL": 76,
+  "SAMPLE, LABELLED": 58,
+  "MIXED": 4
+ },
+ "unlabelled": [],
+ "mixed": [
+  "orders/intake",
+  "pos",
+  "shop/checkout",
+  "admin/online-settings"
+ ]
+}

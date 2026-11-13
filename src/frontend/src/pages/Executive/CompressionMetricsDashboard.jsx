@@ -685,7 +685,7 @@ const CompressionMetricsDashboard = () => {
       {/* ─── FOOTER ───────────────────────────────────────────────────── */}
       <Box sx={{ textAlign: 'center', pt: 2, pb: 4 }}>
         <Typography variant="caption" color="text.secondary">
-          Compression Metrics Dashboard • Data refreshed {new Date().toLocaleTimeString()} • Using mock data
+          Compression Metrics Dashboard • Data refreshed {new Date().toLocaleTimeString()}
         </Typography>
       </Box>
     </Box>

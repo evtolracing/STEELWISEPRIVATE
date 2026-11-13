@@ -37,7 +37,7 @@ async function askChatFallback({ role, query, context }) {
     });
     
     if (!response.ok) {
-      return getMockResponse({ role, query, context });
+      return notConnected();
     }
     
     const data = await response.json();
@@ -46,25 +46,11 @@ async function askChatFallback({ role, query, context }) {
       suggestedActions: [],
     };
   } catch (error) {
-    return getMockResponse({ role, query, context });
+    return notConnected();
   }
 }
 
-// Mock response for demo/fallback
-function getMockResponse({ role, query, context }) {
-  const roleResponses = {
-    CEO: `Based on current operations at ${context.locationId || 'all locations'}, key metrics are: Utilization at 85%, SLA compliance at 94%, Margin at 28.5%. Focus areas: Saw Line 1 bottleneck, 2 low-margin orders flagged.`,
-    VP_OPERATIONS: `Operations summary for ${context.locationId || 'enterprise'}: 18 jobs in process, 4 HOT priority, 2 capacity alerts. Saw Line 1 at 94% utilization - recommend load balancing to Saw Line 2.`,
-    BRANCH_MANAGER: `Branch ${context.locationId || 'FWA'} status: 25 shipments today (5 staged, 8 ready, 12 dispatched). 2 late-risk orders. Inventory alerts: SS-304 critical, HR-A36 low.`,
-    SCHEDULER: `Schedule analysis: Today's load 87.5%, Tomorrow 79.2%. 4 HOT jobs need priority sequencing. Recommend: Move JOB-2026-009 to SAW-02 to avoid bottleneck.`,
-    OPERATOR: `Your work center status: 3 jobs queued, next job JOB-2026-004 (aluminum plate cut). Estimated completion for current job: 25 minutes.`,
-  };
-  
-  return {
-    answer: roleResponses[role] || `Analyzing "${query}" for ${role}... This is a simulated response. Connect to DeepSeek API for real AI insights.`,
-    suggestedActions: [
-      { label: 'View Details', action: 'navigate', target: '/ops-cockpit' },
-      { label: 'Run Optimization', action: 'optimize', target: '/optimization' },
-    ],
-  };
+// No assistant is connected. Say so; never invent an answer or a figure.
+function notConnected() {
+  return { answer: 'The assistant is not connected, so there is no answer. Use the figures on this dashboard and the screens they open.', suggestedActions: [], unavailable: true };
 }

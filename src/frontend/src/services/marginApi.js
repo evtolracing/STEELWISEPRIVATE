@@ -13,10 +13,10 @@ export async function getMarginInsights(params = {}) {
   
   try {
     const response = await fetch(`${API_BASE}/v1/analytics/margin?${queryParams.toString()}`);
-    if (!response.ok) return getMockMarginInsights(params);
+    if (!response.ok) throw new Error('Not available right now. The server did not answer.');
     return response.json();
   } catch (error) {
-    return getMockMarginInsights(params);
+    throw new Error('Not available right now. The server did not answer.');
   }
 }
 
@@ -30,21 +30,3 @@ export async function getMarginByCustomer(params = {}) {
   }
 }
 
-// Mock data fallback
-function getMockMarginInsights(params) {
-  return {
-    avgMargin: 28.5,
-    marginTrend: 'UP',
-    marginChange: 2.3,
-    discountedOrdersPercent: 15,
-    avgDiscount: 8.2,
-    topMarginCustomer: 'Acme Corp',
-    lowMarginAlert: 2,
-    revenueToday: 85400,
-    marginToday: 24320,
-    byDivision: [
-      { division: 'METALS', margin: 29.2 },
-      { division: 'PLASTICS', margin: 26.8 },
-    ],
-  };
-}

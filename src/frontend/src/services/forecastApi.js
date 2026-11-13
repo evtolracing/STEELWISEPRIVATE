@@ -13,10 +13,10 @@ export async function getOpsForecast(params = {}) {
   
   try {
     const response = await fetch(`${API_BASE}/v1/analytics/ops-forecast?${queryParams.toString()}`);
-    if (!response.ok) return getMockForecast(params);
+    if (!response.ok) throw new Error('Not available right now. The server did not answer.');
     return response.json();
   } catch (error) {
-    return getMockForecast(params);
+    throw new Error('Not available right now. The server did not answer.');
   }
 }
 
@@ -30,39 +30,3 @@ export async function getCapacityForecast(params = {}) {
   }
 }
 
-// Mock data fallback
-function getMockForecast(params) {
-  const horizonDays = params.horizonDays || 7;
-  
-  return {
-    today: {
-      date: new Date().toISOString().split('T')[0],
-      load: 420,
-      capacity: 480,
-      utilizationPercent: 87.5,
-      jobsPlanned: 18,
-      hotJobs: 4,
-      atRiskJobs: 3,
-    },
-    tomorrow: {
-      date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      load: 380,
-      capacity: 480,
-      utilizationPercent: 79.2,
-      jobsPlanned: 15,
-      hotJobs: 2,
-      atRiskJobs: 2,
-    },
-    weekAhead: horizonDays >= 7 ? [
-      { day: 'Mon', load: 420, capacity: 480 },
-      { day: 'Tue', load: 380, capacity: 480 },
-      { day: 'Wed', load: 450, capacity: 480 },
-      { day: 'Thu', load: 390, capacity: 480 },
-      { day: 'Fri', load: 360, capacity: 480 },
-    ] : null,
-    trend: 'STABLE',
-    alerts: [
-      { type: 'CAPACITY', message: 'Wednesday load at 94% - consider overtime', severity: 'WARNING' },
-    ],
-  };
-}

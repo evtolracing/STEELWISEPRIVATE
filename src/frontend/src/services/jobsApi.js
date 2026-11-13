@@ -198,32 +198,10 @@ export async function getSlaRiskJobs(params = {}) {
   
   try {
     const response = await fetch(`${API_BASE}/v1/jobs/sla-risk?${queryParams.toString()}`);
-    if (!response.ok) return getMockSlaRisk(params);
+    if (!response.ok) throw new Error('Not available right now. The server did not answer.');
     return response.json();
   } catch (error) {
-    console.warn('SLA risk API unavailable, using mock data');
-    return getMockSlaRisk(params);
+    throw new Error('Not available right now. The server did not answer.');
   }
-}
-
-// Mock SLA risk data
-function getMockSlaRisk(params) {
-  const now = Date.now();
-  const jobs = [
-    { id: 'JOB-001', jobNumber: 'J-2026-001', customerName: 'Acme Corp', priority: 'HOT', status: 'IN_PROCESS', dueDate: new Date(now + 4 * 60 * 60 * 1000).toISOString(), hoursUntilDue: 4, risk: 'HOT' },
-    { id: 'JOB-002', jobNumber: 'J-2026-002', customerName: 'BuildRight', priority: 'RUSH', status: 'SCHEDULED', dueDate: new Date(now + 8 * 60 * 60 * 1000).toISOString(), hoursUntilDue: 8, risk: 'AT_RISK' },
-    { id: 'JOB-003', jobNumber: 'J-2026-003', customerName: 'Steel Masters', priority: 'HOT', status: 'PACKAGING', dueDate: new Date(now + 2 * 60 * 60 * 1000).toISOString(), hoursUntilDue: 2, risk: 'HOT' },
-    { id: 'JOB-004', jobNumber: 'J-2026-004', customerName: 'Metro Fab', priority: 'NORMAL', status: 'IN_PROCESS', dueDate: new Date(now + 10 * 60 * 60 * 1000).toISOString(), hoursUntilDue: 10, risk: 'AT_RISK' },
-    { id: 'JOB-005', jobNumber: 'J-2026-005', customerName: 'QuickParts', priority: 'NORMAL', status: 'SCHEDULED', dueDate: new Date(now + 48 * 60 * 60 * 1000).toISOString(), hoursUntilDue: 48, risk: 'SAFE' },
-  ];
-  
-  return {
-    summary: {
-      hot: jobs.filter(j => j.risk === 'HOT').length,
-      atRisk: jobs.filter(j => j.risk === 'AT_RISK').length,
-      safe: jobs.filter(j => j.risk === 'SAFE').length,
-    },
-    jobs,
-  };
 }
 

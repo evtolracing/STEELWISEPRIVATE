@@ -232,7 +232,7 @@ const ModernOrderBoardPage = () => {
                 Order Board
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                Real-time production scheduling • AI-powered insights
+                Real-time production scheduling
               </Typography>
             </Box>
           </Box>

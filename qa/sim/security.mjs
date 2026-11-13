@@ -158,16 +158,32 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
   if (adminWrite.status !== 403) observations.push(`operator POST /api/admin/pricing/levels → ${adminWrite.status}`);
   const exec = await raw('GET', '/api/executive/summary', { token: op });
   if (exec.status !== 403) findings.push(`a saw operator opened executive data → ${exec.status}`);
-  // Not a failure by today's rules, but recorded: the API does not limit staff roles by department.
-  const adminToken = await tokenFor('admin');
+  // Departments: staff can only change the records their department owns.
+  const adminToken = await tokenFor('admin'); const csr = await tokenFor('csr'); const shipping = await tokenFor('shipping');
   const buyer = await prisma.organization.findFirst({ where: { code: 'QA-C05' } });
   const made = await fetch(`${BASE}/api/orders`, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${adminToken}` }, body: JSON.stringify({ buyerId: buyer.id, poReference: 'QA-SECURITY', lines: [{ qtyOrdered: 10, description: 'security probe' }] }) }).then((r) => r.json());
-  const order = made?.id ? made : null;
-  if (order) {
-    const r = await raw('PUT', `/api/orders/${order.id}`, { token: op, body: { notes: 'edited by operator (QA probe)' } });
-    observations.push(`A saw-operator login edited a sales order through the API → ${r.status}. Screens are limited by role, but the API lets any signed-in staff member use any staff route.`);
+  const expect = async (who, token, m, u, body, want, what) => {
+    const r = await raw(m, u, { token, body });
+    const okay = want === 403 ? r.status === 403 : r.status !== 403 && r.status !== 401;
+    if (!okay) findings.push(`${who}: ${what} → ${r.status} (expected ${want === 403 ? 'refused' : 'allowed'})`);
+  };
+  if (!made?.id) findings.push('could not create the probe order');
+  else {
+    await expect('saw operator', op, 'PUT', `/api/orders/${made.id}`, { notes: 'edited by operator (QA probe)' }, 403, 'edit a sales order');
+    await expect('saw operator', op, 'POST', '/api/orders', { buyerId: buyer.id, lines: [] }, 403, 'create a sales order');
+    await expect('saw operator', op, 'POST', '/api/shipments', { orderId: made.id }, 403, 'create a shipment');
+    await expect('saw operator', op, 'POST', `/api/invoices/${FAKE_ID}/payments`, { amount: 1, paymentMethod: 'CASH' }, 403, 'record a payment');
+    await expect('saw operator', op, 'POST', `/api/jobs/${FAKE_ID}/status`, { status: 'IN_PROCESS' }, 200, 'move a job');
+    await expect('shipping', shipping, 'PUT', `/api/orders/${made.id}`, { notes: 'x' }, 403, 'edit a sales order');
+    await expect('shipping', shipping, 'POST', '/api/shipments', { orderId: made.id }, 200, 'create a shipment');
+    await expect('CSR', csr, 'PUT', `/api/orders/${made.id}`, { notes: 'edited by CSR (QA probe)' }, 200, 'edit a sales order');
+    await expect('CSR', csr, 'POST', '/api/inventory/adjust', {}, 403, 'adjust stock');
+    await expect('CSR', csr, 'POST', `/api/invoices/${FAKE_ID}/credit`, { reason: 'x', amount: 1 }, 403, 'issue a credit');
+    await expect('CSR', csr, 'POST', `/api/invoices/${FAKE_ID}/cancel`, {}, 403, 'cancel an invoice');
+    await expect('CSR', csr, 'POST', `/api/pos/quick-sale/${FAKE_ID}/void`, { reason: 'x' }, 403, 'void a counter sale');
+    await expect('admin', adminToken, 'POST', `/api/invoices/${FAKE_ID}/credit`, { reason: 'x', amount: 1 }, 200, 'issue a credit');
   }
-  section('Staff roles', { pass: findings.length === 0, summary: `${findings.length} problems, ${observations.length} observation(s) needing a policy decision`, findings, observations });
+  section('Staff roles and departments', { pass: findings.length === 0, summary: `18 checks, ${findings.length} problems`, findings, observations });
   for (const o of observations) console.log('     note:', o);
 }
 

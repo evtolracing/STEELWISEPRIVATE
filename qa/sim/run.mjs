@@ -407,16 +407,16 @@ async function returnFlow(sc) {
     check(sc, 'credit quantity = returned quantity', Math.abs(-num(credit.lines[0]?.quantity) - back) < 0.001, `credit qty ${credit.lines[0] && num(credit.lines[0].quantity)}`);
     if (paidFirst) {
       check(sc, 'paid invoice: the credit is owed back to the customer', cents(credit.paidAmount) === 0 && credit.status === 'SENT', `credit paid ${num(credit.paidAmount)} status ${credit.status}`);
-      await step(sc, 'refunding more than the credit is refused', () => A.post(`/api/invoices/${credit.id}/refund`, { amount: +(-num(credit.totalAmount) + 5).toFixed(2), paymentMethod: 'CHECK' }, 'csr'), '4xx');
-      const refund = await step(sc, 'refund the credit', () => A.post(`/api/invoices/${credit.id}/refund`, { amount: -num(credit.totalAmount), paymentMethod: 'CHECK' }, 'csr'));
+      await step(sc, 'refunding more than the credit is refused', () => A.post(`/api/invoices/${credit.id}/refund`, { amount: +(-num(credit.totalAmount) + 5).toFixed(2), paymentMethod: 'CHECK' }), '4xx');
+      const refund = await step(sc, 'refund the credit', () => A.post(`/api/invoices/${credit.id}/refund`, { amount: -num(credit.totalAmount), paymentMethod: 'CHECK' }));
       check(sc, 'credit memo is settled after the refund', refund.body?.status === 'PAID' && refund.body?.balance === 0, `status ${refund.body?.status} balance ${refund.body?.balance}`);
     } else {
       check(sc, 'open invoice: the credit reduced what is owed', cents(now.totalAmount) - cents(now.paidAmount) === cents(invoice.totalAmount) + cents(credit.totalAmount), `balance ${num(now.totalAmount) - num(now.paidAmount)}`);
       check(sc, 'credit memo is fully applied', credit.status === 'PAID', `status ${credit.status}`);
     }
-    await step(sc, 'crediting more than the invoice is refused', () => A.post(`/api/invoices/${invoice.id}/credit`, { reason: 'QA', amount: +(num(invoice.totalAmount) + 1).toFixed(2) }, 'csr'), '4xx');
+    await step(sc, 'crediting more than the invoice is refused', () => A.post(`/api/invoices/${invoice.id}/credit`, { reason: 'QA', amount: +(num(invoice.totalAmount) + 1).toFixed(2) }), '4xx');
   }
-  await step(sc, 'an invoice with payments or credits cannot be cancelled', () => A.post(`/api/invoices/${invoice.id}/cancel`, {}, 'csr'), '4xx');
+  await step(sc, 'an invoice with payments or credits cannot be cancelled', () => A.post(`/api/invoices/${invoice.id}/cancel`, {}), '4xx');
   await checkBilling(sc, order.id);
   await checkInventory(sc, [stock.coilId]);
 }

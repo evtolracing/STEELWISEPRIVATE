@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T07:20:06.073Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T08:32:34.522Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -24,17 +24,18 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 | `r8-7001.json` | 7001 | 50 | 50 | 0 | 0 | 0 | 712 | 776 | 8 of 8 pass | 0 problems in 323 stock items and 59 orders |
 | `r8-7002.json` | 7002 | 50 | 50 | 0 | 0 | 0 | 708 | 771 | 8 of 8 pass | 0 problems in 323 stock items and 118 orders |
 | `r8-7003.json` | 7003 | 50 | 50 | 0 | 0 | 0 | 700 | 769 | 8 of 8 pass | 0 problems in 323 stock items and 177 orders |
-| `final-8001.json` | 8001 | 50 | 50 | 0 | 0 | 0 | 715 | 783 | 8 of 8 pass | 0 problems in 323 stock items and 59 orders |
-| `final-8002.json` | 8002 | 50 | 50 | 0 | 0 | 0 | 699 | 778 | 8 of 8 pass | 0 problems in 323 stock items and 118 orders |
-| `final-8003.json` | 8003 | 50 | 50 | 0 | 0 | 0 | 693 | 770 | 8 of 8 pass | 0 problems in 323 stock items and 177 orders |
+| `final-8001.json` | 8001 | 50 | 50 | 0 | 0 | 0 | 714 | 784 | 8 of 8 pass | 0 problems in 323 stock items and 59 orders |
+| `final-8002.json` | 8002 | 50 | 50 | 0 | 0 | 0 | 709 | 785 | 8 of 8 pass | 0 problems in 323 stock items and 118 orders |
+| `final-8003.json` | 8003 | 50 | 50 | 0 | 0 | 0 | 711 | 788 | 8 of 8 pass | 0 problems in 323 stock items and 177 orders |
 
-**Final consecutive cycles:** 3 cycles, 150 jobs: 150 passed, 0 failed, 0 blocked. 2107 API steps and 2331 checks. Seeds 8001, 8002, 8003.
+**Final consecutive cycles:** 3 cycles, 150 jobs: 150 passed, 0 failed, 0 blocked. 2134 API steps and 2357 checks. Seeds 8001, 8002, 8003.
 
 ### By category across the final cycles
 
 | Category | Jobs | Pass | Fail | Blocked |
 |---|---|---|---|---|
-| standard-metals | 21 | 21 | 0 | 0 |
+| standard-metals | 15 | 15 | 0 | 0 |
+| entry-screen | 6 | 6 | 0 | 0 |
 | multi-step-metals | 15 | 15 | 0 | 0 |
 | plastics | 18 | 18 | 0 | 0 |
 | pos-ecommerce | 15 | 15 | 0 | 0 |
@@ -49,13 +50,13 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 ### Simultaneous-request probes (last final cycle)
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
-- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 4800
+- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
 - Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 7200 of 7200; on hand 12000 → 4800
+- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
-- Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 7200 billed of 7200 shipped
-- Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 4680 of 4680
-- Pass: one return received three times at once: counted once, one credit. statuses 409,200,409; 1 credit memo(s); source coil on hand 4800 → 6600
+- Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
+- Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
+- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
 
 The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
@@ -75,26 +76,28 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T07:19:09.906Z. 574 of 574 routes swept.
+Run 2026-11-13T08:22:56.484Z. 585 of 585 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
-| No access without signing in | Pass | 535 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
+| No access without signing in | Pass | 546 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
 | Partner API needs a partner token | Pass | 60 calls, 0 let in |
 | Forged and invalid sign-ins are refused | Pass | 5 cases, 0 problems |
-| Customer logins are held to the store | Pass | 512 staff routes tried as a customer, 0 not refused |
+| Customer logins are held to the store | Pass | 523 staff routes tried as a customer, 0 not refused |
 | Customers and divisions cannot see each other | Pass | 31 checks, 0 problems |
 | Staff roles and departments | Pass | 18 checks, 0 problems |
-| Read routes do not crash on bad input | Pass | 750 reads, 0 server errors |
+| Read routes do not crash on bad input | Pass | 774 reads, 0 server errors |
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
 | Web checkout uses the system price, not the browser's | Pass | 4 checks, 0 problems |
 | Platform safeguards: bounded lists, tracing, real figures, database rules | Pass | 31 checks, 0 problems |
 | Error replies do not expose internals | Pass | 0 replies exposed internal detail |
+| One customer, one price in every sales channel | Pass | 47 checks, 0 problems |
+| Order entry screen follows the order rules | Pass | 43 checks, 0 problems |
 
 ## Screen check
 
-Run 2026-11-13T06:55:02.306Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T08:28:51.060Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 123
 - OK: 123
@@ -114,9 +117,37 @@ Run 2026-11-13T06:55:02.306Z as qa-admin@qa.test. Every route in the app's route
 
 Screens with an id in the address were opened with an id that does not exist, so a "not found" call on those is expected.
 
+## Sales screens operated in a browser
+
+Run 2026-11-13T08:30:05.144Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard and Pricing were used as a clerk and as a manager, and what they showed was compared with the database.
+
+- Checks: 18
+- Failed: 0
+
+| Check | Result |
+|---|---|
+| mobile rep: customer search finds a real customer | Pass |
+| mobile rep: product search lists real products with prices | Pass |
+| mobile rep: the products shown are catalog products | Pass |
+| mobile rep: the order is submitted and shows its real order number | Pass |
+| mobile rep: the order is saved under the person who entered it | Pass |
+| mobile rep: the saved order has the customer, a priced line and totals | Pass |
+| mobile rep intake: no script errors | Pass |
+| mobile rep: inventory lookup shows live stock | Pass |
+| mobile rep inventory: no script errors | Pass |
+| mobile rep: order list shows real orders, not samples | Pass |
+| mobile rep orders: no script errors | Pass |
+| mobile rep home: shows the signed-in person's own order count | Pass |
+| sales dashboard: shows counted figures and says what is not available | Pass |
+| sales dashboard: no script errors | Pass |
+| pricing: lists real products and price levels, not samples | Pass |
+| pricing: a clerk is not offered a way to change a list price | Pass |
+| pricing: a manager can open the change-price box | Pass |
+| pricing: no script errors | Pass |
+
 ## Screen-to-server contract
 
-352 distinct API calls are written in the screens; 155 have no matching server route. Full list in `qa/api-contract.md`.
+354 distinct API calls are written in the screens; 155 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

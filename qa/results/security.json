@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T07:35:41.316Z",
- "endpointsInInventory": 574,
- "endpointsSwept": 574,
+ "at": "2026-11-13T08:22:56.484Z",
+ "endpointsInInventory": 585,
+ "endpointsSwept": 585,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "535 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
-   "tested": 535,
+   "summary": "546 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 546,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "512 staff routes tried as a customer, 0 not refused",
-   "tested": 512,
+   "summary": "523 staff routes tried as a customer, 0 not refused",
+   "tested": 523,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -40,8 +40,8 @@
   },
   "Read routes do not crash on bad input": {
    "pass": true,
-   "summary": "750 reads, 0 server errors",
-   "tested": 750,
+   "summary": "774 reads, 0 server errors",
+   "tested": 774,
    "byFile": {},
    "findings": []
   },
@@ -73,12 +73,12 @@
   },
   "One customer, one price in every sales channel": {
    "pass": true,
-   "summary": "21 checks, 0 problems",
+   "summary": "47 checks, 0 problems",
    "findings": []
   },
   "Order entry screen follows the order rules": {
    "pass": true,
-   "summary": "33 checks, 0 problems",
+   "summary": "43 checks, 0 problems",
    "findings": []
   }
  },

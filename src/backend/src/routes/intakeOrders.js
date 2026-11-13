@@ -191,7 +191,6 @@ async function totalsFor(req, { subtotal, customerId, meta = {}, freightAmount =
     customerId,
     shipToState: meta.shipToState,
     branchState: await branchStateFor(req.user, meta.location),
-    counterSale: meta.source === 'RETAIL',
   });
   return {
     data: { subtotal, taxAmount: tax.taxAmount, totalAmount: money(subtotal + tax.taxAmount + (Number(freightAmount) || 0)) },
@@ -307,6 +306,35 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Error listing intake orders:', error);
     res.status(500).json({ error: 'Failed to list orders' });
+  }
+});
+
+// ─── GET /summary — the signed-in person's own sales figures ────────
+
+router.get('/summary', async (req, res) => {
+  try {
+    const now = new Date();
+    const today = new Date(now); today.setHours(0, 0, 0, 0);
+    const month = new Date(now.getFullYear(), now.getMonth(), 1);
+    const mine = { orderType: 'SO', createdById: req.user.id };
+    const live = { ...mine, status: { notIn: ['CANCELLED', 'DRAFT'] } };
+    const [ordersToday, drafts, monthAgg, openQuotes] = await Promise.all([
+      prisma.order.count({ where: { ...live, createdAt: { gte: today } } }),
+      prisma.order.count({ where: { ...mine, status: 'DRAFT' } }),
+      prisma.order.aggregate({ where: { ...live, createdAt: { gte: month } }, _sum: { subtotal: true }, _count: { _all: true } }),
+      prisma.quote.count({ where: { status: { in: ['DRAFT', 'SENT'] } } }).catch(() => null),
+    ]);
+    const revenueMTD = Number(monthAgg._sum.subtotal || 0);
+    const ordersMTD = monthAgg._count._all;
+    res.json({ data: {
+      ordersToday, drafts, ordersMTD,
+      revenueMTD: Math.round(revenueMTD * 100) / 100,
+      avgOrderValue: ordersMTD ? Math.round((revenueMTD / ordersMTD) * 100) / 100 : 0,
+      quotesOpen: openQuotes,
+    } });
+  } catch (error) {
+    console.error('Error loading intake summary:', error);
+    res.status(500).json({ error: 'Failed to load sales figures' });
   }
 });
 

@@ -1,0 +1,98 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-13T08:30:05.144Z",
+ "checks": 18,
+ "failed": 0,
+ "results": [
+  {
+   "name": "mobile rep: customer search finds a real customer",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep: product search lists real products with prices",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep: the products shown are catalog products",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep: the order is submitted and shows its real order number",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep: the order is saved under the person who entered it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep: the saved order has the customer, a priced line and totals",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep intake: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep: inventory lookup shows live stock",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep inventory: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep: order list shows real orders, not samples",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep orders: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile rep home: shows the signed-in person's own order count",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sales dashboard: shows counted figures and says what is not available",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "sales dashboard: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "pricing: lists real products and price levels, not samples",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "pricing: a clerk is not offered a way to change a list price",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "pricing: a manager can open the change-price box",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "pricing: no script errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

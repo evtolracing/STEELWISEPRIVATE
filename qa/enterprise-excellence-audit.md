@@ -37,7 +37,7 @@ A score never overrides a failed gate. Scores are a judgement backed by the evid
 | # | Workstream | Status |
 |---|---|---|
 | 1 | Architecture and infrastructure | First batch done (this document). Open items in `engineering-quality-findings.md` |
-| 2 | Sales and customer experience | Not started |
+| 2 | Sales and customer experience | Partially complete: 16 findings fixed, 11 open. `phase-reports/phase2-workstream2.md` |
 | 3 | Inventory and purchasing | Not started |
 | 4 | Manufacturing execution | Not started |
 | 5 | Shipping and financial operations | Not started |
@@ -65,4 +65,4 @@ Verification after the changes: 47 unit tests pass; three 50-job cycles (seeds 8
 
 - Branch `claude/project-thread-25z3jd`, pull request 30.
 - Rebuild the QA database with `qa/tools/rebuild-qa-db.sh`. Build the scaled copy with `createdb -T steelwise_qa steelwise_qa_perf` then `PGOPTIONS="-c perf.copies=300" psql steelwise_qa_perf -f qa/perf/scale-up.sql`, start a server on it with `QA_DATABASE_URL=... PORT=3013 qa/tools/start-qa-server.sh`, and run `node qa/perf/bench.mjs`.
-- Left in Workstream 1, all needing the owner: E-014 (shared rate limit), E-015 (restore test), E-016 (lint), E-017 (alerting). Next: Workstream 2.
+- Left in Workstream 1, all needing the owner: E-014 (shared rate limit), E-015 (restore test), E-016 (lint), E-017 (alerting). Workstream 2 is reported in `phase-reports/phase2-workstream2.md`. Next: Workstream 3.

@@ -30,9 +30,13 @@ export function extendPrice(unitPrice, priceUnit, quantity) {
   return Math.round(((qty / divisor) * unitPrice) * 100) / 100;
 }
 
-/** Which state's rate applies. Pure, so it can be unit tested. */
-export function taxStateFor({ counterSale = false, shipToState, customerState, branchState } = {}) {
+/**
+ * Which state's rate applies: always the selling branch's state (the owner's
+ * decision, rule 27). Only when the branch is not known does it fall back to
+ * the ship-to state and then the customer's state, so an order is never left
+ * untaxed just because no branch was sent. Pure, so it can be unit tested.
+ */
+export function taxStateFor({ shipToState, customerState, branchState } = {}) {
   const clean = (v) => (v ? String(v).trim().toUpperCase().slice(0, 2) : '') || null;
-  const [ship, customer, branch] = [clean(shipToState), clean(customerState), clean(branchState)];
-  return counterSale ? (branch || customer) : (ship || customer || branch);
+  return clean(branchState) || clean(shipToState) || clean(customerState);
 }

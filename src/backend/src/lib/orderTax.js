@@ -1,11 +1,10 @@
 /**
  * Sales tax for an order typed in by staff (order entry screen, Retail POS).
  *
- * Rule (recorded as rule 27 in qa/defect-register.md, awaiting the owner's confirmation):
+ * Rule 27 in qa/defect-register.md, decided by the owner on 2026-11-13:
  *   - A tax-exempt customer pays no tax.
- *   - A counter sale (Retail POS) is taxed at the selling branch's state rate.
- *   - Any other order is taxed at the ship-to state when one is given, otherwise
- *     the customer's state, otherwise the selling branch's state.
+ *   - Every other order is taxed at the selling branch's state rate, wherever it ships.
+ *   - Only when the selling branch is not known: the ship-to state, then the customer's state.
  *   - A state with no rate on file charges no tax and says so (Admin > Sales Tax Rates).
  */
 import prisma from './db.js';
@@ -32,13 +31,13 @@ export async function branchStateFor(user, location) {
 }
 
 /** { taxRate, taxAmount, taxState, exempt, rateFound } for a subtotal. */
-export async function orderTax({ subtotal, customerId, shipToState, branchState, counterSale = false }) {
+export async function orderTax({ subtotal, customerId, shipToState, branchState }) {
   const amount = Number(subtotal) || 0;
   const customer = customerId
     ? await prisma.organization.findUnique({ where: { id: String(customerId) }, select: { taxExempt: true, state: true } }).catch(() => null)
     : null;
   if (customer?.taxExempt) return { taxRate: 0, taxAmount: 0, taxState: null, exempt: true, rateFound: true };
-  const taxState = taxStateFor({ counterSale, shipToState, customerState: customer?.state, branchState });
+  const taxState = taxStateFor({ shipToState, customerState: customer?.state, branchState });
   const row = taxState ? await prisma.salesTaxRate.findUnique({ where: { state: taxState } }) : null;
   const taxRate = row ? Number(row.rate) : 0;
   return { taxRate, taxAmount: money(amount * taxRate), taxState, exempt: false, rateFound: Boolean(row) };

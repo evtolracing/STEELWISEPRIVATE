@@ -67,6 +67,11 @@ if (ui) {
   if (failing.length) { L.push('### API calls that failed while screens loaded', '', '| Call | Screens |', '|---|---|'); for (const [k, v] of failing) L.push(`| \`${k}\` | ${v.slice(0, 3).map((x) => `\`${x}\``).join(', ')}${v.length > 3 ? ` +${v.length - 3}` : ''} |`); L.push(''); }
   L.push('Screens with an id in the address were opened with an id that does not exist, so a "not found" call on those is expected.');
 }
+const sales = read('ui-sales.json');
+if (sales) {
+  L.push('', '## Sales screens operated in a browser', '', `Run ${sales.at} with \`qa/sim/ui-sales.cjs\`: Sales Rep Mobile, Sales Dashboard and Pricing were used as a clerk and as a manager, and what they showed was compared with the database.`, '', `- Checks: ${sales.checks}`, `- Failed: ${sales.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of sales.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
 const contract = (() => { try { return JSON.parse(fs.readFileSync(path.join(root, '.api-contract.json'), 'utf8')); } catch { return null; } })();
 if (contract) L.push('', '## Screen-to-server contract', '', `${contract.total} distinct API calls are written in the screens; ${contract.missing.length} have no matching server route. Full list in \`qa/api-contract.md\`.`);
 L.push('', '## Unit tests', '', 'Run with `npm test` in `src/backend` (Node built-in test runner). The count and result are printed by the runner; see the pull request for the latest run.');

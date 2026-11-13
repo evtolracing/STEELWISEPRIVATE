@@ -26,7 +26,7 @@ const ok2xx = (s) => s >= 200 && s < 300;
 
 // ── Scenario mix (directive §7, adapted to what the app supports) ──
 const MIX = [
-  ['standard-metals', 7], ['multi-step-metals', 5], ['plastics', 6], ['pos-ecommerce', 5],
+  ['standard-metals', 5], ['entry-screen', 2], ['multi-step-metals', 5], ['plastics', 6], ['pos-ecommerce', 5],
   ['multi-location', 6], ['transfers-receiving', 5], ['rush-backorder-exception', 5],
   ['partial-rework-return', 5], ['mixed-division', 4], ['quick-sale', 1], ['quote-to-order', 1],
 ];
@@ -459,7 +459,7 @@ async function posEcommerce(sc, variant) {
     const acc = await step(sc, 'CSR accepts the web order', () => A.post(`/api/orders/online/${webId}/accept`, {}, 'csr'));
     const soId = acc.body?.data?.internalOrderId || acc.body?.data?.orderId || (await prisma.onlineOrder.findUnique({ where: { id: webId } }))?.internalOrderId;
     check(sc, 'accepted web order became a sales order', !!soId, JSON.stringify(acc.body).slice(0, 200));
-    if (soId) await checkOrderBooks(sc, soId);
+    if (soId) await checkOrderBooks(sc, soId, { createdBy: (await prisma.user.findUnique({ where: { email: 'qa-csr@qa.test' } })).id });
     await step(sc, 'another customer cannot open this web order', () => A.get(`/api/ecom/my-orders/${webId}`, 'custB'), 404);
     return;
   }
@@ -574,6 +574,53 @@ async function quoteToOrder(sc) {
   await step(sc, 'a closed RFQ cannot be quoted again', () => A.post(`/api/rfqs/${rfq.body.id}/quotes`, { lines: [{ rfqLineId: rl.id, unitPrice: 50, priceUnit: 'CWT' }] }, 'csr'), 409);
 }
 
+/**
+ * An order typed on the CSR order entry screen (/api/orders/intake), which is how staff
+ * enter most orders: draft, edit, submit, work orders, production, shipping, invoice, payment.
+ */
+async function entryScreenOrder(sc) {
+  const loc = pickLoc(['METALS', 'MIXED']);
+  const customer = R.pick(ctx.customers.slice(2));
+  const csr = await prisma.user.findUnique({ where: { email: 'qa-csr@qa.test' } });
+  const stocks = [R.pick(await stockAt(loc.id))].filter(Boolean);
+  if (!stocks.length) { sc.notes.push(`no stock at ${loc.code}`); sc.result = 'BLOCKED'; return; }
+  const qty = Math.min(200 + R.int(0, 20) * 50, Math.floor(num(stocks[0].qtyAvailable) / 2));
+  const price = R.pick([0.55, 0.65, 0.8]);
+  const entry = (q) => ({ gradeId: stocks[0].coil.gradeId, description: `${stocks[0].coil.grade.code} ${stocks[0].coil.form} cut to size`, qty: q, uom: 'LB', unitPrice: price, extPrice: +(q * price).toFixed(2), lineType: 'MATERIAL', processes: [{ name: 'SAW' }] });
+  const head = { source: 'PHONE', division: 'METALS', location: loc.code, priority: R.pick(['STANDARD', 'RUSH']), ownership: 'HOUSE', poNumber: `QA-${sc.id}`, customerId: customer.id, customerName: customer.name };
+  const draft = await step(sc, 'entry screen: save a draft', () => A.post('/api/orders/intake', { ...head, lines: [entry(qty + 50)], status: 'DRAFT' }, 'csr'));
+  const id = draft.body?.data?.id;
+  if (!id) return;
+  await step(sc, 'entry screen: a line with no quantity is refused', () => A.patch(`/api/orders/intake/${id}`, { lines: [entry(0)] }, 'csr'), 400);
+  await step(sc, 'entry screen: change the quantity', () => A.patch(`/api/orders/intake/${id}`, { lines: [entry(qty)] }, 'csr'));
+  await step(sc, 'entry screen: submit', () => A.post(`/api/orders/intake/${id}/submit`, {}, 'csr'));
+  let order = await prisma.order.findUnique({ where: { id }, include: { lines: true, buyer: true } });
+  const rate = order.buyer.taxExempt ? 0 : num((loc.state ? await prisma.salesTaxRate.findUnique({ where: { state: loc.state } }) : null)?.rate);
+  const subtotal = +(qty * price).toFixed(2);
+  check(sc, 'entry screen: subtotal saved from the lines', Math.abs(num(order.subtotal) - subtotal) < 0.005, `subtotal ${order.subtotal} vs ${subtotal}`);
+  check(sc, 'entry screen: sales tax saved at the selling branch state rate', Math.abs(num(order.taxAmount) - Math.round(subtotal * rate * 100) / 100) < 0.005, `tax ${order.taxAmount} vs ${Math.round(subtotal * rate * 100) / 100} (branch state ${loc.state})`);
+  check(sc, 'entry screen: total = subtotal + tax', Math.abs(num(order.totalAmount) - (num(order.subtotal) + num(order.taxAmount))) < 0.005, `total ${order.totalAmount}`);
+  const line = order.lines[0];
+  await allocate(sc, order, line, stocks[0], qty);
+  const made = await step(sc, 'entry screen: create work orders', () => A.post(`/api/orders/intake/${id}/create-work-orders`, {}, 'csr'));
+  await step(sc, 'entry screen: create work orders pressed again', () => A.post(`/api/orders/intake/${id}/create-work-orders`, {}, 'csr'));
+  const jobs = await prisma.job.findMany({ where: { orderId: id } });
+  check(sc, 'entry screen: one work order per line', jobs.length === 1 && made.body?.data?.count === 1, `${jobs.length} jobs`);
+  await step(sc, 'entry screen: a confirmed order cannot have its lines replaced', () => A.patch(`/api/orders/intake/${id}`, { lines: [entry(1)] }, 'csr'), 409);
+  const wc = R.pick(wcOf(loc, ['SAW', 'SHEAR', 'LASER', 'PLASMA', 'WATERJET']));
+  for (const j of jobs) {
+    if (wc) await step(sc, `assign ${j.jobNumber} to ${wc.code}`, () => A.patch(`/api/jobs/${j.id}`, { workCenterId: wc.id }));
+    await runJob(sc, j);
+  }
+  order = await prisma.order.findUnique({ where: { id }, include: { lines: true } });
+  const s = await ship(sc, order, loc, [[line, qty]]);
+  if (s) await dispatchDeliver(sc, s);
+  await checkOrderBooks(sc, id, { expectStatus: 'COMPLETE', createdBy: csr.id });
+  await checkInventory(sc, stocks.map((x) => x.coilId));
+  await payInvoices(sc, id);
+  await checkBilling(sc, id);
+}
+
 async function runScenario(category, i, id) {
   const sc = newScenario(id, category);
   const t0 = Date.now();
@@ -589,6 +636,7 @@ async function runScenario(category, i, id) {
     else if (category === 'mixed-division') await standardFlow(sc, { mixed: true });
     else if (category === 'quick-sale') await quickSale(sc);
     else if (category === 'quote-to-order') await quoteToOrder(sc);
+    else if (category === 'entry-screen') await entryScreenOrder(sc);
   } catch (e) {
     sc.result = 'ERROR'; sc.notes.push(e.stack?.split('\n').slice(0, 3).join(' | '));
   }

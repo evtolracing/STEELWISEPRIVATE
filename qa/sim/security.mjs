@@ -512,6 +512,95 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       else await prisma.customerPricingTier.deleteMany({ where: { customerId: company.id } });
     }
   }
+  // The pricing tier chosen on the customer screen is the one prices use (finding S-013).
+  {
+    const target = await prisma.organization.findUnique({ where: { code: 'QA-C08' } });
+    const item = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'EACH', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
+    const [adminT2, csrT2] = await Promise.all(['admin', 'csr'].map(tokenFor));
+    const put = (token, body) => fetch(`${BASE}/api/customers/${target.id}/preferences`, { method: 'PUT', headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: JSON.stringify(body) }).then(async (r) => ({ status: r.status, body: await r.json().catch(() => null) }));
+    const price = async () => (await fetch(`${BASE}/api/pricing/calculate`, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${csrT2}` }, body: JSON.stringify({ productId: item.id, customerId: target.id, qty: 1 }) }).then((r) => r.json())).unitPrice;
+    const listPrice = Number(item.basePriceCwt);
+    try {
+      const clerk = await put(csrT2, { pricingTier: 'A', creditLimit: 999999 });
+      check('customer screen: a clerk cannot give a customer a pricing tier or credit limit', clerk.status === 403 && Math.abs(await price() - listPrice) < 0.006, `status ${clerk.status}, price ${await price()}`);
+      const mgr = await put(adminT2, { pricingTier: 'A', creditLimit: 50000 });
+      const levelB = Number((await prisma.priceLevel.findUnique({ where: { code: 'CONTRACT_B' } })).multiplier);
+      check('customer screen: a manager sets the tier and the price follows at once', mgr.status === 200 && Math.abs(await price() - +(listPrice * levelB).toFixed(4)) < 0.006, `status ${mgr.status}, price ${await price()}, want ${+(listPrice * levelB).toFixed(4)}`);
+      const logged = await prisma.auditLog.count({ where: { eventType: 'CUSTOMER_PRICING_CHANGED', resourceId: target.id } });
+      check('customer screen: the tier change is in the audit log', logged >= 1, `${logged} entries`);
+      const other = await put(csrT2, { pricingTier: 'A', creditLimit: 50000, preferredCarrier: 'XPO' });
+      check('customer screen: a clerk can still save other preferences', other.status === 200, `status ${other.status}`);
+      // S-014: the save used two field names the database does not have, so it always failed.
+      const tolSave = await put(csrT2, { pricingTier: 'A', creditLimit: 50000, preferredCarrier: 'XPO', thkTolerancePlus: 0.02, lenToleranceMinus: 0.05, internalNotes: 'staff only note' });
+      const kept = await prisma.customerPreference.findUnique({ where: { customerId: target.id } });
+      check('customer screen: tolerances are saved', tolSave.status === 200 && Number(kept?.thkTolerancePlus) === 0.02 && Number(kept?.lenToleranceMinus) === 0.05 && Number(kept?.widTolerancePlus) === 0.063, `status ${tolSave.status}, thk+ ${kept?.thkTolerancePlus}, len- ${kept?.lenToleranceMinus}, wid+ ${kept?.widTolerancePlus}`);
+      check('customer screen: an unknown tier is refused', (await put(adminT2, { pricingTier: 'Z' })).status === 400, 'accepted');
+      const off = await put(adminT2, { pricingTier: '', creditLimit: 50000 });
+      check('customer screen: removing the tier returns the customer to list price', off.status === 200 && Math.abs(await price() - listPrice) < 0.006, `status ${off.status}, price ${await price()}`);
+    } finally {
+      await prisma.customerPricingTier.deleteMany({ where: { customerId: target.id } });
+      await prisma.customerPreference.deleteMany({ where: { customerId: target.id } });
+    }
+  }
+  // S-015, S-016: the customer record itself.
+  {
+    const adminT3 = await tokenFor('admin');
+    const acct = await prisma.organization.findUnique({ where: { code: 'QA-C01' } });
+    const send = (method, url, token, body) => fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined }).then(async (r) => ({ status: r.status, body: await r.json().catch(() => null) }));
+    await prisma.customerPreference.upsert({ where: { customerId: acct.id }, update: { internalNotes: 'QA staff only note', contractNotes: 'QA terms note', creditLimit: 12345 }, create: { customerId: acct.id, internalNotes: 'QA staff only note', contractNotes: 'QA terms note', creditLimit: 12345, preferredCarrier: 'XPO' } });
+    try {
+      const own = await send('GET', `/api/customers/${acct.id}/preferences`, await tokenFor('custA'));
+      const text = JSON.stringify(own.body || {});
+      check('a customer login reads its store defaults without the staff-only notes and terms', own.status === 200 && own.body?.data?.preferredCarrier === 'XPO' && !/QA staff only note|QA terms note|12345|internalNotes|creditLimit|pricingTier|discountPct/.test(text), `status ${own.status}, ${text.slice(0, 160)}`);
+      const staff = await send('GET', `/api/customers/${acct.id}/preferences`, adminT3);
+      check('staff still see the notes', staff.body?.data?.internalNotes === 'QA staff only note', JSON.stringify(staff.body?.data?.internalNotes));
+      const edit = await send('PATCH', `/api/customers/${acct.id}`, adminT3, { code: 'HACKED', id: 'x', createdAt: '2000-01-01', phone: '555-0100' });
+      const after = await prisma.organization.findUnique({ where: { id: acct.id } });
+      check('editing a customer changes only the editable fields', edit.status === 200 && after.code === 'QA-C01' && after.phone === '555-0100' && after.createdAt.getFullYear() > 2000, `status ${edit.status}, code ${after?.code}, phone ${after?.phone}`);
+      check('a customer cannot be its own parent account', (await send('PATCH', `/api/customers/${acct.id}`, adminT3, { parentId: acct.id })).status === 400, 'accepted');
+      check('an unknown customer answers not found', (await send('PATCH', '/api/customers/no-such-id', adminT3, { phone: '1' })).status === 404, 'not a 404');
+      const before = await prisma.auditLog.count({ where: { eventType: 'CUSTOMER_TAX_STATUS_CHANGED', resourceId: acct.id } });
+      await send('PATCH', `/api/customers/${acct.id}`, adminT3, { taxExempt: !acct.taxExempt });
+      const logged = await prisma.auditLog.count({ where: { eventType: 'CUSTOMER_TAX_STATUS_CHANGED', resourceId: acct.id } });
+      check('a change of tax-exempt status is in the audit log', logged === before + 1, `${logged - before} new entries`);
+      check('a new customer needs a code and a name', (await send('POST', '/api/customers', adminT3, { code: 'QA-NONAME' })).status === 400, 'accepted');
+      check('a customer code cannot be used twice', (await send('POST', '/api/customers', adminT3, { code: 'QA-C01', name: 'Duplicate' })).status === 409, 'accepted');
+    } finally {
+      await prisma.organization.update({ where: { id: acct.id }, data: { taxExempt: acct.taxExempt, phone: acct.phone, parentId: acct.parentId } });
+      await prisma.customerPreference.deleteMany({ where: { customerId: acct.id } });
+    }
+  }
+  // S-017, S-018: the price book and list-price changes.
+  {
+    const [mgrT, clerkT] = await Promise.all(['admin', 'csr'].map(tokenFor));
+    const send = (method, url, token, body) => fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined }).then(async (r) => ({ status: r.status, body: await r.json().catch(() => null) }));
+    const item = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'EACH', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'desc' } });
+    const was = Number(item.basePriceCwt);
+    const lvl = Object.fromEntries((await prisma.priceLevel.findMany({ where: { isActive: true } })).map((l) => [l.code, Number(l.multiplier)]));
+    const book = await send('GET', `/api/pricing/price-list?search=${encodeURIComponent(item.sku)}&limit=5`, clerkT);
+    const row = (book.body?.data || []).find((r) => r.id === item.id);
+    check('price book: shows the list price and each level\'s price from the database', book.status === 200 && row && Math.abs(row.listPrice - was) < 0.00005 && Object.keys(lvl).every((c) => Math.abs(row.prices[c] - +(was * lvl[c]).toFixed(4)) < 0.00005), JSON.stringify(row ?? null).slice(0, 200));
+    check('price book: the list is capped', (await send('GET', '/api/pricing/price-list?limit=99999', clerkT)).body?.data?.length <= 200, 'more than 200 rows');
+    const over = await send('GET', '/api/pricing/overview', clerkT);
+    const tierRows = await prisma.customerPricingTier.count();
+    check('price book: tier accounts and product counts match the database', over.status === 200 && over.body?.accounts?.length === Math.min(tierRows, 1000) && over.body?.products?.withListPrice === await prisma.product.count({ where: { isActive: true, basePriceCwt: { gt: 0 } } }), `status ${over.status}, ${over.body?.accounts?.length} accounts vs ${tierRows}`);
+    try {
+      const clerk = await send('PUT', `/api/pricing/list-price/${item.id}`, clerkT, { listPrice: was + 1 });
+      check('list price: a clerk cannot change it', clerk.status === 403 && Math.abs(Number((await prisma.product.findUnique({ where: { id: item.id } })).basePriceCwt) - was) < 0.00005, `status ${clerk.status}`);
+      for (const bad of [0, -5, 'abc', null]) {
+        check(`list price: ${JSON.stringify(bad)} is refused`, (await send('PUT', `/api/pricing/list-price/${item.id}`, mgrT, { listPrice: bad })).status === 400, 'accepted');
+      }
+      check('list price: an unknown product answers not found', (await send('PUT', '/api/pricing/list-price/no-such-product', mgrT, { listPrice: 5 })).status === 404, 'not a 404');
+      const before = await prisma.auditLog.count({ where: { eventType: 'LIST_PRICE_CHANGED', resourceId: item.id } });
+      const mgr = await send('PUT', `/api/pricing/list-price/${item.id}`, mgrT, { listPrice: was + 1 });
+      const quoted = await send('POST', '/api/pricing/calculate', clerkT, { productId: item.id, qty: 1 });
+      check('list price: a manager changes it and the next price uses it', mgr.status === 200 && Math.abs(Number(quoted.body?.unitPrice ?? quoted.body?.data?.unitPrice) - (was + 1)) < 0.006, `status ${mgr.status}, next price ${JSON.stringify(quoted.body).slice(0, 120)}`);
+      const logs = await prisma.auditLog.findMany({ where: { eventType: 'LIST_PRICE_CHANGED', resourceId: item.id }, orderBy: { timestamp: 'desc' } });
+      check('list price: the change is in the audit log with the old and new price', logs.length === before + 1 && Math.abs(logs[0]?.details?.from - was) < 0.00005 && Math.abs(logs[0]?.details?.to - (was + 1)) < 0.00005, `${logs.length - before} new entries, ${JSON.stringify(logs[0]?.details)}`);
+    } finally {
+      await prisma.product.update({ where: { id: item.id }, data: { basePriceCwt: item.basePriceCwt } });
+    }
+  }
   section('One customer, one price in every sales channel', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
 }
 
@@ -530,7 +619,8 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const customer = await prisma.organization.findUnique({ where: { code: 'QA-C06' } });
   const product = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'CWT', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
   const line = (over = {}) => ({ productId: product.id, description: 'QA intake line', qty: 200, uom: 'LB', unitPrice: 0.5, extPrice: 100, ...over });
-  const create = (over = {}) => call('POST', '/api/orders/intake', { source: 'PHONE', division: 'METALS', priority: 'STANDARD', customerId: customer.id, customerName: customer.name, lines: [line(), line({ qty: 100, extPrice: 50 })], status: 'DRAFT', ...over });
+  const miBranch = await prisma.location.findFirst({ where: { state: 'MI' }, orderBy: { code: 'asc' } });
+  const create = (over = {}) => call('POST', '/api/orders/intake', { source: 'PHONE', division: 'METALS', location: miBranch.code, priority: 'STANDARD', customerId: customer.id, customerName: customer.name, lines: [line(), line({ qty: 100, extPrice: 50 })], status: 'DRAFT', ...over });
   const row = (id) => prisma.order.findUnique({ where: { id }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
 
   const made = await create();
@@ -541,14 +631,19 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     check('the order is recorded under the person who entered it', saved.createdById === csrUser.id, `createdById ${saved.createdById}, signed in as ${csrUser.id}`);
     const rateFor = async (state) => Number((state ? await prisma.salesTaxRate.findUnique({ where: { state } }) : null)?.rate || 0);
     const cents = (n) => Math.round(n * 100) / 100;
-    const wantTax = cents(150 * await rateFor(customer.state));
-    check('order totals are saved from the lines, with sales tax for the customer\'s state', Math.abs(Number(saved.subtotal) - 150) < 0.005 && Math.abs(Number(saved.taxAmount) - wantTax) < 0.005 && Math.abs(Number(saved.totalAmount) - (150 + wantTax)) < 0.005, `subtotal ${saved.subtotal}, tax ${saved.taxAmount} (want ${wantTax} for ${customer.state}), total ${saved.totalAmount}`);
-    const estimate = await call('POST', '/api/pricing/tax-estimate', { subtotal: 150, customerId: customer.id });
+    // Rule 27: tax follows the selling branch. This customer is in another state, with no rate of its own.
+    const wantTax = cents(150 * await rateFor('MI'));
+    check('order totals are saved from the lines, with sales tax for the selling branch state', Math.abs(Number(saved.subtotal) - 150) < 0.005 && Math.abs(Number(saved.taxAmount) - wantTax) < 0.005 && Math.abs(Number(saved.totalAmount) - (150 + wantTax)) < 0.005, `subtotal ${saved.subtotal}, tax ${saved.taxAmount} (want ${wantTax} for the MI branch; customer is in ${customer.state}), total ${saved.totalAmount}`);
+    const estimate = await call('POST', '/api/pricing/tax-estimate', { subtotal: 150, customerId: customer.id, location: miBranch.code });
     check('the tax shown on the screen is the tax saved on the order', Math.abs(Number(estimate.body?.taxAmount) - wantTax) < 0.005, `screen ${estimate.body?.taxAmount}, order ${wantTax}`);
-    // A ship-to state wins over the customer's state; an exempt customer pays none; a counter sale uses the branch.
+    // Shipping to another state does not change the tax; an exempt customer pays none.
     const shipped = await create({ shipToState: 'IN' });
     const shippedRow = await row(shipped.body?.data?.id);
-    check('an order shipped to another state is taxed at that state\'s rate', Math.abs(Number(shippedRow?.taxAmount) - cents(150 * await rateFor('IN'))) < 0.005, `tax ${shippedRow?.taxAmount}, want ${cents(150 * await rateFor('IN'))}`);
+    check('an order shipped to another state is still taxed at the selling branch state rate', wantTax > 0 && Math.abs(Number(shippedRow?.taxAmount) - wantTax) < 0.005, `tax ${shippedRow?.taxAmount}, want ${wantTax}`);
+    const ohBranch = await prisma.location.findFirst({ where: { state: 'OH' }, orderBy: { code: 'asc' } });
+    const fromOhio = await create({ location: ohBranch.code });
+    const ohioRow = await row(fromOhio.body?.data?.id);
+    check('the same order sold from a branch in another state is taxed at that branch state rate', Math.abs(Number(ohioRow?.taxAmount) - cents(150 * await rateFor('OH'))) < 0.005, `tax ${ohioRow?.taxAmount}, want ${cents(150 * await rateFor('OH'))}`);
     const exemptCustomer = await prisma.organization.findUnique({ where: { code: 'QA-C07' } });
     await prisma.organization.update({ where: { id: exemptCustomer.id }, data: { taxExempt: true } });
     try {
@@ -626,6 +721,43 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     check('a cancelled order cannot be submitted, given work orders or reopened', revive.status === 409 && reviveJobs.status === 409 && reviveEdit.status === 409 && (await row(deadId)).status === 'CANCELLED' && (await prisma.job.count({ where: { orderId: deadId } })) === 0, `submit ${revive.status}, work orders ${reviveJobs.status}, edit ${reviveEdit.status}, now ${(await row(deadId)).status}`);
     const huge = await call('GET', '/api/orders/intake?limit=1000000');
     check('the order list is capped', huge.status === 200 && (huge.body?.data?.length ?? 1e9) <= 200, `${huge.body?.data?.length} rows`);
+  }
+  // Overrides at order entry are kept on the server (finding S-011), not in the browser.
+  {
+    const adminT = await tokenFor('admin');
+    const as = async (token, method, url, body) => { const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined }); let json = null; try { json = await res.json(); } catch { /* not JSON */ } return { status: res.status, body: json }; };
+    const ref = `QA-OVR-${Date.now()}`;
+    const made2 = await as(csrT, 'POST', '/api/overrides', { type: 'CUTOFF_VIOLATION', reasonCode: 'CUSTOMER_EMERGENCY', notes: 'QA sweep', orderId: ref, orderNumber: ref, user: 'someone-else', userName: 'Someone Else' });
+    const stored = made2.body?.data?.id ? await prisma.auditLog.findUnique({ where: { id: made2.body.data.id } }) : null;
+    check('an override is saved in the audit log under the signed-in user', made2.status === 201 && stored?.userId === csrUser.id && stored?.eventType === 'ORDER_OVERRIDE' && made2.body.data.user === QA_USERS.csr, `status ${made2.status}, userId ${stored?.userId}`);
+    check('an override needs a known type and a reason', (await as(csrT, 'POST', '/api/overrides', { type: 'ANYTHING', reasonCode: 'X' })).status === 400 && (await as(csrT, 'POST', '/api/overrides', { type: 'PRICING_OVERRIDE' })).status === 400, 'accepted');
+    const forOrder = await as(csrT, 'GET', `/api/overrides?orderId=${ref}`);
+    check('the override is listed on its order', forOrder.body?.data?.length === 1 && forOrder.body.data[0].status === 'ACTIVE', JSON.stringify(forOrder.body).slice(0, 120));
+    check('a clerk cannot read the override log or revoke', (await as(csrT, 'GET', '/api/overrides/audit')).status === 403 && (await as(csrT, 'POST', `/api/overrides/${made2.body?.data?.id}/revoke`, { reason: 'x' })).status === 403, 'allowed');
+    const log = await as(adminT, 'GET', `/api/overrides/audit?orderId=${ref}`);
+    check('a manager sees it in the override log', log.status === 200 && log.body?.meta?.total === 1, `status ${log.status}, total ${log.body?.meta?.total}`);
+    const revoked = await as(adminT, 'POST', `/api/overrides/${made2.body?.data?.id}/revoke`, { reason: 'QA revoke' });
+    const again = await as(adminT, 'POST', `/api/overrides/${made2.body?.data?.id}/revoke`, { reason: 'QA revoke' });
+    const history = await prisma.auditLog.count({ where: { resourceId: ref } });
+    check('a manager revokes once, and the original entry is kept', revoked.status === 200 && revoked.body?.data?.status === 'REVOKED' && again.status === 409 && history === 2, `revoke ${revoked.status}, again ${again.status}, ${history} log rows`);
+  }
+  // Sales figures on the dashboards are counted from the database (findings S-012, D-036).
+  {
+    const dash = await call('GET', '/api/sales-dashboard?range=month');
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const [rfqs, sent, wonQuotes, openSum] = await Promise.all([
+      prisma.rFQ.count({ where: { createdAt: { gte: monthStart } } }),
+      prisma.quote.count({ where: { status: { in: ['SENT', 'COUNTERED'] } } }),
+      prisma.quote.count({ where: { status: 'ACCEPTED', updatedAt: { gte: monthStart } } }),
+      prisma.quote.aggregate({ where: { status: { in: ['DRAFT', 'PENDING_APPROVAL', 'SENT', 'COUNTERED'] } }, _sum: { totalAmount: true } }),
+    ]);
+    const d = dash.body || {};
+    check('sales dashboard counts match the database', dash.status === 200 && Math.abs(d.pipeline?.newRfqs - rfqs) <= 1 && d.pipeline?.awaitingCustomer === sent && Math.abs(d.pipeline?.won - wonQuotes) <= 1 && Math.abs(d.pipeline?.openValue - Number(openSum._sum.totalAmount || 0)) < 0.01, `rfqs ${d.pipeline?.newRfqs}/${rfqs}, sent ${d.pipeline?.awaitingCustomer}/${sent}, won ${d.pipeline?.won}/${wonQuotes}, open ${d.pipeline?.openValue}/${Number(openSum._sum.totalAmount || 0)}`);
+    check('sales dashboard rates are real percentages or blank', [d.performance?.winRate, d.performance?.conversionRate].every((v) => v === null || (v >= 0 && v <= 100)) && d.performance?.avgMargin === null, JSON.stringify(d.performance));
+    const mine = await call('GET', '/api/orders/intake/summary');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const myToday = await prisma.order.count({ where: { orderType: 'SO', createdById: csrUser.id, status: { notIn: ['CANCELLED', 'DRAFT'] }, createdAt: { gte: today } } });
+    check('a rep\'s own figures match the database', mine.status === 200 && Math.abs(mine.body?.data?.ordersToday - myToday) <= 1, `${mine.body?.data?.ordersToday} vs ${myToday}`);
   }
   section('Order entry screen follows the order rules', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
 }

@@ -189,6 +189,10 @@
    "file": "src/backend/src/routes/intakeOrders.js"
   },
   {
+   "ep": "GET /api/orders/intake/summary",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
    "ep": "GET /api/orders/intake/:id",
    "file": "src/backend/src/routes/intakeOrders.js"
   },
@@ -397,6 +401,18 @@
    "file": "src/backend/src/routes/intakePricing.js"
   },
   {
+   "ep": "GET /api/pricing/overview",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
+   "ep": "GET /api/pricing/price-list",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
+   "ep": "PUT /api/pricing/list-price/:productId",
+   "file": "src/backend/src/routes/intakePricing.js"
+  },
+  {
    "ep": "GET /api/processing/operations",
    "file": "src/backend/src/routes/intakeProcessing.js"
   },
@@ -551,6 +567,34 @@
   {
    "ep": "DELETE /api/tax-rates/:state",
    "file": "src/backend/src/routes/taxRates.js"
+  },
+  {
+   "ep": "POST /api/overrides",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides/count",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides/audit",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/overrides/stats",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "POST /api/overrides/:id/revoke",
+   "file": "src/backend/src/routes/overrides.js"
+  },
+  {
+   "ep": "GET /api/sales-dashboard",
+   "file": "src/backend/src/routes/salesDashboard.js"
   },
   {
    "ep": "GET /api/dashboard",
@@ -4171,7 +4215,6 @@
   "branchComparisonApi.js",
   "cutoffRulesApi.js",
   "intakeCustomersApi.js",
-  "overrideApi.js",
   "splitShipmentApi.js"
  ]
 }

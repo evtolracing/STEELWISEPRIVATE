@@ -121,6 +121,7 @@ import {
   Tune as PreferencesIcon,
   BusinessCenter as AccountIcon,
   HelpOutline as HelpManualIcon,
+  LocalOffer as PricingNavIcon,
 } from '@mui/icons-material'
 
 import { useDemo } from '../../contexts/DemoContext'
@@ -145,6 +146,7 @@ const navSections = [
       { path: '/customers/preferences', label: 'Preferences', icon: PreferencesIcon },
       { path: '/sales/rfq-inbox', label: 'RFQs & Quotes', icon: RFQIcon },
       { path: '/sales/dashboard', label: 'Sales Dashboard', icon: SalesDashIcon },
+      { path: '/pricing', label: 'Pricing', icon: PricingNavIcon },
       { path: '/commercial/demand-shaping', label: 'Demand Shaping', icon: DemandShapingIcon },
     ],
   },

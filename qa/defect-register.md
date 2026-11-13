@@ -53,7 +53,7 @@ Evidence files are in `qa/results/`. "Sim" is `qa/sim/run.mjs`, "Sweep" is `qa/s
 
 | ID | Sev | What is wrong | Note |
 |---|---|---|---|
-| D-036 | P2 | The Sales Dashboard page shows fixed sample figures, and the Order Hub RFQ pages keep their data in server memory, separate from the working RFQs & Quotes screen. | Found while repairing D-019. Not repaired here. |
+| D-036 | P2 | Sales Dashboard fixed in Phase 2 Workstream 2 (S-012): it now counts from the database. The Order Hub RFQ pages remain a separate console, not in the menu. | Order Hub needs a decision (S-021). |
 | D-020 | P2 | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | Many are helper functions no page uses. The screen check shows which pages actually hit a missing route when they open. Buttons inside pages were not clicked. |
 | D-023 | P3 | The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed). | Seed script, not app behaviour. Matters only because the demo site shows them. |
 | D-024 | P2 | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`branchComparisonApi`, `cutoffRulesApi`, `intakeCustomersApi`, `overrideApi`, `splitShipmentApi`). | Needs consolidation. |
@@ -84,3 +84,13 @@ These are now enforced by the server. Each was chosen to match what the screens 
 19. Web checkout always saves the system price for the customer's price level.
 20. A division login sees its own division only. A head-office login sees all divisions.
 21. A line with an unfinished shop job cannot be dispatched.
+22. Not used.
+23. Shipping summary: "staged" is a shipment waiting, "ready" is one loading, "late" is past its scheduled date and still on the dock (E-007).
+24. Not used.
+25. Not used.
+26. Not used.
+27. Sales tax on an order typed in by staff is charged at the rate of the selling branch's state, wherever it ships. A tax-exempt customer pays none. Only when the branch is not known is the ship-to state used, then the customer's state. Decided by the owner on 2026-11-13.
+28. A customer pays list price times the price level of their top-level account: Tier A is Contract B, Tier B is Contract A, Tier C is Volume, Tier D and no tier are Retail. A tier outside its dates, or switched off, pays Retail. To confirm.
+29. Only a manager (rule 16's list) changes a customer's pricing tier or credit limit. Each change is written to the audit log. To confirm.
+30. Only a manager changes a list price. Each change is written to the audit log with the old and new price. To confirm.
+31. An order typed on the order entry screen can be changed only while it is a draft or pending and has no jobs. A Retail sale with no account is filed under the walk-in account. Counter discounts are between 0 and 100% and never more than the subtotal, approved by a signed-in manager. To confirm.

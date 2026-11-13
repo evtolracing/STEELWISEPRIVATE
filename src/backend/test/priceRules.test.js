@@ -46,14 +46,13 @@ test('line totals follow the price unit', () => {
   assert.equal(extendPrice(42, 'CWT', 0), 0);
 });
 
-test('an order is taxed at the ship-to state, then the customer state, then the branch state', () => {
-  assert.equal(taxStateFor({ shipToState: 'oh', customerState: 'MI', branchState: 'IN' }), 'OH');
-  assert.equal(taxStateFor({ customerState: 'MI', branchState: 'IN' }), 'MI');
-  assert.equal(taxStateFor({ branchState: ' in ' }), 'IN');
+test('an order is always taxed at the selling branch state', () => {
+  assert.equal(taxStateFor({ shipToState: 'oh', customerState: 'MI', branchState: 'IN' }), 'IN');
+  assert.equal(taxStateFor({ customerState: 'MI', branchState: ' in ' }), 'IN');
   assert.equal(taxStateFor({}), null);
 });
 
-test('a counter sale is taxed where the branch is', () => {
-  assert.equal(taxStateFor({ counterSale: true, shipToState: 'OH', customerState: 'MI', branchState: 'IN' }), 'IN');
-  assert.equal(taxStateFor({ counterSale: true, customerState: 'MI' }), 'MI');
+test('with no branch known the ship-to state is used, then the customer state', () => {
+  assert.equal(taxStateFor({ shipToState: 'OH', customerState: 'MI' }), 'OH');
+  assert.equal(taxStateFor({ customerState: 'MI' }), 'MI');
 });

@@ -1,274 +1,251 @@
-import { useState } from 'react'
+/**
+ * Pricing: the price book as it stands in the system.
+ *   - the price levels and what each pays against list price
+ *   - which customer accounts have a pricing tier
+ *   - the list price of every product and what each level pays for it
+ * A tier is changed under Customers > Preferences. A manager can change a list
+ * price here; the change is written to the audit log.
+ */
+import { useState, useEffect, useCallback } from 'react'
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Card,
-  CardContent,
-  Button,
-  Stack,
-  TextField,
-  MenuItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  IconButton,
-  Chip,
-  Avatar,
-  alpha,
+  Box, Typography, Paper, Grid, Button, TextField, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Chip, Alert, LinearProgress, InputAdornment, TablePagination,
+  Dialog, DialogTitle, DialogContent, DialogActions, Snackbar,
 } from '@mui/material'
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  TrendingUp as TrendingUpIcon,
-  AttachMoney as MoneyIcon,
-  AutoAwesome as AIIcon,
-} from '@mui/icons-material'
-import { DataTable, StatusChip } from '../../components/common'
+import { Search as SearchIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
+
+// The roles the server lets change a list price.
+const PRICE_MANAGERS = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER', 'OPS_MANAGER', 'EXECUTIVE', 'CFO', 'COO', 'CIO', 'DIVISION_DIRECTOR', 'SERVICE_CENTER', 'CREDIT_MANAGER', 'SALES_DIRECTOR']
+
+const PAGE = 25
+const price = (n, unit) => (n == null ? 'No list price' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} / ${String(unit).toLowerCase()}`)
+const against = (m) => {
+  const pct = Math.round((1 - Number(m)) * 1000) / 10
+  if (pct === 0) return 'List price'
+  return pct > 0 ? `${pct}% under list` : `${-pct}% over list`
+}
+const day = (d) => (d ? new Date(d).toLocaleDateString() : '')
+
+async function getJson(url) {
+  const res = await fetch(url)
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(body.error || 'The price book could not be loaded')
+  return body
+}
 
 export default function PricingDashboardPage() {
-  const [gradeFilter, setGradeFilter] = useState('')
-  
-  // Mock data
-  const mockPrices = [
-    { id: 1, grade: 'A36', product: 'Hot Rolled Coil', basePrice: 0.42, effectiveDate: new Date(), status: 'ACTIVE' },
-    { id: 2, grade: 'A572-50', product: 'Hot Rolled Coil', basePrice: 0.48, effectiveDate: new Date(), status: 'ACTIVE' },
-    { id: 3, grade: '304 SS', product: 'Stainless Coil', basePrice: 2.15, effectiveDate: new Date(), status: 'ACTIVE' },
-    { id: 4, grade: '316 SS', product: 'Stainless Coil', basePrice: 2.85, effectiveDate: new Date(), status: 'ACTIVE' },
-  ]
+  const navigate = useNavigate()
+  const [overview, setOverview] = useState(null)
+  const [list, setList] = useState({ data: [], meta: { total: 0 } })
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const { user } = useAuth()
+  const canEdit = PRICE_MANAGERS.includes(user?.role)
+  const [editing, setEditing] = useState(null)
+  const [newPrice, setNewPrice] = useState('')
+  const [saveError, setSaveError] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [notice, setNotice] = useState('')
 
-  const mockSurcharges = [
-    { id: 1, name: 'Fuel Surcharge', type: 'PERCENTAGE', value: 5, status: 'ACTIVE' },
-    { id: 2, name: 'Small Order Fee', type: 'FLAT', value: 150, minQty: 0, maxQty: 5000, status: 'ACTIVE' },
-    { id: 3, name: 'Cut-to-Length', type: 'PER_LB', value: 0.02, status: 'ACTIVE' },
-  ]
+  const loadOverview = useCallback(async () => {
+    try {
+      setOverview(await getJson('/api/pricing/overview'))
+      setError('')
+    } catch (e) {
+      setError(e.message)
+    }
+  }, [])
 
-  const mockQuotes = [
-    { id: 1, quoteNumber: 'Q-2024-001', customer: 'Acme Steel Co', total: 45600, validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), status: 'PENDING' },
-    { id: 2, quoteNumber: 'Q-2024-002', customer: 'BuildRight LLC', total: 23400, validUntil: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), status: 'APPROVED' },
-    { id: 3, quoteNumber: 'Q-2024-003', customer: 'Metal Works Inc', total: 89000, validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), status: 'DRAFT' },
-  ]
+  const loadList = useCallback(async () => {
+    setLoading(true)
+    try {
+      setList(await getJson(`/api/pricing/price-list?limit=${PAGE}&offset=${page * PAGE}&search=${encodeURIComponent(search)}`))
+      setError('')
+    } catch (e) {
+      setError(e.message)
+    }
+    setLoading(false)
+  }, [page, search])
 
-  const priceColumns = [
-    { id: 'grade', label: 'Grade', minWidth: 100 },
-    { id: 'product', label: 'Product', minWidth: 150 },
-    { id: 'basePrice', label: 'Base Price ($/lb)', minWidth: 120, render: (row) => `$${row.basePrice.toFixed(2)}` },
-    { id: 'effectiveDate', label: 'Effective', minWidth: 100, render: (row) => new Date(row.effectiveDate).toLocaleDateString() },
-    { id: 'status', label: 'Status', minWidth: 100, render: (row) => <StatusChip status={row.status} /> },
-    { id: 'actions', label: '', minWidth: 80, render: () => (
-      <Stack direction="row" spacing={0.5}>
-        <IconButton size="small"><EditIcon fontSize="small" /></IconButton>
-      </Stack>
-    )},
-  ]
+  const openEdit = (p) => { setEditing(p); setNewPrice(p.listPrice == null ? '' : String(p.listPrice)); setSaveError('') }
+  const savePrice = async () => {
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/pricing/list-price/${editing.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ listPrice: newPrice }) })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body.error || 'The list price could not be saved')
+      setNotice(`List price of ${editing.sku} saved`)
+      setEditing(null)
+      loadList()
+      loadOverview()
+    } catch (e) {
+      setSaveError(e.message)
+    }
+    setSaving(false)
+  }
 
-  const quoteColumns = [
-    { id: 'quoteNumber', label: 'Quote #', minWidth: 120, render: (row) => (
-      <Typography variant="body2" fontWeight={600} color="primary">{row.quoteNumber}</Typography>
-    )},
-    { id: 'customer', label: 'Customer', minWidth: 150 },
-    { id: 'total', label: 'Total', minWidth: 100, render: (row) => `$${row.total.toLocaleString()}` },
-    { id: 'validUntil', label: 'Valid Until', minWidth: 100, render: (row) => new Date(row.validUntil).toLocaleDateString() },
-    { id: 'status', label: 'Status', minWidth: 100, render: (row) => <StatusChip status={row.status} /> },
-  ]
+  useEffect(() => { loadOverview() }, [loadOverview])
+  useEffect(() => {
+    const t = setTimeout(loadList, 250)
+    return () => clearTimeout(t)
+  }, [loadList])
+
+  const levels = (overview?.levels || []).filter((l) => l.isActive)
+  const tiersFor = (code) => Object.entries(overview?.tierToLevel || {}).filter(([, level]) => level === code).map(([tier]) => tier)
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #f0f4f8 0%, #e8edf3 100%)' }}>
-      {/* Modern Header */}
-      <Box sx={{ 
-        px: 3, 
-        py: 2.5, 
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%)',
-        color: 'white',
-        boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
-        mb: 3,
-      }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ 
-              width: 56, 
-              height: 56, 
-              background: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(10px)',
-            }}>
-              <MoneyIcon sx={{ fontSize: 30 }} />
-            </Avatar>
-            <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
-                Pricing Management
-              </Typography>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                  Manage base prices, surcharges, and quotes • AI-optimized pricing
-                </Typography>
-              </Stack>
-            </Box>
-          </Box>
-          <Stack direction="row" spacing={1}>
-            <Button 
-              variant="contained" 
-              startIcon={<AddIcon />}
-              sx={{
-                bgcolor: 'rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(10px)',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
-              }}
-            >
-              New Quote
-            </Button>
-          </Stack>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box>
+          <Typography variant="h4" fontWeight={700}>Pricing</Typography>
+          <Typography variant="body2" color="text.secondary">
+            What each customer pays is the product&apos;s list price times the price level of their account
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { loadOverview(); loadList() }}>Refresh</Button>
+          <Button variant="contained" onClick={() => navigate('/customers/preferences')}>Set a customer&apos;s tier</Button>
         </Box>
       </Box>
 
-      <Box sx={{ px: 3, pb: 3 }}>
-      {/* KPI Cards */}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {overview?.products?.withoutListPrice > 0 && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {overview.products.withoutListPrice} active product{overview.products.withoutListPrice === 1 ? ' has' : 's have'} no list price and cannot be sold at the counter until one is entered in the product catalog.
+        </Alert>
+      )}
+
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ 
-            background: `linear-gradient(135deg, ${alpha('#4caf50', 0.05)} 0%, ${alpha('#4caf50', 0.02)} 100%)`,
-            border: `1px solid ${alpha('#4caf50', 0.2)}`,
-            transition: 'all 0.3s ease',
-            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#4caf50', 0.2)}` },
-          }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Avg Carbon Price</Typography>
-                  <Typography variant="h4" fontWeight={600}>$0.45/lb</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
-                    <TrendingUpIcon fontSize="small" color="success" />
-                    <Typography variant="body2" color="success.main">+2.3%</Typography>
-                  </Box>
-                </Box>
-                <Avatar sx={{ bgcolor: alpha('#4caf50', 0.1) }}>
-                  <MoneyIcon sx={{ color: 'success.main' }} />
-                </Avatar>
-              </Box>
-            </CardContent>
-          </Card>
+        <Grid item xs={12} md={5}>
+          <Paper sx={{ p: 2, height: '100%' }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>Price levels</Typography>
+            <Table size="small" aria-label="Price levels">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Level</TableCell>
+                  <TableCell>Pays</TableCell>
+                  <TableCell>Customer tier</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {levels.map((l) => (
+                  <TableRow key={l.code}>
+                    <TableCell>{l.label}</TableCell>
+                    <TableCell>{against(l.multiplier)}</TableCell>
+                    <TableCell>{[...tiersFor(l.code).map((t) => `Tier ${t}`), ...(l.code === 'RETAIL' ? ['no tier'] : [])].join(', ') || 'Not used by a tier'}</TableCell>
+                  </TableRow>
+                ))}
+                {overview && levels.length === 0 && (
+                  <TableRow><TableCell colSpan={3}>No price levels are set up. Every customer pays list price.</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ 
-            background: `linear-gradient(135deg, ${alpha('#2196f3', 0.05)} 0%, ${alpha('#2196f3', 0.02)} 100%)`,
-            border: `1px solid ${alpha('#2196f3', 0.2)}`,
-            transition: 'all 0.3s ease',
-            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#2196f3', 0.2)}` },
-          }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Avg Stainless Price</Typography>
-                  <Typography variant="h4" fontWeight={600}>$2.50/lb</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
-                    <TrendingUpIcon fontSize="small" color="success" />
-                    <Typography variant="body2" color="success.main">+5.1%</Typography>
-                  </Box>
-                </Box>
-                <Avatar sx={{ bgcolor: alpha('#2196f3', 0.1) }}>
-                  <MoneyIcon sx={{ color: 'info.main' }} />
-                </Avatar>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ 
-            background: `linear-gradient(135deg, ${alpha('#ff9800', 0.05)} 0%, ${alpha('#ff9800', 0.02)} 100%)`,
-            border: `1px solid ${alpha('#ff9800', 0.2)}`,
-            transition: 'all 0.3s ease',
-            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#ff9800', 0.2)}` },
-          }}>
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Open Quotes</Typography>
-              <Typography variant="h4" fontWeight={600}>12</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>$458K total value</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ 
-            background: `linear-gradient(135deg, ${alpha('#9c27b0', 0.05)} 0%, ${alpha('#9c27b0', 0.02)} 100%)`,
-            border: `1px solid ${alpha('#9c27b0', 0.2)}`,
-            transition: 'all 0.3s ease',
-            '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${alpha('#9c27b0', 0.2)}` },
-          }}>
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">Quote Win Rate</Typography>
-              <Typography variant="h4" fontWeight={600}>68%</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>Last 30 days</Typography>
-            </CardContent>
-          </Card>
+        <Grid item xs={12} md={7}>
+          <Paper sx={{ p: 2, height: '100%' }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+              Accounts with a pricing tier{overview ? ` (${overview.accounts.length})` : ''}
+            </Typography>
+            <TableContainer sx={{ maxHeight: 260 }}>
+              <Table size="small" stickyHeader aria-label="Accounts with a pricing tier">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Tier</TableCell>
+                    <TableCell>Paying now</TableCell>
+                    <TableCell>Dates</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(overview?.accounts || []).map((a) => (
+                    <TableRow key={a.customerId} hover>
+                      <TableCell>{a.name} <Typography component="span" variant="caption" color="text.secondary">{a.code}</Typography></TableCell>
+                      <TableCell>Tier {a.tier}</TableCell>
+                      <TableCell>
+                        {a.inForce
+                          ? (levels.find((l) => l.code === a.levelInForce)?.label || a.levelInForce)
+                          : <Chip size="small" color="warning" label="List price: tier not in force" />}
+                      </TableCell>
+                      <TableCell>{day(a.effectiveFrom)}{a.effectiveUntil ? ` to ${day(a.effectiveUntil)}` : ' onward'}</TableCell>
+                    </TableRow>
+                  ))}
+                  {overview && overview.accounts.length === 0 && (
+                    <TableRow><TableCell colSpan={4}>No account has a pricing tier. Every customer pays list price.</TableCell></TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
         </Grid>
       </Grid>
 
-      <Grid container spacing={3}>
-        {/* Base Prices */}
-        <Grid item xs={12} lg={8}>
-          <Paper sx={{ p: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">Base Prices</Typography>
-              <Button startIcon={<AddIcon />} size="small">Add Price</Button>
-            </Box>
-            <DataTable
-              columns={priceColumns}
-              data={mockPrices}
-              pageSize={5}
-              showSearch={false}
-            />
-          </Paper>
-        </Grid>
-
-        {/* Surcharges */}
-        <Grid item xs={12} lg={4}>
-          <Paper sx={{ p: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">Active Surcharges</Typography>
-              <Button startIcon={<AddIcon />} size="small">Add</Button>
-            </Box>
-            <Stack spacing={2}>
-              {mockSurcharges.map((surcharge) => (
-                <Card key={surcharge.id} variant="outlined">
-                  <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Box>
-                        <Typography variant="subtitle2">{surcharge.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {surcharge.type === 'PERCENTAGE' && `${surcharge.value}%`}
-                          {surcharge.type === 'FLAT' && `$${surcharge.value}`}
-                          {surcharge.type === 'PER_LB' && `$${surcharge.value}/lb`}
-                        </Typography>
-                      </Box>
-                      <Chip label={surcharge.status} size="small" color="success" variant="outlined" />
-                    </Box>
-                  </CardContent>
-                </Card>
+      <Paper sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, flexWrap: 'wrap', gap: 2 }}>
+          <Typography variant="subtitle1" fontWeight={600}>Price list ({list.meta?.total ?? 0} products)</Typography>
+          <TextField
+            size="small" placeholder="Search by SKU or name" value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(0) }}
+            inputProps={{ 'aria-label': 'Search the price list' }}
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> }}
+            sx={{ minWidth: 280 }}
+          />
+        </Box>
+        {loading && <LinearProgress />}
+        <TableContainer>
+          <Table size="small" aria-label="Price list">
+            <TableHead>
+              <TableRow>
+                <TableCell>SKU</TableCell>
+                <TableCell>Product</TableCell>
+                {levels.map((l) => <TableCell key={l.code} align="right">{l.label}</TableCell>)}
+                {canEdit && <TableCell />}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {list.data.map((p) => (
+                <TableRow key={p.id} hover>
+                  <TableCell>{p.sku}</TableCell>
+                  <TableCell>{p.name}</TableCell>
+                  {levels.map((l) => <TableCell key={l.code} align="right">{price(p.prices?.[l.code], p.priceUnit)}</TableCell>)}
+                  {canEdit && <TableCell align="right"><Button size="small" onClick={() => openEdit(p)} aria-label={`Change the list price of ${p.sku}`}>Change</Button></TableCell>}
+                </TableRow>
               ))}
-            </Stack>
-          </Paper>
-        </Grid>
+              {!loading && list.data.length === 0 && (
+                <TableRow><TableCell colSpan={3 + levels.length}>No products match.</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          component="div" count={list.meta?.total ?? 0} page={page} rowsPerPage={PAGE}
+          rowsPerPageOptions={[PAGE]} onPageChange={(e, p) => setPage(p)}
+        />
+      </Paper>
 
-        {/* Recent Quotes */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">Recent Quotes</Typography>
-              <Button size="small">View All</Button>
-            </Box>
-            <DataTable
-              columns={quoteColumns}
-              data={mockQuotes}
-              pageSize={5}
-              showSearch={false}
-            />
-          </Paper>
-        </Grid>
-      </Grid>
-      </Box>
+      <Dialog open={Boolean(editing)} onClose={() => !saving && setEditing(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Change list price</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>{editing?.sku}: {editing?.name}</Typography>
+          <TextField
+            autoFocus fullWidth type="number" label={`List price per ${String(editing?.priceUnit || '').toLowerCase()}`}
+            value={newPrice} onChange={(e) => setNewPrice(e.target.value)}
+            inputProps={{ min: 0, step: 0.01 }}
+            InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+            helperText="Applies to new order lines at once, for every customer. Orders already entered keep their prices."
+          />
+          {saveError && <Alert severity="error" sx={{ mt: 2 }}>{saveError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditing(null)} disabled={saving}>Cancel</Button>
+          <Button variant="contained" onClick={savePrice} disabled={saving || !(Number(newPrice) > 0)}>Save</Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar open={Boolean(notice)} autoHideDuration={4000} onClose={() => setNotice('')} message={notice} />
     </Box>
   )
 }

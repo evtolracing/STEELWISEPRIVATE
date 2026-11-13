@@ -1,7 +1,7 @@
 {
  "seed": 8001,
  "base": "http://localhost:3011",
- "at": "2026-11-13T06:50:03.260Z",
+ "at": "2026-11-13T08:22:33.345Z",
  "scenarios": [
   {
    "id": "S8001-01",
@@ -200,7 +200,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 365
+   "ms": 330
   },
   {
    "id": "S8001-02",
@@ -373,7 +373,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 228
+   "ms": 274
   },
   {
    "id": "S8001-03",
@@ -572,7 +572,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 249
+   "ms": 294
   },
   {
    "id": "S8001-04",
@@ -755,7 +755,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 242
+   "ms": 240
   },
   {
    "id": "S8001-05",
@@ -928,34 +928,64 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 204
+   "ms": 226
   },
   {
    "id": "S8001-06",
-   "category": "standard-metals",
+   "category": "entry-screen",
    "steps": [
     {
-     "name": "create sales order",
+     "name": "entry screen: save a draft",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "confirm order",
+     "name": "entry screen: a line with no quantity is refused",
+     "expect": 400,
+     "status": 400,
+     "ok": true
+    },
+    {
+     "name": "entry screen: change the quantity",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "allocate 700 lb from QA-L06-S1",
+     "name": "entry screen: submit",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L06-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L06-LASER",
+     "name": "entry screen: create work orders",
      "expect": "2xx",
-     "status": 201,
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "entry screen: create work orders pressed again",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "entry screen: a confirmed order cannot have its lines replaced",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "assign JOB-00064 to QA-L06-LASER",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     },
     {
@@ -1013,19 +1043,41 @@
      "ok": true
     },
     {
-     "name": "invoicing again finds nothing left to bill",
-     "expect": 409,
-     "status": 409,
+     "name": "pay 137.5 on INV-000008",
+     "expect": "2xx",
+     "status": 201,
      "ok": true
     },
     {
-     "name": "create shipment (1 line(s))",
+     "name": "pay the rest of INV-000008",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "paying a paid invoice is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     }
    ],
    "invariants": [
+    {
+     "name": "entry screen: subtotal saved from the lines",
+     "ok": true
+    },
+    {
+     "name": "entry screen: sales tax saved at the selling branch state rate",
+     "ok": true
+    },
+    {
+     "name": "entry screen: total = subtotal + tax",
+     "ok": true
+    },
+    {
+     "name": "entry screen: one work order per line",
+     "ok": true
+    },
     {
      "name": "order subtotal = sum of line totals",
      "ok": true
@@ -1067,6 +1119,14 @@
      "ok": true
     },
     {
+     "name": "INV-000008: status after payment",
+     "ok": true
+    },
+    {
+     "name": "INV-000008: paid in full",
+     "ok": true
+    },
+    {
      "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
@@ -1101,34 +1161,64 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 222
+   "ms": 323
   },
   {
    "id": "S8001-07",
-   "category": "standard-metals",
+   "category": "entry-screen",
    "steps": [
     {
-     "name": "create sales order",
+     "name": "entry screen: save a draft",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "confirm order",
+     "name": "entry screen: a line with no quantity is refused",
+     "expect": 400,
+     "status": 400,
+     "ok": true
+    },
+    {
+     "name": "entry screen: change the quantity",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "allocate 650 lb from QA-L03-S1",
+     "name": "entry screen: submit",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 750 lb from QA-L15-S5",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L03-PLASMA",
+     "name": "entry screen: create work orders",
      "expect": "2xx",
-     "status": 201,
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "entry screen: create work orders pressed again",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "entry screen: a confirmed order cannot have its lines replaced",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "assign JOB-00065 to QA-L15-SAW",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     },
     {
@@ -1184,39 +1274,25 @@
      "expect": "4xx",
      "status": 409,
      "ok": true
-    },
-    {
-     "name": "pay 228.68 on INV-000009",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "pay the rest of INV-000009",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "paying a paid invoice is refused",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "invoicing again finds nothing left to bill",
-     "expect": 409,
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "create shipment (1 line(s))",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
     }
    ],
    "invariants": [
+    {
+     "name": "entry screen: subtotal saved from the lines",
+     "ok": true
+    },
+    {
+     "name": "entry screen: sales tax saved at the selling branch state rate",
+     "ok": true
+    },
+    {
+     "name": "entry screen: total = subtotal + tax",
+     "ok": true
+    },
+    {
+     "name": "entry screen: one work order per line",
+     "ok": true
+    },
     {
      "name": "order subtotal = sum of line totals",
      "ok": true
@@ -1242,27 +1318,19 @@
      "ok": true
     },
     {
-     "name": "QA-L03-S1: no negative quantities",
+     "name": "QA-L15-S5: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L03-S1: on hand = available + allocated + on hold",
+     "name": "QA-L15-S5: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L03-S1: inventory allocated = open allocations",
+     "name": "QA-L15-S5: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L03-S1: inventory branch = coil branch",
-     "ok": true
-    },
-    {
-     "name": "INV-000009: status after payment",
-     "ok": true
-    },
-    {
-     "name": "INV-000009: paid in full",
+     "name": "QA-L15-S5: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -1300,7 +1368,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 255
+   "ms": 259
   },
   {
    "id": "S8001-08",
@@ -1319,13 +1387,13 @@
      "ok": true
     },
     {
-     "name": "allocate 850 lb from QA-L79-S1",
+     "name": "allocate 1550 lb from QA-L26-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L79-SAW",
+     "name": "create job at QA-L26-SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1355,7 +1423,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L79-SHEAR",
+     "name": "create job at QA-L26-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1385,7 +1453,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L79-LASER",
+     "name": "create job at QA-L26-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1445,24 +1513,6 @@
      "ok": true
     },
     {
-     "name": "pay 384.04 on INV-000010",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "pay the rest of INV-000010",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "paying a paid invoice is refused",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    },
-    {
      "name": "invoicing again finds nothing left to bill",
      "expect": 409,
      "status": 409,
@@ -1501,27 +1551,19 @@
      "ok": true
     },
     {
-     "name": "QA-L79-S1: no negative quantities",
+     "name": "QA-L26-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L79-S1: on hand = available + allocated + on hold",
+     "name": "QA-L26-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L79-S1: inventory allocated = open allocations",
+     "name": "QA-L26-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L79-S1: inventory branch = coil branch",
-     "ok": true
-    },
-    {
-     "name": "INV-000010: status after payment",
-     "ok": true
-    },
-    {
-     "name": "INV-000010: paid in full",
+     "name": "QA-L26-S2: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -1559,7 +1601,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 343
+   "ms": 314
   },
   {
    "id": "S8001-09",
@@ -1578,13 +1620,13 @@
      "ok": true
     },
     {
-     "name": "allocate 950 lb from QA-L45-S5",
+     "name": "allocate 800 lb from QA-L31-S3",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L45-SAW",
+     "name": "create job at QA-L31-SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1614,7 +1656,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L45-SHEAR",
+     "name": "create job at QA-L31-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1644,7 +1686,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L45-LASER",
+     "name": "create job at QA-L31-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1704,7 +1746,7 @@
      "ok": true
     },
     {
-     "name": "pay 334.22 on INV-000011",
+     "name": "pay 346.45 on INV-000011",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1760,19 +1802,19 @@
      "ok": true
     },
     {
-     "name": "QA-L45-S5: no negative quantities",
+     "name": "QA-L31-S3: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L45-S5: on hand = available + allocated + on hold",
+     "name": "QA-L31-S3: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L45-S5: inventory allocated = open allocations",
+     "name": "QA-L31-S3: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L45-S5: inventory branch = coil branch",
+     "name": "QA-L31-S3: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -1818,7 +1860,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 322
+   "ms": 349
   },
   {
    "id": "S8001-10",
@@ -1837,13 +1879,13 @@
      "ok": true
     },
     {
-     "name": "allocate 300 lb from QA-L08-S4",
+     "name": "allocate 250 lb from QA-L19-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L08-SAW",
+     "name": "create job at QA-L19-SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1873,7 +1915,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L08-SHEAR",
+     "name": "create job at QA-L19-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1898,6 +1940,36 @@
     },
     {
      "name": "job JOB-00073 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L19-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00074 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00074 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00074 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00074 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1971,19 +2043,19 @@
      "ok": true
     },
     {
-     "name": "QA-L08-S4: no negative quantities",
+     "name": "QA-L19-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L08-S4: on hand = available + allocated + on hold",
+     "name": "QA-L19-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L08-S4: inventory allocated = open allocations",
+     "name": "QA-L19-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L08-S4: inventory branch = coil branch",
+     "name": "QA-L19-S2: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -2021,7 +2093,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 267
+   "ms": 296
   },
   {
    "id": "S8001-11",
@@ -2040,43 +2112,13 @@
      "ok": true
     },
     {
-     "name": "allocate 600 lb from QA-L73-S2",
+     "name": "allocate 650 lb from QA-L02-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L73-SAW",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00074 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00074 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00074 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00074 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L73-SHEAR",
+     "name": "create job at QA-L02-SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2106,7 +2148,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L73-LASER",
+     "name": "create job at QA-L02-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2131,6 +2173,36 @@
     },
     {
      "name": "job JOB-00076 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L02-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00077 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00077 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00077 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00077 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2166,13 +2238,246 @@
      "ok": true
     },
     {
-     "name": "pay 211.09 on INV-000013",
+     "name": "invoicing again finds nothing left to bill",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S1: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "line 1: invoiced qty = shipped qty",
+     "ok": true
+    },
+    {
+     "name": "INV-000013: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000013: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000013: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000013: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order subtotal",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order tax",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order freight",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 285
+  },
+  {
+   "id": "S8001-12",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000013",
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 600 lb from QA-L73-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L73-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00078 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00078 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00078 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00078 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L73-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00079 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00079 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00079 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00079 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L73-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00080 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00080 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00080 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00080 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00064",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00064",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "list invoices for the order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "overpay INV-000014 is refused",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "pay 211.09 on INV-000014",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pay the rest of INV-000014",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2238,224 +2543,11 @@
      "ok": true
     },
     {
-     "name": "INV-000013: status after payment",
-     "ok": true
-    },
-    {
-     "name": "INV-000013: paid in full",
-     "ok": true
-    },
-    {
-     "name": "line 1: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
-     "name": "INV-000013: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000013: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000013: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000013: never paid more than billed",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order subtotal",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order tax",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order freight",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 342
-  },
-  {
-   "id": "S8001-12",
-   "category": "multi-step-metals",
-   "steps": [
-    {
-     "name": "create sales order",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "confirm order",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "allocate 1500 lb from QA-L16-S2",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L16-SAW",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00077 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00077 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00077 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00077 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L16-SHEAR",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00078 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00078 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00078 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00078 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create shipment (1 line(s))",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "dispatch SHP-00064",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "deliver SHP-00064",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "list invoices for the order",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "overpay INV-000014 is refused",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "pay 1170.44 on INV-000014",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "invoicing again finds nothing left to bill",
-     "expect": 409,
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "create shipment (1 line(s))",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "order subtotal = sum of line totals",
-     "ok": true
-    },
-    {
-     "name": "order created by the signed-in user",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "order status is COMPLETE",
-     "ok": true
-    },
-    {
-     "name": "QA-L16-S2: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L16-S2: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L16-S2: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L16-S2: inventory branch = coil branch",
-     "ok": true
-    },
-    {
      "name": "INV-000014: status after payment",
+     "ok": true
+    },
+    {
+     "name": "INV-000014: paid in full",
      "ok": true
     },
     {
@@ -2493,7 +2585,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 309
+   "ms": 315
   },
   {
    "id": "S8001-13",
@@ -2512,37 +2604,37 @@
      "ok": true
     },
     {
-     "name": "allocate 1600 lb from QA-L61-S4",
+     "name": "allocate 1500 lb from QA-L18-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L61-CNC",
+     "name": "create job at QA-L18-PLASTIC_SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00079 → IN_PROCESS",
+     "name": "job JOB-00081 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00079 → WAITING_QC",
+     "name": "job JOB-00081 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00079 → PACKAGING",
+     "name": "job JOB-00081 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00079 → READY_TO_SHIP",
+     "name": "job JOB-00081 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2616,19 +2708,19 @@
      "ok": true
     },
     {
-     "name": "QA-L61-S4: no negative quantities",
+     "name": "QA-L18-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L61-S4: on hand = available + allocated + on hold",
+     "name": "QA-L18-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L61-S4: inventory allocated = open allocations",
+     "name": "QA-L18-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L61-S4: inventory branch = coil branch",
+     "name": "QA-L18-S2: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -2666,7 +2758,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 194
+   "ms": 186
   },
   {
    "id": "S8001-14",
@@ -2685,73 +2777,13 @@
      "ok": true
     },
     {
-     "name": "allocate 1500 lb from QA-L39-S3",
+     "name": "allocate 1600 lb from QA-L61-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L39-ROUTER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00080 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00080 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00080 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00080 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L39-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00081 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00081 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00081 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00081 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L39-PLASTIC_SAW",
+     "name": "create job at QA-L61-ROUTER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2776,6 +2808,36 @@
     },
     {
      "name": "job JOB-00082 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L61-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00083 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00083 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00083 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00083 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2808,6 +2870,12 @@
      "name": "overpay INV-000016 is refused",
      "expect": "4xx",
      "status": 409,
+     "ok": true
+    },
+    {
+     "name": "pay 1210.8 on INV-000016",
+     "expect": "2xx",
+     "status": 201,
      "ok": true
     },
     {
@@ -2849,19 +2917,23 @@
      "ok": true
     },
     {
-     "name": "QA-L39-S3: no negative quantities",
+     "name": "QA-L61-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L39-S3: on hand = available + allocated + on hold",
+     "name": "QA-L61-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L39-S3: inventory allocated = open allocations",
+     "name": "QA-L61-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L39-S3: inventory branch = coil branch",
+     "name": "QA-L61-S4: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "INV-000016: status after payment",
      "ok": true
     },
     {
@@ -2899,7 +2971,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 307
+   "ms": 286
   },
   {
    "id": "S8001-15",
@@ -2918,37 +2990,37 @@
      "ok": true
     },
     {
-     "name": "allocate 1350 lb from QA-L67-S2",
+     "name": "allocate 1500 lb from QA-L39-S3",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L67-CNC",
+     "name": "create job at QA-L39-ROUTER",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00083 → IN_PROCESS",
+     "name": "job JOB-00084 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00083 → WAITING_QC",
+     "name": "job JOB-00084 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00083 → PACKAGING",
+     "name": "job JOB-00084 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00083 → READY_TO_SHIP",
+     "name": "job JOB-00084 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3022,19 +3094,19 @@
      "ok": true
     },
     {
-     "name": "QA-L67-S2: no negative quantities",
+     "name": "QA-L39-S3: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L67-S2: on hand = available + allocated + on hold",
+     "name": "QA-L39-S3: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L67-S2: inventory allocated = open allocations",
+     "name": "QA-L39-S3: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L67-S2: inventory branch = coil branch",
+     "name": "QA-L39-S3: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -3072,7 +3144,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 203
+   "ms": 204
   },
   {
    "id": "S8001-16",
@@ -3091,43 +3163,13 @@
      "ok": true
     },
     {
-     "name": "allocate 1400 lb from QA-L11-S2",
+     "name": "allocate 1350 lb from QA-L19-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L11-ROUTER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00084 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00084 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00084 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00084 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L11-CNC",
+     "name": "create job at QA-L19-ROUTER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3157,7 +3199,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L11-PLASTIC_SAW",
+     "name": "create job at QA-L19-CNC",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3217,13 +3259,186 @@
      "ok": true
     },
     {
-     "name": "pay 492.54 on INV-000018",
+     "name": "invoicing again finds nothing left to bill",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L19-S4: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L19-S4: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L19-S4: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L19-S4: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "line 1: invoiced qty = shipped qty",
+     "ok": true
+    },
+    {
+     "name": "INV-000018: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000018: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000018: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000018: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order subtotal",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order tax",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order freight",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 262
+  },
+  {
+   "id": "S8001-17",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000018",
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1400 lb from QA-L11-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L11-PLASTIC_SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00087 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00087 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00087 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00087 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00069",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00069",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "list invoices for the order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "overpay INV-000019 is refused",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "pay 492.54 on INV-000019",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pay the rest of INV-000019",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3289,194 +3504,11 @@
      "ok": true
     },
     {
-     "name": "INV-000018: status after payment",
-     "ok": true
-    },
-    {
-     "name": "INV-000018: paid in full",
-     "ok": true
-    },
-    {
-     "name": "line 1: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
-     "name": "INV-000018: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000018: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000018: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000018: never paid more than billed",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order subtotal",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order tax",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order freight",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 372
-  },
-  {
-   "id": "S8001-17",
-   "category": "plastics",
-   "steps": [
-    {
-     "name": "create sales order",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "confirm order",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "allocate 850 lb from QA-L19-S4",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L19-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00087 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00087 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00087 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00087 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create shipment (1 line(s))",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "dispatch SHP-00069",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "deliver SHP-00069",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "list invoices for the order",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "overpay INV-000019 is refused",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "pay 598.08 on INV-000019",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "invoicing again finds nothing left to bill",
-     "expect": 409,
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "create shipment (1 line(s))",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "order subtotal = sum of line totals",
-     "ok": true
-    },
-    {
-     "name": "order created by the signed-in user",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "order status is COMPLETE",
-     "ok": true
-    },
-    {
-     "name": "QA-L19-S4: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L19-S4: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L19-S4: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L19-S4: inventory branch = coil branch",
-     "ok": true
-    },
-    {
      "name": "INV-000019: status after payment",
+     "ok": true
+    },
+    {
+     "name": "INV-000019: paid in full",
      "ok": true
     },
     {
@@ -3514,7 +3546,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 233
+   "ms": 246
   },
   {
    "id": "S8001-18",
@@ -3533,13 +3565,13 @@
      "ok": true
     },
     {
-     "name": "allocate 800 lb from QA-L26-S4",
+     "name": "allocate 550 lb from QA-L67-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L26-ROUTER",
+     "name": "create job at QA-L67-ROUTER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3569,7 +3601,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L26-CNC",
+     "name": "create job at QA-L67-CNC",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3594,6 +3626,36 @@
     },
     {
      "name": "job JOB-00089 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L67-PLASTIC_SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00090 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00090 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00090 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00090 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3629,21 +3691,9 @@
      "ok": true
     },
     {
-     "name": "pay 281.45 on INV-000020",
+     "name": "pay 357.5 on INV-000020",
      "expect": "2xx",
      "status": 201,
-     "ok": true
-    },
-    {
-     "name": "pay the rest of INV-000020",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "paying a paid invoice is refused",
-     "expect": "4xx",
-     "status": 409,
      "ok": true
     },
     {
@@ -3685,27 +3735,23 @@
      "ok": true
     },
     {
-     "name": "QA-L26-S4: no negative quantities",
+     "name": "QA-L67-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L26-S4: on hand = available + allocated + on hold",
+     "name": "QA-L67-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L26-S4: inventory allocated = open allocations",
+     "name": "QA-L67-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L26-S4: inventory branch = coil branch",
+     "name": "QA-L67-S2: inventory branch = coil branch",
      "ok": true
     },
     {
      "name": "INV-000020: status after payment",
-     "ok": true
-    },
-    {
-     "name": "INV-000020: paid in full",
      "ok": true
     },
     {
@@ -3743,7 +3789,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 290
+   "ms": 312
   },
   {
    "id": "S8001-19",
@@ -3800,7 +3846,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 113
+   "ms": 96
   },
   {
    "id": "S8001-20",
@@ -3857,7 +3903,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 80
+   "ms": 79
   },
   {
    "id": "S8001-21",
@@ -3914,7 +3960,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 80
+   "ms": 81
   },
   {
    "id": "S8001-22",
@@ -3963,7 +4009,7 @@
      "ok": true
     },
     {
-     "name": "POS: add 700 lb of SS-304-SH",
+     "name": "POS: add 450 lb of AL-6061-PL",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3990,6 +4036,10 @@
    "invariants": [
     {
      "name": "POS line is priced",
+     "ok": true
+    },
+    {
+     "name": "POS line is the catalog list price for this product",
      "ok": true
     },
     {
@@ -4027,7 +4077,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 140
+   "ms": 138
   },
   {
    "id": "S8001-23",
@@ -4076,7 +4126,7 @@
      "ok": true
     },
     {
-     "name": "POS: add 300 lb of HR-A36-PL",
+     "name": "POS: add 550 lb of HR-A36-PL",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -4103,6 +4153,10 @@
    "invariants": [
     {
      "name": "POS line is priced",
+     "ok": true
+    },
+    {
+     "name": "POS line is the catalog list price for this product",
      "ok": true
     },
     {
@@ -4140,7 +4194,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 138
+   "ms": 128
   },
   {
    "id": "S8001-24",
@@ -4159,43 +4213,43 @@
      "ok": true
     },
     {
-     "name": "allocate 500 lb from QA-L08-S1",
+     "name": "allocate 500 lb from QA-L33-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "transfer QA-L08-S1 QA-L08 → QA-L29",
+     "name": "transfer QA-L33-S2 QA-L33 → QA-L54",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "create job at QA-L29-SAW",
+     "name": "create job at QA-L54-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00090 → IN_PROCESS",
+     "name": "job JOB-00091 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00090 → WAITING_QC",
+     "name": "job JOB-00091 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00090 → PACKAGING",
+     "name": "job JOB-00091 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00090 → READY_TO_SHIP",
+     "name": "job JOB-00091 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4249,25 +4303,25 @@
      "ok": true
     },
     {
-     "name": "QA-L08-S1: no negative quantities",
+     "name": "QA-L33-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L08-S1: on hand = available + allocated + on hold",
+     "name": "QA-L33-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L08-S1: inventory allocated = open allocations",
+     "name": "QA-L33-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L08-S1: inventory branch = coil branch",
+     "name": "QA-L33-S2: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 196
+   "ms": 195
   },
   {
    "id": "S8001-25",
@@ -4286,37 +4340,37 @@
      "ok": true
     },
     {
-     "name": "allocate 500 lb from QA-L58-S5",
+     "name": "allocate 500 lb from QA-L37-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L58-LASER",
+     "name": "create job at QA-L37-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00091 → IN_PROCESS",
+     "name": "job JOB-00092 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00091 → WAITING_QC",
+     "name": "job JOB-00092 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00091 → PACKAGING",
+     "name": "job JOB-00092 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00091 → READY_TO_SHIP",
+     "name": "job JOB-00092 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4366,25 +4420,25 @@
      "ok": true
     },
     {
-     "name": "QA-L58-S5: no negative quantities",
+     "name": "QA-L37-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L58-S5: on hand = available + allocated + on hold",
+     "name": "QA-L37-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L58-S5: inventory allocated = open allocations",
+     "name": "QA-L37-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L58-S5: inventory branch = coil branch",
+     "name": "QA-L37-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 166
+   "ms": 195
   },
   {
    "id": "S8001-26",
@@ -4403,43 +4457,43 @@
      "ok": true
     },
     {
-     "name": "allocate 500 lb from QA-L43-S1",
+     "name": "allocate 500 lb from QA-L31-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "transfer QA-L43-S1 QA-L43 → QA-L78",
+     "name": "transfer QA-L31-S4 QA-L31 → QA-L20",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "create job at QA-L78-SHEAR",
+     "name": "create job at QA-L20-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00092 → IN_PROCESS",
+     "name": "job JOB-00093 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00092 → WAITING_QC",
+     "name": "job JOB-00093 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00092 → PACKAGING",
+     "name": "job JOB-00093 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00092 → READY_TO_SHIP",
+     "name": "job JOB-00093 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4493,25 +4547,25 @@
      "ok": true
     },
     {
-     "name": "QA-L43-S1: no negative quantities",
+     "name": "QA-L31-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L43-S1: on hand = available + allocated + on hold",
+     "name": "QA-L31-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L43-S1: inventory allocated = open allocations",
+     "name": "QA-L31-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L43-S1: inventory branch = coil branch",
+     "name": "QA-L31-S4: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 197
+   "ms": 185
   },
   {
    "id": "S8001-27",
@@ -4530,37 +4584,37 @@
      "ok": true
     },
     {
-     "name": "allocate 500 lb from QA-L65-S1",
+     "name": "allocate 500 lb from QA-L16-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L65-SHEAR",
+     "name": "create job at QA-L16-SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00093 → IN_PROCESS",
+     "name": "job JOB-00094 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00093 → WAITING_QC",
+     "name": "job JOB-00094 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00093 → PACKAGING",
+     "name": "job JOB-00094 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00093 → READY_TO_SHIP",
+     "name": "job JOB-00094 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4610,25 +4664,25 @@
      "ok": true
     },
     {
-     "name": "QA-L65-S1: no negative quantities",
+     "name": "QA-L16-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L65-S1: on hand = available + allocated + on hold",
+     "name": "QA-L16-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L65-S1: inventory allocated = open allocations",
+     "name": "QA-L16-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L65-S1: inventory branch = coil branch",
+     "name": "QA-L16-S4: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 169
+   "ms": 175
   },
   {
    "id": "S8001-28",
@@ -4647,146 +4701,13 @@
      "ok": true
     },
     {
-     "name": "allocate 500 lb from QA-L58-S5",
+     "name": "allocate 500 lb from QA-L76-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "transfer QA-L58-S5 QA-L58 → QA-L15",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L15-SAW",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00094 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00094 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00094 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00094 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create shipment (1 line(s))",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "dispatch SHP-00075",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "deliver SHP-00075",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "transfer did not create or lose stock",
-     "ok": true
-    },
-    {
-     "name": "order subtotal = sum of line totals",
-     "ok": true
-    },
-    {
-     "name": "order created by the signed-in user",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "order status is COMPLETE",
-     "ok": true
-    },
-    {
-     "name": "QA-L58-S5: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L58-S5: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L58-S5: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L58-S5: inventory branch = coil branch",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 182
-  },
-  {
-   "id": "S8001-29",
-   "category": "multi-location",
-   "steps": [
-    {
-     "name": "create sales order",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "confirm order",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "allocate 500 lb from QA-L12-S2",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "transfer QA-L12-S2 QA-L12 → QA-L54",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L54-SAW",
+     "name": "create job at QA-L76-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -4822,23 +4743,19 @@
      "ok": true
     },
     {
-     "name": "dispatch SHP-00076",
+     "name": "dispatch SHP-00075",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "deliver SHP-00076",
+     "name": "deliver SHP-00075",
      "expect": "2xx",
      "status": 200,
      "ok": true
     }
    ],
    "invariants": [
-    {
-     "name": "transfer did not create or lose stock",
-     "ok": true
-    },
     {
      "name": "order subtotal = sum of line totals",
      "ok": true
@@ -4864,113 +4781,6 @@
      "ok": true
     },
     {
-     "name": "QA-L12-S2: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L12-S2: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L12-S2: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L12-S2: inventory branch = coil branch",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 185
-  },
-  {
-   "id": "S8001-30",
-   "category": "transfers-receiving",
-   "steps": [
-    {
-     "name": "receive more of an existing item",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "receipt adds exactly the received qty",
-     "ok": true
-    },
-    {
-     "name": "receipt recorded against the signed-in user",
-     "ok": true
-    },
-    {
-     "name": "QA-L59-S2: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L59-S2: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L59-S2: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L59-S2: inventory branch = coil branch",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 25
-  },
-  {
-   "id": "S8001-31",
-   "category": "transfers-receiving",
-   "steps": [
-    {
-     "name": "reject a negative receipt",
-     "expect": "4xx",
-     "status": 400,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "QA-L79-S1: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L79-S1: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L79-S1: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L79-S1: inventory branch = coil branch",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 11
-  },
-  {
-   "id": "S8001-32",
-   "category": "transfers-receiving",
-   "steps": [
-    {
-     "name": "transfer whole item between branches",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
      "name": "QA-L76-S1: no negative quantities",
      "ok": true
     },
@@ -4989,77 +4799,11 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 21
+   "ms": 176
   },
   {
-   "id": "S8001-33",
-   "category": "transfers-receiving",
-   "steps": [
-    {
-     "name": "reject a transfer from the wrong branch",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "QA-L10-S3: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L10-S3: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L10-S3: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L10-S3: inventory branch = coil branch",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 11
-  },
-  {
-   "id": "S8001-34",
-   "category": "transfers-receiving",
-   "steps": [
-    {
-     "name": "reject a partial transfer of a single tracked item",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "QA-L69-S1: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L69-S1: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L69-S1: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L69-S1: inventory branch = coil branch",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 13
-  },
-  {
-   "id": "S8001-35",
-   "category": "rush-backorder-exception",
+   "id": "S8001-29",
+   "category": "multi-location",
    "steps": [
     {
      "name": "create sales order",
@@ -5074,13 +4818,13 @@
      "ok": true
     },
     {
-     "name": "allocate 750 lb from QA-L40-S2",
+     "name": "allocate 500 lb from QA-L71-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L40-LASER",
+     "name": "create job at QA-L71-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5116,6 +4860,296 @@
      "ok": true
     },
     {
+     "name": "dispatch SHP-00076",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00076",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 171
+  },
+  {
+   "id": "S8001-30",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "receive more of an existing item",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "receipt adds exactly the received qty",
+     "ok": true
+    },
+    {
+     "name": "receipt recorded against the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S5: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S5: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S5: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S5: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 27
+  },
+  {
+   "id": "S8001-31",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a negative receipt",
+     "expect": "4xx",
+     "status": 400,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L65-S5: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L65-S5: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L65-S5: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L65-S5: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 11
+  },
+  {
+   "id": "S8001-32",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "transfer whole item between branches",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L35-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L35-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L35-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L35-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 22
+  },
+  {
+   "id": "S8001-33",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a transfer from the wrong branch",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L29-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L29-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L29-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L29-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 10
+  },
+  {
+   "id": "S8001-34",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a partial transfer of a single tracked item",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L54-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L54-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L54-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L54-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 12
+  },
+  {
+   "id": "S8001-35",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 800 lb from QA-L71-S5",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L71-WATERJET",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00097 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00097 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00097 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00097 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "dispatch SHP-00077",
      "expect": "2xx",
      "status": 200,
@@ -5140,7 +5174,7 @@
      "ok": true
     },
     {
-     "name": "pay 527.72 on INV-000027",
+     "name": "pay 702.9 on INV-000027",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5184,19 +5218,19 @@
      "ok": true
     },
     {
-     "name": "QA-L40-S2: no negative quantities",
+     "name": "QA-L71-S5: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L40-S2: on hand = available + allocated + on hold",
+     "name": "QA-L71-S5: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L40-S2: inventory allocated = open allocations",
+     "name": "QA-L71-S5: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L40-S2: inventory branch = coil branch",
+     "name": "QA-L71-S5: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -5238,7 +5272,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 221
+   "ms": 204
   },
   {
    "id": "S8001-36",
@@ -5257,7 +5291,7 @@
      "ok": true
     },
     {
-     "name": "allocate 25550 lb from QA-L48-S2",
+     "name": "allocate 9000 lb from QA-L35-S1",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -5285,25 +5319,25 @@
      "ok": true
     },
     {
-     "name": "QA-L48-S2: no negative quantities",
+     "name": "QA-L35-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L48-S2: on hand = available + allocated + on hold",
+     "name": "QA-L35-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L48-S2: inventory allocated = open allocations",
+     "name": "QA-L35-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L48-S2: inventory branch = coil branch",
+     "name": "QA-L35-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 40
+   "ms": 37
   },
   {
    "id": "S8001-37",
@@ -5322,7 +5356,7 @@
      "ok": true
     },
     {
-     "name": "allocate 400 lb from QA-L68-S2",
+     "name": "allocate 400 lb from QA-L30-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5366,25 +5400,25 @@
      "ok": true
     },
     {
-     "name": "QA-L68-S2: no negative quantities",
+     "name": "QA-L30-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L68-S2: on hand = available + allocated + on hold",
+     "name": "QA-L30-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L68-S2: inventory allocated = open allocations",
+     "name": "QA-L30-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L68-S2: inventory branch = coil branch",
+     "name": "QA-L30-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 78
+   "ms": 60
   },
   {
    "id": "S8001-38",
@@ -5403,13 +5437,13 @@
      "ok": true
     },
     {
-     "name": "allocate 400 lb from QA-L45-S1",
+     "name": "allocate 400 lb from QA-L72-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L45-SAW",
+     "name": "create job at QA-L72-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5427,25 +5461,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00097 → IN_PROCESS",
+     "name": "job JOB-00098 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00097 → WAITING_QC",
+     "name": "job JOB-00098 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00097 → PACKAGING",
+     "name": "job JOB-00098 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00097 → READY_TO_SHIP",
+     "name": "job JOB-00098 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5485,25 +5519,25 @@
      "ok": true
     },
     {
-     "name": "QA-L45-S1: no negative quantities",
+     "name": "QA-L72-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L45-S1: on hand = available + allocated + on hold",
+     "name": "QA-L72-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L45-S1: inventory allocated = open allocations",
+     "name": "QA-L72-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L45-S1: inventory branch = coil branch",
+     "name": "QA-L72-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 154
+   "ms": 104
   },
   {
    "id": "S8001-39",
@@ -5522,7 +5556,7 @@
      "ok": true
     },
     {
-     "name": "allocate 400 lb from QA-L79-S5",
+     "name": "allocate 400 lb from QA-L29-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5562,25 +5596,25 @@
      "ok": true
     },
     {
-     "name": "QA-L79-S5: no negative quantities",
+     "name": "QA-L29-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L79-S5: on hand = available + allocated + on hold",
+     "name": "QA-L29-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L79-S5: inventory allocated = open allocations",
+     "name": "QA-L29-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L79-S5: inventory branch = coil branch",
+     "name": "QA-L29-S2: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 79
+   "ms": 78
   },
   {
    "id": "S8001-40",
@@ -5599,37 +5633,37 @@
      "ok": true
     },
     {
-     "name": "allocate 1450 lb from QA-L44-S5",
+     "name": "allocate 1000 lb from QA-L12-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L44-SHEAR",
+     "name": "create job at QA-L12-SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00098 → IN_PROCESS",
+     "name": "job JOB-00099 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00098 → WAITING_QC",
+     "name": "job JOB-00099 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00098 → PACKAGING",
+     "name": "job JOB-00099 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00098 → READY_TO_SHIP",
+     "name": "job JOB-00099 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5683,21 +5717,27 @@
      "ok": true
     },
     {
-     "name": "pay 471.25 on INV-000029",
+     "name": "pay 175.91 on INV-000029",
      "expect": "2xx",
      "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pay the rest of INV-000029",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "paying a paid invoice is refused",
+     "expect": "4xx",
+     "status": 409,
      "ok": true
     },
     {
      "name": "overpay INV-000028 is refused",
      "expect": "4xx",
      "status": 409,
-     "ok": true
-    },
-    {
-     "name": "pay 471.25 on INV-000028",
-     "expect": "2xx",
-     "status": 201,
      "ok": true
     },
     {
@@ -5763,19 +5803,19 @@
      "ok": true
     },
     {
-     "name": "QA-L44-S5: no negative quantities",
+     "name": "QA-L12-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L44-S5: on hand = available + allocated + on hold",
+     "name": "QA-L12-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L44-S5: inventory allocated = open allocations",
+     "name": "QA-L12-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L44-S5: inventory branch = coil branch",
+     "name": "QA-L12-S2: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -5783,27 +5823,11 @@
      "ok": true
     },
     {
-     "name": "INV-000028: status after payment",
+     "name": "INV-000029: paid in full",
      "ok": true
     },
     {
      "name": "line 1: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
-     "name": "INV-000028: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000028: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000028: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000028: never paid more than billed",
      "ok": true
     },
     {
@@ -5823,6 +5847,22 @@
      "ok": true
     },
     {
+     "name": "INV-000028: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000028: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000028: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000028: never paid more than billed",
+     "ok": true
+    },
+    {
      "name": "invoices add up to the order subtotal",
      "ok": true
     },
@@ -5837,7 +5877,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 300
+   "ms": 344
   },
   {
    "id": "S8001-41",
@@ -5856,37 +5896,37 @@
      "ok": true
     },
     {
-     "name": "allocate 1450 lb from QA-L50-S5",
+     "name": "allocate 350 lb from QA-L69-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L50-SAW",
+     "name": "create job at QA-L69-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00099 → IN_PROCESS",
+     "name": "job JOB-00100 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00099 → WAITING_QC",
+     "name": "job JOB-00100 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00099 → PACKAGING",
+     "name": "job JOB-00100 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00099 → READY_TO_SHIP",
+     "name": "job JOB-00100 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5946,21 +5986,9 @@
      "ok": true
     },
     {
-     "name": "pay 255.06 on INV-000030",
+     "name": "pay 123.14 on INV-000030",
      "expect": "2xx",
      "status": 201,
-     "ok": true
-    },
-    {
-     "name": "pay the rest of INV-000030",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "paying a paid invoice is refused",
-     "expect": "4xx",
-     "status": 409,
      "ok": true
     },
     {
@@ -6026,19 +6054,19 @@
      "ok": true
     },
     {
-     "name": "QA-L50-S5: no negative quantities",
+     "name": "QA-L69-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L50-S5: on hand = available + allocated + on hold",
+     "name": "QA-L69-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L50-S5: inventory allocated = open allocations",
+     "name": "QA-L69-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L50-S5: inventory branch = coil branch",
+     "name": "QA-L69-S2: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -6046,27 +6074,7 @@
      "ok": true
     },
     {
-     "name": "INV-000030: paid in full",
-     "ok": true
-    },
-    {
      "name": "line 1: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
-     "name": "INV-000030: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000030: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000030: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000030: never paid more than billed",
      "ok": true
     },
     {
@@ -6086,6 +6094,22 @@
      "ok": true
     },
     {
+     "name": "INV-000030: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000030: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000030: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000030: never paid more than billed",
+     "ok": true
+    },
+    {
      "name": "invoices add up to the order subtotal",
      "ok": true
     },
@@ -6100,7 +6124,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 327
+   "ms": 268
   },
   {
    "id": "S8001-42",
@@ -6119,31 +6143,31 @@
      "ok": true
     },
     {
-     "name": "allocate 300 lb from QA-L45-S3",
+     "name": "allocate 300 lb from QA-L29-S3",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L45-LASER",
+     "name": "create job at QA-L29-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00100 → IN_PROCESS",
+     "name": "job JOB-00101 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00100 → WAITING_QC",
+     "name": "job JOB-00101 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00100 → ON_HOLD",
+     "name": "job JOB-00101 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6167,25 +6191,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00100 → IN_PROCESS",
+     "name": "job JOB-00101 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00100 → WAITING_QC",
+     "name": "job JOB-00101 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00100 → PACKAGING",
+     "name": "job JOB-00101 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00100 → READY_TO_SHIP",
+     "name": "job JOB-00101 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6265,25 +6289,25 @@
      "ok": true
     },
     {
-     "name": "QA-L45-S3: no negative quantities",
+     "name": "QA-L29-S3: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L45-S3: on hand = available + allocated + on hold",
+     "name": "QA-L29-S3: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L45-S3: inventory allocated = open allocations",
+     "name": "QA-L29-S3: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L45-S3: inventory branch = coil branch",
+     "name": "QA-L29-S3: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 224
+   "ms": 212
   },
   {
    "id": "S8001-43",
@@ -6302,31 +6326,31 @@
      "ok": true
     },
     {
-     "name": "allocate 300 lb from QA-L59-S3",
+     "name": "allocate 300 lb from QA-L72-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L59-LASER",
+     "name": "create job at QA-L72-SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00101 → IN_PROCESS",
+     "name": "job JOB-00102 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00101 → WAITING_QC",
+     "name": "job JOB-00102 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00101 → ON_HOLD",
+     "name": "job JOB-00102 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6350,25 +6374,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00101 → IN_PROCESS",
+     "name": "job JOB-00102 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00101 → WAITING_QC",
+     "name": "job JOB-00102 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00101 → PACKAGING",
+     "name": "job JOB-00102 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00101 → READY_TO_SHIP",
+     "name": "job JOB-00102 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6386,7 +6410,7 @@
      "ok": true
     },
     {
-     "name": "ship JOB-00101 from the shop floor",
+     "name": "ship JOB-00102 from the shop floor",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6464,25 +6488,25 @@
      "ok": true
     },
     {
-     "name": "QA-L59-S3: no negative quantities",
+     "name": "QA-L72-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L59-S3: on hand = available + allocated + on hold",
+     "name": "QA-L72-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L59-S3: inventory allocated = open allocations",
+     "name": "QA-L72-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L59-S3: inventory branch = coil branch",
+     "name": "QA-L72-S4: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 272
+   "ms": 263
   },
   {
    "id": "S8001-44",
@@ -6501,7 +6525,7 @@
      "ok": true
     },
     {
-     "name": "allocate 400 lb from QA-L47-S2",
+     "name": "allocate 400 lb from QA-L65-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -6549,7 +6573,7 @@
      "ok": true
     },
     {
-     "name": "open a return for 200 lb (scrap)",
+     "name": "open a return for 80 lb (scrap)",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -6713,25 +6737,25 @@
      "ok": true
     },
     {
-     "name": "QA-L47-S2: no negative quantities",
+     "name": "QA-L65-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L47-S2: on hand = available + allocated + on hold",
+     "name": "QA-L65-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L47-S2: inventory allocated = open allocations",
+     "name": "QA-L65-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L47-S2: inventory branch = coil branch",
+     "name": "QA-L65-S4: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 326
+   "ms": 304
   },
   {
    "id": "S8001-45",
@@ -6750,49 +6774,19 @@
      "ok": true
     },
     {
-     "name": "allocate 1500 lb from QA-L76-S2",
+     "name": "allocate 1400 lb from QA-L75-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "allocate 1350 lb from QA-L76-S3",
+     "name": "allocate 1700 lb from QA-L75-S3",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L76-SHEAR",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00102 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00102 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00102 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00102 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L76-CNC",
+     "name": "create job at QA-L75-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -6817,6 +6811,36 @@
     },
     {
      "name": "job JOB-00103 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L75-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00104 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00104 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00104 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00104 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6849,12 +6873,6 @@
      "name": "overpay INV-000035 is refused",
      "expect": "4xx",
      "status": 409,
-     "ok": true
-    },
-    {
-     "name": "pay 2005.33 on INV-000035",
-     "expect": "2xx",
-     "status": 201,
      "ok": true
     },
     {
@@ -6908,39 +6926,35 @@
      "ok": true
     },
     {
-     "name": "QA-L76-S2: no negative quantities",
+     "name": "QA-L75-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: on hand = available + allocated + on hold",
+     "name": "QA-L75-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory allocated = open allocations",
+     "name": "QA-L75-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory branch = coil branch",
+     "name": "QA-L75-S2: inventory branch = coil branch",
      "ok": true
     },
     {
-     "name": "QA-L76-S3: no negative quantities",
+     "name": "QA-L75-S3: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L76-S3: on hand = available + allocated + on hold",
+     "name": "QA-L75-S3: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L76-S3: inventory allocated = open allocations",
+     "name": "QA-L75-S3: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L76-S3: inventory branch = coil branch",
-     "ok": true
-    },
-    {
-     "name": "INV-000035: status after payment",
+     "name": "QA-L75-S3: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -6982,7 +6996,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 300
+   "ms": 278
   },
   {
    "id": "S8001-46",
@@ -7001,49 +7015,19 @@
      "ok": true
     },
     {
-     "name": "allocate 600 lb from QA-L61-S1",
+     "name": "allocate 450 lb from QA-L68-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "allocate 500 lb from QA-L61-S4",
+     "name": "allocate 400 lb from QA-L68-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L61-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00104 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00104 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00104 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00104 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L61-CNC",
+     "name": "create job at QA-L68-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7068,6 +7052,36 @@
     },
     {
      "name": "job JOB-00105 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L68-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00106 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00106 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00106 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00106 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7103,272 +7117,9 @@
      "ok": true
     },
     {
-     "name": "pay 773.99 on INV-000036",
+     "name": "pay 598.08 on INV-000036",
      "expect": "2xx",
      "status": 201,
-     "ok": true
-    },
-    {
-     "name": "invoicing again finds nothing left to bill",
-     "expect": 409,
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "create shipment (1 line(s))",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    }
-   ],
-   "invariants": [
-    {
-     "name": "order subtotal = sum of line totals",
-     "ok": true
-    },
-    {
-     "name": "order created by the signed-in user",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 2: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 2: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 2: allocated ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "order status is COMPLETE",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S1: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S1: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S1: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S1: inventory branch = coil branch",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S4: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S4: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S4: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L61-S4: inventory branch = coil branch",
-     "ok": true
-    },
-    {
-     "name": "INV-000036: status after payment",
-     "ok": true
-    },
-    {
-     "name": "line 1: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
-     "name": "line 2: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
-     "name": "INV-000036: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000036: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000036: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000036: never paid more than billed",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order subtotal",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order tax",
-     "ok": true
-    },
-    {
-     "name": "invoices add up to the order freight",
-     "ok": true
-    }
-   ],
-   "result": "PASS",
-   "notes": [],
-   "ms": 287
-  },
-  {
-   "id": "S8001-47",
-   "category": "mixed-division",
-   "steps": [
-    {
-     "name": "create sales order",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "confirm order",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "allocate 600 lb from QA-L68-S1",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "allocate 900 lb from QA-L68-S4",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L68-SAW",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00106 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00106 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00106 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00106 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L68-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00107 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00107 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00107 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00107 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create shipment (2 line(s))",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "dispatch SHP-00089",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "deliver SHP-00089",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "list invoices for the order",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "overpay INV-000037 is refused",
-     "expect": "4xx",
-     "status": 409,
-     "ok": true
-    },
-    {
-     "name": "pay 600.22 on INV-000037",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "pay the rest of INV-000037",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "paying a paid invoice is refused",
-     "expect": "4xx",
-     "status": 409,
      "ok": true
     },
     {
@@ -7454,11 +7205,7 @@
      "ok": true
     },
     {
-     "name": "INV-000037: status after payment",
-     "ok": true
-    },
-    {
-     "name": "INV-000037: paid in full",
+     "name": "INV-000036: status after payment",
      "ok": true
     },
     {
@@ -7470,19 +7217,19 @@
      "ok": true
     },
     {
-     "name": "INV-000037: total = subtotal + tax + freight",
+     "name": "INV-000036: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000037: subtotal = its lines",
+     "name": "INV-000036: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000037: paid = its payments",
+     "name": "INV-000036: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000037: never paid more than billed",
+     "name": "INV-000036: never paid more than billed",
      "ok": true
     },
     {
@@ -7500,10 +7247,10 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 314
+   "ms": 288
   },
   {
-   "id": "S8001-48",
+   "id": "S8001-47",
    "category": "mixed-division",
    "steps": [
     {
@@ -7519,19 +7266,49 @@
      "ok": true
     },
     {
-     "name": "allocate 1400 lb from QA-L13-S2",
+     "name": "allocate 600 lb from QA-L47-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "allocate 1050 lb from QA-L13-S3",
+     "name": "allocate 1200 lb from QA-L47-S4",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "create job at QA-L13-SAW",
+     "name": "create job at QA-L47-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00107 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00107 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00107 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00107 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L47-CNC",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7561,49 +7338,19 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L13-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00109 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00109 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00109 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00109 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
      "name": "create shipment (2 line(s))",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "dispatch SHP-00090",
+     "name": "dispatch SHP-00089",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "deliver SHP-00090",
+     "name": "deliver SHP-00089",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7615,13 +7362,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000038 is refused",
+     "name": "overpay INV-000037 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 1592.5 on INV-000038",
+     "name": "pay 1170 on INV-000037",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7677,35 +7424,286 @@
      "ok": true
     },
     {
-     "name": "QA-L13-S2: no negative quantities",
+     "name": "QA-L47-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L13-S2: on hand = available + allocated + on hold",
+     "name": "QA-L47-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L13-S2: inventory allocated = open allocations",
+     "name": "QA-L47-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L13-S2: inventory branch = coil branch",
+     "name": "QA-L47-S2: inventory branch = coil branch",
      "ok": true
     },
     {
-     "name": "QA-L13-S3: no negative quantities",
+     "name": "QA-L47-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L13-S3: on hand = available + allocated + on hold",
+     "name": "QA-L47-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L13-S3: inventory allocated = open allocations",
+     "name": "QA-L47-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L13-S3: inventory branch = coil branch",
+     "name": "QA-L47-S4: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "INV-000037: status after payment",
+     "ok": true
+    },
+    {
+     "name": "line 1: invoiced qty = shipped qty",
+     "ok": true
+    },
+    {
+     "name": "line 2: invoiced qty = shipped qty",
+     "ok": true
+    },
+    {
+     "name": "INV-000037: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000037: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000037: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000037: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order subtotal",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order tax",
+     "ok": true
+    },
+    {
+     "name": "invoices add up to the order freight",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 288
+  },
+  {
+   "id": "S8001-48",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1500 lb from QA-L75-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "allocate 600 lb from QA-L75-S4",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L75-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00109 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00109 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00109 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00109 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L75-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00110 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00110 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00110 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00110 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (2 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00090",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00090",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "list invoices for the order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "overpay INV-000038 is refused",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "pay 1477.61 on INV-000038",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "invoicing again finds nothing left to bill",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S4: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S4: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S4: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S4: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -7751,7 +7749,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 293
+   "ms": 284
   },
   {
    "id": "S8001-49",
@@ -7870,7 +7868,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 145
+   "ms": 151
   },
   {
    "id": "S8001-50",
@@ -7973,7 +7971,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 114
+   "ms": 120
   }
  ],
  "concurrency": {
@@ -7997,7 +7995,7 @@
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 200,409,409; line shipped 10200 of 10200; on hand 17000 → 6800"
+    "detail": "statuses 409,200,409; line shipped 10200 of 10200; on hand 17000 → 6800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8012,12 +8010,12 @@
    {
     "name": "three full payments at once on one invoice: taken once",
     "pass": true,
-    "detail": "statuses 201,409,409; paid 6630 of 6630"
+    "detail": "statuses 409,201,409; paid 6630 of 6630"
    },
    {
     "name": "one return received three times at once: counted once, one credit",
     "pass": true,
-    "detail": "statuses 409,200,409; 1 credit memo(s); source coil on hand 6800 → 9350"
+    "detail": "statuses 200,409,409; 1 credit memo(s); source coil on hand 6800 → 9350"
    }
   ]
  },
@@ -8031,7 +8029,7 @@
   "ordersFromThisQaRun": 59,
   "totals": {
    "orders": 118,
-   "jobs": 119,
+   "jobs": 120,
    "shipments": 91
   },
   "problems": [],
@@ -8053,8 +8051,8 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 715,
-  "checks": 783,
+  "steps": 714,
+  "checks": 784,
   "failedSteps": {},
   "failedChecks": {}
  }

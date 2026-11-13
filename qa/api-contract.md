@@ -2,8 +2,8 @@
 
 Generated 2026-11-13 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
 
-- Distinct API calls found in the screens: **352**
-- Matched to a server route: **197**
+- Distinct API calls found in the screens: **355**
+- Matched to a server route: **200**
 - No matching server route (the call would get a 404): **155**
 
 Calls built from variables (a base URL constant plus a suffix) are not seen by this scan, so the real number of calls is higher.

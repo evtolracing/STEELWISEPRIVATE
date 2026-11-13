@@ -94,6 +94,9 @@ export default function MobilePromisePreview() {
       <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
         <ShipIcon sx={{ verticalAlign: 'bottom', mr: 0.5 }} /> Promise Preview
       </Typography>
+      <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+        This is an estimate from standard cutoff times for four branches. It does not look at live stock or shop load, so confirm with the branch before promising a date.
+      </Alert>
 
       {/* ── Inputs ──────────────────────────────────────────── */}
       <Paper elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 2 }}>

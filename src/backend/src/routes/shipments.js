@@ -16,7 +16,7 @@ import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
 import {
-  SHIPPABLE_ORDER_STATUSES, shipmentMoveError, positiveQty, lineStatusFor, orderStatusFromLines,
+  SHIPPABLE_ORDER_STATUSES, shipmentMoveError, positiveQty, lineStatusFor, orderStatusFromLines, jobsBlockingShipment,
 } from '../lib/workflowRules.js';
 
 import { invoiceShipment } from '../services/billing.js';
@@ -226,6 +226,9 @@ async function dispatch(id, body, userId) {
     if (!SHIPPABLE_ORDER_STATUSES.includes(shipment.order.status)) {
       refuse(409, `Order ${shipment.order.orderNumber} is ${shipment.order.status}, so this shipment cannot go out`);
     }
+    const jobs = await prisma.job.findMany({ where: { orderId: shipment.orderId }, select: { jobNumber: true, status: true, orderLineId: true } });
+    const blocked = jobsBlockingShipment(jobs, shipment.items.map((i) => i.orderLineId));
+    if (blocked) refuse(409, blocked);
   }
   const edits = pickEdits(body);
 
@@ -243,7 +246,14 @@ async function dispatch(id, body, userId) {
         await tx.orderLine.update({ where: { id: line.id }, data: { lineStatus: lineStatusFor(num(line.qtyOrdered), num(line.qtyShipped)) } });
         await consumeReserved(tx, shipment, item, userId);
       }
-      const lines = await tx.orderLine.findMany({ where: { orderId: shipment.orderId }, select: { lineStatus: true } });
+      const lines = await tx.orderLine.findMany({ where: { orderId: shipment.orderId }, select: { id: true, lineStatus: true } });
+      // Jobs that were ready to ship go with the material once their line has fully shipped.
+      const gone = lines.filter((l) => l.lineStatus === 'COMPLETE').map((l) => l.id);
+      const allGone = lines.every((l) => ['COMPLETE', 'CANCELLED'].includes(l.lineStatus));
+      await tx.job.updateMany({
+        where: { orderId: shipment.orderId, status: 'READY_TO_SHIP', OR: [{ orderLineId: { in: gone } }, ...(allGone ? [{ orderLineId: null }] : [])] },
+        data: { status: 'SHIPPED' },
+      });
       const status = orderStatusFromLines(lines.map((l) => l.lineStatus));
       if (status) await tx.order.update({ where: { id: shipment.orderId }, data: { status } });
     }
@@ -281,6 +291,53 @@ async function dispatchAndInvoice(id, body, userId) {
     console.error(`Shipments: could not invoice shipment ${id}:`, error?.message || error);
   }
   return { ...shipment, invoice: invoice && { id: invoice.id, invoiceNumber: invoice.invoiceNumber, totalAmount: invoice.totalAmount } };
+}
+
+/**
+ * "Ship" pressed on a job at the shop-floor shipping screen: creates and
+ * dispatches a shipment for what is still open on the job's order line, so
+ * stock, the order and the invoice all follow. Returns null when there is
+ * nothing to ship (the line already went out on a shipment, or the job is not
+ * for an order line). Throws an error with .status and .message when refused.
+ */
+export async function shipForJob(job, { carrier, trackingNumber, userId }) {
+  if (!job.orderId) return null;
+  const [order, workCenter] = await Promise.all([
+    prisma.order.findUnique({
+      where: { id: job.orderId },
+      select: { id: true, status: true, orderNumber: true, lines: { where: job.orderLineId ? { id: job.orderLineId } : {}, include: { shipmentItems: { where: { shipment: { status: { in: OPEN } } } } } } },
+    }),
+    job.workCenterId ? prisma.workCenter.findUnique({ where: { id: job.workCenterId }, select: { locationId: true } }) : null,
+  ]);
+  if (!order) return null;
+  // A job with no line is for the whole order: everything still open goes.
+  const lines = order.lines.filter((l) => l.lineStatus !== 'CANCELLED');
+  const waiting = lines.find((l) => l.shipmentItems.some((it) => num(it.qtyShipped) > 1e-9));
+  if (waiting) refuse(409, `Line ${waiting.lineNumber} of ${order.orderNumber} is already on a shipment that has not left. Dispatch that shipment from the shipping desk.`);
+  const wanted = lines.map((l) => ({ orderLineId: l.id, qtyShipped: num(l.qtyOrdered) - num(l.qtyShipped) })).filter((w) => w.qtyShipped > 1e-9);
+  if (!wanted.length) return null;
+  if (!SHIPPABLE_ORDER_STATUSES.includes(order.status)) refuse(409, `Order ${order.orderNumber} is ${order.status}, so this job cannot ship`);
+  if (!workCenter?.locationId) refuse(409, 'This job has no work center, so the branch it ships from is not known. Create the shipment on the shipping desk.');
+  const shipment = await createNumbered({
+    count: () => prisma.shipment.count(),
+    format: padded('SHP'),
+    create: (shipmentNumber) => prisma.$transaction(async (tx) => {
+      const items = await checkItems(tx, order.id, wanted);
+      return tx.shipment.create({
+        data: {
+          shipmentNumber, orderId: order.id, fromLocationId: workCenter.locationId, carrierName: carrier || null, bolNumber: trackingNumber || null,
+          notes: `Shipped from the shop floor for ${job.jobNumber}`, items: { create: items },
+        },
+      });
+    }, { isolationLevel: 'Serializable' }),
+  });
+  try {
+    return await dispatchAndInvoice(shipment.id, {}, userId);
+  } catch (error) {
+    // Nothing left the dock: do not leave an empty shipment behind.
+    await prisma.shipment.delete({ where: { id: shipment.id } }).catch(() => {});
+    throw error;
+  }
 }
 
 router.put('/:id/dispatch', handle('dispatch', async (req, res) => {

@@ -343,9 +343,26 @@ async function partialRework(sc, variant) {
     await allocate(sc, order, order.lines[0], stock, qty);
     const j = await createJob(sc, order, order.lines[0], R.pick(loc.workCenters));
     if (!j) return;
-    await runJob(sc, j, ['IN_PROCESS', 'WAITING_QC', 'ON_HOLD', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP']);
+    await runJob(sc, j, ['IN_PROCESS', 'WAITING_QC', 'ON_HOLD']);
+    // Jobs and shipments are tied: nothing leaves the dock while its job is unfinished.
     const s = await ship(sc, order, loc, [[order.lines[0], qty]]);
-    if (s) await dispatchDeliver(sc, s);
+    if (!s) return;
+    await step(sc, 'dispatch while the job is on hold is refused', () => A.put(`/api/shipments/${s.id}/dispatch`, {}, 'shipping'), 409);
+    await step(sc, 'marking the job shipped by hand before anything ships is refused', () => A.post(`/api/jobs/${j.id}/status`, { status: 'SHIPPED' }, 'operator'), 409);
+    await runJob(sc, j, ['IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP']);
+    if (variant === 2) {
+      await dispatchDeliver(sc, s);
+    } else {
+      // Shop-floor "Ship" on the job: it makes the shipment itself.
+      await step(sc, 'shop-floor ship is refused while the line sits on an open shipment', () => A.post(`/api/jobs/${j.id}/ship`, { carrier: 'XPO', trackingNumber: `QA-${sc.id}` }, 'operator'), 409);
+      await step(sc, 'cancel the open shipment', () => A.patch(`/api/shipments/${s.id}/status`, { status: 'CANCELLED' }, 'shipping'));
+      const shipped = await step(sc, `ship ${j.jobNumber} from the shop floor`, () => A.post(`/api/jobs/${j.id}/ship`, { carrier: 'XPO', trackingNumber: `QA-${sc.id}` }, 'operator'));
+      check(sc, 'shop-floor ship created a shipment and an invoice', !!shipped.body?.shipment?.shipmentNumber && !!shipped.body?.shipment?.invoice?.invoiceNumber, JSON.stringify(shipped.body?.shipment || null));
+      await step(sc, 'shipping the same job twice is refused', () => A.post(`/api/jobs/${j.id}/ship`, { carrier: 'XPO', trackingNumber: 'again' }, 'operator'), '4xx');
+    }
+    const jobNow = await prisma.job.findUnique({ where: { id: j.id } });
+    check(sc, 'the job is SHIPPED once its line has shipped', jobNow.status === 'SHIPPED', `job status ${jobNow.status}`);
+    await checkBilling(sc, order.id);
     await checkOrderBooks(sc, order.id, { expectStatus: 'COMPLETE' });
     await checkInventory(sc, [stock.coilId]);
     return;
@@ -586,7 +603,8 @@ async function reconcile(report) {
   const stockProblems = problems.length;
   const orders = await prisma.order.findMany({ include: { lines: { include: { allocations: true } }, shipments: { include: { items: true } } } });
   for (const o of orders) {
-    if (o.orderType === 'RETURN') continue;
+    // Returns are not shipped, and counter quick sales are handed over the counter with no shipment.
+    if (o.orderType === 'RETURN' || (o.poReference || '').startsWith('QS:')) continue;
     const problems = o.createdAt >= since ? allProblems : seedProblems;
     const priced = o.lines.length && o.lines.every((l) => l.extendedPrice != null);
     const sum = o.lines.reduce((t, l) => t + num(l.extendedPrice), 0);

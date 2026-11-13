@@ -4,8 +4,18 @@ import { supabase } from '../config/supabaseClient.js';
 import { onJobStatusChange } from '../services/printAutomationService.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
+import { shipForJob } from './shipments.js';
 
 const router = Router();
+
+/** A job tied to an order is shipped by its shipment. null when marking it SHIPPED by hand is fine. */
+async function shippedByHandError(job, to) {
+  if (to !== 'SHIPPED' || !job.orderId) return null;
+  const left = await prisma.shipment.count({
+    where: { orderId: job.orderId, status: { in: ['IN_TRANSIT', 'DELIVERED', 'EXCEPTION'] }, ...(job.orderLineId && { items: { some: { orderLineId: job.orderLineId } } }) },
+  });
+  return left ? null : 'This job is for a customer order, so it is marked shipped when its shipment is dispatched. Nothing has shipped for it yet.';
+}
 
 // Priority mapping: DB stores Int, frontend expects string labels
 const PRIORITY_INT_TO_STRING = { 1: 'LOW', 2: 'LOW', 3: 'NORMAL', 4: 'HIGH', 5: 'HOT' }
@@ -76,7 +86,7 @@ async function editJob(req, res) {
     }
     const moving = body.status !== undefined && body.status !== job.status;
     if (moving) {
-      const why = jobMoveError(job.status, body.status);
+      const why = jobMoveError(job.status, body.status) || await shippedByHandError(job, body.status);
       if (why) return res.status(JOB_STATUSES.includes(body.status) ? 409 : 400).json({ error: why });
       Object.assign(data, { status: body.status }, stampsFor(job, body.status));
     } else if (['COMPLETED', 'CANCELLED'].includes(job.status) && Object.keys(data).length) {
@@ -330,6 +340,14 @@ router.post('/', async (req, res) => {
     
     // Add optional fields only if provided
     if (orderId) data.orderId = orderId;
+    // The order line this job makes. It ties the job to what ships.
+    const orderLineId = req.body.orderLineId;
+    if (orderLineId) {
+      const line = typeof orderLineId === 'string' ? await prisma.orderLine.findUnique({ where: { id: orderLineId }, select: { orderId: true } }).catch(() => null) : null;
+      if (!line || (orderId && line.orderId !== orderId)) return res.status(400).json({ error: 'orderLineId is not a line on this order' });
+      data.orderLineId = orderLineId;
+      data.orderId = line.orderId;
+    }
     if (workCenterId) data.workCenterId = workCenterId;
     if (operationType) data.operationType = operationType;
     if (instructions) data.instructions = instructions;
@@ -580,7 +598,7 @@ router.post('/:id/status', async (req, res) => {
 
     const job = await prisma.job.findUnique({ where: { id } });
     if (!job) return res.status(404).json({ error: 'Job not found' });
-    const why = jobMoveError(job.status, status);
+    const why = jobMoveError(job.status, status) || await shippedByHandError(job, status);
     if (why) return res.status(JOB_STATUSES.includes(status) ? 409 : 400).json({ error: why });
 
     const updateData = { status, ...stampsFor(job, status) };
@@ -620,7 +638,7 @@ router.patch('/:id/status', async (req, res) => {
 
     const prevJob = await prisma.job.findUnique({ where: { id } });
     if (!prevJob) return res.status(404).json({ error: 'Job not found' });
-    const why = jobMoveError(prevJob.status, status);
+    const why = jobMoveError(prevJob.status, status) || await shippedByHandError(prevJob, status);
     if (why) return res.status(JOB_STATUSES.includes(status) ? 409 : 400).json({ error: why });
     const oldStatus = prevJob.status;
 
@@ -789,6 +807,19 @@ router.post('/:id/ship', async (req, res) => {
       return res.status(400).json({ error: `Cannot ship job with status ${job.status}` });
     }
     
+    // For a customer order this is a real shipment: stock, the order and the invoice follow.
+    let shipment = null;
+    try {
+      shipment = await shipForJob(job, { carrier, trackingNumber, userId: req.user.id });
+    } catch (error) {
+      if (error?.status && error.status < 500) return res.status(error.status).json({ error: error.message });
+      throw error;
+    }
+    if (!shipment) {
+      const why = await shippedByHandError(job, 'SHIPPED');
+      if (why) return res.status(409).json({ error: why });
+    }
+
     const updateData = {
       status: 'SHIPPED',
       shippedAt: new Date(),
@@ -816,7 +847,7 @@ router.post('/:id/ship', async (req, res) => {
       },
     });
     
-    res.json(updatedJob);
+    res.json({ ...updatedJob, shipment: shipment && { id: shipment.id, shipmentNumber: shipment.shipmentNumber, invoice: shipment.invoice } });
   } catch (error) {
     console.error('Error shipping job:', error);
     res.status(500).json({ error: 'Failed to ship job' });

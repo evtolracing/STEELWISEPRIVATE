@@ -29,3 +29,6 @@ Ordered by how much they should worry you.
 | Freight planning screens are samples | They are labelled, but rates, routes, tracking and exceptions are not being recorded anywhere | Decision and build (F-007) |
 | Shipping documents not examined | A bill of lading or packing list may not be printable from the shipment | Workstream 6 (F-011) |
 | Shipment and money history starts now | Shipments and payments made before this change show no name | None: the past was not recorded |
+| 58 of 143 screens are samples | They say so, but the work they describe (safety, maintenance, training, visitors, claims, freight and more) is recorded nowhere | A decision per module (X-009) |
+| Promise dates, cut-off times and branch suggestions come from sample rules in the browser | A customer may be promised a date the business never set | The owner's rules, then a build (X-007) |
+| The screen audit reads code, not behaviour | A screen it marks REAL may still show something made up | Operate each in a browser |

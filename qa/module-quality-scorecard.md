@@ -28,7 +28,7 @@ Target is 95. The platform layer is not there. The largest gaps are a tested res
 | Inventory and purchasing | 3 | 68 (was 30), see below |
 | Manufacturing and processing | 4 | 66 (was 35), see below |
 | Logistics and financial operations | 5 | 70 (was 40), see below |
-| Enterprise administration, reporting, navigation | 6 | Not yet audited |
+| Enterprise administration, reporting, navigation | 6 | 55 (was 30), see below |
 
 ## Sales and customer operations (Workstream 2)
 
@@ -115,3 +115,22 @@ Covers the Shipping and Shipment screens, the shipment routes, accepted web orde
 | Observability | 15 | 82 | Every shipment step and every money action is in the audit log with the person and shown on the screen (F-004, F-006) |
 | Accessibility | Not measured | Not measured | New screens use labelled tables and controls. No keyboard or contrast audit was run |
 | **Weighted** | **40** | **70** | Performance and accessibility left out and the other weights rescaled to 100. The figures are a judgement from the evidence listed, not a measurement |
+
+## Enterprise experience (Workstream 6)
+
+Covers the menu against the route table, every screen's source of data, the role dashboard, and the build gates. Not examined: the admin screens and reports one by one, the top bar assistant, accessibility, mobile layouts, and the help manual beyond the pages already rewritten.
+
+| Category | Before | After | Evidence |
+|---|---:|---:|---|
+| Functional correctness | 30 | 45 | 58 of 143 screens are samples (X-009). None is presented as real any more, but the functions are still missing |
+| Data integrity | 40 | 70 | No invented figure is shown as real: screens labelled (X-001, X-002), dashboard fallbacks removed (X-003). Promise and cut-off rules are still invented in the browser (X-007) |
+| Reliability | 45 | 65 | A failed dashboard figure shows an error and a retry |
+| Security | Not measured | Not measured | Nothing in this workstream changed access |
+| Operational efficiency | 30 | 40 | The menu still lists modules that do nothing; a decision per module is needed |
+| User experience | 25 | 60 | One notice, in the same words, on every sample screen; false AI claims removed (X-004) |
+| Performance | Not measured | Not measured | |
+| Integration quality | 30 | 45 | Five browser-side rule services have no server (X-007) |
+| Maintainability | 30 | 70 | A screen audit and a lint step run in the pull-request workflow (X-006) |
+| Observability | 30 | 60 | `qa/screen-audit.md` states, for every screen, where its data comes from |
+| Accessibility | Not measured | Not measured | |
+| **Weighted** | **30** | **55** | Security, performance and accessibility left out and the other weights rescaled. A judgement from the evidence listed, not a measurement. The target of 95 is not met in any module group |

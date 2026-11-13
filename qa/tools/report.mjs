@@ -87,6 +87,13 @@ if (shipping) {
   L.push('', '## Shipping and invoice screens operated in a browser', '', `Run ${shipping.at} with \`qa/sim/ui-shipping.cjs\`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.`, '', `- Checks: ${shipping.checks}`, `- Failed: ${shipping.failed}`, '', '| Check | Result |', '|---|---|');
   for (const c of shipping.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
 }
+const experience = read('ui-experience.json');
+if (experience) {
+  L.push('', '## Sample notices and invented figures checked in a browser', '', `Run ${experience.at} with \`qa/sim/ui-experience.cjs\`.`, '', `- Checks: ${experience.checks}`, `- Failed: ${experience.failed}`, '', '| Check | Result |', '|---|---|');
+  for (const c of experience.results) L.push(`| ${c.name} | ${c.ok ? 'Pass' : `FAIL: ${String(c.detail).replace(/\|/g, '\\|').slice(0, 160)}`} |`);
+}
+const audit = (() => { try { return JSON.parse(fs.readFileSync(path.join(root, '.screen-audit.json'), 'utf8')); } catch { return null; } })();
+if (audit) L.push('', '## Screen audit', '', `${audit.screens} screens: ${Object.entries(audit.tally).map(([k, v]) => `${v} ${k}`).join(', ')}. ${audit.unlabelled.length} show made-up data with no notice. Full list in \`qa/screen-audit.md\`.`);
 const contract = (() => { try { return JSON.parse(fs.readFileSync(path.join(root, '.api-contract.json'), 'utf8')); } catch { return null; } })();
 if (contract) L.push('', '## Screen-to-server contract', '', `${contract.total} distinct API calls are written in the screens; ${contract.missing.length} have no matching server route. Full list in \`qa/api-contract.md\`.`);
 L.push('', '## Unit tests', '', 'Run with `npm test` in `src/backend` (Node built-in test runner). The count and result are printed by the runner; see the pull request for the latest run.');

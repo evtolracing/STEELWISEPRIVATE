@@ -20,6 +20,8 @@ Everything here runs against a **local** database whose name contains `qa`. The 
 | `sim/ui-inventory.cjs` | Operates the stock, heat and receiving screens in a browser |
 | `sim/ui-shop.cjs` | Operates the job, schedule, time tracking and work order screens in a browser |
 | `sim/ui-shipping.cjs` | Creates, dispatches, delivers and cancels a shipment and records a payment in a browser |
+| `sim/ui-experience.cjs` | Checks that sample screens say so and that no dashboard figure or assistant answer is invented |
+| `tools/screen-audit.mjs` | Says for every screen where its data comes from; fails when made-up data has no notice. Writes `screen-audit.md` |
 | `sim/fixtures.mjs` | Builds the QA data set (80 branches) |
 | `tools/*.mjs` | Generators for the documents above |
 

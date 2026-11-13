@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T10:16:30.625Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T10:37:12.553Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -50,8 +50,8 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 ### Simultaneous-request probes (last final cycle)
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
-- Pass: two reservations racing for the same stock: exactly one wins. statuses 409,201; available 2640
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
+- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
 - Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
@@ -76,7 +76,7 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T10:14:02.489Z. 596 of 596 routes swept.
+Run 2026-11-13T10:29:49.732Z. 596 of 596 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
@@ -103,7 +103,7 @@ Run 2026-11-13T10:14:02.489Z. 596 of 596 routes swept.
 
 ## Screen check
 
-Run 2026-11-13T10:12:30.373Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T10:36:54.767Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 125
 - OK: 125
@@ -129,7 +129,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-13T10:15:47.385Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T10:31:51.130Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 24
 - Failed: 0
@@ -163,7 +163,7 @@ Run 2026-11-13T10:15:47.385Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 
 ## Stock screens operated in a browser
 
-Run 2026-11-13T10:16:09.297Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T10:32:12.748Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 22
 - Failed: 0
@@ -195,7 +195,7 @@ Run 2026-11-13T10:16:09.297Z with `qa/sim/ui-inventory.cjs`: stock items, heats 
 
 ## Shop screens operated in a browser
 
-Run 2026-11-13T10:15:20.936Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
+Run 2026-11-13T10:31:30.952Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
 
 - Checks: 30
 - Failed: 0
@@ -235,7 +235,7 @@ Run 2026-11-13T10:15:20.936Z with `qa/sim/ui-shop.cjs`: the job, schedule, time 
 
 ## Shipping and invoice screens operated in a browser
 
-Run 2026-11-13T10:14:43.280Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
+Run 2026-11-13T10:31:04.087Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
 
 - Checks: 27
 - Failed: 0
@@ -269,6 +269,42 @@ Run 2026-11-13T10:14:43.280Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 | /freight/planner: says it is a sample screen and points to Shipping | Pass |
 | /freight/tracking: says it is a sample screen and points to Shipping | Pass |
 | /logistics/dispatch: says it is a sample screen and points to Shipping | Pass |
+
+## Sample notices and invented figures checked in a browser
+
+Run 2026-11-13T10:30:43.320Z with `qa/sim/ui-experience.cjs`.
+
+- Checks: 22
+- Failed: 0
+
+| Check | Result |
+|---|---|
+| /safety: says it is a sample screen | Pass |
+| /safety/incidents: says it is a sample screen | Pass |
+| /safety/stop-work: says it is a sample screen | Pass |
+| /maintenance/dashboard: says it is a sample screen | Pass |
+| /maintenance/parts: says it is a sample screen | Pass |
+| /provenance: says it is a sample screen | Pass |
+| /executive/cockpit: says it is a sample screen | Pass |
+| /executive/forecast: says it is a sample screen | Pass |
+| /training/dashboard: says it is a sample screen | Pass |
+| /contractors/active: says it is a sample screen | Pass |
+| /customer-quality/claims: says it is a sample screen | Pass |
+| /customer-quality/rma: says it is a sample screen | Pass |
+| /qaqc: says it is a sample screen | Pass |
+| /shipping: a real screen carries no sample notice | Pass |
+| /orders/invoices: a real screen carries no sample notice | Pass |
+| /schedule: a real screen carries no sample notice | Pass |
+| /admin/users: a real screen carries no sample notice | Pass |
+| order board: no invented assistant or AI claim on the board | Pass |
+| role dashboard: opens | Pass |
+| role dashboard: a failed figure is not replaced by an invented one | Pass |
+| role dashboard: failed figures say they are not available | Pass |
+| role dashboard: the assistant says it is not connected and invents nothing | Pass |
+
+## Screen audit
+
+143 screens: 5 STATIC, 76 REAL, 58 SAMPLE, LABELLED, 4 MIXED. 0 show made-up data with no notice. Full list in `qa/screen-audit.md`.
 
 ## Screen-to-server contract
 

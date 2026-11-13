@@ -42,3 +42,8 @@ Not reviewed yet: keyboard-only use, screen-reader labels and colour contrast on
 | U-034 | All Orders | Tax shown as 0 and total as subtotal; sample orders on error | Fixed (F-007) |
 | U-035 | Freight and logistics | Invented routes, rates and tracking presented as real | Labelled as samples (F-007); build is a decision |
 | U-036 | Shipment | No button to print a bill of lading or packing list | Open (F-011) |
+| U-037 | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Labelled as samples (X-001, X-002); build or remove is a decision |
+| U-038 | Role dashboard | Invented figures when the server failed | Fixed (X-003): error and retry |
+| U-039 | Role dashboard, order board | Assistants that made up answers | Fixed (X-004) |
+| U-040 | Menu | Lists 58 sample screens beside the real ones | Open (X-009) |
+| U-041 | Checkout, order entry | Promise dates and branch suggestions from invented rules | Open (X-007) |

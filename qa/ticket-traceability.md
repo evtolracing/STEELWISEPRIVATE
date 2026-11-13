@@ -2,10 +2,12 @@
 
 There are no ticket files in the repository, so each commit is treated as one ticket. Commits #1–#28 are squashed pull requests; older commits came before the PR workflow. Requested scope is taken from the commit or PR title; "implemented" is what the diff touched.
 
-Commits: 204. Commits that changed the database schema: 57. Commits that added tests: 23.
+Commits: 206. Commits that changed the database schema: 57. Commits that added tests: 25.
 
 | Commit | Date | Ticket (title) | Files | Schema | API areas | UI areas | Tests added |
 |---|---|---|---:|:-:|---|---|---:|
+| 3a7b7a7 | 2026-11-13 | No made-up data shown as real: 36 more screens labelled, dashboard fallbacks removed, lint gate | 24 |  |  | ui:eslint.config.js, ui:package-lock.json, ui:package.json, ui:components, ui:Commercial, ui:Executive, ui:ModernOrderBoardPage, ui:router | 5 |
+| 061c996 | 2026-11-13 | Workstream 5 gate report; counter sales record the cashier for the invoice and payment | 25 |  | api:quickSale, api:billing |  | 23 |
 | 9caf03c | 2026-11-13 | Shipping: real screens to create, dispatch and deliver; web orders carry tax; money actions record who | 28 |  | api:invoices, api:onlineOrders, api:quickSale, api:returns, api:shipments, api:billing | ui:apps, ui:help, ui:mocks, ui:Logistics, ui:Orders, ui:Shipping, ui:ShippingDeskPage, ui:router | 6 |
 | 3d1c6bc | 2026-11-13 | Workstream 4: inspection reply fix, checks, manual, registers and gate report | 27 |  | api:qcRoutes | ui:help | 25 |
 | fbbacf6 | 2026-11-13 | Shop screens browser check; remove made-up AI tip and claim | 4 |  |  | ui:SchedulePage, ui:WorkOrders | 2 |

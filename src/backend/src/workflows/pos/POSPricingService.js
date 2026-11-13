@@ -12,6 +12,9 @@
  * - Real-time price calculation
  */
 
+import prisma from '../../lib/db.js';
+import { customerLevel, levelPrice } from '../../lib/customerPricing.js';
+
 // ============================================
 // PRICING CONFIGURATION
 // ============================================
@@ -306,31 +309,26 @@ export class POSPricingService {
   async determineBasePrice(params) {
     const { customerId, productId, productSku, productCategory, gradeCode, divisionId } = params;
     
-    // Check sources in priority order
-    const sources = [
-      () => this.checkContractPrice(customerId, productId, divisionId),
-      () => this.checkCustomerPriceList(customerId, productId),
-      () => this.checkCustomerTier(customerId, productId),
-      () => this.getCommodityPrice(productCategory, gradeCode),
-      () => this.getCatalogPrice(productId, productSku)
-    ];
-    
-    for (const source of sources) {
-      const result = await source();
-      if (result && result.price > 0) {
-        return result;
-      }
+    // The product's list price at the customer's price level: the same rule
+    // every other sales channel uses (lib/customerPricing.js).
+    const product = productId
+      ? await prisma.product.findUnique({ where: { id: String(productId) } })
+      : productSku ? await prisma.product.findFirst({ where: { sku: String(productSku) } }) : null;
+    const level = await customerLevel(customerId);
+    const priced = levelPrice(product, level);
+    if (!priced) {
+      return { price: 0, priceUnit: product?.priceUnit || 'CWT', source: 'NOT_FOUND', description: 'No list price on file' };
     }
-    
-    // Fallback to list price
     return {
-      price: 0,
-      priceUnit: 'CWT',
-      source: 'NOT_FOUND',
-      description: 'No pricing found'
+      price: priced.unitPrice,
+      priceUnit: priced.priceUnit,
+      listPrice: priced.listPrice,
+      source: level.code === 'RETAIL' ? 'CATALOG_PRICE' : 'CUSTOMER_LEVEL',
+      priceLevel: level.code,
+      description: level.label,
     };
   }
-  
+
   /**
    * Check for contract pricing
    */
@@ -666,14 +664,18 @@ export class POSPricingService {
   async calculateMargin(params) {
     const { productId, productCategory, extendedPrice, quantity, unit } = params;
     
-    // Get cost (in production, from inventory or costing service)
+    // Product costs are not recorded, so no margin is reported and nothing is
+    // held for approval on a made-up figure.
     const cost = await this.getProductCost(productId, quantity, unit);
-    
+    const categoryConfig = CategoryMargins[productCategory] || CategoryMargins.CARBON_FLAT;
+    if (cost == null) {
+      return { margin: null, marginPercent: null, cost: null, status: 'OK', message: '', marginAvailable: false,
+        minMargin: categoryConfig.min * 100, targetMargin: categoryConfig.target * 100 };
+    }
+
     const margin = extendedPrice - cost;
     const marginPercent = extendedPrice > 0 ? margin / extendedPrice : 0;
-    
-    const categoryConfig = CategoryMargins[productCategory] || CategoryMargins.CARBON_FLAT;
-    
+
     let status = 'OK';
     let message = '';
     
@@ -694,6 +696,7 @@ export class POSPricingService {
       cost,
       status,
       message,
+      marginAvailable: true,
       minMargin: categoryConfig.min * 100,
       targetMargin: categoryConfig.target * 100
     };
@@ -703,11 +706,8 @@ export class POSPricingService {
    * Get product cost
    */
   async getProductCost(productId, quantity, unit) {
-    // In production, get from inventory/costing service
-    // Mock: assume 75% of list price
-    const listPrice = 55.00; // $/cwt
-    const cost = (quantity / 100) * (listPrice * 0.75);
-    return Math.round(cost * 100) / 100;
+    // No cost is stored per product yet.
+    return null;
   }
   
   // ========================================

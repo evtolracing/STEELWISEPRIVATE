@@ -482,6 +482,8 @@ async function posEcommerce(sc, variant) {
   const added = await step(sc, `POS: add ${qty} lb of ${product.sku}`, () => A.post(`/api/pos/sessions/${sid}/products/add`, { productId: product.id, quantity: qty, unit: 'LB', description: product.name }, 'csr'));
   const line = added.body?.context?.lines?.[0];
   check(sc, 'POS line is priced', num(line?.extendedPrice) > 0, `line ${JSON.stringify(line)?.slice(0, 160)}`);
+  const listTotal = Math.round((qty / 100) * num(product.basePriceCwt) * 100) / 100;
+  check(sc, 'POS line is the catalog list price for this product', Math.abs(num(line?.extendedPrice) - listTotal) < 0.01, `line ${line?.extendedPrice} vs list ${listTotal}`);
   const pricing = (await A.get(`/api/pos/sessions/${sid}/pricing`, 'csr')).body;
   check(sc, 'POS total equals the line', Math.abs(num(pricing?.summary?.subtotal) - num(line?.extendedPrice)) < 0.01 && num(pricing?.summary?.subtotal) > 0, `subtotal ${pricing?.summary?.subtotal} vs line ${line?.extendedPrice}`);
   await go('review', 'proceed_to_review');

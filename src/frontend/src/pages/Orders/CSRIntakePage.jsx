@@ -3,7 +3,7 @@
  *
  * Route: /orders/intake
  */
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import {
   Box, Paper, Typography, Button, Grid, Divider, TextField, Alert, Snackbar,
   FormControl, InputLabel, Select, MenuItem, ToggleButtonGroup, ToggleButton,
@@ -82,9 +82,10 @@ export default function CSRIntakePage() {
   const [processingIdx, setProcessingIdx] = useState(null)
 
   // ── pricing ──
-  const [taxRate, setTaxRate] = useState(6)
+  const [taxRate, setTaxRate] = useState(0) // percent, from the server's tax rule for this customer and branch
   const [priceSource, setPriceSource] = useState('RETAIL')
   const [contractName, setContractName] = useState(null)
+  const [priceMultiplier, setPriceMultiplier] = useState(1) // the customer's price level, applied to list prices
 
   // ── workflow ──
   const [activeStep, setActiveStep] = useState(0)
@@ -142,6 +143,15 @@ export default function CSRIntakePage() {
     if (csrKey) setLocation(csrKey)
   }, [fulfillmentSuggestions, logOverride, division, orderId])
 
+  // Tax rate for this customer and branch, as the order will be saved.
+  useEffect(() => {
+    let live = true
+    estimateTax({ subtotal: 0, customerId: customer?.id, location, source })
+      .then(t => { if (live) setTaxRate(+((Number(t.taxRate) || 0) * 100).toFixed(4)) })
+      .catch(() => { if (live) setTaxRate(0) })
+    return () => { live = false }
+  }, [customer?.id, location, source])
+
   // ── handlers ──
   const handleCustomerSelect = useCallback(async (cust) => {
     setCustomer(cust)
@@ -153,8 +163,15 @@ export default function CSRIntakePage() {
         const c = res.data.contracts[0]
         setPriceSource('CONTRACT')
         setContractName(c.name)
+        setPriceMultiplier(Number(c.multiplier) > 0 ? Number(c.multiplier) : 1)
+      } else {
+        setPriceSource('RETAIL')
+        setContractName(null)
+        setPriceMultiplier(1)
       }
-    } catch { /* ignore */ }
+    } catch {
+      setPriceSource('RETAIL'); setContractName(null); setPriceMultiplier(1)
+    }
     // load & apply customer preference defaults (soft suggestions)
     try {
       const defs = await loadCustomerDefaults(cust.id)
@@ -175,6 +192,8 @@ export default function CSRIntakePage() {
   }, [])
 
   const handleMaterialSelected = useCallback((product) => {
+    // List price at the customer's price level. Remnants keep their own price.
+    const atLevel = (list) => +((Number(list) || 0) * (product.isRemnant ? 1 : priceMultiplier)).toFixed(4)
     setLines(prev => {
       const next = [...prev]
       if (materialPickerIdx !== null && next[materialPickerIdx]) {
@@ -185,13 +204,13 @@ export default function CSRIntakePage() {
             ...next[materialPickerIdx],
             productId: product.id,
             description: product.description,
-            unitPrice: product.unitPrice || 0,
+            unitPrice: atLevel(product.unitPrice),
             uom: product.uom || 'LB',
             weight: product.weight || 0,
             dimensions: product.dimensions || '',
             isRemnant: false,
             remnantDiscount: 0,
-            extPrice: +(qty * (product.unitPrice || 0)).toFixed(2),
+            extPrice: +(qty * atLevel(product.unitPrice)).toFixed(2),
             // Extra metadata
             coilNumber: product.coilNumber,
             grade: product.grade,
@@ -207,19 +226,19 @@ export default function CSRIntakePage() {
             ...next[materialPickerIdx],
             productId: product.id,
             description: product.name || product.description,
-            unitPrice: product.basePrice || product.price || 0,
+            unitPrice: atLevel(product.basePrice || product.price),
             uom: product.uom || 'EA',
             weight: product.weight || 0,
             isRemnant: !!product.isRemnant,
             remnantDiscount: product.remnantDiscount || 0,
-            extPrice: +((next[materialPickerIdx].qty || 1) * (product.basePrice || product.price || 0)).toFixed(2),
+            extPrice: +((next[materialPickerIdx].qty || 1) * atLevel(product.basePrice || product.price)).toFixed(2),
           }
         }
       }
       return next
     })
     setMaterialPickerOpen(false)
-  }, [materialPickerIdx])
+  }, [materialPickerIdx, priceMultiplier])
 
   const handleOpenProcessing = useCallback((idx) => {
     setProcessingIdx(idx)
@@ -311,8 +330,8 @@ export default function CSRIntakePage() {
       await submitOrder(id)
       setSnack({ open: true, msg: 'Order submitted!', severity: 'success' })
       setTimeout(() => navigate(`/orders/${id}`), 1200)
-    } catch {
-      setSnack({ open: true, msg: 'Submit failed', severity: 'error' })
+    } catch (e) {
+      setSnack({ open: true, msg: e?.message || 'Submit failed', severity: 'error' })
     }
     setSaving(false)
   }, [source, division, location, priority, ownership, poNumber, notes, requestedDate, customer, lines, orderId, navigate])

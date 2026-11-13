@@ -10,7 +10,7 @@
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import { packNotes, getSystemUserId, createSalesOrder } from './intakeOrders.js';
+import { packNotes, createSalesOrder } from './intakeOrders.js';
 
 const router = Router();
 const iso = (d) => (d ? d.toISOString() : null);
@@ -73,8 +73,8 @@ router.post('/:id/accept', async (req, res) => {
     if (!online) return;
     const { customerId, division = 'METALS', locationId } = req.body || {};
 
-    const createdById = await getSystemUserId();
-    if (!createdById) return res.status(500).json({ error: 'No CSR or admin user found to own the order' });
+    // The person who accepts the web order is recorded as entering the sales order.
+    const createdById = req.user.id;
 
     const buyerId = customerId || online.customerId || null;
     if (buyerId && !(await prisma.organization.findUnique({ where: { id: buyerId }, select: { id: true } }))) {

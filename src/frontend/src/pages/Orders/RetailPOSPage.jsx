@@ -3,7 +3,7 @@
  *
  * Route: /pos/retail  (standalone, no AppLayout wrapper)
  */
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import {
   Box, Paper, Typography, Button, Grid, Divider, TextField, Alert, Snackbar,
   FormControl, InputLabel, Select, MenuItem, Chip, IconButton, Tooltip,
@@ -53,7 +53,15 @@ export default function RetailPOSPage() {
 
   // ── Derived totals ──
   const subtotal = useMemo(() => cart.reduce((s, c) => s + (c.extPrice || 0), 0), [cart])
-  const taxRate = 6
+  // Percent, from the server's tax rule for a counter sale at this branch.
+  const [taxRate, setTaxRate] = useState(0)
+  useEffect(() => {
+    let live = true
+    estimateTax({ subtotal: 0, location: 'JACKSON', source: 'RETAIL' })
+      .then(t => { if (live) setTaxRate(+((Number(t.taxRate) || 0) * 100).toFixed(4)) })
+      .catch(() => { if (live) setTaxRate(0) })
+    return () => { live = false }
+  }, [])
   const tax = +(subtotal * taxRate / 100).toFixed(2)
   const total = subtotal + tax
 
@@ -81,7 +89,12 @@ export default function RetailPOSPage() {
         return { ...c, qty, extPrice: +(qty * c.unitPrice).toFixed(2) }
       }))
     } else {
-      const price = item.basePrice || item.price || item.unitCost || 0
+      // The selling price only. An item with no price on file is not sold at its cost.
+      const price = item.basePrice || item.price || 0
+      if (!(price > 0)) {
+        setSnack({ open: true, msg: 'This item has no price on file. Use the order entry screen to price it.', severity: 'warning' })
+        return
+      }
       const discount = item.isRemnant ? (item.remnantDiscount || 15) : 0
       const effectivePrice = discount ? +(price * (1 - discount / 100)).toFixed(2) : price
       setCart(prev => [...prev, {
@@ -133,8 +146,8 @@ export default function RetailPOSPage() {
       setSubmittedOrder(res.data)
       setReceiptDialog(true)
       setSnack({ open: true, msg: 'Order submitted!', severity: 'success' })
-    } catch {
-      setSnack({ open: true, msg: 'Checkout failed', severity: 'error' })
+    } catch (e) {
+      setSnack({ open: true, msg: e?.message || 'Checkout failed', severity: 'error' })
     }
     setSaving(false)
   }, [cart, custName, custPhone, custCompany])
@@ -213,7 +226,7 @@ export default function RetailPOSPage() {
                           {item.isRemnant && <Chip icon={<RemnantIcon />} label={`Remnant -${item.remnantDiscount || 15}%`} size="small" color="warning" sx={{ ml: 0.5 }} />}
                         </TableCell>
                         <TableCell><Typography variant="caption" color="text.secondary">{item.sku || item.code || '—'}</Typography></TableCell>
-                        <TableCell align="right">{fmt(item.basePrice || item.price || item.unitCost)}</TableCell>
+                        <TableCell align="right">{(item.basePrice || item.price) ? fmt(item.basePrice || item.price) : 'No price'}</TableCell>
                         <TableCell>
                           <Chip label={item.qtyOnHand ?? item.stock ?? '—'} size="small" variant="outlined" color={(item.qtyOnHand ?? item.stock ?? 0) > 0 ? 'success' : 'error'} />
                         </TableCell>
@@ -317,7 +330,7 @@ export default function RetailPOSPage() {
               <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>{submittedOrder.orderNumber}</Typography>
               <Typography variant="body2" color="text.secondary" gutterBottom>Customer: {custName || 'Walk-In'}</Typography>
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h5" fontWeight={700}>{fmt(total)}</Typography>
+              <Typography variant="h5" fontWeight={700}>{fmt(submittedOrder.totalAmount ?? total)}</Typography>
               <Typography variant="caption" color="text.secondary">incl. tax</Typography>
             </Box>
           )}

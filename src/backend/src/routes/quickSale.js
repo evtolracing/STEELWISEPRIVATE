@@ -24,6 +24,7 @@
  *  - A sale id can be paid once. Sending it again returns the first result.
  *  - Receipts are shown and printed. Email and text receipts are not set up.
  */
+import { customerLevel, levelPrice } from '../lib/customerPricing.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
@@ -54,7 +55,7 @@ const handle = (label, fn) => async (req, res) => {
 const SHELF = { isActive: true, priceUnit: 'EACH', basePriceCwt: { gt: 0 } };
 const toItem = (p) => ({ id: p.id, productId: p.id, sku: p.sku, barcode: p.sku, name: p.name, description: p.name, unitPrice: money(p.basePriceCwt), unit: 'EA', taxable: true });
 
-async function walkInAccount() {
+export async function walkInAccount() {
   const found = await prisma.organization.findUnique({ where: { code: WALK_IN_CODE } });
   if (found) return found;
   try {
@@ -84,11 +85,13 @@ async function priceSale(req, raw = {}) {
     wanted.set(String(productId), (wanted.get(String(productId)) || 0) + qty);
   }
   const products = await prisma.product.findMany({ where: { id: { in: [...wanted.keys()] } } });
+  // An account customer buys at the account's price level; a walk-in pays list.
+  const level = await customerLevel(raw.customerId);
   const items = [...wanted.entries()].map(([productId, quantity], i) => {
     const p = products.find((x) => x.id === productId);
     if (!p || !p.isActive) refuse(400, `Item ${i + 1}: that product is not for sale`);
     if (p.priceUnit !== 'EACH' || !(num(p.basePriceCwt) > 0)) refuse(409, `${p.name} is priced by weight. Ring it up as a counter order instead.`);
-    const unitPrice = money(p.basePriceCwt);
+    const unitPrice = money(levelPrice(p, level).unitPrice);
     return { lineNumber: i + 1, productId: p.id, sku: p.sku, description: p.name, quantity, unitPrice, extended: money(unitPrice * quantity), taxable: true };
   });
 
@@ -109,7 +112,7 @@ async function priceSale(req, raw = {}) {
   const tax = money(subtotal * taxRate);
   return {
     id: raw.id ? String(raw.id).slice(0, 60) : null,
-    items, subtotal, taxRate, tax, total: money(subtotal + tax),
+    items, subtotal, taxRate, tax, total: money(subtotal + tax), priceLevel: level.code,
     taxExempt: Boolean(customer?.taxExempt), rateFound,
     ...(rateFound || customer?.taxExempt ? {} : { taxNote: branch ? `No sales tax rate is set up for ${branch.state || 'this branch'}, so no tax was charged.` : 'Your login has no home branch, so no tax was charged.' }),
     customer: customer && { id: customer.id, name: customer.name, code: customer.code },

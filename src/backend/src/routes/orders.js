@@ -206,7 +206,7 @@ router.post('/', async (req, res) => {
 });
 
 /** Gives every open reservation on the order back to stock. Runs inside a transaction. */
-async function releaseAllocations(tx, orderId) {
+export async function releaseAllocations(tx, orderId) {
   const allocations = await tx.orderLineAllocation.findMany({ where: { orderLine: { orderId } } });
   for (const a of allocations) {
     if (Number(a.qtyAllocated) <= 0) continue;

@@ -418,6 +418,218 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
 // 9. Nothing above may have answered with database or server internals.
 section('Error replies do not expose internals', { pass: leaks.size === 0, summary: `${leaks.size} replies exposed internal detail`, findings: [...leaks] });
 
+// 13. One customer, one price (Phase 2 findings S-001 to S-004). The same customer and item
+// must be priced the same in the web store, at order intake, in a quick sale and in a counter session.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const [admin, csrT, custA, custDiv] = await Promise.all(['admin', 'csr', 'custA', 'custDiv'].map(tokenFor));
+  const call = async (method, url, token, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
+    let json = null; try { json = await res.json(); } catch { /* not JSON */ }
+    return { status: res.status, body: json };
+  };
+  const company = await prisma.organization.findUnique({ where: { code: 'QA-C01' } });
+  const division = await prisma.organization.findUnique({ where: { code: 'QA-C01-D1' } });
+  const retailCustomer = await prisma.organization.findUnique({ where: { code: 'QA-C05' } });
+  const csrUser = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
+  const each = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'EACH', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
+  const cwt = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'CWT', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
+  const level = await prisma.priceLevel.findUnique({ where: { code: 'CONTRACT_B' } });
+  const before = await prisma.customerPricingTier.findUnique({ where: { customerId: company.id } });
+  if (!each || !cwt || !level) findings.push('needs an each-priced product, a weight-priced product and the CONTRACT_B price level');
+  else {
+    const mult = Number(level.multiplier); const list = Number(each.basePriceCwt); const listCwt = Number(cwt.basePriceCwt);
+    const near = (a, b, tol = 0.006) => Number.isFinite(Number(a)) && Math.abs(Number(a) - b) <= tol;
+    const setTier = (data) => prisma.customerPricingTier.upsert({ where: { customerId: company.id }, update: data, create: { customerId: company.id, tierCode: 'A', marginFloor: 10, marginTarget: 18, ...data } });
+    // A counter session with one each-priced and one weight-priced line for the given customer.
+    const counter = async (customerId) => {
+      const s = await call('POST', '/api/pos/sessions', csrT, { userId: csrUser.id, entryPoint: 'counter', terminalId: `QA-PRICE-${Date.now()}` });
+      const sid = s.body?.sessionId; const go = (trigger, payload) => call('POST', `/api/pos/sessions/${sid}/transition`, csrT, { trigger, payload });
+      await go('start_order'); await call('POST', `/api/pos/sessions/${sid}/customers/select`, csrT, { customerId }); await go('continue');
+      let last = null;
+      for (const [p, unit, quantity] of [[each, 'EA', 3], [cwt, 'LB', 250]]) { await go('search_product'); await go('product_selected', { productId: p.id }); last = await call('POST', `/api/pos/sessions/${sid}/products/add`, csrT, { productId: p.id, quantity, unit, description: p.name, unitPrice: 0.01, priceUnit: 'CWT' }); }
+      return { sid, lines: last?.body?.context?.lines || [] };
+    };
+    try {
+      await setTier({ tierCode: 'A', isActive: true, effectiveFrom: new Date(Date.now() - 86400000), effectiveUntil: null });
+      const want = +(list * mult).toFixed(4); const wantTotal = Math.round(want * 3 * 100) / 100;
+
+      // Web store, as the company login and as a login on one of its divisions.
+      for (const [who, token] of [['company login', custA], ['division login', custDiv]]) {
+        const web = await call('POST', '/api/ecom/pricing/config', token, { productId: each.id, quantity: 3, priceLevel: 'RETAIL' });
+        check(`web store, ${who}: contract price`, near(web.body?.unitPrice, want) && near(web.body?.extended, wantTotal), `${web.body?.unitPrice} / ${web.body?.extended}, want ${want} / ${wantTotal}`);
+      }
+      const other = await tokenFor('custB');
+      const lied = await call('POST', '/api/ecom/pricing/config', other, { productId: each.id, quantity: 3, priceLevel: 'CONTRACT_B', customerId: company.id });
+      check('web store: another customer cannot ask for this customer\'s level', near(lied.body?.unitPrice, list), `${lied.body?.unitPrice}, want list ${list}`);
+
+      // Order intake: the level lookup and the line calculator, for the company and for its division.
+      for (const [who, id] of [['company', company.id], ['division', division.id]]) {
+        const c = await call('GET', `/api/pricing/contracts?customerId=${id}`, csrT);
+        check(`order intake, ${who}: level found`, c.body?.priceLevel === 'CONTRACT_B' && near(c.body?.data?.contracts?.[0]?.multiplier, mult, 1e-9), `${c.body?.priceLevel} ${JSON.stringify(c.body?.data)}`);
+        const calc = await call('POST', '/api/pricing/calculate', csrT, { productId: each.id, customerId: id, priceLevel: 'RETAIL', qty: 3 });
+        check(`order intake, ${who}: contract price`, near(calc.body?.unitPrice, want) && near(calc.body?.materialTotal, wantTotal), `${calc.body?.unitPrice} / ${calc.body?.materialTotal}`);
+      }
+      const noTier = await call('POST', '/api/pricing/calculate', csrT, { productId: each.id, customerId: retailCustomer.id, priceLevel: 'CONTRACT_B', qty: 3 });
+      check('order intake: a customer with no tier pays list whatever level is sent', near(noTier.body?.unitPrice, list), `${noTier.body?.unitPrice}, want ${list}`);
+
+      // Quick sale.
+      const qs = await call('POST', '/api/pos/quick-sale/price', csrT, { sale: { customerId: company.id, items: [{ productId: each.id, quantity: 3, unitPrice: 0.01 }] } });
+      check('quick sale: contract price', near(qs.body?.subtotal, Math.round(Math.round(want * 100) / 100 * 3 * 100) / 100, 0.011), `${qs.body?.subtotal}, want about ${wantTotal}`);
+      const qsWalkIn = await call('POST', '/api/pos/quick-sale/price', csrT, { sale: { items: [{ productId: each.id, quantity: 3 }] } });
+      check('quick sale: a walk-in pays list', near(qsWalkIn.body?.subtotal, Math.round(list * 3 * 100) / 100), `${qsWalkIn.body?.subtotal}`);
+
+      // Counter session: catalog price at the customer's level, in the product's own unit.
+      const tiered = await counter(company.id);
+      check('counter session: each-priced line at the contract price', near(tiered.lines[0]?.unitPrice, want) && near(tiered.lines[0]?.extendedPrice, wantTotal) && tiered.lines[0]?.priceUnit === 'EACH', JSON.stringify(tiered.lines[0])?.slice(0, 200));
+      check('counter session: weight-priced line at the contract price', near(tiered.lines[1]?.unitPrice, +(listCwt * mult).toFixed(4)) && near(tiered.lines[1]?.extendedPrice, Math.round(listCwt * mult * 2.5 * 100) / 100) && tiered.lines[1]?.priceUnit === 'CWT', JSON.stringify(tiered.lines[1])?.slice(0, 200));
+      const retail = await counter(retailCustomer.id);
+      check('counter session: a customer with no tier pays the catalog list price', near(retail.lines[0]?.unitPrice, list) && near(retail.lines[1]?.unitPrice, listCwt) && near(retail.lines[1]?.extendedPrice, Math.round(listCwt * 2.5 * 100) / 100), `each ${retail.lines[0]?.unitPrice} (list ${list}), cwt ${retail.lines[1]?.unitPrice} (list ${listCwt})`);
+
+      // Counter discounts stay within the sale and only a manager approves.
+      const d = (body, token = csrT) => call('POST', `/api/pos/sessions/${retail.sid}/pricing/discount`, token, body);
+      check('counter discount: more than 100 percent is refused', (await d({ type: 'PERCENTAGE', value: 150 })).status === 400, 'accepted');
+      check('counter discount: a negative amount is refused', (await d({ type: 'FIXED', value: -50, amount: -50 })).status === 400, 'accepted');
+      check('counter discount: more than the sale is refused', (await d({ type: 'FIXED', value: 1e6, amount: 1e6 })).status === 400, 'accepted');
+      const ok = await d({ type: 'PERCENTAGE', value: 5 });
+      check('counter discount: 5 percent is accepted', ok.status === 200 && ok.body?.discount?.id, `status ${ok.status}`);
+      const approve = await call('POST', `/api/pos/sessions/${retail.sid}/pricing/discount/${ok.body?.discount?.id}/approve`, csrT, { approverId: 'anyone', approverPin: '0000' });
+      check('counter discount: a clerk cannot approve by typing a PIN', approve.status === 403, `status ${approve.status}`);
+
+      // An expired or switched-off tier pays list in every channel.
+      for (const [what, data] of [['expired', { effectiveUntil: new Date(Date.now() - 3600000) }], ['not yet started', { effectiveUntil: null, effectiveFrom: new Date(Date.now() + 86400000) }], ['switched off', { effectiveFrom: new Date(Date.now() - 86400000), isActive: false }]]) {
+        await setTier(data);
+        const web = await call('POST', '/api/ecom/pricing/config', custA, { productId: each.id, quantity: 3 });
+        const calc = await call('POST', '/api/pricing/calculate', csrT, { productId: each.id, customerId: company.id, qty: 3 });
+        const quick = await call('POST', '/api/pos/quick-sale/price', csrT, { sale: { customerId: company.id, items: [{ productId: each.id, quantity: 1 }] } });
+        check(`a tier that is ${what} pays list everywhere`, near(web.body?.unitPrice, list) && near(calc.body?.unitPrice, list) && near(quick.body?.subtotal, Math.round(list * 100) / 100), `web ${web.body?.unitPrice}, intake ${calc.body?.unitPrice}, quick sale ${quick.body?.subtotal}, list ${list}`);
+      }
+      void admin;
+    } finally {
+      // Leave the customer as it was found.
+      if (before) { const { id, createdAt, updatedAt, ...rest } = before; void id; void createdAt; void updatedAt; await prisma.customerPricingTier.update({ where: { customerId: company.id }, data: rest }); }
+      else await prisma.customerPricingTier.deleteMany({ where: { customerId: company.id } });
+    }
+  }
+  section('One customer, one price in every sales channel', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
+// 14. Order entry screen API (Phase 2 finding S-006). /api/orders/intake is what the CSR
+// order-entry screen calls. It must follow the same rules as the rest of the order system.
+{
+  const findings = []; let checks = 0;
+  const check = (name, ok, detail) => { checks++; if (!ok) findings.push(`${name}: ${detail}`); };
+  const csrT = await tokenFor('csr');
+  const call = async (method, url, body) => {
+    const res = await fetch(BASE + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${csrT}` }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20000) });
+    const text = await res.text(); let json = null; try { json = JSON.parse(text); } catch { /* not JSON */ }
+    return { status: res.status, body: json, text };
+  };
+  const csrUser = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
+  const customer = await prisma.organization.findUnique({ where: { code: 'QA-C06' } });
+  const product = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'CWT', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
+  const line = (over = {}) => ({ productId: product.id, description: 'QA intake line', qty: 200, uom: 'LB', unitPrice: 0.5, extPrice: 100, ...over });
+  const create = (over = {}) => call('POST', '/api/orders/intake', { source: 'PHONE', division: 'METALS', priority: 'STANDARD', customerId: customer.id, customerName: customer.name, lines: [line(), line({ qty: 100, extPrice: 50 })], status: 'DRAFT', ...over });
+  const row = (id) => prisma.order.findUnique({ where: { id }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
+
+  const made = await create();
+  const id = made.body?.data?.id;
+  check('a draft order is created', made.status === 201 && id, `status ${made.status}`);
+  if (id) {
+    let saved = await row(id);
+    check('the order is recorded under the person who entered it', saved.createdById === csrUser.id, `createdById ${saved.createdById}, signed in as ${csrUser.id}`);
+    const rateFor = async (state) => Number((state ? await prisma.salesTaxRate.findUnique({ where: { state } }) : null)?.rate || 0);
+    const cents = (n) => Math.round(n * 100) / 100;
+    const wantTax = cents(150 * await rateFor(customer.state));
+    check('order totals are saved from the lines, with sales tax for the customer\'s state', Math.abs(Number(saved.subtotal) - 150) < 0.005 && Math.abs(Number(saved.taxAmount) - wantTax) < 0.005 && Math.abs(Number(saved.totalAmount) - (150 + wantTax)) < 0.005, `subtotal ${saved.subtotal}, tax ${saved.taxAmount} (want ${wantTax} for ${customer.state}), total ${saved.totalAmount}`);
+    const estimate = await call('POST', '/api/pricing/tax-estimate', { subtotal: 150, customerId: customer.id });
+    check('the tax shown on the screen is the tax saved on the order', Math.abs(Number(estimate.body?.taxAmount) - wantTax) < 0.005, `screen ${estimate.body?.taxAmount}, order ${wantTax}`);
+    // A ship-to state wins over the customer's state; an exempt customer pays none; a counter sale uses the branch.
+    const shipped = await create({ shipToState: 'IN' });
+    const shippedRow = await row(shipped.body?.data?.id);
+    check('an order shipped to another state is taxed at that state\'s rate', Math.abs(Number(shippedRow?.taxAmount) - cents(150 * await rateFor('IN'))) < 0.005, `tax ${shippedRow?.taxAmount}, want ${cents(150 * await rateFor('IN'))}`);
+    const exemptCustomer = await prisma.organization.findUnique({ where: { code: 'QA-C07' } });
+    await prisma.organization.update({ where: { id: exemptCustomer.id }, data: { taxExempt: true } });
+    try {
+      const ex = await create({ customerId: exemptCustomer.id });
+      const exRow = await row(ex.body?.data?.id);
+      check('a tax-exempt customer is charged no tax', Number(exRow?.taxAmount) === 0 && Math.abs(Number(exRow?.totalAmount) - 150) < 0.005, `tax ${exRow?.taxAmount}, total ${exRow?.totalAmount}`);
+    } finally { await prisma.organization.update({ where: { id: exemptCustomer.id }, data: { taxExempt: exemptCustomer.taxExempt } }); }
+    const branch = await prisma.location.findFirst({ where: { state: 'OH' }, orderBy: { code: 'asc' } });
+    const retail = await create({ source: 'RETAIL', customerId: undefined, customerName: 'Walk-In', location: branch.code, status: 'SUBMITTED' });
+    const retailRow = await prisma.order.findUnique({ where: { id: retail.body?.data?.id || FAKE_ID }, include: { buyer: true } });
+    check('a Retail POS sale with no account is sold to the walk-in account and taxed at the branch', retail.status === 201 && retailRow?.buyer?.code === 'WALK-IN' && retailRow?.status === 'PENDING' && Math.abs(Number(retailRow?.taxAmount) - cents(150 * await rateFor('OH'))) < 0.005, `status ${retail.status}, buyer ${retailRow?.buyer?.code}, tax ${retailRow?.taxAmount}, want ${cents(150 * await rateFor('OH'))}`);
+    check('line prices are saved in the unit they were entered in', saved.lines[0].priceUnit === 'LB' && Math.abs(Number(saved.lines[0].extendedPrice) - 100) < 0.005, `${saved.lines[0].priceUnit} ${saved.lines[0].extendedPrice}`);
+
+    // Bad input is refused with a clear message.
+    for (const [what, over] of [
+      ['a negative quantity', { lines: [line({ qty: -5 })] }],
+      ['a zero quantity', { lines: [line({ qty: 0 })] }],
+      ['a negative price', { lines: [line({ unitPrice: -1, extPrice: -200 })] }],
+      ['a customer that does not exist', { customerId: FAKE_ID }],
+      ['a starting status other than draft or submitted', { status: 'COMPLETE' }],
+    ]) {
+      const r = await create(over);
+      check(`${what} is refused`, r.status === 400, `status ${r.status} ${r.text.slice(0, 100)}`);
+      check(`${what}: the reply does not expose internals`, !LEAK.test(r.text), r.text.slice(0, 120));
+    }
+
+    // Editing a draft replaces the lines and keeps the totals right.
+    const edited = await call('PATCH', `/api/orders/intake/${id}`, { lines: [line({ qty: 300, extPrice: 150 })] });
+    saved = await row(id);
+    check('editing a draft updates lines and totals together', edited.status === 200 && saved.lines.length === 1 && Math.abs(Number(saved.subtotal) - 150) < 0.005 && Math.abs(Number(saved.totalAmount) - (150 + wantTax)) < 0.005 && Math.abs(Number(saved.lines[0].qtyOrdered) - 300) < 1e-9, `status ${edited.status}, ${saved.lines.length} lines, subtotal ${saved.subtotal}`);
+    const badEdit = await call('PATCH', `/api/orders/intake/${id}`, { lines: [line({ qty: -1 })] });
+    saved = await row(id);
+    check('a bad edit is refused and the lines are left alone', badEdit.status === 400 && saved.lines.length === 1, `status ${badEdit.status}, ${saved.lines.length} lines`);
+    for (const status of ['COMPLETE', 'PARTIAL', 'SHIPPED', 'CONFIRMED']) {
+      const r = await call('PATCH', `/api/orders/intake/${id}`, { status });
+      check(`the status cannot be set to ${status} from the entry screen`, r.status >= 400 && r.status < 500 && (await row(id)).status === 'DRAFT', `status ${r.status}, order is ${(await row(id)).status}`);
+    }
+
+    // Stock reserved for a line is given back when the lines are replaced.
+    const stock = await prisma.inventory.findFirst({ where: { qtyAvailable: { gte: 500 }, coil: { status: 'AVAILABLE', qcStatus: { notIn: ['FAILED', 'HOLD'] } } }, orderBy: { coilId: 'asc' } });
+    saved = await row(id);
+    if (!saved.lines[0]) findings.push('the order has no lines left to reserve stock against');
+    else if (stock) {
+      const reserve = await call('POST', `/api/orders/${id}/allocate`, { lineId: saved.lines[0].id, coilId: stock.coilId, qty: 100 });
+      const during = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
+      await call('PATCH', `/api/orders/intake/${id}`, { lines: [line({ qty: 250, extPrice: 125 })] });
+      const after = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
+      check('stock reserved for a replaced line goes back on the shelf', reserve.status === 201 && Number(during.qtyAllocated) === Number(stock.qtyAllocated) + 100 && Number(after.qtyAllocated) === Number(stock.qtyAllocated) && Number(after.qtyAvailable) === Number(stock.qtyAvailable), `reserve ${reserve.status}; allocated ${stock.qtyAllocated} → ${during.qtyAllocated} → ${after.qtyAllocated}; available ${stock.qtyAvailable} → ${after.qtyAvailable}`);
+    }
+
+    // Submit, then work orders, exactly once.
+    const empty = await create({ lines: [] });
+    const emptySubmit = await call('POST', `/api/orders/intake/${empty.body?.data?.id}/submit`);
+    check('an order with no lines cannot be submitted', emptySubmit.status === 400 || emptySubmit.status === 409, `status ${emptySubmit.status}`);
+    const submit = await call('POST', `/api/orders/intake/${id}/submit`);
+    check('a draft is submitted', submit.status === 200 && (await row(id)).status === 'PENDING', `status ${submit.status}`);
+    const jobs1 = await call('POST', `/api/orders/intake/${id}/create-work-orders`);
+    const jobs2 = await call('POST', `/api/orders/intake/${id}/create-work-orders`);
+    const jobCount = await prisma.job.count({ where: { orderId: id } });
+    const lineCount = (await row(id)).lines.length;
+    check('work orders are created once per line, however many times the button is pressed', jobs1.status === 200 && jobCount === lineCount, `${jobCount} jobs for ${lineCount} lines (second call status ${jobs2.status})`);
+    const job = await prisma.job.findFirst({ where: { orderId: id } });
+    check('work orders are recorded under the person who made them', job?.createdById === csrUser.id, `createdById ${job?.createdById}`);
+    check('the order is confirmed once it has work orders', (await row(id)).status === 'CONFIRMED', (await row(id)).status);
+    const lateEdit = await call('PATCH', `/api/orders/intake/${id}`, { lines: [line({ qty: 1, extPrice: 0.5 })] });
+    check('lines cannot be replaced once the order is confirmed', lateEdit.status === 409 && (await prisma.job.count({ where: { orderId: id } })) === lineCount, `status ${lateEdit.status}`);
+
+    // A cancelled or finished order stays that way.
+    const dead = await create();
+    const deadId = dead.body?.data?.id;
+    await prisma.order.update({ where: { id: deadId }, data: { status: 'CANCELLED' } });
+    const revive = await call('POST', `/api/orders/intake/${deadId}/submit`);
+    const reviveJobs = await call('POST', `/api/orders/intake/${deadId}/create-work-orders`);
+    const reviveEdit = await call('PATCH', `/api/orders/intake/${deadId}`, { status: 'DRAFT' });
+    check('a cancelled order cannot be submitted, given work orders or reopened', revive.status === 409 && reviveJobs.status === 409 && reviveEdit.status === 409 && (await row(deadId)).status === 'CANCELLED' && (await prisma.job.count({ where: { orderId: deadId } })) === 0, `submit ${revive.status}, work orders ${reviveJobs.status}, edit ${reviveEdit.status}, now ${(await row(deadId)).status}`);
+    const huge = await call('GET', '/api/orders/intake?limit=1000000');
+    check('the order list is capped', huge.status === 200 && (huge.body?.data?.length ?? 1e9) <= 200, `${huge.body?.data?.length} rows`);
+  }
+  section('Order entry screen follows the order rules', { pass: findings.length === 0, summary: `${checks} checks, ${findings.length} problems`, findings });
+}
+
 report.pass = Object.values(report.sections).every((s) => s.pass);
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(report, null, 1));

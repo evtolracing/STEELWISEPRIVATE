@@ -100,8 +100,8 @@ export default function OrderDetailPage() {
       setEditing(false)
       setSnack({ open: true, msg: 'Order updated', severity: 'success' })
       loadOrder()
-    } catch {
-      setSnack({ open: true, msg: 'Update failed', severity: 'error' })
+    } catch (e) {
+      setSnack({ open: true, msg: e?.message || 'Update failed', severity: 'error' })
     }
     setSaving(false)
   }, [id, lines, notes, loadOrder])
@@ -113,8 +113,8 @@ export default function OrderDetailPage() {
       await submitOrder(id)
       setSnack({ open: true, msg: 'Order submitted', severity: 'success' })
       loadOrder()
-    } catch {
-      setSnack({ open: true, msg: 'Submit failed', severity: 'error' })
+    } catch (e) {
+      setSnack({ open: true, msg: e?.message || 'Submit failed', severity: 'error' })
     }
     setSaving(false)
   }, [id, loadOrder])
@@ -127,8 +127,8 @@ export default function OrderDetailPage() {
       setWoResult(res.data)
       setWoDialogOpen(true)
       setSnack({ open: true, msg: 'Work orders created!', severity: 'success' })
-    } catch {
-      setSnack({ open: true, msg: 'Failed to create work orders', severity: 'error' })
+    } catch (e) {
+      setSnack({ open: true, msg: e?.message || 'Failed to create work orders', severity: 'error' })
     }
     setSaving(false)
   }, [id])

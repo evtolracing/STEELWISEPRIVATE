@@ -20,6 +20,7 @@
 import { Router } from 'express';
 import * as store from '../services/ecomService.js';
 import { isCustomerLogin, requireLinkedCustomer } from '../lib/customerScope.js';
+import { customerPriceLevel } from '../lib/customerPricing.js';
 
 // A customer login always orders for its own account, under its own name.
 const checkoutPayload = (req) => {
@@ -60,7 +61,14 @@ router.get('/catalog/:id', wrap('load product', async (req) => {
   const p = await store.getStoreProduct(req.params.id);
   return p ? { ...p, data: p } : { status: 404, error: 'Product not found' };
 }));
-router.post('/pricing/config', wrap('price item', (req) => store.priceConfig(req.body || {})));
+// A customer login is priced at its own account's level, whatever level the
+// browser sends. Staff may price for a customer by sending customerId.
+router.post('/pricing/config', wrap('price item', async (req) => {
+  const body = req.body || {};
+  const customerId = isCustomerLogin(req.user) ? req.user.customerId : body.customerId;
+  if (!isCustomerLogin(req.user) && !customerId) return store.priceConfig(body);
+  return store.priceConfig({ ...body, priceLevel: await customerPriceLevel(customerId) });
+}));
 router.post('/pricing/tax', wrap('estimate tax', (req) => store.taxEstimate(req.body || {})));
 router.post('/cart/validate', wrap('validate cart', (req) => store.validateCart(req.body || {})));
 router.post('/checkout/submit', requireLinkedCustomer, wrap('submit order', (req) => store.checkout(checkoutPayload(req))));

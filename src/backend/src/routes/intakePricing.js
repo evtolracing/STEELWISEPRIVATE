@@ -10,6 +10,8 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { unitPrice } from '../services/intakeCatalogService.js';
+import { customerPriceLevel } from '../lib/customerPricing.js';
+import { orderTax, branchStateFor } from '../lib/orderTax.js';
 
 const router = Router();
 const money = (n) => Math.round(n * 100) / 100;
@@ -21,7 +23,9 @@ async function priceLevels() {
 
 router.post('/calculate', async (req, res) => {
   try {
-    const { productId, priceLevel = 'RETAIL', weight = 0, qty = 0, isRemnant, remnantDiscount, processes = [] } = req.body || {};
+    const { productId, customerId, weight = 0, qty = 0, isRemnant, remnantDiscount, processes = [] } = req.body || {};
+    // With a customer, the customer's own level is used whatever level the screen sent.
+    const priceLevel = customerId ? await customerPriceLevel(customerId) : (req.body?.priceLevel || 'RETAIL');
     if (!productId) return res.status(400).json({ error: 'productId is required' });
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) return res.status(404).json({ error: 'Product not found' });
@@ -55,18 +59,19 @@ router.post('/calculate', async (req, res) => {
   }
 });
 
+// The same tax rule the order is saved with (lib/orderTax.js), so the screen
+// shows what the invoice will bill.
 router.post('/tax-estimate', async (req, res) => {
   try {
-    const { subtotal = 0, customerId, shipToState } = req.body || {};
-    const amount = Number(subtotal) || 0;
-    if (customerId) {
-      const customer = await prisma.organization.findUnique({ where: { id: customerId }, select: { taxExempt: true } });
-      if (customer?.taxExempt) return res.json({ taxRate: 0, taxAmount: 0, exempt: true });
-    }
-    const state = String(shipToState || '').trim().toUpperCase();
-    const row = state ? await prisma.salesTaxRate.findUnique({ where: { state } }) : null;
-    const rate = row ? Number(row.rate) : 0;
-    res.json({ taxRate: rate, taxAmount: money(amount * rate), exempt: false, ...(row ? {} : { rateFound: false }) });
+    const { subtotal = 0, customerId, shipToState, location, source } = req.body || {};
+    const tax = await orderTax({
+      subtotal,
+      customerId,
+      shipToState,
+      branchState: await branchStateFor(req.user, location),
+      counterSale: source === 'RETAIL',
+    });
+    res.json({ taxRate: tax.taxRate, taxAmount: tax.taxAmount, exempt: tax.exempt, taxState: tax.taxState, ...(tax.rateFound ? {} : { rateFound: false }) });
   } catch (error) {
     console.error('Tax estimate failed:', error);
     res.status(500).json({ error: 'Tax estimate failed' });
@@ -79,13 +84,13 @@ router.get('/contracts', async (req, res) => {
     const contracts = await priceLevels();
     let priceLevel = 'RETAIL';
     if (customerId) {
-      const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: String(customerId) } });
-      if (tier?.isActive && contracts[tier.tierCode]) priceLevel = tier.tierCode;
+      const level = await customerPriceLevel(String(customerId));
+      if (contracts[level]) priceLevel = level;
     }
     const active = priceLevel !== 'RETAIL' && contracts[priceLevel]
       ? [{ code: priceLevel, name: contracts[priceLevel].label, multiplier: contracts[priceLevel].multiplier }]
       : [];
-    res.json({ priceLevel, contracts, data: { contracts: active } });
+    res.json({ priceLevel, multiplier: contracts[priceLevel]?.multiplier ?? 1, contracts, data: { contracts: active } });
   } catch (error) {
     console.error('Contract pricing failed:', error);
     res.status(500).json({ error: 'Failed to fetch contract pricing' });

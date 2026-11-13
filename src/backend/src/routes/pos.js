@@ -4,6 +4,7 @@
  * RESTful API endpoints for POS workflow operations.
  */
 
+import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import posWorkflowService from '../workflows/pos/POSWorkflowService.js';
@@ -1280,13 +1281,14 @@ router.post('/sessions/:sessionId/pricing/discount/:discountId/approve', async (
     const { sessionId, discountId } = req.params;
     const { approverPin, approverId, reason } = req.body;
     
-    if (!approverPin && !approverId) {
-      return res.status(400).json({ error: 'Approver credentials required' });
+    // The approver is the signed-in user, who must be a manager. A PIN or a
+    // user id typed into the request proves nothing.
+    if (!MONEY_MANAGERS.has(req.user?.role)) {
+      return res.status(403).json({ error: 'Only a manager can approve a discount' });
     }
     
     const result = await posWorkflowService.approveDiscount(sessionId, discountId, {
-      approverPin,
-      approverId,
+      approverId: req.user.id,
       reason
     });
     

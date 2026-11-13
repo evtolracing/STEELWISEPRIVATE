@@ -7,6 +7,7 @@
  * Customers are identified by organization id or code. Until customer
  * logins exist, the portal passes the id from the store session.
  */
+import { customerPriceLevel, levelForTier } from '../lib/customerPricing.js';
 import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
 import { unpackNotes } from '../routes/intakeOrders.js';
@@ -156,16 +157,8 @@ async function loadAccountOrders(tree, { branchId, from, to } = {}) {
 
 // ─── Enterprise account ───────────────────────────────────────────────────
 
-const TIER_TO_LEVEL = { A: 'CONTRACT_B', B: 'CONTRACT_A', C: 'VOLUME', D: 'RETAIL' };
-
-/** The price level a customer buys at: set on the top-level account's pricing tier. RETAIL when none. */
-export async function customerPriceLevel(idOrCode) {
-  if (!idOrCode) return 'RETAIL';
-  const tree = await accountTree(idOrCode).catch(() => null);
-  if (!tree) return 'RETAIL';
-  const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: tree.company.id } }).catch(() => null);
-  return (tier?.isActive !== false && TIER_TO_LEVEL[tier?.tierCode]) || 'RETAIL';
-}
+// The price level a customer buys at is decided in lib/customerPricing.js for every channel.
+export { customerPriceLevel };
 
 export async function accountProfile(idOrCode) {
   const tree = await accountTree(idOrCode);
@@ -184,7 +177,7 @@ export async function accountProfile(idOrCode) {
     id: root.id,
     companyName: root.name,
     accountNumber: root.code,
-    priceLevel: TIER_TO_LEVEL[tier?.tierCode] || 'RETAIL',
+    priceLevel: levelForTier(tier),
     creditLimit: tier?.creditLimit != null ? num(tier.creditLimit) : null,
     creditUsed: money(unpaid + open.reduce((s, o) => s + o.total, 0)),
     paymentTerms: tier?.paymentTerms || root.paymentTerms || company.paymentTerms || null,

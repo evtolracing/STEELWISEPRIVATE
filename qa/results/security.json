@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T07:19:09.906Z",
+ "at": "2026-11-13T07:35:41.316Z",
  "endpointsInInventory": 574,
  "endpointsSwept": 574,
  "sections": {
@@ -69,6 +69,16 @@
   "Error replies do not expose internals": {
    "pass": true,
    "summary": "0 replies exposed internal detail",
+   "findings": []
+  },
+  "One customer, one price in every sales channel": {
+   "pass": true,
+   "summary": "21 checks, 0 problems",
+   "findings": []
+  },
+  "Order entry screen follows the order rules": {
+   "pass": true,
+   "summary": "33 checks, 0 problems",
    "findings": []
   }
  },

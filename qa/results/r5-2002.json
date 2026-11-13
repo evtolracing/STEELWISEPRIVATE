@@ -1,0 +1,6179 @@
+{
+ "seed": 2002,
+ "base": "http://localhost:3011",
+ "at": "2026-11-13T03:13:19.663Z",
+ "scenarios": [
+  {
+   "id": "S2002-01",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 600 lb from QA-L23-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L23-PLASMA",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00343 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00343 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00343 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00343 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00229",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00229",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L23-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L23-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L23-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L23-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 166
+  },
+  {
+   "id": "S2002-02",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 400 lb from QA-L41-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L41-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00346 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00346 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00346 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00346 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00230",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00230",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 143
+  },
+  {
+   "id": "S2002-03",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 350 lb from QA-L24-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L24-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00347 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00347 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00347 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00347 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00231",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00231",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L24-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L24-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L24-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L24-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 147
+  },
+  {
+   "id": "S2002-04",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1450 lb from QA-L26-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L26-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00349 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00349 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00349 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00349 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00232",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00232",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 158
+  },
+  {
+   "id": "S2002-05",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 600 lb from QA-L05-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L05-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00350 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00350 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00350 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00350 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00233",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00233",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L05-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L05-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L05-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L05-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 152
+  },
+  {
+   "id": "S2002-06",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1700 lb from QA-L34-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L34-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00351 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00351 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00351 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00351 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00234",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00234",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 142
+  },
+  {
+   "id": "S2002-07",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1650 lb from QA-L17-S4",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L17-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00352 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00352 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00352 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00352 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00235",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00235",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L17-S4: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L17-S4: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L17-S4: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L17-S4: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 143
+  },
+  {
+   "id": "S2002-08",
+   "category": "standard-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 300 lb from QA-L26-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L26-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00353 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00353 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00353 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00353 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00236",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00236",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L26-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 178
+  },
+  {
+   "id": "S2002-09",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1650 lb from QA-L30-S5",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L30-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00354 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00354 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00354 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00354 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L30-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00355 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00355 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00355 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00355 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L30-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00356 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00356 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00356 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00356 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00237",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00237",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S5: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S5: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S5: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S5: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 277
+  },
+  {
+   "id": "S2002-10",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 450 lb from QA-L06-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L06-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00357 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00357 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00357 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00357 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L06-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00358 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00358 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00358 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00358 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L06-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00359 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00359 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00359 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00359 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00238",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00238",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 261
+  },
+  {
+   "id": "S2002-11",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1550 lb from QA-L29-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L29-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00360 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00360 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00360 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00360 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L29-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00361 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00361 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00361 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00361 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L29-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00362 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00362 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00362 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00362 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00239",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00239",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L29-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L29-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L29-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L29-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 240
+  },
+  {
+   "id": "S2002-12",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 600 lb from QA-L45-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L45-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00363 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00363 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00363 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00363 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L45-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00364 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00364 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00364 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00364 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L45-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00365 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00365 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00365 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00365 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00240",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00240",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L45-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L45-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L45-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L45-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 247
+  },
+  {
+   "id": "S2002-13",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1300 lb from QA-L57-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L57-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00366 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00366 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00366 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00366 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L57-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00367 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00367 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00367 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00367 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L57-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00368 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00368 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00368 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00368 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00241",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00241",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 232
+  },
+  {
+   "id": "S2002-14",
+   "category": "multi-step-metals",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1550 lb from QA-L13-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L13-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00369 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00369 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00369 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00369 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L13-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00370 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00370 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00370 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00370 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L13-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00371 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00371 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00371 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00371 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00242",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00242",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 238
+  },
+  {
+   "id": "S2002-15",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 250 lb from QA-L04-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L04-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00372 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00372 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00372 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00372 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00243",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00243",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L04-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L04-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L04-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L04-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 145
+  },
+  {
+   "id": "S2002-16",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 350 lb from QA-L53-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L53-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00373 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00373 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00373 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00373 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L53-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00374 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00374 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00374 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00374 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L53-PLASTIC_SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00375 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00375 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00375 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00375 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00244",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00244",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L53-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L53-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L53-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L53-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 309
+  },
+  {
+   "id": "S2002-17",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 750 lb from QA-L12-S4",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L12-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00376 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00376 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00376 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00376 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00245",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00245",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L12-S4: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L12-S4: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L12-S4: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L12-S4: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 172
+  },
+  {
+   "id": "S2002-18",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L34-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L34-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00377 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00377 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00377 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00377 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L34-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00378 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00378 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00378 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00378 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00246",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00246",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L34-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 236
+  },
+  {
+   "id": "S2002-19",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 300 lb from QA-L60-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L60-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00379 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00379 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00379 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00379 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00247",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00247",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L60-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L60-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L60-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L60-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 182
+  },
+  {
+   "id": "S2002-20",
+   "category": "plastics",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1050 lb from QA-L32-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L32-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00380 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00380 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00380 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00380 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L32-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00381 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00381 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00381 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00381 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L32-PLASTIC_SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00382 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00382 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00382 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00382 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00248",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00248",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L32-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L32-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L32-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L32-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 240
+  },
+  {
+   "id": "S2002-21",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "customer checks out online",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "CSR accepts the web order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "another customer cannot open this web order",
+     "expect": 404,
+     "status": 404,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "web order filed under the customer login's account",
+     "ok": true
+    },
+    {
+     "name": "accepted web order became a sales order",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 77
+  },
+  {
+   "id": "S2002-22",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "customer checks out online",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "CSR accepts the web order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "another customer cannot open this web order",
+     "expect": 404,
+     "status": 404,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "web order filed under the customer login's account",
+     "ok": true
+    },
+    {
+     "name": "accepted web order became a sales order",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 69
+  },
+  {
+   "id": "S2002-23",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "customer checks out online",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "CSR accepts the web order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "another customer cannot open this web order",
+     "expect": 404,
+     "status": 404,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "web order filed under the customer login's account",
+     "ok": true
+    },
+    {
+     "name": "accepted web order became a sales order",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 63
+  },
+  {
+   "id": "S2002-24",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "POS: open a counter session",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "POS: start order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: pick the customer",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: continue to lines",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: refuse to submit an empty sale",
+     "expect": "4xx",
+     "status": 400,
+     "ok": true
+    },
+    {
+     "name": "POS: search product",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: select product",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: add 500 lb of REM-A36-PL",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "POS: review",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: submit the sale",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "POS: refuse to submit the same sale twice",
+     "expect": "4xx",
+     "status": 400,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "POS line is priced",
+     "ok": true
+    },
+    {
+     "name": "POS total equals the line",
+     "ok": true
+    },
+    {
+     "name": "POS order saved with its total",
+     "ok": true
+    },
+    {
+     "name": "POS order belongs to the chosen customer",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 117
+  },
+  {
+   "id": "S2002-25",
+   "category": "pos-ecommerce",
+   "steps": [
+    {
+     "name": "POS: open a counter session",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "POS: start order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: pick the customer",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: continue to lines",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: refuse to submit an empty sale",
+     "expect": "4xx",
+     "status": 400,
+     "ok": true
+    },
+    {
+     "name": "POS: search product",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: select product",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: add 350 lb of HR-A36-PL",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "POS: review",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "POS: submit the sale",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "POS: refuse to submit the same sale twice",
+     "expect": "4xx",
+     "status": 400,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "POS line is priced",
+     "ok": true
+    },
+    {
+     "name": "POS total equals the line",
+     "ok": true
+    },
+    {
+     "name": "POS order saved with its total",
+     "ok": true
+    },
+    {
+     "name": "POS order belongs to the chosen customer",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 111
+  },
+  {
+   "id": "S2002-26",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L64-S5",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L64-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00383 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00383 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00383 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00383 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00249",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00249",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L64-S5: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L64-S5: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L64-S5: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L64-S5: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 136
+  },
+  {
+   "id": "S2002-27",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L13-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L13-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00384 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00384 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00384 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00384 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00250",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00250",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 153
+  },
+  {
+   "id": "S2002-28",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L59-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L59-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00385 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00385 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00385 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00385 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00251",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00251",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L59-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L59-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L59-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L59-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 147
+  },
+  {
+   "id": "S2002-29",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L55-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L55-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00386 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00386 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00386 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00386 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00252",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00252",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 137
+  },
+  {
+   "id": "S2002-30",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L40-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L40-S1 QA-L40 → QA-L80",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L80-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00387 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00387 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00387 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00387 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00253",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00253",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "transfer did not create or lose stock",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L40-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L40-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L40-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L40-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 162
+  },
+  {
+   "id": "S2002-31",
+   "category": "multi-location",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 500 lb from QA-L36-S4",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L36-S4 QA-L36 → QA-L34",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L34-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00388 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00388 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00388 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00388 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00254",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00254",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "transfer did not create or lose stock",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S4: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S4: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S4: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L36-S4: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 147
+  },
+  {
+   "id": "S2002-32",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "receive more of an existing item",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "receipt adds exactly the received qty",
+     "ok": true
+    },
+    {
+     "name": "receipt recorded against the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L30-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 17
+  },
+  {
+   "id": "S2002-33",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a negative receipt",
+     "expect": "4xx",
+     "status": 400,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L54-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L54-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L54-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L54-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 9
+  },
+  {
+   "id": "S2002-34",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "transfer whole item between branches",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L45-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L45-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L45-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L45-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 20
+  },
+  {
+   "id": "S2002-35",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a transfer from the wrong branch",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L28-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L28-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L28-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L28-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 13
+  },
+  {
+   "id": "S2002-36",
+   "category": "transfers-receiving",
+   "steps": [
+    {
+     "name": "reject a partial transfer of a single tracked item",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "QA-L62-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L62-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L62-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L62-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 11
+  },
+  {
+   "id": "S2002-37",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1200 lb from QA-L06-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L06-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00389 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00389 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00389 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00389 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00255",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00255",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L06-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 152
+  },
+  {
+   "id": "S2002-38",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 31500 lb from QA-L13-S1",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L13-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 40
+  },
+  {
+   "id": "S2002-39",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 400 lb from QA-L57-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "cancel order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "reject reopening a cancelled order",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "cancel releases the reservation",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L57-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 73
+  },
+  {
+   "id": "S2002-40",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 400 lb from QA-L33-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L43-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "reject skipping straight to SHIPPED",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "reject an unknown status",
+     "expect": "4xx",
+     "status": 400,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00390 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00390 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00390 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00390 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "reject moving a ready job back to SCHEDULED",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "reject rewriting a job's order through the edit endpoint",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "QA-L33-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L33-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L33-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L33-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 133
+  },
+  {
+   "id": "S2002-41",
+   "category": "rush-backorder-exception",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 400 lb from QA-L65-S4",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "reject shipping more than ordered",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "reject delivering a shipment that never left",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "QA-L65-S4: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L65-S4: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L65-S4: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L65-S4: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 62
+  },
+  {
+   "id": "S2002-42",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 900 lb from QA-L41-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L62-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00391 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00391 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00391 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00391 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00257",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00257",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00258",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00258",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is PARTIAL",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L41-S1: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 182
+  },
+  {
+   "id": "S2002-43",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1500 lb from QA-L09-S5",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L09-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00392 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00392 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00392 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00392 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00259",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00259",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00260",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00260",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is PARTIAL",
+     "ok": true
+    },
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L09-S5: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L09-S5: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L09-S5: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L09-S5: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 219
+  },
+  {
+   "id": "S2002-44",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 300 lb from QA-L02-S5",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L02-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00393 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00393 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00393 → ON_HOLD",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00393 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00393 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00393 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00393 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00261",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00261",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S5: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S5: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S5: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L02-S5: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 170
+  },
+  {
+   "id": "S2002-45",
+   "category": "partial-rework-return",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 300 lb from QA-L71-S2",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L71-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00394 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00394 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00394 → ON_HOLD",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00394 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00394 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00394 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00394 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00262",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00262",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L71-S2: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 156
+  },
+  {
+   "id": "S2002-46",
+   "category": "partial-rework-return",
+   "steps": [],
+   "invariants": [],
+   "result": "BLOCKED",
+   "notes": [
+    "No API to receive a customer return (Order type RETURN exists, but no endpoint creates or processes one)."
+   ],
+   "ms": 0
+  },
+  {
+   "id": "S2002-47",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 700 lb from QA-L10-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "allocate 1450 lb from QA-L76-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L76-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00395 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00395 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00395 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00395 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L76-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00396 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00396 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00396 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00396 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (2 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00263",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00263",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L10-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L10-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L10-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L10-S3: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "QA-L76-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L76-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L76-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L76-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 207
+  },
+  {
+   "id": "S2002-48",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 1400 lb from QA-L61-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "allocate 1200 lb from QA-L61-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L61-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00397 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00397 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00397 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00397 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L61-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00398 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00398 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00398 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00398 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (2 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00264",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00264",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 216
+  },
+  {
+   "id": "S2002-49",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 250 lb from QA-L55-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "allocate 600 lb from QA-L55-S4",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L55-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00399 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00399 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00399 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00399 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L55-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00400 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00400 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00400 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00400 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (2 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00265",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00265",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S1: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S4: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S4: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S4: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L55-S4: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 206
+  },
+  {
+   "id": "S2002-50",
+   "category": "mixed-division",
+   "steps": [
+    {
+     "name": "create sales order",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "confirm order",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "allocate 800 lb from QA-L61-S1",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "allocate 550 lb from QA-L61-S3",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L61-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00401 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00401 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00401 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00401 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L61-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00402 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00402 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00402 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00402 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (2 line(s))",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "dispatch SHP-00266",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "deliver SHP-00266",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create shipment (1 line(s))",
+     "expect": "4xx",
+     "status": 409,
+     "ok": true
+    }
+   ],
+   "invariants": [
+    {
+     "name": "order subtotal = sum of line totals",
+     "ok": true
+    },
+    {
+     "name": "order created by the signed-in user",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "order status is COMPLETE",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S1: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L61-S3: inventory branch = coil branch",
+     "ok": true
+    }
+   ],
+   "result": "PASS",
+   "notes": [],
+   "ms": 235
+  }
+ ],
+ "concurrency": {
+  "pass": true,
+  "probes": [
+   {
+    "name": "10 simultaneous orders all saved with distinct numbers",
+    "pass": true,
+    "detail": "statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct"
+   },
+   {
+    "name": "two reservations racing for the same stock: exactly one wins",
+    "pass": true,
+    "detail": "statuses 409,201; available 4640"
+   },
+   {
+    "name": "two shipments racing for the same order line: exactly one is created",
+    "pass": true,
+    "detail": "statuses 201,409"
+   },
+   {
+    "name": "one shipment dispatched three times at once: counted once",
+    "pass": true,
+    "detail": "statuses 200,409,409; line shipped 6960 of 6960; on hand 11600 → 4640"
+   },
+   {
+    "name": "10 simultaneous jobs all saved with distinct numbers",
+    "pass": true,
+    "detail": "statuses 201,201,201,201,201,201,201,201,201,201"
+   }
+  ]
+ },
+ "openDefectProbes": [
+  {
+   "id": "D-014",
+   "what": "Counter quick sale cannot add an item or take payment",
+   "stillPresent": true,
+   "evidence": "500 {\"error\":\"Failed to add item\"}"
+  },
+  {
+   "id": "D-015",
+   "what": "No way to record a customer return",
+   "stillPresent": true,
+   "evidence": "POST /api/returns → 404"
+  },
+  {
+   "id": "D-016",
+   "what": "No way to create an invoice or record a payment",
+   "stillPresent": true,
+   "evidence": "POST /api/invoices → 404"
+  }
+ ],
+ "reconciliation": {
+  "pass": true,
+  "stockItems": 323,
+  "orders": 369,
+  "shipmentsWithStockMovement": 210,
+  "ordersFromThisQaRun": 310,
+  "totals": {
+   "orders": 369,
+   "jobs": 409,
+   "shipments": 267
+  },
+  "problems": [],
+  "problemCount": 0,
+  "stockProblems": 0,
+  "demoSeedDataProblems": {
+   "count": 49,
+   "examples": [
+    "SO-P1003: fully shipped but status is CONFIRMED",
+    "SO-P1001: fully shipped but status is CONFIRMED",
+    "SO-C2001 line 1: shipped 7 ≠ shipments that left 0",
+    "SO-C2002 line 1: shipped 10 ≠ shipments that left 0",
+    "SO-C2003 line 1: shipped 9 ≠ shipments that left 0"
+   ]
+  }
+ },
+ "summary": {
+  "clean": true,
+  "tally": {
+   "PASS": 49,
+   "BLOCKED": 1
+  },
+  "steps": 596,
+  "checks": 490,
+  "failedSteps": {},
+  "failedChecks": {}
+ }
+}

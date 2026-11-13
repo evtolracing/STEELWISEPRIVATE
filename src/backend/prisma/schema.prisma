@@ -437,7 +437,6 @@ model Coil {
   parentCoil       Coil?                 @relation("CoilParent", fields: [parentCoilId], references: [id])
   childCoils       Coil[]                @relation("CoilParent")
   product          Product?              @relation(fields: [productId], references: [id])
-  documentLinks    DocumentLink[]
   inventory        Inventory?
   movements        MaterialMovement[]
   allocations      OrderLineAllocation[]
@@ -1236,7 +1235,11 @@ model DocumentLink {
   linkType   String   @default("PRIMARY")
   createdAt  DateTime @default(now())
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  coil       Coil     @relation(fields: [entityId], references: [id], map: "document_coil_link")
+
+  // entityId points at whatever entityType names (heat, stock item, order…),
+  // so it has no foreign key of its own.
+  @@index([entityType, entityId])
+  @@index([documentId])
 }
 
 model CommodityPrice {

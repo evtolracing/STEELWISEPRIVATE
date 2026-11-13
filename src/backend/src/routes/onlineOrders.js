@@ -10,7 +10,7 @@
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import { packNotes, getSystemUserId, nextOrderNumber } from './intakeOrders.js';
+import { packNotes, getSystemUserId, createSalesOrder } from './intakeOrders.js';
 
 const router = Router();
 const iso = (d) => (d ? d.toISOString() : null);
@@ -88,10 +88,10 @@ router.post('/:id/accept', async (req, res) => {
     });
     const bySku = new Map(products.map((p) => [p.sku, p]));
 
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await createSalesOrder((orderNumber) => prisma.$transaction(async (tx) => {
       const created = await tx.order.create({
         data: {
-          orderNumber: await nextOrderNumber(),
+          orderNumber,
           orderType: 'SO',
           status: 'PENDING',
           buyerId,
@@ -129,7 +129,7 @@ router.post('/:id/accept', async (req, res) => {
         data: { status: 'ACCEPTED', customerId: buyerId, internalOrderId: created.id, decidedAt: new Date() },
       });
       return created;
-    });
+    }));
 
     const updated = await prisma.onlineOrder.findUnique({ where: { id: online.id } });
     res.json({ ...toApi(updated), internalOrderNumber: order.orderNumber });

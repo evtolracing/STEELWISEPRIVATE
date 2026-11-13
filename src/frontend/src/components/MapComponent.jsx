@@ -13,6 +13,7 @@ import {
   Slider,
   FormControlLabel,
   Switch,
+  Alert,
 } from '@mui/material';
 import {
   Room,
@@ -664,4 +665,14 @@ const MapComponent = ({
   );
 };
 
-export default MapComponent;
+// Without a map key the map library throws and takes the whole page down, so
+// show a notice in the map's place instead.
+const MapOrNotice = (props) => (getMapboxToken()
+  ? <MapComponent {...props} />
+  : (
+    <Alert severity="info" sx={{ height: props.height || 'auto', alignItems: 'center' }}>
+      The map is not available because no map key is set up for this site. Everything else on this page still works.
+    </Alert>
+  ));
+
+export default MapOrNotice;

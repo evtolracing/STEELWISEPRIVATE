@@ -60,81 +60,117 @@ const upload = multer({
 
 const router = Router();
 
-// GET /documents - List documents with optional filters
+/** Runs a multer upload and answers a refused file (wrong type, too large) with a 400. */
+const accept = (uploader) => (req, res, next) => uploader(req, res, (err) => {
+  if (!err) return next();
+  const tooBig = err.code === 'LIMIT_FILE_SIZE';
+  res.status(tooBig ? 413 : 400).json({ error: tooBig ? 'That file is larger than the 25 MB limit' : err.message || 'That file could not be accepted' });
+});
+
+// The screens use `type`, `mimeType`, `sizeBytes` and `organizationId`; the
+// table stores them as documentType, fileType, fileSizeBytes and ownerId.
+const DOCUMENT_TYPES = ['MTR', 'CERT', 'BOL', 'POD', 'INVOICE', 'SPEC', 'COA', 'MSDS', 'DRAWING', 'OTHER'];
+const TYPE_ALIASES = { MTC: 'MTR', CERTIFICATE: 'CERT', COC: 'CERT', SDS: 'MSDS' };
+function documentTypeFor(value) {
+  const key = String(value || '').toUpperCase();
+  if (DOCUMENT_TYPES.includes(key)) return key;
+  return TYPE_ALIASES[key] || 'OTHER';
+}
+function toApi(doc) {
+  if (!doc) return doc;
+  const { storagePath, ...rest } = doc;
+  return {
+    ...rest,
+    type: doc.documentType,
+    mimeType: doc.fileType,
+    sizeBytes: doc.fileSizeBytes,
+    organizationId: doc.ownerId,
+    downloadUrl: `/api/documents/${doc.id}/download`,
+  };
+}
+const NOT_LINKABLE = 'Documents cannot be attached to this kind of record until the pending database update has been applied.';
+const NO_STORAGE = 'File storage is not set up on this deployment, so files cannot be uploaded here yet.';
+const sha256 = (file) => crypto.createHash('sha256').update(fs.readFileSync(file.path)).digest('hex');
+const removeFile = (file) => { if (file?.path && fs.existsSync(file.path)) fs.unlinkSync(file.path); };
+
+async function saveUpload(file, body) {
+  const { entityType, entityId, type, organizationId } = body;
+  const document = await prisma.document.create({
+    data: {
+      documentType: documentTypeFor(type || entityType),
+      title: body.title || undefined,
+      fileName: file.originalname,
+      fileType: file.mimetype,
+      fileSizeBytes: file.size,
+      storagePath: file.path,
+      checksum: sha256(file),
+      ownerId: organizationId || undefined,
+    },
+  });
+  if (entityType && entityId) {
+    try {
+      await prisma.documentLink.create({ data: { documentId: document.id, entityType, entityId } });
+    } catch (error) {
+      // Until the "document links any record" database update is applied, links only work for stock items.
+      await prisma.document.delete({ where: { id: document.id } }).catch(() => {});
+      if (error?.code === 'P2003') throw Object.assign(new Error('NOT_LINKABLE'), { notLinkable: true });
+      throw error;
+    }
+    // A mill cert uploaded on a heat becomes that heat's cert of record.
+    if (entityType === 'HEAT' && document.documentType === 'MTR') {
+      await prisma.heat.updateMany({ where: { id: entityId }, data: { mtrDocumentId: document.id } });
+    }
+  }
+  return document;
+}
+
+// GET /documents - List documents
 router.get('/', async (req, res) => {
   try {
-    const { type, organizationId, limit = '50', offset = '0' } = req.query;
-    
+    const { type, organizationId } = req.query;
+    const take = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 200);
+    const skip = Math.max(parseInt(req.query.offset, 10) || 0, 0);
     const where = {};
-    
     if (type) {
-      where.type = type;
+      if (!DOCUMENT_TYPES.includes(String(type).toUpperCase()) && !TYPE_ALIASES[String(type).toUpperCase()]) {
+        return res.status(400).json({ error: `type must be one of: ${DOCUMENT_TYPES.join(', ')}` });
+      }
+      where.documentType = documentTypeFor(type);
     }
-    
-    if (organizationId) {
-      where.organizationId = organizationId;
-    }
-    
+    if (organizationId) where.ownerId = String(organizationId);
+
     const [documents, total] = await Promise.all([
-      prisma.document.findMany({
-        where,
-        take: parseInt(limit),
-        skip: parseInt(offset),
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          type: true,
-          fileName: true,
-          mimeType: true,
-          sizeBytes: true,
-          createdAt: true,
-          organization: {
-            select: { id: true, name: true },
-          },
-        },
-      }),
+      prisma.document.findMany({ where, take, skip, orderBy: { createdAt: 'desc' }, include: { owner: { select: { id: true, name: true, code: true } } } }),
       prisma.document.count({ where }),
     ]);
-    
-    res.json({
-      data: documents,
-      meta: {
-        total,
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-      },
-    });
+    res.json({ data: documents.map(toApi), meta: { total, limit: take, offset: skip } });
   } catch (error) {
     console.error('Error fetching documents:', error);
     res.status(500).json({ error: 'Failed to fetch documents' });
   }
 });
 
-// GET /documents/:id - Get document details and download URL
+// GET /documents/entity/:entityType/:entityId - Documents linked to a heat, stock item, order…
+router.get('/entity/:entityType/:entityId', async (req, res) => {
+  try {
+    const { entityType, entityId } = req.params;
+    const links = await prisma.documentLink.findMany({ where: { entityType, entityId }, include: { document: true }, orderBy: { createdAt: 'desc' } });
+    res.json({ data: links.map((l) => ({ ...toApi(l.document), linkId: l.id })) });
+  } catch (error) {
+    console.error('Error fetching entity documents:', error);
+    res.status(500).json({ error: 'Failed to fetch entity documents' });
+  }
+});
+
+// GET /documents/:id - Get document by ID
 router.get('/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    
     const document = await prisma.document.findUnique({
-      where: { id },
-      include: {
-        organization: {
-          select: { id: true, name: true },
-        },
-        uploadedBy: {
-          select: { id: true, firstName: true, lastName: true },
-        },
-      },
+      where: { id: req.params.id },
+      include: { owner: { select: { id: true, name: true, code: true } }, links: true },
     });
-    
-    if (!document) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-    
-    res.json({
-      ...document,
-      downloadUrl: `/api/documents/${id}/download`,
-    });
+    if (!document) return res.status(404).json({ error: 'Document not found' });
+    res.json(toApi(document));
   } catch (error) {
     console.error('Error fetching document:', error);
     res.status(500).json({ error: 'Failed to fetch document' });
@@ -144,32 +180,15 @@ router.get('/:id', async (req, res) => {
 // GET /documents/:id/download - Download document file
 router.get('/:id/download', async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const document = await prisma.document.findUnique({
-      where: { id },
-    });
-    
-    if (!document) {
-      return res.status(404).json({ error: 'Document not found' });
+    const document = await prisma.document.findUnique({ where: { id: req.params.id } });
+    if (!document) return res.status(404).json({ error: 'Document not found' });
+    if (!document.storagePath || !fs.existsSync(document.storagePath)) {
+      return res.status(404).json({ error: 'The file for this document is not available', fileName: document.fileName });
     }
-
-    // Stream the actual file if it exists on disk
-    if (document.storagePath && fs.existsSync(document.storagePath)) {
-      res.setHeader('Content-Type', document.mimeType || 'application/octet-stream');
-      res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
-      if (document.sizeBytes) {
-        res.setHeader('Content-Length', document.sizeBytes);
-      }
-      const stream = fs.createReadStream(document.storagePath);
-      stream.pipe(res);
-    } else {
-      res.status(404).json({
-        error: 'File not found on disk',
-        storagePath: document.storagePath,
-        fileName: document.fileName,
-      });
-    }
+    res.setHeader('Content-Type', document.fileType || 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${String(document.fileName).replace(/["\r\n]/g, '')}"`);
+    if (document.fileSizeBytes) res.setHeader('Content-Length', document.fileSizeBytes);
+    fs.createReadStream(document.storagePath).pipe(res);
   } catch (error) {
     console.error('Error downloading document:', error);
     res.status(500).json({ error: 'Failed to download document' });
@@ -177,196 +196,48 @@ router.get('/:id/download', async (req, res) => {
 });
 
 // POST /documents/upload - Upload a file and create a Document record
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload', accept(upload.single('file')), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file provided' });
-    }
-
-    const { entityType, entityId, type, organizationId, uploadedById } = req.body;
-
-    // Compute checksum
-    const fileBuffer = fs.readFileSync(req.file.path);
-    const checksum = crypto.createHash('sha256').update(fileBuffer).digest('hex');
-
-    // Create document record
-    const document = await prisma.document.create({
-      data: {
-        type: type || entityType || 'OTHER',
-        fileName: req.file.originalname,
-        mimeType: req.file.mimetype,
-        sizeBytes: req.file.size,
-        storagePath: req.file.path,
-        checksum,
-        organizationId: organizationId || undefined,
-        uploadedById: uploadedById || undefined,
-      },
-    });
-
-    // If entityType + entityId provided, create a DocumentLink
-    if (entityType && entityId) {
-      try {
-        await prisma.documentLink.create({
-          data: {
-            documentId: document.id,
-            entityType,
-            entityId,
-          },
-        });
-      } catch (linkErr) {
-        console.warn('DocumentLink creation skipped (table may not exist):', linkErr.message);
-      }
-
-      // Special case: if linking MTR to a Heat, update the heat's mtrDocumentId
-      if (entityType === 'HEAT' && (type === 'MTC' || type === 'MTR')) {
-        try {
-          await prisma.heat.update({
-            where: { id: entityId },
-            data: { mtrDocumentId: document.id },
-          });
-        } catch (heatErr) {
-          console.warn('Heat mtrDocumentId update skipped:', heatErr.message);
-        }
-      }
-    }
-
-    res.status(201).json({
-      ...document,
-      downloadUrl: `/api/documents/${document.id}/download`,
-    });
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+    if (!req.file.path) return res.status(501).json({ error: NO_STORAGE });
+    res.status(201).json(toApi(await saveUpload(req.file, req.body || {})));
   } catch (error) {
+    removeFile(req.file);
+    if (error?.notLinkable) return res.status(409).json({ error: NOT_LINKABLE });
+    if (error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The upload has a field that is not valid' });
     console.error('Error uploading document:', error);
-    // Clean up uploaded file on error
-    if (req.file?.path && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(500).json({ error: 'Failed to upload document' });
   }
 });
 
 // POST /documents/upload-multiple - Upload multiple files at once
-router.post('/upload-multiple', upload.array('files', 10), async (req, res) => {
+router.post('/upload-multiple', accept(upload.array('files', 10)), async (req, res) => {
   try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'No files provided' });
-    }
-
-    const { entityType, entityId, type, organizationId, uploadedById } = req.body;
+    if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No files provided' });
+    if (req.files.some((f) => !f.path)) return res.status(501).json({ error: NO_STORAGE });
     const documents = [];
-
-    for (const file of req.files) {
-      const fileBuffer = fs.readFileSync(file.path);
-      const checksum = crypto.createHash('sha256').update(fileBuffer).digest('hex');
-
-      const doc = await prisma.document.create({
-        data: {
-          type: type || entityType || 'OTHER',
-          fileName: file.originalname,
-          mimeType: file.mimetype,
-          sizeBytes: file.size,
-          storagePath: file.path,
-          checksum,
-          organizationId: organizationId || undefined,
-          uploadedById: uploadedById || undefined,
-        },
-      });
-
-      if (entityType && entityId) {
-        try {
-          await prisma.documentLink.create({
-            data: { documentId: doc.id, entityType, entityId },
-          });
-        } catch (_) { /* skip if table doesn't exist */ }
-      }
-
-      documents.push({ ...doc, downloadUrl: `/api/documents/${doc.id}/download` });
-    }
-
+    for (const file of req.files) documents.push(toApi(await saveUpload(file, req.body || {})));
     res.status(201).json({ data: documents, count: documents.length });
   } catch (error) {
-    console.error('Error uploading multiple documents:', error);
+    for (const file of req.files || []) removeFile(file);
+    if (error?.notLinkable) return res.status(409).json({ error: NOT_LINKABLE });
+    console.error('Error uploading documents:', error);
     res.status(500).json({ error: 'Failed to upload documents' });
   }
 });
 
-// GET /documents/entity/:entityType/:entityId - Get documents linked to an entity
-router.get('/entity/:entityType/:entityId', async (req, res) => {
-  try {
-    const { entityType, entityId } = req.params;
-
-    // Try DocumentLink table first
-    let documents = [];
-    try {
-      const links = await prisma.documentLink.findMany({
-        where: { entityType, entityId },
-        include: {
-          document: {
-            select: {
-              id: true, type: true, fileName: true, mimeType: true,
-              sizeBytes: true, createdAt: true, checksum: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-      documents = links.map(l => ({
-        ...l.document,
-        downloadUrl: `/api/documents/${l.document.id}/download`,
-        linkId: l.id,
-      }));
-    } catch {
-      // Fallback: query documents by type matching entityType
-      const fallback = await prisma.document.findMany({
-        where: { type: entityType },
-        orderBy: { createdAt: 'desc' },
-        take: 50,
-      });
-      documents = fallback.map(d => ({
-        ...d,
-        downloadUrl: `/api/documents/${d.id}/download`,
-      }));
-    }
-
-    res.json({ data: documents });
-  } catch (error) {
-    console.error('Error fetching entity documents:', error);
-    res.status(500).json({ error: 'Failed to fetch entity documents' });
-  }
-});
-
-// POST /documents - Upload a new document (metadata only - file upload handled separately)
-router.post('/', async (req, res) => {
-  try {
-    const { type, fileName, mimeType, sizeBytes, storagePath, organizationId, uploadedById } = req.body;
-    
-    const document = await prisma.document.create({
-      data: {
-        type,
-        fileName,
-        mimeType,
-        sizeBytes: sizeBytes ? parseInt(sizeBytes) : null,
-        storagePath,
-        organizationId,
-        uploadedById,
-      },
-    });
-    
-    res.status(201).json(document);
-  } catch (error) {
-    console.error('Error creating document:', error);
-    res.status(500).json({ error: 'Failed to create document' });
-  }
-});
-
-// DELETE /documents/:id - Delete document
+// DELETE /documents/:id - Delete document and its file
 router.delete('/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    await prisma.document.delete({
-      where: { id },
-    });
-    
+    const document = await prisma.document.findUnique({ where: { id: req.params.id } });
+    if (!document) return res.status(404).json({ error: 'Document not found' });
+    await prisma.$transaction([
+      prisma.heat.updateMany({ where: { mtrDocumentId: document.id }, data: { mtrDocumentId: null } }),
+      prisma.documentLink.deleteMany({ where: { documentId: document.id } }),
+      prisma.document.delete({ where: { id: document.id } }),
+    ]);
+    // Only remove files this module stored.
+    if (document.storagePath && path.resolve(document.storagePath).startsWith(path.resolve(uploadsDir) + path.sep)) removeFile({ path: document.storagePath });
     res.json({ message: 'Document deleted successfully' });
   } catch (error) {
     console.error('Error deleting document:', error);

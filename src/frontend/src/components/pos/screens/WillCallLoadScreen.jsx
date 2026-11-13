@@ -48,7 +48,7 @@ import {
   Create as SignatureIcon,
   ArrowForward as CompleteIcon,
   ArrowBack as BackIcon,
-  PartialIcon,
+  Warning as PartialIcon,
   Inventory as InventoryIcon,
   QrCodeScanner as ScanIcon,
   Warning as WarningIcon

@@ -15,6 +15,7 @@
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { createNumbered, padded } from '../lib/numbering.js';
 
 const router = Router();
 
@@ -68,6 +69,11 @@ export async function getSystemUserId() {
 export async function nextOrderNumber() {
   const count = await prisma.order.count();
   return `SO-${String(count + 1).padStart(5, '0')}`;
+}
+
+/** Creates a sales order with the next free SO number; `create(orderNumber)` does the insert. */
+export function createSalesOrder(create) {
+  return createNumbered({ count: () => prisma.order.count(), format: padded('SO'), create });
 }
 
 /** Map a DB Order row → the shape the intake frontend expects */
@@ -145,9 +151,28 @@ router.post('/', async (req, res) => {
     const seller = await prisma.organization.findFirst({ where: { code: 'ALRO' } });
 
     const meta = { source, division, location, priority, ownership, customerName };
-    const orderNumber = await nextOrderNumber();
+    const lineData = await Promise.all(lines.map(async (line, idx) => {
+      // Only store productId / gradeId if they reference real DB records
+      const validProductId = await resolveProductId(line.productId);
+      const validGradeId = await resolveGradeId(line.gradeId);
+      return {
+        lineNumber: idx + 1,
+        description: line.description || line.productId || 'Material',
+        productId: validProductId,
+        gradeId: validGradeId,
+        qtyOrdered: line.qty || line.qtyOrdered || 1,
+        unit: line.uom || line.unit || 'LB',
+        unitPrice: line.unitPrice || null,
+        extendedPrice: line.extPrice || line.extendedPrice || null,
+        thicknessIn: line.thicknessIn || null,
+        widthIn: line.widthIn || null,
+        lengthIn: line.lengthIn || null,
+        // Store processes array in line notes as JSON
+        notes: line.processes ? JSON.stringify(line.processes) : null,
+      };
+    }));
 
-    const order = await prisma.order.create({
+    const order = await createSalesOrder((orderNumber) => prisma.order.create({
       data: {
         orderNumber,
         orderType: 'SO',
@@ -158,31 +183,10 @@ router.post('/', async (req, res) => {
         requiredDate: requestedDate ? new Date(requestedDate) : null,
         notes: packNotes(notes, meta),
         createdById,
-        lines: {
-          create: await Promise.all(lines.map(async (line, idx) => {
-            // Only store productId / gradeId if they reference real DB records
-            const validProductId = await resolveProductId(line.productId);
-            const validGradeId = await resolveGradeId(line.gradeId);
-            return {
-              lineNumber: idx + 1,
-              description: line.description || line.productId || 'Material',
-              productId: validProductId,
-              gradeId: validGradeId,
-              qtyOrdered: line.qty || line.qtyOrdered || 1,
-              unit: line.uom || line.unit || 'LB',
-              unitPrice: line.unitPrice || null,
-              extendedPrice: line.extPrice || line.extendedPrice || null,
-              thicknessIn: line.thicknessIn || null,
-              widthIn: line.widthIn || null,
-              lengthIn: line.lengthIn || null,
-              // Store processes array in line notes as JSON
-              notes: line.processes ? JSON.stringify(line.processes) : null,
-            };
-          })),
-        },
+        lines: { create: lineData },
       },
       include: ORDER_INCLUDE,
-    });
+    }));
 
     res.status(201).json({ data: mapOrderForIntake(order) });
   } catch (error) {
@@ -354,11 +358,6 @@ router.post('/:id/submit', async (req, res) => {
 
 // ─── POST /:id/create-work-orders — generate Jobs from order lines ──
 
-async function nextJobNumber() {
-  const count = await prisma.job.count();
-  return `JOB-${String(count + 1).padStart(5, '0')}`;
-}
-
 router.post('/:id/create-work-orders', async (req, res) => {
   try {
     const order = await prisma.order.findUnique({
@@ -385,8 +384,7 @@ router.post('/:id/create-work-orders', async (req, res) => {
         ? processes.map(p => p.name || p.type || p).join(' + ')
         : 'PROCESSING';
 
-      const jobNumber = await nextJobNumber();
-      const job = await prisma.job.create({
+      const job = await createNumbered({ count: () => prisma.job.count(), format: padded('JOB'), create: (jobNumber) => prisma.job.create({
         data: {
           jobNumber,
           orderId: order.id,
@@ -406,7 +404,7 @@ router.post('/:id/create-work-orders', async (req, res) => {
           }),
           createdById,
         },
-      });
+      }) });
       jobs.push({
         id: job.id,
         jobNumber: job.jobNumber,

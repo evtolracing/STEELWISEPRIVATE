@@ -12,7 +12,9 @@
  * - Discount impact preview
  */
 
-import { posPricingService } from './POSPricingService.js';
+import { getPricingService } from './POSPricingService.js';
+
+const posPricingService = getPricingService();
 
 // ============================================
 // CONFIGURATION

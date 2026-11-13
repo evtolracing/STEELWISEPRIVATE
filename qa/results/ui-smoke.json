@@ -1,0 +1,1278 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-13T03:19:54.640Z",
+ "who": "qa-admin@qa.test",
+ "screens": 120,
+ "tally": {
+  "OK": 120
+ },
+ "screensWithFailedApiCalls": 7,
+ "failedApiCalls": {
+  "GET /api/heats/:id → 404": [
+   "/heats/:id"
+  ],
+  "GET /api/coils/:id → 404": [
+   "/units/:id"
+  ],
+  "GET /api/work-orders/:id → 404": [
+   "/work-orders/:id"
+  ],
+  "GET /api/qc/inspections/:id → 404": [
+   "/qc/inspect/:id"
+  ],
+  "GET /api/orders/intake/:id → 404": [
+   "/orders/:id"
+  ],
+  "GET /api/ecom/catalog/:id → 404": [
+   "/shop/products/:id"
+  ],
+  "GET /api/ecom/my-orders/:id → 404": [
+   "/shop/orders/:id"
+  ]
+ },
+ "results": [
+  {
+   "route": "/shop-floor",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Warning: validateDOMNesting(...): %s cannot appear as a child of <%s>.%s%s%s <h5> h2   \n    at h5\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=25579222:4218:49\n    at Typog"
+   ],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop-floor",
+   "textLength": 208,
+   "hasParam": false
+  },
+  {
+   "route": "/mobile-rep",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/mobile-rep",
+   "textLength": 371,
+   "hasParam": false
+  },
+  {
+   "route": "/intake",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/",
+   "textLength": 2292,
+   "hasParam": false
+  },
+  {
+   "route": "/inventory",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/inventory",
+   "textLength": 4327,
+   "hasParam": false
+  },
+  {
+   "route": "/promise",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/",
+   "textLength": 2292,
+   "hasParam": false
+  },
+  {
+   "route": "/place-order",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/",
+   "textLength": 2292,
+   "hasParam": false
+  },
+  {
+   "route": "/",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/",
+   "textLength": 2292,
+   "hasParam": false
+  },
+  {
+   "route": "/ops-cockpit",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/ops-cockpit",
+   "textLength": 15691,
+   "hasParam": false
+  },
+  {
+   "route": "/heats",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/heats",
+   "textLength": 2130,
+   "hasParam": false
+  },
+  {
+   "route": "/heats/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/heats/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/heats/00000000-0000-4000-8000-000000000000",
+   "textLength": 2059,
+   "hasParam": true
+  },
+  {
+   "route": "/units",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/units",
+   "textLength": 2235,
+   "hasParam": false
+  },
+  {
+   "route": "/units/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/coils/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/units/00000000-0000-4000-8000-000000000000",
+   "textLength": 2149,
+   "hasParam": true
+  },
+  {
+   "route": "/work-orders",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/work-orders",
+   "textLength": 1832,
+   "hasParam": false
+  },
+  {
+   "route": "/work-orders/new",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/work-orders/new",
+   "textLength": 1956,
+   "hasParam": false
+  },
+  {
+   "route": "/work-orders/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/work-orders/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/work-orders/00000000-0000-4000-8000-000000000000",
+   "textLength": 2217,
+   "hasParam": true
+  },
+  {
+   "route": "/logistics/shipments",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/logistics/shipments",
+   "textLength": 2139,
+   "hasParam": false
+  },
+  {
+   "route": "/logistics/shipments/:id",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/logistics/shipments/00000000-0000-4000-8000-000000000000",
+   "textLength": 2026,
+   "hasParam": true
+  },
+  {
+   "route": "/pricing",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/pricing",
+   "textLength": 2533,
+   "hasParam": false
+  },
+  {
+   "route": "/pricing/quotes/new",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/pricing/quotes/new",
+   "textLength": 2134,
+   "hasParam": false
+  },
+  {
+   "route": "/commercial/demand-shaping",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/commercial/demand-shaping",
+   "textLength": 2524,
+   "hasParam": false
+  },
+  {
+   "route": "/qaqc",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/qaqc",
+   "textLength": 2498,
+   "hasParam": false
+  },
+  {
+   "route": "/qaqc/test-entry",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/qaqc/test-entry",
+   "textLength": 1819,
+   "hasParam": false
+  },
+  {
+   "route": "/sqm/receiving",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sqm/receiving",
+   "textLength": 2578,
+   "hasParam": false
+  },
+  {
+   "route": "/sqm/inspections",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sqm/inspections",
+   "textLength": 2234,
+   "hasParam": false
+  },
+  {
+   "route": "/sqm/snc",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sqm/snc",
+   "textLength": 2727,
+   "hasParam": false
+  },
+  {
+   "route": "/sqm/scar",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sqm/scar",
+   "textLength": 2465,
+   "hasParam": false
+  },
+  {
+   "route": "/sqm/scorecards",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sqm/scorecards",
+   "textLength": 2412,
+   "hasParam": false
+  },
+  {
+   "route": "/sqm/suppliers",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sqm/suppliers",
+   "textLength": 2640,
+   "hasParam": false
+  },
+  {
+   "route": "/customer-quality/claims",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customer-quality/claims",
+   "textLength": 2585,
+   "hasParam": false
+  },
+  {
+   "route": "/customer-quality/rma",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customer-quality/rma",
+   "textLength": 2449,
+   "hasParam": false
+  },
+  {
+   "route": "/customer-quality/car",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customer-quality/car",
+   "textLength": 2485,
+   "hasParam": false
+  },
+  {
+   "route": "/customer-quality/credits",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customer-quality/credits",
+   "textLength": 2464,
+   "hasParam": false
+  },
+  {
+   "route": "/contractors/active",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/contractors/active",
+   "textLength": 2621,
+   "hasParam": false
+  },
+  {
+   "route": "/contractors/registry",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/contractors/registry",
+   "textLength": 2576,
+   "hasParam": false
+  },
+  {
+   "route": "/contractors/invitations",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/contractors/invitations",
+   "textLength": 2606,
+   "hasParam": false
+  },
+  {
+   "route": "/contractors/kiosk",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/contractors/kiosk",
+   "textLength": 2103,
+   "hasParam": false
+  },
+  {
+   "route": "/training/dashboard",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/training/dashboard",
+   "textLength": 2642,
+   "hasParam": false
+  },
+  {
+   "route": "/training/courses",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/training/courses",
+   "textLength": 3410,
+   "hasParam": false
+  },
+  {
+   "route": "/training/my-certs",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/training/my-certs",
+   "textLength": 2772,
+   "hasParam": false
+  },
+  {
+   "route": "/training/matrix",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/training/matrix",
+   "textLength": 3295,
+   "hasParam": false
+  },
+  {
+   "route": "/qc",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/qc",
+   "textLength": 1895,
+   "hasParam": false
+  },
+  {
+   "route": "/qc/inspect/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/qc/inspections/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/qc/inspections/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/qc/inspect/00000000-0000-4000-8000-000000000000",
+   "textLength": 1630,
+   "hasParam": true
+  },
+  {
+   "route": "/production-quality/dashboard",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production-quality/dashboard",
+   "textLength": 3599,
+   "hasParam": false
+  },
+  {
+   "route": "/production-quality/inspections",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production-quality/inspections",
+   "textLength": 2380,
+   "hasParam": false
+  },
+  {
+   "route": "/production-quality/ncr",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production-quality/ncr",
+   "textLength": 2322,
+   "hasParam": false
+  },
+  {
+   "route": "/production-quality/spc",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production-quality/spc",
+   "textLength": 2417,
+   "hasParam": false
+  },
+  {
+   "route": "/production-quality/trace",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production-quality/trace",
+   "textLength": 2012,
+   "hasParam": false
+  },
+  {
+   "route": "/maintenance/dashboard",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/maintenance/dashboard",
+   "textLength": 3607,
+   "hasParam": false
+  },
+  {
+   "route": "/maintenance/work-orders",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/maintenance/work-orders",
+   "textLength": 1978,
+   "hasParam": false
+  },
+  {
+   "route": "/maintenance/assets",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/maintenance/assets",
+   "textLength": 2086,
+   "hasParam": false
+  },
+  {
+   "route": "/maintenance/pm-schedules",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/maintenance/pm-schedules",
+   "textLength": 2820,
+   "hasParam": false
+  },
+  {
+   "route": "/maintenance/parts",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/maintenance/parts",
+   "textLength": 2717,
+   "hasParam": false
+  },
+  {
+   "route": "/provenance",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/provenance",
+   "textLength": 1841,
+   "hasParam": false
+  },
+  {
+   "route": "/production",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production",
+   "textLength": 29013,
+   "hasParam": false
+  },
+  {
+   "route": "/production/shop-floor",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production/shop-floor",
+   "textLength": 5822,
+   "hasParam": false
+  },
+  {
+   "route": "/production/shipping",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/production/shipping",
+   "textLength": 24956,
+   "hasParam": false
+  },
+  {
+   "route": "/order-board",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/order-board",
+   "textLength": 38169,
+   "hasParam": false
+  },
+  {
+   "route": "/schedule",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/schedule",
+   "textLength": 2444,
+   "hasParam": false
+  },
+  {
+   "route": "/jobs/:id",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/jobs/00000000-0000-4000-8000-000000000000",
+   "textLength": 2282,
+   "hasParam": true
+  },
+  {
+   "route": "/receiving",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/receiving",
+   "textLength": 2054,
+   "hasParam": false
+  },
+  {
+   "route": "/material-tracking",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/material-tracking",
+   "textLength": 2735,
+   "hasParam": false
+  },
+  {
+   "route": "/material-tracking/packaging",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/material-tracking/packaging",
+   "textLength": 24001,
+   "hasParam": false
+  },
+  {
+   "route": "/material-tracking/tags",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/material-tracking/tags",
+   "textLength": 1869,
+   "hasParam": false
+  },
+  {
+   "route": "/material-tracking/staging",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/material-tracking/staging",
+   "textLength": 31136,
+   "hasParam": false
+  },
+  {
+   "route": "/material-tracking/traceability",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/material-tracking/traceability",
+   "textLength": 1940,
+   "hasParam": false
+  },
+  {
+   "route": "/material-tracking/traceability/:jobId",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/material-tracking/traceability/00000000-0000-4000-8000-000000000000",
+   "textLength": 1940,
+   "hasParam": true
+  },
+  {
+   "route": "/freight/planner",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/freight/planner",
+   "textLength": 2637,
+   "hasParam": false
+  },
+  {
+   "route": "/freight/comparison",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/freight/comparison",
+   "textLength": 2934,
+   "hasParam": false
+  },
+  {
+   "route": "/freight/comparison/:shipmentId",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/freight/comparison/00000000-0000-4000-8000-000000000000",
+   "textLength": 2934,
+   "hasParam": true
+  },
+  {
+   "route": "/freight/route/:shipmentId",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/freight/route/00000000-0000-4000-8000-000000000000",
+   "textLength": 2718,
+   "hasParam": true
+  },
+  {
+   "route": "/freight/tracking",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/freight/tracking",
+   "textLength": 3041,
+   "hasParam": false
+  },
+  {
+   "route": "/freight/exceptions",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <p> p \n    at p\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=25579222:4218:49\n    at Typograph",
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at http://localhost:5199/node_modules/.vite/deps/chunk-GJ242FRT.js?v=25579222:4218:49\n    at Box3 "
+   ],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/freight/exceptions",
+   "textLength": 2892,
+   "hasParam": false
+  },
+  {
+   "route": "/freight/pod/:shipmentId",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/freight/pod/00000000-0000-4000-8000-000000000000",
+   "textLength": 2487,
+   "hasParam": true
+  },
+  {
+   "route": "/sales/rfq-inbox",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sales/rfq-inbox",
+   "textLength": 2686,
+   "hasParam": false
+  },
+  {
+   "route": "/sales/quote/new",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sales/quote/new",
+   "textLength": 2861,
+   "hasParam": false
+  },
+  {
+   "route": "/sales/quote/:quoteId",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sales/quote/00000000-0000-4000-8000-000000000000",
+   "textLength": 2861,
+   "hasParam": true
+  },
+  {
+   "route": "/sales/dashboard",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/sales/dashboard",
+   "textLength": 2881,
+   "hasParam": false
+  },
+  {
+   "route": "/portal/quote/:quoteToken",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/portal/quote/00000000-0000-4000-8000-000000000000",
+   "textLength": 2917,
+   "hasParam": true
+  },
+  {
+   "route": "/executive/cockpit",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/executive/cockpit",
+   "textLength": 2881,
+   "hasParam": false
+  },
+  {
+   "route": "/executive/simulation",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/executive/simulation",
+   "textLength": 2092,
+   "hasParam": false
+  },
+  {
+   "route": "/executive/forecast",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/executive/forecast",
+   "textLength": 2484,
+   "hasParam": false
+  },
+  {
+   "route": "/executive/decisions",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/executive/decisions",
+   "textLength": 2828,
+   "hasParam": false
+  },
+  {
+   "route": "/executive/digital-twin",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/executive/digital-twin",
+   "textLength": 2460,
+   "hasParam": false
+  },
+  {
+   "route": "/executive/compression-metrics",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/executive/compression-metrics",
+   "textLength": 7660,
+   "hasParam": false
+  },
+  {
+   "route": "/shipping",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shipping",
+   "textLength": 2584,
+   "hasParam": false
+  },
+  {
+   "route": "/time-tracking",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/time-tracking",
+   "textLength": 2072,
+   "hasParam": false
+  },
+  {
+   "route": "/shopfloor",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shopfloor",
+   "textLength": 2030,
+   "hasParam": false
+  },
+  {
+   "route": "/shopfloor/:workCenterId",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shopfloor/00000000-0000-4000-8000-000000000000",
+   "textLength": 1815,
+   "hasParam": true
+  },
+  {
+   "route": "/logistics/route-optimization",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/logistics/route-optimization",
+   "textLength": 2002,
+   "hasParam": false
+  },
+  {
+   "route": "/logistics/tracking",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/logistics/tracking",
+   "textLength": 2781,
+   "hasParam": false
+  },
+  {
+   "route": "/logistics/dispatch",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/logistics/dispatch",
+   "textLength": 2185,
+   "hasParam": false
+  },
+  {
+   "route": "/orders",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders",
+   "textLength": 5345,
+   "hasParam": false
+  },
+  {
+   "route": "/boms",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/boms",
+   "textLength": 2938,
+   "hasParam": false
+  },
+  {
+   "route": "/orders/intake",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/intake",
+   "textLength": 2640,
+   "hasParam": false
+  },
+  {
+   "route": "/orders/online-inbox",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/orders/online-inbox",
+   "textLength": 5032,
+   "hasParam": false
+  },
+  {
+   "route": "/orders/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/orders/intake/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/orders/intake/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/orders/00000000-0000-4000-8000-000000000000",
+   "textLength": 1612,
+   "hasParam": true
+  },
+  {
+   "route": "/pos",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/pos",
+   "textLength": 2111,
+   "hasParam": false
+  },
+  {
+   "route": "/pos/retail",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/pos/retail",
+   "textLength": 2351,
+   "hasParam": false
+  },
+  {
+   "route": "/customers",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customers",
+   "textLength": 3866,
+   "hasParam": false
+  },
+  {
+   "route": "/customers/preferences",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/customers/preferences",
+   "textLength": 2741,
+   "hasParam": false
+  },
+  {
+   "route": "/admin/users",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/users",
+   "textLength": 2333,
+   "hasParam": false
+  },
+  {
+   "route": "/admin/partners",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/partners",
+   "textLength": 1975,
+   "hasParam": false
+  },
+  {
+   "route": "/admin/audit-log",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/audit-log",
+   "textLength": 2571,
+   "hasParam": false
+  },
+  {
+   "route": "/admin/processing-recipes",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/processing-recipes",
+   "textLength": 3643,
+   "hasParam": false
+  },
+  {
+   "route": "/admin/staff",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/staff",
+   "textLength": 1973,
+   "hasParam": false
+  },
+  {
+   "route": "/shop",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop",
+   "textLength": 2825,
+   "hasParam": false
+  },
+  {
+   "route": "/shop/search",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/search",
+   "textLength": 2637,
+   "hasParam": false
+  },
+  {
+   "route": "/shop/remnants",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/remnants",
+   "textLength": 4410,
+   "hasParam": false
+  },
+  {
+   "route": "/shop/products/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/ecom/catalog/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/ecom/catalog/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/shop/products/00000000-0000-4000-8000-000000000000",
+   "textLength": 1619,
+   "hasParam": true
+  },
+  {
+   "route": "/shop/cart",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/cart",
+   "textLength": 1697,
+   "hasParam": false
+  },
+  {
+   "route": "/shop/checkout",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/checkout",
+   "textLength": 1621,
+   "hasParam": false
+  },
+  {
+   "route": "/shop/orders",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/shop/orders",
+   "textLength": 1890,
+   "hasParam": false
+  },
+  {
+   "route": "/shop/orders/:id",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ],
+   "apiFailures": [
+    "GET /api/ecom/my-orders/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/ecom/my-orders/00000000-0000-4000-8000-000000000000 → 404"
+   ],
+   "status": "OK",
+   "landedOn": "/shop/orders/00000000-0000-4000-8000-000000000000",
+   "textLength": 1619,
+   "hasParam": true
+  },
+  {
+   "route": "/account/dashboard",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/dashboard",
+   "textLength": 2163,
+   "hasParam": false
+  },
+  {
+   "route": "/account/orders",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/orders",
+   "textLength": 10340,
+   "hasParam": false
+  },
+  {
+   "route": "/account/shipments",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/shipments",
+   "textLength": 13834,
+   "hasParam": false
+  },
+  {
+   "route": "/account/documents",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/account/documents",
+   "textLength": 9160,
+   "hasParam": false
+  },
+  {
+   "route": "/admin/catalog",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/catalog",
+   "textLength": 3104,
+   "hasParam": false
+  },
+  {
+   "route": "/admin/online-settings",
+   "pageErrors": [],
+   "consoleErrors": [
+    "Warning: Each child in a list should have a unique \"key\" prop.%s%s See https://reactjs.org/link/warning-keys for more information.%s \n\nCheck the render method of `OnlineSettingsPage`.  \n    at Chip2 ("
+   ],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/admin/online-settings",
+   "textLength": 3476,
+   "hasParam": false
+  },
+  {
+   "route": "/help/manual",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "apiFailures": [],
+   "status": "OK",
+   "landedOn": "/help/manual",
+   "textLength": 1588,
+   "hasParam": false
+  }
+ ]
+}

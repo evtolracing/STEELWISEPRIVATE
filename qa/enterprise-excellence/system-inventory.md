@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit c4da120. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit d8a3a2a. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 47 |
 | Server route files | 72 |
-| API routes (each address counted; two route files are mounted twice) | 611 |
-| API routes that change data | 319 |
-| Database tables in the schema | 158 |
+| API routes (each address counted; two route files are mounted twice) | 613 |
+| API routes that change data | 320 |
+| Database tables in the schema | 159 |
 | Enumerations | 96 |
-| Migrations | 26 |
+| Migrations | 27 |
 | Screens (routes in the browser) | 143 |
-| Frontend source files | 388 (117,893 lines) |
-| Server route code | 25,442 lines |
+| Frontend source files | 389 (117,968 lines) |
+| Server route code | 25,559 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -105,7 +105,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Sales tax by state, store rules, catalogue visibility, demo seed switch
 - **Screens:** 8 (7 real, 1 mixed): /admin/users, /admin/partners, /admin/tax-rates, /admin/audit-log, /admin/processing-recipes, /admin/staff, /admin/catalog, /admin/online-settings
 - **Server:** `src/backend/src/routes/taxRates.js`, `src/backend/src/routes/onlineSettings.js`, `src/backend/src/routes/admin.js`; served at /api/tax-rates, /api/admin/online-settings, /api/admin
-- **Routes:** 11, of which 6 change data. Returned a success in a test this session: 5 of 11; of the changing routes, 0 of 6
+- **Routes:** 12, of which 6 change data. Returned a success in a test this session: 6 of 12; of the changing routes, 0 of 6
 - **Tables:** SalesTaxRate, Location
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Access control
@@ -361,12 +361,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Coils, plates and bars by heat and location; holds; transfers; adjustments
 - **Screens:** 4 (3 real, 1 static): /inventory, /units, /units/:id, /inventory/*
 - **Server:** `src/backend/src/routes/coils.js`, `src/backend/src/routes/inventory.js`; served at /api/coils, /api/inventory
-- **Routes:** 18, of which 8 change data. Returned a success in a test this session: 16 of 18; of the changing routes, 7 of 8
+- **Routes:** 19, of which 9 change data. Returned a success in a test this session: 17 of 19; of the changing routes, 8 of 9
 - **Tables:** Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, receiving
 - **Feeds:** Reservation, shipping, returns
-- **Findings:** I-016
+- **Findings:** none open
 - **Production concern:** No screen for adjustments or counts (I-016)
 
 ### Receiving
@@ -376,7 +376,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** A receipt or an upload makes real stock with heat and location
 - **Screens:** 1 (1 real): /receiving
 - **Server:** `src/backend/src/routes/inventory.js`; served at /api/inventory
-- **Routes:** 10, of which 4 change data. Returned a success in a test this session: 10 of 10; of the changing routes, 4 of 4
+- **Routes:** 11, of which 5 change data. Returned a success in a test this session: 11 of 11; of the changing routes, 5 of 5
 - **Tables:** Inventory, Coil, Location, MaterialMovement
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats
@@ -439,11 +439,11 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 3 (3 real): /work-orders, /work-orders/new, /work-orders/:id
 - **Server:** `src/backend/src/routes/workOrders.js`; served at /api/work-orders
 - **Routes:** 7, of which 5 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 5 of 5
-- **Tables:** WorkOrder, AuditLog, Coil
+- **Tables:** WorkOrder, AuditLog, Coil, OrderLine, Inventory
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Stock
 - **Feeds:** Stock (not yet: M-016)
-- **Findings:** M-016
+- **Findings:** none open
 - **Production concern:** Completing a work order does not move stock
 
 ### Dispatch, work centers and shop-floor operations
@@ -880,7 +880,7 @@ Finding B-014.
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
 | Icon-only buttons | 301 |
-| aria-label attributes | 32 |
+| aria-label attributes | 33 |
 | Browser alert or confirm calls | 25 in 15 files |
 | Timers started (setInterval, setTimeout) | 66 |
 | Timers cleared | 36 |

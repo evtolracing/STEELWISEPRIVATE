@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T20:53:40.967Z",
- "endpointsInInventory": 596,
- "endpointsSwept": 596,
+ "at": "2026-11-13T21:43:59.613Z",
+ "endpointsInInventory": 598,
+ "endpointsSwept": 598,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "557 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
-   "tested": 557,
+   "summary": "559 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 559,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "534 staff routes tried as a customer, 0 not refused",
-   "tested": 534,
+   "summary": "536 staff routes tried as a customer, 0 not refused",
+   "tested": 536,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -40,8 +40,8 @@
   },
   "Read routes do not crash on bad input": {
    "pass": true,
-   "summary": "789 reads, 0 server errors",
-   "tested": 789,
+   "summary": "792 reads, 0 server errors",
+   "tested": 792,
    "byFile": {},
    "findings": []
   },
@@ -103,12 +103,12 @@
   },
   "Shop floor records: who moved a job, and work orders that follow the rules": {
    "pass": true,
-   "summary": "51 checks, 0 problems",
+   "summary": "50 checks, 0 problems",
    "findings": []
   },
   "Shipping and money records: web order tax, shipments and who did what": {
    "pass": true,
-   "summary": "37 checks, 0 problems",
+   "summary": "39 checks, 0 problems",
    "findings": []
   }
  },

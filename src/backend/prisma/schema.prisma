@@ -5281,6 +5281,14 @@ model DemandSuggestionEvent {
 /// One row per request that carried an Idempotency-Key header. A repeat of the same request
 /// (a double click, a retry after a timeout) is answered from this row instead of running again.
 /// Rows are removed a day after they are written.
+// The last number used in a document series that may have no gaps (invoices, credit memos).
+// Advanced inside the transaction that saves the document. See services/billing.js.
+model DocumentCounter {
+  series     String   @id
+  lastNumber Int
+  updatedAt  DateTime @default(now())
+}
+
 model RequestKey {
   id             String   @id @default(uuid())
   scope          String

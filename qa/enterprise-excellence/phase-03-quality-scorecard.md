@@ -1,5 +1,7 @@
 # Phase 3: quality scorecard
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 Scores before and after Phase 3. The method, the weights and the full evidence for every category are in `quality-scorecard.md`, which a tool rebuilds from the findings register and the test results. This file states what moved, why, and what did not.
 
 The target for every group is 95. No group meets it. A score is the engineer's judgement held against written criteria; where a number rests on a measurement, the measurement is named. A score was raised only where this phase produced new evidence.
@@ -81,3 +83,23 @@ In order of what they hold back:
 2. **Test reach.** 231 of 319 changing routes have never returned a success in a test.
 3. **Sample modules.** 58 screens.
 4. **Recovery.** One timed restore would lift the reliability of every group.
+
+
+## After the owner's decisions of 2026-11-13
+
+Rebuilt from the final gate run after the six decisions were built (`phase-03-owner-decisions.md`).
+
+| Group | End of Phase 2 | First Phase 3 report | Now | Open P0 and P1 now |
+|---|---:|---:|---:|---:|
+| Platform infrastructure | 73 | 78 | 78 | 2 |
+| Sales and customer operations | 72 | 75 | 76 | 4 |
+| Inventory and purchasing | 73 | 74 | 75 | 3 |
+| Manufacturing and processing | 73 | 73 | 74 | 1 |
+| Logistics and financial operations | 75 | 77 | 78 | 2 |
+| Enterprise experience | 60 | 60 | 60 | 5 |
+
+Open P1 findings fell from 17 to 14: G-019, M-016 and I-016 are VERIFIED FIXED. E-015 (backups) is ACCEPTED RISK WITH APPROVAL and still counts as open. Open P0 is unchanged at 2. Findings: 243 in all, 158 VERIFIED FIXED, 63 deferred to a named phase, 16 waiting on a business decision, 2 blocked, 2 in progress, 1 accepted risk, 1 not applicable.
+
+The data integrity scores that moved, with the evidence, are in `quality-scorecard.md`: Sales 88 to 90, Inventory 87 to 91, Manufacturing 82 to 87, Logistics and financial 89 to 92; Inventory reliability 78 to 81. Group scores move little because data integrity is one of several weighted categories and the others did not change. No group reaches the 95 the engineering standard asks for.
+
+Test reach by route: 287 of 613, and 89 of 320 routes that change data.

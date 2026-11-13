@@ -11,7 +11,7 @@
   "testsExecuted": [
     {
       "test": "Phase 3 database scenarios (qa/sim/phase3-db.mjs, new in Phase 3)",
-      "result": "64 of 64 scenarios pass, 447 checks. Inventory receiving and adjustments: 10 of 10; Reservations and material consumption: 9 of 9; Work orders, scrap and remnants: 8 of 8; Interbranch transfers: 9 of 9; Orders, invoicing and financial records: 10 of 10; Concurrency, retries and failure recovery: 18 of 18",
+      "result": "74 of 74 scenarios pass, 607 checks. Inventory receiving and adjustments: 10 of 10; Reservations and material consumption: 9 of 9; Work orders, scrap and remnants: 11 of 11; Interbranch transfers: 9 of 9; Orders, invoicing and financial records: 10 of 10; Concurrency, retries and failure recovery: 18 of 18; Stock corrections, invoice numbers and retention: 7 of 7",
       "before": "Did not exist. On the code before the corrections: 53 of the first 61 passed; the failures included a line reserved twice over (6 of 6 rounds), stock left reserved for a cancelled order (6 of 6 rounds) and, once added, 8 of 80 simultaneous orders lost"
     },
     {
@@ -21,12 +21,12 @@
     },
     {
       "test": "Database consistency checks (qa/tools/db-facts.mjs, 21 checks added in Phase 3), run after the simulation and again after the scenarios",
-      "result": "0 problems outside the demo seed rows on stock balance, reservations, ledger, branch, transfers, traceability, exact amounts, invoice and order totals, tax, credits and duplicate invoices. 3 shipment items shipped with nothing reserved (G-019, by current rule)",
+      "result": "27 checks added in Phase 3. 0 problems outside the demo seed rows on stock balance, reservations, the movement ledger (now with pieces made, cuts, scrap and corrections), work orders matched by movements, pieces carrying the source heat, branch, transfers, exact amounts, invoice and order totals, tax, credits, duplicate invoices, invoice counters and repeated numbers. Dispatched shipment items not covered by stock movements: 0 (G-019 closed)",
       "before": "16 checks; amounts with floating-point residue in 12 columns"
     },
     {
       "test": "Schema inventory from the database catalogues (qa/tools/db-schema.mjs, new in Phase 3)",
-      "result": "159 tables, 188 foreign keys (0 not validated), 24 value checks, 581 indexes, 0 duplicate indexes, 26 migrations applied, 0 failed",
+      "result": "160 tables, 188 foreign keys (0 not validated), 25 value checks, 582 indexes, 0 duplicate indexes, 27 migrations applied, 0 failed",
       "before": "158 tables, 171 foreign keys, 9 value checks, 578 indexes, 10 duplicates"
     },
     {
@@ -46,12 +46,12 @@
     },
     {
       "test": "Unit tests (src/backend, npm test)",
-      "result": "118 of 118 pass",
+      "result": "126 of 126 pass",
       "before": "105 of 105"
     },
     {
       "test": "Browser suites: experience, shipping, shop, sales, inventory",
-      "result": "22 (experience), 27 (shipping), 30 (shop), 24 (sales), 22 (inventory) checks, 0 failed",
+      "result": "22 (experience), 29 (shipping), 30 (shop), 24 (sales), 22 (inventory) checks, 0 failed",
       "before": "22, 27, 30, 24 and 22, 0 failed"
     },
     {
@@ -66,7 +66,7 @@
     },
     {
       "test": "Department rule coverage",
-      "result": "319 changing routes: 238 under a department rule, 12 guarded in the route file, 69 covered another way, 0 with no rule",
+      "result": "320 changing routes: 239 under a department rule, 12 guarded in the route file, 69 covered another way, 0 with no rule",
       "before": "319 changing routes, 0 with no rule"
     },
     {
@@ -85,8 +85,8 @@
       "before": "passes"
     },
     {
-      "test": "Three SQL Editor files, each run twice on a copy of the 85-branch scale database (72,240 orders, 37,625 invoices, 100,233 stock items) at the schema before Phase 3",
-      "result": "First runs: 0.62 s, 0.07 s, 0.10 s; all 15 foreign keys and 15 checks validated, no notice of a broken rule; 19 quotes given a branch. Second runs: each skipped itself",
+      "test": "Four SQL Editor files, each run twice on a copy of the 85-branch scale database (72,240 orders, 37,625 invoices, 100,233 stock items) at the schema before Phase 3",
+      "result": "First runs: 0.62 s, 0.07 s, 0.10 s; all 15 foreign keys and 15 checks validated, no notice of a broken rule; 19 quotes given a branch. Second runs: each skipped itself. File 9 (document counters): first run 0.16 s, series started at INV 116 and CM 9; second run changed nothing",
       "before": "Did not exist"
     },
     {
@@ -121,10 +121,8 @@
   "unverifiedAreas": [
     "The live database: its schema as actually applied, row-level security in force, extensions, roles, pool settings, size, and whether live rows break any of the new rules. Nothing in Phase 3 was run against it",
     "Backup and restore (E-015): no backup has been confirmed to exist and none has been restored",
-    "A dry run of SQL Editor files 6 to 8 on a restored copy of the live database",
+    "A dry run of SQL Editor files 6 to 9 on a restored copy of the live database",
     "Transfer receipt, shortage, damage and loss in transit: a transfer has no in-transit stage (G-007)",
-    "Stock adjustment, cycle count and scrap write-off: do not exist on the real stock list (I-016)",
-    "What a completed work order consumes and produces, remnants from processing, two work orders on one item (M-016, G-006, G-008)",
     "The second stock list and order hub were audited, not migrated (B-009)",
     "Request keys on the web checkout and order intake routes (same middleware; only order creation was exercised); the screens sending the header (no browser test asserts it)",
     "Drop tags and packages under the branch boundary: unit-tested, not exercised through the API",
@@ -134,23 +132,27 @@
     "Partner API, webhooks and outside integrations: Phase 4",
     "Dashboard and report figures against the records they summarise",
     "Accessibility, tablet and mobile layouts",
-    "Test coverage by line was not measured; reach is counted by route"
+    "Test coverage by line was not measured; reach is counted by route",
+    "Shipments already dispatched on the live system with nothing reserved, before the refusal: not counted (no access)",
+    "Shop-floor jobs record operations, not weights: what a job consumed is known only from the stock reserved for the line it ships",
+    "A scheduled cycle-count program does not exist; corrections are per item",
+    "Archiving records older than five years is not built; the system only warns",
+    "The Correct quantity dialog, the pieces field on the work order screen and the archive notice have no browser test of their own; their routes are tested through the API"
   ],
   "currentBlockers": [
-    "E-015: a restore test and a dry run on live data need the owner's database provider",
-    "G-015: whether DATABASE_URL on the host is the pooler address, and its limits, is the owner's setting",
-    "Rules only the owner can give: may an order ship with nothing reserved (G-019); what a completed work order consumes and produces (M-016, G-006, G-008); stock adjustment and count (I-016); how long history is kept (G-016); must invoice numbers have no gaps (G-017 note)",
-    "B-009: the live contents of the two JSON stores must be exported read-only before they can be connected or retired",
-    "B-018 and B-019: no scheduler; whether the host may run a scheduled trigger is undecided"
+    "Owner: SQL Editor files 6, 7, 8 and 9 must be applied, in order, before the Phase 3 code is merged. Without file 9 no invoice can be numbered",
+    "E-015: no backup confirmed, no restore tested. Owner decision of 2026-11-13: later (ACCEPTED RISK WITH APPROVAL). Remains a blocker for production readiness",
+    "B-009 (P1): the second stock list and order hub need a read-only export of the live stores before they can be migrated",
+    "G-015: host connection settings unverified (owner)"
   ],
   "nextActions": [
-    "Owner: apply SQL Editor files 6, 7 and 8 in order (/mnt/project-files/database-updates/), keep any notices, and send them back",
-    "Owner: say when to merge the Phase 3 pull request (after the three files)",
-    "Owner: answer the five rule questions listed under blockers",
-    "Owner: restore one backup into a separate project and time it (phase-03-recovery-assessment.md, section 4)",
+    "Owner: apply SQL Editor files 6, 7, 8 and 9 in order (/mnt/project-files/database-updates/), keep any notices, and send them back",
+    "Owner: say when to merge pull request 31 (after the four files)",
+    "Owner: tell staff that a shipment now needs its stock reserved on the order before it can be dispatched",
+    "Owner: confirm the pooler address and connection limit on the host (G-015)",
     "Owner: issue the Phase 4 prompt. Phase 4 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 3: three correction batches tested; full gate run on the final code (qa/tools/run-gates.sh) all green; three SQL Editor files run twice on the 85-branch copy; thirteen Phase 3 files written; registers rebuilt",
+  "lastCompletedCheckpoint": "Phase 3 with the owner's six decisions of 2026-11-13 built and tested: full gate run on the final code all green; four SQL Editor files run twice on the 85-branch copy; fourteen Phase 3 files; registers rebuilt",
   "currentPhase": 3,
   "findingPrefix": "G-",
   "phase2BaselineCommit": "0ad7857",
@@ -158,8 +160,8 @@
     {
       "group": "Manufacturing and processing",
       "category": "Data integrity",
-      "score": 82,
-      "evidence": "Phase 2: shop-floor start, complete, reassign and job planning are all-or-nothing; job status moves are conditional on the status they were checked in (phase2-integrity, 80 checks; 8 of 8 race trials left a job stuck before the fix, 0 of 8 after). Held at 82 because a completed work order still moves no stock (M-016)"
+      "score": 87,
+      "evidence": "Phase 3, owner decision: completing a work order takes output and scrap off the source, creates the pieces with the source heat, and carries a line's reservation into them, in one transaction; several work orders on one item are safe under a lock (three raced: two fit, one refused). Three read-only checks at 0. Held at 87: shop-floor jobs record no weights; a completed work order cannot be reversed"
     },
     {
       "group": "Manufacturing and processing",
@@ -176,8 +178,8 @@
     {
       "group": "Sales and customer operations",
       "category": "Data integrity",
-      "score": 88,
-      "evidence": "Phase 3: order totals enforced by the database; duplicate order requests answered once (C-006); a void is one transaction (C-010); quotes keep their price and branch into the order. Held at 88: an order ships and bills with nothing reserved (G-019); the void marker is text (G-009)"
+      "score": 90,
+      "evidence": "Phase 3: order totals enforced by the database; duplicate order requests answered once (C-006); a void is one transaction (C-010); quotes keep their price and branch; an order cannot ship or bill without reserved stock (G-019, owner decision). Held at 90: the void marker is text (G-009)"
     },
     {
       "group": "Enterprise experience",
@@ -224,14 +226,14 @@
     {
       "group": "Inventory and purchasing",
       "category": "Data integrity",
-      "score": 87,
-      "evidence": "Phase 3: reservation races closed (6 of 6 rounds failed before); weights stored exactly; 14 reconciliation checks at 0 after every run; the database refuses a negative balance, a broken identity and a zero movement. Held at 87: a shipment with no reservation moves no stock (G-019); no adjustment or count (I-016); no in-transit stage (G-007)"
+      "score": 91,
+      "evidence": "Phase 3: races closed; exact weights; 18 reconciliation checks at 0; the ledger explains every balance including pieces, cuts, scrap and corrections; nothing ships unreserved (G-019); corrections after a count with reason, note and person (I-016); a remnant reduces its parent (G-006). Held at 91: no in-transit stage (G-007); the second stock list (B-009); no cycle-count program"
     },
     {
       "group": "Inventory and purchasing",
       "category": "Reliability",
-      "score": 78,
-      "evidence": "Phase 3: receipts, transfers, holds, reservations and returns each raced and each safe; five identical receipts make one item. Held at 78: transfer receipt and adjustment do not exist to test"
+      "score": 81,
+      "evidence": "Phase 3: reservations, receipts, holds, transfers, returns and corrections each raced and each safe; a correction racing a reservation and a shipment leaves the books in balance. Held at 81: transfer receipt does not exist to test"
     },
     {
       "group": "Inventory and purchasing",
@@ -248,8 +250,8 @@
     {
       "group": "Logistics and financial operations",
       "category": "Data integrity",
-      "score": 89,
-      "evidence": "Phase 3: invoice total identity, payment not zero and the invoice-to-shipment, credit-to-invoice and line-to-order-line links are enforced by the database; amounts exact to the cent; tax across part shipments adds to the cent; 11 financial reconciliation checks at 0. Held at 89: an unreserved shipment is billed with no stock leaving the books (G-019)"
+      "score": 92,
+      "evidence": "Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken (C-002)"
     },
     {
       "group": "Logistics and financial operations",

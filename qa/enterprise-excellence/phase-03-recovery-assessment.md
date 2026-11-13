@@ -1,5 +1,7 @@
 # Phase 3: backup and recovery assessment
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 **Summary: no backup or restore of the live database has been verified.** The live database is hosted by the owner's provider and cannot be reached from this environment. What follows is what can be said from the repository and from tests on local databases, and what the owner needs to check. Nothing here claims that a backup exists or works.
 
 ## 1. What was verified, and where

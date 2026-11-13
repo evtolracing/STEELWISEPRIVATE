@@ -1,11 +1,11 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T21:01:26.544Z",
+ "at": "2026-11-13T21:51:46.587Z",
  "sections": {
   "Read-only roles cannot change anything": {
    "pass": true,
-   "summary": "540 write calls as auditor and data analyst, 0 not refused",
-   "tested": 540,
+   "summary": "542 write calls as auditor and data analyst, 0 not refused",
+   "tested": 542,
    "findings": []
   },
   "A second address follows the same department rules": {
@@ -15,12 +15,12 @@
   },
   "Write routes sent an empty body do not crash": {
    "pass": true,
-   "summary": "275 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing",
-   "tested": 275,
+   "summary": "276 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing",
+   "tested": 276,
    "byStatus": {
     "200": 13,
     "201": 1,
-    "400": 156,
+    "400": 157,
     "403": 1,
     "404": 101,
     "501": 3

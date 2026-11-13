@@ -261,7 +261,11 @@ router.delete('/:id/items/:itemId', handle('remove shipment item', async (req, r
   res.json({ success: true });
 }));
 
-/** Takes shipped quantity out of the stock reserved for the line. Stock with no reservation is left alone. */
+/**
+ * Takes shipped quantity out of the stock reserved for the line. Everything that ships must come
+ * off a reserved stock item, so that the item, its heat and the balance are always on record
+ * (owner decision of 2026-11-13, G-019). A shipment with less reserved than it carries is refused.
+ */
 async function consumeReserved(tx, shipment, item, userId) {
   let left = num(item.qtyShipped);
   const allocations = await tx.orderLineAllocation.findMany({ where: { orderLineId: item.orderLineId }, orderBy: { allocatedAt: 'asc' } });
@@ -292,6 +296,11 @@ async function consumeReserved(tx, shipment, item, userId) {
       await tx.coil.updateMany({ where: { id: a.coilId, status: 'ALLOCATED' }, data: { status: 'AVAILABLE' } });
     }
     left -= take;
+  }
+  if (left > 1e-6) {
+    const line = await tx.orderLine.findUnique({ where: { id: item.orderLineId }, select: { lineNumber: true } });
+    const short = Math.round(left * 10000) / 10000;
+    refuse(409, `Line ${line?.lineNumber ?? ''} has ${short.toLocaleString()} more on this shipment than is reserved for it. Reserve the stock that is going out on the order first, so the item and its heat are recorded.`.replace('  ', ' '));
   }
 }
 

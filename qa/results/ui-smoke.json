@@ -1,6 +1,6 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T21:01:25.888Z",
+ "at": "2026-11-13T21:51:45.845Z",
  "who": "qa-admin@qa.test",
  "screens": 125,
  "tally": {
@@ -81,7 +81,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/units",
-   "textLength": 4800,
+   "textLength": 4710,
    "hasParam": false
   },
   {
@@ -121,7 +121,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/ops-cockpit",
-   "textLength": 16416,
+   "textLength": 16293,
    "hasParam": false
   },
   {
@@ -157,7 +157,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/units",
-   "textLength": 4800,
+   "textLength": 4710,
    "hasParam": false
   },
   {
@@ -187,7 +187,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/work-orders",
-   "textLength": 2728,
+   "textLength": 3018,
    "hasParam": false
   },
   {
@@ -223,7 +223,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shipping",
-   "textLength": 10913,
+   "textLength": 10955,
    "hasParam": false
   },
   {
@@ -279,7 +279,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/qaqc",
-   "textLength": 2732,
+   "textLength": 2731,
    "hasParam": false
   },
   {
@@ -615,7 +615,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production",
-   "textLength": 17151,
+   "textLength": 17207,
    "hasParam": false
   },
   {
@@ -625,7 +625,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/production/shop-floor",
-   "textLength": 5192,
+   "textLength": 5301,
    "hasParam": false
   },
   {
@@ -645,7 +645,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/order-board",
-   "textLength": 22303,
+   "textLength": 22328,
    "hasParam": false
   },
   {
@@ -670,8 +670,8 @@
    "apiFailures": [
     "GET /api/jobs/00000000-0000-4000-8000-000000000000 → 404",
     "GET /api/jobs/00000000-0000-4000-8000-000000000000/history → 404",
-    "GET /api/jobs/00000000-0000-4000-8000-000000000000/history → 404",
-    "GET /api/jobs/00000000-0000-4000-8000-000000000000 → 404"
+    "GET /api/jobs/00000000-0000-4000-8000-000000000000 → 404",
+    "GET /api/jobs/00000000-0000-4000-8000-000000000000/history → 404"
    ],
    "status": "OK",
    "landedOn": "/jobs/00000000-0000-4000-8000-000000000000",
@@ -685,7 +685,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/receiving",
-   "textLength": 17034,
+   "textLength": 20404,
    "hasParam": false
   },
   {
@@ -938,7 +938,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/shipping",
-   "textLength": 10913,
+   "textLength": 10955,
    "hasParam": false
   },
   {
@@ -1024,7 +1024,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders/invoices",
-   "textLength": 8170,
+   "textLength": 9417,
    "hasParam": false
   },
   {
@@ -1044,7 +1044,7 @@
    "apiFailures": [],
    "status": "OK",
    "landedOn": "/orders",
-   "textLength": 5344,
+   "textLength": 5410,
    "hasParam": false
   },
   {

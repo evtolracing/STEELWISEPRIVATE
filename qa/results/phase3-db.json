@@ -1,9 +1,9 @@
 {
- "at": "2026-11-13T20:54:17.788Z",
+ "at": "2026-11-13T21:44:37.920Z",
  "base": "http://localhost:3011",
- "scenarios": 64,
- "passed": 64,
- "checks": 447,
+ "scenarios": 74,
+ "passed": 74,
+ "checks": 607,
  "groups": {
   "Inventory receiving and adjustments": {
    "scenarios": 10,
@@ -13,12 +13,12 @@
   "Reservations and material consumption": {
    "scenarios": 9,
    "passed": 9,
-   "checks": 63
+   "checks": 73
   },
   "Work orders, scrap and remnants": {
-   "scenarios": 8,
-   "passed": 8,
-   "checks": 33
+   "scenarios": 11,
+   "passed": 11,
+   "checks": 106
   },
   "Interbranch transfers": {
    "scenarios": 9,
@@ -33,15 +33,16 @@
   "Concurrency, retries and failure recovery": {
    "scenarios": 18,
    "passed": 18,
-   "checks": 162
+   "checks": 171
+  },
+  "Stock corrections, invoice numbers and retention": {
+   "scenarios": 7,
+   "passed": 7,
+   "checks": 68
   }
  },
  "notes": [
-  "Shipping without a reservation: a dispatch of 300 lb with nothing reserved was accepted, invoiced, and left no stock movement. No stock item, and so no heat, is recorded against that shipment, and no balance went down. Whether a shipment must be fully reserved before it can leave is the owner's rule; recorded as finding G-019.",
-  "Remnant quantity: entering a 51.25 lb remnant left its parent at 6000 lb. The application does not take the remnant out of the parent, because processing moves no stock (M-016). Not asserted; recorded as finding G-006.",
-  "Work order completion: 2000 lb is still on hand for an item whose work order recorded 1900 lb out and 100 lb scrap. What processing consumes and produces is the owner's rule (M-016, REQUIRES BUSINESS DECISION).",
-  "Transfers: on the real stock list a transfer is one immediate step. There is no request, approval, picking, in-transit or receipt stage, so partial receipt, shortage, damage in transit, lost in transit and duplicate receipt cannot occur and were NOT EXECUTED. Recorded as finding G-007.",
-  "Two work orders on one item: 2 open work orders now name the same 4000 lb item as their source, each with 4000 lb as input. The application does not claim an item for a work order, because processing moves no stock (M-016). Whether one item may feed several work orders is the owner's rule; recorded as finding G-008."
+  "Transfers: on the real stock list a transfer is one immediate step. There is no request, approval, picking, in-transit or receipt stage, so partial receipt, shortage, damage in transit, lost in transit and duplicate receipt cannot occur and were NOT EXECUTED. Recorded as finding G-007."
  ],
  "results": [
   {
@@ -77,7 +78,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -142,7 +143,7 @@
     }
    ],
    "pass": true,
-   "ms": 23
+   "ms": 21
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -169,7 +170,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -178,7 +179,7 @@
     }
    ],
    "pass": true,
-   "ms": 42
+   "ms": 36
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -198,7 +199,7 @@
     }
    ],
    "pass": true,
-   "ms": 36
+   "ms": 35
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -213,48 +214,48 @@
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-7: movement marked UPLOAD",
+     "what": "UP-MWFI8F6A-7: movement marked UPLOAD",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-7: on hand = available + reserved + on hold",
+     "what": "UP-MWFI8F6A-7: on hand = available + reserved + on hold",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-7: reserved quantity equals the reservations on file",
+     "what": "UP-MWFI8F6A-7: reserved quantity equals the reservations on file",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-7: on hand equals receipts minus shipments in the movement ledger",
+     "what": "UP-MWFI8F6A-7: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-7: the item and its stock row name the same branch",
+     "what": "UP-MWFI8F6A-7: the item and its stock row name the same branch",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-8: movement marked UPLOAD",
+     "what": "UP-MWFI8F6A-8: movement marked UPLOAD",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-8: on hand = available + reserved + on hold",
+     "what": "UP-MWFI8F6A-8: on hand = available + reserved + on hold",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-8: reserved quantity equals the reservations on file",
+     "what": "UP-MWFI8F6A-8: reserved quantity equals the reservations on file",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-8: on hand equals receipts minus shipments in the movement ledger",
+     "what": "UP-MWFI8F6A-8: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
-     "what": "UP-MWFGFR98-8: the item and its stock row name the same branch",
+     "what": "UP-MWFI8F6A-8: the item and its stock row name the same branch",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 50
+   "ms": 44
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -281,7 +282,7 @@
      "ok": true
     },
     {
-     "what": "held: on hand equals receipts minus shipments in the movement ledger",
+     "what": "held: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -305,7 +306,7 @@
      "ok": true
     },
     {
-     "what": "released: on hand equals receipts minus shipments in the movement ledger",
+     "what": "released: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -314,7 +315,7 @@
     }
    ],
    "pass": true,
-   "ms": 76
+   "ms": 71
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -334,7 +335,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 30
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -362,7 +363,7 @@
     }
    ],
    "pass": true,
-   "ms": 30
+   "ms": 29
   },
   {
    "group": "Reservations and material consumption",
@@ -397,7 +398,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -406,7 +407,7 @@
     }
    ],
    "pass": true,
-   "ms": 82
+   "ms": 74
   },
   {
    "group": "Reservations and material consumption",
@@ -422,7 +423,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 53
   },
   {
    "group": "Reservations and material consumption",
@@ -449,7 +450,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -458,7 +459,7 @@
     }
    ],
    "pass": true,
-   "ms": 102
+   "ms": 79
   },
   {
    "group": "Reservations and material consumption",
@@ -485,7 +486,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -509,7 +510,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -530,7 +531,7 @@
     }
    ],
    "pass": true,
-   "ms": 181
+   "ms": 156
   },
   {
    "group": "Reservations and material consumption",
@@ -569,7 +570,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -578,7 +579,7 @@
     }
    ],
    "pass": true,
-   "ms": 212
+   "ms": 164
   },
   {
    "group": "Reservations and material consumption",
@@ -605,7 +606,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -614,7 +615,7 @@
     }
    ],
    "pass": true,
-   "ms": 237
+   "ms": 180
   },
   {
    "group": "Reservations and material consumption",
@@ -630,7 +631,7 @@
     }
    ],
    "pass": true,
-   "ms": 86
+   "ms": 69
   },
   {
    "group": "Reservations and material consumption",
@@ -662,31 +663,71 @@
     }
    ],
    "pass": true,
-   "ms": 199
+   "ms": 181
   },
   {
    "group": "Reservations and material consumption",
-   "name": "shipping a line that has no reservation: the order and invoice move, the stock does not (the current rule)",
+   "name": "a shipment with nothing reserved, or less reserved than it carries, is refused and changes nothing",
    "asserts": [
     {
-     "what": "dispatch is accepted with nothing reserved",
+     "what": "dispatch with nothing reserved is refused with the reason",
      "ok": true
     },
     {
-     "what": "the order line shows 300 shipped and one invoice for 600.00 is raised",
+     "what": "nothing reserved: the shipment has not left",
      "ok": true
     },
     {
-     "what": "no stock movement is written and no stock item is named",
+     "what": "nothing reserved: nothing shipped on the line, no invoice, no movement",
      "ok": true
     },
     {
-     "what": "no stock balance changed",
+     "what": "half a pound short of reserved is refused too",
+     "ok": true
+    },
+    {
+     "what": "short: the shipment has not left",
+     "ok": true
+    },
+    {
+     "what": "short: nothing shipped on the line, no invoice, no movement",
+     "ok": true
+    },
+    {
+     "what": "the reservation is still whole",
+     "ok": true
+    },
+    {
+     "what": "fully reserved, it goes",
+     "ok": true
+    },
+    {
+     "what": "the movement names the item, and through it the heat",
+     "ok": true
+    },
+    {
+     "what": "700 left on hand and one invoice for 600.00",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 128
+   "ms": 244
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -715,10 +756,50 @@
     {
      "what": "three moves in the history, each with the person",
      "ok": true
+    },
+    {
+     "what": "the source item is used up: nothing on hand, marked consumed",
+     "ok": true
+    },
+    {
+     "what": "one piece of 7812.5 lb is on the books, tied to the work order",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece: the item and its stock row name the same branch",
+     "ok": true
     }
    ],
    "pass": true,
-   "ms": 79
+   "ms": 104
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -738,7 +819,7 @@
     }
    ],
    "pass": true,
-   "ms": 66
+   "ms": 77
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -762,7 +843,7 @@
     }
    ],
    "pass": true,
-   "ms": 79
+   "ms": 88
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -786,7 +867,7 @@
     }
    ],
    "pass": true,
-   "ms": 54
+   "ms": 51
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -806,7 +887,7 @@
     }
    ],
    "pass": true,
-   "ms": 44
+   "ms": 47
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -845,16 +926,48 @@
      "ok": true
     },
     {
-     "what": "remnant: on hand equals receipts minus shipments in the movement ledger",
+     "what": "remnant: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
      "what": "remnant: the item and its stock row name the same branch",
      "ok": true
+    },
+    {
+     "what": "the parent is lighter by exactly the remnant: 5948.75 lb",
+     "ok": true
+    },
+    {
+     "what": "the parent has a movement for the piece cut from it",
+     "ok": true
+    },
+    {
+     "what": "parent: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "parent: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "parent: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "parent: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "parent and remnant together weigh what the parent weighed: 6000 lb",
+     "ok": true
+    },
+    {
+     "what": "a remnant heavier than what is left of the parent is refused",
+     "ok": true
     }
    ],
    "pass": true,
-   "ms": 51
+   "ms": 79
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -866,23 +979,267 @@
     }
    ],
    "pass": true,
-   "ms": 59
+   "ms": 53
   },
   {
    "group": "Work orders, scrap and remnants",
-   "name": "completing a work order records the weights and leaves the stock balance alone (the current rule)",
+   "name": "completing a work order takes output and scrap off the source and puts each piece on the books",
    "asserts": [
     {
-     "what": "balance identity still holds",
+     "what": "completed",
      "ok": true
     },
     {
-     "what": "no stock movement was invented",
+     "what": "source: 2000 less 1462.5 of pieces and 37.5 of scrap leaves 500 on hand, all free",
+     "ok": true
+    },
+    {
+     "what": "source still available, because some is left",
+     "ok": true
+    },
+    {
+     "what": "one movement for the pieces and one for the scrap, both naming the work order",
+     "ok": true
+    },
+    {
+     "what": "three pieces, each a stock item with the source heat, grade, owner and branch",
+     "ok": true
+    },
+    {
+     "what": "piece widths and the form given are kept",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 1: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 1: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 2: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 2: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece 3: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 3: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 3: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 3: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "pieces + scrap + what is left on the source = the 2000 lb received",
+     "ok": true
+    },
+    {
+     "what": "yield is output over input: 97.5",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "completing it again is refused and takes nothing more",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 69
+   "ms": 150
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a work order takes its input from what the item holds now, not from what it weighed when received",
+   "asserts": [
+    {
+     "what": "input defaults to the 650 lb on hand, not the 900 lb received",
+     "ok": true
+    },
+    {
+     "what": "an input heavier than the item holds is refused",
+     "ok": true
+    },
+    {
+     "what": "an item with nothing on hand cannot be put on a work order",
+     "ok": true
+    },
+    {
+     "what": "one work order on file for the item",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 80
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "a completion that reports more than the item has free is refused, and nothing is saved",
+   "asserts": [
+    {
+     "what": "a work order can be raised on an item that is partly reserved",
+     "ok": true
+    },
+    {
+     "what": "400.5 lb against 400 free is refused with the reason",
+     "ok": true
+    },
+    {
+     "what": "the work order is still in progress",
+     "ok": true
+    },
+    {
+     "what": "no piece, no movement, and the reservation untouched",
+     "ok": true
+    },
+    {
+     "what": "what fits goes through, and the other order keeps its 600",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 139
+  },
+  {
+   "group": "Work orders, scrap and remnants",
+   "name": "stock reserved for an order is cut for it: the pieces stay reserved for that order and ship with their heat",
+   "asserts": [
+    {
+     "what": "the work order is tied to the order and its line",
+     "ok": true
+    },
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "source: 2000 on hand, all free, nothing reserved any more",
+     "ok": true
+    },
+    {
+     "what": "the 960 lb of pieces are reserved for the line; the 40 lb of scrap is not",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 1: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 1: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 1: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "piece 2: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece 2: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "piece 2: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "the pieces ship",
+     "ok": true
+    },
+    {
+     "what": "the shipment names both pieces, which carry the heat of the item they were cut from",
+     "ok": true
+    },
+    {
+     "what": "heat to customer: the heat leads to this order through the pieces",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 248
   },
   {
    "group": "Interbranch transfers",
@@ -921,7 +1278,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -930,7 +1287,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 53
   },
   {
    "group": "Interbranch transfers",
@@ -946,7 +1303,7 @@
     }
    ],
    "pass": true,
-   "ms": 28
+   "ms": 30
   },
   {
    "group": "Interbranch transfers",
@@ -997,7 +1354,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1006,7 +1363,7 @@
     }
    ],
    "pass": true,
-   "ms": 49
+   "ms": 42
   },
   {
    "group": "Interbranch transfers",
@@ -1029,7 +1386,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1066,7 +1423,7 @@
     }
    ],
    "pass": true,
-   "ms": 75
+   "ms": 81
   },
   {
    "group": "Interbranch transfers",
@@ -1097,7 +1454,7 @@
      "ok": true
     },
     {
-     "what": "after transfer: on hand equals receipts minus shipments in the movement ledger",
+     "what": "after transfer: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1121,7 +1478,7 @@
      "ok": true
     },
     {
-     "what": "after shipping: on hand equals receipts minus shipments in the movement ledger",
+     "what": "after shipping: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1130,7 +1487,7 @@
     }
    ],
    "pass": true,
-   "ms": 195
+   "ms": 197
   },
   {
    "group": "Interbranch transfers",
@@ -1157,7 +1514,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1166,7 +1523,7 @@
     }
    ],
    "pass": true,
-   "ms": 65
+   "ms": 52
   },
   {
    "group": "Interbranch transfers",
@@ -1182,7 +1539,7 @@
     }
    ],
    "pass": true,
-   "ms": 172
+   "ms": 160
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1218,7 +1575,7 @@
     }
    ],
    "pass": true,
-   "ms": 185
+   "ms": 162
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1250,7 +1607,7 @@
     }
    ],
    "pass": true,
-   "ms": 270
+   "ms": 257
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1290,7 +1647,7 @@
     }
    ],
    "pass": true,
-   "ms": 250
+   "ms": 242
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1330,7 +1687,7 @@
     }
    ],
    "pass": true,
-   "ms": 243
+   "ms": 231
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1354,7 +1711,7 @@
     }
    ],
    "pass": true,
-   "ms": 18
+   "ms": 15
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1370,7 +1727,7 @@
     }
    ],
    "pass": true,
-   "ms": 19
+   "ms": 18
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1410,7 +1767,7 @@
     }
    ],
    "pass": true,
-   "ms": 115
+   "ms": 102
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1450,7 +1807,7 @@
     }
    ],
    "pass": true,
-   "ms": 158
+   "ms": 170
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1514,7 +1871,7 @@
     }
    ],
    "pass": true,
-   "ms": 209
+   "ms": 207
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1550,7 +1907,7 @@
     }
    ],
    "pass": true,
-   "ms": 361
+   "ms": 303
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1573,7 +1930,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1582,7 +1939,7 @@
     }
    ],
    "pass": true,
-   "ms": 110
+   "ms": 103
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1605,7 +1962,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1614,7 +1971,7 @@
     }
    ],
    "pass": true,
-   "ms": 348
+   "ms": 288
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1629,7 +1986,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1645,7 +2002,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1661,7 +2018,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1677,7 +2034,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1693,7 +2050,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1709,7 +2066,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1725,7 +2082,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1741,7 +2098,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1757,7 +2114,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1773,7 +2130,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1789,7 +2146,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1805,7 +2162,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1818,7 +2175,7 @@
     }
    ],
    "pass": true,
-   "ms": 637
+   "ms": 622
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1833,7 +2190,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1849,7 +2206,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1865,7 +2222,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1881,7 +2238,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1897,7 +2254,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1913,7 +2270,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -1926,7 +2283,7 @@
     }
    ],
    "pass": true,
-   "ms": 492
+   "ms": 465
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1946,7 +2303,7 @@
     }
    ],
    "pass": true,
-   "ms": 45
+   "ms": 33
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1970,7 +2327,7 @@
     }
    ],
    "pass": true,
-   "ms": 282
+   "ms": 280
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2014,7 +2371,7 @@
     }
    ],
    "pass": true,
-   "ms": 170
+   "ms": 148
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2038,7 +2395,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 37
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2065,7 +2422,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -2074,7 +2431,7 @@
     }
    ],
    "pass": true,
-   "ms": 189
+   "ms": 187
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2090,7 +2447,7 @@
     }
    ],
    "pass": true,
-   "ms": 223
+   "ms": 206
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2106,7 +2463,7 @@
     }
    ],
    "pass": true,
-   "ms": 319
+   "ms": 292
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2129,7 +2486,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -2138,7 +2495,7 @@
     }
    ],
    "pass": true,
-   "ms": 176
+   "ms": 135
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2154,7 +2511,7 @@
     }
    ],
    "pass": true,
-   "ms": 38
+   "ms": 26
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2174,7 +2531,7 @@
     }
    ],
    "pass": true,
-   "ms": 34
+   "ms": 28
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2209,7 +2566,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -2218,31 +2575,67 @@
     }
    ],
    "pass": true,
-   "ms": 297
+   "ms": 279
   },
   {
    "group": "Concurrency, retries and failure recovery",
-   "name": "two work orders raised on one item at once each get their own number and nothing is lost",
+   "name": "one item feeding several work orders at once: each takes its share, and no more than the item holds",
    "asserts": [
     {
-     "what": "answered without a server error",
+     "what": "three work orders on one item are all accepted, each with its own number",
      "ok": true
     },
     {
-     "what": "every accepted work order is saved once with its own number",
+     "what": "completed at the same moment: two fit in 4000 lb, the third is refused",
      "ok": true
     },
     {
-     "what": "each has its creation in the history",
+     "what": "1000 lb left on the source, never below zero",
      "ok": true
     },
     {
-     "what": "the item balance is unchanged",
+     "what": "two complete with a piece each, one still in progress with none",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
+     "ok": true
+    },
+    {
+     "what": "the third completes with what is really left, and the item is used up",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "source: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "source: the item and its stock row name the same branch",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 47
+   "ms": 194
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2262,7 +2655,7 @@
     }
    ],
    "pass": true,
-   "ms": 728
+   "ms": 622
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2273,7 +2666,7 @@
      "ok": true
     },
     {
-     "what": "a reconciliation read taken 155 times during the burst never saw the books out of balance",
+     "what": "a reconciliation read taken 157 times during the burst never saw the books out of balance",
      "ok": true
     },
     {
@@ -2285,7 +2678,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -2301,7 +2694,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -2317,7 +2710,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -2333,7 +2726,7 @@
      "ok": true
     },
     {
-     "what": "item: on hand equals receipts minus shipments in the movement ledger",
+     "what": "item: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
@@ -2342,7 +2735,335 @@
     }
    ],
    "pass": true,
-   "ms": 1312
+   "ms": 1113
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "a count that finds less, more, or the same: the balance follows through a movement that says who and why",
+   "asserts": [
+    {
+     "what": "counted 987.5: accepted",
+     "ok": true
+    },
+    {
+     "what": "987.5 on hand and free",
+     "ok": true
+    },
+    {
+     "what": "a count movement of 12.5 out, by the person, with the note",
+     "ok": true
+    },
+    {
+     "what": "20 lb found: accepted",
+     "ok": true
+    },
+    {
+     "what": "1007.5 on hand",
+     "ok": true
+    },
+    {
+     "what": "a count that agrees writes no movement, and is still on record",
+     "ok": true
+    },
+    {
+     "what": "each change is in the history with before and after",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 82
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "a correction cannot take away stock that is reserved or on hold, go below zero, or be made without a reason",
+   "asserts": [
+    {
+     "what": "down to 600 with 700 reserved is refused, and says what is reserved",
+     "ok": true
+    },
+    {
+     "what": "reserved: nothing changed",
+     "ok": true
+    },
+    {
+     "what": "below zero is refused",
+     "ok": true
+    },
+    {
+     "what": "below zero: nothing changed",
+     "ok": true
+    },
+    {
+     "what": "no note: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "unknown reason: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "both a count and a change: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "neither: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "negative count: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "zero change: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "damage that adds: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "found that removes: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "not a number: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "five decimal places: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "bad requests: nothing changed",
+     "ok": true
+    },
+    {
+     "what": "the 300 that is free can be written off; the order keeps its 700",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 171
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "only a manager or the inventory manager can correct stock, and only at their own branch",
+   "asserts": [
+    {
+     "what": "csr: refused",
+     "ok": true
+    },
+    {
+     "what": "operator: refused",
+     "ok": true
+    },
+    {
+     "what": "shipping: refused",
+     "ok": true
+    },
+    {
+     "what": "branchA: refused",
+     "ok": true
+    },
+    {
+     "what": "the inventory manager of the branch can",
+     "ok": true
+    },
+    {
+     "what": "and cannot at another branch",
+     "ok": true
+    },
+    {
+     "what": "a regional manager can correct stock at a branch they manage",
+     "ok": true
+    },
+    {
+     "what": "and not at a branch outside their three",
+     "ok": true
+    },
+    {
+     "what": "only the one allowed correction happened",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 109
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "a correction, a reservation and a shipment on one item at the same moment leave the books in balance",
+   "asserts": [
+    {
+     "what": "no server error",
+     "ok": true
+    },
+    {
+     "what": "nothing is negative and the identity holds",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold",
+     "ok": true
+    },
+    {
+     "what": "item: reserved quantity equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: on hand equals what the movement ledger adds up to",
+     "ok": true
+    },
+    {
+     "what": "item: the item and its stock row name the same branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 252
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "invoice numbers: twelve invoices raised at once take twelve numbers in a row, with none skipped and none repeated",
+   "asserts": [
+    {
+     "what": "the series has a counter that equals the highest number on file",
+     "ok": true
+    },
+    {
+     "what": "all twelve dispatched",
+     "ok": true
+    },
+    {
+     "what": "twelve invoices",
+     "ok": true
+    },
+    {
+     "what": "they are numbers 146 to 157 exactly",
+     "ok": true
+    },
+    {
+     "what": "the counter stands at the last one",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2015
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "invoice numbers: a save that fails or is refused gives its number back, and counter sales share the series",
+   "asserts": [
+    {
+     "what": "a credit memo that fails after taking its number leaves the series where it was",
+     "ok": true
+    },
+    {
+     "what": "asking to invoice an order with nothing left to bill is refused and takes no number",
+     "ok": true
+    },
+    {
+     "what": "a refused credit takes no number",
+     "ok": true
+    },
+    {
+     "what": "the next credit memo takes the very next number",
+     "ok": true
+    },
+    {
+     "what": "one counter sale sent three times at once is one sale",
+     "ok": true
+    },
+    {
+     "what": "it has one invoice, numbered next in the same series",
+     "ok": true
+    },
+    {
+     "what": "no number repeats anywhere in the series",
+     "ok": true
+    },
+    {
+     "what": "and none is skipped since the counter began",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 394
+  },
+  {
+   "group": "Stock corrections, invoice numbers and retention",
+   "name": "history older than five years raises an archive warning, and nothing is removed",
+   "asserts": [
+    {
+     "what": "the report answers with a period of five years",
+     "ok": true
+    },
+    {
+     "what": "with nothing old on file there is no warning",
+     "ok": true
+    },
+    {
+     "what": "an order 30 days short of five years: a warning to plan the archive",
+     "ok": true
+    },
+    {
+     "what": "an order two days past five years: ready to archive, counted once",
+     "ok": true
+    },
+    {
+     "what": "the report removed nothing",
+     "ok": true
+    },
+    {
+     "what": "csr cannot read it",
+     "ok": true
+    },
+    {
+     "what": "operator cannot read it",
+     "ok": true
+    },
+    {
+     "what": "shipping cannot read it",
+     "ok": true
+    },
+    {
+     "what": "with the dates put back, the warning clears",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 257
   }
  ]
 }

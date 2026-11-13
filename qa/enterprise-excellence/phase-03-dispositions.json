@@ -1,13 +1,111 @@
 {
  "note": "Dispositions decided in Phase 3. Applied over the findings source by qa/tools/findings-import.mjs. Never delete an entry.",
  "dispositions": {
-  "C-003": { "statusNote": "Phase 3: DispatchJob.locationId now has a foreign key to Location and the default text \"FWA\" is removed (migration 20261113210000_reference_integrity). The key is validated only if every live row names a real branch; otherwise the SQL Editor file prints a notice and the key holds for new rows. Any live rows holding \"FWA\" are a clean-up the owner approves (phase-03-migration-review.md, section 4)." },
-  "C-006": { "status": "VERIFIED FIXED", "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability", "statusNote": "Phase 3: a RequestKey table with a unique rule on (user and route, key); middleware on every changing route that honours an Idempotency-Key header; the screens send a key for every request that creates a document (src/frontend/src/api/requestKey.js). A repeat gets the first answer back; the same key with a different body is refused (422); a refused request is not remembered.", "verification": "qa/sim/phase3-db.mjs: the same order sent three times at once with one key saves one order and the retry is marked as a replay; different body 422; another user's same key is separate; a stale claim is taken over after a minute. test/requestKeys.test.js (3 tests). Order creation only was exercised through the API; the web checkout and order intake use the same middleware and were not separately run (NOT VERIFIED for those two routes)." },
-  "C-009": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 3: quotes, requests for quotation and their lines now carry a branch and are held to it (G-012, verified). Drop tags are held through their order and packages through their order or the branch they stand at (unit-tested in test/branchScope.test.js; not exercised through the API: FIXED, NOT VERIFIED end to end). Documents are shared by design: a mill certificate follows the material from branch to branch. What remains: the second stock list and order hub (B-009), a home branch on every live staff login, and making Order.locationId required (G-018).", "deferral": { "reason": "The remaining records are either JSON stores that must first become real tables (B-009) or depend on the owner assigning home branches in the live database.", "targetPhase": "Phase 10: security and infrastructure", "correction": "Enforce the boundary on the second stock list once it reads the real tables; add API tests for drop tags and packages; require a branch on every order.", "dependencies": "B-009, G-018, the owner's backfill.", "acceptance": "A branch login cannot read any record of another branch through any route.", "verification": "qa/sim/branch-boundary.mjs extended to each record type." } },
-  "C-010": { "status": "VERIFIED FIXED", "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability", "statusNote": "Phase 3: creditInvoice accepts steps that run inside its own transaction. A void now claims the sale, returns the shelf stock, writes the credit memo and records the refund in one transaction.", "verification": "qa/sim/phase3-db.mjs: a credit whose last step is forced to fail leaves no memo, no refund, no history line, and undoes the step before it; a sale voided twice at once is voided once, with one credit memo, one stock return and money netting to zero." },
-  "C-011": { "statusNote": "Phase 3 did not change Coil.heatId or gradeId. Making them optional changes what every stock screen and trace report may assume, and the rule for piece goods is the owner's. No database change was made on a guess.", "deferral": { "reason": "The columns can only be relaxed together with the receiving function that needs it, and the rule for which products are counted by the piece is not decided.", "targetPhase": "The phase the owner issues for inventory and purchasing (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12", "correction": "A receipt by the piece for products priced EACH, with heat and grade optional for those products only (a database check ties the exemption to the unit).", "dependencies": "I-016; the owner's list of piece goods.", "acceptance": "A shelf item is received by the piece, sold at the counter and reconciles.", "verification": "Database scenarios: receive 10, sell 3, void 1, count 8." } },
-  "E-004": { "status": "VERIFIED FIXED", "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability", "statusNote": "Phase 3: 15 value checks added to the 9 that existed (24 in all): prices, quantities and weights cannot be negative; a discount is 0 to 100; an order total and an invoice total equal subtotal plus tax plus freight; a payment and a stock movement cannot be zero; a reservation is more than zero. Each is added only if no existing row breaks it.", "verification": "qa/sim/phase3-db.mjs, two scenarios that write directly to the database: 13 bad writes, each refused by a check or a key. SQL Editor file run twice on the scale copy (72,240 orders, 37,625 invoices): every check validated; second run changed nothing." },
-  "B-009": { "statusNote": "Phase 3 audited the two stores and did not migrate them. The QA database holds only fixture rows in them; what the live stores hold cannot be seen from here, and moving records nobody has inspected into the order and stock tables would be changing business data on a guess.", "deferral": { "reason": "Decision 1 says the second stock list and the order hub are to be connected to the real tables or retired. Either needs the live contents of the two JSON stores to be read first (a read-only export the owner runs), and the screens rebuilt on the real routes, which is module work.", "targetPhase": "The phase the owner issues for inventory and purchasing, and for sales (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12", "correction": "Export the two stores read-only; decide record by record whether each is a real order or stock item; point the screens at /api/orders and /api/coils; remove the stores.", "dependencies": "A read-only export of AppSetting from the live database; decision 1.", "acceptance": "No route reads or writes an order or a stock record in AppSetting; the two screens show the same records as the main ones.", "verification": "A database check that the two keys hold no records; the browser suites for both screens." } },
-  "B-012": { "statusNote": "Phase 3 measured the branch list screens on the 85-branch copy: every one answered in under 160 ms at the 95th percentile for a branch login and under 270 ms for an all-branch login (qa/results/phase3-branch-bench-before.json). The unlimited lists were not changed in this phase." }
+  "C-003": {
+   "statusNote": "Phase 3: DispatchJob.locationId now has a foreign key to Location and the default text \"FWA\" is removed (migration 20261113210000_reference_integrity). The key is validated only if every live row names a real branch; otherwise the SQL Editor file prints a notice and the key holds for new rows. Any live rows holding \"FWA\" are a clean-up the owner approves (phase-03-migration-review.md, section 4)."
+  },
+  "C-006": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Phase 3: a RequestKey table with a unique rule on (user and route, key); middleware on every changing route that honours an Idempotency-Key header; the screens send a key for every request that creates a document (src/frontend/src/api/requestKey.js). A repeat gets the first answer back; the same key with a different body is refused (422); a refused request is not remembered.",
+   "verification": "qa/sim/phase3-db.mjs: the same order sent three times at once with one key saves one order and the retry is marked as a replay; different body 422; another user's same key is separate; a stale claim is taken over after a minute. test/requestKeys.test.js (3 tests). Order creation only was exercised through the API; the web checkout and order intake use the same middleware and were not separately run (NOT VERIFIED for those two routes)."
+  },
+  "C-009": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Phase 3: quotes, requests for quotation and their lines now carry a branch and are held to it (G-012, verified). Drop tags are held through their order and packages through their order or the branch they stand at (unit-tested in test/branchScope.test.js; not exercised through the API: FIXED, NOT VERIFIED end to end). Documents are shared by design: a mill certificate follows the material from branch to branch. What remains: the second stock list and order hub (B-009), a home branch on every live staff login, and making Order.locationId required (G-018).",
+   "deferral": {
+    "reason": "The remaining records are either JSON stores that must first become real tables (B-009) or depend on the owner assigning home branches in the live database.",
+    "targetPhase": "Phase 10: security and infrastructure",
+    "correction": "Enforce the boundary on the second stock list once it reads the real tables; add API tests for drop tags and packages; require a branch on every order.",
+    "dependencies": "B-009, G-018, the owner's backfill.",
+    "acceptance": "A branch login cannot read any record of another branch through any route.",
+    "verification": "qa/sim/branch-boundary.mjs extended to each record type."
+   }
+  },
+  "C-010": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Phase 3: creditInvoice accepts steps that run inside its own transaction. A void now claims the sale, returns the shelf stock, writes the credit memo and records the refund in one transaction.",
+   "verification": "qa/sim/phase3-db.mjs: a credit whose last step is forced to fail leaves no memo, no refund, no history line, and undoes the step before it; a sale voided twice at once is voided once, with one credit memo, one stock return and money netting to zero."
+  },
+  "C-011": {
+   "statusNote": "Phase 3 did not change Coil.heatId or gradeId. Making them optional changes what every stock screen and trace report may assume, and the rule for piece goods is the owner's. No database change was made on a guess.",
+   "deferral": {
+    "reason": "The columns can only be relaxed together with the receiving function that needs it, and the rule for which products are counted by the piece is not decided.",
+    "targetPhase": "The phase the owner issues for inventory and purchasing (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12",
+    "correction": "A receipt by the piece for products priced EACH, with heat and grade optional for those products only (a database check ties the exemption to the unit).",
+    "dependencies": "I-016; the owner's list of piece goods.",
+    "acceptance": "A shelf item is received by the piece, sold at the counter and reconciles.",
+    "verification": "Database scenarios: receive 10, sell 3, void 1, count 8."
+   }
+  },
+  "E-004": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Phase 3: 15 value checks added to the 9 that existed (24 in all): prices, quantities and weights cannot be negative; a discount is 0 to 100; an order total and an invoice total equal subtotal plus tax plus freight; a payment and a stock movement cannot be zero; a reservation is more than zero. Each is added only if no existing row breaks it.",
+   "verification": "qa/sim/phase3-db.mjs, two scenarios that write directly to the database: 13 bad writes, each refused by a check or a key. SQL Editor file run twice on the scale copy (72,240 orders, 37,625 invoices): every check validated; second run changed nothing."
+  },
+  "B-009": {
+   "statusNote": "Phase 3 audited the two stores and did not migrate them. The QA database holds only fixture rows in them; what the live stores hold cannot be seen from here, and moving records nobody has inspected into the order and stock tables would be changing business data on a guess.",
+   "deferral": {
+    "reason": "Decision 1 says the second stock list and the order hub are to be connected to the real tables or retired. Either needs the live contents of the two JSON stores to be read first (a read-only export the owner runs), and the screens rebuilt on the real routes, which is module work.",
+    "targetPhase": "The phase the owner issues for inventory and purchasing, and for sales (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12",
+    "correction": "Export the two stores read-only; decide record by record whether each is a real order or stock item; point the screens at /api/orders and /api/coils; remove the stores.",
+    "dependencies": "A read-only export of AppSetting from the live database; decision 1.",
+    "acceptance": "No route reads or writes an order or a stock record in AppSetting; the two screens show the same records as the main ones.",
+    "verification": "A database check that the two keys hold no records; the browser suites for both screens."
+   }
+  },
+  "B-012": {
+   "statusNote": "Phase 3 measured the branch list screens on the 85-branch copy: every one answered in under 160 ms at the 95th percentile for a branch login and under 270 ms for an all-branch login (qa/results/phase3-branch-bench-before.json). The unlimited lists were not changed in this phase."
+  },
+  "G-019": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Owner decision of 2026-11-13: refuse. A shipment that carries more than is reserved for its line is refused at dispatch (routes/shipments.js, consumeReserved), with a message that says to reserve the stock first. Nothing is saved for any line of the shipment. Every shipment therefore names its stock items, and through them the heat, and reduces the balance. The shop-floor Ship button goes through the same step.",
+   "verification": "qa/sim/phase3-db.mjs \"a shipment with nothing reserved, or less reserved than it carries, is refused and changes nothing\": nothing reserved is refused; half a pound short is refused; fully reserved goes, with movements naming the item. db-facts check for dispatched shipment items not covered by stock movements is 0 after the gate run. On the old code the first check fails (dispatch was accepted)."
+  },
+  "M-016": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Owner decision of 2026-11-13: everything is always tracked. Completing a work order is one transaction that takes the output weight and the scrap off the source item (movements CONSUME and SCRAP naming the work order), creates each piece as a stock item with the source's heat, grade, owner and branch (movement PROCESS, a WorkOrderOutput row), and leaves anything unused on the source. Stock reserved on the source for the work order's own order line is carried into the pieces, still reserved for that line. More than the item has free is refused. lib/stockChanges.js. Not covered: the shop-floor job route (Job, DispatchJob) records operations and not weights; material for a job is tracked through the reservation it ships from. Cost by job is not maintained.",
+   "verification": "qa/sim/phase3-db.mjs group 3: completion with three pieces (source 2000 to 500, pieces + scrap + remainder = 2000, heat inherited); completion over what is free refused with nothing saved; reserved stock cut for its order stays reserved in the pieces and ships with its heat. db-facts: completed work orders matched by movements, pieces weigh the output, pieces carry the source heat: 0 exceptions. On the old code each of these fails (no movement, no piece)."
+  },
+  "G-006": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Owner decision of 2026-11-13: everything is always tracked. Recording a remnant against its parent takes the remnant's weight off the parent in the same transaction, with a movement on the parent that names the piece (lib/receiving.js, takeFromParent). A remnant heavier than what is free on the parent is refused.",
+   "verification": "qa/sim/phase3-db.mjs \"a remnant entered against its parent...\": parent 6000 to 5948.75, movement on the parent, the two together still 6000; a heavier remnant refused. On the old code the parent stays at 6000."
+  },
+  "G-008": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Owner decision of 2026-11-13: one item may feed several work orders if the system tracks it. It now does: a work order may be raised on an item that is available or reserved, and each takes only what is free (or reserved for its own line) at the moment it completes, under a lock on the item's balance. The item can never go below zero.",
+   "verification": "qa/sim/phase3-db.mjs \"one item feeding several work orders at once\": three work orders of 1500 lb on a 4000 lb item completed at the same moment: two succeed, the third is refused, 1000 lb left; the third then completes with what is left and the item is marked consumed."
+  },
+  "I-016": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Owner decision of 2026-11-13: use the recommendation. POST /api/inventory/adjust corrects one item's balance from a count or by a difference, with a reason (count, damage, scrap, found stock, keying error) and a required note. It writes a movement with the person, the direction and the note, and a history line with before and after. Only branch and company managers and the inventory manager may do it, and only at their own branches. Stock that is reserved or on hold cannot be taken away; the balance cannot go below zero. The stock item screen has a Correct quantity button. Not built: a scheduled cycle-count program (count sheets, a count calendar, approval of large differences); corrections are per item.",
+   "verification": "qa/sim/phase3-db.mjs group 7: count down, found stock, a count that agrees, refusals for reserved stock, below zero and ten malformed requests, role and branch limits, and a correction racing a reservation and a shipment. test/stockChanges.test.js. db-facts: corrections with no note or person: 0."
+  },
+  "G-016": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Owner decision of 2026-11-13: five years for now, with warnings to archive. GET /api/admin/retention counts records older than the period, and those within six months of it, for nine record types, and returns a warning. Managers see the warning on the user administration screen. The period is 5 years unless an AppSetting 'retention.years' says otherwise. Nothing is removed or moved: archiving itself is not built and would need the owner's approval of what is archived and where.",
+   "verification": "qa/sim/phase3-db.mjs \"history older than five years raises an archive warning, and nothing is removed\"; test/stockChanges.test.js (cutoff and level)."
+  },
+  "G-017": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "As before for orders, shipments, jobs and work orders: a number is never repeated and none is lost under 80 simultaneous saves, though a number can be skipped. Owner decision of 2026-11-13 for invoices: never skipped or repeated. Invoice and credit memo numbers now come from a DocumentCounter row that is advanced inside the transaction that saves the document, at the moment it is written, so a save that fails or is refused gives its number back. Counter sales take their invoice number from the same series (they were INV-QS-<order number> before). A counter sale sent twice is held by a lock on the sale id instead of being written and deleted. Numbers issued before this change keep whatever gaps they have.",
+   "verification": "qa/sim/phase3-db.mjs group 7: twelve invoices raised at once take twelve consecutive numbers; a credit that fails after taking its number, a refused credit and an order with nothing to bill take none; a counter sale sent three times at once is one sale with the next number. db-facts: counter equals the highest number on file, no number repeated. SQL Editor file 20261113220000_document_counters run twice on the 85-branch copy."
+  },
+  "E-015": {
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "statusNote": "Owner, 2026-11-13: \"backups later\". Until a backup is confirmed and a restore has been tested, a loss or corruption of the live database may not be recoverable. This stays a production blocker in the risk register (R-08) and is raised again at each phase gate.",
+   "verification": "None. No backup was confirmed and no restore was run."
+  }
  }
 }

@@ -1,5 +1,7 @@
 # Phase 3: financial reconciliation
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 Whether orders, invoices, payments, credits and refunds agree with each other and with what was shipped. Run in this session on the local QA database. No amount was changed to make a total agree.
 
 ## 1. How money is kept
@@ -69,7 +71,7 @@ The simulation's reconciliation of every order, invoice and payment reports 0 pr
 
 | Gap | Evidence | Finding | Status |
 |---|---|---|---|
-| A shipment with nothing reserved is invoiced although no stock left the books | Scenario | G-019 | REQUIRES BUSINESS DECISION |
+| A shipment with nothing reserved is invoiced although no stock left the books | Scenario | G-019 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
 | A voided counter sale is known only by text in the order notes; the order stays complete | Code read | G-009 | DEFERRED to the sales module |
 | Document numbers can skip (never repeat) | By design of the numbering, more so since G-017 | G-017 note | The owner decides if invoices must have no gaps |
 | Cost of goods and margin by job | Cost columns are not maintained | I-series | Not built |

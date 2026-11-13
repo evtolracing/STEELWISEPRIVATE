@@ -1,8 +1,8 @@
 {
- "at": "2026-11-13T20:54:18.169Z",
+ "at": "2026-11-13T21:44:38.286Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
- "tables": 159,
- "totalRows": 7554,
+ "tables": 160,
+ "totalRows": 7966,
  "emptyTables": [
   "AppSetting",
   "ApprovalDecision",
@@ -95,8 +95,7 @@
   "TraceEvent",
   "UserDivision",
   "UserRoleAssignment",
-  "WebhookDelivery",
-  "WorkOrderOutput"
+  "WebhookDelivery"
  ],
  "rows": [
   {
@@ -129,7 +128,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 1900
+   "rows": 2019
   },
   {
    "table": "BomOperation",
@@ -141,7 +140,7 @@
   },
   {
    "table": "Coil",
-   "rows": 413
+   "rows": 448
   },
   {
    "table": "CommodityPrice",
@@ -190,6 +189,10 @@
   {
    "table": "DocumentBlob",
    "rows": 0
+  },
+  {
+   "table": "DocumentCounter",
+   "rows": 2
   },
   {
    "table": "DocumentLink",
@@ -249,7 +252,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 413
+   "rows": 448
   },
   {
    "table": "InventoryAdjustment",
@@ -273,11 +276,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 159
+   "rows": 177
   },
   {
    "table": "InvoiceLine",
-   "rows": 169
+   "rows": 187
   },
   {
    "table": "Job",
@@ -321,7 +324,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 269
+   "rows": 356
   },
   {
    "table": "MeterReading",
@@ -341,15 +344,15 @@
   },
   {
    "table": "Order",
-   "rows": 415
+   "rows": 437
   },
   {
    "table": "OrderLine",
-   "rows": 432
+   "rows": 454
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 30
+   "rows": 32
   },
   {
    "table": "Organization",
@@ -389,7 +392,7 @@
   },
   {
    "table": "Payment",
-   "rows": 110
+   "rows": 113
   },
   {
    "table": "PipelineRun",
@@ -641,11 +644,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 191
+   "rows": 207
   },
   {
    "table": "ShipmentItem",
-   "rows": 160
+   "rows": 176
   },
   {
    "table": "ShipmentStop",
@@ -725,18 +728,18 @@
   },
   {
    "table": "WorkOrder",
-   "rows": 11
+   "rows": 15
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 0
+   "rows": 12
   },
   {
    "table": "_prisma_migrations",
-   "rows": 26
+   "rows": 27
   }
  ],
- "indexes": 581,
+ "indexes": 582,
  "views": [],
  "triggers": [],
  "jsonCols": [
@@ -905,8 +908,8 @@
  "fkNoIndex": [],
  "constraintCounts": {
   "foreign key": 188,
-  "primary key": 159,
-  "check": 24
+  "primary key": 160,
+  "check": 25
  },
  "checkConstraints": [
   {
@@ -914,6 +917,12 @@
    "name": "Coil_weights_not_negative",
    "kind": "check",
    "def": "CHECK ((((\"netWeightLb\" IS NULL) OR (\"netWeightLb\" >= (0)::numeric)) AND ((\"grossWeightLb\" IS NULL) OR (\"grossWeightLb\" >= (0)::numeric))))"
+  },
+  {
+   "table": "DocumentCounter",
+   "name": "DocumentCounter_lastNumber_check",
+   "kind": "check",
+   "def": "CHECK ((\"lastNumber\" >= 0))"
   },
   {
    "table": "Inventory",
@@ -1061,12 +1070,18 @@
   "reservations on stock items that have no stock row": 0,
   "order line reserved more than is left to ship": 0,
   "reservations left on cancelled or completed orders": 0,
-  "received items whose on-hand differs from receipts minus shipments": 0,
+  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 0,
+  "completed work orders whose output and scrap are not matched by movements on the source item": 0,
+  "completed work orders whose pieces do not weigh what the work order says came out": 0,
+  "pieces whose heat, grade or owner differs from the item they were cut from": 0,
+  "invoice series whose counter is not the highest number on file": 0,
+  "invoice numbers repeated": 0,
+  "stock corrections with no note or no person": 0,
   "stock row and its item disagree about the branch": 0,
   "transfers whose two branches are the same, or missing": 0,
   "last transfer of an item did not end where the item now is": 0,
   "shipped stock movements with no shipment": 0,
-  "dispatched shipment items whose quantity is not fully covered by stock movements: shipped with no reservation, so no item, heat or stock change is recorded (G-019)": 3,
+  "dispatched shipment items whose quantity is not fully covered by stock movements: every shipment must come off reserved stock (G-019, refused since the owner decision of 2026-11-13)": 0,
   "stock items cut from a parent that lost the parent heat": 0,
   "amounts kept with digits beyond what was entered (floating-point residue)": 0,
   "invoice subtotal differs from its lines": 2,

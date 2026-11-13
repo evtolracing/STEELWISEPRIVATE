@@ -9,6 +9,7 @@
 import prisma from './db.js';
 import { ci } from './dbText.js';
 import { readReceipt } from './receivingRules.js';
+import { takeFromParent } from './stockChanges.js';
 
 const refuse = (message, status = 400) => Object.assign(new Error(message), { refuse: true, status });
 
@@ -90,11 +91,13 @@ export async function receiveStock({ input, templateType = null, user, source = 
         },
         include: { heat: { select: { id: true, heatNumber: true } }, grade: { select: { id: true, code: true } }, location: { select: { id: true, code: true, name: true } } },
       });
+      // A piece cut from an item on file comes off that item, so the weight is never counted twice.
+      if (found.parentCoilId) await takeFromParent(tx, { parentId: found.parentCoilId, parentNumber: receipt.parentTag, weight: Number(receipt.weightLb), childNumber: receipt.coilNumber, userId: user.id });
       const inventory = await tx.inventory.create({ data: { coilId: coil.id, locationId: found.locationId, qtyOnHand: receipt.weightLb, qtyAvailable: receipt.weightLb, unit: 'LB', lastMovement: new Date() } });
       const movement = await tx.materialMovement.create({
         data: {
           coilId: coil.id, toLocationId: found.locationId, movementType: 'RECEIVE', qtyMoved: receipt.weightLb, unit: 'LB', createdById: user.id,
-          reasonCode: source === 'UPLOAD' ? 'UPLOAD' : 'RECEIPT',
+          reasonCode: found.parentCoilId ? 'CUT_PIECE' : source === 'UPLOAD' ? 'UPLOAD' : 'RECEIPT',
           notes: [receipt.poReference && `PO ${receipt.poReference}`, receipt.notes].filter(Boolean).join('. ') || null,
         },
       });

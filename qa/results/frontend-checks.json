@@ -1,5 +1,5 @@
 {
- "at": "2026-11-13T21:01:41.030Z",
+ "at": "2026-11-13T21:52:03.643Z",
  "effects": [
   "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:85",
   "src/frontend/src/apps/bom/BomRecipeListPage.jsx:39",
@@ -34,7 +34,7 @@
   "src/frontend/src/hooks/useDemandShaping.js:64",
   "src/frontend/src/hooks/useRealTimePricing.js:100",
   "src/frontend/src/hooks/useRealTimePricing.js:111",
-  "src/frontend/src/pages/Admin/UserManagementPage.jsx:99",
+  "src/frontend/src/pages/Admin/UserManagementPage.jsx:100",
   "src/frontend/src/pages/Ecommerce/OnlineSettingsPage.jsx:63",
   "src/frontend/src/pages/Executive/CompressionMetricsDashboard.jsx:150",
   "src/frontend/src/pages/Orders/CSRIntakePage.jsx:285",

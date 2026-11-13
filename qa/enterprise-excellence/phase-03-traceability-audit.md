@@ -1,5 +1,7 @@
 # Phase 3: traceability audit
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 Can a piece of material be followed from the mill heat to the customer, and back? Read from the schema and the code, and tested on the local QA database in this session.
 
 ## 1. The chain as built
@@ -32,12 +34,12 @@ The route `GET /api/heats/:heatNumber/trace` returns a heat with its items, thei
 
 | Break | Evidence | Finding | Status |
 |---|---|---|---|
-| **A shipment with no reservation names no stock item.** `ShipmentItem` has no column for the item; the only link is the movement written when reserved stock is consumed. Ship without reserving and nothing connects that shipment to a heat | Scenario: 300 lb dispatched and invoiced, 0 movements. Database check: 3 such shipment items in the QA database after a full run | G-019 (P1) | REQUIRES BUSINESS DECISION |
-| **Processing leaves no trace.** A work order records input, output and scrap weights. It creates no output items, no scrap record and no movement. `WorkOrderOutput` and `TraceEvent` hold no rows | Scenarios in the work order group | M-016 | REQUIRES BUSINESS DECISION |
-| **Cut pieces exist only when someone enters them by upload** with the parent's number | Remnant scenario | G-006, M-016 | REQUIRES BUSINESS DECISION |
+| **A shipment with no reservation names no stock item.** `ShipmentItem` has no column for the item; the only link is the movement written when reserved stock is consumed. Ship without reserving and nothing connects that shipment to a heat | Scenario: 300 lb dispatched and invoiced, 0 movements. Database check: 3 such shipment items in the QA database after a full run | G-019 (P1) | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
+| **Processing leaves no trace.** A work order records input, output and scrap weights. It creates no output items, no scrap record and no movement. `WorkOrderOutput` and `TraceEvent` hold no rows | Scenarios in the work order group | M-016 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
+| **Cut pieces exist only when someone enters them by upload** with the parent's number | Remnant scenario | G-006, M-016 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
 | **Operator and machine on a piece.** A job records its work center and who moved it. Which item a job consumed is known only through the order line's reservation | Code read | M-016 | With the processing rule |
 | **No forward-trace screen or report** for a recall | Route read | New work, belongs to the quality module | Recorded in the Phase 4 handoff as a missing endpoint |
-| **Split, merge and regrade of items** | No route exists | I-016 | REQUIRES BUSINESS DECISION |
+| **Split, merge and regrade of items** | No route exists | I-016 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
 | **Packages and drop tags** carry their order; the table that links a package to stock items is in the material tracking module, which the tests reach only in part | Test reach, Phase 2 | B-016 | Deferred |
 | **Supplier lot and purchase order** | Receiving stores a purchase order reference as text; there is no purchase order table in use | I-007 | REQUIRES BUSINESS DECISION |
 

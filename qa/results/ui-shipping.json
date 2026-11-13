@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T20:55:23.677Z",
- "checks": 27,
+ "at": "2026-11-13T21:45:39.973Z",
+ "checks": 29,
  "failed": 0,
  "results": [
   {
@@ -41,6 +41,16 @@
   },
   {
    "name": "shipment: dispatch asks before it takes stock and bills",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: with nothing reserved the dispatch is refused and the screen says to reserve the stock",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: the stock going out is reserved on the order",
    "ok": true,
    "detail": ""
   },

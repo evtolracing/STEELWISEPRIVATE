@@ -1,5 +1,7 @@
 # Phase 3: schema audit
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 What the database actually contains, read from PostgreSQL's own catalogues, and what was changed. Everything here was read or run in this session on 2026-11-13 against local databases. The live database was not connected to, read or changed: this environment holds no connection to it.
 
 ## 1. The test databases, and how isolation was verified

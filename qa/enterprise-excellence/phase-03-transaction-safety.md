@@ -1,5 +1,7 @@
 # Phase 3: transaction safety
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 Where each multi-step operation begins and ends, what it locks, what happens when it fails part-way, and what stops a repeated request from doing the work twice. Read from the code and proved against the local QA database in this session. Phase 2's audit of the shop-floor, login and counter-sale handlers (`phase-02-transaction-safety.md`) still stands and is not repeated.
 
 ## 1. Settings

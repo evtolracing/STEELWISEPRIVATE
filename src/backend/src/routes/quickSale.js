@@ -30,7 +30,7 @@ import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { money } from '../lib/billingRules.js';
-import { BillingError, creditInvoice, refundWithin, recordMoney } from '../services/billing.js';
+import { BillingError, creditInvoice, refundWithin, recordMoney, takeNumber, catchUp } from '../services/billing.js';
 
 const router = Router();
 const METHODS = ['CASH', 'CARD', 'CHECK'];
@@ -259,6 +259,11 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
       count: () => prisma.order.count(),
       format: padded('SO'),
       create: (orderNumber) => prisma.$transaction(async (tx) => {
+        // One sale id is rung up once. The lock makes a second copy of the same sale wait for the
+        // first, then see it, so no invoice is ever written and removed (which would leave a gap
+        // in the invoice numbers).
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`QS:${saleId}`}))`;
+        if (await tx.order.findFirst({ where: { poReference: `QS:${saleId}` }, select: { id: true } })) refuse(409, 'This sale has already been rung up');
         const created = await tx.order.create({
           data: {
             orderNumber, orderType: 'SO', status: 'COMPLETE', buyerId: buyer.id, poReference: `QS:${saleId}`,
@@ -276,7 +281,8 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
           },
           include: { lines: true },
         });
-        const invoiceNumber = `INV-QS-${orderNumber.replace(/^SO-/, '')}`;
+        // Counter sales share the one invoice series, which has no gaps.
+        const invoiceNumber = await takeNumber(tx, 'INV');
         const invoice = await tx.invoice.create({
           data: {
             invoiceNumber, orderId: created.id, kind: 'INVOICE', status: 'PAID', invoiceDate: now, dueDate: now,
@@ -291,6 +297,9 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
         await recordMoney(tx, { invoice, eventType: 'PAYMENT_RECORDED', userId: req.user.id, details: { amount: sale.total, method, reference: reference || null } });
         untracked = await takeShelfStock(tx, { sale, orderId: created.id, userId: req.user.id });
         return created;
+    }).catch(async (error) => {
+      if (error?.code === 'P2002' && String(error?.meta?.target || '').includes('invoiceNumber')) await catchUp('INV');
+      throw error;
     }),
   });
   } catch (error) {

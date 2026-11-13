@@ -2152,10 +2152,10 @@
    "dependencies": "Database host backup settings and approval",
    "correction": "Blocked by a dependency",
    "requiredTests": "One restore into a scratch database, timed, with the reconciliation run on the restored copy",
-   "phase": "Phase 2: architecture and code quality",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open: needs the owner (see `production-readiness-checklist.md`)",
-   "verification": ""
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "statusNote": "Open: needs the owner (see `production-readiness-checklist.md`) Owner, 2026-11-13: \"backups later\". Until a backup is confirmed and a restore has been tested, a loss or corruption of the live database may not be recoverable. This stays a production blocker in the risk register (R-08) and is raised again at each phase gate.",
+   "verification": "None. No backup was confirmed and no restore was run."
   },
   {
    "id": "E-016",
@@ -2748,8 +2748,8 @@
    "workflow": "Remnants",
    "cause": "Processing moves no stock (M-016), so there is no step at which the parent is reduced.",
    "dependencies": "M-016.",
-   "statusNote": "The question for the owner is the one already asked under M-016: when a piece is cut, what happens to the weight of the piece it was cut from?",
-   "verification": "",
+   "statusNote": "The question for the owner is the one already asked under M-016: when a piece is cut, what happens to the weight of the piece it was cut from? Owner decision of 2026-11-13: everything is always tracked. Recording a remnant against its parent takes the remnant's weight off the parent in the same transaction, with a movement on the parent that names the piece (lib/receiving.js, takeFromParent). A remnant heavier than what is free on the parent is refused.",
+   "verification": "qa/sim/phase3-db.mjs \"a remnant entered against its parent...\": parent 6000 to 5948.75, movement on the parent, the two together still 6000; a heavier remnant refused. On the old code the parent stays at 6000.",
    "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
    "module": "Stock items",
    "severity": "P2",
@@ -2761,7 +2761,7 @@
    "impact": "Stock by weight is overstated by every remnant entered.",
    "correction": "Decided together with M-016: what a completed work order consumes, produces and scraps.",
    "requiredTests": "Parent plus children plus scrap equals the parent before, for every work order.",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "G-007",
@@ -2800,8 +2800,8 @@
    "workflow": "Raising a work order",
    "cause": "Processing moves no stock (M-016).",
    "dependencies": "M-016.",
-   "statusNote": "Question for the owner: may one stock item feed more than one open work order at a time?",
-   "verification": "",
+   "statusNote": "Question for the owner: may one stock item feed more than one open work order at a time? Owner decision of 2026-11-13: one item may feed several work orders if the system tracks it. It now does: a work order may be raised on an item that is available or reserved, and each takes only what is free (or reserved for its own line) at the moment it completes, under a lock on the item's balance. The item can never go below zero.",
+   "verification": "qa/sim/phase3-db.mjs \"one item feeding several work orders at once\": three work orders of 1500 lb on a 4000 lb item completed at the same moment: two succeed, the third is refused, 1000 lb left; the third then completes with what is left and the item is marked consumed.",
    "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
    "module": "Work orders",
    "severity": "P2",
@@ -2813,7 +2813,7 @@
    "impact": "Two jobs can be planned against the same steel.",
    "correction": "Decided with M-016.",
    "requiredTests": "Per the rule.",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "G-009",
@@ -3008,8 +3008,8 @@
    "workflow": "Retention",
    "cause": "Not decided.",
    "dependencies": "",
-   "statusNote": "Question for the owner: how many years of audit history and stock movements must stay online?",
-   "verification": "",
+   "statusNote": "Question for the owner: how many years of audit history and stock movements must stay online? Owner decision of 2026-11-13: five years for now, with warnings to archive. GET /api/admin/retention counts records older than the period, and those within six months of it, for nine record types, and returns a warning. Managers see the warning on the user administration screen. The period is 5 years unless an AppSetting 'retention.years' says otherwise. Nothing is removed or moved: archiving itself is not built and would need the owner's approval of what is archived and where.",
+   "verification": "qa/sim/phase3-db.mjs \"history older than five years raises an archive warning, and nothing is removed\"; test/stockChanges.test.js (cutoff and level).",
    "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
    "module": "Database",
    "severity": "P3",
@@ -3021,7 +3021,7 @@
    "impact": "None for years at the measured growth; a decision, not a defect.",
    "correction": "The owner sets the periods; archive tables or partitions follow only if the volume needs them.",
    "requiredTests": "None until the rule exists.",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "G-017",
@@ -3030,8 +3030,8 @@
    "workflow": "Numbering of orders, shipments, invoices and other documents",
    "cause": "Every simultaneous request started from the same count and walked forward together.",
    "dependencies": "",
-   "statusNote": "Document numbers can have gaps. If the owner needs invoice numbers with no gaps, that is a different mechanism (a counter row locked per series) and a decision.",
-   "verification": "test/numbering.test.js: 2 new tests, both fail on the code before. qa/sim/phase3-db.mjs \"eighty orders entered at the same moment\": 80 saved with 80 numbers.",
+   "statusNote": "Document numbers can have gaps. If the owner needs invoice numbers with no gaps, that is a different mechanism (a counter row locked per series) and a decision. As before for orders, shipments, jobs and work orders: a number is never repeated and none is lost under 80 simultaneous saves, though a number can be skipped. Owner decision of 2026-11-13 for invoices: never skipped or repeated. Invoice and credit memo numbers now come from a DocumentCounter row that is advanced inside the transaction that saves the document, at the moment it is written, so a save that fails or is refused gives its number back. Counter sales take their invoice number from the same series (they were INV-QS-<order number> before). A counter sale sent twice is held by a lock on the sale id instead of being written and deleted. Numbers issued before this change keep whatever gaps they have.",
+   "verification": "qa/sim/phase3-db.mjs group 7: twelve invoices raised at once take twelve consecutive numbers; a credit that fails after taking its number, a refused credit and an order with nothing to bill take none; a counter sale sent three times at once is one sale with the next number. db-facts: counter equals the highest number on file, no number repeated. SQL Editor file 20261113220000_document_counters run twice on the 85-branch copy.",
    "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
    "module": "Database",
    "severity": "P1",
@@ -3082,8 +3082,8 @@
    "workflow": "Dispatch",
    "cause": "Dispatch consumes reservations and does nothing when there are none.",
    "dependencies": "I-016 (no stock adjustment), M-016.",
-   "statusNote": "Question for the owner: may an order ship when no stock has been reserved for it? If yes, in which cases (direct from the mill, buy-outs), and how should the heat be recorded?",
-   "verification": "",
+   "statusNote": "Question for the owner: may an order ship when no stock has been reserved for it? If yes, in which cases (direct from the mill, buy-outs), and how should the heat be recorded? Owner decision of 2026-11-13: refuse. A shipment that carries more than is reserved for its line is refused at dispatch (routes/shipments.js, consumeReserved), with a message that says to reserve the stock first. Nothing is saved for any line of the shipment. Every shipment therefore names its stock items, and through them the heat, and reduces the balance. The shop-floor Ship button goes through the same step.",
+   "verification": "qa/sim/phase3-db.mjs \"a shipment with nothing reserved, or less reserved than it carries, is refused and changes nothing\": nothing reserved is refused; half a pound short is refused; fully reserved goes, with movements naming the item. db-facts check for dispatched shipment items not covered by stock movements is 0 after the gate run. On the old code the first check fails (dispatch was accepted).",
    "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
    "module": "Shipments",
    "severity": "P1",
@@ -3095,7 +3095,7 @@
    "impact": "For such a shipment a mill certificate cannot be matched to the customer from the records, and the stock on the books stays too high.",
    "correction": "The engineer's recommendation: refuse to dispatch a line that is not fully reserved, unless the order line is marked as shipped direct from a supplier.",
    "requiredTests": "Dispatch with a part reservation is refused; a direct shipment is accepted and marked; the database check for uncovered shipment items returns 0.",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "G-020",
@@ -3490,10 +3490,10 @@
    "dependencies": "Who may adjust stock, and above what amount a second approval is needed",
    "correction": "Requires a business decision",
    "requiredTests": "An adjustment route and screen; sweep checks on the rule",
-   "phase": "Inventory and purchasing",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open",
-   "verification": ""
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "status": "VERIFIED FIXED",
+   "statusNote": "Open Owner decision of 2026-11-13: use the recommendation. POST /api/inventory/adjust corrects one item's balance from a count or by a difference, with a reason (count, damage, scrap, found stock, keying error) and a required note. It writes a movement with the person, the direction and the note, and a history line with before and after. Only branch and company managers and the inventory manager may do it, and only at their own branches. Stock that is reserved or on hold cannot be taken away; the balance cannot go below zero. The stock item screen has a Correct quantity button. Not built: a scheduled cycle-count program (count sheets, a count calendar, approval of large differences); corrections are per item.",
+   "verification": "qa/sim/phase3-db.mjs group 7: count down, found stock, a count that agrees, refusals for reserved stock, below zero and ten malformed requests, role and branch limits, and a correction racing a reservation and a shipment. test/stockChanges.test.js. db-facts: corrections with no note or person: 0."
   },
   {
    "id": "I-017",
@@ -3902,10 +3902,10 @@
    "dependencies": "Whether coil work orders stay as a module beside jobs, and if so how completing one consumes and creates stock",
    "correction": "Requires a business decision",
    "requiredTests": "A completion that moves stock in one transaction; a cycle in the simulation",
-   "phase": "Manufacturing and processing",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open",
-   "verification": ""
+   "phase": "Phase 3: database integrity, transactional correctness, performance and 80-location scalability",
+   "status": "VERIFIED FIXED",
+   "statusNote": "Open Owner decision of 2026-11-13: everything is always tracked. Completing a work order is one transaction that takes the output weight and the scrap off the source item (movements CONSUME and SCRAP naming the work order), creates each piece as a stock item with the source's heat, grade, owner and branch (movement PROCESS, a WorkOrderOutput row), and leaves anything unused on the source. Stock reserved on the source for the work order's own order line is carried into the pieces, still reserved for that line. More than the item has free is refused. lib/stockChanges.js. Not covered: the shop-floor job route (Job, DispatchJob) records operations and not weights; material for a job is tracked through the reservation it ships from. Cost by job is not maintained.",
+   "verification": "qa/sim/phase3-db.mjs group 3: completion with three pieces (source 2000 to 500, pieces + scrap + remainder = 2000, heat inherited); completion over what is free refused with nothing saved; reserved stock cut for its order stays reserved in the pieces and ships with its heat. db-facts: completed work orders matched by movements, pieces weigh the output, pieces carry the source heat: 0 exceptions. On the old code each of these fails (no movement, no piece)."
   },
   {
    "id": "M-017",

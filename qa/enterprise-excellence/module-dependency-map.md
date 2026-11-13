@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit c4da120. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit d8a3a2a. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -65,10 +65,10 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Coil work orders; Shipping; Operations cockpit and dashboards | 9 |
 | Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Shipping; Returns; Partner API; Operations cockpit and dashboards | 9 |
 | Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Stock items and stock levels; Receiving; Dispatch, work centers and shop-floor operations; Shipping | 7 |
+| OrderLine | Order entry; Sales orders; Customer specifications; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 7 |
+| Inventory | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
 | Coil | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
 | WorkCenter | Staff and operators; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 6 |
-| OrderLine | Order entry; Sales orders; Customer specifications; Jobs, job board and schedule; Shipping; Returns | 6 |
-| Inventory | Sales orders; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 6 |
 | MaterialMovement | Counter quick sale; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 6 |
 | User | Sign-in and sessions; Users, roles and branches; RFQs and quotes; Stock items and stock levels; Jobs, job board and schedule | 5 |
 | Product | Order entry; Counter quick sale; Web store; Products, grades and heats; Stock items and stock levels | 5 |
@@ -95,7 +95,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | File | Imported by (route files) | Count |
 |---|---|---:|
 | lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 57 |
-| lib/numbering.js | intakeOrders.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, quotes.js, returns.js, … | 12 |
+| lib/numbering.js | intakeOrders.js, inventory.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, quotes.js, … | 14 |
 | lib/roleAccess.js | coils.js, customers.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, orders.js, … | 11 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
 | lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |
@@ -115,6 +115,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/orderTax.js | intakeOrders.js, intakePricing.js, onlineOrders.js | 3 |
 | services/webhookService.js | carrierRoutes.js, customerRoutes.js, supplierRoutes.js | 3 |
 | lib/priceRules.js | customers.js, intakePricing.js | 2 |
+| lib/stockChanges.js | inventory.js, workOrders.js | 2 |
 | services/printAutomationService.js | jobs.js, printQueue.js | 2 |
 | lib/quoteRules.js | quotes.js, rfqs.js | 2 |
 | services/dropTagService.js | dropTagRoutes.js | 1 |

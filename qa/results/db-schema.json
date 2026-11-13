@@ -1,5 +1,5 @@
 {
- "at": "2026-11-13T20:54:18.651Z",
+ "at": "2026-11-13T21:44:38.770Z",
  "identity": {
   "db": "steelwise_qa",
   "usr": "postgres",
@@ -9,13 +9,13 @@
   "max_connections": "100"
  },
  "counts": {
-  "tables": 159,
-  "columns": 2462,
-  "primaryKeys": 159,
+  "tables": 160,
+  "columns": 2465,
+  "primaryKeys": 160,
   "foreignKeys": 188,
   "uniqueIndexes": 82,
-  "checks": 24,
-  "indexes": 581,
+  "checks": 25,
+  "indexes": 582,
   "schemas": 1,
   "views": 0,
   "materializedViews": 0,
@@ -25,7 +25,7 @@
   "partitionedTables": 0,
   "policies": 0,
   "enums": 96,
-  "migrationsApplied": 26,
+  "migrationsApplied": 27,
   "migrationsFailed": 0
  },
  "other": {
@@ -42,7 +42,7 @@
   "partitionedTables": [],
   "policies": [],
   "enums": 96,
-  "migrationsApplied": 26,
+  "migrationsApplied": 27,
   "migrationsFailed": 0
  },
  "tables": [
@@ -91,8 +91,8 @@
   {
    "name": "AuditLog",
    "rls": false,
-   "bytes": 1294336,
-   "rows": 1900
+   "bytes": 1343488,
+   "rows": 2019
   },
   {
    "name": "BomOperation",
@@ -110,7 +110,7 @@
    "name": "Coil",
    "rls": false,
    "bytes": 434176,
-   "rows": 413
+   "rows": 448
   },
   {
    "name": "CommodityPrice",
@@ -139,7 +139,7 @@
   {
    "name": "DemandSuggestionEvent",
    "rls": false,
-   "bytes": 425984,
+   "bytes": 417792,
    "rows": 1242
   },
   {
@@ -183,6 +183,12 @@
    "rls": false,
    "bytes": 16384,
    "rows": 0
+  },
+  {
+   "name": "DocumentCounter",
+   "rls": false,
+   "bytes": 65536,
+   "rows": 2
   },
   {
    "name": "DocumentLink",
@@ -271,8 +277,8 @@
   {
    "name": "Inventory",
    "rls": false,
-   "bytes": 278528,
-   "rows": 413
+   "bytes": 294912,
+   "rows": 448
   },
   {
    "name": "InventoryAdjustment",
@@ -307,19 +313,19 @@
   {
    "name": "Invoice",
    "rls": false,
-   "bytes": 188416,
-   "rows": 159
+   "bytes": 237568,
+   "rows": 177
   },
   {
    "name": "InvoiceLine",
    "rls": false,
-   "bytes": 188416,
-   "rows": 169
+   "bytes": 221184,
+   "rows": 187
   },
   {
    "name": "Job",
    "rls": false,
-   "bytes": 335872,
+   "bytes": 327680,
    "rows": 271
   },
   {
@@ -379,8 +385,8 @@
   {
    "name": "MaterialMovement",
    "rls": false,
-   "bytes": 344064,
-   "rows": 269
+   "bytes": 409600,
+   "rows": 356
   },
   {
    "name": "MeterReading",
@@ -409,20 +415,20 @@
   {
    "name": "Order",
    "rls": false,
-   "bytes": 507904,
-   "rows": 415
+   "bytes": 524288,
+   "rows": 437
   },
   {
    "name": "OrderLine",
    "rls": false,
-   "bytes": 352256,
-   "rows": 432
+   "bytes": 385024,
+   "rows": 454
   },
   {
    "name": "OrderLineAllocation",
    "rls": false,
    "bytes": 98304,
-   "rows": 30
+   "rows": 32
   },
   {
    "name": "Organization",
@@ -481,8 +487,8 @@
   {
    "name": "Payment",
    "rls": false,
-   "bytes": 90112,
-   "rows": 110
+   "bytes": 106496,
+   "rows": 113
   },
   {
    "name": "PipelineRun",
@@ -493,7 +499,7 @@
   {
    "name": "PosSession",
    "rls": false,
-   "bytes": 262144,
+   "bytes": 229376,
    "rows": 9
   },
   {
@@ -859,14 +865,14 @@
   {
    "name": "Shipment",
    "rls": false,
-   "bytes": 229376,
-   "rows": 191
+   "bytes": 237568,
+   "rows": 207
   },
   {
    "name": "ShipmentItem",
    "rls": false,
-   "bytes": 139264,
-   "rows": 160
+   "bytes": 180224,
+   "rows": 176
   },
   {
    "name": "ShipmentStop",
@@ -955,7 +961,7 @@
   {
    "name": "UserLocation",
    "rls": false,
-   "bytes": 188416,
+   "bytes": 196608,
    "rows": 246
   },
   {
@@ -986,19 +992,19 @@
    "name": "WorkOrder",
    "rls": false,
    "bytes": 98304,
-   "rows": 11
+   "rows": 15
   },
   {
    "name": "WorkOrderOutput",
    "rls": false,
-   "bytes": 32768,
-   "rows": 0
+   "bytes": 65536,
+   "rows": 12
   },
   {
    "name": "_prisma_migrations",
    "rls": false,
    "bytes": 32768,
-   "rows": 26
+   "rows": 27
   }
  ],
  "columns": [
@@ -4585,6 +4591,36 @@
   {
    "t": "DocumentBlob",
    "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "DocumentCounter",
+   "c": "series",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "DocumentCounter",
+   "c": "lastNumber",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": false,
+   "def": null,
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "DocumentCounter",
+   "c": "updatedAt",
    "type": "timestamp without time zone",
    "udt": "timestamp",
    "nullable": false,
@@ -26274,6 +26310,30 @@
    ]
   },
   {
+   "t": "DocumentCounter",
+   "name": "DocumentCounter_lastNumber_check",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((\"lastNumber\" >= 0))",
+   "cols": [
+    "lastNumber"
+   ]
+  },
+  {
+   "t": "DocumentCounter",
+   "name": "DocumentCounter_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (series)",
+   "cols": [
+    "series"
+   ]
+  },
+  {
    "t": "DocumentLink",
    "name": "DocumentLink_documentId_fkey",
    "kind": "f",
@@ -30393,7 +30453,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_resourceType_resourceId_idx\" ON public.\"AuditLog\" USING btree (\"resourceType\", \"resourceId\")",
-   "bytes": 90112,
+   "bytes": 98304,
    "cols": [
     "resourceType",
     "resourceId"
@@ -30419,7 +30479,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_userId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"userId\", \"timestamp\")",
-   "bytes": 212992,
+   "bytes": 229376,
    "cols": [
     "userId",
     "timestamp"
@@ -30749,7 +30809,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"DemandSuggestionEvent_pkey\" ON public.\"DemandSuggestionEvent\" USING btree (id)",
-   "bytes": 106496,
+   "bytes": 98304,
    "cols": [
     "id"
    ],
@@ -31005,6 +31065,18 @@
    "bytes": 8192,
    "cols": [
     "documentId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "DocumentCounter",
+   "name": "DocumentCounter_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"DocumentCounter_pkey\" ON public.\"DocumentCounter\" USING btree (series)",
+   "bytes": 16384,
+   "cols": [
+    "series"
    ],
    "partial": false
   },
@@ -31886,7 +31958,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Invoice_orderId_idx\" ON public.\"Invoice\" USING btree (\"orderId\")",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "orderId"
    ],
@@ -31898,7 +31970,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Invoice_pkey\" ON public.\"Invoice\" USING btree (id)",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "id"
    ],
@@ -31922,7 +31994,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"InvoiceLine_invoiceId_idx\" ON public.\"InvoiceLine\" USING btree (\"invoiceId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "invoiceId"
    ],
@@ -32536,7 +32608,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"MaterialMovement_orderId_idx\" ON public.\"MaterialMovement\" USING btree (\"orderId\")",
-   "bytes": 16384,
+   "bytes": 40960,
    "cols": [
     "orderId"
    ],
@@ -32548,7 +32620,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"MaterialMovement_pkey\" ON public.\"MaterialMovement\" USING btree (id)",
-   "bytes": 40960,
+   "bytes": 49152,
    "cols": [
     "id"
    ],
@@ -32560,7 +32632,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"MaterialMovement_shipmentId_idx\" ON public.\"MaterialMovement\" USING btree (\"shipmentId\")",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "shipmentId"
    ],
@@ -32827,7 +32899,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)",
-   "bytes": 81920,
+   "bytes": 90112,
    "cols": [
     "id"
    ],
@@ -36201,7 +36273,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Shipment_pkey\" ON public.\"Shipment\" USING btree (id)",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "id"
    ],
@@ -36225,7 +36297,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"ShipmentItem_orderLineId_idx\" ON public.\"ShipmentItem\" USING btree (\"orderLineId\")",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "orderLineId"
    ],
@@ -36249,7 +36321,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"ShipmentItem_shipmentId_idx\" ON public.\"ShipmentItem\" USING btree (\"shipmentId\")",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "shipmentId"
    ],
@@ -36889,7 +36961,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"UserLocation_userId_locationId_key\" ON public.\"UserLocation\" USING btree (\"userId\", \"locationId\")",
-   "bytes": 40960,
+   "bytes": 49152,
    "cols": [
     "userId",
     "locationId"
@@ -37119,7 +37191,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WorkOrderOutput_outputCoilId_idx\" ON public.\"WorkOrderOutput\" USING btree (\"outputCoilId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "outputCoilId"
    ],
@@ -37131,7 +37203,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"WorkOrderOutput_pkey\" ON public.\"WorkOrderOutput\" USING btree (id)",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "id"
    ],
@@ -37143,7 +37215,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WorkOrderOutput_workOrderId_idx\" ON public.\"WorkOrderOutput\" USING btree (\"workOrderId\")",
-   "bytes": 8192,
+   "bytes": 16384,
    "cols": [
     "workOrderId"
    ],
@@ -37195,7 +37267,7 @@
    "column": "tenantId",
    "nullable": true,
    "target": null,
-   "rows": 1900,
+   "rows": 2019,
    "set": 2,
    "orphans": null
   },
@@ -37204,7 +37276,7 @@
    "column": "targetUserId",
    "nullable": true,
    "target": "User",
-   "rows": 1900,
+   "rows": 2019,
    "set": 0,
    "orphans": null
   },
@@ -37213,8 +37285,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 1900,
-   "set": 1900,
+   "rows": 2019,
+   "set": 2019,
    "orphans": null
   },
   {
@@ -37222,7 +37294,7 @@
    "column": "sessionId",
    "nullable": true,
    "target": null,
-   "rows": 1900,
+   "rows": 2019,
    "set": 0,
    "orphans": null
   },
@@ -37231,7 +37303,7 @@
    "column": "correlationId",
    "nullable": true,
    "target": null,
-   "rows": 1900,
+   "rows": 2019,
    "set": 0,
    "orphans": null
   },
@@ -39394,8 +39466,7 @@
    "TraceEvent",
    "UserDivision",
    "UserRoleAssignment",
-   "WebhookDelivery",
-   "WorkOrderOutput"
+   "WebhookDelivery"
   ],
   "tablesWithLocationColumnButNoForeignKey": [
    "ExceptionEvent.locationId",

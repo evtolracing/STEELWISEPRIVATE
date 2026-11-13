@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit c4da120. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit d8a3a2a. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -25,10 +25,10 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 | Module group | Weighted score | Share of the weights that has evidence | Open P0 or P1 | Changing routes with a success-path test | Meets the gate |
 |---|---:|---:|---:|---|:-:|
 | Platform infrastructure | 78 | 77% | 2 | 0 of 10 | No |
-| Sales and customer operations | 75 | 97% | 4 | 31 of 97 | No |
-| Inventory and purchasing | 74 | 97% | 4 | 18 of 38 | No |
-| Manufacturing and processing | 73 | 97% | 2 | 26 of 91 | No |
-| Logistics and financial operations | 77 | 97% | 2 | 14 of 37 | No |
+| Sales and customer operations | 76 | 97% | 4 | 31 of 97 | No |
+| Inventory and purchasing | 75 | 97% | 3 | 20 of 40 | No |
+| Manufacturing and processing | 74 | 97% | 1 | 26 of 91 | No |
+| Logistics and financial operations | 78 | 97% | 2 | 14 of 37 | No |
 | Enterprise experience | 60 | 89% | 5 | 3 of 50 | No |
 
 No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.
@@ -60,12 +60,12 @@ The groups hide large differences. Classification and test reach per module:
 | Products, grades and heats | IMPLEMENTED AND VERIFIED | 6 of 6 | B-012 |
 | Processing recipes and bills of material | IMPLEMENTED BUT NOT VERIFIED | 0 of 11 | I-011 |
 | Customer specifications | IMPLEMENTED BUT NOT VERIFIED | n/a |  |
-| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 7 of 8 | I-016 |
-| Receiving | IMPLEMENTED AND VERIFIED | 4 of 4 | I-007 |
+| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 8 of 9 |  |
+| Receiving | IMPLEMENTED AND VERIFIED | 5 of 5 | I-007 |
 | Second stock list (unit tracking) | DISCONNECTED | 0 of 5 | B-009, D-024 |
 | Remnants | PARTIALLY IMPLEMENTED | 1 of 4 | S-009 |
 | Jobs, job board and schedule | IMPLEMENTED AND VERIFIED | 9 of 20 | M-017 |
-| Coil work orders | IMPLEMENTED AND VERIFIED | 5 of 5 | M-016 |
+| Coil work orders | IMPLEMENTED AND VERIFIED | 5 of 5 |  |
 | Dispatch, work centers and shop-floor operations | IMPLEMENTED BUT NOT VERIFIED | 6 of 17 | B-011 |
 | Planning and optimization | IMPLEMENTED BUT NOT VERIFIED | 0 of 3 |  |
 | Quality inspections | IMPLEMENTED BUT NOT VERIFIED | 2 of 6 |  |
@@ -117,7 +117,7 @@ Modules: Customers; RFQs and quotes; Order entry; Sales orders; Pricing and cust
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
 | Functional correctness | 15% | 80 | Placeholder counter price, tier prices, mobile orders, customer preferences save and the Pricing screen all repaired (S-001, S-002, S-005, S-014, S-017). Promise dates are still invented (S-010) |
-| Data integrity | 15% | 88 | Phase 3: order totals enforced by the database; duplicate order requests answered once (C-006); a void is one transaction (C-010); quotes keep their price and branch into the order. Held at 88: an order ships and bills with nothing reserved (G-019); the void marker is text (G-009). Was 82 (Order entry validated and transactional, tax saved, field allow-lists (S-006, S-007, S-016). 150 of 150 jobs, reconciliation 0 problems) |
+| Data integrity | 15% | 90 | Phase 3: order totals enforced by the database; duplicate order requests answered once (C-006); a void is one transaction (C-010); quotes keep their price and branch; an order cannot ship or bill without reserved stock (G-019, owner decision). Held at 90: the void marker is text (G-009). Was 82 (Order entry validated and transactional, tax saved, field allow-lists (S-006, S-007, S-016). 150 of 150 jobs, reconciliation 0 problems) |
 | Reliability | 12% | 76 | Phase 3: 80 orders at once all saved; reservation and cancellation races closed (G-004); confirm against cancel leaves one winner. Held at 76: edits to other fields are last write wins (G-020); most sales routes still have no success-path test. Was 65 (A failed edit no longer destroys order lines. No retry or offline behaviour on mobile; says so) |
 | Security | 12% | 78 | Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 82 |
 | Operational efficiency | 10% | 62 | One price everywhere removes re-keying. Quotes still priced by hand (S-027). Credit limits are now enforced with a manager release (rule 32) |
@@ -127,7 +127,7 @@ Modules: Customers; RFQs and quotes; Order entry; Sales orders; Pricing and cust
 | Maintainability | 5% | 70 | One pricing rule and one tax rule, pure and unit tested (55 tests). Two unused sales paths remain (S-021, S-022) |
 | Observability | 4% | 72 | Phase 3: confirming, cancelling and reserving now leave a history line with the person, in the same transaction (G-010). Held at 72: edits to other order fields are not itemised (G-011). Was 65 (Audit entries for overrides, tier, credit limit, tax status and list price changes; request ids from Workstream 1) |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **75** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **76** | Target 95 |
 
 Changing routes with a success-path test: 31 of 97. Open findings against these modules: 13, of which P0 or P1: 4 (B-009, S-010, X-007, X-009).
 
@@ -138,8 +138,8 @@ Modules: Products, grades and heats; Processing recipes and bills of material; C
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
 | Functional correctness | 15% | 72 | Stock, heat and receiving screens showed sample data and the upload saved nothing; all now run on real records (I-001, I-002, I-005, I-006). No purchase orders, adjustments or counts (I-007, I-016) |
-| Data integrity | 15% | 87 | Phase 3: reservation races closed (6 of 6 rounds failed before); weights stored exactly; 14 reconciliation checks at 0 after every run; the database refuses a negative balance, a broken identity and a zero movement. Held at 87: a shipment with no reservation moves no stock (G-019); no adjustment or count (I-016); no in-transit stage (G-007). Was 85 (Field allow-lists on every stock and catalog write; receipt is one transaction; the database enforces the balance identity (I-004, I-013). 150 of 150 jobs, reconciliation 0 problems) |
-| Reliability | 12% | 78 | Phase 3: receipts, transfers, holds, reservations and returns each raced and each safe; five identical receipts make one item. Held at 78: transfer receipt and adjustment do not exist to test. Was 70 (Upload reports each failed row and keeps the good ones; concurrent hold and transfer guarded by conditional updates. No retry or resume for a large upload) |
+| Data integrity | 15% | 91 | Phase 3: races closed; exact weights; 18 reconciliation checks at 0; the ledger explains every balance including pieces, cuts, scrap and corrections; nothing ships unreserved (G-019); corrections after a count with reason, note and person (I-016); a remnant reduces its parent (G-006). Held at 91: no in-transit stage (G-007); the second stock list (B-009); no cycle-count program. Was 85 (Field allow-lists on every stock and catalog write; receipt is one transaction; the database enforces the balance identity (I-004, I-013). 150 of 150 jobs, reconciliation 0 problems) |
+| Reliability | 12% | 81 | Phase 3: reservations, receipts, holds, transfers, returns and corrections each raced and each safe; a correction racing a reservation and a shipment leaves the books in balance. Held at 81: transfer receipt does not exist to test. Was 70 (Upload reports each failed row and keeps the good ones; concurrent hold and transfer guarded by conditional updates. No retry or resume for a large upload) |
 | Security | 12% | 78 | Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 85 |
 | Operational efficiency | 10% | 62 | Receive, hold, release and move can be done on screen. Heats must be added before stock (I-017); no expected deliveries (I-007) |
 | User experience | 10% | 70 | Screens state errors in the server's words, say "not recorded" instead of inventing values, and the sample screens are labelled (I-011) |
@@ -148,9 +148,9 @@ Modules: Products, grades and heats; Processing recipes and bills of material; C
 | Maintainability | 5% | 75 | One receiving rule and one field reader, pure and unit tested (79 tests in all). The unused RFID stock screens remain in the code |
 | Observability | 4% | 70 | Every receipt, move, hold and release is a movement or hold record with the person; list price changes are in the audit log |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **74** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **75** | Target 95 |
 
-Changing routes with a success-path test: 18 of 38. Open findings against these modules: 7, of which P0 or P1: 4 (B-009, I-007, I-011, I-016).
+Changing routes with a success-path test: 20 of 40. Open findings against these modules: 6, of which P0 or P1: 3 (B-009, I-007, I-011).
 
 ### Manufacturing and processing
 
@@ -159,7 +159,7 @@ Modules: Jobs, job board and schedule; Coil work orders; Dispatch, work centers 
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
 | Functional correctness | 15% | 70 | The job, schedule, work order and old operator screens showed sample data or saved nothing (M-001, M-007, M-008, M-010); all now run on real records. Production quality and BOM screens are still samples (M-011); a work order does not move stock (M-016) |
-| Data integrity | 15% | 82 | Phase 2: shop-floor start, complete, reassign and job planning are all-or-nothing; job status moves are conditional on the status they were checked in (phase2-integrity, 80 checks; 8 of 8 race trials left a job stuck before the fix, 0 of 8 after). Held at 82 because a completed work order still moves no stock (M-016). Was 78 (Work orders read an allow-list and follow status rules (M-005, M-006); a status note no longer overwrites job notes (M-003). Backward job moves are loosely ruled (M-017)) |
+| Data integrity | 15% | 87 | Phase 3, owner decision: completing a work order takes output and scrap off the source, creates the pieces with the source heat, and carries a line's reservation into them, in one transaction; several work orders on one item are safe under a lock (three raced: two fit, one refused). Three read-only checks at 0. Held at 87: shop-floor jobs record no weights; a completed work order cannot be reversed. Was 78 (Work orders read an allow-list and follow status rules (M-005, M-006); a status note no longer overwrites job notes (M-003). Backward job moves are loosely ruled (M-017)) |
 | Reliability | 12% | 78 | Phase 2: simultaneous completion, start after cancel and double status moves are refused with a plain 409; work centers can be created again (C-004). Held at 78: 65 of 91 changing routes still have no success-path test. Was 70 (Missing jobs and work orders answer 404, not 500; concurrent work order moves are guarded; starting an inspection no longer reports failure after saving (M-015)) |
 | Security | 12% | 78 | Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 80 |
 | Operational efficiency | 10% | 60 | A job opens from the board and the schedule; its status changes on one screen. Scheduling by drag, capacity limits and re-planning were not examined |
@@ -169,9 +169,9 @@ Modules: Jobs, job board and schedule; Coil work orders; Dispatch, work centers 
 | Maintainability | 5% | 72 | One job history module and one work order rule, pure and unit tested (87 tests in all). Three job routes still carry their own status checks (M-017) |
 | Observability | 4% | 80 | Every job move, assignment and work order move is in the audit log with the person and is shown on the screen (M-002) |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **73** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **74** | Target 95 |
 
-Changing routes with a success-path test: 26 of 91. Open findings against these modules: 6, of which P0 or P1: 2 (M-016, X-009).
+Changing routes with a success-path test: 26 of 91. Open findings against these modules: 5, of which P0 or P1: 1 (X-009).
 
 ### Logistics and financial operations
 
@@ -180,7 +180,7 @@ Modules: Shipping; Returns; Documents; Partner API; Freight and logistics planni
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
 | Functional correctness | 15% | 75 | There was no screen to ship from and the one on the menu was a sample (F-002); web orders carried no tax (F-001). Both fixed and operated in a browser. Freight planning is still samples (F-007) |
-| Data integrity | 15% | 89 | Phase 3: invoice total identity, payment not zero and the invoice-to-shipment, credit-to-invoice and line-to-order-line links are enforced by the database; amounts exact to the cent; tax across part shipments adds to the cent; 11 financial reconciliation checks at 0. Held at 89: an unreserved shipment is billed with no stock leaving the books (G-019). Was 82 (Web order totals saved; proof of delivery checked (F-005). The billing arithmetic was already sound: the cycles reconcile to zero problems) |
+| Data integrity | 15% | 92 | Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken (C-002). Was 82 (Web order totals saved; proof of delivery checked (F-005). The billing arithmetic was already sound: the cycles reconcile to zero problems) |
 | Reliability | 12% | 80 | Phase 3: four dispatches, five payments, four return receipts and repeated invoicing at once each happen once; a credit forced to fail part-way leaves nothing. Held at 80: carrier partner routes are broken (C-002); no retry exists. Was 75 (Concurrent dispatch, payment and return were already guarded and still pass. Missing shipments answer 404) |
 | Security | 12% | 78 | Credit terms no longer sent to the shipping desk (F-003); unsafe delivery links refused. Who may read invoices is undecided (F-009). Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open |
 | Operational efficiency | 10% | 68 | A shipment is created from the order number in one dialog that shows what is left; dispatch raises the invoice. No documents print from the screen (F-011) |
@@ -190,7 +190,7 @@ Modules: Shipping; Returns; Documents; Partner API; Freight and logistics planni
 | Maintainability | 5% | 70 | Two small screens replace four sample ones; one event writer each for shipments and money. No unit tests added: the checks are in the sweep |
 | Observability | 4% | 82 | Every shipment step and every money action is in the audit log with the person and shown on the screen (F-004, F-006) |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **77** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **78** | Target 95 |
 
 Changing routes with a success-path test: 14 of 37. Open findings against these modules: 8, of which P0 or P1: 2 (B-019, X-009).
 

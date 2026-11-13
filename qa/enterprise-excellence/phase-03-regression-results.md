@@ -1,5 +1,7 @@
 # Phase 3: regression and scenario results
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 Everything in this file was run in this session, on 2026-11-13, on local databases: `steelwise_qa`, rebuilt from nothing at the start of the run, and `steelwise_qa_scale3` for volume. Nothing was run against the live system. The run is `qa/tools/run-gates.sh`, started after the last code change of the phase and left undisturbed from start to finish. Result files are in `qa/results/`.
 
 A line marked NOT EXECUTED or NOT VERIFIED is not a pass.
@@ -197,3 +199,41 @@ Nothing below was hidden or skipped. Each was run again after the correction and
 | H. Migration and recovery | Migrations tested; rollback or recovery documented; data-change risks disclosed | Each file run twice at volume; rollback per change documented; risks in `phase-03-migration-review.md` | NOT MET in full: no dry run on live data, and no backup or restore verified (E-015) |
 
 Gates B and H are why the phase is not reported as verified complete.
+
+
+## Final run after the owner's decisions of 2026-11-13
+
+The sections above describe the run before the owner answered the six questions. This is the run on the code as it now stands (`qa/tools/run-gates.sh`, rebuilt QA database, 2026-11-13).
+
+| Step | Result |
+|---|---|
+| Order-to-cash simulation, three seeds | 150 of 150 jobs; reconciliation 0 problems after each seed |
+| Database consistency checks, after the simulation and after the scenarios | 0 problems outside the demo seed rows, including the seven checks added for the decisions. Dispatched shipment items not covered by stock movements: 0 |
+| Security and safeguards sweep | 20 of 20 sections |
+| Branch boundary | 37 of 37 |
+| Phase 2 integrity and concurrency | 80 of 80 |
+| Phase 3 database scenarios | 74 of 74, 607 checks: receiving 10, reservations and shipping 9, work orders and remnants 11, transfers 9, orders and money 10, concurrency 18, stock corrections, invoice numbers and retention 7 |
+| Schema inventory | 160 tables, 188 foreign keys, 25 value checks, 582 indexes, 27 migrations, 0 failed |
+| Unit tests | 126 of 126 |
+| Browser suites | 22, 29, 30, 24 and 22 checks, 0 failed |
+| Every screen opens, baseline probe, coverage | Pass; 320 changing routes, 0 with no rule |
+| Lint and build | 0 errors, 1,524 warnings (unchanged); build passes |
+
+### Runs before this one, and what each failure was
+
+| Run | Failures | Cause | What was done |
+|---|---|---|---|
+| First scenario run | 4 of 73 scenarios | A missing import in the counter sale route (a real defect in my change, caught before any gate run); three wrong expectations in new tests | Import added; expectations corrected |
+| First gate run | Sweep: 13 checks in 2 sections. Browser: 3 shipping checks, 2 work order checks | Older tests that dispatched with nothing reserved, raised a work order on any item that was not available, and expected a work order's input to be the received weight | Each test now asserts the new rule: the refusal is checked first, then the stock is reserved and the shipment goes |
+| First gate run | Browser work order completion refused | **A real defect found by the old test:** a work order took its input from the weight the item was received at, not from what it holds now, so an item that had shipped half its weight could not be completed against | Fixed: the input defaults to the quantity on hand, more than that is refused, and an empty item cannot be put on a work order. New scenario added |
+| Second gate run | Sweep: 1 check | One more older check that dispatched a second shipment with nothing reserved | Test reserves first |
+| Third gate run | None | | This is the run reported above |
+
+No test was skipped, disabled or loosened to pass. Where an older test was changed, it was because the owner changed the rule it tested.
+
+### Scenarios added for the decisions
+
+Group 2: a shipment with nothing reserved, or less than it carries, is refused and changes nothing.
+Group 3: completion takes output and scrap off the source and creates pieces; input comes from what the item holds now; a completion over what is free is refused; reserved stock is cut for its order and ships with its heat; a remnant reduces its parent.
+Group 6: one item feeding three work orders at once.
+Group 7: count down, found stock and an agreeing count; refusals for reserved stock, below zero and ten malformed requests; who may correct and where; a correction racing a reservation and a shipment; twelve invoices at once numbered in a row; numbers given back by failed and refused saves, and counter sales in the series; the five-year warning.

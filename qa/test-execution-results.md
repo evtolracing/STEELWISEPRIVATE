@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-13T21:02:07.153Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-13T21:52:31.931Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -50,7 +50,7 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 ### Simultaneous-request probes (last final cycle)
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
-- Pass: two reservations racing for the same stock: exactly one wins. statuses 409,201; available 2640
+- Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
 - Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
 - Pass: one shipment dispatched three times at once: counted once. statuses 409,200,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
@@ -76,17 +76,17 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-13T20:53:40.967Z. 596 of 596 routes swept.
+Run 2026-11-13T21:43:59.613Z. 598 of 598 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
-| No access without signing in | Pass | 557 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
+| No access without signing in | Pass | 559 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped) |
 | Partner API needs a partner token | Pass | 60 calls, 0 let in |
 | Forged and invalid sign-ins are refused | Pass | 5 cases, 0 problems |
-| Customer logins are held to the store | Pass | 534 staff routes tried as a customer, 0 not refused |
+| Customer logins are held to the store | Pass | 536 staff routes tried as a customer, 0 not refused |
 | Customers and divisions cannot see each other | Pass | 31 checks, 0 problems |
 | Staff roles and departments | Pass | 18 checks, 0 problems |
-| Read routes do not crash on bad input | Pass | 789 reads, 0 server errors |
+| Read routes do not crash on bad input | Pass | 792 reads, 0 server errors |
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
 | Web checkout uses the system price, not the browser's | Pass | 4 checks, 0 problems |
@@ -98,12 +98,12 @@ Run 2026-11-13T20:53:40.967Z. 596 of 596 routes swept.
 | Credit hold: over the limit waits for a manager | Pass | 22 checks, 0 problems |
 | Heats, products and grades: checked input, right people, prices recorded | Pass | 47 checks, 0 problems |
 | Receiving: a receipt is real stock, and an upload says what it saved | Pass | 32 checks, 0 problems |
-| Shop floor records: who moved a job, and work orders that follow the rules | Pass | 51 checks, 0 problems |
-| Shipping and money records: web order tax, shipments and who did what | Pass | 37 checks, 0 problems |
+| Shop floor records: who moved a job, and work orders that follow the rules | Pass | 50 checks, 0 problems |
+| Shipping and money records: web order tax, shipments and who did what | Pass | 39 checks, 0 problems |
 
 ## Screen check
 
-Run 2026-11-13T21:01:25.888Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-13T21:51:45.845Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 125
 - OK: 125
@@ -129,7 +129,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-13T20:56:13.566Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T21:46:27.672Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 24
 - Failed: 0
@@ -163,7 +163,7 @@ Run 2026-11-13T20:56:13.566Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 
 ## Stock screens operated in a browser
 
-Run 2026-11-13T20:56:36.749Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-13T21:46:49.662Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 22
 - Failed: 0
@@ -195,7 +195,7 @@ Run 2026-11-13T20:56:36.749Z with `qa/sim/ui-inventory.cjs`: stock items, heats 
 
 ## Shop screens operated in a browser
 
-Run 2026-11-13T20:55:52.501Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
+Run 2026-11-13T21:46:06.911Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
 
 - Checks: 30
 - Failed: 0
@@ -235,9 +235,9 @@ Run 2026-11-13T20:55:52.501Z with `qa/sim/ui-shop.cjs`: the job, schedule, time 
 
 ## Shipping and invoice screens operated in a browser
 
-Run 2026-11-13T20:55:23.677Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
+Run 2026-11-13T21:45:39.973Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
 
-- Checks: 27
+- Checks: 29
 - Failed: 0
 
 | Check | Result |
@@ -250,6 +250,8 @@ Run 2026-11-13T20:55:23.677Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 | shipment: the history says who created it | Pass |
 | shipment: truck and driver are saved and shown | Pass |
 | shipment: dispatch asks before it takes stock and bills | Pass |
+| shipment: with nothing reserved the dispatch is refused and the screen says to reserve the stock | Pass |
+| shipment: the stock going out is reserved on the order | Pass |
 | shipment: dispatch is saved, and the history names who dispatched | Pass |
 | shipment: the invoice raised by the dispatch is shown with its total | Pass |
 | shipment: once dispatched it cannot be cancelled or edited | Pass |
@@ -272,7 +274,7 @@ Run 2026-11-13T20:55:23.677Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 
 ## Sample notices and invented figures checked in a browser
 
-Run 2026-11-13T20:55:00.097Z with `qa/sim/ui-experience.cjs`.
+Run 2026-11-13T21:45:17.683Z with `qa/sim/ui-experience.cjs`.
 
 - Checks: 22
 - Failed: 0
@@ -308,7 +310,7 @@ Run 2026-11-13T20:55:00.097Z with `qa/sim/ui-experience.cjs`.
 
 ## Screen-to-server contract
 
-283 distinct API calls are written in the screens; 80 have no matching server route. Full list in `qa/api-contract.md`.
+284 distinct API calls are written in the screens; 80 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

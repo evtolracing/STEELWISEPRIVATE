@@ -1,5 +1,7 @@
 # Phase 3: data ownership
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 For each kind of business record: the one place that is authoritative, what writes it, what is derived from it, and where a second copy exists. Built from the schema inventory (`qa/results/db-schema.json`), the code that writes each table (`database-inventory.md`, "Written by"), and the Phase 3 scenarios, which read the tables directly after every operation.
 
 ## 1. Source of truth, by record
@@ -23,6 +25,9 @@ For each kind of business record: the one place that is authoritative, what writ
 | User, role, branch | `User`, `UserLocation` | `routes/users.js` under `lib/userAdminRules.js` | None | No |
 | History | `AuditLog` | Each route, in or beside its transaction | None | No |
 | Repeat-request record | `RequestKey` (new) | `middleware/requestKeys.js` | Removed after 24 hours | No |
+| Invoice and credit memo numbers | `DocumentCounter` (new): one row per series with the last number used | `services/billing.js` and the counter sale, inside the transaction that writes the invoice | Must equal the highest number on file; checked after every gate run | No |
+| Stock correction | `MaterialMovement` of type ADJUST, COUNT or SCRAP, with an `AuditLog` line | `lib/stockChanges.js` only (`POST /api/inventory/adjust`) | The balance changes in the same transaction | No |
+| Pieces made by a work order | `Coil` with `parentCoilId`, `WorkOrderOutput`, movements PROCESS (piece), CONSUME and SCRAP (source) | `lib/stockChanges.js` only | Pieces weigh the work order's output; source movements equal output plus scrap; both checked after every gate run | No |
 
 ## 2. Conflicting ownership
 
@@ -45,5 +50,6 @@ Available-to-promise, customer open balance, invoice ageing, dashboard totals an
 1. Stock quantity changes only inside a transaction that also writes the movement.
 2. A reservation takes the order row lock first (`SELECT … FOR UPDATE` on `Order`), then reads, then writes.
 3. Money is written only through `services/billing.js`.
-4. A numbered document is created only through `lib/numbering.js`.
+4. A numbered document is created only through `lib/numbering.js`; an invoice or credit memo takes its number only from `takeNumber` in `services/billing.js`, inside the transaction that writes it.
+6. A stock quantity is corrected only through `lib/stockChanges.js`, never by writing the balance.
 5. No new table may hold a copy of a quantity or an amount unless a database check or a gate check compares it with its source.

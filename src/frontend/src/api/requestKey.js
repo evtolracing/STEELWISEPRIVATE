@@ -22,7 +22,7 @@ const CREATES = [
   /\/api\/returns\/[^/]+\/receive$/,
   /\/api\/coils$/,
   /\/api\/coils\/[^/]+\/transfer$/,
-  /\/api\/inventory\/(receive|receipts|transfer|bulk-upload)$/,
+  /\/api\/inventory\/(receive|receipts|transfer|bulk-upload|adjust)$/,
   /\/api\/orders\/[^/]+\/allocate$/,
   /\/api\/rfqs\/[^/]+\/quotes$/,
   /\/api\/quotes\/[^/]+\/accept$/,

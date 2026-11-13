@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit c4da120. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit d8a3a2a. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,19 +11,20 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 76 | 17 |
-| P2 | 80 | 42 |
-| P3 | 67 | 29 |
-| Total | 243 | 90 |
+| P1 | 76 | 14 |
+| P2 | 80 | 40 |
+| P3 | 67 | 28 |
+| Total | 243 | 84 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 152 |
+| VERIFIED FIXED | 158 |
 | DEFERRED TO SPECIFIC PHASE | 63 |
-| REQUIRES BUSINESS DECISION | 23 |
+| REQUIRES BUSINESS DECISION | 16 |
 | BLOCKED | 2 |
 | IN PROGRESS | 2 |
 | NOT APPLICABLE | 1 |
+| ACCEPTED RISK WITH APPROVAL | 1 |
 
 ## Open findings, most severe first
 
@@ -36,15 +37,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-019 | P1 | REQUIRES BUSINESS DECISION | Platform | Everything happens only when someone opens a screen or presses a button. | Integration phase |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
 | E-014 | P1 | DEFERRED TO SPECIFIC PHASE | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
-| E-015 | P1 | REQUIRES BUSINESS DECISION | Platform | No evidence that a backup has ever been restored | Phase 2: architecture and code quality |
+| E-015 | P1 | ACCEPTED RISK WITH APPROVAL | Platform | No evidence that a backup has ever been restored | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
-| G-019 | P1 | REQUIRES BUSINESS DECISION | Shipments | Shipping reserved stock is fully recorded. Shipping without a reservation is accepted and records nothing about the material. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | I-007 | P1 | REQUIRES BUSINESS DECISION | Purchasing | There is no purchase order: nothing records what was ordered from a mill, what is due, or whether a receipt matches an order or a supplier invoice | Inventory and purchasing |
 | I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
 | I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
-| I-016 | P1 | REQUIRES BUSINESS DECISION | Stock corrections | There is no way to correct a stock quantity: no count, adjustment or scrap on the real stock list | Inventory and purchasing |
 | M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
-| M-016 | P1 | REQUIRES BUSINESS DECISION | Work orders | Completing a work order changes no stock: the source item is not used up and the pieces made are not added | Manufacturing and processing |
 | S-010 | P1 | REQUIRES BUSINESS DECISION | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
 | X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
@@ -72,9 +70,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | F-011 | P2 | DEFERRED TO SPECIFIC PHASE | Shipping documents | Whether a bill of lading or packing list can be printed for a shipment was not examined. Print code exists in the server (`printQueue`, `printAutomationService`); the new Shipment screen has no print button | Shipping and financial operations |
 | F-012 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend build | A stray word left in `AppRouter.jsx` by a patch in this workstream passed the production build and broke every screen at run time. Caught by the browser check before commit | Shipping and financial operations |
 | G-003 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017). | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-006 | P2 | REQUIRES BUSINESS DECISION | Stock items | The company total rises by the remnant's weight. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-007 | P2 | DEFERRED TO SPECIFIC PHASE | Inventory | The item is at the destination the moment the sender presses the button. What is on the road is counted as on the receiver's shelf. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-008 | P2 | REQUIRES BUSINESS DECISION | Work orders | A work order does not claim its source item. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-011 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-015 | P2 | BLOCKED | Platform | Unknown. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
@@ -101,7 +97,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | G-009 | P3 | DEFERRED TO SPECIFIC PHASE | Counter quick sale | Free text. The order stays COMPLETE. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-013 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items, stock search, heat trace | Both grow in step with the whole company's data. Both are far inside the half-second target today. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-014 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Each order comes with its full lines and customer record. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-016 | P3 | REQUIRES BUSINESS DECISION | Database | Everything is kept for ever in the working tables. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-018 | P3 | DEFERRED TO SPECIFIC PHASE | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | U-002 | P3 | DEFERRED TO SPECIFIC PHASE | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
@@ -1634,7 +1629,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs a shared store, which is a new service
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-015 · P1 · REQUIRES BUSINESS DECISION
+### E-015 · P1 · ACCEPTED RISK WITH APPROVAL
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -1647,8 +1642,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** Database host backup settings and approval
 - **Recommended correction:** Blocked by a dependency
 - **Required tests:** One restore into a scratch database, timed, with the reconciliation run on the restored copy
-- **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: needs the owner (see `production-readiness-checklist.md`)
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Open: needs the owner (see `production-readiness-checklist.md`) Owner, 2026-11-13: "backups later". Until a backup is confirmed and a restore has been tested, a loss or corruption of the live database may not be recoverable. This stays a production blocker in the risk register (R-08) and is raised again at each phase gate.
+- **Verification evidence:** None. No backup was confirmed and no restore was run.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-016 · P2 · VERIFIED FIXED
@@ -2093,7 +2089,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/results/db-schema.json: duplicateIndexes 10 before, 0 after. Sweep "Platform safeguards": 33 checks pass.
 - **First recorded in:** Phase 3 database audit
 
-### G-006 · P2 · REQUIRES BUSINESS DECISION
+### G-006 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Stock items
@@ -2109,7 +2105,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Decided together with M-016: what a completed work order consumes, produces and scraps.
 - **Required tests:** Parent plus children plus scrap equals the parent before, for every work order.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** The question for the owner is the one already asked under M-016: when a piece is cut, what happens to the weight of the piece it was cut from?
+- **Status note:** The question for the owner is the one already asked under M-016: when a piece is cut, what happens to the weight of the piece it was cut from? Owner decision of 2026-11-13: everything is always tracked. Recording a remnant against its parent takes the remnant's weight off the parent in the same transaction, with a movement on the parent that names the piece (lib/receiving.js, takeFromParent). A remnant heavier than what is free on the parent is refused.
+- **Verification evidence:** qa/sim/phase3-db.mjs "a remnant entered against its parent...": parent 6000 to 5948.75, movement on the parent, the two together still 6000; a heavier remnant refused. On the old code the parent stays at 6000.
 - **First recorded in:** Phase 3 database audit
 
 ### G-007 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -2136,7 +2133,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
 - **First recorded in:** Phase 3 database audit
 
-### G-008 · P2 · REQUIRES BUSINESS DECISION
+### G-008 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Work orders
@@ -2152,7 +2149,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Decided with M-016.
 - **Required tests:** Per the rule.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Question for the owner: may one stock item feed more than one open work order at a time?
+- **Status note:** Question for the owner: may one stock item feed more than one open work order at a time? Owner decision of 2026-11-13: one item may feed several work orders if the system tracks it. It now does: a work order may be raised on an item that is available or reserved, and each takes only what is free (or reserved for its own line) at the moment it completes, under a lock on the item's balance. The item can never go below zero.
+- **Verification evidence:** qa/sim/phase3-db.mjs "one item feeding several work orders at once": three work orders of 1500 lb on a 4000 lb item completed at the same moment: two succeed, the third is refused, 1000 lb left; the third then completes with what is left and the item is marked consumed.
 - **First recorded in:** Phase 3 database audit
 
 ### G-009 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -2304,7 +2302,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Blocked on the owner reading two host settings. Nothing was changed.
 - **First recorded in:** Phase 3 database audit
 
-### G-016 · P3 · REQUIRES BUSINESS DECISION
+### G-016 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -2319,7 +2317,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The owner sets the periods; archive tables or partitions follow only if the volume needs them.
 - **Required tests:** None until the rule exists.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Question for the owner: how many years of audit history and stock movements must stay online?
+- **Status note:** Question for the owner: how many years of audit history and stock movements must stay online? Owner decision of 2026-11-13: five years for now, with warnings to archive. GET /api/admin/retention counts records older than the period, and those within six months of it, for nine record types, and returns a warning. Managers see the warning on the user administration screen. The period is 5 years unless an AppSetting 'retention.years' says otherwise. Nothing is removed or moved: archiving itself is not built and would need the owner's approval of what is archived and where.
+- **Verification evidence:** qa/sim/phase3-db.mjs "history older than five years raises an archive warning, and nothing is removed"; test/stockChanges.test.js (cutoff and level).
 - **First recorded in:** Phase 3 database audit
 
 ### G-017 · P1 · VERIFIED FIXED
@@ -2337,8 +2336,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** After two collisions the search waits a random moment, counts again and steps ahead by a random distance that doubles. A series may skip numbers; the unique rule in the database guarantees none repeats.
 - **Required tests:** 80 at once; a series whose count lags its highest number by 300.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Document numbers can have gaps. If the owner needs invoice numbers with no gaps, that is a different mechanism (a counter row locked per series) and a decision.
-- **Verification evidence:** test/numbering.test.js: 2 new tests, both fail on the code before. qa/sim/phase3-db.mjs "eighty orders entered at the same moment": 80 saved with 80 numbers.
+- **Status note:** Document numbers can have gaps. If the owner needs invoice numbers with no gaps, that is a different mechanism (a counter row locked per series) and a decision. As before for orders, shipments, jobs and work orders: a number is never repeated and none is lost under 80 simultaneous saves, though a number can be skipped. Owner decision of 2026-11-13 for invoices: never skipped or repeated. Invoice and credit memo numbers now come from a DocumentCounter row that is advanced inside the transaction that saves the document, at the moment it is written, so a save that fails or is refused gives its number back. Counter sales take their invoice number from the same series (they were INV-QS-<order number> before). A counter sale sent twice is held by a lock on the sale id instead of being written and deleted. Numbers issued before this change keep whatever gaps they have.
+- **Verification evidence:** qa/sim/phase3-db.mjs group 7: twelve invoices raised at once take twelve consecutive numbers; a credit that fails after taking its number, a refused credit and an order with nothing to bill take none; a counter sale sent three times at once is one sale with the next number. db-facts: counter equals the highest number on file, no number repeated. SQL Editor file 20261113220000_document_counters run twice on the 85-branch copy.
 - **First recorded in:** Phase 3 database audit
 
 ### G-018 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -2365,7 +2364,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
 - **First recorded in:** Phase 3 database audit
 
-### G-019 · P1 · REQUIRES BUSINESS DECISION
+### G-019 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Shipments
@@ -2381,7 +2380,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The engineer's recommendation: refuse to dispatch a line that is not fully reserved, unless the order line is marked as shipped direct from a supplier.
 - **Required tests:** Dispatch with a part reservation is refused; a direct shipment is accepted and marked; the database check for uncovered shipment items returns 0.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Question for the owner: may an order ship when no stock has been reserved for it? If yes, in which cases (direct from the mill, buy-outs), and how should the heat be recorded?
+- **Status note:** Question for the owner: may an order ship when no stock has been reserved for it? If yes, in which cases (direct from the mill, buy-outs), and how should the heat be recorded? Owner decision of 2026-11-13: refuse. A shipment that carries more than is reserved for its line is refused at dispatch (routes/shipments.js, consumeReserved), with a message that says to reserve the stock first. Nothing is saved for any line of the shipment. Every shipment therefore names its stock items, and through them the heat, and reduces the balance. The shop-floor Ship button goes through the same step.
+- **Verification evidence:** qa/sim/phase3-db.mjs "a shipment with nothing reserved, or less reserved than it carries, is refused and changes nothing": nothing reserved is refused; half a pound short is refused; fully reserved goes, with movements naming the item. db-facts check for dispatched shipment items not covered by stock movements is 0 after the gate run. On the old code the first check fails (dispatch was accepted).
 - **First recorded in:** Phase 3 database audit
 
 ### G-020 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -2646,7 +2646,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Removed from `api/units.js`, `api/heats.js`, `api/inventory.js`. 16 more in `api/boms.js` and `api/batches.js` belong to Workstream 4
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-016 · P1 · REQUIRES BUSINESS DECISION
+### I-016 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Stock corrections
@@ -2659,8 +2659,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** Who may adjust stock, and above what amount a second approval is needed
 - **Recommended correction:** Requires a business decision
 - **Required tests:** An adjustment route and screen; sweep checks on the rule
-- **Assigned phase:** Inventory and purchasing
-- **Status note:** Open
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Open Owner decision of 2026-11-13: use the recommendation. POST /api/inventory/adjust corrects one item's balance from a count or by a difference, with a reason (count, damage, scrap, found stock, keying error) and a required note. It writes a movement with the person, the direction and the note, and a history line with before and after. Only branch and company managers and the inventory manager may do it, and only at their own branches. Stock that is reserved or on hold cannot be taken away; the balance cannot go below zero. The stock item screen has a Correct quantity button. Not built: a scheduled cycle-count program (count sheets, a count calendar, approval of large differences); corrections are per item.
+- **Verification evidence:** qa/sim/phase3-db.mjs group 7: count down, found stock, a count that agrees, refusals for reserved stock, below zero and ten malformed requests, role and branch limits, and a correction racing a reservation and a shipment. test/stockChanges.test.js. db-facts: corrections with no note or person: 0.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-017 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -2941,7 +2942,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep 19. Seen failing before the fix in this session. The faulty line came from the numbering change made earlier on this branch (f3db70a), so it was never live
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### M-016 · P1 · REQUIRES BUSINESS DECISION
+### M-016 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Work orders
@@ -2954,8 +2955,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** Whether coil work orders stay as a module beside jobs, and if so how completing one consumes and creates stock
 - **Recommended correction:** Requires a business decision
 - **Required tests:** A completion that moves stock in one transaction; a cycle in the simulation
-- **Assigned phase:** Manufacturing and processing
-- **Status note:** Open
+- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Open Owner decision of 2026-11-13: everything is always tracked. Completing a work order is one transaction that takes the output weight and the scrap off the source item (movements CONSUME and SCRAP naming the work order), creates each piece as a stock item with the source's heat, grade, owner and branch (movement PROCESS, a WorkOrderOutput row), and leaves anything unused on the source. Stock reserved on the source for the work order's own order line is carried into the pieces, still reserved for that line. More than the item has free is refused. lib/stockChanges.js. Not covered: the shop-floor job route (Job, DispatchJob) records operations and not weights; material for a job is tracked through the reservation it ships from. Cost by job is not maintained.
+- **Verification evidence:** qa/sim/phase3-db.mjs group 3: completion with three pieces (source 2000 to 500, pieces + scrap + remainder = 2000, heat inherited); completion over what is free refused with nothing saved; reserved stock cut for its order stays reserved in the pieces and ships with its heat. db-facts: completed work orders matched by movements, pieces weigh the output, pieces carry the source heat: 0 exceptions. On the old code each of these fails (no movement, no piece).
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### M-017 · P2 · REQUIRES BUSINESS DECISION

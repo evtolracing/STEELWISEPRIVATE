@@ -1,8 +1,8 @@
 // Phase 3 database scenarios: every scenario drives the real server and then reads the
 // database directly to check what was saved, what was not, and that the books still agree.
-// Six groups: receiving and holds; reservations and shipping; work orders, scrap and
+// Seven groups: receiving and holds; reservations and shipping; work orders, scrap and
 // remnants; branch transfers; orders, invoices and money; simultaneous requests, repeats
-// and failure recovery.
+// and failure recovery; stock corrections, invoice numbers and retention.
 //   node qa/sim/phase3-db.mjs [--base http://localhost:3011]
 // Runs only against a local QA database (lib.mjs refuses anything else).
 import fs from 'node:fs';
@@ -91,9 +91,11 @@ async function books(ok, coilId, label = 'item') {
   ok(`${label}: on hand = available + reserved + on hold`, Math.abs(num(inv.qtyOnHand) - (num(inv.qtyAvailable) + num(inv.qtyAllocated) + num(inv.qtyOnHold))) < 1e-6, JSON.stringify(inv));
   ok(`${label}: reserved quantity equals the reservations on file`, Math.abs(num(inv.qtyAllocated) - await allocSum(coilId)) < 1e-6, `${inv.qtyAllocated} vs ${await allocSum(coilId)}`);
   const mv = await movesOf(coilId);
-  if (mv.some((m) => m.movementType === 'RECEIVE' && ['RECEIPT', 'UPLOAD'].includes(m.reasonCode))) {
-    const net = mv.reduce((s, m) => s + (m.movementType === 'RECEIVE' ? num(m.qtyMoved) : m.movementType === 'SHIP' ? -num(m.qtyMoved) : 0), 0);
-    ok(`${label}: on hand equals receipts minus shipments in the movement ledger`, Math.abs(num(inv.qtyOnHand) - net) < 1e-6, `${inv.qtyOnHand} vs ledger ${net}`);
+  if (mv.some((m) => (m.movementType === 'RECEIVE' && ['RECEIPT', 'UPLOAD', 'CUT_PIECE'].includes(m.reasonCode)) || m.movementType === 'PROCESS')) {
+    // In: receipts and pieces made. Out: shipments, material cut away, scrap. A correction goes the way it points.
+    const sign = (m) => (['RECEIVE', 'PROCESS'].includes(m.movementType) ? 1 : ['SHIP', 'CONSUME', 'SCRAP'].includes(m.movementType) ? -1 : ['ADJUST', 'COUNT'].includes(m.movementType) ? (m.toLocationId ? 1 : -1) : 0);
+    const net = mv.reduce((t, m) => t + sign(m) * num(m.qtyMoved), 0);
+    ok(`${label}: on hand equals what the movement ledger adds up to`, Math.abs(num(inv.qtyOnHand) - net) < 1e-6, `${inv.qtyOnHand} vs ledger ${net}`);
   }
   ok(`${label}: the item and its stock row name the same branch`, coil.locationId === inv.locationId, `${coil.locationId} vs ${inv.locationId}`);
   return true;
@@ -300,16 +302,28 @@ await scenario(G2, 'a dispatch that hits a hold on one of two lines saves nothin
   await prisma.coil.update({ where: { id: b }, data: { status: 'ALLOCATED', qcStatus: 'PASSED' } });
 });
 
-await scenario(G2, 'shipping a line that has no reservation: the order and invoice move, the stock does not (the current rule)', async (ok) => {
+await scenario(G2, 'a shipment with nothing reserved, or less reserved than it carries, is refused and changes nothing', async (ok) => {
   const id = await received({ weightLb: 1000 });
   const o = (await order([line(300, 2)])).body;
   const s = await shipment(o, L1, [[o.lines[0], 300]]); const d = await dispatch(s.body);
-  ok('dispatch is accepted with nothing reserved', ok2(d), `${d.status} ${JSON.stringify(d.body).slice(0, 160)}`);
-  ok('the order line shows 300 shipped and one invoice for 600.00 is raised', num((await prisma.orderLine.findUnique({ where: { id: o.lines[0].id } })).qtyShipped) === 300 && cents((await invoicesOf(o.id))[0]?.totalAmount) === 60000);
-  const moved = await prisma.materialMovement.count({ where: { shipmentId: s.body.id } });
-  ok('no stock movement is written and no stock item is named', moved === 0, `${moved} movement(s)`);
-  ok('no stock balance changed', num((await invOf(id)).qtyOnHand) === 1000);
-  notes.push('Shipping without a reservation: a dispatch of 300 lb with nothing reserved was accepted, invoiced, and left no stock movement. No stock item, and so no heat, is recorded against that shipment, and no balance went down. Whether a shipment must be fully reserved before it can leave is the owner\'s rule; recorded as finding G-019.');
+  ok('dispatch with nothing reserved is refused with the reason', d.status === 409 && /reserve/i.test(d.body?.error || ''), `${d.status} ${JSON.stringify(d.body).slice(0, 160)}`);
+  const untouched = async (label) => {
+    ok(`${label}: the shipment has not left`, (await prisma.shipment.findUnique({ where: { id: s.body.id } })).status !== 'IN_TRANSIT');
+    ok(`${label}: nothing shipped on the line, no invoice, no movement`, num((await prisma.orderLine.findUnique({ where: { id: o.lines[0].id } })).qtyShipped) === 0 && (await invoicesOf(o.id)).length === 0 && (await prisma.materialMovement.count({ where: { shipmentId: s.body.id } })) === 0);
+  };
+  await untouched('nothing reserved');
+  await reserve(o, o.lines[0], id, 299.5);
+  const short = await dispatch(s.body);
+  ok('half a pound short of reserved is refused too', short.status === 409 && /0\.5/.test(short.body?.error || ''), `${short.status} ${JSON.stringify(short.body).slice(0, 160)}`);
+  await untouched('short');
+  ok('the reservation is still whole', num((await invOf(id)).qtyAllocated) === 299.5 && num((await invOf(id)).qtyOnHand) === 1000);
+  await reserve(o, o.lines[0], id, 0.5);
+  const good = await dispatch(s.body);
+  ok('fully reserved, it goes', ok2(good), `${good.status} ${JSON.stringify(good.body).slice(0, 160)}`);
+  const mv = await prisma.materialMovement.findMany({ where: { shipmentId: s.body.id } });
+  ok('the movement names the item, and through it the heat', mv.length >= 1 && mv.every((m) => m.coilId === id) && Math.abs(mv.reduce((t, m) => t + num(m.qtyMoved), 0) - 300) < 1e-9 && (await coilOf(id)).heatId === heat.id, mv.map((m) => m.qtyMoved).join('+'));
+  ok('700 left on hand and one invoice for 600.00', num((await invOf(id)).qtyOnHand) === 700 && cents((await invoicesOf(o.id))[0]?.totalAmount) === 60000);
+  await books(ok, id);
 });
 
 // ══ 3. Work orders, scrap and remnants ═══════════════════════════════════════════════════
@@ -323,10 +337,13 @@ await scenario(G3, 'a work order runs from created to complete with weights, yie
   for (const stepName of ['release', 'start']) { const r = await A.put(`/api/work-orders/${wo.body.id}/${stepName}`, {}); ok(stepName, ok2(r), `${r.status} ${JSON.stringify(r.body).slice(0, 150)}`); }
   const done = await A.put(`/api/work-orders/${wo.body.id}/complete`, { outputWeightLb: 7812.5, scrapWeightLb: 187.5 });
   ok('completed', ok2(done), `${done.status} ${JSON.stringify(done.body).slice(0, 150)}`);
-  const row = await prisma.workOrder.findUnique({ where: { id: wo.body.id } });
+  const row = await prisma.workOrder.findUnique({ where: { id: wo.body.id }, include: { outputs: true } });
   ok('output 7812.5, scrap 187.5, yield 97.66 saved', num(row.outputWeightLb) === 7812.5 && num(row.scrapWeightLb) === 187.5 && num(row.yieldPct) === 97.66 && row.status === 'COMPLETE', JSON.stringify({ o: row.outputWeightLb, s: row.scrapWeightLb, y: row.yieldPct }));
   const hist = await woHistory(wo.body.id);
   ok('three moves in the history, each with the person', hist.length === 3 && hist.every((h) => h.userId === users.admin.id), `${hist.length}`);
+  ok('the source item is used up: nothing on hand, marked consumed', num((await invOf(id)).qtyOnHand) === 0 && (await coilOf(id)).status === 'CONSUMED', `${(await invOf(id)).qtyOnHand} ${(await coilOf(id)).status}`);
+  ok('one piece of 7812.5 lb is on the books, tied to the work order', row.outputs.length === 1 && num((await invOf(row.outputs[0].outputCoilId)).qtyOnHand) === 7812.5);
+  await books(ok, id, 'source'); await books(ok, row.outputs[0].outputCoilId, 'piece');
 });
 await scenario(G3, 'more cannot come off the line than went on, and weights cannot be negative', async (ok) => {
   const id = await received({ weightLb: 1000 });
@@ -389,7 +406,14 @@ await scenario(G3, 'a remnant entered against its parent keeps the heat, grade a
   ok('the parent can list its remnants', (await prisma.coil.count({ where: { parentCoilId: parent } })) === 1);
   await books(ok, rem.id, 'remnant');
   const pInv = await invOf(parent);
-  notes.push(`Remnant quantity: entering a ${num((await invOf(rem.id)).qtyOnHand)} lb remnant left its parent at ${num(pInv.qtyOnHand)} lb. The application does not take the remnant out of the parent, because processing moves no stock (M-016). Not asserted; recorded as finding G-006.`);
+  ok('the parent is lighter by exactly the remnant: 5948.75 lb', num(pInv.qtyOnHand) === 5948.75 && num(pInv.qtyAvailable) === 5948.75, `${pInv.qtyOnHand}`);
+  const cut = await movesOf(parent, 'CONSUME');
+  ok('the parent has a movement for the piece cut from it', cut.length === 1 && num(cut[0].qtyMoved) === 51.25 && cut[0].notes.includes(remNo));
+  await books(ok, parent, 'parent');
+  const total = num(pInv.qtyOnHand) + num((await invOf(rem.id)).qtyOnHand);
+  ok('parent and remnant together weigh what the parent weighed: 6000 lb', total === 6000, total);
+  const big = await A.post('/api/inventory/bulk-upload', { templateType: 'remnants', items: [{ tag_number: tag('REM'), parent_tag: parentNo, thickness: 0.5, width: 12, length: 30, weight_lbs: 5948.76, location_code: L1.code }] });
+  ok('a remnant heavier than what is left of the parent is refused', (big.body?.errors?.length === 1 || big.status >= 400) && num((await invOf(parent)).qtyOnHand) === 5948.75 && (await prisma.coil.count({ where: { parentCoilId: parent } })) === 1, `${big.status} ${JSON.stringify(big.body).slice(0, 200)}`);
 });
 await scenario(G3, 'a remnant that names a different heat or grade than its parent, or a parent not on file, is refused', async (ok) => {
   const parentNo = tag('PAR'); await received({ coilNumber: parentNo });
@@ -400,15 +424,77 @@ await scenario(G3, 'a remnant that names a different heat or grade than its pare
   await up({ parent_tag: `NO-PARENT-${run}` });
   ok('none of the three was saved', (await prisma.coil.count()) === n0, `${(await prisma.coil.count()) - n0} saved`);
 });
-await scenario(G3, 'completing a work order records the weights and leaves the stock balance alone (the current rule)', async (ok) => {
+await scenario(G3, 'completing a work order takes output and scrap off the source and puts each piece on the books', async (ok) => {
   const id = await received({ weightLb: 2000 });
-  const wo = (await workOrder(id)).body;
+  const wo = (await workOrder(id, { inputWeightLb: 1500 })).body;
   await A.put(`/api/work-orders/${wo.id}/release`, {}); await A.put(`/api/work-orders/${wo.id}/start`, {});
-  await A.put(`/api/work-orders/${wo.id}/complete`, { outputWeightLb: 1900, scrapWeightLb: 100 });
-  const inv = await invOf(id);
-  ok('balance identity still holds', Math.abs(num(inv.qtyOnHand) - (num(inv.qtyAvailable) + num(inv.qtyAllocated) + num(inv.qtyOnHold))) < 1e-6);
-  ok('no stock movement was invented', (await movesOf(id)).length === 1);
-  notes.push(`Work order completion: ${num(inv.qtyOnHand)} lb is still on hand for an item whose work order recorded 1900 lb out and 100 lb scrap. What processing consumes and produces is the owner's rule (M-016, REQUIRES BUSINESS DECISION).`);
+  const done = await A.put(`/api/work-orders/${wo.id}/complete`, { scrapWeightLb: 37.5, outputs: [{ weightLb: 700.25, widthIn: 12 }, { weightLb: 700.25, widthIn: 12 }, { weightLb: 62, widthIn: 3.5, form: 'SHEET' }] });
+  ok('completed', ok2(done), `${done.status} ${JSON.stringify(done.body).slice(0, 200)}`);
+  const inv = await invOf(id); const src = await coilOf(id);
+  ok('source: 2000 less 1462.5 of pieces and 37.5 of scrap leaves 500 on hand, all free', num(inv.qtyOnHand) === 500 && num(inv.qtyAvailable) === 500, JSON.stringify(inv));
+  ok('source still available, because some is left', src.status === 'AVAILABLE', src.status);
+  const mv = await movesOf(id);
+  ok('one movement for the pieces and one for the scrap, both naming the work order', mv.filter((m) => m.movementType === 'CONSUME' && num(m.qtyMoved) === 1462.5 && m.workOrderId === wo.id).length === 1 && mv.filter((m) => m.movementType === 'SCRAP' && num(m.qtyMoved) === 37.5 && m.workOrderId === wo.id).length === 1, mv.map((m) => `${m.movementType} ${m.qtyMoved}`).join(', '));
+  const outs = await prisma.workOrderOutput.findMany({ where: { workOrderId: wo.id }, include: { outputCoil: true }, orderBy: { sequence: 'asc' } });
+  ok('three pieces, each a stock item with the source heat, grade, owner and branch', outs.length === 3 && outs.every((o) => o.outputCoil.heatId === src.heatId && o.outputCoil.gradeId === src.gradeId && o.outputCoil.ownerId === src.ownerId && o.outputCoil.parentCoilId === id && o.outputCoil.locationId === src.locationId));
+  ok('piece widths and the form given are kept', num(outs[0].outputCoil.widthIn) === 12 && num(outs[2].outputCoil.widthIn) === 3.5 && outs[2].outputCoil.form === 'SHEET' && outs[0].outputCoil.form === src.form);
+  let pieces = 0;
+  for (const o of outs) { pieces += num((await invOf(o.outputCoilId)).qtyOnHand); await books(ok, o.outputCoilId, `piece ${o.sequence}`); }
+  ok('pieces + scrap + what is left on the source = the 2000 lb received', pieces + 37.5 + num(inv.qtyOnHand) === 2000, pieces + 37.5 + num(inv.qtyOnHand));
+  ok('yield is output over input: 97.5', num((await prisma.workOrder.findUnique({ where: { id: wo.id } })).yieldPct) === 97.5);
+  await books(ok, id, 'source');
+  const again = await A.put(`/api/work-orders/${wo.id}/complete`, { outputWeightLb: 10 });
+  ok('completing it again is refused and takes nothing more', again.status === 409 && num((await invOf(id)).qtyOnHand) === 500);
+});
+await scenario(G3, 'a work order takes its input from what the item holds now, not from what it weighed when received', async (ok) => {
+  const id = await received({ weightLb: 900 });
+  await A.post('/api/inventory/adjust', { coilId: id, countedQty: 650, reason: 'COUNT', notes: 'Count before cutting' });
+  const wo = await workOrder(id);
+  ok('input defaults to the 650 lb on hand, not the 900 lb received', wo.status === 201 && num(wo.body.inputWeightLb) === 650, `${wo.status} ${wo.body?.inputWeightLb}`);
+  const over = await workOrder(id, { inputWeightLb: 650.5 });
+  ok('an input heavier than the item holds is refused', over.status === 400 && /650/.test(over.body?.error || ''), `${over.status} ${JSON.stringify(over.body).slice(0, 150)}`);
+  await A.post('/api/inventory/adjust', { coilId: id, countedQty: 0, reason: 'SCRAP', notes: 'Scrapped whole item' });
+  const none = await workOrder(id);
+  ok('an item with nothing on hand cannot be put on a work order', none.status === 409, `${none.status}`);
+  ok('one work order on file for the item', (await prisma.workOrder.count({ where: { sourceCoilId: id } })) === 1);
+});
+await scenario(G3, 'a completion that reports more than the item has free is refused, and nothing is saved', async (ok) => {
+  const id = await received({ weightLb: 1000 });
+  const o = (await order([line(600, 1)])).body;
+  await reserve(o, o.lines[0], id, 600); // reserved for an order this work order is not for
+  const wo = (await workOrder(id)).body;
+  ok('a work order can be raised on an item that is partly reserved', !!wo.id, JSON.stringify(wo).slice(0, 150));
+  await A.put(`/api/work-orders/${wo.id}/start`, {});
+  const n0 = await prisma.coil.count();
+  const r = await A.put(`/api/work-orders/${wo.id}/complete`, { outputWeightLb: 400, scrapWeightLb: 0.5 });
+  ok('400.5 lb against 400 free is refused with the reason', r.status === 409 && /400/.test(r.body?.error || ''), `${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);
+  ok('the work order is still in progress', (await prisma.workOrder.findUnique({ where: { id: wo.id } })).status === 'IN_PROGRESS');
+  ok('no piece, no movement, and the reservation untouched', (await prisma.coil.count()) === n0 && (await movesOf(id)).length === 1 && num((await invOf(id)).qtyAllocated) === 600 && num((await invOf(id)).qtyOnHand) === 1000);
+  const fit = await A.put(`/api/work-orders/${wo.id}/complete`, { outputWeightLb: 390, scrapWeightLb: 10 });
+  ok('what fits goes through, and the other order keeps its 600', ok2(fit) && num((await invOf(id)).qtyAllocated) === 600 && num((await invOf(id)).qtyAvailable) === 0 && num((await invOf(id)).qtyOnHand) === 600, `${fit.status} ${JSON.stringify(await invOf(id))}`);
+  await books(ok, id);
+});
+await scenario(G3, 'stock reserved for an order is cut for it: the pieces stay reserved for that order and ship with their heat', async (ok) => {
+  const id = await received({ weightLb: 3000 });
+  const o = (await order([line(1000, 1.2)])).body;
+  await reserve(o, o.lines[0], id, 1000);
+  const wo = (await workOrder(id, { lineId: o.lines[0].id, inputWeightLb: 1000 })).body;
+  ok('the work order is tied to the order and its line', wo.lineId === o.lines[0].id && wo.salesOrderId === o.id, JSON.stringify(wo).slice(0, 200));
+  await A.put(`/api/work-orders/${wo.id}/start`, {});
+  const done = await A.put(`/api/work-orders/${wo.id}/complete`, { scrapWeightLb: 40, outputs: [{ weightLb: 480 }, { weightLb: 480 }] });
+  ok('completed', ok2(done), `${done.status} ${JSON.stringify(done.body).slice(0, 200)}`);
+  const src = await invOf(id);
+  ok('source: 2000 on hand, all free, nothing reserved any more', num(src.qtyOnHand) === 2000 && num(src.qtyAvailable) === 2000 && num(src.qtyAllocated) === 0, JSON.stringify(src));
+  const outs = await prisma.workOrderOutput.findMany({ where: { workOrderId: wo.id }, orderBy: { sequence: 'asc' } });
+  const lineRes = await prisma.orderLineAllocation.findMany({ where: { orderLineId: o.lines[0].id } });
+  ok('the 960 lb of pieces are reserved for the line; the 40 lb of scrap is not', lineRes.length === 2 && lineRes.every((a) => outs.some((x) => x.outputCoilId === a.coilId) && num(a.qtyAllocated) === 480), JSON.stringify(lineRes.map((a) => a.qtyAllocated)));
+  for (const x of outs) await books(ok, x.outputCoilId, `piece ${x.sequence}`);
+  await books(ok, id, 'source');
+  const s = await shipment(o, L1, [[o.lines[0], 960]]); const d = await dispatch(s.body);
+  ok('the pieces ship', ok2(d), `${d.status} ${JSON.stringify(d.body).slice(0, 160)}`);
+  const mv = await prisma.materialMovement.findMany({ where: { shipmentId: s.body.id } });
+  ok('the shipment names both pieces, which carry the heat of the item they were cut from', mv.length === 2 && mv.every((m) => outs.some((x) => x.outputCoilId === m.coilId)) && (await prisma.coil.count({ where: { id: { in: mv.map((m) => m.coilId) }, heatId: heat.id, parentCoilId: id } })) === 2);
+  ok('heat to customer: the heat leads to this order through the pieces', (await prisma.materialMovement.count({ where: { movementType: 'SHIP', orderId: o.id, coil: { heatId: heat.id } } })) === 2);
 });
 
 // ══ 4. Transfers between branches ════════════════════════════════════════════════════════
@@ -868,16 +954,22 @@ await scenario(G6, 'a return received four times at once is counted once and cre
   ok('one credit memo for 187.50', memos.length === 1 && cents(memos[0].totalAmount) === -18750, `${memos.length} ${memos[0]?.totalAmount}`);
   await books(ok, coilId);
 });
-await scenario(G6, 'two work orders raised on one item at once each get their own number and nothing is lost', async (ok) => {
+await scenario(G6, 'one item feeding several work orders at once: each takes its share, and no more than the item holds', async (ok) => {
   const id = await received({ weightLb: 4000 });
-  const both = await Promise.all([workOrder(id), workOrder(id)]);
-  ok('answered without a server error', both.every((r) => r.status < 500), both.map((r) => r.status).join(','));
-  const rows = await prisma.workOrder.findMany({ where: { sourceCoilId: id } });
-  ok('every accepted work order is saved once with its own number', rows.length === both.filter((r) => r.status === 201).length && new Set(rows.map((r) => r.woNumber)).size === rows.length, rows.map((r) => r.woNumber).join(','));
-  ok('each has its creation in the history', (await prisma.auditLog.count({ where: { resourceType: 'WorkOrder', resourceId: { in: rows.map((r) => r.id) }, eventType: 'WORK_ORDER_CREATED' } })) === rows.length);
+  const made = await Promise.all([workOrder(id, { inputWeightLb: 1500 }), workOrder(id, { inputWeightLb: 1500 }), workOrder(id, { inputWeightLb: 1500 })]);
+  ok('three work orders on one item are all accepted, each with its own number', made.every((r) => r.status === 201) && new Set(made.map((r) => r.body.woNumber)).size === 3, made.map((r) => r.status).join(','));
+  for (const m of made) await A.put(`/api/work-orders/${m.body.id}/start`, {});
+  const done = await Promise.all(made.map((m) => A.put(`/api/work-orders/${m.body.id}/complete`, { outputWeightLb: 1450, scrapWeightLb: 50 })));
+  ok('completed at the same moment: two fit in 4000 lb, the third is refused', done.filter(ok2).length === 2 && done.filter((r) => r.status === 409).length === 1, done.map((r) => r.status).join(','));
   const inv = await invOf(id);
-  ok('the item balance is unchanged', num(inv.qtyOnHand) === 4000 && num(inv.qtyAvailable) === 4000);
-  notes.push(`Two work orders on one item: ${rows.length} open work orders now name the same 4000 lb item as their source, each with 4000 lb as input. The application does not claim an item for a work order, because processing moves no stock (M-016). Whether one item may feed several work orders is the owner's rule; recorded as finding G-008.`);
+  ok('1000 lb left on the source, never below zero', num(inv.qtyOnHand) === 1000 && num(inv.qtyAvailable) === 1000, JSON.stringify(inv));
+  const rows = await prisma.workOrder.findMany({ where: { sourceCoilId: id }, include: { outputs: true } });
+  ok('two complete with a piece each, one still in progress with none', rows.filter((r) => r.status === 'COMPLETE' && r.outputs.length === 1).length === 2 && rows.filter((r) => r.status === 'IN_PROGRESS' && !r.outputs.length).length === 1);
+  await books(ok, id, 'source');
+  const last = rows.find((r) => r.status === 'IN_PROGRESS');
+  const fit = await A.put(`/api/work-orders/${last.id}/complete`, { outputWeightLb: 990, scrapWeightLb: 10 });
+  ok('the third completes with what is really left, and the item is used up', ok2(fit) && num((await invOf(id)).qtyOnHand) === 0 && (await coilOf(id)).status === 'CONSUMED', `${fit.status}`);
+  await books(ok, id, 'source');
 });
 await scenario(G6, 'eighty orders entered at the same moment each get their own number, and none is lost', async (ok) => {
   const mark = tag('PO80');
@@ -907,6 +999,146 @@ await scenario(G6, 'the books are in balance at every moment while forty changes
   ok('no request failed with a server error', all.every((r) => r.status < 500), all.filter((r) => r.status >= 500).length);
   ok(`a reconciliation read taken ${samples} times during the burst never saw the books out of balance`, violations === 0 && samples > 3, `${violations} violations in ${samples} samples`);
   for (const id of ids) await books(ok, id);
+});
+
+// ══ 7. Owner decisions of 2026-11-13 ═════════════════════════════════════════════════════
+const G7 = 'Stock corrections, invoice numbers and retention';
+const adjust = (body, who = 'admin') => A.post('/api/inventory/adjust', body, who);
+await scenario(G7, 'a count that finds less, more, or the same: the balance follows through a movement that says who and why', async (ok) => {
+  const id = await received({ weightLb: 1000 });
+  const down = await adjust({ coilId: id, countedQty: 987.5, reason: 'COUNT', notes: 'Cycle count, bay 4' });
+  ok('counted 987.5: accepted', down.status === 201 && down.body.change === -12.5, `${down.status} ${JSON.stringify(down.body).slice(0, 200)}`);
+  let inv = await invOf(id);
+  ok('987.5 on hand and free', num(inv.qtyOnHand) === 987.5 && num(inv.qtyAvailable) === 987.5);
+  const m1 = (await movesOf(id, 'COUNT'))[0];
+  ok('a count movement of 12.5 out, by the person, with the note', m1 && num(m1.qtyMoved) === 12.5 && m1.fromLocationId === L1.id && !m1.toLocationId && m1.createdById === users.admin.id && m1.reasonCode === 'COUNT_DOWN' && /bay 4/.test(m1.notes));
+  const up = await adjust({ coilId: id, change: 20, reason: 'FOUND', notes: 'Found behind rack 2' });
+  ok('20 lb found: accepted', up.status === 201, `${up.status}`);
+  inv = await invOf(id);
+  ok('1007.5 on hand', num(inv.qtyOnHand) === 1007.5 && num(inv.qtyAvailable) === 1007.5);
+  const same = await adjust({ coilId: id, countedQty: 1007.5, reason: 'COUNT', notes: 'Recount agrees' });
+  ok('a count that agrees writes no movement, and is still on record', same.status === 200 && same.body.movement === null && (await movesOf(id)).length === 3 && (await prisma.auditLog.count({ where: { resourceId: id, eventType: 'STOCK_COUNT_CONFIRMED' } })) === 1, `${same.status}`);
+  ok('each change is in the history with before and after', (await prisma.auditLog.findMany({ where: { resourceId: id, eventType: 'STOCK_ADJUSTED' }, orderBy: { timestamp: 'asc' } })).map((l) => `${l.details.from}>${l.details.to}`).join(' ') === '1000>987.5 987.5>1007.5');
+  await books(ok, id);
+});
+await scenario(G7, 'a correction cannot take away stock that is reserved or on hold, go below zero, or be made without a reason', async (ok) => {
+  const id = await received({ weightLb: 1000 });
+  const o = (await order([line(700, 1)])).body; await reserve(o, o.lines[0], id, 700);
+  const same = async (label) => { const inv = await invOf(id); ok(`${label}: nothing changed`, num(inv.qtyOnHand) === 1000 && num(inv.qtyAllocated) === 700 && num(inv.qtyAvailable) === 300 && (await movesOf(id)).length === 1, JSON.stringify(inv)); };
+  const r1 = await adjust({ coilId: id, countedQty: 600, reason: 'COUNT', notes: 'Count says 600' });
+  ok('down to 600 with 700 reserved is refused, and says what is reserved', r1.status === 409 && /700/.test(r1.body?.error || ''), `${r1.status} ${JSON.stringify(r1.body).slice(0, 200)}`); await same('reserved');
+  const r2 = await adjust({ coilId: id, change: -1000.5, reason: 'CORRECTION', notes: 'Too much' });
+  ok('below zero is refused', r2.status === 409, r2.status); await same('below zero');
+  const bad = [
+    [{ coilId: id, countedQty: 900, reason: 'COUNT' }, 'no note'],
+    [{ coilId: id, countedQty: 900, reason: 'BECAUSE', notes: 'Some reason' }, 'unknown reason'],
+    [{ coilId: id, countedQty: 900, change: -100, reason: 'COUNT', notes: 'Both given' }, 'both a count and a change'],
+    [{ coilId: id, reason: 'COUNT', notes: 'Neither given' }, 'neither'],
+    [{ coilId: id, countedQty: -5, reason: 'COUNT', notes: 'Negative count' }, 'negative count'],
+    [{ coilId: id, change: 0, reason: 'CORRECTION', notes: 'Zero change' }, 'zero change'],
+    [{ coilId: id, change: 5, reason: 'DAMAGE', notes: 'Damage cannot add' }, 'damage that adds'],
+    [{ coilId: id, change: -5, reason: 'FOUND', notes: 'Found cannot remove' }, 'found that removes'],
+    [{ coilId: id, change: 'lots', reason: 'CORRECTION', notes: 'Not a number' }, 'not a number'],
+    [{ coilId: id, change: 0.00001, reason: 'CORRECTION', notes: 'Too fine' }, 'five decimal places'],
+  ];
+  for (const [body, label] of bad) { const r = await adjust(body); ok(`${label}: refused with 400`, r.status === 400, `${r.status} ${JSON.stringify(r.body).slice(0, 120)}`); }
+  await same('bad requests');
+  const ok300 = await adjust({ coilId: id, change: -300, reason: 'DAMAGE', notes: 'Forklift damage, written off' });
+  const inv = await invOf(id);
+  ok('the 300 that is free can be written off; the order keeps its 700', ok300.status === 201 && num(inv.qtyOnHand) === 700 && num(inv.qtyAllocated) === 700 && num(inv.qtyAvailable) === 0, `${ok300.status} ${JSON.stringify(inv)}`);
+  await books(ok, id);
+});
+await scenario(G7, 'only a manager or the inventory manager can correct stock, and only at their own branch', async (ok) => {
+  const id = await received({ weightLb: 500 });
+  const far = await received({ weightLb: 500, locationId: L4.id });
+  for (const who of ['csr', 'operator', 'shipping', 'branchA']) {
+    const r = await adjust({ coilId: id, countedQty: 400, reason: 'COUNT', notes: 'Not allowed' }, who);
+    ok(`${who}: refused`, r.status === 403, `${r.status} ${JSON.stringify(r.body).slice(0, 100)}`);
+  }
+  const wh = await adjust({ coilId: id, change: -1, reason: 'DAMAGE', notes: 'Inventory manager, own branch' }, 'branchWh');
+  ok('the inventory manager of the branch can', wh.status === 201, `${wh.status}`);
+  ok('and cannot at another branch', [403, 404].includes((await adjust({ coilId: far, countedQty: 1, reason: 'COUNT', notes: 'Another branch' }, 'branchWh')).status));
+  const reg = await adjust({ coilId: id, countedQty: 498, reason: 'COUNT', notes: 'Regional manager count' }, 'regional');
+  ok('a regional manager can correct stock at a branch they manage', reg.status === 201, `${reg.status} ${JSON.stringify(reg.body).slice(0, 150)}`);
+  const out = await adjust({ coilId: far, countedQty: 1, reason: 'COUNT', notes: 'Another branch' }, 'regional');
+  ok('and not at a branch outside their three', out.status === 404 || out.status === 403, `${out.status}`);
+  ok('only the one allowed correction happened', num((await invOf(id)).qtyOnHand) === 498 && num((await invOf(far)).qtyOnHand) === 500);
+});
+await scenario(G7, 'a correction, a reservation and a shipment on one item at the same moment leave the books in balance', async (ok) => {
+  const id = await received({ weightLb: 2000 });
+  const o1 = (await order([line(500, 1)])).body; await reserve(o1, o1.lines[0], id, 500);
+  const s1 = await shipment(o1, L1, [[o1.lines[0], 500]]);
+  const o2 = (await order([line(800, 1)])).body;
+  const all = await Promise.all([
+    adjust({ coilId: id, change: -700, reason: 'DAMAGE', notes: 'Burst test A' }), adjust({ coilId: id, change: -700, reason: 'DAMAGE', notes: 'Burst test B' }),
+    adjust({ coilId: id, change: 25, reason: 'FOUND', notes: 'Burst test C' }), reserve(o2, o2.lines[0], id, 800), dispatch(s1.body),
+  ]);
+  ok('no server error', all.every((r) => r.status < 500), all.map((r) => r.status).join(','));
+  const inv = await invOf(id);
+  ok('nothing is negative and the identity holds', [inv.qtyOnHand, inv.qtyAvailable, inv.qtyAllocated].every((v) => num(v) >= 0) && Math.abs(num(inv.qtyOnHand) - num(inv.qtyAvailable) - num(inv.qtyAllocated) - num(inv.qtyOnHold)) < 1e-6, JSON.stringify(inv));
+  await books(ok, id);
+});
+
+const invSeries = async (prefix) => (await prisma.invoice.findMany({ where: { invoiceNumber: { startsWith: `${prefix}-` } }, select: { invoiceNumber: true } })).map((i) => Number(i.invoiceNumber.slice(prefix.length + 1))).filter(Number.isInteger).sort((a, b) => a - b);
+const counterOf = async (series) => (await prisma.documentCounter.findUnique({ where: { series } }))?.lastNumber ?? null;
+await scenario(G7, 'invoice numbers: twelve invoices raised at once take twelve numbers in a row, with none skipped and none repeated', async (ok) => {
+  await billedOrder(10, 1); // makes sure the series has started
+  const start = await counterOf('INV');
+  ok('the series has a counter that equals the highest number on file', start !== null && start === (await invSeries('INV')).at(-1), `${start} vs ${(await invSeries('INV')).at(-1)}`);
+  const ready = [];
+  for (let i = 0; i < 12; i++) { const id = await received({ weightLb: 100 }); const o = (await order([line(50, 1)])).body; await reserve(o, o.lines[0], id, 50); ready.push((await shipment(o, L1, [[o.lines[0], 50]])).body); }
+  const sent = await Promise.all(ready.map((sh) => dispatch(sh)));
+  ok('all twelve dispatched', sent.every(ok2), sent.map((r) => r.status).join(','));
+  // A dispatch never waits on its invoice: any that was not raised in the burst is raised now, as the invoices page would.
+  for (const sh of ready) if (!(await prisma.invoice.count({ where: { shipmentId: sh.id } }))) await A.post('/api/invoices', { shipmentId: sh.id }, 'csr');
+  const mine = (await prisma.invoice.findMany({ where: { shipmentId: { in: ready.map((r) => r.id) } }, select: { invoiceNumber: true } })).map((i) => Number(i.invoiceNumber.slice(4))).sort((a, b) => a - b);
+  ok('twelve invoices', mine.length === 12, mine.length);
+  ok(`they are numbers ${start + 1} to ${start + 12} exactly`, mine.every((n, i) => n === start + 1 + i), mine.join(','));
+  ok('the counter stands at the last one', (await counterOf('INV')) === start + 12, await counterOf('INV'));
+});
+await scenario(G7, 'invoice numbers: a save that fails or is refused gives its number back, and counter sales share the series', async (ok) => {
+  const { creditInvoice } = await import('../../src/backend/src/services/billing.js');
+  const { invoice, o } = await billedOrder(100, 2);
+  const [inv0, cm0] = [await counterOf('INV'), await counterOf('CM')];
+  let thrown = null;
+  try { await creditInvoice(invoice.id, { reason: 'QA forced failure', amount: 10 }, users.admin.id, { after: () => { throw new Error('forced failure after the number was taken'); } }); } catch (e) { thrown = e; }
+  ok('a credit memo that fails after taking its number leaves the series where it was', /forced failure/.test(String(thrown?.message)) && (await counterOf('CM')) === cm0, `${await counterOf('CM')} vs ${cm0}`);
+  const none = await A.post('/api/invoices', { orderId: o.id }, 'csr');
+  ok('asking to invoice an order with nothing left to bill is refused and takes no number', none.status === 409 && (await counterOf('INV')) === inv0, `${none.status} ${await counterOf('INV')} vs ${inv0}`);
+  const over = await A.post(`/api/invoices/${invoice.id}/credit`, { reason: 'Too much', amount: 99999 });
+  ok('a refused credit takes no number', over.status === 409 && (await counterOf('CM')) === cm0, `${over.status}`);
+  const good = await A.post(`/api/invoices/${invoice.id}/credit`, { reason: 'QA credit', amount: 10 });
+  ok('the next credit memo takes the very next number', good.status === 201 && Number(good.body.invoiceNumber.slice(3)) === (cm0 ?? 0) + 1, `${good.status} ${good.body?.invoiceNumber} after ${cm0}`);
+  const each = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'EACH', basePriceCwt: { gt: 0 } } });
+  const sale = { id: tag('QS'), locationId: L1.id, items: [{ productId: each.id, quantity: 1 }] };
+  const priced = await A.post('/api/pos/quick-sale/price', { sale }, 'csr');
+  const pay = { sale, payment: { method: 'CASH', amountTendered: Math.ceil(num(priced.body?.total)) + 1 } };
+  const three = await Promise.all([1, 2, 3].map(() => A.post('/api/pos/quick-sale/process-payment', pay, 'csr')));
+  ok('one counter sale sent three times at once is one sale', three.every(ok2) && new Set(three.map((r) => r.body.orderId)).size === 1, three.map((r) => r.status).join(','));
+  const qs = await invoicesOf(three[0].body.orderId);
+  ok('it has one invoice, numbered next in the same series', qs.length === 1 && Number(qs[0].invoiceNumber.slice(4)) === inv0 + 1 && (await counterOf('INV')) === inv0 + 1, `${qs.map((i) => i.invoiceNumber)} after ${inv0}`);
+  const all = await invSeries('INV'); const from = all.indexOf(inv0);
+  ok('no number repeats anywhere in the series', new Set(all).size === all.length);
+  ok('and none is skipped since the counter began', all.slice(from).every((n, i) => n === inv0 + i), all.slice(from).join(','));
+});
+await scenario(G7, 'history older than five years raises an archive warning, and nothing is removed', async (ok) => {
+  const first = await A.get('/api/admin/retention');
+  ok('the report answers with a period of five years', first.status === 200 && first.body.years === 5 && Array.isArray(first.body.records) && first.body.records.length >= 8, `${first.status} ${JSON.stringify(first.body).slice(0, 200)}`);
+  ok('with nothing old on file there is no warning', first.body.level === 'OK' && first.body.warning === null, `${first.body.level}`);
+  const o = (await order([line(10, 1)])).body; const o2 = (await order([line(10, 1)])).body;
+  const total0 = await prisma.order.count();
+  const ago = (y, d = 0) => { const t = new Date(); t.setFullYear(t.getFullYear() - y); t.setDate(t.getDate() + d); return t; };
+  await prisma.order.update({ where: { id: o2.id }, data: { createdAt: ago(5, 30) } });
+  const soon = await A.get('/api/admin/retention');
+  ok('an order 30 days short of five years: a warning to plan the archive', soon.body.level === 'SOON' && /six months/.test(soon.body.warning || ''), `${soon.body.level} ${soon.body.warning}`);
+  await prisma.order.update({ where: { id: o.id }, data: { createdAt: ago(5, -2) } });
+  const past = await A.get('/api/admin/retention');
+  const row = past.body.records.find((r) => r.record === 'Sales orders');
+  ok('an order two days past five years: ready to archive, counted once', past.body.level === 'ARCHIVE' && row.pastPeriod === 1 && row.withinSixMonths === 1 && /ready to archive/.test(past.body.warning), `${past.body.level} ${JSON.stringify(row)}`);
+  ok('the report removed nothing', (await prisma.order.count()) === total0);
+  for (const who of ['csr', 'operator', 'shipping']) ok(`${who} cannot read it`, (await A.get('/api/admin/retention', who)).status === 403);
+  await prisma.order.updateMany({ where: { id: { in: [o.id, o2.id] } }, data: { createdAt: new Date() } });
+  ok('with the dates put back, the warning clears', (await A.get('/api/admin/retention')).body.level === 'OK');
 });
 
 // ══ results ══════════════════════════════════════════════════════════════════════════════

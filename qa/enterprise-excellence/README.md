@@ -59,6 +59,7 @@ The owner's permanent standard is `qa/ENGINEERING-STANDARD.md` and governs every
 | `phase-03-recovery-assessment.md` | Backup and recovery: what is known and what is not verified | By hand |
 | `phase-03-regression-results.md` | The full run on the final code and the 64 scenarios | By hand, from `qa/results/` |
 | `phase-03-quality-scorecard.md` | Scores before and after Phase 3 | By hand, from `progress.json` |
+| `phase-03-owner-decisions.md` | The owner's six answers of 2026-11-13, what was built from each, the evidence and what is not covered | By hand |
 | `phase-03-dispositions.json` | Phase 3's status for each earlier finding it touched | By hand. Applied by `findings-import.mjs` |
 | `progress.json` | Program state for a machine | Generated; phase fields come from `phase-state.json` |
 | `owner-decisions.json` | Decisions the owner has given, with the findings each one settles | By hand. Applied to `findings.json` by `findings-import.mjs` |
@@ -101,7 +102,7 @@ Run on a rebuilt QA database. Sizes as of Phase 3. `qa/tools/run-gates.sh` runs 
 | Baseline probe | `node qa/sim/baseline-probe.mjs --max-crash 0` | 4 sections over every write route |
 | Branch boundary | `node qa/sim/branch-boundary.mjs` | 37 checks |
 | Phase 2 integrity and concurrency | `node qa/sim/phase2-integrity.mjs` | 80 checks |
-| Phase 3 database scenarios | `node qa/sim/phase3-db.mjs` | 64 scenarios, 447 checks |
+| Phase 3 database scenarios | `node qa/sim/phase3-db.mjs` | 74 scenarios in seven groups |
 | Schema inventory | `node qa/tools/db-schema.mjs` | 159 tables read from the catalogues |
 | Department rule coverage | `node qa/tools/access-coverage.mjs` | 319 changing routes |
 | Screen ratchets | `node qa/tools/frontend-checks.mjs` | 2 ceilings |

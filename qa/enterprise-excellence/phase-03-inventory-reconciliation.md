@@ -1,5 +1,7 @@
 # Phase 3: inventory reconciliation
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 How stock is kept, whether the books agree with themselves, and where the model stops. Everything was run in this session on the local QA database. No quantity was changed to make a total agree; the two defects found were fixed in the code and the scenarios run again.
 
 ## 1. The model as built
@@ -68,11 +70,11 @@ These are not reconciliation failures. They are things the books cannot say beca
 
 | Gap | Evidence | Finding | Status |
 |---|---|---|---|
-| A shipment with no reservation records no stock item, no heat, and reduces no balance | Scenario: 300 lb dispatched and invoiced with nothing reserved; no movement written | G-019 (P1) | REQUIRES BUSINESS DECISION |
-| Completing a work order moves no stock | Scenario: 1900 lb out and 100 lb scrap recorded; the item still shows 2000 lb | M-016 | REQUIRES BUSINESS DECISION |
-| A remnant does not reduce its parent | Scenario: a 51.25 lb remnant leaves its 6000 lb parent at 6000 lb | G-006 | REQUIRES BUSINESS DECISION |
-| Several work orders can name the same item as their whole input | Scenario: two at once, both accepted | G-008 | REQUIRES BUSINESS DECISION |
-| No stock adjustment, cycle count or scrap write-off on the real stock list | No route exists | I-016 | REQUIRES BUSINESS DECISION |
+| A shipment with no reservation records no stock item, no heat, and reduces no balance | Scenario: 300 lb dispatched and invoiced with nothing reserved; no movement written | G-019 (P1) | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
+| Completing a work order moves no stock | Scenario: 1900 lb out and 100 lb scrap recorded; the item still shows 2000 lb | M-016 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
+| A remnant does not reduce its parent | Scenario: a 51.25 lb remnant leaves its 6000 lb parent at 6000 lb | G-006 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
+| Several work orders can name the same item as their whole input | Scenario: two at once, both accepted | G-008 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
+| No stock adjustment, cycle count or scrap write-off on the real stock list | No route exists | I-016 | DECIDED 2026-11-13 and VERIFIED FIXED (`phase-03-owner-decisions.md`) |
 | A transfer has no in-transit stage or receipt | Nine transfer scenarios; partial receipt, shortage, damage, loss and duplicate receipt cannot occur and were NOT EXECUTED | G-007 | DEFERRED to the inventory module |
 | Shelf goods cannot be received by the piece | Heat and grade are required on every item | C-011 | DEFERRED to the inventory module |
 | The second stock list is not connected | See `phase-03-data-ownership.md` | B-009 (P1) | DEFERRED to the inventory module |

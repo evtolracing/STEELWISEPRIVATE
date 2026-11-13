@@ -1,14 +1,17 @@
 # Phase 3: migration review
 
+> **Updated after the owner's decisions of 2026-11-13.** Shipping without a reservation (G-019), stock movement in processing and remnants (M-016, G-006, G-008), stock corrections (I-016), invoice numbering (G-017) and retention (G-016) were decided and built after this file was first written. Rows below that name those findings are marked. The detail is in `phase-03-owner-decisions.md`.
+
 Every database change of this phase, how it was made safe, what it was tested on, and what the owner has to do. The owner applies database updates himself; nothing was applied to the live database.
 
-## 1. The three changes
+## 1. The four changes
 
 | Order to apply | File in `src/backend/prisma/upgrades/sql-editor/` | Copy for the owner in `/mnt/project-files/database-updates/` | What it does |
 |---|---|---|---|
 | 6 | `20261113210000_reference_integrity.sql` | `6-20261113210000_reference_integrity.sql` | 15 foreign keys, 8 indexes for them, 15 value checks, the "FWA" default removed from `DispatchJob.locationId`, 10 duplicate indexes dropped |
 | 7 | `20261113211000_request_keys.sql` | `7-20261113211000_request_keys.sql` | New table `RequestKey` with its unique rule and index |
 | 8 | `20261113212000_quote_branch.sql` | `8-20261113212000_quote_branch.sql` | Branch column on `Quote` and `RFQ` with indexes and foreign keys; existing quotes take their writer's home branch, existing requests take the branch of their first quote; the rest stay unassigned and are seen by every branch |
+| 9 | `20261113220000_document_counters.sql` | `9-20261113220000_document_counters.sql` | New table `DocumentCounter`: the last number used for invoices and for credit memos, started from the highest number on file. Added after the owner's decision that invoice numbers are never skipped or repeated. Run twice on the 85-branch copy: 0.16 s, series started at INV 116 and CM 9; the second run changed nothing. **The code cannot number an invoice without this table**, so it must be applied before the code is deployed |
 
 Files 1 to 5 are from earlier phases and the owner reports having applied them. Each file is made by `npm run db:sql-editor -- <migration>` from the migration of the same name, as the repository's rules require.
 

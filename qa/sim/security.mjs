@@ -249,7 +249,7 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
   section('Documents: upload, list, download, delete', { pass: findings.length === 0, summary: `11 checks, ${findings.length} problems`, findings });
 }
 
-// 11. Web checkout: a line priced below the system price is flagged for the CSR; an honest one is not.
+// 11. Web checkout: the system's price is saved whatever price or price level the browser sends.
 {
   const token = await tokenFor('custB'); const H = { 'content-type': 'application/json', authorization: `Bearer ${token}` };
   const findings = [];
@@ -262,13 +262,17 @@ const section = (name, data) => { report.sections[name] = data; console.log(`${d
     else {
       const place = async (extended) => { const r = await fetch(`${BASE}/api/ecom/checkout/submit`, { method: 'POST', headers: H, body: JSON.stringify({ items: [{ productId: prod.id, quantity: 3, extended, sku: prod.sku }], deliveryMethod: 'PICKUP' }) }).then((x) => x.json()); return r?.data?.id ? prisma.onlineOrder.findUnique({ where: { id: r.data.id } }) : null; };
       const cheap = await place(0.03); const honest = await place(fair);
-      if (!cheap || !/PRICE CHECK/.test(cheap.notes || '')) findings.push(`a 3-cent order for a ${fair} item was not flagged (notes: ${cheap?.notes})`);
-      if (!honest || /PRICE CHECK/.test(honest.notes || '')) findings.push(`an order at the system price was flagged (notes: ${honest?.notes})`);
+      const total = (o) => Number(o?.subtotal ?? o?.totalAmount ?? o?.total ?? NaN);
+      if (!cheap || !/PRICE CORRECTED/.test(cheap.notes || '')) findings.push(`a 3-cent order for a ${fair} item was not corrected (notes: ${cheap?.notes})`);
+      if (!(total(cheap) > 1) || Math.abs(total(cheap) - total(honest)) > 0.01) findings.push(`the 3-cent order was saved at ${total(cheap)}, an honest one at ${total(honest)}`);
+      const claimed = await fetch(`${BASE}/api/ecom/checkout/submit`, { method: 'POST', headers: H, body: JSON.stringify({ priceLevel: 'CONTRACT_B', items: [{ productId: prod.id, quantity: 3, extended: +(fair * 0.85).toFixed(2), priceLevel: 'CONTRACT_B', sku: prod.sku }], deliveryMethod: 'PICKUP' }) }).then((x) => x.json());
+      const claimedOrder = claimed?.data?.id ? await prisma.onlineOrder.findUnique({ where: { id: claimed.data.id } }) : null;
+      if (!claimedOrder || Math.abs(total(claimedOrder) - total(honest)) > 0.01) findings.push(`claiming a contract price level in the request changed the price: ${total(claimedOrder)} vs ${total(honest)}`);
       const neg = await fetch(`${BASE}/api/ecom/checkout/submit`, { method: 'POST', headers: H, body: JSON.stringify({ items: [{ productId: prod.id, quantity: 3, extended: -5 }] }) });
       if (neg.status !== 400) findings.push(`negative price → ${neg.status}`);
     }
   }
-  section('Web checkout prices are checked against the system price', { pass: findings.length === 0, summary: `3 checks, ${findings.length} problems`, findings });
+  section('Web checkout uses the system price, not the browser\'s', { pass: findings.length === 0, summary: `4 checks, ${findings.length} problems`, findings });
 }
 
 // 9. Nothing above may have answered with database or server internals.

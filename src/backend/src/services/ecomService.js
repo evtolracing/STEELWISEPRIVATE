@@ -5,6 +5,7 @@
  * OnlineOrder that lands in the CSR online order inbox.
  */
 import crypto from 'node:crypto';
+import { customerPriceLevel } from './portalService.js';
 import prisma from '../lib/db.js';
 import { createNumbered } from '../lib/numbering.js';
 import { ci } from '../lib/dbText.js';
@@ -352,24 +353,36 @@ export async function checkout(payload = {}, { quote = false } = {}) {
       estimatedWeight: Number(i.estimatedWeight ?? pricing.estimatedWeight) || null,
     };
   });
-  // The price comes from the browser, so compare each line with the system's
-  // own price and flag any line that came in lower for the CSR who reviews it.
+  // The system's price is the price. What the browser sent is only used when
+  // the system cannot price the line (then a CSR must review it), and for
+  // remnants, whose discount a CSR confirms.
   const priceFlags = [];
   const usd = (n) => `USD ${n.toFixed(2)}`;
+  const level = await customerPriceLevel(payload.customerId);
   for (const [idx, i] of raw.entries()) {
     const line = lines[idx];
-    if (i.isRemnant || i.remnantId || line.priceSource === 'REMNANT' || line.priceSource === 'REVIEW_REQUIRED') continue;
-    const system = await priceConfig({ productId: i.productId, quantity: line.qty, dimensions: line.dimensions || {}, processing: line.processing, priceLevel: i.priceLevel || payload.priceLevel });
-    if (system.error || system.priceSource === 'REVIEW_REQUIRED') continue;
-    line.systemExtended = system.extended;
-    if (line.extended + 0.01 < system.extended) {
+    const system = await priceConfig({ productId: i.productId, quantity: line.qty, dimensions: line.dimensions || {}, processing: line.processing, priceLevel: level });
+    if (system.error || system.priceSource === 'REVIEW_REQUIRED') {
       line.priceSource = 'REVIEW_REQUIRED';
-      priceFlags.push(`PRICE CHECK line ${line.lineNumber}: order says ${usd(line.extended)}, system price is ${usd(system.extended)}`);
+      continue;
     }
+    line.systemExtended = system.extended;
+    if (i.isRemnant || i.remnantId || system.priceSource === 'REMNANT') {
+      line.priceSource = 'REMNANT';
+      if (line.extended + 0.01 < system.extended) priceFlags.push(`REMNANT PRICE line ${line.lineNumber}: order says ${usd(line.extended)}, list price is ${usd(system.extended)} — confirm the discount`);
+      continue;
+    }
+    if (Math.abs(line.extended - system.extended) > 0.01) {
+      priceFlags.push(`PRICE CORRECTED line ${line.lineNumber}: the store showed ${usd(line.extended)}, the system price ${usd(system.extended)} was used`);
+      line.extended = system.extended;
+      line.unitPrice = line.qty ? money(system.extended / line.qty) : 0;
+    }
+    line.priceSource = system.priceSource;
   }
 
   const subtotal = money(lines.reduce((s, l) => s + l.extended, 0));
-  const tax = money(Number(payload.taxAmount ?? payload.tax) || 0);
+  // Tax is worked out here from the ship-to state and the customer's tax status, not taken from the browser.
+  const tax = (await taxEstimate({ subtotal, shipToState: payload.shipToState || 'MI', customerId: payload.customerId })).taxAmount;
   const needsReview = quote || lines.some((l) => l.priceSource === 'REVIEW_REQUIRED');
 
   const shipping = payload.deliveryMethod || payload.shippingMethod || null;

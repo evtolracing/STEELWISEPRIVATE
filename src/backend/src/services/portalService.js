@@ -150,6 +150,15 @@ async function loadAccountOrders(tree, { branchId, from, to } = {}) {
 
 const TIER_TO_LEVEL = { A: 'CONTRACT_B', B: 'CONTRACT_A', C: 'VOLUME', D: 'RETAIL' };
 
+/** The price level a customer buys at: set on the top-level account's pricing tier. RETAIL when none. */
+export async function customerPriceLevel(idOrCode) {
+  if (!idOrCode) return 'RETAIL';
+  const tree = await accountTree(idOrCode).catch(() => null);
+  if (!tree) return 'RETAIL';
+  const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: tree.root.id } }).catch(() => null);
+  return (tier?.isActive !== false && TIER_TO_LEVEL[tier?.tierCode]) || 'RETAIL';
+}
+
 export async function accountProfile(idOrCode) {
   const tree = await accountTree(idOrCode);
   if (!tree) return null;

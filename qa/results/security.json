@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T05:12:57.333Z",
- "endpointsInInventory": 581,
- "endpointsSwept": 581,
+ "at": "2026-11-13T05:42:18.406Z",
+ "endpointsInInventory": 571,
+ "endpointsSwept": 571,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "542 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
-   "tested": 542,
+   "summary": "532 routes tried with no token, 0 did not refuse (39 documented public or partner routes skipped)",
+   "tested": 532,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "519 staff routes tried as a customer, 0 not refused",
-   "tested": 519,
+   "summary": "509 staff routes tried as a customer, 0 not refused",
+   "tested": 509,
    "findings": []
   },
   "Customers cannot see each other": {
@@ -41,23 +41,11 @@
    ]
   },
   "Read routes do not crash on bad input": {
-   "pass": false,
-   "summary": "753 reads, 7 server errors",
-   "tested": 753,
-   "byFile": {
-    "rfqs.js": 2,
-    "quotes.js": 3,
-    "pos.js": 2
-   },
-   "findings": [
-    "/api/rfqs/:id → 500 {\"error\":\"Failed to fetch RFQ\"} [rfqs.js]",
-    "/api/rfqs/:id (hostile filter) → 500 {\"error\":\"Failed to fetch RFQ\"} [rfqs.js]",
-    "/api/quotes → 500 {\"error\":\"Failed to fetch quotes\"} [quotes.js]",
-    "/api/quotes/:id → 500 {\"error\":\"Failed to fetch quote\"} [quotes.js]",
-    "/api/quotes/:id (hostile filter) → 500 {\"error\":\"Failed to fetch quote\"} [quotes.js]",
-    "/api/pos/quick-sale/:saleId/receipt → 500 {\"error\":\"Failed to get receipt\"} [pos.js]",
-    "/api/pos/quick-sale/:saleId/receipt (hostile filter) → 500 {\"error\":\"Failed to get receipt\"} [pos.js]"
-   ]
+   "pass": true,
+   "summary": "747 reads, 0 server errors",
+   "tested": 747,
+   "byFile": {},
+   "findings": []
   },
   "Core write routes reject bad input cleanly": {
    "pass": true,
@@ -70,9 +58,9 @@
    "summary": "11 checks, 0 problems",
    "findings": []
   },
-  "Web checkout prices are checked against the system price": {
+  "Web checkout uses the system price, not the browser's": {
    "pass": true,
-   "summary": "3 checks, 0 problems",
+   "summary": "4 checks, 0 problems",
    "findings": []
   },
   "Error replies do not expose internals": {
@@ -81,5 +69,5 @@
    "findings": []
   }
  },
- "pass": false
+ "pass": true
 }

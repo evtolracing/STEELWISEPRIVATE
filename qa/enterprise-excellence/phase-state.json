@@ -78,17 +78,14 @@
     "The live database and the host: not touched"
   ],
   "currentBlockers": [
-    "B-003: the owner's rule for branch, division and region access",
-    "B-004: the owner department for 16 areas with no write rule",
-    "B-009 and the open decision card: which stock list and which order pipeline is the real one",
-    "X-009: build or remove, per sample module",
-    "B-018, B-019: a scheduled trigger on the host and an email or text provider"
+    "B-019: whether the host may run a scheduled trigger (not yet decided; email and text are deferred by the owner)",
+    "B-018: blocked on the same trigger",
+    "Open rules from earlier phases: promise dates and cut-offs (X-007), stock adjustment and what processing consumes (I-016, M-016), purchasing (I-007), package upgrades (E-011), restore test (E-015)"
   ],
   "nextActions": [
-    "Owner: answer the blockers above (B-003, B-004, B-009, X-009, B-018 and B-019), and B-025",
     "Owner: issue the Phase 2 prompt. Phase 2 has not been started",
-    "Phase 2: see the handoff in phase-01-report.md",
+    "Phase 2: see the handoff in phase-01-report.md; owner-decisions.json holds the six decisions of 2026-11-13",
     "Apply the SQL Editor files from the earlier workstreams, in order, before merging pull request 30"
   ],
-  "lastCompletedCheckpoint": "Phase 1 artifacts written; four corrections verified (B-001, B-002, B-005, B-023); full gate run on the final code with qa/tools/run-gates.sh"
+  "lastCompletedCheckpoint": "Phase 1 artifacts written; four corrections verified (B-001, B-002, B-005, B-023); full gate run on the final code with qa/tools/run-gates.sh; six owner decisions recorded (owner-decisions.json)"
 }

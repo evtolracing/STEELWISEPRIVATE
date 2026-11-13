@@ -1,0 +1,85 @@
+{
+  "note": "Decisions given by the owner. findings-import.mjs applies them to findings.json. Add to this file; never remove an entry.",
+  "decisions": [
+    {
+      "n": 1,
+      "asked": "Which stock list and which order pipeline is the real one",
+      "answer": "Use the best logical choice",
+      "recorded": "The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
+      "findings": [
+        "B-009",
+        "I-012 (D-024)",
+        "S-021",
+        "U-002",
+        "U-020"
+      ],
+      "status": "OPEN",
+      "date": "2026-11-13"
+    },
+    {
+      "n": 2,
+      "asked": "May staff see and change other branches' records",
+      "answer": "NO STAFF SEES ITS OWN BRANCH UNLESS SUPER ADMIN OR HIGH LEVEL MGMT",
+      "recorded": "Read as: staff see and change only their own branch's records. Super admin and high-level management see every branch. Which roles count as high-level management, and how transfers and ship-from-another-branch work under this rule, will be proposed in the security and multi-location phase for the owner to confirm.",
+      "findings": [
+        "B-003"
+      ],
+      "status": "OPEN",
+      "date": "2026-11-13"
+    },
+    {
+      "n": 3,
+      "asked": "Which department owns the 16 areas with no write rule",
+      "answer": "Use best logic",
+      "recorded": "The engineer assigns each area to the department that does that work, lists the assignment in permissions-matrix.md when it is implemented, and the owner can change any line.",
+      "findings": [
+        "B-004"
+      ],
+      "status": "OPEN",
+      "date": "2026-11-13"
+    },
+    {
+      "n": 4,
+      "asked": "Build or remove each sample module",
+      "answer": "Build everything",
+      "recorded": "Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
+      "findings": [
+        "X-001",
+        "X-002",
+        "X-009",
+        "X-008",
+        "I-011",
+        "M-011",
+        "U-019",
+        "U-029",
+        "U-035",
+        "U-037",
+        "B-017"
+      ],
+      "status": "OPEN",
+      "date": "2026-11-13"
+    },
+    {
+      "n": 5,
+      "asked": "A scheduled trigger on the host and an email or text provider",
+      "answer": "Not sure what you are asking, but we will do email and text later",
+      "recorded": "Email and text are deferred by the owner. The scheduled trigger (a timer on the host that lets the system act without a person, for example to retry a failed partner message) was not decided and will be asked again, in plain terms, in the integration phase.",
+      "findings": [
+        "D-034"
+      ],
+      "status": "DEFERRED WITH JUSTIFICATION",
+      "date": "2026-11-13"
+    },
+    {
+      "n": 6,
+      "asked": "Are shelf items sold at the counter counted stock",
+      "answer": "Counter sale reduces stock",
+      "recorded": "A counter sale reduces stock, and a void puts it back.",
+      "findings": [
+        "B-025"
+      ],
+      "status": "OPEN",
+      "date": "2026-11-13"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit 958e90b. Do not edit by hand: change the source and rerun.
+Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit b821398. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -19,21 +19,21 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Status | Count |
 |---|---:|
 | VERIFIED FIXED | 126 |
-| REQUIRES BUSINESS DECISION | 40 |
-| OPEN | 36 |
+| OPEN | 55 |
+| REQUIRES BUSINESS DECISION | 20 |
+| DEFERRED WITH JUSTIFICATION | 4 |
 | IN PROGRESS | 4 |
-| DEFERRED WITH JUSTIFICATION | 3 |
 | BLOCKED | 1 |
 
 ## Open findings, most severe first
 
 | ID | Sev | Status | Module | What is wrong | Assigned to |
 |---|---|---|---|---|---|
-| X-001 | P0 | REQUIRES BUSINESS DECISION | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
-| X-002 | P0 | REQUIRES BUSINESS DECISION | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
-| B-003 | P1 | REQUIRES BUSINESS DECISION | Access control | Branch, division and region are fields on records and filters on screens. They are not an access boundary: every staff login reads every branch, and changes any branch within its department. | Security and multi-location phase (extends E-019) |
-| B-004 | P1 | REQUIRES BUSINESS DECISION | Access control | 16 areas have no department rule. Any staff login that is not read-only can change them. | Security and multi-location phase |
-| B-009 | P1 | REQUIRES BUSINESS DECISION | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 2: architecture and code quality (after the decision) |
+| X-001 | P0 | OPEN | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
+| X-002 | P0 | OPEN | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
+| B-003 | P1 | OPEN | Access control | Branch, division and region are fields on records and filters on screens. They are not an access boundary: every staff login reads every branch, and changes any branch within its department. | Security and multi-location phase (extends E-019) |
+| B-004 | P1 | OPEN | Access control | 16 areas have no department rule. Any staff login that is not read-only can change them. | Security and multi-location phase |
+| B-009 | P1 | OPEN | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 2: architecture and code quality (after the decision) |
 | B-016 | P1 | OPEN | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
 | B-019 | P1 | REQUIRES BUSINESS DECISION | Platform | Everything happens only when someone opens a screen or presses a button. | Integration phase |
 | E-004 | P1 | IN PROGRESS | Database | No check constraints anywhere | Phase 2: architecture and code quality |
@@ -42,15 +42,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | E-015 | P1 | REQUIRES BUSINESS DECISION | Platform | No evidence that a backup has ever been restored | Phase 2: architecture and code quality |
 | E-023 | P1 | IN PROGRESS | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
 | I-007 | P1 | REQUIRES BUSINESS DECISION | Purchasing | There is no purchase order: nothing records what was ordered from a mill, what is due, or whether a receipt matches an order or a supplier invoice | Inventory and purchasing |
-| I-011 | P1 | REQUIRES BUSINESS DECISION | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
-| I-012 (D-024) | P1 | REQUIRES BUSINESS DECISION | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
+| I-011 | P1 | OPEN | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
+| I-012 (D-024) | P1 | OPEN | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
 | I-016 | P1 | REQUIRES BUSINESS DECISION | Stock corrections | There is no way to correct a stock quantity: no count, adjustment or scrap on the real stock list | Inventory and purchasing |
 | I-018 | P1 | OPEN | Web orders | An accepted web order saves its subtotal and no tax or total (seen while adding the credit hold) | Inventory and purchasing |
-| M-011 | P1 | REQUIRES BUSINESS DECISION | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
+| M-011 | P1 | OPEN | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | M-016 | P1 | REQUIRES BUSINESS DECISION | Work orders | Completing a work order changes no stock: the source item is not used up and the pieces made are not added | Manufacturing and processing |
 | S-010 | P1 | REQUIRES BUSINESS DECISION | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
-| X-009 | P1 | REQUIRES BUSINESS DECISION | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
+| X-009 | P1 | OPEN | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
 | B-007 | P2 | OPEN | Work centers, assets, maintenance orders, executive decisions | Any column can be set by the caller, including status, ids and timestamps. | Phase 2: architecture and code quality |
 | B-008 | P2 | OPEN | Jobs, order hub, counter sessions, demand shaping | Seven create routes save from nothing. | Phase 2: architecture and code quality |
 | B-010 | P2 | OPEN | Users, shop-floor operations, job planning, material tracking, cockpit, partner carrier | A failure between two changes leaves the first one saved. Example: an operation is marked started and its time log is not created. | Phase 2: architecture and code quality |
@@ -58,14 +58,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-012 | P2 | OPEN | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
 | B-014 | P2 | OPEN | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
 | B-015 | P2 | OPEN | Frontend | Most icon buttons have no name (some have tooltips, which were not counted). | Phase 9: user experience |
-| B-017 | P2 | REQUIRES BUSINESS DECISION | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
+| B-017 | P2 | OPEN | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
 | B-018 | P2 | BLOCKED | Partner API | It is marked for retry and never sent again. | Integration phase |
 | B-021 | P2 | OPEN | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
-| B-025 | P2 | REQUIRES BUSINESS DECISION | Counter quick sale | Shelf items sold at the counter never reduce stock. Any report that filters on order status counts a voided sale as a completed one; only the counter's own daily figures read the note. | Inventory and purchasing |
+| B-025 | P2 | OPEN | Counter quick sale | Shelf items sold at the counter never reduce stock. Any report that filters on order status counts a voided sale as a completed one; only the counter's own daily figures read the note. | Inventory and purchasing |
 | D-020 | P2 | OPEN |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
 | D-024 | P2 | OPEN |  | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`br | By subject (see the finding) |
 | D-033 | P2 | REQUIRES BUSINESS DECISION |  | The app does not charge cards. A card sale is recorded with the approval code from a separate card terminal. | By subject (see the finding) |
-| D-034 | P2 | REQUIRES BUSINESS DECISION |  | Receipts, quotes and invoices are not emailed or texted. The buttons say so. | By subject (see the finding) |
+| D-034 | P2 | DEFERRED WITH JUSTIFICATION |  | Receipts, quotes and invoices are not emailed or texted. The buttons say so. | By subject (see the finding) |
 | D-036 | P2 | OPEN |  | Sales Dashboard fixed in Phase 2 Workstream 2 (S-012): it now counts from the database. The Order Hub RFQ pages remain a separate console, not in the menu. | By subject (see the finding) |
 | E-016 | P2 | REQUIRES BUSINESS DECISION | Platform | No lint configuration | Phase 2: architecture and code quality |
 | E-017 | P2 | REQUIRES BUSINESS DECISION | Platform | No error tracking or alerting service; logs only | Phase 2: architecture and code quality |
@@ -81,12 +81,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | S-008 | P2 | DEFERRED WITH JUSTIFICATION | Order entry | Two entry screens list four Michigan branches in code | Sales and customer operations |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
-| S-021 | P2 | REQUIRES BUSINESS DECISION | Order Hub | A second RFQ console, not in the menu, beside RFQs & Quotes | Sales and customer operations |
+| S-021 | P2 | OPEN | Order Hub | A second RFQ console, not in the menu, beside RFQs & Quotes | Sales and customer operations |
 | S-022 | P2 | OPEN | Counter | The POS session API is called by no screen and saves no tax | Sales and customer operations |
 | S-024 | P2 | IN PROGRESS | Help manual | Pricing, Sales Dashboard, Sales Rep Mobile and customer pages described tabs, contracts, signatures, visit logs and offline use that do not exist | Sales and customer operations |
 | S-026 | P2 | OPEN | Sales screens | Screen code calls 18 sales routes that do not exist: 13 under `/api/pricing` in `api/pricing.js`, 3 will-call, 2 split-shipment | Sales and customer operations |
 | S-027 | P2 | REQUIRES BUSINESS DECISION | Quotes | Quote lines are priced by hand; the screen offers no customer price because RFQ lines are free text, not products | Sales and customer operations |
-| X-008 | P2 | REQUIRES BUSINESS DECISION | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
+| X-008 | P2 | OPEN | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | X-010 | P2 | OPEN | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
 | B-006 | P3 | OPEN | Counter (older session flow) | Three routes cannot work. No screen reaches them. | Phase 2: architecture and code quality |
 | B-013 | P3 | OPEN | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
@@ -98,19 +98,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | D-035 | P3 | REQUIRES BUSINESS DECISION |  | Sales tax is charged only for states that have a rate set. A sale at a branch in a state with no rate charges no tax and says so on the screen. A login with no home branch also charges no tax. A new screen, Admin > Sales | By subject (see the finding) |
 | E-012 | P3 | OPEN | API | 39 routes send the raw error text on a server error | Phase 2: architecture and code quality |
 | E-018 | P3 | DEFERRED WITH JUSTIFICATION | Code | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Phase 2: architecture and code quality |
-| U-002 | P3 | REQUIRES BUSINESS DECISION | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
+| U-002 | P3 | OPEN | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
 | U-004 | P3 | OPEN | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | OPEN | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
 | U-011 | P3 | OPEN | Order entry, Retail POS | Branch list fixed at four Michigan branches | Phase 9: user experience |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
-| U-019 | P3 | REQUIRES BUSINESS DECISION | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
-| U-020 | P3 | REQUIRES BUSINESS DECISION | Menu | "Inventory" and "Units" were two different stock lists | Phase 9: user experience |
+| U-019 | P3 | OPEN | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
+| U-020 | P3 | OPEN | Menu | "Inventory" and "Units" were two different stock lists | Phase 9: user experience |
 | U-022 | P3 | OPEN | Receiving | A heat must be added before its stock, one at a time | Phase 9: user experience |
 | U-028 | P3 | OPEN | Old operator screen | Recorded output into nothing | Phase 9: user experience |
-| U-029 | P3 | REQUIRES BUSINESS DECISION | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
-| U-035 | P3 | REQUIRES BUSINESS DECISION | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
+| U-029 | P3 | OPEN | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
+| U-035 | P3 | OPEN | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
 | U-036 | P3 | OPEN | Shipment | No button to print a bill of lading or packing list | Phase 9: user experience |
-| U-037 | P3 | REQUIRES BUSINESS DECISION | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
+| U-037 | P3 | OPEN | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
 | U-040 | P3 | OPEN | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
 | U-041 | P3 | OPEN | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user experience |
 
@@ -154,7 +154,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Probe section 1: 290 not refused before, 0 after (542 calls). Unit test "read-only roles change nothing, and may still ask questions that change nothing".
 - **First recorded in:** Phase 1 discovery
 
-### B-003 · P1 · REQUIRES BUSINESS DECISION
+### B-003 · P1 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Access control
@@ -170,9 +170,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Needs the owner's rule first: which roles are held to their own branch or region for reading, and which for changing. Then one scoping helper used by every route, and a sweep section that proves it.
 - **Required tests:** A sweep section: a branch login cannot read or change another branch's rows on every route that carries a location.
 - **Assigned phase:** Security and multi-location phase (extends E-019)
+- **Status note:** Owner's decision 2, 2026-11-13: Read as: staff see and change only their own branch's records. Super admin and high-level management see every branch. Which roles count as high-level management, and how transfers and ship-from-another-branch work under this rule, will be proposed in the security and multi-location phase for the owner to confirm.
 - **First recorded in:** Phase 1 discovery
 
-### B-004 · P1 · REQUIRES BUSINESS DECISION
+### B-004 · P1 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Access control
@@ -188,6 +189,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Needs the owner's matrix. Proposed: set-up records (work centers, recipes, BOMs, staff, assets, dispatch set-up) to production managers and admins; documents delete to quality, warehouse leads and managers; maintenance to maintenance and production managers; order hub to sales.
 - **Required tests:** Probe: one refused role per area, generated from the rule table.
 - **Assigned phase:** Security and multi-location phase
+- **Status note:** Owner's decision 3, 2026-11-13: The engineer assigns each area to the department that does that work, lists the assignment in permissions-matrix.md when it is implemented, and the owner can change any line.
 - **First recorded in:** Phase 1 discovery
 
 ### B-005 · P2 · VERIFIED FIXED
@@ -263,7 +265,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 2: architecture and code quality
 - **First recorded in:** Phase 1 discovery
 
-### B-009 · P1 · REQUIRES BUSINESS DECISION
+### B-009 · P1 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Second stock list, order hub, stop work
@@ -279,6 +281,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The owner chooses the real one of each pair. Then the other is removed or made a view of the first.
 - **Required tests:** A two-requests-at-once test on whichever store is kept; the audit shows one stock list.
 - **Assigned phase:** Phase 2: architecture and code quality (after the decision)
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** Phase 1 discovery
 
 ### B-010 · P2 · OPEN
@@ -405,7 +408,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Testing phase; each phase for its own area
 - **First recorded in:** Phase 1 discovery
 
-### B-017 · P2 · REQUIRES BUSINESS DECISION
+### B-017 · P2 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -420,6 +423,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** After the X-009 decisions, drop the tables of modules that will not be built. Dropping tables is a destructive change and needs the owner's approval and a SQL Editor file.
 - **Required tests:** The inventory shows no table without code.
 - **Assigned phase:** Data integrity phase (after X-009)
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** Phase 1 discovery
 
 ### B-018 · P2 · BLOCKED
@@ -547,7 +551,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 2: architecture and code quality
 - **First recorded in:** Phase 1 discovery
 
-### B-025 · P2 · REQUIRES BUSINESS DECISION
+### B-025 · P2 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter quick sale
@@ -563,6 +567,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** After the decision: record a stock movement on sale and on void, and give a voided sale its own status or flag.
 - **Required tests:** Simulation: a counter sale reduces the shelf item and a void restores it; reports exclude voided sales.
 - **Assigned phase:** Inventory and purchasing
+- **Status note:** Owner's decision 6, 2026-11-13: A counter sale reduces stock, and a void puts it back.
 - **First recorded in:** Phase 1 discovery
 
 ### D-001 · P0 · VERIFIED FIXED
@@ -1005,7 +1010,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs something from the business
 - **First recorded in:** qa/defect-register.md
 
-### D-034 · P2 · REQUIRES BUSINESS DECISION
+### D-034 · P2 · DEFERRED WITH JUSTIFICATION
 
 - **Discovered:** 2026-11-12
 - **Category:** Missing function
@@ -1013,7 +1018,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** The email and text provider to connect.
 - **Recommended correction:** The email and text provider to connect.
 - **Assigned phase:** By subject (see the finding)
-- **Status note:** Open: needs something from the business
+- **Status note:** Owner's decision 5, 2026-11-13: Email and text are deferred by the owner. The scheduled trigger (a timer on the host that lets the system act without a person, for example to retry a failed partner message) was not decided and will be asked again, in plain terms, in the integration phase.
 - **First recorded in:** qa/defect-register.md
 
 ### D-035 · P3 · REQUIRES BUSINESS DECISION
@@ -1723,7 +1728,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** `routes/products.js` audits `LIST_PRICE_CHANGED`; Sweep 17
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-011 · P1 · REQUIRES BUSINESS DECISION
+### I-011 · P1 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Supplier quality (six screens)
@@ -1737,10 +1742,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision, then a build
 - **Required tests:** The six screens read real data and the notice is removed
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Mitigated
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-012 (D-024) · P1 · REQUIRES BUSINESS DECISION
+### I-012 (D-024) · P1 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Inventory
@@ -1751,7 +1756,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second
 - **Operational impact:** Stock received or shipped did not show under "Inventory"
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Fixed pending the owner's answer
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-013 (E-020) · P2 · VERIFIED FIXED
@@ -2003,7 +2008,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** The address now opens the real shop floor (`/shopfloor`); the sample screen is deleted. Browser
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### M-011 · P1 · REQUIRES BUSINESS DECISION
+### M-011 · P1 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Production quality (5 screens), Bills of material
@@ -2017,7 +2022,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision, then a build
 - **Required tests:** The screens read real data and the notice is removed
 - **Assigned phase:** Manufacturing and processing
-- **Status note:** Mitigated
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### M-012 · P3 · VERIFIED FIXED
@@ -2448,7 +2453,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-021 · P2 · REQUIRES BUSINESS DECISION
+### S-021 · P2 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Order Hub
@@ -2462,7 +2467,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** One RFQ screen; route removed or linked
 - **Assigned phase:** Sales and customer operations
-- **Status note:** Open
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### S-022 · P2 · OPEN
@@ -2581,7 +2586,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (S-012): counted figures, "Not available" where nothing is measured
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-002 · P3 · REQUIRES BUSINESS DECISION
+### U-002 · P3 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Order Hub RFQ pages
@@ -2589,7 +2594,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Source file or endpoint:** Order Hub RFQ pages
 - **Actual:** A second RFQ console beside RFQs & Quotes
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open: decision S-021
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-003 · P3 · VERIFIED FIXED
@@ -2780,7 +2785,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (I-008, I-014): Release hold and Move
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-019 · P3 · REQUIRES BUSINESS DECISION
+### U-019 · P3 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Supplier quality, six screens
@@ -2788,10 +2793,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Source file or endpoint:** Supplier quality, six screens
 - **Actual:** Invented data presented as real
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Labelled as samples (I-011); build is a decision
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-020 · P3 · REQUIRES BUSINESS DECISION
+### U-020 · P3 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Menu
@@ -2799,7 +2804,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Source file or endpoint:** Menu
 - **Actual:** "Inventory" and "Units" were two different stock lists
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** One entry, Inventory, on the real list (I-012, pending the owner's answer)
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-021 · P3 · VERIFIED FIXED
@@ -2896,7 +2901,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Removed (M-010): opens the real shop floor
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-029 · P3 · REQUIRES BUSINESS DECISION
+### U-029 · P3 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Production quality, BOMs
@@ -2904,7 +2909,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Source file or endpoint:** Production quality, BOMs
 - **Actual:** Invented data presented as real
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Labelled as samples (M-011); build is a decision
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-030 · P3 · VERIFIED FIXED
@@ -2967,7 +2972,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (F-007)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-035 · P3 · REQUIRES BUSINESS DECISION
+### U-035 · P3 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Freight and logistics
@@ -2975,7 +2980,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Source file or endpoint:** Freight and logistics
 - **Actual:** Invented routes, rates and tracking presented as real
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Labelled as samples (F-007); build is a decision
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-036 · P3 · OPEN
@@ -2989,7 +2994,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open (F-011)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-037 · P3 · REQUIRES BUSINESS DECISION
+### U-037 · P3 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Safety, maintenance, training, contractors, customer quality, executive, provenance
@@ -2997,7 +3002,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Source file or endpoint:** Safety, maintenance, training, contractors, customer quality, executive, provenance
 - **Actual:** Invented data presented as real
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Labelled as samples (X-001, X-002); build or remove is a decision
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-038 · P3 · VERIFIED FIXED
@@ -3046,7 +3051,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open (X-007)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### X-001 · P0 · REQUIRES BUSINESS DECISION
+### X-001 · P0 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Safety (13 screens, on the menu)
@@ -3060,10 +3065,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Mitigated; requires a business decision per module
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
-- **Status note:** Mitigated
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-002 · P0 · REQUIRES BUSINESS DECISION
+### X-002 · P0 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup
@@ -3077,7 +3082,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Mitigated; requires a business decision per module
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
-- **Status note:** Mitigated
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### X-003 · P1 · VERIFIED FIXED
@@ -3157,7 +3162,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-008 · P2 · REQUIRES BUSINESS DECISION
+### X-008 · P2 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter (`/pos`), will-call screens
@@ -3171,10 +3176,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** Built on real orders, or removed
 - **Assigned phase:** Enterprise experience
-- **Status note:** Open
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-009 · P1 · REQUIRES BUSINESS DECISION
+### X-009 · P1 · OPEN
 
 - **Discovered:** 2026-11-13
 - **Module:** Scale of sample screens
@@ -3188,7 +3193,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Mitigated; requires a business decision per module
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
-- **Status note:** Open
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### X-010 · P2 · OPEN

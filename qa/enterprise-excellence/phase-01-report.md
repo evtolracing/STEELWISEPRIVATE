@@ -146,6 +146,8 @@ Decisions needed from the owner, in the order they unblock work:
 6. **Shelf items at the counter** (B-025): are they counted stock?
 7. The earlier open decisions: promise dates and cut-offs (X-007), stock adjustment and what processing consumes (I-016, M-016), purchasing (I-007), package upgrades (E-011), restore test (E-015).
 
+**Update, 2026-11-13, after this report was written:** the owner answered items 1 to 6. The answers are in `owner-decisions.json` and on each finding in the register. In short: the stock items list and sales orders are the real ones; staff see only their own branch, except super admin and high-level management; the engineer assigns the 16 areas; every sample module is to be built; email and text come later (the scheduled trigger is still undecided); a counter sale reduces stock. None of this is built yet. The counts in section 2 are as of the report; `progress.json` has the current ones.
+
 Carried to later phases with the phase named on each finding: 84 in all.
 
 ## 12. Continuation point

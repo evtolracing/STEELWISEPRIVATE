@@ -52,7 +52,7 @@
    "workflow": "All",
    "cause": "The access model was built on role and department only.",
    "dependencies": "Every list and detail route; reports; the screens' branch pickers.",
-   "statusNote": "",
+   "statusNote": "Owner's decision 2, 2026-11-13: Read as: staff see and change only their own branch's records. Super admin and high-level management see every branch. Which roles count as high-level management, and how transfers and ship-from-another-branch work under this rule, will be proposed in the security and multi-location phase for the owner to confirm.",
    "verification": "",
    "module": "Access control",
    "severity": "P1",
@@ -65,7 +65,7 @@
    "correction": "Needs the owner's rule first: which roles are held to their own branch or region for reading, and which for changing. Then one scoping helper used by every route, and a sweep section that proves it.",
    "requiredTests": "A sweep section: a branch login cannot read or change another branch's rows on every route that carries a location.",
    "phase": "Security and multi-location phase (extends E-019)",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "OPEN"
   },
   {
    "id": "B-004",
@@ -74,7 +74,7 @@
    "workflow": "Set-up and shop floor",
    "cause": "Rules were added for the core order-to-cash records only.",
    "dependencies": "Scheduling, routing, quality records, documents.",
-   "statusNote": "",
+   "statusNote": "Owner's decision 3, 2026-11-13: The engineer assigns each area to the department that does that work, lists the assignment in permissions-matrix.md when it is implemented, and the owner can change any line.",
    "verification": "",
    "module": "Access control",
    "severity": "P1",
@@ -87,7 +87,7 @@
    "correction": "Needs the owner's matrix. Proposed: set-up records (work centers, recipes, BOMs, staff, assets, dispatch set-up) to production managers and admins; documents delete to quality, warehouse leads and managers; maintenance to maintenance and production managers; order hub to sales.",
    "requiredTests": "Probe: one refused role per area, generated from the rule table.",
    "phase": "Security and multi-location phase",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "OPEN"
   },
   {
    "id": "B-005",
@@ -184,7 +184,7 @@
    "workflow": "Stock, RFQ to order, safety",
    "cause": "Prototype stores that were moved from memory into tables without being redesigned.",
    "dependencies": "D-024, S-021, I-011 and the open decision card \"Choose which stock list is the real one\".",
-   "statusNote": "",
+   "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
    "verification": "",
    "module": "Second stock list, order hub, stop work",
    "severity": "P1",
@@ -197,7 +197,7 @@
    "correction": "The owner chooses the real one of each pair. Then the other is removed or made a view of the first.",
    "requiredTests": "A two-requests-at-once test on whichever store is kept; the audit shows one stock list.",
    "phase": "Phase 2: architecture and code quality (after the decision)",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "OPEN"
   },
   {
    "id": "B-010",
@@ -360,7 +360,7 @@
    "workflow": "",
    "cause": "Schema written ahead of the features.",
    "dependencies": "X-009 decides which modules are built.",
-   "statusNote": "",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": "",
    "module": "Database",
    "severity": "P2",
@@ -373,7 +373,7 @@
    "correction": "After the X-009 decisions, drop the tables of modules that will not be built. Dropping tables is a destructive change and needs the owner's approval and a SQL Editor file.",
    "requiredTests": "The inventory shows no table without code.",
    "phase": "Data integrity phase (after X-009)",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "OPEN"
   },
   {
    "id": "B-018",
@@ -536,7 +536,7 @@
    "workflow": "Counter sale",
    "cause": "The quick sale was built as a priced receipt on top of orders and invoices; stock for items priced each was left out and the void marker was put in the notes.",
    "dependencies": "The owner: are shelf items counted stock? I-016 (no stock adjustment).",
-   "statusNote": "",
+   "statusNote": "Owner's decision 6, 2026-11-13: A counter sale reduces stock, and a void puts it back.",
    "verification": "",
    "module": "Counter quick sale",
    "severity": "P2",
@@ -549,7 +549,7 @@
    "correction": "After the decision: record a stock movement on sale and on void, and give a voided sale its own status or flag.",
    "requiredTests": "Simulation: a counter sale reduces the shelf item and a void restores it; reports exclude voided sales.",
    "phase": "Inventory and purchasing",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "OPEN"
   },
   {
    "id": "D-001",
@@ -1339,8 +1339,8 @@
    "correction": "The email and text provider to connect.",
    "requiredTests": "",
    "phase": "By subject (see the finding)",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open: needs something from the business",
+   "status": "DEFERRED WITH JUSTIFICATION",
+   "statusNote": "Owner's decision 5, 2026-11-13: Email and text are deferred by the owner. The scheduled trigger (a timer on the host that lets the system act without a person, for example to retry a failed partner message) was not decided and will be asked again, in plain terms, in the integration phase.",
    "verification": ""
   },
   {
@@ -2351,8 +2351,8 @@
    "correction": "Requires a business decision, then a build",
    "requiredTests": "The six screens read real data and the notice is removed",
    "phase": "Inventory and purchasing",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Mitigated",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -2373,8 +2373,8 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Inventory and purchasing",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Fixed pending the owner's answer",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
    "verification": ""
   },
   {
@@ -2747,8 +2747,8 @@
    "correction": "Requires a business decision, then a build",
    "requiredTests": "The screens read real data and the notice is removed",
    "phase": "Manufacturing and processing",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Mitigated",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -3363,8 +3363,8 @@
    "correction": "Requires a business decision",
    "requiredTests": "One RFQ screen; route removed or linked",
    "phase": "Sales and customer operations",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
    "verification": ""
   },
   {
@@ -3539,8 +3539,8 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open: decision S-021",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
    "verification": ""
   },
   {
@@ -3913,8 +3913,8 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Labelled as samples (I-011); build is a decision",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -3935,8 +3935,8 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "One entry, Inventory, on the real list (I-012, pending the owner's answer)",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.",
    "verification": ""
   },
   {
@@ -4133,8 +4133,8 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Labelled as samples (M-011); build is a decision",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -4265,8 +4265,8 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Labelled as samples (F-007); build is a decision",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -4309,8 +4309,8 @@
    "correction": "",
    "requiredTests": "",
    "phase": "Phase 9: user experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Labelled as samples (X-001, X-002); build or remove is a decision",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -4419,8 +4419,8 @@
    "correction": "Mitigated; requires a business decision per module",
    "requiredTests": "The audit shows the screen as REAL, or the route is gone",
    "phase": "Enterprise experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Mitigated",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -4441,8 +4441,8 @@
    "correction": "Mitigated; requires a business decision per module",
    "requiredTests": "The audit shows the screen as REAL, or the route is gone",
    "phase": "Enterprise experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Mitigated",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -4573,8 +4573,8 @@
    "correction": "Requires a business decision",
    "requiredTests": "Built on real orders, or removed",
    "phase": "Enterprise experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {
@@ -4595,8 +4595,8 @@
    "correction": "Mitigated; requires a business decision per module",
    "requiredTests": "The audit shows the screen as REAL, or the route is gone",
    "phase": "Enterprise experience",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open",
+   "status": "OPEN",
+   "statusNote": "Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.",
    "verification": ""
   },
   {

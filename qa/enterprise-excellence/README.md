@@ -37,6 +37,7 @@ The owner's permanent standard is `qa/ENGINEERING-STANDARD.md` and governs every
 | `production-risk-register.md` | What stands between this code and going live | By hand |
 | `phase-01-report.md` | What Phase 1 did, with evidence, and the Phase 2 handoff | By hand |
 | `progress.json` | Program state for a machine | Generated; phase fields come from `phase-state.json` |
+| `owner-decisions.json` | Decisions the owner has given, with the findings each one settles | By hand. Applied to `findings.json` by `findings-import.mjs` |
 | `phase-state.json` | The few facts a person sets at the end of a phase | By hand |
 | `.discovery.json` | Raw facts read from the code | Generated |
 

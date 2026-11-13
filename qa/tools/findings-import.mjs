@@ -166,6 +166,12 @@ B(25, { module: 'Counter quick sale', workflow: 'Counter sale', severity: 'P2', 
   actual: 'Shelf items sold at the counter never reduce stock. Any report that filters on order status counts a voided sale as a completed one; only the counter\'s own daily figures read the note.', cause: 'The quick sale was built as a priced receipt on top of orders and invoices; stock for items priced each was left out and the void marker was put in the notes.',
   impact: 'Shelf stock cannot be trusted if it is ever counted in the system. Sales reports by order status overstate by the voided sales (the money side is correct: the credit memo and refund exist).', dependencies: 'The owner: are shelf items counted stock? I-016 (no stock adjustment).', correction: 'After the decision: record a stock movement on sale and on void, and give a voided sale its own status or flag.', requiredTests: 'Simulation: a counter sale reduces the shelf item and a void restores it; reports exclude voided sales.', phase: 'Inventory and purchasing', status: 'REQUIRES BUSINESS DECISION' });
 
+// The owner's decisions (owner-decisions.json) move a finding out of REQUIRES BUSINESS DECISION.
+const DEC = path.join(path.dirname(OUT), 'owner-decisions.json');
+if (fs.existsSync(DEC)) for (const d of JSON.parse(fs.readFileSync(DEC, 'utf8')).decisions) for (const id of d.findings) {
+  const f = findings.find((x) => x.id === id); if (!f) throw new Error(`owner decision ${d.n} names unknown finding ${id}`);
+  f.status = d.status; f.statusNote = `Owner's decision ${d.n}, ${d.date}: ${d.recorded}`;
+}
 findings.sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
 const ids = new Set(); for (const f of findings) { if (ids.has(f.id)) throw new Error(`duplicate id ${f.id}`); ids.add(f.id); }
 fs.mkdirSync(path.dirname(OUT), { recursive: true });

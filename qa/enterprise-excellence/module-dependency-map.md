@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -30,7 +30,9 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | Processing recipes and bills of material | Products, work centers | Jobs, planning |
 | Customer specifications | Customers | Jobs |
 | Stock items and stock levels | Products, heats, receiving | Reservation, shipping, returns |
-| Receiving | Products, heats | Stock |
+| Receiving | Products, heats, purchase orders | Stock |
+| Purchase orders and supply position | Suppliers, grades, products | Receiving, stock |
+| Interbranch transfers | Stock, branches | Stock, reservation, shipping |
 | Second stock list (unit tracking) | None | None |
 | Remnants | Stock, work orders (not connected) | Web store |
 | Jobs, job board and schedule | Sales orders | Shipping (unfinished jobs hold their lines) |
@@ -61,15 +63,15 @@ Two views. The first is the business flow, written by hand in the module map. Th
 
 | Table | Modules | Count |
 |---|---|---:|
-| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Coil work orders; Shipping; Partner API; Operations cockpit and dashboards | 10 |
-| Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 10 |
-| Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Dispatch, work centers and shop-floor operations; Shipping | 9 |
-| Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Shipping; Returns; Partner API; Operations cockpit and dashboards | 9 |
+| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Purchase orders and supply position; Coil work orders; Shipping; Partner API; Operations cockpit and dashboards | 11 |
+| Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Dispatch, work centers and shop-floor operations; Shipping | 11 |
+| Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Purchase orders and supply position; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 11 |
+| Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Purchase orders and supply position; Shipping; Returns; Partner API; Operations cockpit and dashboards | 10 |
 | Job | Order entry; Customer specifications; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Operations cockpit and dashboards | 9 |
-| OrderLine | Order entry; Sales orders; Customer specifications; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 7 |
-| Inventory | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
-| Coil | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
-| MaterialMovement | Counter quick sale; Products, grades and heats; Stock items and stock levels; Receiving; Shipping; Returns; Operations cockpit and dashboards | 7 |
+| OrderLine | Order entry; Sales orders; Customer specifications; Purchase orders and supply position; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 8 |
+| Inventory | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 8 |
+| Coil | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 8 |
+| MaterialMovement | Counter quick sale; Products, grades and heats; Stock items and stock levels; Receiving; Interbranch transfers; Shipping; Returns; Operations cockpit and dashboards | 8 |
 | User | Sign-in and sessions; Users, roles and branches; RFQs and quotes; Sales orders; Stock items and stock levels; Jobs, job board and schedule | 6 |
 | WorkCenter | Staff and operators; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 6 |
 | Product | Order entry; Counter quick sale; Web store; Products, grades and heats; Stock items and stock levels | 5 |
@@ -83,10 +85,10 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | Grade | Products, grades and heats; Stock items and stock levels; Operations cockpit and dashboards | 3 |
 | Heat | Products, grades and heats; Stock items and stock levels; Documents | 3 |
 | QCHold | Stock items and stock levels; Returns; Operations cockpit and dashboards | 3 |
+| StockTransfer | Stock items and stock levels; Receiving; Interbranch transfers | 3 |
 | CustomerPreference | Customers; Customer specifications | 2 |
 | CustomerPricingTier | Customers; Order entry | 2 |
 | InvoiceLine | Counter quick sale; Returns | 2 |
-| StockTransfer | Stock items and stock levels; Receiving | 2 |
 | DispatchJob | Jobs, job board and schedule; Dispatch, work centers and shop-floor operations | 2 |
 | DispatchOperation | Dispatch, work centers and shop-floor operations; Operations cockpit and dashboards | 2 |
 | JobInspection | Quality inspections; Material tracking, packages and drop tags | 2 |
@@ -167,4 +169,9 @@ Two views. The first is the business flow, written by hand in the module map. Th
 13. `lib/lineSpecs.js` (new in Phase 5): carries the customer's requirements from the request line to the quote line, the order line and the work order. Imported by requests, quotes and order intake. A change here can drop a requirement between steps. Covered by 5 unit tests and the Phase 5 traceability scenarios.
 14. `lib/orderTax.js` `sellingBranch()` (Phase 5): decides the branch an order is taxed at and filed under, for quotes, quote acceptance, order intake, Retail POS and web order acceptance. Covered by the Phase 5 tax and branch scenarios and the sweep.
 15. `GET /api/orders/intake/branches` (Phase 5): the branch list of order entry, Retail POS and the mobile rep screen. It follows the branch boundary (`branchesOf`). Covered by the API and browser checks.
+16. `lib/transfers.js` (new in Phase 6): the only code that sends, receives, settles and calls back a transfer. Used by the stock routes and the old one-item transfer address. Stock in transit is refused by reservations, holds, corrections, work orders and shipping; any new code that changes a balance must refuse it too. Covered by 17 transfer scenarios and seven database checks.
+17. `lib/reservationRules.js` (new in Phase 6): decides whether a stock item fits an order line (unit, grade, size, tolerance, owner, in transit). Called wherever a reservation is made. Covered by unit tests and the reservation scenarios.
+18. `lib/holds.js` (new in Phase 6): places and releases holds with their reasons for receiving, transfers, returns and the stock routes.
+19. `routes/purchaseOrders.js` (new in Phase 6): purchase orders are Orders of type PO. Receiving (`routes/inventory.js`, `lib/receiving.js`) reads the line and writes what was received on it; the supply position reads stock, open purchase orders, open transfers and open order lines.
+20. The balance check now includes the in-transit quantity (SQL Editor file 12). Every script that writes `Inventory` directly must keep on hand = available + reserved + on hold + in transit.
 

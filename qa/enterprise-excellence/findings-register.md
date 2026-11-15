@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -12,13 +12,13 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 |---|---:|---:|
 | P0 | 20 | 2 |
 | P1 | 87 | 14 |
-| P2 | 105 | 42 |
+| P2 | 106 | 42 |
 | P3 | 77 | 28 |
-| Total | 289 | 86 |
+| Total | 290 | 86 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 202 |
+| VERIFIED FIXED | 203 |
 | DEFERRED TO SPECIFIC PHASE | 55 |
 | REQUIRES BUSINESS DECISION | 24 |
 | IN PROGRESS | 3 |
@@ -3505,6 +3505,23 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The row says in transit.
 - **Deferred: verification:** A browser check on the list.
 - **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-015 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Stock items
+- **Workflow:** A hold or release at the same moment as another change to the same item
+- **Category:** Reliability: lock order
+- **Source file or endpoint:** src/backend/src/lib/holds.js
+- **Evidence:** Second full gate run of Phase 6, scenario "forty stock changes at once": one hold answered 500. The server log shows PostgreSQL error 40P01, deadlock detected: the hold had updated the item and was waiting for its balance while a count correction held the balance and was waiting for the item.
+- **Expected:** Every stock change takes the balance row first and the item second, so two changes queue.
+- **Actual:** A hold and a release took the item first. The database ended one of the two transactions; nothing was saved wrongly, and the person saw "Could not place the hold".
+- **Operational impact:** Rare: needs two people changing one item in the same instant. No balance was wrong. The person had to try again with no explanation.
+- **Recommended correction:** placeHold and releaseHold lock the balance row first, like lib/stockChanges.js and lib/transfers.js.
+- **Required tests:** Holds and releases raced against counts and cuts on the same items, many at once: no server error, books in balance.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "a hold queues behind a stock change in progress on the same item instead of deadlocking" (with the lock removed the hold answers 500; with it, 201), "a hold racing counts and cuts on the same item never ends in a server error" (144 requests on 12 items) and "forty stock changes at once leave every balance in step".
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
 ### M-001 · P0 · VERIFIED FIXED

@@ -114,7 +114,7 @@ See `phase-06-ux-efficiency.md`.
 
 | Test | Result |
 |---|---|
-| Phase 6 inventory scenarios (`qa/sim/phase6-inventory.mjs`, new) | @@P6@@ |
+| Phase 6 inventory scenarios (`qa/sim/phase6-inventory.mjs`, new) | 105 of 105, 486 checks, in seven groups at or above the prompt's minimums (16, 15, 15, 15, 17, 10, 17) |
 | Proof the checks catch the defects | With the reservation rules, the receiving-branch check and the return's RECEIVE movement removed, 8 scenarios fail. With the hold's balance lock removed, the hold scenario answers 500. All restored afterwards |
 | Phase 6 browser checks (`qa/sim/ui-phase6.cjs`, new) | 14 of 14 |
 | Unit tests | 158 of 158 (9 new) |
@@ -122,7 +122,7 @@ See `phase-06-ux-efficiency.md`.
 | SQL Editor file 12 | Run twice on a fresh copy and on the 85-branch copy; schema comparison empty |
 | Every earlier suite | See `phase-06-regression-results.md` |
 
-Failed tests: none on the final code. Blocked: scanner, label and scale tests (K-013). Not executed: valuation, cycle count scheduling, reorder calculations (not built), the host, live data.
+Failed tests: none on the final code (third full gate run). The second run's one failure was the deadlock K-015, fixed. Blocked: scanner, label and scale tests (K-013). Not executed: valuation, cycle count scheduling, reorder calculations (not built), the host, live data.
 
 ---
 

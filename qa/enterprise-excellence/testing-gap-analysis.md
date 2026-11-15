@@ -1,6 +1,6 @@
 # Testing gap analysis
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
 
 ## What exists
 
@@ -67,6 +67,8 @@ Measured from the server's request log during the full gate run of this session 
 | Pricing and customer tiers | 2 | 2 | 0 |
 | Products, grades and heats | 6 | 6 | 0 |
 | Receiving | 9 | 9 | 0 |
+| Purchase orders and supply position | 1 | 1 | 0 |
+| Interbranch transfers | 9 | 9 | 0 |
 | Coil work orders | 5 | 5 | 0 |
 | Integrations and scheduled work | 2 | 2 | 0 |
 | Invoices, payments, credits and refunds | 5 | 5 | 0 |

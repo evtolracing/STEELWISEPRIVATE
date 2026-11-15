@@ -1,12 +1,12 @@
 {
   "programVersion": "1.0",
   "program": "Enterprise Excellence Program",
-  "currentPhase": 5,
+  "currentPhase": 6,
   "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-15T18:30:35.902Z",
+  "updated": "2026-11-15T18:56:06.406Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "c43ee25ac4a6db0716101167bee3653d6ac83f6d",
+    "commit": "d3a130d1c515e5295e76181537b6cc067da0412e",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 31,
     "merged": false,
@@ -14,10 +14,10 @@
       30
     ]
   },
-  "modulesDiscovered": 48,
-  "modulesAudited": 47,
+  "modulesDiscovered": 50,
+  "modulesAudited": 49,
   "modulesByClassification": {
-    "IMPLEMENTED AND VERIFIED": 23,
+    "IMPLEMENTED AND VERIFIED": 25,
     "IMPLEMENTED BUT NOT VERIFIED": 11,
     "PARTIALLY IMPLEMENTED": 6,
     "PLACEHOLDER OR MOCK": 5,
@@ -43,12 +43,12 @@
   },
   "findingsBySeverity": {
     "P1": 87,
-    "P2": 105,
+    "P2": 106,
     "P3": 77,
     "P0": 20
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 202,
+    "VERIFIED FIXED": 203,
     "IN PROGRESS": 3,
     "REQUIRES BUSINESS DECISION": 24,
     "DEFERRED TO SPECIFIC PHASE": 55,
@@ -62,52 +62,60 @@
     "P3": 28,
     "P0": 2
   },
-  "findingsTotal": 289,
-  "findingsAddedThisPhase": 13,
+  "findingsTotal": 290,
+  "findingsAddedThisPhase": 15,
   "testsExecuted": [
     {
-      "test": "Phase 5 sales scenarios (qa/sim/phase5-sales.mjs, new in Phase 5)",
-      "result": "76 of 76 scenarios pass, 386 checks. CRM, customers and requests 10/10; product configuration and pricing 15/15; quoting, approvals and conversion 15/15; sales orders and fulfilment hand-off 10/10; counter (POS) 11/11; web shop and portal 10/10; exceptions, security and recovery 5/5. In the second full gate run one portal check failed on a test-code error (sort column); corrected and re-run on the same database: 76 of 76",
-      "before": "Did not exist. Probes on the starting code showed requirements, tax and branch lost from request to order, closed accounts taking orders and the other J-series defects; J-010 and J-011 were found by the suite's first run"
+      "test": "Phase 6 inventory scenarios (qa/sim/phase6-inventory.mjs, new in Phase 6)",
+      "result": "105 of 105 scenarios pass, 486 checks, in the third full gate run on the final code. Purchasing and replenishment 16/16; receiving and putaway 15/15; reservations, allocation and picking 15/15; consumption, remnants and scrap 15/15; interbranch transfers 17/17; returns, counts and adjustments 10/10; concurrency, security and recovery 17/17",
+      "before": "Did not exist. Probes on the starting code showed any stock reservable for any line (K-001), one-step transfers (G-007), no purchase orders (I-007). The second full run found a deadlock between a hold and a count (K-015), fixed before the third"
     },
     {
-      "test": "Phase 5 browser checks (qa/sim/ui-phase5.cjs, new)",
-      "result": "14 checks, 0 failed: home figures real; Order Hub address redirects; order entry branches from the server; Retail POS taxed at the home branch; requirement fields and the tax line on the request and quote screens",
+      "test": "Proof the Phase 6 checks fail without the fixes",
+      "result": "With the reservation rules, the receiving-branch check and the scrapped return's RECEIVE movement removed, 8 scenarios fail; with the hold's balance lock removed the hold scenario answers 500. Code restored and re-run green"
+    },
+    {
+      "test": "Phase 6 browser checks (qa/sim/ui-phase6.cjs, new)",
+      "result": "14 checks, 0 failed: purchase orders, supply position, receiving against a line, transfers received from the screen",
       "before": "Did not exist"
     },
     {
       "test": "Unit tests (src/backend, npm test)",
-      "result": "149 of 149 pass (5 new: lineSpecs)",
-      "before": "144 of 144"
+      "result": "158 of 158 pass (9 new: phase6Rules)",
+      "before": "149 of 149"
     },
     {
-      "test": "Sales screens at 85 branches (qa/perf/branch-bench.mjs --set sales, 18,000 extra requests and quotes from qa/perf/phase5-sales-scale.sql)",
-      "result": "Every sales screen within 67 ms at the 95th percentile for an all-branch login and 48 ms for a branch login; 40 at once: 0 failed",
-      "before": "Phase 3 measured quotes and requests at 5 to 110 ms with 28 quotes on file"
+      "test": "Stock, purchasing and transfer screens at 85 branches (100,233 stock items)",
+      "result": "All-branch login, median of 7: first page of stock 48 ms, search by part of a number 116 ms, supply position 271 ms, everything else under 40 ms. The one-branch login's branch holds no stock in the scale copy (empty case only)",
+      "before": "Phase 3 measured the stock search at 140 ms"
     },
     {
-      "test": "SQL Editor file 11 (voided_counter_sales_cancelled) on a copy of the 85-branch database",
-      "result": "Ran twice: first run 903 voided sales set to CANCELLED, second run skipped",
-      "before": "New in Phase 5"
+      "test": "SQL Editor file 12 (stock_transfers_po_receipts_piece_stock)",
+      "result": "Ran twice on a fresh copy with every earlier migration applied, and on the 85-branch copy; schema comparison afterwards empty",
+      "before": "New in Phase 6"
     },
     {
       "test": "Order-to-cash simulation, seeds 8001 to 8003",
-      "result": "150 of 150 jobs pass; reconciliation 0 problems after each seed (plus 52 in demo seed data). The counter job now uses Retail POS (S-022) and quote checks split subtotal and tax (J-001)",
+      "result": "150 of 150 jobs pass; reconciliation 0 problems after each seed (plus 52 in demo seed data). Transfers are now sent and received; generated lines fit the stock item (K-001)",
       "before": "150 of 150"
     },
     {
-      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3 and Phase 4 scenarios",
-      "result": "20 of 20 sections; 37 of 37; 80 of 80; 74 of 74 (607 checks); 66 of 66 (554 checks). Five older checks were updated to the corrected tax and branch behaviour (phase-05-regression-results.md section 1); none removed",
-      "before": "The same counts"
+      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, Phase 4 and Phase 5 scenarios",
+      "result": "20 of 20 sections; 39 of 39; 80 of 80; 74 of 74 (612 checks); 66 of 66 (555 checks); 76 of 76 (386 checks). Older checks updated to the in-transit stage and the reservation rules are listed in phase-06-regression-results.md section 1; none removed",
+      "before": "20 of 20; 37 of 37; 80 of 80; 74 of 74 (607); 66 of 66 (554); 76 of 76"
     },
     {
       "test": "Browser suites, every screen opens, baseline probe, department coverage, screen audit, lint, build",
-      "result": "All pass; 0 screens with made-up data and no notice; lint 0 errors",
-      "before": "The same"
+      "result": "All pass; 332 changing routes, 0 with no rule; 0 screens with made-up data and no notice; lint 0 errors, 1,528 warnings",
+      "before": "The same, 323 changing routes"
     },
     {
-      "test": "Payment at web checkout, card processor, email and text",
-      "result": "NOT EXECUTED: not built or not connected (H-013, H-015, decision 5). Nothing simulated as if it were"
+      "test": "Scanners, label printers, scales",
+      "result": "NOT EXECUTED: no hardware (K-013). No compatibility is claimed"
+    },
+    {
+      "test": "Inventory valuation, cycle count schedules, reorder calculations",
+      "result": "NOT EXECUTED: not built, each waits for an owner decision (K-007, K-008, K-010)"
     },
     {
       "test": "The host and live data",
@@ -187,7 +195,8 @@
     "K-002",
     "K-003",
     "K-004",
-    "K-005"
+    "K-005",
+    "K-015"
   ],
   "scoreSummary": [
     {
@@ -204,9 +213,9 @@
     },
     {
       "group": "Inventory and purchasing",
-      "weighted": 76,
+      "weighted": 77,
       "evidenceShare": 97,
-      "openP0P1": 2
+      "openP0P1": 3
     },
     {
       "group": "Manufacturing and processing",
@@ -228,25 +237,25 @@
     }
   ],
   "unverifiedAreas": [
-    "The live database and the host: nothing in Phase 5 was run against either; live customer, price and tax data are unknown",
-    "Payment at web checkout and a card processor (H-013, H-015): not built",
-    "Customer messages (email, text): decision 5, later",
-    "Tablet layouts of the sales and portal screens",
+    "The live database and the host: nothing in Phase 6 was run against either; live master data, heats, certificates and bins are unknown",
+    "Scanners, label printers and scales (K-013)",
+    "Inventory valuation: no cost at receipt and no method chosen (K-007)",
+    "Cycle count program, reorder rules, receiving tolerance and purchase order approval: no policy on file (K-008, K-010, K-011)",
     "Time per task with real users: no minutes-saved figure is claimed",
-    "Earlier unverified areas unchanged: backup and restore (E-015), host pool (G-015), host schedule (B-019), sustained load"
+    "Earlier unverified areas unchanged: payment at web checkout (H-013, H-015), customer messages (decision 5), backup and restore (E-015), host pool (G-015), host schedule (B-019), sustained load"
   ],
   "currentBlockers": [
-    "Owner: SQL Editor files 6 to 11 must be applied, in order, before pull request 31 is merged",
-    "J-008 and S-020: the rules for six customer preference fields, including how a default discount combines with a contract tier",
-    "H-011 (implemented as: a draft may be empty, nothing further without a line): owner to confirm",
-    "H-013, H-015: card payment at web checkout; which outside services first",
-    "B-019: host schedule and secret (owner's settings)",
-    "E-015: no backup confirmed, no restore tested (owner: later)"
+    "Owner: SQL Editor files 6 to 12 must be applied, in order, before pull request 31 is merged",
+    "K-007 (P1): the costing method and where cost comes from at receipt",
+    "K-008, K-010, K-011, K-009: cycle count policy; reorder rules; receiving tolerance and purchase order approval; bin plan",
+    "K-006, S-009, J-012: remnant pricing and the Steel Outlet list",
+    "K-013: no scanner hardware to test with",
+    "Still open from earlier phases: J-008 and S-020, H-011, H-013, H-015, B-019, E-015"
   ],
   "nextActions": [
-    "Owner: apply SQL Editor files 6 to 11 in order (/mnt/project-files/database-updates/), then say when to merge pull request 31",
-    "Owner: answer the questions in phase-05-report.md (customer preferences and discount; empty orders; card at checkout; outside services)",
-    "Owner: issue the Phase 6 prompt. Phase 6 has not been started"
+    "Owner: apply SQL Editor files 6 to 12 in order (/mnt/project-files/database-updates/), then say when to merge pull request 31",
+    "Owner: answer the questions in phase-06-report.md (costing; cycle counts; reorder rules, tolerance and approval; bins and remnant pricing)",
+    "Owner: issue the Phase 7 prompt (manufacturing, scheduling and quality). Phase 7 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 5: second full gate run on the final code green except one Phase 5 test-code error, corrected and re-run (76 of 76); 14 browser checks; sales screens timed at 85 branches; 13 findings recorded (J-001 to J-013) and 16 earlier findings dispositioned; documents written."
+  "lastCompletedCheckpoint": "Phase 6: third full gate run on the final code all green; 105 of 105 inventory scenarios (486 checks); 14 browser checks; stock screens timed at 85 branches; 15 findings recorded (K-001 to K-015); G-007, I-007 and C-011 closed; documents written."
 }

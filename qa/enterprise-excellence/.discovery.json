@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-15T18:30:35.704Z",
+ "generated": "2026-11-15T18:54:57.209Z",
  "commit": "ref: refs/heads/claude/project-thread-25z3jd",
  "schema": {
   "models": [
@@ -6925,11 +6925,11 @@
   "dbViews": [],
   "dbTriggers": [],
   "rawSqlTables": [
+   "Inventory",
    "OrderLine",
    "Order",
    "InvoiceLine",
    "Invoice",
-   "Inventory",
    "UV",
    "DispatchJob",
    "Job",
@@ -23504,7 +23504,7 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 165,
+     "ok": 166,
      "refused": 2,
      "error": 0
     }
@@ -23604,8 +23604,8 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 376,
-     "refused": 2,
+     "ok": 426,
+     "refused": 4,
      "error": 0
     }
    },
@@ -24243,7 +24243,7 @@
     "file": "src/backend/src/routes/products.js",
     "mount": "/api/products",
     "exercised": {
-     "ok": 3,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -24718,7 +24718,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 13,
+     "ok": 15,
      "refused": 12,
      "error": 0
     }
@@ -24755,7 +24755,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 8,
+     "ok": 9,
      "refused": 9,
      "error": 0
     }
@@ -24863,8 +24863,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 15,
-     "refused": 15,
+     "ok": 43,
+     "refused": 24,
      "error": 0
     }
    },
@@ -24897,8 +24897,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 8,
-     "refused": 4,
+     "ok": 33,
+     "refused": 16,
      "error": 0
     }
    },
@@ -24931,7 +24931,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 22,
+     "ok": 20,
      "refused": 4,
      "error": 0
     }
@@ -25103,7 +25103,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 7,
+     "ok": 10,
      "refused": 4,
      "error": 0
     }
@@ -25169,7 +25169,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 41,
+     "ok": 42,
      "refused": 11,
      "error": 1
     }
@@ -25204,7 +25204,7 @@
     "mount": "/api/inventory",
     "exercised": {
      "ok": 36,
-     "refused": 13,
+     "refused": 14,
      "error": 1
     }
    },
@@ -25269,8 +25269,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 25,
-     "refused": 6,
+     "ok": 26,
+     "refused": 5,
      "error": 0
     }
    },
@@ -25303,8 +25303,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 18,
-     "refused": 41,
+     "ok": 40,
+     "refused": 55,
      "error": 0
     }
    },
@@ -25337,7 +25337,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 14,
+     "ok": 17,
      "refused": 3,
      "error": 0
     }
@@ -25369,8 +25369,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 264,
-     "refused": 53,
+     "ok": 305,
+     "refused": 71,
      "error": 0
     }
    },
@@ -25534,7 +25534,7 @@
     "file": "src/backend/src/routes/intakeOrders.js",
     "mount": "/api/orders/intake",
     "exercised": {
-     "ok": 9,
+     "ok": 11,
      "refused": 4,
      "error": 0
     }
@@ -28012,7 +28012,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 451,
+     "ok": 459,
      "refused": 53,
      "error": 0
     }
@@ -28048,7 +28048,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 334,
+     "ok": 342,
      "refused": 29,
      "error": 0
     }
@@ -28087,7 +28087,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 255,
+     "ok": 260,
      "refused": 62,
      "error": 0
     }
@@ -28121,8 +28121,8 @@
     "file": "src/backend/src/routes/purchaseOrders.js",
     "mount": "/api/purchase-orders",
     "exercised": {
-     "ok": 1,
-     "refused": 0,
+     "ok": 3,
+     "refused": 3,
      "error": 0
     }
    },
@@ -28155,8 +28155,8 @@
     "file": "src/backend/src/routes/purchaseOrders.js",
     "mount": "/api/purchase-orders",
     "exercised": {
-     "ok": 6,
-     "refused": 3,
+     "ok": 8,
+     "refused": 6,
      "error": 0
     }
    },
@@ -28190,7 +28190,7 @@
     "mount": "/api/purchase-orders",
     "exercised": {
      "ok": 1,
-     "refused": 3,
+     "refused": 8,
      "error": 0
     }
    },
@@ -28226,7 +28226,7 @@
     "mount": "/api/purchase-orders",
     "exercised": {
      "ok": 19,
-     "refused": 4,
+     "refused": 6,
      "error": 0
     }
    },
@@ -28431,8 +28431,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 17,
-     "refused": 21,
+     "ok": 15,
+     "refused": 23,
      "error": 0
     }
    },
@@ -28463,8 +28463,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 3,
-     "refused": 6,
+     "ok": 5,
+     "refused": 4,
      "error": 0
     }
    },
@@ -28497,7 +28497,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 13,
+     "ok": 43,
      "refused": 5,
      "error": 0
     }
@@ -28532,7 +28532,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 4,
+     "ok": 8,
      "refused": 9,
      "error": 0
     }
@@ -28568,8 +28568,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 11,
-     "refused": 10,
+     "ok": 37,
+     "refused": 12,
      "error": 0
     }
    },
@@ -28604,8 +28604,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 206,
-     "refused": 88,
+     "ok": 216,
+     "refused": 90,
      "error": 0
     }
    },
@@ -28783,8 +28783,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 192,
-     "refused": 35,
+     "ok": 196,
+     "refused": 34,
      "error": 0
     }
    },
@@ -28815,7 +28815,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 111,
+     "ok": 114,
      "refused": 12,
      "error": 0
     }
@@ -28847,7 +28847,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 4,
+     "ok": 5,
      "refused": 4,
      "error": 0
     }
@@ -28879,7 +28879,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 83,
+     "ok": 85,
      "refused": 5,
      "error": 0
     }
@@ -28911,7 +28911,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 2,
+     "ok": 6,
      "refused": 7,
      "error": 0
     }
@@ -28976,7 +28976,7 @@
     "mount": "/api/invoices",
     "exercised": {
      "ok": 94,
-     "refused": 138,
+     "refused": 139,
      "error": 0
     }
    },
@@ -29897,8 +29897,8 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 381,
-     "refused": 5,
+     "ok": 431,
+     "refused": 9,
      "error": 0
     }
    },
@@ -30753,8 +30753,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 655,
-     "refused": 21,
+     "ok": 654,
+     "refused": 22,
      "error": 0
     }
    },
@@ -30819,8 +30819,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 2,
-     "refused": 13,
+     "ok": 3,
+     "refused": 12,
      "error": 0
     }
    },
@@ -39475,8 +39475,8 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 11,
-     "refused": 9,
+     "ok": 14,
+     "refused": 10,
      "error": 0
     }
    },
@@ -39573,7 +39573,7 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 1,
+     "ok": 2,
      "refused": 1,
      "error": 0
     }
@@ -42771,7 +42771,7 @@
     "file": "src/backend/src/routes/printQueue.js",
     "mount": "/api/print-queue",
     "exercised": {
-     "ok": 368,
+     "ok": 418,
      "refused": 3,
      "error": 0
     }
@@ -53492,7 +53492,7 @@
    },
    {
     "file": "qa/sim/phase6-inventory.mjs",
-    "lines": 1095,
+    "lines": 1142,
     "checks": 0
    },
    {
@@ -53512,7 +53512,7 @@
    },
    {
     "file": "qa/sim/ui-integration.cjs",
-    "lines": 332,
+    "lines": 336,
     "checks": 33
    },
    {
@@ -54825,17 +54825,17 @@
   ]
  },
  "exercised": {
-  "at": "2026-11-15T18:29:50.794Z",
+  "at": "2026-11-15T18:54:12.352Z",
   "sources": [
    {
     "file": "server-3011.log",
-    "requests": 7535
+    "requests": 7714
    },
    {
     "file": "server-3001.log",
-    "requests": 1743
+    "requests": 2041
    }
   ],
-  "distinct": 2262
+  "distinct": 2272
  }
 }

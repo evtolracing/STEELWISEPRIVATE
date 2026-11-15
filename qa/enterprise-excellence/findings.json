@@ -4534,6 +4534,28 @@
    }
   },
   {
+   "id": "K-015",
+   "discovered": "2026-11-15",
+   "source": "Phase 6 inventory and purchasing audit",
+   "workflow": "A hold or release at the same moment as another change to the same item",
+   "cause": "",
+   "dependencies": "",
+   "statusNote": "",
+   "verification": "qa/sim/phase6-inventory.mjs: \"a hold queues behind a stock change in progress on the same item instead of deadlocking\" (with the lock removed the hold answers 500; with it, 201), \"a hold racing counts and cuts on the same item never ends in a server error\" (144 requests on 12 items) and \"forty stock changes at once leave every balance in step\".",
+   "phase": "Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer",
+   "module": "Stock items",
+   "severity": "P2",
+   "category": "Reliability: lock order",
+   "where": "src/backend/src/lib/holds.js",
+   "evidence": "Second full gate run of Phase 6, scenario \"forty stock changes at once\": one hold answered 500. The server log shows PostgreSQL error 40P01, deadlock detected: the hold had updated the item and was waiting for its balance while a count correction held the balance and was waiting for the item.",
+   "expected": "Every stock change takes the balance row first and the item second, so two changes queue.",
+   "actual": "A hold and a release took the item first. The database ended one of the two transactions; nothing was saved wrongly, and the person saw \"Could not place the hold\".",
+   "impact": "Rare: needs two people changing one item in the same instant. No balance was wrong. The person had to try again with no explanation.",
+   "correction": "placeHold and releaseHold lock the balance row first, like lib/stockChanges.js and lib/transfers.js.",
+   "requiredTests": "Holds and releases raced against counts and cuts on the same items, many at once: no server error, books in balance.",
+   "status": "VERIFIED FIXED"
+  },
+  {
    "id": "M-001",
    "discovered": "2026-11-13",
    "source": "qa/engineering-quality-findings.md",

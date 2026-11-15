@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -26,7 +26,7 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 |---|---:|---:|---:|---|:-:|
 | Platform infrastructure | 80 | 77% | 2 | 2 of 10 | No |
 | Sales and customer operations | 79 | 97% | 4 | 37 of 97 | No |
-| Inventory and purchasing | 76 | 97% | 2 | 30 of 52 | No |
+| Inventory and purchasing | 77 | 97% | 3 | 40 of 62 | No |
 | Manufacturing and processing | 74 | 97% | 1 | 26 of 91 | No |
 | Logistics and financial operations | 79 | 97% | 2 | 31 of 40 | No |
 | Enterprise experience | 60 | 89% | 5 | 4 of 50 | No |
@@ -60,8 +60,10 @@ The groups hide large differences. Classification and test reach per module:
 | Products, grades and heats | IMPLEMENTED AND VERIFIED | 6 of 6 | B-012 |
 | Processing recipes and bills of material | IMPLEMENTED BUT NOT VERIFIED | 0 of 11 | I-011 |
 | Customer specifications | IMPLEMENTED BUT NOT VERIFIED | n/a |  |
-| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 12 of 13 |  |
-| Receiving | IMPLEMENTED AND VERIFIED | 9 of 9 |  |
+| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 12 of 13 | K-007, K-008, K-009, K-014 |
+| Receiving | IMPLEMENTED AND VERIFIED | 9 of 9 | K-011, K-013 |
+| Purchase orders and supply position | IMPLEMENTED AND VERIFIED | 1 of 1 | K-010, K-011, K-012 |
+| Interbranch transfers | IMPLEMENTED AND VERIFIED | 9 of 9 | K-014 |
 | Second stock list (unit tracking) | DISCONNECTED | 0 of 9 | B-009, D-024 |
 | Remnants | PARTIALLY IMPLEMENTED | 3 of 4 | S-009 |
 | Jobs, job board and schedule | IMPLEMENTED AND VERIFIED | 9 of 20 | M-017 |
@@ -134,24 +136,24 @@ Changing routes with a success-path test: 37 of 97. Open findings against these 
 
 ### Inventory and purchasing
 
-Modules: Products, grades and heats; Processing recipes and bills of material; Customer specifications; Stock items and stock levels; Receiving; Second stock list (unit tracking); Remnants.
+Modules: Products, grades and heats; Processing recipes and bills of material; Customer specifications; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Second stock list (unit tracking); Remnants.
 
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
 | Functional correctness | 15% | 72 | Stock, heat and receiving screens showed sample data and the upload saved nothing; all now run on real records (I-001, I-002, I-005, I-006). No purchase orders, adjustments or counts (I-007, I-016) |
-| Data integrity | 15% | 91 | Phase 3: races closed; exact weights; 18 reconciliation checks at 0; the ledger explains every balance including pieces, cuts, scrap and corrections; nothing ships unreserved (G-019); corrections after a count with reason, note and person (I-016); a remnant reduces its parent (G-006). Held at 91: no in-transit stage (G-007); the second stock list (B-009); no cycle-count program. Was 85 (Field allow-lists on every stock and catalog write; receipt is one transaction; the database enforces the balance identity (I-004, I-013). 150 of 150 jobs, reconciliation 0 problems) |
-| Reliability | 12% | 81 | Phase 3: reservations, receipts, holds, transfers, returns and corrections each raced and each safe; a correction racing a reservation and a shipment leaves the books in balance. Held at 81: transfer receipt does not exist to test. Was 70 (Upload reports each failed row and keeps the good ones; concurrent hold and transfer guarded by conditional updates. No retry or resume for a large upload) |
+| Data integrity | 15% | 93 | Phase 6: transfers have an in-transit stage and a receipt, with shortages held and settled (G-007); a reservation must fit the line by unit, grade, size, tolerance and owner (K-001); receipts tie to purchase order lines (I-007); a scrapped return is recorded in and out (K-003); 25 stock checks at 0 after 105 scenarios. Held at 93: no cost on stock (K-007); no cycle count program (K-008); the Steel Outlet remnant list is separate (K-006); live data unverified. Was 85 (Field allow-lists on every stock and catalog write; receipt is one transaction; the database enforces the balance identity (I-004, I-013). 150 of 150 jobs, reconciliation 0 problems) |
+| Reliability | 12% | 86 | Phase 6: transfer send, receive, settle and call-back each raced and each safe; a save that fails part way leaves stock as it was; a hold no longer deadlocks with another stock change (K-015, found by the gate run). Held at 86: scanners not tested (K-013); local machine only. Was 70 (Upload reports each failed row and keeps the good ones; concurrent hold and transfer guarded by conditional updates. No retry or resume for a large upload) |
 | Security | 12% | 78 | Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 85 |
 | Operational efficiency | 10% | 62 | Receive, hold, release and move can be done on screen. Heats must be added before stock (I-017); no expected deliveries (I-007) |
 | User experience | 10% | 70 | Screens state errors in the server's words, say "not recorded" instead of inventing values, and the sample screens are labelled (I-011) |
-| Performance | 8% | 78 | Phase 3: a branch's stock list 1.5 ms and one heat's 31,605 items 23 ms on the scale copy. Held at 78: the stock search scans every item (140 ms at 100,233; G-013); the benchmark branch held no stock. Was null (Lists are capped (500) and paged with a total count. An upload is capped at 2,000 rows and runs one row at a time; not timed) |
-| Integration quality | 6% | 64 | Phase 4: a supplier reads and acknowledges its own purchase orders through the partner API. Held at 64: supplier shipping notices, corrective actions and scorecards answer 501 (H-014); no supplier or carrier connection. Was 60 (One stock list behind orders, receiving, shipping and the Inventory menu (I-012, pending confirmation). 15 dead calls removed (I-015). No supplier or carrier connection) |
+| Performance | 8% | 82 | Phase 6: at 85 branches and 100,233 items the stock list answers in 48 ms, a search by part of a number in 116 ms, the supply position in 271 ms. Held at 82: local machine; the one-branch benchmark login has no stock; no index added without evidence (G-013). Was null (Lists are capped (500) and paged with a total count. An upload is capped at 2,000 rows and runs one row at a time; not timed) |
+| Integration quality | 6% | 60 | One stock list behind orders, receiving, shipping and the Inventory menu (I-012, pending confirmation). 15 dead calls removed (I-015). No supplier or carrier connection |
 | Maintainability | 5% | 75 | One receiving rule and one field reader, pure and unit tested (79 tests in all). The unused RFID stock screens remain in the code |
 | Observability | 4% | 70 | Every receipt, move, hold and release is a movement or hold record with the person; list price changes are in the audit log |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **76** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **77** | Target 95 |
 
-Changing routes with a success-path test: 30 of 52. Open findings against these modules: 5, of which P0 or P1: 2 (B-009, I-011).
+Changing routes with a success-path test: 40 of 62. Open findings against these modules: 13, of which P0 or P1: 3 (B-009, I-011, K-007).
 
 ### Manufacturing and processing
 

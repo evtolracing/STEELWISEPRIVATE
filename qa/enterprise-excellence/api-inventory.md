@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
 
 633 routes in 75 route files, served at 76 mount points. 332 change data.
 

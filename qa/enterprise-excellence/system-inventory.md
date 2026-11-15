@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -8,7 +8,7 @@ Every figure here is counted from the code or measured in a test run. The module
 
 | Item | Count |
 |---|---:|
-| Modules | 48 |
+| Modules | 50 |
 | Server route files | 75 |
 | API routes (each address counted; two route files are mounted twice) | 633 |
 | API routes that change data | 332 |
@@ -27,7 +27,7 @@ Every figure here is counted from the code or measured in a test run. The module
 
 | Classification | Modules |
 |---|---:|
-| IMPLEMENTED AND VERIFIED | 23 |
+| IMPLEMENTED AND VERIFIED | 25 |
 | IMPLEMENTED BUT NOT VERIFIED | 11 |
 | PARTIALLY IMPLEMENTED | 6 |
 | PLACEHOLDER OR MOCK | 5 |
@@ -356,8 +356,8 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 ### Stock items and stock levels
 
 - **Status:** IMPLEMENTED AND VERIFIED
-- **Basis:** Simulation; sweep "Stock items" (29 checks); database balance rule; browser suite (stock)
-- **Purpose:** Coils, plates and bars by heat and location; holds; transfers; adjustments
+- **Basis:** Simulation; sweep "Stock items" (29 checks); qa/sim/phase6-inventory.mjs (105 scenarios); database balance rule including in transit; browser suite (stock)
+- **Purpose:** Coils, plates, bars and shelf goods by heat and location; holds; corrections; reservation fit rules
 - **Screens:** 4 (3 real, 1 static): /inventory, /units, /units/:id, /inventory/*
 - **Server:** `src/backend/src/routes/coils.js`, `src/backend/src/routes/inventory.js`; served at /api/coils, /api/inventory
 - **Routes:** 25, of which 13 change data. Returned a success in a test this session: 23 of 25; of the changing routes, 12 of 13
@@ -365,23 +365,53 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, receiving
 - **Feeds:** Reservation, shipping, returns
-- **Findings:** none open
-- **Production concern:** No screen for adjustments or counts (I-016)
+- **Findings:** K-007, K-008, K-009, K-014
+- **Production concern:** No cost is written at receipt (K-007); no cycle count program (K-008)
 
 ### Receiving
 
 - **Status:** IMPLEMENTED AND VERIFIED
-- **Basis:** Sweep "Receiving" (32 checks); unit tests on receiving rules
-- **Purpose:** A receipt or an upload makes real stock with heat and location
+- **Basis:** Sweep "Receiving" (32 checks); unit tests on receiving rules; qa/sim/phase6-inventory.mjs group "Receiving and putaway"; qa/sim/ui-phase6.cjs
+- **Purpose:** A receipt or an upload makes real stock with heat and location; a receipt against a purchase order line is checked against it
 - **Screens:** 1 (1 real): /receiving
 - **Server:** `src/backend/src/routes/inventory.js`; served at /api/inventory
 - **Routes:** 17, of which 9 change data. Returned a success in a test this session: 17 of 17; of the changing routes, 9 of 9
 - **Tables:** Inventory, Coil, Location, MaterialMovement, StockTransfer
 - **Who may change it:** see permissions-matrix.md
-- **Depends on:** Products, heats
+- **Depends on:** Products, heats, purchase orders
 - **Feeds:** Stock
-- **Findings:** none open
-- **Production concern:** Receiving is not tied to a purchase order because there are none
+- **Findings:** K-011, K-013
+- **Production concern:** Receiving tolerance is not set by the owner (K-011); scanners not tested (K-013)
+
+### Purchase orders and supply position
+
+- **Status:** IMPLEMENTED AND VERIFIED
+- **Basis:** qa/sim/phase6-inventory.mjs group "Purchasing and replenishment" (16 scenarios); qa/sim/ui-phase6.cjs
+- **Purpose:** Buyers write, place, close and cancel purchase orders; receipts fill lines; stock, inbound and demand per branch and grade
+- **Screens:** 1 (1 real): /purchase-orders
+- **Server:** `src/backend/src/routes/purchaseOrders.js`; served at /api/purchase-orders
+- **Routes:** 4, of which 1 change data. Returned a success in a test this session: 4 of 4; of the changing routes, 1 of 1
+- **Tables:** Organization, Location, Order, OrderLine, AuditLog
+- **Who may change it:** see permissions-matrix.md
+- **Depends on:** Suppliers, grades, products
+- **Feeds:** Receiving, stock
+- **Findings:** K-010, K-011, K-012
+- **Production concern:** No approval rule and no reorder policy on file (K-010, K-011); supplier invoices are not matched (K-012)
+
+### Interbranch transfers
+
+- **Status:** IMPLEMENTED AND VERIFIED
+- **Basis:** qa/sim/phase6-inventory.mjs group "Interbranch transfers" (17 scenarios) and concurrency group; seven reconciliation facts in qa/tools/db-facts.mjs; qa/sim/ui-phase6.cjs
+- **Purpose:** Send, in transit, receive, short or damaged held, settle, call back
+- **Screens:** 1 (1 real): /transfers
+- **Server:** `src/backend/src/routes/inventory.js`; served at /api/inventory
+- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 17 of 17; of the changing routes, 9 of 9
+- **Tables:** Inventory, Coil, Location, MaterialMovement, StockTransfer
+- **Who may change it:** see permissions-matrix.md
+- **Depends on:** Stock, branches
+- **Feeds:** Stock, reservation, shipping
+- **Findings:** K-014
+- **Production concern:** The stock list row does not say in transit (K-014)
 
 ### Second stock list (unit tracking)
 
@@ -771,9 +801,10 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 
 | Capability | Finding |
 |---|---|
-| Purchase requisitions, purchase orders, vendor management | I-007 |
-| Cycle counts and a stock adjustment screen | I-016 |
-| Replenishment | I-007 |
+| Purchase requisitions, purchase order approval, vendor scorecards | K-011 |
+| Cycle count program and a stock correction screen | I-016, K-008 |
+| Automatic replenishment (reorder points) | K-010 |
+| Inventory costing and valuation | K-007 |
 | Lead and opportunity tracking (CRM) |  |
 | Quote revisions and quote approvals |  |
 | Contract pricing | S-009 |
@@ -910,10 +941,4 @@ Finding B-014.
 | console.log calls | 18 |
 | Dialogs | 128 |
 | Frontend unit test files | 0 |
-
-## Not yet placed in a module
-
-- route file src/backend/src/routes/purchaseOrders.js
-- screen /transfers (REAL)
-- screen /purchase-orders (REAL)
 

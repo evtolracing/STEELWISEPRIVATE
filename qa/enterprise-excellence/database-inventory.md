@@ -1,8 +1,8 @@
 # Database inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
 
-Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-15 18:20 UTC); they describe test data, not the live database, which was not touched.
+Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-15 18:44 UTC); they describe test data, not the live database, which was not touched.
 
 ## Totals
 
@@ -11,10 +11,10 @@ Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are re
 | Tables | 161 |
 | Tables no server code reads or writes | 53 |
 | Tables empty after a full test run | 83 of 162 |
-| Rows in the QA database | 10,689 |
-| Indexes | 592 |
+| Rows in the QA database | 10,868 |
+| Indexes | 593 |
 | Foreign keys | 194 |
-| Foreign keys with no index | 1 |
+| Foreign keys with no index | 0 |
 | Value rules the database enforces (CHECK) | 30 |
 | Views | 0 |
 | Triggers | 0 |
@@ -39,7 +39,7 @@ Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are re
 | Foreign keys not validated | 0 |
 | Unique indexes | 85 |
 | Value checks | 30 |
-| Indexes | 592 |
+| Indexes | 593 |
 | Exact duplicate indexes | 0 |
 | Views, materialized views, triggers, functions, partitioned tables | 0, 0, 0, 0, 0 |
 | Row-level security policies in the QA database | 0 (the SQL Editor files add one per table on the host; see phase-03-schema-audit.md) |
@@ -203,16 +203,16 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | Division | 7 | 0 | 1 | 0 |  |  | yes | 0 | users | nothing |
 | ApprovalRequest | 12 | 1 | 0 | 2 | ApprovalStatus |  | yes | 0 | nothing | nothing |
 | ApprovalDecision | 6 | 2 | 0 | 2 |  |  |  | 0 | nothing | nothing |
-| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 2596 | creditControl, integrationReport, jobHistory, opsCockpit, … | creditControl, jobHistory, stockChanges, transfers, … |
+| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 2616 | creditControl, integrationReport, jobHistory, opsCockpit, … | creditControl, jobHistory, stockChanges, transfers, … |
 | Grade | 17 | 0 | 1 | 0 |  |  |  | 9 | lineSpecs, receiving, aiAssistant, coils, … | lineSpecs, grades, index, supabaseSeed |
 | Product | 20 | 1 | 1 | 1 |  |  |  | 17 | receiving, aiAssistant, coils, intakeOrders, … | intakePricing, products, index, ecomService |
 | Heat | 15 | 4 | 1 | 4 | HeatStatus |  |  | 18 | receiving, aiAssistant, coils, heats | documents, heats, index, supabaseSeed |
-| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 626 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
+| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 658 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
 | Location | 19 | 2 | 1 | 2 |  |  | yes | 85 | orderTax, receiving, coils, compressionMetrics, … | dispatchRoutes, index, supabaseSeed |
-| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 626 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
-| MaterialMovement | 15 | 8 | 0 | 8 |  | yes |  | 643 | receiving, coils, heats, opsCockpit, … | receiving, stockChanges, transfers, inventory, … |
+| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 658 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
+| MaterialMovement | 15 | 8 | 0 | 8 |  | yes |  | 714 | receiving, coils, heats, opsCockpit, … | receiving, stockChanges, transfers, inventory, … |
 | TestResult | 16 | 4 | 0 | 4 |  |  |  | 0 | (with its parent) | (with its parent) |
-| QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 26 | coils, dashboard, opsCockpit | holds, transfers, returns |
+| QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 54 | coils, dashboard, opsCockpit | holds, transfers, returns |
 | RFQ | 14 | 2 | 1 | 2 | RFQStatus | yes |  | 61 | aiAssistant, analyticsV1, customerRoutes, quotes, … | quotes, rfqs, index |
 | RFQLine | 12 | 1 | 0 | 1 |  |  |  | 46 | (with its parent) | (with its parent) |
 | Quote | 23 | 4 | 2 | 3 | QuoteStatus | yes |  | 57 | aiAssistant, analyticsV1, intakeOrders, customerRoutes, … | quotes, rfqs, index |
@@ -229,9 +229,9 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | Job | 44 | 7 | 1 | 7 | JobStatus |  |  | 273 | jobHistory, aiAssistant, analyticsV1, intakeOrders, … | jobHistory, intakeOrders, jobs, materialTrackingRoutes, … |
 | Order | 28 | 5 | 1 | 5 | OrderStatus | yes |  | 624 | creditControl, aiAssistant, analyticsV1, compressionMetrics, … | creditControl, intakeOrders, onlineOrders, orders, … |
 | OrderLine | 36 | 4 | 0 | 4 |  |  |  | 645 | receiving, jobs, orders, returns, … | receiving, intakeOrders, orders, purchaseOrders, … |
-| OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 48 | holds, stockChanges, coils, orders, … | stockChanges, orders, shipments |
+| OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 46 | holds, stockChanges, coils, orders, … | stockChanges, orders, shipments |
 | WorkOrder | 19 | 3 | 1 | 3 | WOStatus |  |  | 22 | workOrders | workOrders |
-| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 21 | nothing | stockChanges |
+| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 19 | nothing | stockChanges |
 | Shipment | 21 | 3 | 1 | 3 | ShipmentStatus | yes |  | 260 | aiAssistant, dashboard, jobs, opsCockpit, … | shipments, index |
 | ShipmentItem | 6 | 2 | 0 | 2 |  |  |  | 229 | shipments | shipments, index |
 | ShipmentStop | 12 | 1 | 0 | 1 |  |  |  | 0 | (with its parent) | (with its parent) |

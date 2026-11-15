@@ -1,10 +1,40 @@
 {
- "at": "2026-11-15T18:41:48.401Z",
+ "at": "2026-11-15T18:44:52.050Z",
  "base": "http://localhost:3011",
- "scenarios": 17,
- "passed": 17,
- "checks": 140,
+ "scenarios": 105,
+ "passed": 105,
+ "checks": 486,
  "groups": {
+  "Purchasing and replenishment": {
+   "scenarios": 16,
+   "passed": 16,
+   "checks": 52
+  },
+  "Receiving and putaway": {
+   "scenarios": 15,
+   "passed": 15,
+   "checks": 57
+  },
+  "Reservations, allocation and picking": {
+   "scenarios": 15,
+   "passed": 15,
+   "checks": 51
+  },
+  "Consumption, remnants and scrap": {
+   "scenarios": 15,
+   "passed": 15,
+   "checks": 68
+  },
+  "Interbranch transfers": {
+   "scenarios": 17,
+   "passed": 17,
+   "checks": 77
+  },
+  "Returns, counts and adjustments": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 41
+  },
   "Concurrency, security and recovery": {
    "scenarios": 17,
    "passed": 17,
@@ -12,6 +42,2094 @@
   }
  },
  "results": [
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a buyer places a purchase order at their own branch with the supplier, lines and a server number",
+   "asserts": [
+    {
+     "what": "saved as a purchase order from the supplier at the buyer's branch, as a draft",
+     "ok": true
+    },
+    {
+     "what": "two lines, numbered, nothing received",
+     "ok": true
+    },
+    {
+     "what": "the server numbered it and recorded who entered it",
+     "ok": true
+    },
+    {
+     "what": "placing it moves it to CONFIRMED",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 41
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a sales login cannot place a purchase order, and nothing is saved",
+   "asserts": [
+    {
+     "what": "refused with 403",
+     "ok": true
+    },
+    {
+     "what": "no purchase order saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 10
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "the purchase order address only ever shows and changes purchase orders",
+   "asserts": [
+    {
+     "what": "a sales order is not found through it",
+     "ok": true
+    },
+    {
+     "what": "the list holds purchase orders only",
+     "ok": true
+    },
+    {
+     "what": "a body that says SO is still saved as a purchase order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 84
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a buyer cannot open another branch's purchase order",
+   "asserts": [
+    {
+     "what": "the other branch's order is at that branch",
+     "ok": true
+    },
+    {
+     "what": "the L1 buyer gets not found",
+     "ok": true
+    },
+    {
+     "what": "and cannot change it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 44
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "nothing can be received against a draft purchase order",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "no stock item was created and the line is untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 36
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a receipt against a placed line fills it part way, and the movement names the line",
+   "asserts": [
+    {
+     "what": "accepted with no hold",
+     "ok": true
+    },
+    {
+     "what": "the line shows 4000 received and is PARTIAL",
+     "ok": true
+    },
+    {
+     "what": "the receipt movement carries the purchase order and the line",
+     "ok": true
+    },
+    {
+     "what": "the reply says what is left on the line",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 61
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a second receipt completes the line",
+   "asserts": [
+    {
+     "what": "both receipts accepted, the line is COMPLETE at 6000",
+     "ok": true
+    },
+    {
+     "what": "two receipt movements against the line add up to 6000",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 78
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "receiving more than was ordered puts the material on hold for a decision instead of refusing the truck",
+   "asserts": [
+    {
+     "what": "received, with a hold that names the over-receipt",
+     "ok": true
+    },
+    {
+     "what": "all 3600 is on hold and none is on sale",
+     "ok": true
+    },
+    {
+     "what": "the hold is a dispute",
+     "ok": true
+    },
+    {
+     "what": "the line counts what actually came: 3600",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 61
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a receipt of the wrong grade or size against a line is held with every reason",
+   "asserts": [
+    {
+     "what": "received on hold",
+     "ok": true
+    },
+    {
+     "what": "the hold names the grade and the thickness",
+     "ok": true
+    },
+    {
+     "what": "the material is off sale",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 105
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a line that needs a mill certificate holds material whose heat has none on file",
+   "asserts": [
+    {
+     "what": "received on a pending-test hold",
+     "ok": true
+    },
+    {
+     "what": "the reason says the certificate is missing",
+     "ok": true
+    },
+    {
+     "what": "once the certificate is checked a manager releases it and it goes on sale",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 90
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a line bought by the hundredweight counts a 5000 lb receipt as 50 CWT",
+   "asserts": [
+    {
+     "what": "received; the line shows 50 CWT and is PARTIAL",
+     "ok": true
+    },
+    {
+     "what": "the stock is counted in pounds: 5000 LB",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 57
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a purchase order with receipts cannot be cancelled; it is closed, and then takes no more",
+   "asserts": [
+    {
+     "what": "cancelling is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "closing marks the order and every open line COMPLETE",
+     "ok": true
+    },
+    {
+     "what": "the close is in the audit trail with who did it",
+     "ok": true
+    },
+    {
+     "what": "a receipt after closing is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 104
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "a purchase order with nothing received can be cancelled, and then takes nothing",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "a receipt against it is refused and nothing is created",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 66
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "material for another branch's purchase order cannot be received here",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing created and the line untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 52
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "the supply position shows what is on order and moves it to on hand when it arrives",
+   "asserts": [
+    {
+     "what": "placing the order adds 9000 lb on order",
+     "ok": true
+    },
+    {
+     "what": "a 4000 lb receipt takes 4000 off on order and adds it on hand",
+     "ok": true
+    },
+    {
+     "what": "projected free is available plus on order plus inbound less open demand",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 89
+  },
+  {
+   "group": "Purchasing and replenishment",
+   "name": "the supply position keeps to the branch the person works at, and suggests nothing",
+   "asserts": [
+    {
+     "what": "a branch login sees only its own branch",
+     "ok": true
+    },
+    {
+     "what": "asking for another branch is not found",
+     "ok": true
+    },
+    {
+     "what": "no reorder suggestion is made: there is no reorder policy on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "a receipt creates the item, its balance at the branch and bin, and one movement by the person",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "item at the branch and bin, with heat and grade",
+     "ok": true
+    },
+    {
+     "what": "4321.5 lb on hand and on sale",
+     "ok": true
+    },
+    {
+     "what": "one RECEIVE movement into the branch by the person",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 26
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "the same item number cannot be received twice",
+   "asserts": [
+    {
+     "what": "first accepted, second refused",
+     "ok": true
+    },
+    {
+     "what": "one item, one movement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 26
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "a receipt with no weight, a negative weight or an unknown branch is refused and saves nothing",
+   "asserts": [
+    {
+     "what": "zero weight: refused with 4xx and nothing saved",
+     "ok": true
+    },
+    {
+     "what": "negative weight: refused with 4xx and nothing saved",
+     "ok": true
+    },
+    {
+     "what": "unknown branch: refused with 4xx and nothing saved",
+     "ok": true
+    },
+    {
+     "what": "no heat: refused with 4xx and nothing saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 25
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "a branch login cannot receive into another branch",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "a receiving clerk receives at their branch; a sales login cannot receive at all",
+   "asserts": [
+    {
+     "what": "the clerk's receipt is accepted at L2 and recorded against the clerk",
+     "ok": true
+    },
+    {
+     "what": "a sales login is refused and nothing is saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 24
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "shelf goods are received by the piece against a product, with no heat or grade",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "counted as 24 EA, with the product and no heat",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 21
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "shelf goods need a whole number of pieces and a product that is in the catalog",
+   "asserts": [
+    {
+     "what": "no pieces: refused and nothing saved",
+     "ok": true
+    },
+    {
+     "what": "part of a piece: refused and nothing saved",
+     "ok": true
+    },
+    {
+     "what": "no product: refused and nothing saved",
+     "ok": true
+    },
+    {
+     "what": "a product not in the catalog: refused and nothing saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 29
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "metal is received only against a heat on file, and items of one heat join it",
+   "asserts": [
+    {
+     "what": "a heat not on file is refused, saying to add it first, and nothing is saved",
+     "ok": true
+    },
+    {
+     "what": "two receipts on the same heat: one heat, both items on it",
+     "ok": true
+    },
+    {
+     "what": "an item of another grade on that heat is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 60
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "a receipt shows in recent receipts for the branch",
+   "asserts": [
+    {
+     "what": "listed with its item number",
+     "ok": true
+    },
+    {
+     "what": "another branch's receipt is not in this branch's list",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 71
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "an upload says exactly which rows were saved and which were not",
+   "asserts": [
+    {
+     "what": "answered",
+     "ok": true
+    },
+    {
+     "what": "the good row is saved and the bad one is not",
+     "ok": true
+    },
+    {
+     "what": "the answer says one failed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 20
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "a receipt out of tolerance against its line is held, and a manager's release puts it on sale",
+   "asserts": [
+    {
+     "what": "held because of the thickness",
+     "ok": true
+    },
+    {
+     "what": "within the line's tolerance it is not held",
+     "ok": true
+    },
+    {
+     "what": "a sales login cannot release it",
+     "ok": true
+    },
+    {
+     "what": "a manager can",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 143
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "putting an item away in a new bin is saved and the item can be found by it",
+   "asserts": [
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "the stock list shows the new bin",
+     "ok": true
+    },
+    {
+     "what": "the balance did not change",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 52
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "a piece received against its parent takes its weight from the parent and keeps the heat",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "same heat and grade, parent named",
+     "ok": true
+    },
+    {
+     "what": "parent down by 400",
+     "ok": true
+    },
+    {
+     "what": "parent: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "parent: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "parent: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 57
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "the same item number received twice at the same moment makes one item",
+   "asserts": [
+    {
+     "what": "one accepted, the others refused with 4xx",
+     "ok": true
+    },
+    {
+     "what": "one item with one receipt movement",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 31
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "receiving does not create a cost: cost is set by a manager afterwards (valuation finding)",
+   "asserts": [
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "no cost was taken from the receipt body",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 24
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "stock that fits the line is reserved: the reservation is on file and the balance moves",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "1200 reserved, 1800 free, 3000 on hand",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 94
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "more than is free cannot be reserved",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 78
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "a line counted in pieces cannot reserve stock counted in pounds",
+   "asserts": [
+    {
+     "what": "refused with the unit reason",
+     "ok": true
+    },
+    {
+     "what": "3 lb were not taken",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 74
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "stock of another grade cannot be reserved for a line",
+   "asserts": [
+    {
+     "what": "refused with the grade reason",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 67
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "a piece smaller than the line needs cannot be reserved for it",
+   "asserts": [
+    {
+     "what": "refused with the size reason",
+     "ok": true
+    },
+    {
+     "what": "a line it can be cut to may reserve it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 118
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "thickness is held to the line's own tolerance",
+   "asserts": [
+    {
+     "what": "outside the tolerance: refused",
+     "ok": true
+    },
+    {
+     "what": "inside the tolerance: reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 141
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "material a customer owns can be reserved only for that customer",
+   "asserts": [
+    {
+     "what": "refused for another customer with the owner reason",
+     "ok": true
+    },
+    {
+     "what": "reserved for its owner",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 161
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "stock on its way to another branch cannot be reserved",
+   "asserts": [
+    {
+     "what": "refused with the in-transit reason",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 111
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "stock on hold cannot be reserved until it is released",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "reserved once released",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 151
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "two reservations racing for the last of an item: exactly one wins",
+   "asserts": [
+    {
+     "what": "one 201 and one 409",
+     "ok": true
+    },
+    {
+     "what": "800 reserved, 200 free",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 147
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "a branch login cannot reserve another branch's stock",
+   "asserts": [
+    {
+     "what": "not found",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 73
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "a line cannot reserve more than it still needs",
+   "asserts": [
+    {
+     "what": "the second reservation is refused",
+     "ok": true
+    },
+    {
+     "what": "700 reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 93
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "shipping reserved stock takes it off the balance with a SHIP movement and uses the reservation",
+   "asserts": [
+    {
+     "what": "500 left on hand, nothing reserved",
+     "ok": true
+    },
+    {
+     "what": "one SHIP movement of 1000 against the shipment",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 242
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "cancelling an order gives its reserved stock back",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved, all 2000 free, no reservation left on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 120
+  },
+  {
+   "group": "Reservations, allocation and picking",
+   "name": "a hold on a reserved item keeps the reservation, holds the rest, and stops the shipment",
+   "asserts": [
+    {
+     "what": "600 still reserved, the free 500 on hold",
+     "ok": true
+    },
+    {
+     "what": "the shipment cannot go out while the item is on hold",
+     "ok": true
+    },
+    {
+     "what": "released, it ships",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 279
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a completed work order takes its output and scrap off the source with movements, and works out the yield",
+   "asserts": [
+    {
+     "what": "completed with 95% yield",
+     "ok": true
+    },
+    {
+     "what": "source used up",
+     "ok": true
+    },
+    {
+     "what": "a SCRAP movement of 400",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 100
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "pieces made by a work order carry the heat, grade and owner of their source",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "two pieces, each with the source heat, grade and owner",
+     "ok": true
+    },
+    {
+     "what": "WO-00019-01: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "WO-00019-01: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "WO-00019-01: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "WO-00019-02: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "WO-00019-02: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "WO-00019-02: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 97
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a remnant entered against its parent keeps the heat and takes its weight off the parent",
+   "asserts": [
+    {
+     "what": "saved, with the parent heat and named parent",
+     "ok": true
+    },
+    {
+     "what": "parent and remnant together weigh 6000",
+     "ok": true
+    },
+    {
+     "what": "parent: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "parent: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "parent: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "remnant: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "remnant: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "remnant: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 48
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a remnant cannot weigh more than what is free on its parent",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing saved and the parent is untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 34
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a remnant cannot be cut from an item on its way to another branch",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "nothing saved and the parent still all in transit",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 66
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a work order cannot be completed on an item on its way to another branch",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "nothing consumed",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 106
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a remnant can be reserved for a line it fits and shipped",
+   "asserts": [
+    {
+     "what": "reserved",
+     "ok": true
+    },
+    {
+     "what": "shipped and used up",
+     "ok": true
+    },
+    {
+     "what": "remnant: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "remnant: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "remnant: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 255
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a remnant travels to another branch and keeps its parent and heat",
+   "asserts": [
+    {
+     "what": "received at L2 with its parent and heat",
+     "ok": true
+    },
+    {
+     "what": "remnant: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "remnant: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "remnant: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 95
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "scrapping a remnant writes a SCRAP movement and uses it up",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "one SCRAP movement of 12.5 by the inventory manager with the note",
+     "ok": true
+    },
+    {
+     "what": "nothing left and the item is used up",
+     "ok": true
+    },
+    {
+     "what": "remnant: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "remnant: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "remnant: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 70
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "more cannot come out of a work order than went in",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "the source is untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 75
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "scrap needs a note, and only free stock can be scrapped",
+   "asserts": [
+    {
+     "what": "no note: refused",
+     "ok": true
+    },
+    {
+     "what": "scrapping into the reserved part is refused",
+     "ok": true
+    },
+    {
+     "what": "scrapping the free part works",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 133
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "a branch login cannot cut a remnant from another branch's parent",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing saved and the parent untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 32
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "an item's history shows where it came from and what was cut from it",
+   "asserts": [
+    {
+     "what": "the parent history lists the cut",
+     "ok": true
+    },
+    {
+     "what": "the piece names its parent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 66
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "the Steel Outlet remnant list is separate from stock: reserving there changes no stock balance (finding K-006)",
+   "asserts": [
+    {
+     "what": "the outlet list answers",
+     "ok": true
+    },
+    {
+     "what": "no stock balance moved: the outlet list is not linked to stock items",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 78
+  },
+  {
+   "group": "Consumption, remnants and scrap",
+   "name": "consuming reserved stock through a work order for its line keeps the reservation on the pieces",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "the line still has 960 reserved, now on the pieces",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 211
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a transfer of three items ships them: numbered, in transit, still at the sender, no movement yet",
+   "asserts": [
+    {
+     "what": "accepted with a TRF number and three lines",
+     "ok": true
+    },
+    {
+     "what": "item 6fd3bc: at L1, all of it in transit, none on sale",
+     "ok": true
+    },
+    {
+     "what": "no TRANSFER movement until it is received",
+     "ok": true
+    },
+    {
+     "what": "item 9cf986: at L1, all of it in transit, none on sale",
+     "ok": true
+    },
+    {
+     "what": "no TRANSFER movement until it is received",
+     "ok": true
+    },
+    {
+     "what": "item d8dc9a: at L1, all of it in transit, none on sale",
+     "ok": true
+    },
+    {
+     "what": "no TRANSFER movement until it is received",
+     "ok": true
+    },
+    {
+     "what": "the transfer records who sent it, the carrier and reference",
+     "ok": true
+    },
+    {
+     "what": "the send is in the audit trail",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 136
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "stock in transit cannot be held, corrected, shipped to a customer or sent again",
+   "asserts": [
+    {
+     "what": "hold refused",
+     "ok": true
+    },
+    {
+     "what": "correction refused",
+     "ok": true
+    },
+    {
+     "what": "sending again refused",
+     "ok": true
+    },
+    {
+     "what": "legacy one-item transfer refused",
+     "ok": true
+    },
+    {
+     "what": "the balance is exactly as shipped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 88
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "receiving in full moves the items to the other branch, on sale, with one movement each",
+   "asserts": [
+    {
+     "what": "received by the L2 clerk",
+     "ok": true
+    },
+    {
+     "what": "item and balance at L2, on sale, nothing in transit",
+     "ok": true
+    },
+    {
+     "what": "one TRANSFER movement L1 to L2 of the whole quantity by the clerk",
+     "ok": true
+    },
+    {
+     "what": "item and balance at L2, on sale, nothing in transit",
+     "ok": true
+    },
+    {
+     "what": "one TRANSFER movement L1 to L2 of the whole quantity by the clerk",
+     "ok": true
+    },
+    {
+     "what": "the transfer records who received it and when, each line received whole and GOOD",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 101
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "an item that arrives short is held whole; a manager confirming the shortage takes the missing weight off",
+   "asserts": [
+    {
+     "what": "received with a warning",
+     "ok": true
+    },
+    {
+     "what": "at L2, all 2000 on hold, none on sale, a DISPUTE hold",
+     "ok": true
+    },
+    {
+     "what": "confirmed: 1940 on hand and on sale, hold released",
+     "ok": true
+    },
+    {
+     "what": "an ADJUST movement of 60 by the manager with the reason",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 106
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a shortage that turns up is settled as found: nothing is taken off and the hold is released",
+   "asserts": [
+    {
+     "what": "1000 on hand and on sale, hold released, no correction movement",
+     "ok": true
+    },
+    {
+     "what": "settling the same line again is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 106
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "an item that never arrived, once confirmed lost, is taken off entirely and marked used up",
+   "asserts": [
+    {
+     "what": "the one that came is on sale at L2",
+     "ok": true
+    },
+    {
+     "what": "the lost item has nothing on hand, is used up and has no open hold",
+     "ok": true
+    },
+    {
+     "what": "lost item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "lost item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "lost item: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "item that came: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item that came: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item that came: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 141
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "an item that arrives damaged is held as damage at the receiving branch",
+   "asserts": [
+    {
+     "what": "received with a discrepancy",
+     "ok": true
+    },
+    {
+     "what": "a DAMAGE hold, all of it held, at L2",
+     "ok": true
+    },
+    {
+     "what": "the line is recorded as damaged with the note",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 82
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a transfer received twice is booked in once",
+   "asserts": [
+    {
+     "what": "the second receipt is refused as already done",
+     "ok": true
+    },
+    {
+     "what": "one TRANSFER movement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 73
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "the sending branch cannot receive its own transfer at the other end",
+   "asserts": [
+    {
+     "what": "refused with 403",
+     "ok": true
+    },
+    {
+     "what": "still in transit at L1",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 78
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "the sender can call a transfer back before it arrives; the receiver cannot",
+   "asserts": [
+    {
+     "what": "the receiving branch cannot cancel it",
+     "ok": true
+    },
+    {
+     "what": "a reason is required",
+     "ok": true
+    },
+    {
+     "what": "cancelled: back on sale at L1, nothing in transit",
+     "ok": true
+    },
+    {
+     "what": "a cancelled transfer cannot be received",
+     "ok": true
+    },
+    {
+     "what": "no movement was written",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 90
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "only a manager or the inventory manager settles a shortage",
+   "asserts": [
+    {
+     "what": "the clerk is refused",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 90
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a reserved item travels with its reservation and ships from the new branch",
+   "asserts": [
+    {
+     "what": "in transit: 500 still reserved, the free 1500 in transit",
+     "ok": true
+    },
+    {
+     "what": "received at L1 with the reservation and 1500 free",
+     "ok": true
+    },
+    {
+     "what": "ships from L1",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 295
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "an item on hold can be sent and arrives still on hold, with nothing of it on sale on the way",
+   "asserts": [
+    {
+     "what": "sent: 900 still on hold, none free or in the free in-transit bucket",
+     "ok": true
+    },
+    {
+     "what": "received at L2 still on hold with the same hold",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 103
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "each branch sees the transfers coming in and going out, and not other branches' transfers",
+   "asserts": [
+    {
+     "what": "the L1 inventory manager sees its outgoing transfer under out",
+     "ok": true
+    },
+    {
+     "what": "and the incoming one under in",
+     "ok": true
+    },
+    {
+     "what": "and cannot open one between two other branches",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 195
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a transfer must name a real other branch and items from one branch, each once",
+   "asserts": [
+    {
+     "what": "items at two branches: refused",
+     "ok": true
+    },
+    {
+     "what": "to its own branch: refused",
+     "ok": true
+    },
+    {
+     "what": "to a branch not on file: refused",
+     "ok": true
+    },
+    {
+     "what": "the same item twice: refused",
+     "ok": true
+    },
+    {
+     "what": "none of them moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 71
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "a receipt cannot add weight to a transfer or name an item that is not on it",
+   "asserts": [
+    {
+     "what": "more than shipped: refused with 409",
+     "ok": true
+    },
+    {
+     "what": "an item not on the transfer: refused",
+     "ok": true
+    },
+    {
+     "what": "a short line with no note: refused",
+     "ok": true
+    },
+    {
+     "what": "still in transit and not received",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 99
+  },
+  {
+   "group": "Interbranch transfers",
+   "name": "the old transfer address still works but now ships, and the old v1 transfer writes are retired",
+   "asserts": [
+    {
+     "what": "the one-item transfer answers 201 and says it is in transit",
+     "ok": true
+    },
+    {
+     "what": "part of an item still cannot be sent",
+     "ok": true
+    },
+    {
+     "what": "the v1 transfer write is retired with 410",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 94
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "a return to restock goes back on the item it shipped from, with a receipt movement",
+   "asserts": [
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "500 left after shipping plus 300 back: 800 on hand and on sale",
+     "ok": true
+    },
+    {
+     "what": "a RECEIVE movement of 300 for the return",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 281
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "a return for inspection comes back on hold until someone has looked at it",
+   "asserts": [
+    {
+     "what": "received and held for test",
+     "ok": true
+    },
+    {
+     "what": "the returned 200 is not on sale",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 281
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "a return that is scrapped is recorded coming back and going out, so the history still adds up",
+   "asserts": [
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "a RECEIVE and a SCRAP of 250 for the return",
+     "ok": true
+    },
+    {
+     "what": "the balance did not change: 500",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 290
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "more cannot be returned than shipped",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "no return saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 213
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "a count that finds less sets the balance to what is there with a COUNT movement and a note",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "1950.5 on hand; a COUNT movement of 49.5 out by the inventory manager",
+     "ok": true
+    },
+    {
+     "what": "the change is in the audit trail with before and after",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 47
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "a count that agrees writes no movement, only a confirmation",
+   "asserts": [
+    {
+     "what": "answered 200 with no movement",
+     "ok": true
+    },
+    {
+     "what": "only the receipt movement, and a confirmation in the audit trail",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 43
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "found stock adds to the balance; found cannot take away",
+   "asserts": [
+    {
+     "what": "found -50 is refused",
+     "ok": true
+    },
+    {
+     "what": "found +75 is accepted: 1075 on hand with an ADJUST in",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 57
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "only a manager or the inventory manager can correct a balance",
+   "asserts": [
+    {
+     "what": "csr: refused with 403",
+     "ok": true
+    },
+    {
+     "what": "operator: refused with 403",
+     "ok": true
+    },
+    {
+     "what": "shipping: refused with 403",
+     "ok": true
+    },
+    {
+     "what": "the clerk too",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 44
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "a correction cannot take away stock that is reserved or on hold",
+   "asserts": [
+    {
+     "what": "refused with 409 naming what is reserved",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 96
+  },
+  {
+   "group": "Returns, counts and adjustments",
+   "name": "a branch login cannot correct another branch's stock",
+   "asserts": [
+    {
+     "what": "not found",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 31
+  },
   {
    "group": "Concurrency, security and recovery",
    "name": "two people receiving the same transfer at once: one books it in",
@@ -38,7 +2156,7 @@
     }
    ],
    "pass": true,
-   "ms": 118
+   "ms": 80
   },
   {
    "group": "Concurrency, security and recovery",
@@ -70,7 +2188,7 @@
     }
    ],
    "pass": true,
-   "ms": 88
+   "ms": 68
   },
   {
    "group": "Concurrency, security and recovery",
@@ -98,7 +2216,7 @@
     }
    ],
    "pass": true,
-   "ms": 87
+   "ms": 84
   },
   {
    "group": "Concurrency, security and recovery",
@@ -114,7 +2232,7 @@
     }
    ],
    "pass": true,
-   "ms": 89
+   "ms": 76
   },
   {
    "group": "Concurrency, security and recovery",
@@ -142,7 +2260,7 @@
     }
    ],
    "pass": true,
-   "ms": 122
+   "ms": 110
   },
   {
    "group": "Concurrency, security and recovery",
@@ -170,7 +2288,7 @@
     }
    ],
    "pass": true,
-   "ms": 103
+   "ms": 94
   },
   {
    "group": "Concurrency, security and recovery",
@@ -198,7 +2316,7 @@
     }
    ],
    "pass": true,
-   "ms": 87
+   "ms": 89
   },
   {
    "group": "Concurrency, security and recovery",
@@ -210,18 +2328,18 @@
     }
    ],
    "pass": true,
-   "ms": 81
+   "ms": 60
   },
   {
    "group": "Concurrency, security and recovery",
    "name": "bad input to the stock routes is answered with a 4xx, never a server error",
    "asserts": [
     {
-     "what": "POST /api/inventory/transfers {\"toLocationId\":\"ff365222-958b-459c-8b8a: 400",
+     "what": "POST /api/inventory/transfers {\"toLocationId\":\"572b9529-8328-44f9-94b6: 400",
      "ok": true
     },
     {
-     "what": "POST /api/inventory/transfers {\"toLocationId\":42,\"coilIds\":[\"55f75dbc-: 400",
+     "what": "POST /api/inventory/transfers {\"toLocationId\":42,\"coilIds\":[\"7f5a7e01-: 400",
      "ok": true
     },
     {
@@ -229,7 +2347,7 @@
      "ok": true
     },
     {
-     "what": "POST /api/inventory/transfers/nope/settle {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 404",
+     "what": "POST /api/inventory/transfers/nope/settle {\"coilId\":\"7f5a7e01-df3f-4fdb-ac59-fc883: 404",
      "ok": true
     },
     {
@@ -245,19 +2363,19 @@
      "ok": true
     },
     {
-     "what": "POST /api/inventory/receipts {\"coilNumber\":\"RC-MWI6L7IP-14\",\"form\":\"P: 400",
+     "what": "POST /api/inventory/receipts {\"coilNumber\":\"RC-MWI6OZ4J-188\",\"form\":\": 400",
      "ok": true
     },
     {
-     "what": "POST /api/inventory/adjust {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 400",
+     "what": "POST /api/inventory/adjust {\"coilId\":\"7f5a7e01-df3f-4fdb-ac59-fc883: 400",
      "ok": true
     },
     {
-     "what": "POST /api/inventory/adjust {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 400",
+     "what": "POST /api/inventory/adjust {\"coilId\":\"7f5a7e01-df3f-4fdb-ac59-fc883: 400",
      "ok": true
     },
     {
-     "what": "POST /api/coils/55f75dbc-a3d1-4dd0-82d2-4f08674e24a1/hold {\"holdType\":\"NOPE\",\"holdReason\":\"x\"}: 400",
+     "what": "POST /api/coils/7f5a7e01-df3f-4fdb-ac59-fc88398ed0ba/hold {\"holdType\":\"NOPE\",\"holdReason\":\"x\"}: 400",
      "ok": true
     },
     {
@@ -269,7 +2387,7 @@
      "ok": true
     },
     {
-     "what": "POST /api/inventory/transfer {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 400",
+     "what": "POST /api/inventory/transfer {\"coilId\":\"7f5a7e01-df3f-4fdb-ac59-fc883: 400",
      "ok": true
     },
     {
@@ -278,7 +2396,7 @@
     }
    ],
    "pass": true,
-   "ms": 124
+   "ms": 112
   },
   {
    "group": "Concurrency, security and recovery",
@@ -298,7 +2416,7 @@
     }
    ],
    "pass": true,
-   "ms": 214
+   "ms": 205
   },
   {
    "group": "Concurrency, security and recovery",
@@ -330,7 +2448,7 @@
     }
    ],
    "pass": true,
-   "ms": 224
+   "ms": 199
   },
   {
    "group": "Concurrency, security and recovery",
@@ -346,7 +2464,7 @@
     }
    ],
    "pass": true,
-   "ms": 173
+   "ms": 162
   },
   {
    "group": "Concurrency, security and recovery",
@@ -370,7 +2488,7 @@
     }
    ],
    "pass": true,
-   "ms": 24
+   "ms": 14
   },
   {
    "group": "Concurrency, security and recovery",
@@ -381,104 +2499,104 @@
      "ok": true
     },
     {
-     "what": "burst item e4bd28: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 50c908: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item e4bd28: reserved equals the reservations on file",
+     "what": "burst item 50c908: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item e4bd28: its history adds up to its balance",
+     "what": "burst item 50c908: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 9c0f9e: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 6fff0c: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 9c0f9e: reserved equals the reservations on file",
+     "what": "burst item 6fff0c: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 9c0f9e: its history adds up to its balance",
+     "what": "burst item 6fff0c: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 28ac51: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 8c67d5: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 28ac51: reserved equals the reservations on file",
+     "what": "burst item 8c67d5: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 28ac51: its history adds up to its balance",
+     "what": "burst item 8c67d5: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 22d9e6: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 43c0b6: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 22d9e6: reserved equals the reservations on file",
+     "what": "burst item 43c0b6: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 22d9e6: its history adds up to its balance",
+     "what": "burst item 43c0b6: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 73222e: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item e7a7cd: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 73222e: reserved equals the reservations on file",
+     "what": "burst item e7a7cd: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 73222e: its history adds up to its balance",
+     "what": "burst item e7a7cd: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item ebdefb: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 195a8a: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item ebdefb: reserved equals the reservations on file",
+     "what": "burst item 195a8a: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item ebdefb: its history adds up to its balance",
+     "what": "burst item 195a8a: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item b3d8a2: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 348818: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item b3d8a2: reserved equals the reservations on file",
+     "what": "burst item 348818: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item b3d8a2: its history adds up to its balance",
+     "what": "burst item 348818: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 36fb06: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 932ab1: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 36fb06: reserved equals the reservations on file",
+     "what": "burst item 932ab1: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 36fb06: its history adds up to its balance",
+     "what": "burst item 932ab1: its history adds up to its balance",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 587
+   "ms": 453
   },
   {
    "group": "Concurrency, security and recovery",
@@ -489,152 +2607,152 @@
      "ok": true
     },
     {
-     "what": "raced item 08776a: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item fde650: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 08776a: reserved equals the reservations on file",
+     "what": "raced item fde650: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 08776a: its history adds up to its balance",
+     "what": "raced item fde650: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 388e52: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item fbd922: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 388e52: reserved equals the reservations on file",
+     "what": "raced item fbd922: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 388e52: its history adds up to its balance",
+     "what": "raced item fbd922: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 97da81: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 1ebec9: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 97da81: reserved equals the reservations on file",
+     "what": "raced item 1ebec9: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 97da81: its history adds up to its balance",
+     "what": "raced item 1ebec9: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item d105d8: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item b9c9e2: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item d105d8: reserved equals the reservations on file",
+     "what": "raced item b9c9e2: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item d105d8: its history adds up to its balance",
+     "what": "raced item b9c9e2: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 0e730c: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 085e65: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 0e730c: reserved equals the reservations on file",
+     "what": "raced item 085e65: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 0e730c: its history adds up to its balance",
+     "what": "raced item 085e65: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item a08023: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 075872: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item a08023: reserved equals the reservations on file",
+     "what": "raced item 075872: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item a08023: its history adds up to its balance",
+     "what": "raced item 075872: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item fee955: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 61f817: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item fee955: reserved equals the reservations on file",
+     "what": "raced item 61f817: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item fee955: its history adds up to its balance",
+     "what": "raced item 61f817: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item ce38e0: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 805547: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item ce38e0: reserved equals the reservations on file",
+     "what": "raced item 805547: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item ce38e0: its history adds up to its balance",
+     "what": "raced item 805547: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item fadc96: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item e6c2ff: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item fadc96: reserved equals the reservations on file",
+     "what": "raced item e6c2ff: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item fadc96: its history adds up to its balance",
+     "what": "raced item e6c2ff: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item fa78f4: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item edad69: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item fa78f4: reserved equals the reservations on file",
+     "what": "raced item edad69: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item fa78f4: its history adds up to its balance",
+     "what": "raced item edad69: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item d405bd: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 3f52e5: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item d405bd: reserved equals the reservations on file",
+     "what": "raced item 3f52e5: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item d405bd: its history adds up to its balance",
+     "what": "raced item 3f52e5: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 01be8f: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 7970b4: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 01be8f: reserved equals the reservations on file",
+     "what": "raced item 7970b4: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 01be8f: its history adds up to its balance",
+     "what": "raced item 7970b4: its history adds up to its balance",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 896
+   "ms": 800
   },
   {
    "group": "Concurrency, security and recovery",
@@ -666,7 +2784,7 @@
     }
    ],
    "pass": true,
-   "ms": 551
+   "ms": 549
   },
   {
    "group": "Concurrency, security and recovery",
@@ -706,7 +2824,7 @@
     }
    ],
    "pass": true,
-   "ms": 20
+   "ms": 14
   }
  ]
 }

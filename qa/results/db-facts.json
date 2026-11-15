@@ -1,14 +1,12 @@
 {
- "at": "2026-11-15T18:44:52.488Z",
+ "at": "2026-11-15T22:25:24.272Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 162,
- "totalRows": 10868,
+ "totalRows": 15949,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
   "AssetComponent",
-  "BomOperation",
-  "BomRecipe",
   "CommodityPrice",
   "CustomerTagRequirement",
   "Division",
@@ -18,15 +16,12 @@
   "DropTagListing",
   "ForecastSnapshot",
   "InventoryAdjustment",
-  "JobInspection",
-  "LabelTemplate",
   "MaintenanceAttachment",
   "MaintenanceAuditLog",
   "MaintenanceOrderLabor",
   "MaintenanceOrderPart",
   "MaintenanceTask",
   "MeterReading",
-  "OperatorSkill",
   "PMSchedule",
   "PMTemplate",
   "Package",
@@ -95,7 +90,7 @@
   },
   {
    "table": "AppSetting",
-   "rows": 1
+   "rows": 3
   },
   {
    "table": "ApprovalDecision",
@@ -107,7 +102,7 @@
   },
   {
    "table": "Asset",
-   "rows": 285
+   "rows": 292
   },
   {
    "table": "AssetComponent",
@@ -115,23 +110,23 @@
   },
   {
    "table": "AssetType",
-   "rows": 1
+   "rows": 2
   },
   {
    "table": "AuditLog",
-   "rows": 2616
+   "rows": 4306
   },
   {
    "table": "BomOperation",
-   "rows": 0
+   "rows": 34
   },
   {
    "table": "BomRecipe",
-   "rows": 0
+   "rows": 22
   },
   {
    "table": "Coil",
-   "rows": 658
+   "rows": 818
   },
   {
    "table": "CommodityPrice",
@@ -139,11 +134,11 @@
   },
   {
    "table": "CustomerPreference",
-   "rows": 1
+   "rows": 2
   },
   {
    "table": "CustomerPricingTier",
-   "rows": 11
+   "rows": 12
   },
   {
    "table": "CustomerTagRequirement",
@@ -151,7 +146,7 @@
   },
   {
    "table": "DemandSuggestionEvent",
-   "rows": 1242
+   "rows": 1254
   },
   {
    "table": "DispatchDivision",
@@ -159,15 +154,15 @@
   },
   {
    "table": "DispatchJob",
-   "rows": 18
+   "rows": 309
   },
   {
    "table": "DispatchOperation",
-   "rows": 36
+   "rows": 352
   },
   {
    "table": "DispatchTimeLog",
-   "rows": 35
+   "rows": 234
   },
   {
    "table": "Division",
@@ -219,7 +214,7 @@
   },
   {
    "table": "Heat",
-   "rows": 18
+   "rows": 19
   },
   {
    "table": "IntakeContact",
@@ -243,7 +238,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 658
+   "rows": 818
   },
   {
    "table": "InventoryAdjustment",
@@ -267,23 +262,23 @@
   },
   {
    "table": "Invoice",
-   "rows": 241
+   "rows": 244
   },
   {
    "table": "InvoiceLine",
-   "rows": 252
+   "rows": 255
   },
   {
    "table": "Job",
-   "rows": 273
+   "rows": 603
   },
   {
    "table": "JobInspection",
-   "rows": 0
+   "rows": 241
   },
   {
    "table": "LabelTemplate",
-   "rows": 0
+   "rows": 2
   },
   {
    "table": "Location",
@@ -299,7 +294,7 @@
   },
   {
    "table": "MaintenanceOrder",
-   "rows": 1
+   "rows": 3
   },
   {
    "table": "MaintenanceOrderLabor",
@@ -315,7 +310,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 714
+   "rows": 990
   },
   {
    "table": "MeterReading",
@@ -327,23 +322,23 @@
   },
   {
    "table": "Operator",
-   "rows": 2
+   "rows": 95
   },
   {
    "table": "OperatorSkill",
-   "rows": 0
+   "rows": 105
   },
   {
    "table": "Order",
-   "rows": 624
+   "rows": 982
   },
   {
    "table": "OrderLine",
-   "rows": 645
+   "rows": 1003
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 46
+   "rows": 57
   },
   {
    "table": "Organization",
@@ -383,7 +378,7 @@
   },
   {
    "table": "Payment",
-   "rows": 139
+   "rows": 140
   },
   {
    "table": "PipelineRun",
@@ -391,7 +386,7 @@
   },
   {
    "table": "PosSession",
-   "rows": 10
+   "rows": 11
   },
   {
    "table": "PriceLevel",
@@ -431,11 +426,11 @@
   },
   {
    "table": "QCHold",
-   "rows": 54
+   "rows": 59
   },
   {
    "table": "Quote",
-   "rows": 57
+   "rows": 58
   },
   {
    "table": "QuoteAcceptance",
@@ -443,15 +438,15 @@
   },
   {
    "table": "QuoteLine",
-   "rows": 41
+   "rows": 42
   },
   {
    "table": "RFQ",
-   "rows": 61
+   "rows": 62
   },
   {
    "table": "RFQLine",
-   "rows": 46
+   "rows": 47
   },
   {
    "table": "RFQSource",
@@ -467,7 +462,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 22
+   "rows": 38
   },
   {
    "table": "RfidScanEvent",
@@ -635,11 +630,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 260
+   "rows": 270
   },
   {
    "table": "ShipmentItem",
-   "rows": 229
+   "rows": 239
   },
   {
    "table": "ShipmentStop",
@@ -659,11 +654,11 @@
   },
   {
    "table": "StockTransfer",
-   "rows": 60
+   "rows": 69
   },
   {
    "table": "StockTransferLine",
-   "rows": 64
+   "rows": 73
   },
   {
    "table": "StopWorkAudit",
@@ -699,7 +694,7 @@
   },
   {
    "table": "User",
-   "rows": 30
+   "rows": 48
   },
   {
    "table": "UserDivision",
@@ -719,19 +714,19 @@
   },
   {
    "table": "WorkCenter",
-   "rows": 285
+   "rows": 381
   },
   {
    "table": "WorkCenterType",
-   "rows": 1
+   "rows": 77
   },
   {
    "table": "WorkOrder",
-   "rows": 22
+   "rows": 109
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 19
+   "rows": 79
   },
   {
    "table": "_prisma_migrations",
@@ -1116,6 +1111,20 @@
   "purchase order lines (by weight) whose received quantity differs from the receipts booked against them": 0,
   "receipts booked against a line that is not on a purchase order": 0,
   "last transfer of an item did not end where the item now is": 0,
+  "time entries that end before they start": 0,
+  "time entries still running on a step that is finished": 0,
+  "time entries still running on a job that is cancelled, shipped or completed": 0,
+  "steps with more than one clock running": 0,
+  "time entries with no operator or no work center": 0,
+  "finished steps with no start or no end time": 0,
+  "steps running on a work center of another kind, or at another branch, than the step calls for": 0,
+  "jobs with more than one open inspection": 0,
+  "inspections decided with no result or no completion time, or still open with a result": 0,
+  "jobs past inspection (packaging, ready to ship, shipped, completed) whose latest decided inspection failed, outside rows written directly as fixtures": 0,
+  "jobs past production with a planned step unfinished, outside rows written directly as fixtures": 0,
+  "jobs whose plan is at a branch other than their work center": 0,
+  "operators clocked on while recorded as inactive": 0,
+  "work orders on quality hold or cancelled that moved stock": 0,
   "shipped stock movements with no shipment": 0,
   "dispatched shipment items whose quantity is not fully covered by stock movements: every shipment must come off reserved stock (G-019, refused since the owner decision of 2026-11-13)": 0,
   "stock items cut from a parent that lost the parent heat": 0,
@@ -1137,11 +1146,11 @@
   "invoice total differs from subtotal + tax + freight": 0,
   "invoice paid amount differs from its payments": 1,
   "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
-  "jobs with no order and no order line": 58,
-  "stock items (coils) with no heat": 2,
+  "jobs with no order and no order line": 65,
+  "stock items (coils) with no heat": 10,
   "stock items with no location": 0,
   "shipments delivered with no proof of delivery name": 47,
-  "users with no home branch": 2,
+  "users with no home branch": 5,
   "invoices and credit memos with no record of who raised them, outside the demo seed": 0
  }
 }

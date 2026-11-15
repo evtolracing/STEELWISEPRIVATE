@@ -10,56 +10,64 @@
   },
   "testsExecuted": [
     {
-      "test": "Phase 6 inventory scenarios (qa/sim/phase6-inventory.mjs, new in Phase 6)",
-      "result": "105 of 105 scenarios pass, 486 checks, in the third full gate run on the final code. Purchasing and replenishment 16/16; receiving and putaway 15/15; reservations, allocation and picking 15/15; consumption, remnants and scrap 15/15; interbranch transfers 17/17; returns, counts and adjustments 10/10; concurrency, security and recovery 17/17",
-      "before": "Did not exist. Probes on the starting code showed any stock reservable for any line (K-001), one-step transfers (G-007), no purchase orders (I-007). The second full run found a deadlock between a hold and a count (K-015), fixed before the third"
+      "test": "Phase 7 manufacturing scenarios (qa/sim/phase7-manufacturing.mjs, new in Phase 7)",
+      "result": "134 of 134 scenarios pass, 542 checks, on the final code (in the full run 133 of 134: one rewritten scenario stopped on a mistake in the test script, which was corrected and the whole suite run again with no product change). 119 verify built behaviour and 15 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: work orders and routing 15 and 0; BOMs and material 15 and 2; capacity and scheduling 21 and 1; shop floor, labor and machine 19 and 2; quality 19 and 3; scrap, remnants, rework and costing 11 and 5; cross-location, concurrency and recovery 19 and 2",
+      "before": "Did not exist. A probe on the starting code reproduced 17 defects before any fix"
     },
     {
-      "test": "Proof the Phase 6 checks fail without the fixes",
-      "result": "With the reservation rules, the receiving-branch check and the scrapped return's RECEIVE movement removed, 8 scenarios fail; with the hold's balance lock removed the hold scenario answers 500. Code restored and re-run green"
+      "test": "Proof the Phase 7 checks fail without the fixes",
+      "result": "21 fixes removed one at a time; each made 1 to 3 scenarios fail; source restored. A twenty-second belonged to a check that was withdrawn and is not counted"
     },
     {
-      "test": "Phase 6 browser checks (qa/sim/ui-phase6.cjs, new)",
-      "result": "14 checks, 0 failed: purchase orders, supply position, receiving against a line, transfers received from the screen",
+      "test": "First full run of every check on the Phase 7 code",
+      "result": "Every suite passed except the order-to-cash simulation: 147 create-job steps refused, because a check added in this phase blocked orders sold at one branch and worked at another. The check was withdrawn and the scenario rewritten to verify the established behaviour",
+      "before": "150 of 150"
+    },
+    {
+      "test": "Phase 7 browser checks (qa/sim/ui-phase7.cjs, new)",
+      "result": "21 checks, 0 failed: quality queue, conditional pass, scheduling messages, work center with no default limits, planner notes, phone width",
       "before": "Did not exist"
     },
     {
       "test": "Unit tests (src/backend, npm test)",
-      "result": "158 of 158 pass (9 new: phase6Rules)",
-      "before": "149 of 149"
+      "result": "171 of 171 pass (13 new: phase7Rules)",
+      "before": "158 of 158"
     },
     {
-      "test": "Stock, purchasing and transfer screens at 85 branches (100,233 stock items)",
-      "result": "All-branch login, median of 7: first page of stock 48 ms, search by part of a number 116 ms, supply position 271 ms, everything else under 40 ms. The one-branch login's branch holds no stock in the scale copy (empty case only)",
-      "before": "Phase 3 measured the stock search at 140 ms"
+      "test": "Production screens at 85 branches (about 9,300 plans, 18,600 steps, 1,500 inspections; one branch with 7,090 waiting jobs)",
+      "result": "Median of 7: job list 41 to 82 ms, late jobs 74 to 83 ms, shop-floor figures 73 to 98 ms, inspection queue 76 ms, planner preview 137 ms, work center queue 7 ms. Scheduling run at the largest branch 1,859 ms placing 14,180 steps",
+      "before": "Late jobs 653 ms; inspection queue 303 ms and 3.7 MB; scheduling run 45,342 ms"
     },
     {
-      "test": "SQL Editor file 12 (stock_transfers_po_receipts_piece_stock)",
-      "result": "Ran twice on a fresh copy with every earlier migration applied, and on the 85-branch copy; schema comparison afterwards empty",
-      "before": "New in Phase 6"
-    },
-    {
-      "test": "Order-to-cash simulation, seeds 8001 to 8003",
-      "result": "150 of 150 jobs pass; reconciliation 0 problems after each seed (plus 52 in demo seed data). Transfers are now sent and received; generated lines fit the stock item (K-001)",
+      "test": "Order-to-cash simulation, seeds 8001 to 8003 (second full run, final code)",
+      "result": "150 of 150 jobs pass; reconciliation 0 problems after each seed (plus 52 in demo seed data)",
       "before": "150 of 150"
     },
     {
-      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, Phase 4 and Phase 5 scenarios",
-      "result": "20 of 20 sections; 39 of 39; 80 of 80; 74 of 74 (612 checks); 66 of 66 (555 checks); 76 of 76 (386 checks). Older checks updated to the in-transit stage and the reservation rules are listed in phase-06-regression-results.md section 1; none removed",
-      "before": "20 of 20; 37 of 37; 80 of 80; 74 of 74 (607); 66 of 66 (554); 76 of 76"
+      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, 4, 5 and 6 scenarios (second full run)",
+      "result": "20 of 20 sections; 39 of 39; 82 of 82; 74 of 74 (612 checks); 66 of 66 (555 checks); 76 of 76 (386 checks); 105 of 105 (486 checks)",
+      "before": "20 of 20; 39 of 39; 80 of 80; 74 of 74 (612); 66 of 66 (555); 76 of 76 (386); 105 of 105 (486)"
     },
     {
-      "test": "Browser suites, every screen opens, baseline probe, department coverage, screen audit, lint, build",
-      "result": "All pass; 332 changing routes, 0 with no rule; 0 screens with made-up data and no notice; lint 0 errors, 1,528 warnings",
-      "before": "The same, 323 changing routes"
+      "test": "Browser suites, every screen opens, baseline probe, department coverage, screen audit, lint, build (second full run)",
+      "result": "All pass (22, 29, 30, 24, 23, 33, 14, 14 browser checks); 334 changing routes, 0 with no rule; 0 screens with made-up data and no notice; lint 0 errors, 1,526 warnings; build succeeds",
+      "before": "The same, 332 changing routes, 1,528 warnings"
     },
     {
-      "test": "Scanners, label printers, scales",
-      "result": "NOT EXECUTED: no hardware (K-013). No compatibility is claimed"
+      "test": "Database checks after the full run",
+      "result": "0 on every stock, reservation, transfer and production check, including 13 added in Phase 7. Known rows unchanged"
     },
     {
-      "test": "Inventory valuation, cycle count schedules, reorder calculations",
-      "result": "NOT EXECUTED: not built, each waits for an owner decision (K-007, K-008, K-010)"
+      "test": "Database change",
+      "result": "None. Phase 7 ships no migration and no SQL Editor file"
+    },
+    {
+      "test": "Machines, scales, scanners, telemetry",
+      "result": "NOT EXECUTED: no hardware and no machine connection exists (L-030, K-013). No certification is claimed"
+    },
+    {
+      "test": "Bill of material, material requirements, calendar capacity, costing, nesting, outsourced processing, nonconformance and corrective action",
+      "result": "NOT EXECUTED: not built (L-023 to L-027). Recorded NOT APPLICABLE with evidence; nothing was invented"
     },
     {
       "test": "The host and live data",
@@ -67,42 +75,43 @@
     }
   ],
   "unverifiedAreas": [
-    "The live database and the host: nothing in Phase 6 was run against either; live master data, heats, certificates and bins are unknown",
-    "Scanners, label printers and scales (K-013)",
-    "Inventory valuation: no cost at receipt and no method chosen (K-007)",
-    "Cycle count program, reorder rules, receiving tolerance and purchase order approval: no policy on file (K-008, K-010, K-011)",
+    "The live database and the host: nothing in Phase 7 was run against either. Live operators, certifications, work-center kinds, routings and open jobs are unknown, and the new rules will refuse records that do not meet them (R-46)",
+    "SQL Editor files 6 to 12 on the live database: the owner has not sent the result of the read-only check (verify-6-to-12.sql)",
+    "Machines and shop-floor hardware (L-030, K-013)",
+    "Production costing, bill of material, calendar capacity, nonconformance, rework routing, outsourced processing, nesting: not built (L-020, L-023 to L-027)",
+    "Accessibility of the shop-floor screens: not assessed (Phase 9)",
     "Time per task with real users: no minutes-saved figure is claimed",
-    "Earlier unverified areas unchanged: payment at web checkout (H-013, H-015), customer messages (decision 5), backup and restore (E-015), host pool (G-015), host schedule (B-019), sustained load"
+    "Earlier unverified areas unchanged: scanners (K-013), inventory valuation (K-007), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), customer messages (decision 5), backup and restore (E-015), host pool (G-015), host schedule (B-019), sustained load"
   ],
   "currentBlockers": [
-    "Owner: SQL Editor files 6 to 12 must be applied, in order, before pull request 31 is merged",
-    "K-007 (P1): the costing method and where cost comes from at receipt",
-    "K-008, K-010, K-011, K-009: cycle count policy; reorder rules; receiving tolerance and purchase order approval; bin plan",
-    "K-006, S-009, J-012: remnant pricing and the Steel Outlet list",
-    "K-013: no scanner hardware to test with",
-    "Still open from earlier phases: J-008 and S-020, H-011, H-013, H-015, B-019, E-015"
+    "Owner: SQL Editor files 6 to 12 must be applied, in order, and confirmed before pull request 31 is merged",
+    "L-026 with K-007 (P1): production costing and the costing method",
+    "L-024: whether a job and a coil work order are linked, so a job knows its material, scrap and yield",
+    "L-020, L-021, L-022, L-028: how rework is recorded; which jobs must be inspected; labor rules; inspection standards",
+    "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-013, H-015, B-019, E-015, K-013"
   ],
   "nextActions": [
-    "Owner: apply SQL Editor files 6 to 12 in order (/mnt/project-files/database-updates/), then say when to merge pull request 31",
-    "Owner: answer the questions in phase-06-report.md (costing; cycle counts; reorder rules, tolerance and approval; bins and remnant pricing)",
-    "Owner: issue the Phase 7 prompt (manufacturing, scheduling and quality). Phase 7 has not been started"
+    "Owner: send the result of verify-6-to-12.sql, then say when to merge pull request 31",
+    "Owner: answer the six Phase 7 questions in phase-07-report.md (costing; job and coil work order; rework; which jobs are inspected; labor rules; inspection standards)",
+    "Owner: tell the branches about the new shop-floor rules before go-live (R-40), and allow a read-only check of live operators and work centers (R-46)",
+    "Owner: issue the Phase 8 prompt (shipping, logistics, invoicing, reconciliation, closeout). Phase 8 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 6: third full gate run on the final code all green; 105 of 105 inventory scenarios (486 checks); 14 browser checks; stock screens timed at 85 branches; 15 findings recorded (K-001 to K-015); G-007, I-007 and C-011 closed; documents written.",
-  "currentPhase": 6,
-  "findingPrefix": "K-",
+  "lastCompletedCheckpoint": "Phase 7: second full gate run on the final code; 134 manufacturing scenarios run (119 verified, 15 not built), 542 checks; 21 browser checks; 21 fixes proven by mutation; production screens timed at 85 branches; 30 findings recorded (L-001 to L-030: 19 fixed, 6 for the owner, 5 deferred); B-011 closed; no database change; documents written.",
+  "currentPhase": 7,
+  "findingPrefix": "L-",
   "phase2BaselineCommit": "0ad7857",
   "scoreAdjustments": [
     {
       "group": "Manufacturing and processing",
       "category": "Data integrity",
-      "score": 87,
-      "evidence": "Phase 3, owner decision: completing a work order takes output and scrap off the source, creates the pieces with the source heat, and carries a line's reservation into them, in one transaction; several work orders on one item are safe under a lock (three raced: two fit, one refused). Three read-only checks at 0. Held at 87: shop-floor jobs record no weights; a completed work order cannot be reversed"
+      "score": 90,
+      "evidence": "Phase 7: 13 new database checks at 0 after the full run (clocks, steps, inspections, plan branch); a plan with recorded work is never replaced (L-012); cancelling a job closes its clocks (L-018); nothing assumed for grade, thickness, time or hours (L-008, L-010). Phase 3: a coil work order consumes and creates stock in one transaction. Held at 90: a job names no stock and records no weight (L-024); thickness not stated is stored as 0 (L-029)"
     },
     {
       "group": "Manufacturing and processing",
       "category": "Reliability",
-      "score": 78,
-      "evidence": "Phase 2: simultaneous completion, start after cancel and double status moves are refused with a plain 409; work centers can be created again (C-004). Held at 78: 65 of 91 changing routes still have no success-path test"
+      "score": 88,
+      "evidence": "Phase 7: races on planning, scheduling, step start, finish against pause, inspection decisions, status moves and cancel against the last finish each end in one consistent state; a step left running across a gap recovers; a refused request saves nothing. Held at 88: local machine only; no machine connection to fail (L-030)"
     },
     {
       "group": "Platform infrastructure",
@@ -149,8 +158,8 @@
     {
       "group": "Manufacturing and processing",
       "category": "Performance",
-      "score": 72,
-      "evidence": "Phase 3: the branch job list answers in 158 ms at the 95th percentile with 72,541 jobs. Held at 72: it reads every job in the company (G-013); nothing else in the group was measured"
+      "score": 84,
+      "evidence": "Phase 7: at 85 branches with about 18,600 steps the production screens answer in 6 to 139 ms; the scheduling run at a branch with 7,090 waiting jobs fell from 45.3 s to 1.9 s; the late list from 653 to 74 ms; lists are capped with totals. Held at 84: local machine; the scheduling and planner answers are 8.3 MB and 1.2 MB at the largest branch"
     },
     {
       "group": "Logistics and financial operations",
@@ -229,6 +238,18 @@
       "category": "Performance",
       "score": 82,
       "evidence": "Phase 6: at 85 branches and 100,233 items the stock list answers in 48 ms, a search by part of a number in 116 ms, the supply position in 271 ms. Held at 82: local machine; the one-branch benchmark login has no stock; no index added without evidence (G-013)"
+    },
+    {
+      "group": "Manufacturing and processing",
+      "category": "Functional correctness",
+      "score": 86,
+      "evidence": "Phase 7: 119 verified scenarios across work orders, routing, scheduling, shop floor, quality, material and cross-branch production; every job move through one gate (L-001, L-006); steps in planned order (owner decision 8). Held at 86: bill of material, calendar capacity, costing, nonconformance and rework routing are not built (L-020, L-023 to L-026)"
+    },
+    {
+      "group": "Manufacturing and processing",
+      "category": "Security",
+      "score": 90,
+      "evidence": "Phase 7: inspections, time entries and operators are branch-owned (L-019); a planner schedules only their own branch (L-007); pay and emergency contacts go to managers only (L-014); quality decisions are for quality staff and production management and are audited against the signed-in user (L-003). Held at 90: live roles NOT VERIFIED"
     }
   ],
   "pullRequest": 31,
@@ -238,5 +259,6 @@
   "phase3BaselineCommit": "181a874",
   "phase4BaselineCommit": "dffa7d2",
   "phase5BaselineCommit": "fce9593",
-  "phase6BaselineCommit": "c43ee25"
+  "phase6BaselineCommit": "c43ee25",
+  "phase7BaselineCommit": "6cbedc5"
 }

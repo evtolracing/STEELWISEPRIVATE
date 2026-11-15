@@ -1,7 +1,7 @@
 {
  "seed": 8003,
  "base": "http://localhost:3011",
- "at": "2026-11-15T18:42:58.919Z",
+ "at": "2026-11-15T22:12:15.159Z",
  "scenarios": [
   {
    "id": "S8003-01",
@@ -32,25 +32,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00184 → IN_PROCESS",
+     "name": "job JOB-00183 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → WAITING_QC",
+     "name": "job JOB-00183 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → PACKAGING",
+     "name": "job JOB-00183 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00183",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00104",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → READY_TO_SHIP",
+     "name": "job JOB-00183 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -200,7 +212,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 446
+   "ms": 474
   },
   {
    "id": "S8003-02",
@@ -231,25 +243,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00185 → IN_PROCESS",
+     "name": "job JOB-00184 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00185 → WAITING_QC",
+     "name": "job JOB-00184 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00185 → PACKAGING",
+     "name": "job JOB-00184 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00184",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00105",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00185 → READY_TO_SHIP",
+     "name": "job JOB-00184 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -383,7 +407,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 363
+   "ms": 393
   },
   {
    "id": "S8003-03",
@@ -414,25 +438,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00186 → IN_PROCESS",
+     "name": "job JOB-00185 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00186 → WAITING_QC",
+     "name": "job JOB-00185 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00186 → PACKAGING",
+     "name": "job JOB-00185 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00185",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00106",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00186 → READY_TO_SHIP",
+     "name": "job JOB-00185 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -556,7 +592,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 317
+   "ms": 412
   },
   {
    "id": "S8003-04",
@@ -587,25 +623,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00187 → IN_PROCESS",
+     "name": "job JOB-00186 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00187 → WAITING_QC",
+     "name": "job JOB-00186 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00187 → PACKAGING",
+     "name": "job JOB-00186 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00186",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00107",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00187 → READY_TO_SHIP",
+     "name": "job JOB-00186 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -739,7 +787,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 346
+   "ms": 433
   },
   {
    "id": "S8003-05",
@@ -770,25 +818,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00188 → IN_PROCESS",
+     "name": "job JOB-00187 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00188 → WAITING_QC",
+     "name": "job JOB-00187 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00188 → PACKAGING",
+     "name": "job JOB-00187 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00187",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00108",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00188 → READY_TO_SHIP",
+     "name": "job JOB-00187 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -922,7 +982,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 394
+   "ms": 429
   },
   {
    "id": "S8003-06",
@@ -977,31 +1037,43 @@
      "ok": true
     },
     {
-     "name": "assign JOB-00189 to QA-L19-LASER",
+     "name": "assign JOB-00188 to QA-L19-LASER",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → IN_PROCESS",
+     "name": "job JOB-00188 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → WAITING_QC",
+     "name": "job JOB-00188 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → PACKAGING",
+     "name": "job JOB-00188 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00188",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00109",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → READY_TO_SHIP",
+     "name": "job JOB-00188 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1139,7 +1211,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 466
+   "ms": 440
   },
   {
    "id": "S8003-07",
@@ -1194,31 +1266,43 @@
      "ok": true
     },
     {
-     "name": "assign JOB-00190 to QA-L72-SAW",
+     "name": "assign JOB-00189 to QA-L72-SAW",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → IN_PROCESS",
+     "name": "job JOB-00189 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → WAITING_QC",
+     "name": "job JOB-00189 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → PACKAGING",
+     "name": "job JOB-00189 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00189",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00110",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → READY_TO_SHIP",
+     "name": "job JOB-00189 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1372,7 +1456,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 485
+   "ms": 515
   },
   {
    "id": "S8003-08",
@@ -1403,6 +1487,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00190 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00190 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00190 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00190",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00111",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00190 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L30-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00191 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -1415,7 +1541,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00191 → PACKAGING",
+     "name": "job JOB-00191 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00191",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00112",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1427,7 +1565,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L30-SHEAR",
+     "name": "create job at QA-L30-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1445,43 +1583,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00192 → PACKAGING",
+     "name": "job JOB-00192 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00192",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00113",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00192 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L30-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1615,7 +1735,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 590
+   "ms": 795
   },
   {
    "id": "S8003-09",
@@ -1646,31 +1766,85 @@
      "ok": true
     },
     {
-     "name": "job JOB-00196 → IN_PROCESS",
+     "name": "job JOB-00193 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00196 → WAITING_QC",
+     "name": "job JOB-00193 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00196 → PACKAGING",
+     "name": "job JOB-00193 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00193",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00114",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00196 → READY_TO_SHIP",
+     "name": "job JOB-00193 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "create job at QA-L22-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00194 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00194 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00194 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00194",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00115",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00194 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L22-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1688,43 +1862,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00195 → PACKAGING",
+     "name": "job JOB-00195 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00195",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00116",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00195 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L22-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00198 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00198 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00198 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00198 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1874,7 +2030,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 663
+   "ms": 800
   },
   {
    "id": "S8003-10",
@@ -1905,6 +2061,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00196 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00196 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00196 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00196",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00117",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00196 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L12-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00197 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -1917,7 +2115,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00197 → PACKAGING",
+     "name": "job JOB-00197 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00197",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00118",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1929,61 +2139,43 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L12-SHEAR",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00200 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00200 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00200 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00200 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
      "name": "create job at QA-L12-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "job JOB-00199 → IN_PROCESS",
+     "name": "job JOB-00198 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00199 → WAITING_QC",
+     "name": "job JOB-00198 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00199 → PACKAGING",
+     "name": "job JOB-00198 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00198",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00119",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00199 → READY_TO_SHIP",
+     "name": "job JOB-00198 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2133,7 +2325,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 550
+   "ms": 823
   },
   {
    "id": "S8003-11",
@@ -2164,25 +2356,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00201 → IN_PROCESS",
+     "name": "job JOB-00199 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00201 → WAITING_QC",
+     "name": "job JOB-00199 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00201 → PACKAGING",
+     "name": "job JOB-00199 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00199",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00120",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00201 → READY_TO_SHIP",
+     "name": "job JOB-00199 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2194,25 +2398,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00202 → IN_PROCESS",
+     "name": "job JOB-00200 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00202 → WAITING_QC",
+     "name": "job JOB-00200 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00202 → PACKAGING",
+     "name": "job JOB-00200 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00200",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00121",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00202 → READY_TO_SHIP",
+     "name": "job JOB-00200 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2362,7 +2578,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 473
+   "ms": 622
   },
   {
    "id": "S8003-12",
@@ -2393,31 +2609,85 @@
      "ok": true
     },
     {
-     "name": "job JOB-00204 → IN_PROCESS",
+     "name": "job JOB-00201 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00204 → WAITING_QC",
+     "name": "job JOB-00201 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00204 → PACKAGING",
+     "name": "job JOB-00201 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00201",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00122",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00204 → READY_TO_SHIP",
+     "name": "job JOB-00201 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "create job at QA-L75-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00202 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00202 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00202 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00202",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00123",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00202 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L75-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2435,43 +2705,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00203 → PACKAGING",
+     "name": "job JOB-00203 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00203",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00124",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00203 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L75-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00206 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00206 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00206 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00206 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2605,7 +2857,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 559
+   "ms": 749
   },
   {
    "id": "S8003-13",
@@ -2636,25 +2888,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00205 → IN_PROCESS",
+     "name": "job JOB-00204 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → WAITING_QC",
+     "name": "job JOB-00204 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → PACKAGING",
+     "name": "job JOB-00204 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00204",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00125",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → READY_TO_SHIP",
+     "name": "job JOB-00204 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2778,7 +3042,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 320
+   "ms": 412
   },
   {
    "id": "S8003-14",
@@ -2809,31 +3073,85 @@
      "ok": true
     },
     {
-     "name": "job JOB-00208 → IN_PROCESS",
+     "name": "job JOB-00205 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00208 → WAITING_QC",
+     "name": "job JOB-00205 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00208 → PACKAGING",
+     "name": "job JOB-00205 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00205",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00126",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00208 → READY_TO_SHIP",
+     "name": "job JOB-00205 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "create job at QA-L18-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00206 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00206 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00206 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00206",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00127",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00206 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L18-PLASTIC_SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2851,43 +3169,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00207 → PACKAGING",
+     "name": "job JOB-00207 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00207",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00128",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00207 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L18-PLASTIC_SAW",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00209 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00209 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00209 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00209 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3037,7 +3337,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 626
+   "ms": 762
   },
   {
    "id": "S8003-15",
@@ -3068,25 +3368,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00211 → IN_PROCESS",
+     "name": "job JOB-00208 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00211 → WAITING_QC",
+     "name": "job JOB-00208 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00211 → PACKAGING",
+     "name": "job JOB-00208 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00208",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00129",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00211 → READY_TO_SHIP",
+     "name": "job JOB-00208 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3220,7 +3532,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 354
+   "ms": 440
   },
   {
    "id": "S8003-16",
@@ -3251,6 +3563,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00209 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00209 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00209 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00209",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00130",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00209 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L76-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00210 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -3263,43 +3617,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00210 → PACKAGING",
+     "name": "job JOB-00210 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00210",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00131",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00210 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L76-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00212 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00212 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00212 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00212 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3423,7 +3759,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 457
+   "ms": 523
   },
   {
    "id": "S8003-17",
@@ -3454,25 +3790,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00214 → IN_PROCESS",
+     "name": "job JOB-00211 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00214 → WAITING_QC",
+     "name": "job JOB-00211 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00214 → PACKAGING",
+     "name": "job JOB-00211 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00211",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00132",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00214 → READY_TO_SHIP",
+     "name": "job JOB-00211 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3606,7 +3954,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 375
+   "ms": 397
   },
   {
    "id": "S8003-18",
@@ -3637,6 +3985,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00212 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00212 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00212 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00212",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00133",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00212 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L61-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00213 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -3649,43 +4039,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00213 → PACKAGING",
+     "name": "job JOB-00213 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00213",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00134",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00213 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L61-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00215 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00215 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00215 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00215 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3835,7 +4207,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 514
+   "ms": 538
   },
   {
    "id": "S8003-19",
@@ -3892,7 +4264,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 94
+   "ms": 105
   },
   {
    "id": "S8003-20",
@@ -3949,7 +4321,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 82
+   "ms": 75
   },
   {
    "id": "S8003-21",
@@ -4006,7 +4378,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 79
+   "ms": 80
   },
   {
    "id": "S8003-22",
@@ -4129,7 +4501,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 154
+   "ms": 157
   },
   {
    "id": "S8003-23",
@@ -4252,7 +4624,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 149
+   "ms": 147
   },
   {
    "id": "S8003-24",
@@ -4283,25 +4655,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00217 → IN_PROCESS",
+     "name": "job JOB-00214 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → WAITING_QC",
+     "name": "job JOB-00214 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → PACKAGING",
+     "name": "job JOB-00214 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00214",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00135",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → READY_TO_SHIP",
+     "name": "job JOB-00214 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4369,7 +4753,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 332
+   "ms": 365
   },
   {
    "id": "S8003-25",
@@ -4400,25 +4784,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00216 → IN_PROCESS",
+     "name": "job JOB-00215 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → WAITING_QC",
+     "name": "job JOB-00215 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → PACKAGING",
+     "name": "job JOB-00215 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00215",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00136",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → READY_TO_SHIP",
+     "name": "job JOB-00215 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4486,7 +4882,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 322
+   "ms": 376
   },
   {
    "id": "S8003-26",
@@ -4529,25 +4925,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00219 → IN_PROCESS",
+     "name": "job JOB-00216 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → WAITING_QC",
+     "name": "job JOB-00216 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → PACKAGING",
+     "name": "job JOB-00216 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00216",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00137",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → READY_TO_SHIP",
+     "name": "job JOB-00216 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4623,7 +5031,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 351
+   "ms": 406
   },
   {
    "id": "S8003-27",
@@ -4654,25 +5062,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00218 → IN_PROCESS",
+     "name": "job JOB-00217 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → WAITING_QC",
+     "name": "job JOB-00217 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → PACKAGING",
+     "name": "job JOB-00217 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00217",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00138",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → READY_TO_SHIP",
+     "name": "job JOB-00217 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4740,7 +5160,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 293
+   "ms": 347
   },
   {
    "id": "S8003-28",
@@ -4783,25 +5203,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00220 → IN_PROCESS",
+     "name": "job JOB-00218 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00220 → WAITING_QC",
+     "name": "job JOB-00218 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00220 → PACKAGING",
+     "name": "job JOB-00218 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00218",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00139",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00220 → READY_TO_SHIP",
+     "name": "job JOB-00218 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4877,7 +5309,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 353
+   "ms": 393
   },
   {
    "id": "S8003-29",
@@ -4908,25 +5340,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00221 → IN_PROCESS",
+     "name": "job JOB-00219 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → WAITING_QC",
+     "name": "job JOB-00219 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → PACKAGING",
+     "name": "job JOB-00219 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00219",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00140",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → READY_TO_SHIP",
+     "name": "job JOB-00219 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4994,7 +5438,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 307
+   "ms": 361
   },
   {
    "id": "S8003-30",
@@ -5035,7 +5479,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 23
+   "ms": 24
   },
   {
    "id": "S8003-31",
@@ -5068,7 +5512,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 13
+   "ms": 10
   },
   {
    "id": "S8003-32",
@@ -5115,7 +5559,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 55
+   "ms": 45
   },
   {
    "id": "S8003-33",
@@ -5148,7 +5592,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 13
+   "ms": 9
   },
   {
    "id": "S8003-34",
@@ -5181,7 +5625,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 10
   },
   {
    "id": "S8003-35",
@@ -5212,25 +5656,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00222 → IN_PROCESS",
+     "name": "job JOB-00220 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → WAITING_QC",
+     "name": "job JOB-00220 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → PACKAGING",
+     "name": "job JOB-00220 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00220",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00141",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → READY_TO_SHIP",
+     "name": "job JOB-00220 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5380,7 +5836,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 402
+   "ms": 448
   },
   {
    "id": "S8003-36",
@@ -5445,7 +5901,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 61
+   "ms": 73
   },
   {
    "id": "S8003-37",
@@ -5526,7 +5982,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 100
+   "ms": 106
   },
   {
    "id": "S8003-38",
@@ -5569,25 +6025,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00224 → IN_PROCESS",
+     "name": "job JOB-00221 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → WAITING_QC",
+     "name": "job JOB-00221 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → PACKAGING",
+     "name": "job JOB-00221 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00221",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00142",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → READY_TO_SHIP",
+     "name": "job JOB-00221 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5645,7 +6113,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 198
+   "ms": 270
   },
   {
    "id": "S8003-39",
@@ -5722,7 +6190,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 108
+   "ms": 116
   },
   {
    "id": "S8003-40",
@@ -5753,25 +6221,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00223 → IN_PROCESS",
+     "name": "job JOB-00222 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → WAITING_QC",
+     "name": "job JOB-00222 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → PACKAGING",
+     "name": "job JOB-00222 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00222",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00143",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → READY_TO_SHIP",
+     "name": "job JOB-00222 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5923,22 +6403,6 @@
      "ok": true
     },
     {
-     "name": "INV-000103: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000103: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000103: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000103: never paid more than billed",
-     "ok": true
-    },
-    {
      "name": "INV-000102: total = subtotal + tax + freight",
      "ok": true
     },
@@ -5952,6 +6416,22 @@
     },
     {
      "name": "INV-000102: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "INV-000103: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000103: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000103: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000103: never paid more than billed",
      "ok": true
     },
     {
@@ -5969,7 +6449,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 478
+   "ms": 536
   },
   {
    "id": "S8003-41",
@@ -6000,25 +6480,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00226 → IN_PROCESS",
+     "name": "job JOB-00223 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → WAITING_QC",
+     "name": "job JOB-00223 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → PACKAGING",
+     "name": "job JOB-00223 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00223",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00144",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → READY_TO_SHIP",
+     "name": "job JOB-00223 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6206,7 +6698,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 437
+   "ms": 461
   },
   {
    "id": "S8003-42",
@@ -6237,19 +6729,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00225 → IN_PROCESS",
+     "name": "job JOB-00224 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → WAITING_QC",
+     "name": "job JOB-00224 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → ON_HOLD",
+     "name": "job JOB-00224 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6273,25 +6765,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00225 → IN_PROCESS",
+     "name": "job JOB-00224 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → WAITING_QC",
+     "name": "job JOB-00224 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → PACKAGING",
+     "name": "job JOB-00224 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00224",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00145",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → READY_TO_SHIP",
+     "name": "job JOB-00224 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6389,7 +6893,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 371
+   "ms": 483
   },
   {
    "id": "S8003-43",
@@ -6420,19 +6924,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00227 → IN_PROCESS",
+     "name": "job JOB-00225 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00227 → WAITING_QC",
+     "name": "job JOB-00225 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00227 → ON_HOLD",
+     "name": "job JOB-00225 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6456,25 +6960,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00227 → IN_PROCESS",
+     "name": "job JOB-00225 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00227 → WAITING_QC",
+     "name": "job JOB-00225 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00227 → PACKAGING",
+     "name": "job JOB-00225 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00225",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00146",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00227 → READY_TO_SHIP",
+     "name": "job JOB-00225 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6492,7 +7008,7 @@
      "ok": true
     },
     {
-     "name": "ship JOB-00227 from the shop floor",
+     "name": "ship JOB-00225 from the shop floor",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6588,7 +7104,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 444
+   "ms": 509
   },
   {
    "id": "S8003-44",
@@ -6757,22 +7273,6 @@
      "ok": true
     },
     {
-     "name": "INV-000108: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000108: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000108: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000108: never paid more than billed",
-     "ok": true
-    },
-    {
      "name": "CM-000007: total = subtotal + tax + freight",
      "ok": true
     },
@@ -6786,6 +7286,22 @@
     },
     {
      "name": "CM-000007: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "INV-000108: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000108: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000108: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000108: never paid more than billed",
      "ok": true
     },
     {
@@ -6819,7 +7335,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 382
+   "ms": 393
   },
   {
    "id": "S8003-45",
@@ -6856,25 +7372,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00229 → IN_PROCESS",
+     "name": "job JOB-00226 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00229 → WAITING_QC",
+     "name": "job JOB-00226 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00229 → PACKAGING",
+     "name": "job JOB-00226 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00226",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00147",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00229 → READY_TO_SHIP",
+     "name": "job JOB-00226 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6886,25 +7414,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00228 → IN_PROCESS",
+     "name": "job JOB-00227 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00228 → WAITING_QC",
+     "name": "job JOB-00227 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00228 → PACKAGING",
+     "name": "job JOB-00227 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00227",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00148",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00228 → READY_TO_SHIP",
+     "name": "job JOB-00227 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7060,7 +7600,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 539
+   "ms": 600
   },
   {
    "id": "S8003-46",
@@ -7097,25 +7637,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00230 → IN_PROCESS",
+     "name": "job JOB-00228 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00230 → WAITING_QC",
+     "name": "job JOB-00228 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00230 → PACKAGING",
+     "name": "job JOB-00228 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00228",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00149",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00230 → READY_TO_SHIP",
+     "name": "job JOB-00228 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7127,25 +7679,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00232 → IN_PROCESS",
+     "name": "job JOB-00229 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00232 → WAITING_QC",
+     "name": "job JOB-00229 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00232 → PACKAGING",
+     "name": "job JOB-00229 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00229",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00150",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00232 → READY_TO_SHIP",
+     "name": "job JOB-00229 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7301,7 +7865,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 522
+   "ms": 602
   },
   {
    "id": "S8003-47",
@@ -7338,6 +7902,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00230 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00230 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00230 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00230",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00151",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00230 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L12-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00231 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -7350,43 +7956,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00231 → PACKAGING",
+     "name": "job JOB-00231 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00231",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00152",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00231 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L12-ROUTER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00233 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00233 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00233 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00233 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7542,7 +8130,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 510
+   "ms": 637
   },
   {
    "id": "S8003-48",
@@ -7579,25 +8167,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00234 → IN_PROCESS",
+     "name": "job JOB-00232 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00234 → WAITING_QC",
+     "name": "job JOB-00232 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00234 → PACKAGING",
+     "name": "job JOB-00232 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00232",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00153",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00234 → READY_TO_SHIP",
+     "name": "job JOB-00232 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7609,25 +8209,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00235 → IN_PROCESS",
+     "name": "job JOB-00233 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00235 → WAITING_QC",
+     "name": "job JOB-00233 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00235 → PACKAGING",
+     "name": "job JOB-00233 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00233",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00154",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00235 → READY_TO_SHIP",
+     "name": "job JOB-00233 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7793,7 +8405,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 511
+   "ms": 631
   },
   {
    "id": "S8003-49",
@@ -7912,7 +8524,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 168
+   "ms": 190
   },
   {
    "id": "S8003-50",
@@ -8015,7 +8627,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 149
+   "ms": 161
   }
  ],
  "concurrency": {
@@ -8054,12 +8666,12 @@
    {
     "name": "three full payments at once on one invoice: taken once",
     "pass": true,
-    "detail": "statuses 201,409,409; paid 2574 of 2574"
+    "detail": "statuses 409,409,201; paid 2574 of 2574"
    },
    {
     "name": "one return received three times at once: counted once, one credit",
     "pass": true,
-    "detail": "statuses 409,200,409; 1 credit memo(s); source coil on hand 2640 → 3630"
+    "detail": "statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630"
    }
   ]
  },
@@ -8095,7 +8707,7 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 716,
+  "steps": 818,
   "checks": 792,
   "failedSteps": {},
   "failedChecks": {}

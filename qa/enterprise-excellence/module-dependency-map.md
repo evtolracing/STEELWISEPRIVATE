@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -27,7 +27,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | Order hub and intake pipeline | None | None |
 | Mobile rep |  |  |
 | Products, grades and heats | Access control | Stock, pricing, order entry, receiving |
-| Processing recipes and bills of material | Products, work centers | Jobs, planning |
+| Routings and processing recipes | Products, work centers | Jobs, planning |
 | Customer specifications | Customers | Jobs |
 | Stock items and stock levels | Products, heats, receiving | Reservation, shipping, returns |
 | Receiving | Products, heats, purchase orders | Stock |
@@ -35,13 +35,13 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | Interbranch transfers | Stock, branches | Stock, reservation, shipping |
 | Second stock list (unit tracking) | None | None |
 | Remnants | Stock, work orders (not connected) | Web store |
-| Jobs, job board and schedule | Sales orders | Shipping (unfinished jobs hold their lines) |
-| Coil work orders | Stock | Stock (not yet: M-016) |
-| Dispatch, work centers and shop-floor operations | Jobs, staff | Jobs, time and labor |
-| Planning and optimization | Jobs, work centers | Schedule |
-| Quality inspections | Jobs | Jobs (waiting on quality), shipping |
+| Jobs, job board and schedule | Sales orders, routings | Shipping (unfinished jobs hold their lines), quality |
+| Coil work orders | Stock | Stock (pieces, scrap, drops) |
+| Dispatch, work centers and shop-floor operations | Jobs, staff, maintenance (lockout) | Jobs, time and labor, quality |
+| Planning and optimization | Jobs, work centers, routings | Schedule |
+| Quality inspections | Jobs | Jobs (packaging or hold), shipping |
 | Material tracking, packages and drop tags | Jobs | Shipping |
-| Maintenance and assets | Work centers | Scheduling (not connected) |
+| Maintenance and assets | Work centers | Scheduling and step start (lockout) |
 | Shipping | Sales orders, jobs, stock | Invoices, stock |
 | Returns | Shipping, invoices | Stock, credits |
 | Documents | Heats, shipments | Customer account pages, partner API |
@@ -63,17 +63,17 @@ Two views. The first is the business flow, written by hand in the module map. Th
 
 | Table | Modules | Count |
 |---|---|---:|
-| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Purchase orders and supply position; Coil work orders; Shipping; Partner API; Operations cockpit and dashboards | 11 |
+| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Purchase orders and supply position; Coil work orders; Quality inspections; Shipping; Partner API; Operations cockpit and dashboards | 12 |
 | Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Dispatch, work centers and shop-floor operations; Shipping | 11 |
 | Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Purchase orders and supply position; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 11 |
-| Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Purchase orders and supply position; Shipping; Returns; Partner API; Operations cockpit and dashboards | 10 |
+| Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Purchase orders and supply position; Jobs, job board and schedule; Shipping; Returns; Partner API; Operations cockpit and dashboards | 11 |
 | Job | Order entry; Customer specifications; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Operations cockpit and dashboards | 9 |
 | OrderLine | Order entry; Sales orders; Customer specifications; Purchase orders and supply position; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 8 |
 | Inventory | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 8 |
 | Coil | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 8 |
 | MaterialMovement | Counter quick sale; Products, grades and heats; Stock items and stock levels; Receiving; Interbranch transfers; Shipping; Returns; Operations cockpit and dashboards | 8 |
+| WorkCenter | Staff and operators; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 7 |
 | User | Sign-in and sessions; Users, roles and branches; RFQs and quotes; Sales orders; Stock items and stock levels; Jobs, job board and schedule | 6 |
-| WorkCenter | Staff and operators; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 6 |
 | Product | Order entry; Counter quick sale; Web store; Products, grades and heats; Stock items and stock levels | 5 |
 | Quote | RFQs and quotes; Order entry; Partner API; Operations cockpit and dashboards | 4 |
 | Shipment | Material tracking, packages and drop tags; Shipping; Partner API; Operations cockpit and dashboards | 4 |
@@ -86,11 +86,12 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | Heat | Products, grades and heats; Stock items and stock levels; Documents | 3 |
 | QCHold | Stock items and stock levels; Returns; Operations cockpit and dashboards | 3 |
 | StockTransfer | Stock items and stock levels; Receiving; Interbranch transfers | 3 |
+| DispatchOperation | Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Operations cockpit and dashboards | 3 |
+| DispatchTimeLog | Staff and operators; Dispatch, work centers and shop-floor operations | 2 |
 | CustomerPreference | Customers; Customer specifications | 2 |
 | CustomerPricingTier | Customers; Order entry | 2 |
 | InvoiceLine | Counter quick sale; Returns | 2 |
 | DispatchJob | Jobs, job board and schedule; Dispatch, work centers and shop-floor operations | 2 |
-| DispatchOperation | Dispatch, work centers and shop-floor operations; Operations cockpit and dashboards | 2 |
 | JobInspection | Quality inspections; Material tracking, packages and drop tags | 2 |
 | Document | Documents; Partner API | 2 |
 | DocumentBlob | Documents; Partner API | 2 |
@@ -102,33 +103,37 @@ Two views. The first is the business flow, written by hand in the module map. Th
 |---|---|---:|
 | lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 59 |
 | lib/numbering.js | intakeOrders.js, inventory.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, quotes.js, … | 14 |
-| lib/roleAccess.js | coils.js, customers.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, orders.js, … | 11 |
+| lib/roleAccess.js | coils.js, customers.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, orders.js, … | 12 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
 | lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |
 | lib/workflowRules.js | intakeOrders.js, inventory.js, jobs.js, orders.js, returns.js, rfqs.js, shipments.js | 7 |
 | services/webhookService.js | integrations.js, orders.js, carrierRoutes.js, customerRoutes.js, webhookRoutes.js, shipments.js | 6 |
 | middleware/partnerAuth.js | adminRoutes.js, carrierRoutes.js, common.js, customerRoutes.js, partnerAuthRoutes.js, supplierRoutes.js | 6 |
-| lib/jobHistory.js | jobs.js, materialTrackingRoutes.js, operationsRoutes.js, qcRoutes.js, shipments.js | 5 |
 | middleware/auth.js | admin.js, auth.js, integrations.js, users.js | 4 |
 | services/intakeCatalogService.js | coils.js, intakePricing.js, inventory.js, products.js | 4 |
+| lib/settings.js | compressionMetrics.js, demandShaping.js, onlineSettings.js, operationsRoutes.js | 4 |
+| lib/workCenterGuard.js | dispatchRoutes.js, operationsRoutes.js, optimizationV1.js, workCenters.js | 4 |
+| lib/branchScope.js | dispatchRoutes.js, intakeOrders.js, inventory.js, purchaseOrders.js | 4 |
 | lib/creditControl.js | intakeOrders.js, onlineOrders.js, orders.js, quotes.js | 4 |
 | lib/billingRules.js | intakeOrders.js, onlineOrders.js, quickSale.js, returns.js | 4 |
 | lib/orderTax.js | intakeOrders.js, intakePricing.js, onlineOrders.js, quotes.js | 4 |
 | services/billing.js | invoices.js, quickSale.js, returns.js, shipments.js | 4 |
+| lib/jobGates.js | jobs.js, materialTrackingRoutes.js, operationsRoutes.js, qcRoutes.js | 4 |
 | lib/quoteRules.js | customerRoutes.js, quotes.js, rfqs.js, salesDashboard.js | 4 |
 | lib/outbound.js | ai.js, aiAssistant.js, tts.js | 3 |
 | services/ai/AIProviderService.js | ai.js, aiAssistant.js, opsCockpit.js | 3 |
-| lib/settings.js | compressionMetrics.js, demandShaping.js, onlineSettings.js | 3 |
 | lib/customerScope.js | ecom.js, portal.js, users.js | 3 |
 | lib/customerPricing.js | ecom.js, intakePricing.js, quickSale.js | 3 |
-| lib/branchScope.js | intakeOrders.js, inventory.js, purchaseOrders.js | 3 |
 | lib/lineSpecs.js | intakeOrders.js, quotes.js, rfqs.js | 3 |
+| lib/productionRules.js | jobs.js, operationsRoutes.js, qcRoutes.js | 3 |
 | lib/holds.js | coils.js, returns.js | 2 |
 | lib/priceRules.js | customers.js, intakePricing.js | 2 |
 | lib/listing.js | inventory.js, orders.js | 2 |
 | lib/stockChanges.js | inventory.js, workOrders.js | 2 |
 | services/printAutomationService.js | jobs.js, printQueue.js | 2 |
+| lib/jobHistory.js | jobs.js, shipments.js | 2 |
 | lib/reservationRules.js | orders.js, returns.js | 2 |
+| lib/dispatchPlan.js | dispatchRoutes.js | 1 |
 | services/dropTagService.js | dropTagRoutes.js | 1 |
 | services/dropTagListingService.js | dropTagRoutes.js | 1 |
 | services/scanService.js | dropTagRoutes.js | 1 |
@@ -142,6 +147,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/receiving.js | inventory.js | 1 |
 | lib/receivingRules.js | inventory.js | 1 |
 | lib/transfers.js | inventory.js | 1 |
+| lib/capacityPlan.js | optimizationV1.js | 1 |
 | middleware/partnerRateLimit.js | common.js | 1 |
 | middleware/requestKeys.js | common.js | 1 |
 | services/portalService.js | portal.js | 1 |

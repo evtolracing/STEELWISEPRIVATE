@@ -7,7 +7,7 @@
 import express from 'express';
 import { shipForJob } from './shipments.js';
 import prisma from '../lib/db.js';
-import { recordJobMove } from '../lib/jobHistory.js';
+import { changeJobStatusTx } from '../lib/jobGates.js';
 
 const router = express.Router();
 
@@ -441,16 +441,13 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
 
     // The job, its history and the custody record are one step (B-010).
     const job = await prisma.$transaction(async (tx) => {
-    const job = await tx.job.update({
-      where: { id: jobId },
-      data: {
-        status: 'SHIPPED',
-        shippingCarrier: carrier || undefined,
-        trackingNumber: trackingNumber || undefined,
-        shippedAt: new Date(),
-      },
+    // Through the one place a job moves (lib/jobGates.js): locked, still ready to ship, and released by quality.
+    await changeJobStatusTx(tx, jobId, 'SHIPPED', {
+      from: ['READY_TO_SHIP', 'SHIPPED'], fromError: (j) => `Only a job that is ready to ship can be shipped. This one is ${j.status}.`,
+      data: { shippingCarrier: carrier || undefined, trackingNumber: trackingNumber || undefined, shippedAt: new Date() },
+      note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id,
     });
-    await recordJobMove(tx, { job: staged, from: staged.status, to: 'SHIPPED', note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id });
+    const job = await tx.job.findUnique({ where: { id: jobId } });
 
     // Auto-log custody event
     await tx.traceEvent.create({
@@ -472,6 +469,7 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
 
     res.json(job);
   } catch (error) {
+    if (error?.refused) return res.status(error.status === 400 ? 409 : error.status).json({ error: error.message });
     console.error('Error shipping job:', error);
     res.status(400).json({ error: error.message });
   }

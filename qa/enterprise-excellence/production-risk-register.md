@@ -84,6 +84,13 @@ What Phase 5 adds to, or changes in, the list:
 | R-37 | Stock value, scrap cost and margin cannot be reported | K-007: receiving writes no cost; no costing method is chosen; purchase order prices are saved and not carried to the item | Certain | High for finance; none for stock quantities | Owner's call | The owner's costing method, then cost at receipt carried through pieces, transfers, scrap and sales, with a reconciliation | Owner decision |
 | R-38 | Staff send a transfer and the other branch never receives it on the system | G-007 (fixed): stock stays in transit, off sale at both branches, until the destination receives it or the sender calls it back | Likely in the first weeks | Medium: stock looks unavailable | No | Tell every branch before go-live; the Transfers screen lists what is on its way; a report of transfers open more than a set number of days | Owner: staff notice. Phase 9: the ageing report |
 | R-39 | Counts are not scheduled and bins are free text | K-008, K-009: corrections are controlled and audited, but nothing prompts a count and a bin can be mistyped | Likely | Medium | No | The owner's count policy and bin plan | Owner decision |
+| R-40 | Shop-floor staff are stopped by rules that were not enforced before | Phase 7: steps in planned order (owner decision 8), right kind of work center, lapsed certification, a job cannot leave inspection without a passed inspection or leave production with a step open | Certain in the first days | Medium: work waits until the record is put right | No | Tell every branch before go-live; check operator certifications and work-center kinds on the live database first. Planned order is one setting and can be switched off | Owner, before go-live |
+| R-41 | What a job cost cannot be known | L-026, K-007: no material, labor or machine cost reaches a job; no rate is on file | Certain | High for finance and pricing; none for the shop floor | Owner's call | The owner's costing decisions, then a build | Owner decision |
+| R-42 | A job's material use, scrap and yield are not tied to the job | L-024: jobs and coil work orders are separate records | Certain | Medium: yield per job is not reportable; traceability holds through the coil work order | No | The owner's decision on linking them | Owner decision |
+| R-43 | The schedule promises more than the shop can do | L-025: the planner knows hours per day where entered, not shifts, holidays, absence or running work. The screen says so | Likely at a busy branch | Medium | No | Use the planner as a queue, not a calendar, until capacity rules are on file | Owner decision; later build |
+| R-44 | Rework time and nonconformances are not recorded | L-020, L-023: a failed inspection and the re-inspection are on record; the rework labor and any corrective action are not | Likely | Medium for quality reporting | No | The owner's rework rule; the quality modules of decision 4 | Owner decision |
+| R-45 | Work is released without inspection where no steps were planned | L-021: a job with no planned steps is never sent to inspection | Possible | Medium to high, by product | Owner's call | The owner's rule on which jobs must be inspected | Owner decision |
+| R-46 | Live operator and work-center records do not meet the new rules | Not verified: no access to live data. An operator with a lapsed certification or a step on the wrong kind of work center will be refused | Unknown | Medium | No | A read-only check of live operators, certifications and work-center kinds before the pull request is merged | Engineer, with the owner |
 
 ## Earlier risks changed by Phase 4
 
@@ -136,6 +143,8 @@ What Phase 6 adds to, or changes in, the list:
 
 
 ## Rollback
+
+Phase 7 has no database change. Every correction is in code, so the pull request can be reverted without touching the database. One settings row (`production.rules`) may exist if the planned-order rule was changed from a screen; the previous code ignores it.
 
 Phase 6 adds two tables, three optional columns, one index and replaces two checks (file 12); it deletes and rewrites nothing. The Phase 5 code runs on the new schema as long as no transfer is in transit: the replaced balance check counts the in-transit quantity, which the older code never fills. Before reverting the code, receive or call back every open transfer.
 

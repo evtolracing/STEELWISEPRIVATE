@@ -54,6 +54,11 @@ const direct = (field, moves = false) => ({ field, moves, where: (ids) => ({ [fi
 const through = (where) => ({ where });
 const orderIn = (ids) => ({ locationId: { in: ids } });
 // Owned by a branch once someone has taken it; until then every branch sees it.
+const jobIn = (ids) => ({ OR: [
+  { order: orderIn(ids) },
+  { workCenter: { locationId: { in: ids } } },
+  { orderId: null, workCenterId: null, createdBy: { homeLocationId: { in: ids } } },
+] });
 const ownOrUnassigned = (ids) => ({ OR: [{ locationId: { in: ids } }, { locationId: null }] });
 
 export const BRANCH_OWNED = {
@@ -67,11 +72,12 @@ export const BRANCH_OWNED = {
   Coil: direct('locationId', true),
   Shipment: direct('fromLocationId'),
   ShipmentItem: through((ids) => ({ shipment: { fromLocationId: { in: ids } } })),
-  Job: through((ids) => ({ OR: [
-    { order: orderIn(ids) },
-    { workCenter: { locationId: { in: ids } } },
-    { orderId: null, workCenterId: null, createdBy: { homeLocationId: { in: ids } } },
-  ] })),
+  Job: through(jobIn),
+  // An inspection belongs to its job's branch; recorded shop-floor time to its plan's branch (Phase 7).
+  JobInspection: through((ids) => ({ job: jobIn(ids) })),
+  // Shop-floor staff belong to their home branch; one with no branch on file is seen by every branch.
+  Operator: through((ids) => ({ OR: [{ homeLocationId: { in: ids } }, { homeLocationId: null }] })),
+  DispatchTimeLog: through((ids) => ({ dispatchOperation: { dispatchJob: { locationId: { in: ids } } } })),
   WorkOrder: through((ids) => ({ sourceCoil: { locationId: { in: ids } } })),
   WorkCenter: direct('locationId'),
   DispatchJob: direct('locationId'),

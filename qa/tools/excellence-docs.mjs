@@ -184,6 +184,10 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '18. `lib/holds.js` (new in Phase 6): places and releases holds with their reasons for receiving, transfers, returns and the stock routes.',
     '19. `routes/purchaseOrders.js` (new in Phase 6): purchase orders are Orders of type PO. Receiving (`routes/inventory.js`, `lib/receiving.js`) reads the line and writes what was received on it; the supply position reads stock, open purchase orders, open transfers and open order lines.',
     '20. The balance check now includes the in-transit quantity (SQL Editor file 12). Every script that writes `Inventory` directly must keep on hand = available + reserved + on hold + in transit.', ''];
+    '21. `lib/jobGates.js` (new in Phase 7): the only code that changes a job\'s status. It locks the job, applies the move table, the quality gate (no release without a passed inspection) and the open-steps gate, writes the history row, and closes running clocks on a cancel. Called by every status address in `routes/jobs.js`, by `routes/operationsRoutes.js` and by `routes/qcRoutes.js`.',
+    '22. `lib/productionRules.js` (new in Phase 7): the state rules of a step and who may run it where (kind of work center, branch, operator, certification, planned order). The planned-order rule reads the setting `production.rules` in `lib/settings.js` (owner decision 8).',
+    '23. `lib/dispatchPlan.js` and `lib/capacityPlan.js` (new in Phase 7): the scheduling run and the planner decide in pure functions with unit tests; the routes only read, lock and write. `lib/workCenterGuard.js` answers whether a machine is locked out (maintenance orders, asset status) and validates a work center change; scheduling, the planner and step start all ask it.',
+    '24. `lib/branchScope.js` (Phase 7): inspections, time entries and operators are branch-owned. A job is scoped by its order\'s branch or its work center\'s branch, so an order sold at one branch can be worked at another.',
   write('module-dependency-map.md', L);
 }
 
@@ -345,7 +349,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
     workflowsMapped: state.workflowsMapped ?? null, jobTypesIdentified: state.jobTypesIdentified ?? null,
     findingsBySeverity: count(F, 'severity'), findingsByStatus: count(F, 'status'), openFindingsBySeverity: count(F.filter(open), 'severity'), findingsTotal: F.length, findingsAddedThisPhase: F.filter((f) => f.id.startsWith(state.findingPrefix || 'B-')).length,
     testsExecuted: state.testsExecuted || [], testReach: { routesWithSuccess: eps.filter(okOf).length, routes: eps.length, changingRoutesWithSuccess: w.filter(okOf).length, changingRoutes: w.length },
-    correctionsCompleted: F.filter((f) => /^[BCGHJK]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
+    correctionsCompleted: F.filter((f) => /^[BCGHJKL]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
     unverifiedAreas: state.unverifiedAreas || [], currentBlockers: state.currentBlockers || [], nextActions: state.nextActions || [], lastCompletedCheckpoint: state.lastCompletedCheckpoint || null,
   };
   fs.writeFileSync(path.join(DIR, 'progress.json'), `${JSON.stringify(progress, null, 2)}\n`);

@@ -1,6 +1,7 @@
 import { readFields } from '../lib/fieldRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { capacityError, typeError, changeError } from '../lib/workCenterGuard.js';
 
 const router = Router();
 
@@ -79,6 +80,8 @@ router.post('/', async (req, res) => {
     if (error) return res.status(400).json({ error });
     if (!(await prisma.location.findUnique({ where: { id: data.locationId }, select: { id: true } }))) return res.status(400).json({ error: 'Branch not found' });
     if (await prisma.workCenter.findUnique({ where: { code: data.code }, select: { id: true } })) return res.status(409).json({ error: 'A work center with that code already exists' });
+    const bad = capacityError(data.capacity) || await typeError(data.type);
+    if (bad) return res.status(400).json({ error: bad });
 
     const workCenter = await prisma.workCenter.create({
       data: { ...data, capabilities: capabilitiesOf(req.body) || [] },
@@ -103,6 +106,14 @@ router.patch('/:id', async (req, res) => {
     const capabilities = capabilitiesOf(req.body);
     if (capabilities) updateData.capabilities = capabilities;
     if (!Object.keys(updateData).length) return res.status(400).json({ error: 'Nothing to change' });
+    const existing = await prisma.workCenter.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Work center not found' });
+    const bad = capacityError(updateData.capacity) || (updateData.type !== undefined && updateData.type !== existing.type ? await typeError(updateData.type) : null);
+    if (bad) return res.status(400).json({ error: bad });
+    if (updateData.locationId && updateData.locationId !== existing.locationId && !(await prisma.location.findUnique({ where: { id: updateData.locationId }, select: { id: true } }))) return res.status(400).json({ error: 'Branch not found' });
+    if (updateData.code && updateData.code !== existing.code && await prisma.workCenter.findUnique({ where: { code: updateData.code }, select: { id: true } })) return res.status(409).json({ error: 'A work center with that code already exists' });
+    const held = await changeError(existing, updateData);
+    if (held) return res.status(409).json({ error: held });
     
     const workCenter = await prisma.workCenter.update({
       where: { id },
@@ -129,6 +140,7 @@ router.get('/:id/schedule', async (req, res) => {
       workCenterId: id,
     };
     
+    for (const d of [startDate, endDate]) if (d && Number.isNaN(new Date(d).getTime())) return res.status(400).json({ error: 'A date is not valid' });
     if (startDate || endDate) {
       where.scheduledStart = {};
       if (startDate) where.scheduledStart.gte = new Date(startDate);

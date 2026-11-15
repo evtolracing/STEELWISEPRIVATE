@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 50 |
 | Server route files | 75 |
-| API routes (each address counted; two route files are mounted twice) | 633 |
-| API routes that change data | 332 |
+| API routes (each address counted; two route files are mounted twice) | 635 |
+| API routes that change data | 334 |
 | Database tables in the schema | 161 |
 | Enumerations | 96 |
 | Migrations | 30 |
 | Screens (routes in the browser) | 142 |
-| Frontend source files | 393 (118,731 lines) |
-| Server route code | 25,141 lines |
+| Frontend source files | 393 (118,752 lines) |
+| Server route code | 25,058 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -27,9 +27,9 @@ Every figure here is counted from the code or measured in a test run. The module
 
 | Classification | Modules |
 |---|---:|
-| IMPLEMENTED AND VERIFIED | 25 |
-| IMPLEMENTED BUT NOT VERIFIED | 11 |
-| PARTIALLY IMPLEMENTED | 6 |
+| IMPLEMENTED AND VERIFIED | 27 |
+| PARTIALLY IMPLEMENTED | 9 |
+| IMPLEMENTED BUT NOT VERIFIED | 6 |
 | PLACEHOLDER OR MOCK | 5 |
 | DISCONNECTED | 3 |
 
@@ -84,18 +84,18 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 
 ### Staff and operators
 
-- **Status:** IMPLEMENTED BUT NOT VERIFIED
-- **Basis:** Screen opens on real data. 0 of 9 write routes succeed in any test
-- **Purpose:** Operators, skills, shifts
+- **Status:** PARTIALLY IMPLEMENTED
+- **Basis:** Phase 7: operator rules tested (private fields to managers only, certifications validated, a clocked-on operator cannot be removed or moved, branch-owned: L-014, L-019). Shift routes have no success-path test and nothing schedules against a shift
+- **Purpose:** Operators, skills, certifications, shifts
 - **Screens:** 1 (1 real): /admin/staff
 - **Server:** `src/backend/src/routes/staff.js`; served at /api/staff
-- **Routes:** 15, of which 9 change data. Returned a success in a test this session: 4 of 15; of the changing routes, 0 of 9
-- **Tables:** Operator, Location, WorkCenter, OperatorSkill, WorkCenterType, Shift
+- **Routes:** 15, of which 9 change data. Returned a success in a test this session: 9 of 15; of the changing routes, 4 of 9
+- **Tables:** Operator, WorkCenterType, Location, WorkCenter, DispatchTimeLog, OperatorSkill, Shift
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Users, work centers
 - **Feeds:** Dispatch, time tracking
-- **Findings:** B-012, B-014
-- **Production concern:** Any staff login can change operators and shifts
+- **Findings:** B-012, B-014, L-022
+- **Production concern:** Labor rules (certification required, two steps at once, shift length) are not on file (L-022)
 
 ### Settings, tax rates and online settings
 
@@ -322,20 +322,20 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Findings:** B-012
 - **Production concern:** GET /api/products returns the whole catalogue
 
-### Processing recipes and bills of material
+### Routings and processing recipes
 
-- **Status:** IMPLEMENTED BUT NOT VERIFIED
-- **Basis:** Screens open on real data. 0 of 11 write routes succeed in a test
-- **Purpose:** Recipes, routing templates, BOM recipes for processing
+- **Status:** PARTIALLY IMPLEMENTED
+- **Basis:** Phase 7: routing life cycle, step validation, activation, versioning and who may change one are tested (qa/sim/phase7-manufacturing.mjs groups 1 and 2; L-011). Processing recipe writes have no success-path test. No bill of material exists (L-024)
+- **Purpose:** Versioned routings (called BOM recipes in the code: steps, not materials) and processing recipes
 - **Screens:** 4 (1 sample, labelled, 3 real): /boms, /bom//, /bom//new, /bom//:recipeId
 - **Server:** `src/backend/src/routes/processingRecipes.js`, `src/backend/src/routes/bomV1.js`; served at /api/processing-recipes, /api/v1/bom
-- **Routes:** 16, of which 11 change data. Returned a success in a test this session: 3 of 16; of the changing routes, 0 of 11
+- **Routes:** 16, of which 11 change data. Returned a success in a test this session: 9 of 16; of the changing routes, 6 of 11
 - **Tables:** ProcessingRecipe, RecipeRoutingTemplate, BomRecipe
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, work centers
 - **Feeds:** Jobs, planning
-- **Findings:** I-011
-- **Production concern:** Any staff login can change a recipe
+- **Findings:** I-011, L-024
+- **Production concern:** A bill of material and material requirements do not exist
 
 ### Customer specifications
 
@@ -448,77 +448,77 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 ### Jobs, job board and schedule
 
 - **Status:** IMPLEMENTED AND VERIFIED
-- **Basis:** Simulation: every job; sweep "Shop floor records" (51 checks); unit tests on moves and history; browser suite (shop)
-- **Purpose:** Shop jobs: create, plan, move through the shop, every move recorded against a person
+- **Basis:** Simulation: every job; sweep "Shop floor records" (50 checks); qa/sim/phase7-manufacturing.mjs groups 1, 4, 5 and 7; unit tests on moves, gates and history; browser suite (shop)
+- **Purpose:** Shop jobs: create, plan, move through the shop, every move recorded against a person and passed through one quality and open-steps gate
 - **Screens:** 6 (6 real): /production, /production/shop-floor, /production/shipping, /order-board, /schedule, /jobs/:id
-- **Server:** `src/backend/src/routes/jobs.js`; served at /api/jobs, /api/v1/jobs
-- **Routes:** 32, of which 20 change data. Returned a success in a test this session: 19 of 32; of the changing routes, 9 of 20
-- **Tables:** Job, OrderLine, DispatchJob, WorkCenterType, User
+- **Server:** `src/backend/src/routes/jobs.js`, `src/backend/src/lib/jobGates.js`; served at /api/jobs, /api/v1/jobs
+- **Routes:** 32, of which 20 change data. Returned a success in a test this session: 19 of 32; of the changing routes, 10 of 20
+- **Tables:** Job, OrderLine, Order, WorkCenter, DispatchJob, WorkCenterType, DispatchOperation, User
 - **Who may change it:** see permissions-matrix.md
-- **Depends on:** Sales orders
-- **Feeds:** Shipping (unfinished jobs hold their lines)
-- **Findings:** M-017
-- **Production concern:** A job can be created with no order and no content
+- **Depends on:** Sales orders, routings
+- **Feeds:** Shipping (unfinished jobs hold their lines), quality
+- **Findings:** M-017, L-021, L-024, L-029
+- **Production concern:** A job names no stock and carries no cost (L-024, L-026); a job with no steps is not inspected (L-021)
 
 ### Coil work orders
 
 - **Status:** IMPLEMENTED AND VERIFIED
-- **Basis:** Sweep and unit tests on the work order move table; browser suite (shop)
-- **Purpose:** Release, start, complete a processing work order against a coil
+- **Basis:** Phase 3 completion to stock; qa/sim/phase7-manufacturing.mjs groups 2, 5 and 6 (consumption, quality hold, substitution, scrap and yield); unit tests on the move table; browser suite (shop)
+- **Purpose:** Release, start, complete a processing work order against a coil: weight in, pieces out, scrap, with the source heat
 - **Screens:** 3 (3 real): /work-orders, /work-orders/new, /work-orders/:id
 - **Server:** `src/backend/src/routes/workOrders.js`; served at /api/work-orders
-- **Routes:** 7, of which 5 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 5 of 5
+- **Routes:** 9, of which 7 change data. Returned a success in a test this session: 9 of 9; of the changing routes, 7 of 7
 - **Tables:** WorkOrder, AuditLog, Coil, OrderLine, Inventory
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Stock
-- **Feeds:** Stock (not yet: M-016)
-- **Findings:** none open
-- **Production concern:** Completing a work order does not move stock
+- **Feeds:** Stock (pieces, scrap, drops)
+- **Findings:** L-024
+- **Production concern:** Not linked to a job (L-024); carries no cost (L-026)
 
 ### Dispatch, work centers and shop-floor operations
 
-- **Status:** IMPLEMENTED BUT NOT VERIFIED
-- **Basis:** Screens open on real data (browser suite). 0 of 15 write routes succeed in a test: starting and completing an operation has never been exercised
-- **Purpose:** Work-center types, queues, start, pause and complete an operation, time logs
+- **Status:** IMPLEMENTED AND VERIFIED
+- **Basis:** qa/sim/phase7-manufacturing.mjs groups 3, 4 and 7 (59 verified scenarios); qa/sim/phase2-integrity.mjs; unit tests; qa/sim/ui-phase7.cjs; timed at 85 branches
+- **Purpose:** Work-center kinds, queues, the scheduling run, start, pause and finish a step, time entries
 - **Screens:** 3 (3 real): /time-tracking, /shopfloor, /shopfloor/:workCenterId
-- **Server:** `src/backend/src/routes/dispatchRoutes.js`, `src/backend/src/routes/operationsRoutes.js`, `src/backend/src/routes/workCenters.js`; served at /api/work-centers, /api/v1/work-centers, /api/v1/dispatch, /api/v1/operations
-- **Routes:** 34, of which 17 change data. Returned a success in a test this session: 18 of 34; of the changing routes, 6 of 17
+- **Server:** `src/backend/src/routes/dispatchRoutes.js`, `src/backend/src/routes/operationsRoutes.js`, `src/backend/src/routes/workCenters.js`, `src/backend/src/lib/productionRules.js`, `src/backend/src/lib/dispatchPlan.js`, `src/backend/src/lib/workCenterGuard.js`; served at /api/work-centers, /api/v1/work-centers, /api/v1/dispatch, /api/v1/operations
+- **Routes:** 34, of which 17 change data. Returned a success in a test this session: 24 of 34; of the changing routes, 11 of 17
 - **Tables:** WorkCenter, Location, Job, WorkCenterType, DispatchDivision, DispatchOperation, Organization, Operator, DispatchJob, DispatchTimeLog
 - **Who may change it:** see permissions-matrix.md
-- **Depends on:** Jobs, staff
-- **Feeds:** Jobs, time and labor
-- **Findings:** B-011
-- **Production concern:** No move rules on operations; half-saved time logs possible
+- **Depends on:** Jobs, staff, maintenance (lockout)
+- **Feeds:** Jobs, time and labor, quality
+- **Findings:** L-030
+- **Production concern:** No machine is connected (L-030); no screen sets hours per day (L-025)
 
 ### Planning and optimization
 
-- **Status:** IMPLEMENTED BUT NOT VERIFIED
-- **Basis:** No test. Not examined
-- **Purpose:** Suggests a schedule for work orders
+- **Status:** PARTIALLY IMPLEMENTED
+- **Basis:** Phase 7: examined and tested (qa/sim/phase7-manufacturing.mjs group 3; unit tests): no assumed times or hours, apply checks every line (L-008). Partial because it knows no shift calendar, absence or running work (L-025)
+- **Purpose:** Lays jobs out on work centers, reports load, bottlenecks and late jobs; preview, apply, what-if
 - **Screens:** 3 (3 real): /optimization//, /planning//, /planning//workflow
-- **Server:** `src/backend/src/routes/optimizationV1.js`; served at /api/v1/ai/work-order-optimize
-- **Routes:** 4, of which 3 change data. Returned a success in a test this session: 1 of 4; of the changing routes, 0 of 3
+- **Server:** `src/backend/src/routes/optimizationV1.js`, `src/backend/src/lib/capacityPlan.js`; served at /api/v1/ai/work-order-optimize
+- **Routes:** 4, of which 3 change data. Returned a success in a test this session: 4 of 4; of the changing routes, 3 of 3
 - **Tables:** Job, WorkCenter
 - **Who may change it:** see permissions-matrix.md
-- **Depends on:** Jobs, work centers
+- **Depends on:** Jobs, work centers, routings
 - **Feeds:** Schedule
-- **Findings:** none open
-- **Production concern:** Not examined
+- **Findings:** L-025
+- **Production concern:** Not a finite-capacity schedule (L-025)
 
 ### Quality inspections
 
-- **Status:** IMPLEMENTED BUT NOT VERIFIED
-- **Basis:** Workstream 4 fixed and checked the reply. 2 of 6 write routes succeed in a test
-- **Purpose:** Inspection of a job: pass, fail, hold
+- **Status:** IMPLEMENTED AND VERIFIED
+- **Basis:** qa/sim/phase7-manufacturing.mjs group 5 (19 scenarios) and group 6 rework; qa/sim/ui-phase7.cjs; unit tests on the gate
+- **Purpose:** Inspection of a job: open, fill in, pass, conditional pass, fail and hold, rework; the only way out of the inspection queue
 - **Screens:** 2 (2 real): /qc, /qc/inspect/:id
 - **Server:** `src/backend/src/routes/qcRoutes.js`; served at /api/qc
-- **Routes:** 11, of which 6 change data. Returned a success in a test this session: 6 of 11; of the changing routes, 2 of 6
-- **Tables:** Job, JobInspection, Operator
+- **Routes:** 11, of which 6 change data. Returned a success in a test this session: 11 of 11; of the changing routes, 6 of 6
+- **Tables:** Job, JobInspection, Operator, AuditLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Jobs
-- **Feeds:** Jobs (waiting on quality), shipping
-- **Findings:** none open
-- **Production concern:** Whether stock pending inspection may ship is not decided
+- **Feeds:** Jobs (packaging or hold), shipping
+- **Findings:** L-020, L-021, L-023, L-028
+- **Production concern:** No inspection standard on file (L-028); no nonconformance record (L-023); rework not routed or clocked (L-020)
 
 ### Material tracking, packages and drop tags
 
@@ -538,15 +538,15 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 ### Maintenance and assets
 
 - **Status:** PARTIALLY IMPLEMENTED
-- **Basis:** Two real screens, three sample screens. 0 of 8 write routes succeed in a test
-- **Purpose:** Assets, maintenance orders
+- **Basis:** Two real screens, three sample screens. Phase 7: maintenance order state rules and the lockout are tested (qa/sim/phase7-manufacturing.mjs group 3; L-015, L-016). Asset writes have no success-path test
+- **Purpose:** Assets, maintenance orders, lockout of a machine from scheduling
 - **Screens:** 5 (3 sample, labelled, 2 real): /maintenance/dashboard, /maintenance/work-orders, /maintenance/assets, /maintenance/pm-schedules, /maintenance/parts
 - **Server:** `src/backend/src/routes/maintenanceOrders.js`, `src/backend/src/routes/assets.js`; served at /api/maintenance-orders, /api/assets
-- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 10 of 17; of the changing routes, 4 of 9
+- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 12 of 17; of the changing routes, 6 of 9
 - **Tables:** MaintenanceOrder, Asset, AssetType, WorkCenter
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Work centers
-- **Feeds:** Scheduling (not connected)
+- **Feeds:** Scheduling and step start (lockout)
 - **Findings:** X-009, B-017
 - **Production concern:** 11 maintenance tables have no code
 
@@ -743,7 +743,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Role dashboard, operations cockpit, sales and pricing dashboards, exception events
 - **Screens:** 2 (2 real): /ops-cockpit, /role-dashboard//
 - **Server:** `src/backend/src/routes/dashboard.js`, `src/backend/src/routes/opsCockpit.js`, `src/backend/src/routes/analyticsV1.js`, `src/backend/src/routes/eventsV1.js`, `src/backend/src/routes/demandShaping.js`, `src/backend/src/routes/compressionMetrics.js`; served at /api/demand-shaping, /api/metrics/compression, /api/dashboard, /api/v1/analytics, /api/v1/events, /api/ops-cockpit
-- **Routes:** 29, of which 9 change data. Returned a success in a test this session: 21 of 29; of the changing routes, 1 of 9
+- **Routes:** 29, of which 9 change data. Returned a success in a test this session: 22 of 29; of the changing routes, 2 of 9
 - **Tables:** DemandSuggestionEvent, Inventory, Order, QCHold, Coil, Shipment, Job, RFQ, Quote, Organization, WorkCenter, ExceptionEvent, DispatchOperation, MaterialMovement, Grade, AuditLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Every operational module
@@ -810,7 +810,13 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 | Contract pricing | S-009 |
 | Carrier assignment with rates, freight cost | F-007 |
 | Statements, ageing, accounting export or integration |  |
-| Material and processing costing, profitability reporting from actual cost |  |
+| Material and processing costing, profitability reporting from actual cost | L-026, K-007 |
+| Bill of material and material requirements for a job | L-024 |
+| Finite-capacity scheduling against shift calendars | L-025 |
+| Nonconformance reports and corrective actions | L-023 |
+| Rework routing and rework labor | L-020 |
+| Outside processing; nesting and cut optimisation | L-027 |
+| Machine connection, machine time and downtime capture | L-030 |
 | Email or text notifications of any kind | D-034, B-019 |
 | Card payment processing | D-033 |
 | Scheduled tasks, queues, background jobs | B-019 |
@@ -914,15 +920,15 @@ Finding B-014.
 | src/frontend/src/screens/ShipmentTrackingScreen.jsx | 769 | 10 |
 | src/frontend/src/pages/Maintenance/PartsInventory.jsx | 762 | 5 |
 | src/backend/src/routes/pos.js | 1313 | |
-| src/backend/src/routes/dispatchRoutes.js | 1034 | |
 | src/backend/src/routes/stopWork.js | 985 | |
-| src/backend/src/routes/jobs.js | 948 | |
+| src/backend/src/routes/jobs.js | 980 | |
+| src/backend/src/routes/dispatchRoutes.js | 902 | |
 | src/backend/src/routes/inventoryV1.js | 876 | |
-| src/backend/src/routes/opsCockpit.js | 868 | |
-| src/backend/src/routes/staff.js | 720 | |
+| src/backend/src/routes/opsCockpit.js | 873 | |
+| src/backend/src/routes/staff.js | 788 | |
+| src/backend/src/routes/bomV1.js | 722 | |
 | src/backend/src/routes/dropTagRoutes.js | 716 | |
 | src/backend/src/routes/users.js | 692 | |
-| src/backend/src/routes/bomV1.js | 671 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
 | src/backend/src/routes/intakeOrders.js | 651 | |
 

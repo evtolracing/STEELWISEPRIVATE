@@ -33,6 +33,57 @@ const ALLOWED_TRANSITIONS = {
   ARCHIVED: [],
 };
 
+const STALE = 'This recipe was changed by someone else a moment ago. Reload it and try again.';
+
+/** The steps of a routing, checked: each names a work center type on file, in a clear order, with times that are not negative. */
+async function readSteps(operations) {
+  if (!Array.isArray(operations)) return { error: 'operations must be a list of steps' };
+  if (operations.length > 50) return { error: 'A routing can have at most 50 steps' };
+  const types = new Set((await prisma.workCenterType.findMany({ where: { isActive: true }, select: { id: true } })).map((t) => t.id));
+  const seen = new Set();
+  const steps = [];
+  for (const [idx, op] of operations.entries()) {
+    const label = `Step ${idx + 1}`;
+    if (!op || typeof op !== 'object') return { error: `${label} is not a step` };
+    if (typeof op.name !== 'string' || !op.name.trim()) return { error: `${label} needs a name` };
+    if (typeof op.workCenterType !== 'string' || !types.has(op.workCenterType)) return { error: `${label}: "${op.workCenterType ?? ''}" is not a work center type on file` };
+    const sequence = op.sequence == null ? idx + 1 : Number(op.sequence);
+    if (!Number.isInteger(sequence) || sequence < 1 || sequence > 1000) return { error: `${label}: sequence must be a whole number from 1` };
+    if (seen.has(sequence)) return { error: `Two steps have sequence ${sequence}. Each step needs its own place in the order.` };
+    seen.add(sequence);
+    const minutes = {};
+    for (const f of ['estimatedMachineMinutes', 'estimatedLaborMinutes', 'setupMinutes']) {
+      const v = op[f] == null || op[f] === '' ? 0 : Number(op[f]);
+      if (!Number.isFinite(v) || v < 0 || v > 100000) return { error: `${label}: ${f} must be zero or more` };
+      minutes[f] = Math.round(v);
+    }
+    steps.push({ sequence, name: op.name.trim().slice(0, 200), workCenterType: op.workCenterType, ...minutes, parameters: op.parameters && typeof op.parameters === 'object' ? op.parameters : {} });
+  }
+  return { steps };
+}
+
+function thicknessRangeError(min, max) {
+  for (const v of [min, max]) if (v != null && !(Number.isFinite(Number(v)) && Number(v) >= 0)) return 'Thickness limits must be zero or more';
+  if (min != null && max != null && Number(min) > Number(max)) return 'The minimum thickness is more than the maximum';
+  return null;
+}
+
+/** A routing goes into use only with at least one step, each on a work center type still on file. */
+async function activationError(recipe) {
+  const steps = await prisma.bomOperation.findMany({ where: { recipeId: recipe.id }, select: { workCenterType: true } });
+  if (!steps.length) return 'This routing has no steps. Add its steps before it goes into use.';
+  const types = new Set((await prisma.workCenterType.findMany({ where: { isActive: true }, select: { id: true } })).map((t) => t.id));
+  const gone = steps.find((st) => !types.has(st.workCenterType));
+  return gone ? `A step uses work center type "${gone.workCenterType}", which is not on file or is inactive` : null;
+}
+
+/** Applies only if the recipe is still in the status it was read in. */
+async function moveRecipe(recipe, to) {
+  const moved = await prisma.bomRecipe.updateMany({ where: { id: recipe.id, status: recipe.status }, data: { status: to } });
+  if (!moved.count) return null;
+  return prisma.bomRecipe.findUnique({ where: { id: recipe.id }, include: { operations: { orderBy: { sequence: 'asc' } } } });
+}
+
 function isTransitionAllowed(fromStatus, toStatus) {
   return ALLOWED_TRANSITIONS[fromStatus]?.includes(toStatus) || false;
 }
@@ -196,6 +247,11 @@ router.post('/recipes', async (req, res) => {
       return res.status(400).json({ error: 'name and code are required' });
     }
     
+    const range = thicknessRangeError(thicknessMin, thicknessMax);
+    if (range) return res.status(400).json({ error: range });
+    const steps = await readSteps(operations);
+    if (steps.error) return res.status(400).json({ error: steps.error });
+
     // Check if code already exists
     const existing = await prisma.bomRecipe.findFirst({ where: { code } });
     if (existing) {
@@ -216,15 +272,7 @@ router.post('/recipes', async (req, res) => {
         version: 1,
         status: 'DRAFT',
         operations: {
-          create: operations.map((op, idx) => ({
-            sequence: op.sequence || idx + 1,
-            name: op.name,
-            workCenterType: op.workCenterType,
-            estimatedMachineMinutes: op.estimatedMachineMinutes || 0,
-            estimatedLaborMinutes: op.estimatedLaborMinutes || 0,
-            setupMinutes: op.setupMinutes || 0,
-            parameters: op.parameters || {},
-          }))
+          create: steps.steps
         }
       },
       include: {
@@ -299,20 +347,16 @@ router.put('/recipes/:id', async (req, res) => {
     if (thicknessMax !== undefined) updateData.thicknessMax = thicknessMax;
     if (division !== undefined) updateData.division = division;
     
+    const range = thicknessRangeError(thicknessMin !== undefined ? thicknessMin : recipe.thicknessMin, thicknessMax !== undefined ? thicknessMax : recipe.thicknessMax);
+    if (range) return res.status(400).json({ error: range });
+    const steps = operations !== undefined ? await readSteps(operations) : null;
+    if (steps?.error) return res.status(400).json({ error: steps.error });
     if (operations !== undefined) {
       // Replace the operations in the same save as the recipe (B-010): if the new ones are refused,
       // the old ones are still there.
       updateData.operations = {
         deleteMany: {},
-        create: operations.map((op, idx) => ({
-          sequence: op.sequence || idx + 1,
-          name: op.name,
-          workCenterType: op.workCenterType,
-          estimatedMachineMinutes: op.estimatedMachineMinutes || 0,
-          estimatedLaborMinutes: op.estimatedLaborMinutes || 0,
-          setupMinutes: op.setupMinutes || 0,
-          parameters: op.parameters || {},
-        }))
+        create: steps.steps
       };
     }
     
@@ -349,11 +393,10 @@ router.post('/recipes/:id/activate', async (req, res) => {
       });
     }
     
-    const updated = await prisma.bomRecipe.update({
-      where: { id },
-      data: { status: 'ACTIVE' },
-      include: { operations: { orderBy: { sequence: 'asc' } } }
-    });
+    const why = await activationError(recipe);
+    if (why) return res.status(409).json({ error: why });
+    const updated = await moveRecipe(recipe, 'ACTIVE');
+    if (!updated) return res.status(409).json({ error: STALE });
     
     res.json(updated);
   } catch (error) {
@@ -394,11 +437,12 @@ router.post('/recipes/:id/transition', async (req, res) => {
       });
     }
     
-    const updated = await prisma.bomRecipe.update({
-      where: { id },
-      data: { status: targetStatus },
-      include: { operations: { orderBy: { sequence: 'asc' } } }
-    });
+    if (targetStatus === 'ACTIVE') {
+      const why = await activationError(recipe);
+      if (why) return res.status(409).json({ error: why });
+    }
+    const updated = await moveRecipe(recipe, targetStatus);
+    if (!updated) return res.status(409).json({ error: STALE });
     
     res.json(updated);
   } catch (error) {
@@ -656,10 +700,17 @@ router.post('/ai-suggest', (req, res) => {
       suggestedName += ` (${opNames})`;
     }
     
+    // The steps are suggested from the words used. Times and tolerances are the shop's own figures and are
+    // left empty for the planner to enter: none is suggested here (they used to be filled in with fixed numbers).
+    for (const op of suggestedOperations) {
+      op.estimatedMachineMinutes = 0; op.estimatedLaborMinutes = 0; op.setupMinutes = 0;
+      op.parameters = (op.parameters || []).map((prm) => ({ ...prm, value: '' }));
+    }
+
     res.json({
       suggestedName,
       suggestedOperations,
-      analysisNotes: `Generated ${suggestedOperations.length} operation(s) based on description: "${description}"`,
+      analysisNotes: `Suggested ${suggestedOperations.length} step(s) from the words in the description. Enter your own times and tolerances; none is assumed.`,
     });
   } catch (error) {
     console.error('AI suggestion error:', error);

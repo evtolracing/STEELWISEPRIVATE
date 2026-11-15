@@ -19,11 +19,14 @@ const testStart = new Date();
 for (const who of ['admin', 'csr', 'operator', 'branchA', 'regional']) await A.login(who);
 const loc = Object.fromEntries((await prisma.location.findMany({ where: { code: { in: ['QA-L01', 'QA-L02', 'QA-L04'] } } })).map((l) => [l.code, l.id]));
 const L1 = loc['QA-L01'], L4 = loc['QA-L04'];
-const wc = await prisma.workCenter.findFirst({ where: { locationId: L1 } });
 
 // Test fixtures the product has no seed for: one work center type and two operators.
 const TYPE = 'QA-P2-SAW';
 await prisma.workCenterType.upsert({ where: { id: TYPE }, update: { isActive: true }, create: { id: TYPE, label: 'QA saw' } });
+// Phase 7: a step is worked only on a work center of the kind it needs, so the fixture is a work center of that kind
+// (it used to be whichever work center came first at the branch).
+const wc = await prisma.workCenter.findFirst({ where: { code: 'QA-P2-SAW-1' } })
+  || await prisma.workCenter.create({ data: { code: 'QA-P2-SAW-1', name: 'QA phase 2 saw', locationId: L1, type: TYPE } });
 const operators = [];
 for (const n of [1, 2]) {
   const code = `QA-P2-OP${n}`;
@@ -76,6 +79,10 @@ check('an operation can be started again and paused', restarted.status === 200 &
 // ── Completing ──
 const done1 = await complete(op1);
 check('completing one of two operations leaves the job in process', done1.status === 200 && (await jobOf(j1.id)).status === 'IN_PROCESS', `${done1.status}`);
+// Phase 7: a step is finished only after it was started (so its time is on record); it used to be accepted unstarted.
+const unstarted = await complete(op2);
+check('a step that was never started cannot be finished', unstarted.status === 409 && (await opsOf(j1.id))[1].status === 'PENDING', `${unstarted.status}`);
+await start(op2, 1);
 const done2 = await complete(op2);
 const toQc = async (id) => (await moves(id)).filter((m) => m.to === 'WAITING_QC').length;
 check('completing the last operation sends the job to inspection, once', done2.status === 200 && (await jobOf(j1.id)).status === 'WAITING_QC' && (await toQc(j1.id)) === 1, `${done2.status}`);
@@ -84,6 +91,14 @@ const again = await complete(op2);
 check('a repeated completion changes nothing', again.status === 200 && (await toQc(j1.id)) === 1 && String((await opsOf(j1.id))[1].actualEnd) === String(endBefore) && (await jobOf(j1.id)).status === 'WAITING_QC', `${again.status}`);
 
 // Two operators finish the last two operations at the same moment (the lost-update case).
+// The owner's rule (2026-11-15) is that steps run in their planned order, so two steps of one job are
+// not normally running together. The rule is a setting; this race is checked with it switched off,
+// because the completion code must stay safe if the rule is ever relaxed.
+const soon = await plannedJob('SCHEDULED');
+const tooSoon = await start(soon.ops[1], 1);
+check('the second step cannot start before the first is finished (the owner\'s planned-order rule)', tooSoon.status === 409 && (await opsOf(soon.id))[1].status === 'PENDING', `${tooSoon.status}`);
+const stepRule = (stepsInOrder) => prisma.appSetting.upsert({ where: { key: 'production.rules' }, update: { value: { stepsInOrder } }, create: { key: 'production.rules', value: { stepsInOrder } } });
+await stepRule(false);
 let stuck = 0, twice = 0;
 const ROUNDS = 8;
 for (let i = 0; i < ROUNDS; i++) {
@@ -95,6 +110,7 @@ for (let i = 0; i < ROUNDS; i++) {
 }
 check(`two operators finishing the last two operations together: the job reaches inspection every time (${ROUNDS} rounds)`, stuck === 0, `${stuck} jobs left in process`);
 check('and the history has exactly one move to inspection each time', twice === 0, `${twice} jobs`);
+await prisma.appSetting.deleteMany({ where: { key: 'production.rules' } });
 
 // ── A cancelled job ──
 const jc = await plannedJob('SCHEDULED');
@@ -176,7 +192,7 @@ check('and no record was created by them', afterEmpty.jobs === before.jobs && af
 
 // ── Field lists (B-007) ──
 const code = `QA-P2-${run}`;
-const wcNew = await A.post('/api/work-centers', { code, name: 'QA phase 2 saw', locationId: L1, type: 'SAW', id: '11111111-1111-1111-1111-111111111111', createdAt: '2000-01-01T00:00:00Z' }, 'admin');
+const wcNew = await A.post('/api/work-centers', { code, name: 'QA phase 2 saw', locationId: L1, type: TYPE, id: '11111111-1111-1111-1111-111111111111', createdAt: '2000-01-01T00:00:00Z' }, 'admin');
 const wcRow = await prisma.workCenter.findUnique({ where: { code } });
 check('a work center can be created, and fields the browser may not set are ignored', wcNew.status === 201 && wcRow && wcRow.id !== '11111111-1111-1111-1111-111111111111' && wcRow.createdAt.getUTCFullYear() > 2000, `${wcNew.status} ${JSON.stringify(wcNew.body).slice(0, 120)}`);
 const wcDup = await A.post('/api/work-centers', { code, name: 'again', locationId: L1 }, 'admin');

@@ -21,7 +21,7 @@ Written by hand in Phase 1 from the code (`src/backend/src/lib/workflowRules.js`
 | Credit hold and release | Yes | Yes | |
 | Stock hold and release | Yes | Yes | Whether held or uninspected stock may ship is partly decided |
 | Coil work order | Yes | Yes | Does not consume or produce stock (M-016) |
-| Quality inspection of a job | Yes | Pass path only | Fail, hold and rework paths mapped only |
+| Quality inspection of a job | Yes | Yes (Phase 7: pass, conditional, fail, hold, rework, re-inspection) | Rework is not routed or clocked (L-020); no inspection standard on file (L-028) |
 | Shipment documents and tags | Routes exist | No | Not examined (F-011) |
 | Partner API (customer, supplier, carrier) | Routes exist | Refusal only | No success-path test; failed webhooks are not retried (B-018) |
 | User life cycle | Yes | Refusal only | No success-path test |
@@ -55,6 +55,22 @@ Sales channels that create a sales order after Phase 5: order entry (including R
 | Replenishment | A supply position per branch and grade (stock, inbound, demand). Nothing is calculated or ordered (K-010) | same, group 1 |
 
 Inventory valuation is not a workflow in the code: receiving writes no cost (K-007).
+
+### Phase 7 update (2026-11-15)
+
+| Workflow | Change | Verified by |
+|---|---|---|
+| Make to order: open and plan a job | Opened only for a live order and line; planned once, steps in order at the work center's branch; grade and thickness from the order line, nothing assumed; a plan with recorded work is never replaced (L-010, L-012) | `qa/sim/phase7-manufacturing.mjs`, group 1 |
+| Make to order: routing | Draft, review, in use, retired; only a routing in use goes on a job, and the job records the version (L-011) | same, groups 1 and 2 |
+| Make to order: schedule | The scheduling run places waiting steps of open jobs on like work centers at the branch with certified operators, once, under a branch lock; machines off or locked out get no work (L-007, L-016). The planner assumes no times or hours (L-008) | same, group 3 |
+| Make to order: run a step | Start, pause, finish in planned order (owner decision 8), on the right kind of work center, by an operator of that branch whose certification has not lapsed (L-004, L-005) | same, group 4; `qa/sim/phase2-integrity.mjs` |
+| Make to order: leave production | Not with a planned step unfinished (L-006). Cancelling stops the clocks (L-018) | same, groups 4 and 7 |
+| Quality inspection of a job | Now verified on every path: pass, conditional pass, fail and hold, rework and re-inspection. A job leaves inspection only by a passed inspection (L-001, L-002, L-003) | same, group 5; `qa/sim/ui-phase7.cjs` |
+| Coil work order | Quality hold cannot be completed; substitution needs a reason; failed, held or in-transit material is refused (L-013) | same, groups 2, 5 and 6 |
+| Rework | Sent back with instructions and inspected again. The rework itself is not routed or clocked (L-020, the owner's question) | same, group 6 |
+| Sold at one branch, worked at another | Unchanged and confirmed: the job follows its work center | same, group 7; the multi-branch jobs of the order-to-cash simulation |
+
+Not workflows in the code, recorded as such: bill of material and material requirements (L-024), calendar capacity (L-025), production costing (L-026), nonconformance and corrective action (L-023), outside processing and nesting (L-027), machine connection (L-030).
 
 ## Job types found
 

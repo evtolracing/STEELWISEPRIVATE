@@ -114,8 +114,24 @@ async function createJob(sc, order, line, wc, priority = 3) {
   return r.body?.id ? r.body : null;
 }
 const FLOW = ['IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP'];
+// Phase 7: a job waiting for inspection is released by a passed inspection, not by hand (the status route refuses it).
+// So where a flow goes from inspection to packaging, the simulation records and passes an inspection, as the Quality screen does.
+async function passInspection(sc, job) {
+  const made = await step(sc, `open an inspection for ${job.jobNumber}`, () => A.post('/api/qc/inspections', { jobId: job.id }, 'admin'));
+  const inspection = made.body?.data;
+  if (!inspection) return;
+  const checklist = (inspection.checklist || []).map((c) => ({ ...c, result: 'PASS' }));
+  await step(sc, `pass inspection ${inspection.inspectionNumber}`, () => A.post(`/api/qc/inspections/${inspection.id}/pass`, { checklist }, 'admin'));
+}
 async function runJob(sc, job, flow = FLOW, who = 'operator') {
-  for (const s of flow) await step(sc, `job ${job.jobNumber} → ${s}`, () => A.post(`/api/jobs/${job.id}/status`, { status: s }, who));
+  let at = null;
+  for (const s of flow) {
+    if (at === 'WAITING_QC' && s === 'PACKAGING') {
+      await step(sc, `job ${job.jobNumber} cannot be released from inspection by hand`, () => A.post(`/api/jobs/${job.id}/status`, { status: s }, who), 409);
+      await passInspection(sc, job);
+    } else await step(sc, `job ${job.jobNumber} → ${s}`, () => A.post(`/api/jobs/${job.id}/status`, { status: s }, who));
+    at = s;
+  }
 }
 async function ship(sc, order, loc, items, expect = '2xx') {
   const r = await step(sc, `create shipment (${items.length} line(s))`, () => A.post('/api/shipments', {

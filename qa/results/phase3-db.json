@@ -1,5 +1,5 @@
 {
- "at": "2026-11-15T18:43:43.659Z",
+ "at": "2026-11-15T22:12:58.691Z",
  "base": "http://localhost:3011",
  "scenarios": 74,
  "passed": 74,
@@ -87,7 +87,7 @@
     }
    ],
    "pass": true,
-   "ms": 47
+   "ms": 44
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -103,7 +103,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 34
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -119,7 +119,7 @@
     }
    ],
    "pass": true,
-   "ms": 17
+   "ms": 16
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -143,7 +143,7 @@
     }
    ],
    "pass": true,
-   "ms": 24
+   "ms": 21
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -179,7 +179,7 @@
     }
    ],
    "pass": true,
-   "ms": 41
+   "ms": 42
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -199,7 +199,7 @@
     }
    ],
    "pass": true,
-   "ms": 49
+   "ms": 40
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -214,48 +214,48 @@
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-7: movement marked UPLOAD",
+     "what": "UP-MWIE4JXI-7: movement marked UPLOAD",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-7: on hand = available + reserved + on hold",
+     "what": "UP-MWIE4JXI-7: on hand = available + reserved + on hold",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-7: reserved quantity equals the reservations on file",
+     "what": "UP-MWIE4JXI-7: reserved quantity equals the reservations on file",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-7: on hand equals what the movement ledger adds up to",
+     "what": "UP-MWIE4JXI-7: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-7: the item and its stock row name the same branch",
+     "what": "UP-MWIE4JXI-7: the item and its stock row name the same branch",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-8: movement marked UPLOAD",
+     "what": "UP-MWIE4JXI-8: movement marked UPLOAD",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-8: on hand = available + reserved + on hold",
+     "what": "UP-MWIE4JXI-8: on hand = available + reserved + on hold",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-8: reserved quantity equals the reservations on file",
+     "what": "UP-MWIE4JXI-8: reserved quantity equals the reservations on file",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-8: on hand equals what the movement ledger adds up to",
+     "what": "UP-MWIE4JXI-8: on hand equals what the movement ledger adds up to",
      "ok": true
     },
     {
-     "what": "UP-MWI6NFPP-8: the item and its stock row name the same branch",
+     "what": "UP-MWIE4JXI-8: the item and its stock row name the same branch",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 58
+   "ms": 43
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -315,7 +315,7 @@
     }
    ],
    "pass": true,
-   "ms": 91
+   "ms": 82
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -335,7 +335,7 @@
     }
    ],
    "pass": true,
-   "ms": 40
+   "ms": 35
   },
   {
    "group": "Inventory receiving and adjustments",
@@ -363,7 +363,7 @@
     }
    ],
    "pass": true,
-   "ms": 34
+   "ms": 32
   },
   {
    "group": "Reservations and material consumption",
@@ -407,7 +407,7 @@
     }
    ],
    "pass": true,
-   "ms": 101
+   "ms": 88
   },
   {
    "group": "Reservations and material consumption",
@@ -423,7 +423,7 @@
     }
    ],
    "pass": true,
-   "ms": 84
+   "ms": 79
   },
   {
    "group": "Reservations and material consumption",
@@ -459,7 +459,7 @@
     }
    ],
    "pass": true,
-   "ms": 112
+   "ms": 101
   },
   {
    "group": "Reservations and material consumption",
@@ -531,7 +531,7 @@
     }
    ],
    "pass": true,
-   "ms": 186
+   "ms": 177
   },
   {
    "group": "Reservations and material consumption",
@@ -579,7 +579,7 @@
     }
    ],
    "pass": true,
-   "ms": 206
+   "ms": 191
   },
   {
    "group": "Reservations and material consumption",
@@ -615,7 +615,7 @@
     }
    ],
    "pass": true,
-   "ms": 227
+   "ms": 184
   },
   {
    "group": "Reservations and material consumption",
@@ -631,7 +631,7 @@
     }
    ],
    "pass": true,
-   "ms": 86
+   "ms": 78
   },
   {
    "group": "Reservations and material consumption",
@@ -663,7 +663,7 @@
     }
    ],
    "pass": true,
-   "ms": 204
+   "ms": 188
   },
   {
    "group": "Reservations and material consumption",
@@ -727,7 +727,7 @@
     }
    ],
    "pass": true,
-   "ms": 300
+   "ms": 292
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -799,7 +799,7 @@
     }
    ],
    "pass": true,
-   "ms": 144
+   "ms": 106
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -819,7 +819,7 @@
     }
    ],
    "pass": true,
-   "ms": 65
+   "ms": 68
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -843,7 +843,7 @@
     }
    ],
    "pass": true,
-   "ms": 84
+   "ms": 96
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -887,7 +887,7 @@
     }
    ],
    "pass": true,
-   "ms": 50
+   "ms": 47
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -967,7 +967,7 @@
     }
    ],
    "pass": true,
-   "ms": 89
+   "ms": 88
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -979,7 +979,7 @@
     }
    ],
    "pass": true,
-   "ms": 51
+   "ms": 50
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -1111,7 +1111,7 @@
     }
    ],
    "pass": true,
-   "ms": 83
+   "ms": 89
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -1155,7 +1155,7 @@
     }
    ],
    "pass": true,
-   "ms": 159
+   "ms": 170
   },
   {
    "group": "Work orders, scrap and remnants",
@@ -1239,7 +1239,7 @@
     }
    ],
    "pass": true,
-   "ms": 312
+   "ms": 323
   },
   {
    "group": "Interbranch transfers",
@@ -1295,7 +1295,7 @@
     }
    ],
    "pass": true,
-   "ms": 89
+   "ms": 84
   },
   {
    "group": "Interbranch transfers",
@@ -1311,7 +1311,7 @@
     }
    ],
    "pass": true,
-   "ms": 29
+   "ms": 27
   },
   {
    "group": "Interbranch transfers",
@@ -1339,7 +1339,7 @@
     }
    ],
    "pass": true,
-   "ms": 51
+   "ms": 40
   },
   {
    "group": "Interbranch transfers",
@@ -1375,7 +1375,7 @@
     }
    ],
    "pass": true,
-   "ms": 76
+   "ms": 69
   },
   {
    "group": "Interbranch transfers",
@@ -1407,7 +1407,7 @@
     }
    ],
    "pass": true,
-   "ms": 69
+   "ms": 67
   },
   {
    "group": "Interbranch transfers",
@@ -1439,7 +1439,7 @@
     }
    ],
    "pass": true,
-   "ms": 108
+   "ms": 105
   },
   {
    "group": "Interbranch transfers",
@@ -1507,7 +1507,7 @@
     }
    ],
    "pass": true,
-   "ms": 241
+   "ms": 229
   },
   {
    "group": "Interbranch transfers",
@@ -1543,7 +1543,7 @@
     }
    ],
    "pass": true,
-   "ms": 123
+   "ms": 108
   },
   {
    "group": "Interbranch transfers",
@@ -1559,7 +1559,7 @@
     }
    ],
    "pass": true,
-   "ms": 213
+   "ms": 161
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1595,7 +1595,7 @@
     }
    ],
    "pass": true,
-   "ms": 190
+   "ms": 172
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1627,7 +1627,7 @@
     }
    ],
    "pass": true,
-   "ms": 295
+   "ms": 288
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1667,7 +1667,7 @@
     }
    ],
    "pass": true,
-   "ms": 281
+   "ms": 227
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1707,7 +1707,7 @@
     }
    ],
    "pass": true,
-   "ms": 265
+   "ms": 261
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1731,7 +1731,7 @@
     }
    ],
    "pass": true,
-   "ms": 24
+   "ms": 17
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1747,7 +1747,7 @@
     }
    ],
    "pass": true,
-   "ms": 21
+   "ms": 20
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1787,7 +1787,7 @@
     }
    ],
    "pass": true,
-   "ms": 124
+   "ms": 109
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1827,7 +1827,7 @@
     }
    ],
    "pass": true,
-   "ms": 220
+   "ms": 184
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1891,7 +1891,7 @@
     }
    ],
    "pass": true,
-   "ms": 227
+   "ms": 235
   },
   {
    "group": "Orders, invoicing and financial records",
@@ -1927,7 +1927,7 @@
     }
    ],
    "pass": true,
-   "ms": 386
+   "ms": 332
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1959,7 +1959,7 @@
     }
    ],
    "pass": true,
-   "ms": 135
+   "ms": 132
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -1991,7 +1991,7 @@
     }
    ],
    "pass": true,
-   "ms": 396
+   "ms": 360
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2195,7 +2195,7 @@
     }
    ],
    "pass": true,
-   "ms": 750
+   "ms": 702
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2303,7 +2303,7 @@
     }
    ],
    "pass": true,
-   "ms": 507
+   "ms": 560
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2347,7 +2347,7 @@
     }
    ],
    "pass": true,
-   "ms": 280
+   "ms": 274
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2391,7 +2391,7 @@
     }
    ],
    "pass": true,
-   "ms": 172
+   "ms": 164
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2415,7 +2415,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 37
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2451,7 +2451,7 @@
     }
    ],
    "pass": true,
-   "ms": 226
+   "ms": 203
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2467,7 +2467,7 @@
     }
    ],
    "pass": true,
-   "ms": 265
+   "ms": 241
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2483,7 +2483,7 @@
     }
    ],
    "pass": true,
-   "ms": 293
+   "ms": 274
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2515,7 +2515,7 @@
     }
    ],
    "pass": true,
-   "ms": 160
+   "ms": 181
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2531,7 +2531,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 34
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2551,7 +2551,7 @@
     }
    ],
    "pass": true,
-   "ms": 34
+   "ms": 32
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2595,7 +2595,7 @@
     }
    ],
    "pass": true,
-   "ms": 338
+   "ms": 355
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2655,7 +2655,7 @@
     }
    ],
    "pass": true,
-   "ms": 184
+   "ms": 192
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2675,7 +2675,7 @@
     }
    ],
    "pass": true,
-   "ms": 734
+   "ms": 761
   },
   {
    "group": "Concurrency, retries and failure recovery",
@@ -2686,7 +2686,7 @@
      "ok": true
     },
     {
-     "what": "a reconciliation read taken 61 times during the burst never saw the books out of balance",
+     "what": "a reconciliation read taken 57 times during the burst never saw the books out of balance",
      "ok": true
     },
     {
@@ -2755,7 +2755,7 @@
     }
    ],
    "pass": true,
-   "ms": 897
+   "ms": 776
   },
   {
    "group": "Stock corrections, invoice numbers and retention",
@@ -2807,7 +2807,7 @@
     }
    ],
    "pass": true,
-   "ms": 89
+   "ms": 73
   },
   {
    "group": "Stock corrections, invoice numbers and retention",
@@ -2895,7 +2895,7 @@
     }
    ],
    "pass": true,
-   "ms": 198
+   "ms": 164
   },
   {
    "group": "Stock corrections, invoice numbers and retention",
@@ -2939,7 +2939,7 @@
     }
    ],
    "pass": true,
-   "ms": 136
+   "ms": 105
   },
   {
    "group": "Stock corrections, invoice numbers and retention",
@@ -2971,7 +2971,7 @@
     }
    ],
    "pass": true,
-   "ms": 314
+   "ms": 292
   },
   {
    "group": "Stock corrections, invoice numbers and retention",
@@ -2999,7 +2999,7 @@
     }
    ],
    "pass": true,
-   "ms": 2348
+   "ms": 2203
   },
   {
    "group": "Stock corrections, invoice numbers and retention",
@@ -3039,7 +3039,7 @@
     }
    ],
    "pass": true,
-   "ms": 464
+   "ms": 415
   },
   {
    "group": "Stock corrections, invoice numbers and retention",
@@ -3083,7 +3083,7 @@
     }
    ],
    "pass": true,
-   "ms": 281
+   "ms": 271
   }
  ]
 }

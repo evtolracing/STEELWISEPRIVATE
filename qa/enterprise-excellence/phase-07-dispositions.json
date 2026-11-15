@@ -1,0 +1,17 @@
+{
+ "note": "Dispositions decided in Phase 7. Applied over the findings source by qa/tools/findings-import.mjs. Never delete an entry.",
+ "dispositions": {
+  "B-011": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence",
+   "statusNote": "Phase 7: confirmed by running it (L-004) and corrected. A step must be started before it is finished, a finished step cannot be started again, and a pause needs a running clock. The owner decided on 2026-11-15 that steps run in their planned order (decision 8). Whether a finished step may be reopened for rework is now finding L-020.",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"steps run in their planned order\", \"a step that was never started cannot be finished\", \"finishing the last step sends the job to inspection once; finishing it again changes nothing\"; qa/sim/phase2-integrity.mjs; src/backend/test/phase7Rules.test.js."
+  },
+  "M-017": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "phase": "Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence",
+   "statusNote": "Phase 7: the first half is done. Every job status change, from every address, now goes through one function (lib/jobGates.js changeJobStatusTx) with one history entry and the same quality and open-step gates (L-001, L-006). What remains for the owner is narrower: the move table still allows some backward moves (for example in process back to ordered). Question: which backward moves should be allowed, and by whom?",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"across everything this run did: every job is where its history says\"; \"one job moved by two people at the same moment\"."
+  }
+ }
+}

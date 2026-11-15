@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -26,10 +26,10 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 |---|---:|---:|---:|---|:-:|
 | Platform infrastructure | 80 | 77% | 2 | 2 of 10 | No |
 | Sales and customer operations | 79 | 97% | 4 | 37 of 97 | No |
-| Inventory and purchasing | 77 | 97% | 3 | 40 of 62 | No |
-| Manufacturing and processing | 74 | 97% | 1 | 26 of 91 | No |
+| Inventory and purchasing | 77 | 97% | 3 | 46 of 62 | No |
+| Manufacturing and processing | 80 | 97% | 1 | 43 of 93 | No |
 | Logistics and financial operations | 79 | 97% | 2 | 31 of 40 | No |
-| Enterprise experience | 60 | 89% | 5 | 4 of 50 | No |
+| Enterprise experience | 60 | 89% | 5 | 9 of 50 | No |
 
 No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.
 
@@ -42,7 +42,7 @@ The groups hide large differences. Classification and test reach per module:
 | Sign-in and sessions | IMPLEMENTED AND VERIFIED | 1 of 3 |  |
 | Users, roles and branches | IMPLEMENTED BUT NOT VERIFIED | 2 of 6 |  |
 | Access control | IMPLEMENTED AND VERIFIED | n/a | F-009 |
-| Staff and operators | IMPLEMENTED BUT NOT VERIFIED | 0 of 9 | B-012, B-014 |
+| Staff and operators | PARTIALLY IMPLEMENTED | 4 of 9 | B-012, B-014, L-022 |
 | Settings, tax rates and online settings | PARTIALLY IMPLEMENTED | 0 of 6 | X-007, D-035 |
 | Customers | IMPLEMENTED AND VERIFIED | 3 of 4 | S-009 |
 | RFQs and quotes | IMPLEMENTED AND VERIFIED | 7 of 9 | B-012 |
@@ -58,7 +58,7 @@ The groups hide large differences. Classification and test reach per module:
 | Order hub and intake pipeline | DISCONNECTED | 0 of 18 | B-009 |
 | Mobile rep | PLACEHOLDER OR MOCK | n/a | X-009 |
 | Products, grades and heats | IMPLEMENTED AND VERIFIED | 6 of 6 | B-012 |
-| Processing recipes and bills of material | IMPLEMENTED BUT NOT VERIFIED | 0 of 11 | I-011 |
+| Routings and processing recipes | PARTIALLY IMPLEMENTED | 6 of 11 | I-011, L-024 |
 | Customer specifications | IMPLEMENTED BUT NOT VERIFIED | n/a |  |
 | Stock items and stock levels | IMPLEMENTED AND VERIFIED | 12 of 13 | K-007, K-008, K-009, K-014 |
 | Receiving | IMPLEMENTED AND VERIFIED | 9 of 9 | K-011, K-013 |
@@ -66,13 +66,13 @@ The groups hide large differences. Classification and test reach per module:
 | Interbranch transfers | IMPLEMENTED AND VERIFIED | 9 of 9 | K-014 |
 | Second stock list (unit tracking) | DISCONNECTED | 0 of 9 | B-009, D-024 |
 | Remnants | PARTIALLY IMPLEMENTED | 3 of 4 | S-009 |
-| Jobs, job board and schedule | IMPLEMENTED AND VERIFIED | 9 of 20 | M-017 |
-| Coil work orders | IMPLEMENTED AND VERIFIED | 5 of 5 |  |
-| Dispatch, work centers and shop-floor operations | IMPLEMENTED BUT NOT VERIFIED | 6 of 17 | B-011 |
-| Planning and optimization | IMPLEMENTED BUT NOT VERIFIED | 0 of 3 |  |
-| Quality inspections | IMPLEMENTED BUT NOT VERIFIED | 2 of 6 |  |
+| Jobs, job board and schedule | IMPLEMENTED AND VERIFIED | 10 of 20 | M-017, L-021, L-024, L-029 |
+| Coil work orders | IMPLEMENTED AND VERIFIED | 7 of 7 | L-024 |
+| Dispatch, work centers and shop-floor operations | IMPLEMENTED AND VERIFIED | 11 of 17 | L-030 |
+| Planning and optimization | PARTIALLY IMPLEMENTED | 3 of 3 | L-025 |
+| Quality inspections | IMPLEMENTED AND VERIFIED | 6 of 6 | L-020, L-021, L-023, L-028 |
 | Material tracking, packages and drop tags | IMPLEMENTED BUT NOT VERIFIED | 0 of 31 | F-011 |
-| Maintenance and assets | PARTIALLY IMPLEMENTED | 4 of 9 | X-009, B-017 |
+| Maintenance and assets | PARTIALLY IMPLEMENTED | 6 of 9 | X-009, B-017 |
 | Shipping | IMPLEMENTED AND VERIFIED | 5 of 7 | F-011 |
 | Returns | IMPLEMENTED AND VERIFIED | 2 of 3 |  |
 | Documents | IMPLEMENTED AND VERIFIED | 2 of 3 | B-021 |
@@ -85,7 +85,7 @@ The groups hide large differences. Classification and test reach per module:
 | AI assistant and voice | IMPLEMENTED BUT NOT VERIFIED | 2 of 10 | H-012 |
 | Help manual | IMPLEMENTED BUT NOT VERIFIED | n/a | M-018, X-010 |
 | Background work, notifications, schedules | PARTIALLY IMPLEMENTED | n/a | B-019, D-034, H-015 |
-| Operations cockpit and dashboards | IMPLEMENTED BUT NOT VERIFIED | 1 of 9 | B-012 |
+| Operations cockpit and dashboards | IMPLEMENTED BUT NOT VERIFIED | 2 of 9 | B-012 |
 | Executive tools | PLACEHOLDER OR MOCK | 0 of 10 | X-009 |
 | Stop work | DISCONNECTED | 0 of 7 | X-001, B-009 |
 | Safety, training, contractors, customer quality, supplier quality, production quality, provenance | PLACEHOLDER OR MOCK | n/a | X-001, X-002, X-009, B-017 |
@@ -136,7 +136,7 @@ Changing routes with a success-path test: 37 of 97. Open findings against these 
 
 ### Inventory and purchasing
 
-Modules: Products, grades and heats; Processing recipes and bills of material; Customer specifications; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Second stock list (unit tracking); Remnants.
+Modules: Products, grades and heats; Routings and processing recipes; Customer specifications; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Second stock list (unit tracking); Remnants.
 
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
@@ -153,7 +153,7 @@ Modules: Products, grades and heats; Processing recipes and bills of material; C
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
 | **Weighted over the 97% that has evidence** | | **77** | Target 95 |
 
-Changing routes with a success-path test: 40 of 62. Open findings against these modules: 13, of which P0 or P1: 3 (B-009, I-011, K-007).
+Changing routes with a success-path test: 46 of 62. Open findings against these modules: 14, of which P0 or P1: 3 (B-009, I-011, K-007).
 
 ### Manufacturing and processing
 
@@ -161,20 +161,20 @@ Modules: Jobs, job board and schedule; Coil work orders; Dispatch, work centers 
 
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
-| Functional correctness | 15% | 70 | The job, schedule, work order and old operator screens showed sample data or saved nothing (M-001, M-007, M-008, M-010); all now run on real records. Production quality and BOM screens are still samples (M-011); a work order does not move stock (M-016) |
-| Data integrity | 15% | 87 | Phase 3, owner decision: completing a work order takes output and scrap off the source, creates the pieces with the source heat, and carries a line's reservation into them, in one transaction; several work orders on one item are safe under a lock (three raced: two fit, one refused). Three read-only checks at 0. Held at 87: shop-floor jobs record no weights; a completed work order cannot be reversed. Was 78 (Work orders read an allow-list and follow status rules (M-005, M-006); a status note no longer overwrites job notes (M-003). Backward job moves are loosely ruled (M-017)) |
-| Reliability | 12% | 78 | Phase 2: simultaneous completion, start after cancel and double status moves are refused with a plain 409; work centers can be created again (C-004). Held at 78: 65 of 91 changing routes still have no success-path test. Was 70 (Missing jobs and work orders answer 404, not 500; concurrent work order moves are guarded; starting an inspection no longer reports failure after saving (M-015)) |
-| Security | 12% | 78 | Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 80 |
+| Functional correctness | 15% | 86 | Phase 7: 119 verified scenarios across work orders, routing, scheduling, shop floor, quality, material and cross-branch production; every job move through one gate (L-001, L-006); steps in planned order (owner decision 8). Held at 86: bill of material, calendar capacity, costing, nonconformance and rework routing are not built (L-020, L-023 to L-026). Was 70 (The job, schedule, work order and old operator screens showed sample data or saved nothing (M-001, M-007, M-008, M-010); all now run on real records. Production quality and BOM screens are still samples (M-011); a work order does not move stock (M-016)) |
+| Data integrity | 15% | 90 | Phase 7: 13 new database checks at 0 after the full run (clocks, steps, inspections, plan branch); a plan with recorded work is never replaced (L-012); cancelling a job closes its clocks (L-018); nothing assumed for grade, thickness, time or hours (L-008, L-010). Phase 3: a coil work order consumes and creates stock in one transaction. Held at 90: a job names no stock and records no weight (L-024); thickness not stated is stored as 0 (L-029). Was 78 (Work orders read an allow-list and follow status rules (M-005, M-006); a status note no longer overwrites job notes (M-003). Backward job moves are loosely ruled (M-017)) |
+| Reliability | 12% | 88 | Phase 7: races on planning, scheduling, step start, finish against pause, inspection decisions, status moves and cancel against the last finish each end in one consistent state; a step left running across a gap recovers; a refused request saves nothing. Held at 88: local machine only; no machine connection to fail (L-030). Was 70 (Missing jobs and work orders answer 404, not 500; concurrent work order moves are guarded; starting an inspection no longer reports failure after saving (M-015)) |
+| Security | 12% | 90 | Phase 7: inspections, time entries and operators are branch-owned (L-019); a planner schedules only their own branch (L-007); pay and emergency contacts go to managers only (L-014); quality decisions are for quality staff and production management and are audited against the signed-in user (L-003). Held at 90: live roles NOT VERIFIED. Was 78 (Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 80) |
 | Operational efficiency | 10% | 60 | A job opens from the board and the schedule; its status changes on one screen. Scheduling by drag, capacity limits and re-planning were not examined |
 | User experience | 10% | 68 | Real data, "not recorded" instead of invented values, refusals in the server's words, sample screens labelled, false AI claims removed (M-014) |
-| Performance | 8% | 72 | Phase 3: the branch job list answers in 158 ms at the 95th percentile with 72,541 jobs. Held at 72: it reads every job in the company (G-013); nothing else in the group was measured. Was null (The schedule asks for one day of jobs, not the whole list. Nothing timed) |
+| Performance | 8% | 84 | Phase 7: at 85 branches with about 18,600 steps the production screens answer in 6 to 139 ms; the scheduling run at a branch with 7,090 waiting jobs fell from 45.3 s to 1.9 s; the late list from 653 to 74 ms; lists are capped with totals. Held at 84: local machine; the scheduling and planner answers are 8.3 MB and 1.2 MB at the largest branch. Was null (The schedule asks for one day of jobs, not the whole list. Nothing timed) |
 | Integration quality | 6% | 65 | 73 dead calls removed (M-012). Work orders are not connected to stock or to jobs (M-016) |
 | Maintainability | 5% | 72 | One job history module and one work order rule, pure and unit tested (87 tests in all). Three job routes still carry their own status checks (M-017) |
 | Observability | 4% | 80 | Every job move, assignment and work order move is in the audit log with the person and is shown on the screen (M-002) |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **74** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **80** | Target 95 |
 
-Changing routes with a success-path test: 26 of 91. Open findings against these modules: 5, of which P0 or P1: 1 (X-009).
+Changing routes with a success-path test: 43 of 93. Open findings against these modules: 12, of which P0 or P1: 1 (X-009).
 
 ### Logistics and financial operations
 
@@ -216,5 +216,5 @@ Modules: Sign-in and sessions; Users, roles and branches; Access control; Staff 
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
 | **Weighted over the 89% that has evidence** | | **60** | Target 95 |
 
-Changing routes with a success-path test: 4 of 50. Open findings against these modules: 10, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
+Changing routes with a success-path test: 9 of 50. Open findings against these modules: 11, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
 

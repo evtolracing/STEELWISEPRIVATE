@@ -58,6 +58,9 @@ export const SETTING_DEFAULTS = {
     SCHEDULED_TO_SHIP: { target: 72, warning: 48, unit: 'hours' },
     END_TO_END: { target: 120, warning: 96, unit: 'hours' },
   },
+  // Shop-floor rules that are the owner's to set. stepsInOrder: a step cannot start until the steps before it are finished.
+  // The owner chose planned order on 2026-11-15.
+  'production.rules': { stepsInOrder: true },
 };
 
 export async function getSetting(key) {

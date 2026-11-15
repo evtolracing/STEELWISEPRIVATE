@@ -591,7 +591,12 @@ router.post('/recommendations/accept', async (req, res) => {
           const targetWc = await prisma.workCenter.findFirst({ where: { code: targetCodes[0] } });
           const bottleneckWc = await prisma.workCenter.findFirst({ where: { code: bottleneckCode } });
 
-          if (targetWc && bottleneckWc) {
+          // Work only moves to a work center that can do it: online, the same kind, at the same branch.
+          const canTake = targetWc && bottleneckWc && targetWc.isActive && targetWc.type === bottleneckWc.type && targetWc.locationId === bottleneckWc.locationId;
+          if (targetWc && bottleneckWc && !canTake) {
+            results.push({ action: 'not reassigned', from: bottleneckCode, to: targetCodes[0], reason: !targetWc.isActive ? 'the target work center is offline' : targetWc.type !== bottleneckWc.type ? 'the target is a different kind of work center' : 'the target is at another branch' });
+          }
+          if (canTake) {
             // Reassign up to 2 jobs from bottleneck to target
             const jobsToMove = await prisma.job.findMany({
               where: { workCenterId: bottleneckWc.id, status: { in: ['ORDERED', 'SCHEDULED'] } },
@@ -600,10 +605,12 @@ router.post('/recommendations/accept', async (req, res) => {
             });
 
             for (const job of jobsToMove) {
-              await prisma.job.update({
-                where: { id: job.id },
+              // Only a job that is still waiting to start is moved.
+              const moved = await prisma.job.updateMany({
+                where: { id: job.id, workCenterId: bottleneckWc.id, status: { in: ['ORDERED', 'SCHEDULED'] } },
                 data: { workCenterId: targetWc.id },
               });
+              if (!moved.count) continue;
               results.push({
                 action: 'reassigned',
                 jobNumber: job.jobNumber,
@@ -620,15 +627,13 @@ router.post('/recommendations/accept', async (req, res) => {
       if (jobMatch) {
         const job = await prisma.job.findFirst({ where: { jobNumber: jobMatch[1] } });
         if (job) {
-          await prisma.job.update({
-            where: { id: job.id },
-            data: { priority: Math.max(1, (job.priority || 3) - 1) },
-          });
-          results.push({
-            action: 'expedited',
-            jobNumber: job.jobNumber,
-            newPriority: Math.max(1, (job.priority || 3) - 1),
-          });
+          // Priority runs from 1 (low) to 5 (hot), so expediting raises the number. (It used to lower it, which pushed the job back.)
+          const newPriority = Math.min(5, (job.priority || 3) + 1);
+          const open = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'ON_HOLD'].includes(job.status);
+          if (open) await prisma.job.update({ where: { id: job.id }, data: { priority: newPriority } });
+          results.push(open
+            ? { action: 'expedited', jobNumber: job.jobNumber, newPriority }
+            : { action: 'not expedited', jobNumber: job.jobNumber, reason: `the job is ${job.status.toLowerCase().replace(/_/g, ' ')}` });
         }
       }
     } else if (recommendation.title?.includes('allocated material') || recommendation.title?.includes('Review allocated')) {

@@ -10,11 +10,11 @@
 import express from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import prisma from '../lib/db.js'
-import {
-  divisions as DEFAULT_DIVISIONS,
-  compareSkillLevel,
-} from '../data/dispatchData.js'
+import { divisions as DEFAULT_DIVISIONS } from '../data/dispatchData.js'
+import { changeError, lockedOut } from '../lib/workCenterGuard.js'
+import { planAssignments, SCHEDULABLE_JOB_STATUSES, PRIORITY_ORDER, SKILL_ORDER } from '../lib/dispatchPlan.js'
 
+import { currentScope } from '../lib/branchScope.js'
 const router = express.Router()
 
 // ============================================================================
@@ -32,10 +32,12 @@ function mapPrismaWC(wc) {
     code: wc.code,
     name: wc.name,
     locationId: wc.locationId,
-    workCenterType: wc.type || 'SAW',
-    division: cap.division || 'METALS',
+    // Shown as stored. A work center with no type, division or thickness limit on file is shown without one
+    // (it used to be shown as a metals saw good to 12 inches).
+    workCenterType: wc.type || null,
+    division: cap.division || null,
     capabilities: wc.capabilities || [],
-    maxThicknessInches: cap.maxThicknessInches ?? 12,
+    maxThicknessInches: cap.maxThicknessInches ?? null,
     isOnline: wc.isActive !== false,
     isActive: wc.isActive !== false,
     createdAt: wc.createdAt,
@@ -63,77 +65,6 @@ function mapPrismaLocation(loc) {
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
-
-/**
- * Get count of operations assigned to a work center with active status
- */
-async function getWorkCenterLoad(workCenterId) {
-  return prisma.dispatchOperation.count({
-    where: {
-      assignedWorkCenterId: workCenterId,
-      status: { in: ['SCHEDULED', 'IN_PROCESS'] },
-    },
-  })
-}
-
-/**
- * Check if work center can handle the operation
- * Accepts the mapped (dispatch-shaped) work center
- */
-function workCenterCanHandle(wc, operation) {
-  // Type must match
-  if (wc.workCenterType !== operation.requiredWorkCenterType) return false
-  
-  // Division must match (or wc capabilities include it)
-  if (wc.division !== operation.requiredDivision) {
-    if (!wc.capabilities.includes(operation.requiredDivision)) return false
-  }
-  
-  // Thickness check
-  if (wc.maxThicknessInches < operation.thickness) return false
-  
-  // Must be online
-  if (!wc.isOnline) return false
-  
-  // Specialization check (if required)
-  if (operation.specialization) {
-    if (!wc.capabilities.includes(operation.specialization)) return false
-  }
-  
-  return true
-}
-
-/**
- * Check if operator can handle the operation
- */
-function operatorCanHandle(op, operation) {
-  // Must be qualified for work center type
-  if (!op.qualifiedWorkCenterTypes.includes(operation.requiredWorkCenterType)) return false
-  
-  // Must be qualified for division
-  if (!op.qualifiedDivisions.includes(operation.requiredDivision)) return false
-  
-  // Skill level check
-  if (!compareSkillLevel(operation.requiredSkillLevel, op.skillLevel)) return false
-  
-  // Thickness check
-  if (op.maxThicknessInches < operation.thickness) return false
-  
-  return true
-}
-
-/**
- * Get job for an operation (for priority sorting)
- * Now uses a pre-loaded map passed in, or queries Prisma
- */
-async function getJobForOperation(operationJobId) {
-  return prisma.dispatchJob.findUnique({ where: { id: operationJobId } })
-}
-
-/**
- * Priority order for sorting
- */
-const PRIORITY_ORDER = { VIP: 0, RUSH: 1, HOT: 2, NORMAL: 3 }
 
 // ============================================================================
 // ROUTES
@@ -361,6 +292,10 @@ router.post('/work-centers', async (req, res) => {
       })
     }
 
+    const limit = maxThicknessInches == null || maxThicknessInches === '' ? null : Number(maxThicknessInches)
+    if (limit != null && !(Number.isFinite(limit) && limit > 0)) return res.status(400).json({ success: false, error: 'Maximum thickness must be more than zero, or left empty' })
+    if (capabilities !== undefined && !(Array.isArray(capabilities) && capabilities.every((c) => typeof c === 'string'))) return res.status(400).json({ success: false, error: 'capabilities must be a list of names' })
+
     // Validate type exists in registry
     const typeExists = await prisma.workCenterType.findUnique({ where: { id: workCenterType } })
     if (!typeExists) {
@@ -398,9 +333,10 @@ router.post('/work-centers', async (req, res) => {
         locationId,
         type: workCenterType,
         capabilities: capabilities || [],
+        // Only what was entered is stored. No division or thickness limit is assumed (it used to default to METALS and 12 in).
         capacity: {
-          division: division || typeExists.divisions[0] || 'METALS',
-          maxThicknessInches: maxThicknessInches ?? 12,
+          ...(division || typeExists.divisions?.[0] ? { division: division || typeExists.divisions[0] } : {}),
+          ...(limit != null ? { maxThicknessInches: limit } : {}),
         },
         isActive: true,
       },
@@ -452,10 +388,15 @@ router.patch('/work-centers/:id', async (req, res) => {
     const currentCap = existing.capacity || {}
     const newCap = { ...currentCap }
     if (division !== undefined) newCap.division = division
-    if (maxThicknessInches !== undefined) newCap.maxThicknessInches = maxThicknessInches
-    if (division !== undefined || maxThicknessInches !== undefined) {
-      updateData.capacity = newCap
+    if (maxThicknessInches !== undefined) {
+      const limit = maxThicknessInches == null || maxThicknessInches === '' ? null : Number(maxThicknessInches)
+      if (limit != null && !(Number.isFinite(limit) && limit > 0)) return res.status(400).json({ success: false, error: 'Maximum thickness must be more than zero, or left empty' })
+      if (limit == null) delete newCap.maxThicknessInches; else newCap.maxThicknessInches = limit
     }
+    if (capabilities !== undefined && !(Array.isArray(capabilities) && capabilities.every((c) => typeof c === 'string'))) return res.status(400).json({ success: false, error: 'capabilities must be a list of names' })
+    // A work center with steps queued or running cannot change branch or type, or go offline with a step running.
+    const held = await changeError(existing, { locationId, type: workCenterType, isActive: isOnline })
+    if (held) return res.status(409).json({ success: false, error: held })
 
     const wc = await prisma.workCenter.update({
       where: { id: req.params.id },
@@ -486,6 +427,8 @@ router.delete('/work-centers/:id', async (req, res) => {
       where: {
         assignedWorkCenterId: req.params.id,
         status: { in: ['SCHEDULED', 'IN_PROCESS'] },
+        // Steps of cancelled or finished jobs are not work waiting, so they do not keep a work center online.
+        dispatchJob: { job: { status: { in: SCHEDULABLE_JOB_STATUSES } } },
       },
     })
     if (activeOpsCount > 0) {
@@ -612,11 +555,12 @@ router.get('/operators', async (req, res) => {
   try {
     const { workCenterId, workCenterType } = req.query
 
-    // Load Prisma operators with their skills
+    // Operators with their current certifications: an expired certification does not qualify anyone.
+    const now = new Date()
     const prismaOperators = await prisma.operator.findMany({
-      where: { isActive: true, status: 'ACTIVE' },
+      where: { isActive: true, status: 'ACTIVE', ...(req.query.locationId ? { homeLocationId: String(req.query.locationId) } : {}) },
       include: {
-        skills: { where: { isActive: true }, select: { workCenterTypeId: true, skillLevel: true } },
+        skills: { where: { isActive: true, OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] }, select: { workCenterTypeId: true, skillLevel: true } },
         homeWorkCenter: { select: { id: true, type: true } },
       },
     })
@@ -626,16 +570,12 @@ router.get('/operators', async (req, res) => {
       id: op.id,
       name: `${op.firstName} ${op.lastName}`,
       employeeCode: op.employeeCode,
+      homeLocationId: op.homeLocationId || null,
       homeWorkCenterId: op.homeWorkCenterId || null,
       qualifiedWorkCenterTypes: op.skills.map((s) => s.workCenterTypeId),
-      qualifiedDivisions: ['METALS', 'PLASTICS'],
-      skillLevel: op.skills.length > 0
-        ? op.skills.reduce((best, s) => {
-            const order = { NOVICE: 0, STANDARD: 1, EXPERT: 2 }
-            return (order[s.skillLevel] || 0) > (order[best] || 0) ? s.skillLevel : best
-          }, 'NOVICE')
-        : 'STANDARD',
-      maxThicknessInches: op.maxThicknessInches ? Number(op.maxThicknessInches) : 999,
+      // The highest level held, or none: a level is not assumed for someone with no certification on file.
+      skillLevel: op.skills.reduce((best, s) => ((SKILL_ORDER[s.skillLevel] || 0) > (SKILL_ORDER[best] || 0) ? s.skillLevel : best), null),
+      maxThicknessInches: op.maxThicknessInches ? Number(op.maxThicknessInches) : null,
     }))
 
     // Apply filters
@@ -657,10 +597,13 @@ router.get('/operators', async (req, res) => {
       )
     }
 
-    // If nothing matched, return all operators so the dropdown is never empty
+    // If nothing matched, every operator is listed so the screen can still be used, each marked as not certified
+    // for this type so nobody is mistaken for a certified operator.
+    const certified = (op) => !resolvedType || op.qualifiedWorkCenterTypes.includes(resolvedType)
     if (filtered.length === 0) {
       filtered = allOperators
     }
+    filtered = filtered.map((op) => ({ ...op, certified: certified(op) }))
 
     res.json({
       success: true,
@@ -692,144 +635,81 @@ router.post('/run', async (req, res) => {
   }
   
   try {
-    // Get work centers from Supabase at this location
-    const prismaWCs = await prisma.workCenter.findMany({
-      where: { locationId, isActive: true },
-    })
-    const locationWorkCenters = prismaWCs.map(mapPrismaWC)
+    const branch = await prisma.location.findUnique({ where: { id: String(locationId) }, select: { id: true } }).catch(() => null)
+    if (!branch) return res.status(400).json({ success: false, error: 'That branch is not on file' })
+    // A planner schedules their own branch. Leadership roles may schedule any.
+    const mine = currentScope()?.branches
+    if (mine && !mine.includes(branch.id)) return res.status(403).json({ success: false, error: 'You can schedule only your own branch' })
 
-    // Load operators from database
-    const prismaOps = await prisma.operator.findMany({
-      where: { isActive: true, status: 'ACTIVE' },
-      include: {
-        skills: { where: { isActive: true }, select: { workCenterTypeId: true, skillLevel: true } },
-      },
-    })
-    const dbOperators = prismaOps.map((op) => ({
-      id: op.id,
-      name: `${op.firstName} ${op.lastName}`,
-      homeWorkCenterId: op.homeWorkCenterId || null,
-      qualifiedWorkCenterTypes: op.skills.map((s) => s.workCenterTypeId),
-      qualifiedDivisions: ['METALS', 'PLASTICS'],
-      skillLevel: op.skills.length > 0
-        ? op.skills.reduce((best, s) => {
-            const order = { NOVICE: 0, STANDARD: 1, EXPERT: 2 }
-            return (order[s.skillLevel] || 0) > (order[best] || 0) ? s.skillLevel : best
-          }, 'NOVICE')
-        : 'STANDARD',
-      maxThicknessInches: op.maxThicknessInches ? Number(op.maxThicknessInches) : 999,
-    }))
-  
-  // Get dispatch jobs at this location from Prisma
-  const locationDispatchJobs = await prisma.dispatchJob.findMany({
-    where: { locationId },
-    include: { operations: true },
-  })
-  
-  // Build a lookup map: dispatchJobId -> dispatchJob
-  const jobMap = new Map()
-  locationDispatchJobs.forEach((dj) => jobMap.set(dj.id, dj))
-  
-  // Collect all pending operations from those jobs
-  const pendingOperations = []
-  for (const dj of locationDispatchJobs) {
-    for (const op of dj.operations) {
-      if (op.status === 'PENDING' && !op.assignedWorkCenterId) {
-        pendingOperations.push({
-          ...op,
-          thickness: Number(op.thickness || 0),
-          jobId: dj.id,  // dispatchJob id for lookups
-        })
+    // One run at a time per branch (two planners pressing the button together would otherwise both place the same step).
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${'dispatch-run:' + branch.id}))`
+      const [workCenters, operators, dispatchJobs, loadRows] = await Promise.all([
+        tx.workCenter.findMany({ where: { locationId: branch.id }, select: { id: true, code: true, name: true, type: true, capabilities: true, capacity: true, isActive: true } }),
+        tx.operator.findMany({
+          where: { homeLocationId: branch.id },
+          select: { id: true, isActive: true, status: true, homeLocationId: true, homeWorkCenterId: true, maxThicknessInches: true, skills: { select: { workCenterTypeId: true, skillLevel: true, expiresAt: true, isActive: true } } },
+        }),
+        tx.dispatchJob.findMany({ where: { locationId: branch.id, job: { status: { in: SCHEDULABLE_JOB_STATUSES } } }, include: { operations: true, job: { select: { status: true } } } }),
+        // What is already queued at each work center, counting only steps of jobs that are still open.
+        tx.dispatchOperation.groupBy({
+          by: ['assignedWorkCenterId'],
+          where: { status: { in: ['SCHEDULED', 'IN_PROCESS'] }, assignedWorkCenterId: { not: null }, dispatchJob: { locationId: branch.id, job: { status: { in: SCHEDULABLE_JOB_STATUSES } } } },
+          _count: true,
+        }),
+      ])
+      // A machine locked out for maintenance, or on a safety or quality hold, is given no work.
+      const locked = await lockedOut(tx, workCenters.map((wc) => wc.id))
+      const usable = workCenters.filter((wc) => !locked[wc.id])
+      const plan = planAssignments({
+        jobs: dispatchJobs.map((dj) => ({ id: dj.id, jobNumber: dj.jobNumber, priority: dj.priority, dueDate: dj.dueDate, jobStatus: dj.job?.status, operations: dj.operations.map((o) => ({ ...o, thickness: Number(o.thickness || 0) })) })),
+        workCenters: usable, operators, branchId: branch.id,
+        loads: Object.fromEntries(loadRows.map((r) => [r.assignedWorkCenterId, r._count])),
+      })
+      // Only a step that is still waiting is placed. A start time is written only when nothing is ahead of it:
+      // the engine does not know how long steps take, so it does not state a time for a queued step.
+      // Steps going to the same work center and operator are written together, so a branch with
+      // thousands of waiting steps is a handful of writes, not one per step.
+      const now = new Date()
+      const groups = new Map()
+      for (const a of plan.assignments) {
+        const key = `${a.workCenterId}|${a.operatorId || ''}|${a.queuedBehind === 0 ? 1 : 0}`
+        if (!groups.has(key)) groups.set(key, { workCenterId: a.workCenterId, operatorId: a.operatorId, first: a.queuedBehind === 0, ids: [] })
+        groups.get(key).ids.push(a.operationId)
       }
-    }
-  }
-  
-  // Sort by job priority and due date, then by sequence
-  // Use the pre-loaded jobMap for synchronous lookups
-  pendingOperations.sort((a, b) => {
-    const jobA = jobMap.get(a.jobId)
-    const jobB = jobMap.get(b.jobId)
-    
-    // Priority first
-    const prioA = PRIORITY_ORDER[jobA?.priority] ?? 99
-    const prioB = PRIORITY_ORDER[jobB?.priority] ?? 99
-    if (prioA !== prioB) return prioA - prioB
-    
-    // Then due date
-    const dueA = new Date(jobA?.dueDate || '2099-12-31')
-    const dueB = new Date(jobB?.dueDate || '2099-12-31')
-    if (dueA.getTime() !== dueB.getTime()) return dueA - dueB
-    
-    // Then sequence within same job
-    if (a.jobId === b.jobId) return a.sequence - b.sequence
-    
-    return 0
-  })
-  
-  const assigned = []
-  
-  for (const operation of pendingOperations) {
-    // Check if previous operations in the job are complete (dependency check)
-    const parentJob = jobMap.get(operation.jobId)
-    const priorOps = (parentJob?.operations || []).filter(
-      (op) => op.sequence < operation.sequence
-    )
-    
-    // Only schedule first operation or if prior ones are done/scheduled
-    const allPriorScheduledOrComplete = priorOps.every(
-      (op) => op.status === 'COMPLETE' || op.status === 'SCHEDULED' || op.status === 'IN_PROCESS'
-    )
-    
-    if (!allPriorScheduledOrComplete) continue
-    
-    // Find candidate work centers
-    const candidateWCs = locationWorkCenters.filter((wc) =>
-      workCenterCanHandle(wc, operation)
-    )
-    
-    if (candidateWCs.length === 0) continue
-    
-    // Pick work center with lowest load (simple load balancing)
-    // getWorkCenterLoad is now async, so resolve all loads first
-    const loads = await Promise.all(
-      candidateWCs.map(async (wc) => ({ wc, load: await getWorkCenterLoad(wc.id) }))
-    )
-    loads.sort((a, b) => a.load - b.load)
-    const chosenWC = loads[0].wc
-    
-    // Find candidate operators from database
-    const candidateOps = dbOperators.filter((op) => operatorCanHandle(op, operation))
-    
-    let chosenOperator = null
-    if (candidateOps.length > 0) {
-      // Prefer operator whose home is this work center
-      const homeOp = candidateOps.find((op) => op.homeWorkCenterId === chosenWC.id)
-      chosenOperator = homeOp || candidateOps[0]
-    }
-    
-    // Persist assignment to Prisma
-    const updated = await prisma.dispatchOperation.update({
-      where: { id: operation.id },
-      data: {
-        assignedWorkCenterId: chosenWC.id,
-        assignedOperatorId: chosenOperator?.id || null,
-        status: 'SCHEDULED',
-        scheduledStart: new Date(),
-      },
-    })
-    
-    assigned.push({
-      ...updated,
-      thickness: Number(updated.thickness || 0),
-    })
-  }
-  
+      for (const g of groups.values()) {
+        for (let i = 0; i < g.ids.length; i += 5000) {
+          await tx.dispatchOperation.updateMany({
+            where: { id: { in: g.ids.slice(i, i + 5000) }, status: 'PENDING', assignedWorkCenterId: null },
+            data: { assignedWorkCenterId: g.workCenterId, assignedOperatorId: g.operatorId, status: 'SCHEDULED', scheduledStart: g.first ? now : null },
+          })
+        }
+      }
+      // What was actually placed is read back: a step another screen took in the meantime is not reported as placed.
+      const behind = new Map(plan.assignments.map((a) => [a.operationId, a]))
+      const assigned = []
+      const ids = plan.assignments.map((a) => a.operationId)
+      for (let i = 0; i < ids.length; i += 5000) {
+        const rows = await tx.dispatchOperation.findMany({ where: { id: { in: ids.slice(i, i + 5000) }, status: 'SCHEDULED' } })
+        for (const row of rows) {
+          const a = behind.get(row.id)
+          if (row.assignedWorkCenterId !== a.workCenterId) continue
+          assigned.push({ ...row, thickness: Number(row.thickness || 0), queuedBehind: a.queuedBehind })
+        }
+      }
+      for (const reason of Object.values(locked)) plan.notChecked.push(`${reason}, so it was given no work`)
+      return { assigned, plan }
+    }, { timeout: 60000, maxWait: 20000 })
+
   res.json({
     success: true,
     data: {
       locationId,
-      assignedCount: assigned.length,
-      details: assigned,
+      assignedCount: result.assigned.length,
+      details: result.assigned,
+      unassignedCount: result.plan.unassigned.length,
+      unassigned: result.plan.unassigned,
+      notChecked: result.plan.notChecked,
     },
   })
   } catch (error) {
@@ -854,14 +734,11 @@ router.get('/queue', async (req, res) => {
   
   try {
     // Build where clause for Prisma query
+    // Steps of a cancelled, held or finished job are not work to do, so they are not in the queue.
     const opWhere = {
       assignedWorkCenterId: workCenterId,
       status: { in: ['SCHEDULED', 'IN_PROCESS'] },
-    }
-    
-    // If locationId provided, filter by dispatch jobs at that location
-    if (locationId) {
-      opWhere.dispatchJob = { locationId }
+      dispatchJob: { job: { status: { in: SCHEDULABLE_JOB_STATUSES } }, ...(locationId ? { locationId } : {}) },
     }
     
     const rawOps = await prisma.dispatchOperation.findMany({
@@ -959,27 +836,23 @@ router.get('/queue', async (req, res) => {
 router.get('/stats', async (req, res) => {
   try {
     const { locationId } = req.query
-    
-    // Build where clause: filter operations by location via their parent dispatchJob
-    const opWhere = {}
-    if (locationId) {
-      opWhere.dispatchJob = { locationId }
-    }
-    
-    // Aggregate counts by status using Prisma groupBy
-    const statusGroups = await prisma.dispatchOperation.groupBy({
-      by: ['status'],
-      where: opWhere,
-      _count: true,
-    })
-    
-    const unassignedCount = await prisma.dispatchOperation.count({
-      where: { ...opWhere, assignedWorkCenterId: null },
-    })
-    
-    const statusMap = {}
-    statusGroups.forEach((g) => { statusMap[g.status] = g._count })
-    
+
+    // Finished steps are counted whatever became of the job. Work still to do (waiting, queued, running)
+    // is counted only for jobs that are still open: steps of a cancelled, held or finished job are not
+    // work to do, and the queue does not list them either.
+    const branch = locationId ? { locationId } : {}
+    const all = { ...(locationId ? { dispatchJob: branch } : {}) }
+    const open = { dispatchJob: { ...branch, job: { status: { in: SCHEDULABLE_JOB_STATUSES } } } }
+    const TO_DO = ['PENDING', 'SCHEDULED', 'IN_PROCESS']
+
+    const [openGroups, complete, unassignedCount] = await Promise.all([
+      prisma.dispatchOperation.groupBy({ by: ['status'], where: { ...open, status: { in: TO_DO } }, _count: true }),
+      prisma.dispatchOperation.count({ where: { ...all, status: 'COMPLETE' } }),
+      prisma.dispatchOperation.count({ where: { ...open, status: { in: TO_DO }, assignedWorkCenterId: null } }),
+    ])
+    const statusMap = { COMPLETE: complete }
+    openGroups.forEach((g) => { statusMap[g.status] = g._count })
+
     const stats = {
       total: Object.values(statusMap).reduce((s, c) => s + c, 0),
       pending: statusMap['PENDING'] || 0,
@@ -988,34 +861,29 @@ router.get('/stats', async (req, res) => {
       complete: statusMap['COMPLETE'] || 0,
       unassigned: unassignedCount,
     }
-    
-    // Per work center stats from Prisma
+
+    // Per work center, by the same rule
     const wcWhere = {}
     if (locationId) wcWhere.locationId = locationId
     const prismaWCs = await prisma.workCenter.findMany({ where: wcWhere, select: { id: true, name: true, type: true } })
-    
     const wcIds = prismaWCs.map((wc) => wc.id)
-    const wcStatusGroups = await prisma.dispatchOperation.groupBy({
-      by: ['assignedWorkCenterId', 'status'],
-      where: {
-        assignedWorkCenterId: { in: wcIds },
-        ...(locationId ? { dispatchJob: { locationId } } : {}),
-      },
-      _count: true,
-    })
-    
+    const [wcOpen, wcDone] = await Promise.all([
+      prisma.dispatchOperation.groupBy({ by: ['assignedWorkCenterId', 'status'], where: { ...open, assignedWorkCenterId: { in: wcIds }, status: { in: ['SCHEDULED', 'IN_PROCESS'] } }, _count: true }),
+      prisma.dispatchOperation.groupBy({ by: ['assignedWorkCenterId'], where: { ...all, assignedWorkCenterId: { in: wcIds }, status: 'COMPLETE' }, _count: true }),
+    ])
+
     const wcStats = {}
     prismaWCs.forEach((wc) => {
       wcStats[wc.id] = { name: wc.name, type: wc.type, scheduled: 0, inProcess: 0, complete: 0 }
     })
-    wcStatusGroups.forEach((g) => {
+    wcOpen.forEach((g) => {
       const entry = wcStats[g.assignedWorkCenterId]
       if (!entry) return
       if (g.status === 'SCHEDULED') entry.scheduled = g._count
       else if (g.status === 'IN_PROCESS') entry.inProcess = g._count
-      else if (g.status === 'COMPLETE') entry.complete = g._count
     })
-    
+    wcDone.forEach((g) => { if (wcStats[g.assignedWorkCenterId]) wcStats[g.assignedWorkCenterId].complete = g._count })
+
     res.json({
       success: true,
       data: {

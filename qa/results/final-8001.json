@@ -1,7 +1,7 @@
 {
  "seed": 8001,
  "base": "http://localhost:3011",
- "at": "2026-11-15T18:42:22.968Z",
+ "at": "2026-11-15T22:11:34.570Z",
  "scenarios": [
   {
    "id": "S8001-01",
@@ -44,7 +44,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00059 → PACKAGING",
+     "name": "job JOB-00059 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00059",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00001",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -200,7 +212,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 493
+   "ms": 613
   },
   {
    "id": "S8001-02",
@@ -243,7 +255,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00060 → PACKAGING",
+     "name": "job JOB-00060 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00060",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00002",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -373,7 +397,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 356
+   "ms": 489
   },
   {
    "id": "S8001-03",
@@ -416,7 +440,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00061 → PACKAGING",
+     "name": "job JOB-00061 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00061",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00003",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -572,7 +608,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 385
+   "ms": 521
   },
   {
    "id": "S8001-04",
@@ -615,7 +651,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00062 → PACKAGING",
+     "name": "job JOB-00062 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00062",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00004",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -755,7 +803,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 360
+   "ms": 435
   },
   {
    "id": "S8001-05",
@@ -798,7 +846,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00063 → PACKAGING",
+     "name": "job JOB-00063 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00063",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00005",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -928,7 +988,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 335
+   "ms": 442
   },
   {
    "id": "S8001-06",
@@ -1001,7 +1061,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00064 → PACKAGING",
+     "name": "job JOB-00064 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00064",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00006",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1161,7 +1233,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 483
+   "ms": 561
   },
   {
    "id": "S8001-07",
@@ -1234,7 +1306,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00065 → PACKAGING",
+     "name": "job JOB-00065 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00065",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00007",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1368,7 +1452,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 443
+   "ms": 472
   },
   {
    "id": "S8001-08",
@@ -1411,7 +1495,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00066 → PACKAGING",
+     "name": "job JOB-00066 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00066",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00008",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1441,7 +1537,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00067 → PACKAGING",
+     "name": "job JOB-00067 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00067",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00009",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1471,7 +1579,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00068 → PACKAGING",
+     "name": "job JOB-00068 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00068",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00010",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1601,7 +1721,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 534
+   "ms": 737
   },
   {
    "id": "S8001-09",
@@ -1644,7 +1764,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00069 → PACKAGING",
+     "name": "job JOB-00069 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00069",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00011",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1674,7 +1806,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00070 → PACKAGING",
+     "name": "job JOB-00070 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00070",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00012",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1704,7 +1848,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00071 → PACKAGING",
+     "name": "job JOB-00071 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00071",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00013",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1860,7 +2016,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 577
+   "ms": 855
   },
   {
    "id": "S8001-10",
@@ -1903,7 +2059,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00072 → PACKAGING",
+     "name": "job JOB-00072 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00072",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00014",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1933,7 +2101,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00073 → PACKAGING",
+     "name": "job JOB-00073 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00073",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00015",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1963,7 +2143,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00074 → PACKAGING",
+     "name": "job JOB-00074 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00074",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00016",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2093,7 +2285,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 471
+   "ms": 698
   },
   {
    "id": "S8001-11",
@@ -2136,7 +2328,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00075 → PACKAGING",
+     "name": "job JOB-00075 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00075",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00017",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2166,7 +2370,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00076 → PACKAGING",
+     "name": "job JOB-00076 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00076",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00018",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2196,7 +2412,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00077 → PACKAGING",
+     "name": "job JOB-00077 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00077",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00019",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2326,7 +2554,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 474
+   "ms": 757
   },
   {
    "id": "S8001-12",
@@ -2369,7 +2597,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00078 → PACKAGING",
+     "name": "job JOB-00078 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00078",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00020",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2399,7 +2639,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00079 → PACKAGING",
+     "name": "job JOB-00079 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00079",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00021",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2429,7 +2681,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00080 → PACKAGING",
+     "name": "job JOB-00080 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00080",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00022",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2585,7 +2849,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 585
+   "ms": 740
   },
   {
    "id": "S8001-13",
@@ -2628,7 +2892,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00081 → PACKAGING",
+     "name": "job JOB-00081 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00081",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00023",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2758,7 +3034,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 325
+   "ms": 414
   },
   {
    "id": "S8001-14",
@@ -2801,7 +3077,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00082 → PACKAGING",
+     "name": "job JOB-00082 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00082",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00024",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2831,7 +3119,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00083 → PACKAGING",
+     "name": "job JOB-00083 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00083",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00025",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2971,7 +3271,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 438
+   "ms": 564
   },
   {
    "id": "S8001-15",
@@ -3014,7 +3314,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00084 → PACKAGING",
+     "name": "job JOB-00084 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00084",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00026",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3144,7 +3456,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 363
+   "ms": 368
   },
   {
    "id": "S8001-16",
@@ -3187,7 +3499,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00085 → PACKAGING",
+     "name": "job JOB-00085 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00085",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00027",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3217,7 +3541,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00086 → PACKAGING",
+     "name": "job JOB-00086 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00086",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00028",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3347,7 +3683,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 420
+   "ms": 557
   },
   {
    "id": "S8001-17",
@@ -3390,7 +3726,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00087 → PACKAGING",
+     "name": "job JOB-00087 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00087",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00029",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3546,7 +3894,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 361
+   "ms": 452
   },
   {
    "id": "S8001-18",
@@ -3589,7 +3937,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00088 → PACKAGING",
+     "name": "job JOB-00088 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00088",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00030",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3619,7 +3979,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00089 → PACKAGING",
+     "name": "job JOB-00089 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00089",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00031",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3649,7 +4021,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00090 → PACKAGING",
+     "name": "job JOB-00090 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00090",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00032",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3789,7 +4173,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 541
+   "ms": 763
   },
   {
    "id": "S8001-19",
@@ -3846,7 +4230,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 101
+   "ms": 113
   },
   {
    "id": "S8001-20",
@@ -3903,7 +4287,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 86
+   "ms": 93
   },
   {
    "id": "S8001-21",
@@ -3960,7 +4344,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 82
+   "ms": 86
   },
   {
    "id": "S8001-22",
@@ -4083,7 +4467,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 157
+   "ms": 185
   },
   {
    "id": "S8001-23",
@@ -4206,7 +4590,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 149
+   "ms": 161
   },
   {
    "id": "S8001-24",
@@ -4261,7 +4645,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00091 → PACKAGING",
+     "name": "job JOB-00091 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00091",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00033",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4343,7 +4739,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 377
+   "ms": 452
   },
   {
    "id": "S8001-25",
@@ -4386,7 +4782,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00092 → PACKAGING",
+     "name": "job JOB-00092 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00092",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00034",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4460,7 +4868,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 333
+   "ms": 365
   },
   {
    "id": "S8001-26",
@@ -4515,7 +4923,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00093 → PACKAGING",
+     "name": "job JOB-00093 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00093",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00035",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4597,7 +5017,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 363
+   "ms": 442
   },
   {
    "id": "S8001-27",
@@ -4640,7 +5060,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00094 → PACKAGING",
+     "name": "job JOB-00094 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00094",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00036",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4714,7 +5146,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 265
+   "ms": 424
   },
   {
    "id": "S8001-28",
@@ -4757,7 +5189,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00095 → PACKAGING",
+     "name": "job JOB-00095 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00095",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00037",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4831,7 +5275,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 256
+   "ms": 353
   },
   {
    "id": "S8001-29",
@@ -4874,7 +5318,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00096 → PACKAGING",
+     "name": "job JOB-00096 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00096",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00038",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4948,7 +5404,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 280
+   "ms": 386
   },
   {
    "id": "S8001-30",
@@ -4989,7 +5445,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 26
+   "ms": 25
   },
   {
    "id": "S8001-31",
@@ -5022,7 +5478,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 11
+   "ms": 10
   },
   {
    "id": "S8001-32",
@@ -5069,7 +5525,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 53
+   "ms": 48
   },
   {
    "id": "S8001-33",
@@ -5102,7 +5558,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 14
   },
   {
    "id": "S8001-34",
@@ -5135,7 +5591,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 13
+   "ms": 12
   },
   {
    "id": "S8001-35",
@@ -5178,7 +5634,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00097 → PACKAGING",
+     "name": "job JOB-00097 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00097",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00039",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5318,7 +5786,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 335
+   "ms": 420
   },
   {
    "id": "S8001-36",
@@ -5383,7 +5851,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 62
+   "ms": 63
   },
   {
    "id": "S8001-37",
@@ -5464,7 +5932,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 93
+   "ms": 104
   },
   {
    "id": "S8001-38",
@@ -5519,7 +5987,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00098 → PACKAGING",
+     "name": "job JOB-00098 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00098",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00040",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5583,7 +6063,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 210
+   "ms": 265
   },
   {
    "id": "S8001-39",
@@ -5660,7 +6140,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 117
+   "ms": 106
   },
   {
    "id": "S8001-40",
@@ -5703,7 +6183,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00099 → PACKAGING",
+     "name": "job JOB-00099 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00099",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00041",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5923,7 +6415,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 466
+   "ms": 583
   },
   {
    "id": "S8001-41",
@@ -5966,7 +6458,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00100 → PACKAGING",
+     "name": "job JOB-00100 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00100",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00042",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6170,7 +6674,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 475
+   "ms": 502
   },
   {
    "id": "S8001-42",
@@ -6249,7 +6753,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00101 → PACKAGING",
+     "name": "job JOB-00101 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00101",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00043",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6353,7 +6869,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 377
+   "ms": 443
   },
   {
    "id": "S8001-43",
@@ -6432,7 +6948,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00102 → PACKAGING",
+     "name": "job JOB-00102 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00102",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00044",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6552,7 +7080,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 485
+   "ms": 511
   },
   {
    "id": "S8001-44",
@@ -6801,7 +7329,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 473
+   "ms": 403
   },
   {
    "id": "S8001-45",
@@ -6850,7 +7378,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00103 → PACKAGING",
+     "name": "job JOB-00103 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00103",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00045",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6880,7 +7420,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00104 → PACKAGING",
+     "name": "job JOB-00104 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00104",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00046",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7042,7 +7594,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 598
+   "ms": 565
   },
   {
    "id": "S8001-46",
@@ -7091,7 +7643,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00105 → PACKAGING",
+     "name": "job JOB-00105 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00105",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00047",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7121,7 +7685,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00106 → PACKAGING",
+     "name": "job JOB-00106 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00106",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00048",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7293,7 +7869,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 570
+   "ms": 615
   },
   {
    "id": "S8001-47",
@@ -7342,7 +7918,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00107 → PACKAGING",
+     "name": "job JOB-00107 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00107",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00049",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7372,7 +7960,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00108 → PACKAGING",
+     "name": "job JOB-00108 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00108",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00050",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7442,18 +8042,6 @@
      "ok": true
     },
     {
-     "name": "line 2: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 2: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 2: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 1: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -7463,6 +8051,18 @@
     },
     {
      "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -7506,11 +8106,11 @@
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
+     "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "line 1: invoiced qty = shipped qty",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
@@ -7544,7 +8144,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 571
+   "ms": 662
   },
   {
    "id": "S8001-48",
@@ -7593,7 +8193,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00109 → PACKAGING",
+     "name": "job JOB-00109 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00109",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00051",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7623,7 +8235,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00110 → PACKAGING",
+     "name": "job JOB-00110 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00110",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00052",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7795,7 +8419,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 568
+   "ms": 566
   },
   {
    "id": "S8001-49",
@@ -7914,7 +8538,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 188
+   "ms": 204
   },
   {
    "id": "S8001-50",
@@ -8017,7 +8641,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 220
+   "ms": 155
   }
  ],
  "concurrency": {
@@ -8031,17 +8655,17 @@
    {
     "name": "two reservations racing for the same stock: exactly one wins",
     "pass": true,
-    "detail": "statuses 201,409; available 6800"
+    "detail": "statuses 409,201; available 6800"
    },
    {
     "name": "two shipments racing for the same order line: exactly one is created",
     "pass": true,
-    "detail": "statuses 201,409"
+    "detail": "statuses 409,201"
    },
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 409,200,409; line shipped 10200 of 10200; on hand 17000 → 6800"
+    "detail": "statuses 409,409,200; line shipped 10200 of 10200; on hand 17000 → 6800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8056,7 +8680,7 @@
    {
     "name": "three full payments at once on one invoice: taken once",
     "pass": true,
-    "detail": "statuses 409,201,409; paid 6630 of 6630"
+    "detail": "statuses 201,409,409; paid 6630 of 6630"
    },
    {
     "name": "one return received three times at once: counted once, one credit",
@@ -8097,7 +8721,7 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 719,
+  "steps": 823,
   "checks": 788,
   "failedSteps": {},
   "failedChecks": {}

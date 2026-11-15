@@ -1,0 +1,113 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-15T22:18:59.948Z",
+ "checks": 21,
+ "failed": 0,
+ "results": [
+  {
+   "name": "quality: the job waiting for inspection is in the queue",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "quality: the pass rate shown is the figure from the records, or a dash when nothing was decided today",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "quality: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: Pass is switched off while required checks are unanswered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: a conditional pass with no conditions is refused and the screen says why",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: with the conditions written it is accepted and the job goes to packaging",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: scheduling reports how many steps it placed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: and says what could not be placed, with the reason",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: the step that fits is on the work center; the one that does not is still waiting",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: a new work center starts with no thickness limit (it used to start at 12 in)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: the screen says shift calendars, operator availability, downtime and running jobs are not counted",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: overall utilisation is the figure from the records, or \"Not known\"",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: nothing reads NaN or undefined",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: the shop floor screen fits a 390-pixel screen without sideways scrolling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: \"Run Dispatch\" is a named button that can be reached",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: shop floor: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: the quality screen fits a 390-pixel screen without sideways scrolling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: quality: no script errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

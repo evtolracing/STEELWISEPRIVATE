@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,16 +11,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 87 | 14 |
-| P2 | 106 | 42 |
-| P3 | 77 | 28 |
-| Total | 290 | 86 |
+| P1 | 96 | 15 |
+| P2 | 124 | 48 |
+| P3 | 80 | 31 |
+| Total | 320 | 96 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 203 |
-| DEFERRED TO SPECIFIC PHASE | 55 |
-| REQUIRES BUSINESS DECISION | 24 |
+| VERIFIED FIXED | 223 |
+| DEFERRED TO SPECIFIC PHASE | 60 |
+| REQUIRES BUSINESS DECISION | 29 |
 | IN PROGRESS | 3 |
 | BLOCKED | 3 |
 | NOT APPLICABLE | 1 |
@@ -42,11 +42,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
 | I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
 | K-007 | P1 | REQUIRES BUSINESS DECISION | Inventory valuation | No cost unless typed by hand. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| L-026 | P1 | REQUIRES BUSINESS DECISION | Production costing | No production cost exists. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | S-010 | P1 | REQUIRES BUSINESS DECISION | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
 | X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
-| B-011 | P2 | REQUIRES BUSINESS DECISION | Shop-floor operations | Any call is accepted. | Manufacturing phase |
 | B-012 | P2 | DEFERRED TO SPECIFIC PHASE | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
 | B-014 | P2 | DEFERRED TO SPECIFIC PHASE | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
 | B-015 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend | Most icon buttons have no name (some have tooltips, which were not counted). | Phase 9: user experience |
@@ -80,7 +80,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | K-010 | P2 | REQUIRES BUSINESS DECISION | Replenishment | Nothing. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-011 | P2 | REQUIRES BUSINESS DECISION | Purchasing | Exact, held. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-012 | P2 | DEFERRED TO SPECIFIC PHASE | Purchasing | Not recorded. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Manufacturing and processing |
+| L-020 | P2 | REQUIRES BUSINESS DECISION | Rework | Rework happens off the record between two inspections. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-021 | P2 | REQUIRES BUSINESS DECISION | Quality control | Inspection is tied to having planned steps. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-022 | P2 | REQUIRES BUSINESS DECISION | Operators; time entries | None of the three is on file, and none was invented. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-023 | P2 | DEFERRED TO SPECIFIC PHASE | Quality control | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-024 | P2 | REQUIRES BUSINESS DECISION | Jobs; material | Two partial records joined only by the order line. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-025 | P2 | DEFERRED TO SPECIFIC PHASE | Scheduling | A queue order with times where estimates exist, clearly labelled. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-028 | P2 | REQUIRES BUSINESS DECISION | Quality control | A fixed list of unknown origin. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
@@ -103,6 +110,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | K-009 | P3 | REQUIRES BUSINESS DECISION | Warehouse locations | Free text. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-013 | P3 | BLOCKED | Scanning | Lookup by typed or pasted number verified; hardware not tested. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-014 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items | Shown on the item page and the Transfers screen only. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| L-027 | P3 | DEFERRED TO SPECIFIC PHASE | Manufacturing | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-029 | P3 | DEFERRED TO SPECIFIC PHASE | Jobs | 0 by convention. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-030 | P3 | DEFERRED TO SPECIFIC PHASE | Equipment | None is made. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
@@ -317,7 +327,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase2-integrity.mjs: start, complete, reassign and plan checked against the database, including a refused reassign that leaves the clock running. 32 of the first 43 checks fail on the code before the change.
 - **First recorded in:** Phase 1 discovery
 
-### B-011 · P2 · REQUIRES BUSINESS DECISION
+### B-011 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Shop-floor operations
@@ -332,7 +342,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** Time tracking, schedule, job status.
 - **Recommended correction:** A move table for operations in lib/workflowRules.js. Whether a completed operation may be reopened for rework is the owner's rule (extends M-017).
 - **Required tests:** Unit tests for the table; a sweep check per refused move.
-- **Assigned phase:** Manufacturing phase
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Owner's decision 8, 2026-11-15: A step cannot start until the steps before it are finished. It is one setting (production.rules.stepsInOrder), on by default. Phase 7: confirmed by running it (L-004) and corrected. A step must be started before it is finished, a finished step cannot be started again, and a pause needs a running clock. The owner decided on 2026-11-15 that steps run in their planned order (decision 8). Whether a finished step may be reopened for rework is now finding L-020.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "steps run in their planned order", "a step that was never started cannot be finished", "finishing the last step sends the job to inspection once; finishing it again changes nothing"; qa/sim/phase2-integrity.mjs; src/backend/test/phase7Rules.test.js.
 - **First recorded in:** Phase 1 discovery
 
 ### B-012 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -3524,6 +3536,546 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase6-inventory.mjs: "a hold queues behind a stock change in progress on the same item instead of deadlocking" (with the lock removed the hold answers 500; with it, 201), "a hold racing counts and cuts on the same item never ends in a server error" (144 requests on 12 items) and "forty stock changes at once leave every balance in step".
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
+### L-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Quality control
+- **Workflow:** Releasing a job from inspection
+- **Category:** Quality control bypass
+- **Source file or endpoint:** src/backend/src/routes/jobs.js (every status address); new src/backend/src/lib/jobGates.js and lib/productionRules.js
+- **Evidence:** Probe on the QA database, before: a sales login moved a job from waiting for inspection to ready to ship with no inspection on file (200). After an inspection failed, the same login moved the job from on hold to ready to ship (200). A job sent back for rework was started and completed straight to ready to ship with no second inspection (200).
+- **Expected:** Only a passed inspection moves a job on from inspection, and a job whose last inspection failed cannot be packed, shipped or completed until a new inspection passes.
+- **Actual:** The job move table allowed the moves and nothing looked at the inspections.
+- **Root cause or suspected cause:** Job status and inspection result were two unconnected records; five routes each changed the status in their own way.
+- **Operational impact:** Material that was never inspected, or that failed inspection, could be shipped to a customer.
+- **Recommended correction:** Every job status change now goes through one function (changeJobStatusTx) that locks the job and applies the quality gate: no release with an inspection open, none after a failed inspection, none from the inspection queue without a pass recorded since the job arrived there. "Complete" on a reworked job sends it to inspection.
+- **Required tests:** Each bypass refused at every address and for every role; the legitimate path still works.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job waiting for inspection cannot be released by hand", "a job that failed inspection cannot be packed, shipped or completed by any route until a new inspection passes", "sent for rework, a job goes back to the floor with the instructions and must pass a new inspection"; src/backend/test/phase7Rules.test.js; with the gate removed two quality scenarios fail (mutation run); qa/tools/db-facts.mjs "jobs past inspection whose latest decided inspection failed" at 0.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-002 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Quality control
+- **Workflow:** Deciding an inspection
+- **Category:** Quality control weakened
+- **Source file or endpoint:** src/backend/src/routes/qcRoutes.js
+- **Evidence:** Probe, before: an inspection with a required check marked FAIL was passed (200). A conditional pass was accepted with no conditions and replaced the inspector's notes. Found while writing the scenarios: a conditional pass could carry the disposition SCRAP or REWORK and still send the job to packaging.
+- **Expected:** A pass needs every required check answered as passed and no measurement out of tolerance; a conditional pass states its conditions and keeps what the inspector wrote.
+- **Actual:** The pass address saved whatever it was sent.
+- **Operational impact:** A recorded failure could be signed off as a pass; the reason for a concession was lost.
+- **Recommended correction:** Pass is refused with 409 naming the failed or unanswered check or the measurement out of tolerance. Conditional pass requires conditions, keeps earlier notes beneath them, and accepts only USE_AS_IS or SELL_SECONDARY. Dispositions are validated.
+- **Required tests:** Each refusal leaves the inspection open and the job waiting; the valid cases are saved as entered.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "an inspection cannot be passed with a required check unanswered or failed, or a measurement out of tolerance", "a conditional pass must state its conditions, keeps the inspector's earlier notes, and cannot carry a disposition that says the material is not going on"; qa/sim/ui-phase7.cjs: the screen refuses a conditional pass with no conditions; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-003 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Quality control
+- **Workflow:** Opening and deciding inspections at the same moment
+- **Category:** Concurrency and audit trail
+- **Source file or endpoint:** src/backend/src/routes/qcRoutes.js
+- **Evidence:** Probe, before: two inspections could be opened for one job (201, 201). The decision and the job move were separate writes. The audit log did not say which signed-in person decided. An inspection could name an inspector who is not on file, at creation and (found this phase) by editing.
+- **Expected:** One open inspection per job; a decision and the job's move are one step; who decided is on record.
+- **Actual:** No lock and no check.
+- **Operational impact:** Two inspectors could reach different results on one job; the job could be left in a state that matched neither.
+- **Recommended correction:** Opening and deciding lock the job. One open inspection per job. The decision, the job move and an audit row INSPECTION_DECIDED (with the signed-in user, result, disposition and where the job went) are one transaction. The inspector is validated on create and edit; checklist and measurements must be lists.
+- **Required tests:** Pass and fail sent together: one wins and inspection, job, history and audit agree.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job has one open inspection at a time, even when two inspectors open one at the same moment", "an inspection passed and failed at the same moment has one result" (6 rounds), "passing an inspection moves the job to packaging in the same step, and records who decided", "an open inspection can be filled in as the inspector goes"; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-004 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Shop-floor operations
+- **Workflow:** Starting, pausing and finishing a step
+- **Category:** Execution state rules
+- **Source file or endpoint:** src/backend/src/routes/operationsRoutes.js; lib/productionRules.js; lib/settings.js (production.rules)
+- **Evidence:** Probe, before: step 2 started before step 1 (200); a step that was never started was completed (200); a completed step was started again and went back to in process (200); a step with nothing running was "paused" (200). This is finding B-011 confirmed by running it.
+- **Expected:** A step is started, then paused or finished; a finished step stays finished; steps follow the planned order if the owner says so.
+- **Actual:** No check of the step's present state.
+- **Operational impact:** Start and end times and labor time could be overwritten or invented; a job could reach inspection with work recorded out of order.
+- **Recommended correction:** State rules decided on the locked plan: complete requires started, pause requires a running clock, a finished step cannot be restarted, nothing starts on a job that is closed, on hold or past production. Planned order is the owner's decision of 2026-11-15 (decision 8): a step cannot start until the steps before it are finished. The rule is one setting (production.rules.stepsInOrder), on by default.
+- **Required tests:** Each refusal with no clock started; the order rule on, off and by default; two starts at once leave one clock.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "steps run in their planned order", "the planned-order rule is one setting", "a step that was never started cannot be finished", "finishing the last step sends the job to inspection once; finishing it again changes nothing", "pausing closes the clock with the reason given", "two operators starting the same step at the same moment leave one clock running"; qa/sim/phase2-integrity.mjs (two new checks); mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-005 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Shop-floor operations
+- **Workflow:** Who and where a step is run
+- **Category:** Location isolation and qualification
+- **Source file or endpoint:** src/backend/src/routes/operationsRoutes.js (checkWho); lib/productionRules.js
+- **Evidence:** Probe, before: a step of a QA-L01 job was started at a QA-L02 work center by a QA-L02 operator (200). A step could be started on a work center of another kind or one switched off, by an operator whose certification had expired or who was inactive.
+- **Expected:** A step runs on a work center of its own kind at the job's branch, by an active operator of that branch whose certification for that kind, if on file, has not expired.
+- **Actual:** Only that the operator and work center existed.
+- **Operational impact:** Work recorded at the wrong branch; time booked against a machine that cannot do the step; lapsed certifications ignored.
+- **Recommended correction:** checkWho() refuses with 409 and a sentence naming the work center, branch, operator or the certification and its expiry date. The same check applies to reassigning a step.
+- **Required tests:** Each refusal; a valid start; a reassign.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a step is run only on a work center of its own kind, at the job's branch, that is switched on", "an operator whose certification has lapsed, who is inactive, or who works at another branch cannot start a step", "a step is moved to another work center or operator only where it can be run"; qa/tools/db-facts.mjs "steps running on a work center of another kind, or at another branch"; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-006 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Jobs
+- **Workflow:** Moving a job out of production
+- **Category:** Work order integrity
+- **Source file or endpoint:** lib/jobGates.js (gateError); lib/productionRules.js (openStepsError)
+- **Evidence:** Probe, before: a job with two planned steps, neither finished, was completed by hand to ready to ship (200).
+- **Expected:** A job with planned steps leaves production when its steps are finished.
+- **Actual:** The steps were not consulted.
+- **Operational impact:** A job could be shipped with planned work not done and no time recorded.
+- **Recommended correction:** A move to inspection, packaging, ready to ship, shipped or completed is refused with 409 naming the first open step. Cancelling and holding are still allowed.
+- **Required tests:** Refused at every address; cancel and hold accepted.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job cannot leave production while a planned step is unfinished", "a job put on hold while its last step is running stays on hold when the step is finished"; qa/tools/db-facts.mjs "jobs past production with a planned step unfinished" at 0; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-007 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Scheduling
+- **Workflow:** Running the scheduling engine for a branch
+- **Category:** Scheduling and capacity
+- **Source file or endpoint:** src/backend/src/routes/dispatchRoutes.js (POST /run); new src/backend/src/lib/dispatchPlan.js
+- **Evidence:** Probe, before: the run scheduled steps of a cancelled job; it chose an operator whose certification had expired; it considered operators of other branches; it wrote a start time for every step though no duration is on file; it gave no reason for steps it left unplaced. Two runs at once could both place a step. Found while writing the scenarios: a production manager of one branch could run the engine for another branch (200).
+- **Expected:** Open jobs only, this branch's qualified people and machines, no invented times, a reason for anything unplaced, one run at a time, own branch only.
+- **Actual:** As described.
+- **Operational impact:** Work queued for cancelled jobs; unqualified assignments; start times nobody had grounds for.
+- **Recommended correction:** The decision is a pure function (planAssignments). The run takes a per-branch lock, places steps of open jobs only, uses this branch's operators with a current certification, skips machines that are off or locked out, writes a start time only for the step at the front of a queue, and returns what it could not place and what it did not check (for example thickness, where a work center has no limit on file). A branch planner gets 403 for another branch. The writes are grouped (one statement per work center, operator and queue position), which took a run at a branch with 7,090 waiting jobs from 45 seconds to under 2. Another branch's run is refused with 403.
+- **Required tests:** Each case; three runs at once place each step once.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: the first 12 "Capacity planning and scheduling" scenarios; qa/sim/ui-phase7.cjs: the shop-floor screen reports what was placed and what was not, with the reason; src/backend/test/phase7Rules.test.js; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-008 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Scheduling
+- **Workflow:** The job planner: preview, apply, what-if
+- **Category:** Invented planning figures; unchecked write
+- **Source file or endpoint:** src/backend/src/routes/optimizationV1.js; new src/backend/src/lib/capacityPlan.js; src/frontend/src/apps/optimization/WorkOrderOptimizationPage.jsx
+- **Evidence:** Code read and probe, before: every job with no estimate was given 60 minutes and every work center 480 minutes a day, and utilisation was reported from those. Apply wrote whatever the browser sent: a work center at another branch, an end before the start, a job already finished; it answered "applied 2" having checked nothing.
+- **Expected:** Figures come from the records or are reported as not known; a schedule line is checked on the server before it is saved.
+- **Actual:** Assumed figures presented as real; an unchecked write.
+- **Operational impact:** A capacity picture nobody had entered; jobs moved to machines that could not run them.
+- **Recommended correction:** A job takes its time from its routing (set-up plus machine minutes) or from its own dates; otherwise it is queued with no start or end. A work center with no hours on file has no utilisation figure. The plan carries notes saying what is not counted. Apply checks each line against the job and work center as they are now, saves only jobs still waiting to start, and reports the true count with a reason for each line skipped.
+- **Required tests:** Routing time, no time, no hours, overload, apply refusals, branch.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "the planner takes a job's time from its routing", "a work center with no working hours on file has no utilisation figure", "an overloaded work center is reported as a bottleneck from the figures on file", "applying a schedule saves the work center and times, and counts only what it saved", "a schedule line is refused when the work center is at another branch, the wrong kind, switched off, or the times run backwards", "the planner places a job only at its own branch", "a preview and a what-if save nothing"; qa/sim/ui-phase7.cjs; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-009 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Production reporting
+- **Workflow:** Counts and lists shown to planners and inspectors
+- **Category:** Reporting accuracy
+- **Source file or endpoint:** routes/jobs.js (/stats/summary, /sla-risk); routes/qcRoutes.js (/stats); routes/dispatchRoutes.js (/stats, /queue); src/frontend/src/pages/QC/QCDashboardPage.jsx
+- **Evidence:** Probe, before: job counts for a named branch answered 500. The late-jobs list left out jobs waiting for inspection, in packaging or on hold, and its sort compared missing values. The quality pass rate read 100% on a day with no decisions. Found this phase: the shop-floor figures counted waiting steps of cancelled and held jobs as work to do, so they disagreed with the queue beside them.
+- **Expected:** Each figure equals a count of the records, and "not known" is shown as such.
+- **Actual:** As described.
+- **Operational impact:** Planners and managers reading wrong numbers.
+- **Recommended correction:** The inspection queue lists the most urgent first (it listed the least urgent first), and the inspection queue, the steps list and the late list are capped with the total stated, so a large branch gets a short answer. The branch filter is fixed; the late list covers every unfinished status, overdue first, and refuses a nonsense window; the pass rate is null (shown as a dash) when nothing was decided; the shop-floor figures count work to do on open jobs only.
+- **Required tests:** Each figure compared with a direct count.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "the late-jobs list puts overdue first, includes jobs waiting for inspection, and refuses a nonsense time window", "the quality figures are counted from the records", "the shop-floor figures count work still to do on open jobs only, and agree with the queue", "leadership sees production at every branch" (branch counts equal the records); qa/sim/ui-phase7.cjs; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-010 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Jobs; work centers; routings
+- **Workflow:** Values filled in when none was entered
+- **Category:** Invented manufacturing data
+- **Source file or endpoint:** routes/jobs.js (plan); routes/dispatchRoutes.js (mapPrismaWC); routes/bomV1.js (/ai-suggest); src/frontend/src/apps/shopfloor/CreateWorkCenterDialog.jsx
+- **Evidence:** Probe, before: a plan for a job with no grade or thickness was saved as grade A36, thickness 0.5 in. A work center with no type was reported as a saw, with a division and a 12 in thickness limit; the new work center window started at 12 in. The routing suggestion returned minutes and tolerances that came from nowhere.
+- **Expected:** What is not known is saved and shown as not known.
+- **Actual:** Defaults that read as facts.
+- **Operational impact:** Steps matched to machines on a made-up thickness; routings carrying made-up times.
+- **Recommended correction:** A plan takes grade and thickness from the job or its order line, else no grade and thickness 0 (not stated). A work center reports only what is on its record. The suggestion names steps only, with times 0 and tolerances empty, and says so. The window starts with no limit.
+- **Required tests:** Each case reads back as entered or as not stated.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** The plan's thickness column does not accept "empty", so "not stated" is saved as 0 (L-029).
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a plan takes the grade and thickness from the order line and assumes neither", "a suggested routing names steps only: no times or tolerances are made up", "a work center's recorded thickness limit is respected, and where none is recorded the answer says thickness was not checked"; qa/sim/ui-phase7.cjs: a new work center starts with no thickness limit.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-011 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Routings
+- **Workflow:** Putting a routing into use
+- **Category:** Routing integrity
+- **Source file or endpoint:** src/backend/src/routes/bomV1.js
+- **Evidence:** Code read and probe: a routing with no steps could be made active; a step could name a kind of work center that is not on file, share a sequence number with another, or carry negative minutes; a status change was read-then-write.
+- **Expected:** An active routing has at least one valid step; status moves draft, review, active, retired, one at a time.
+- **Actual:** No validation.
+- **Operational impact:** A job could be given a routing that cannot be run.
+- **Recommended correction:** Steps are validated; activation needs at least one step on a kind on file; transitions are conditional updates; only an active routing goes on a job, and the job records the version.
+- **Required tests:** Each refusal; the life cycle; a new version is a separate draft.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a routing goes draft, review, in use; only a routing in use can be put on a job", "a routing step must have a name, a kind of work center on file, its own place in the order and times that are not negative", "a routing with no steps cannot go into use", "the routing offered for a material is one that is in use", "sales staff can read routings but cannot create, change or put one into use".
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-012 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Jobs
+- **Workflow:** Opening and planning a job
+- **Category:** Work order integrity
+- **Source file or endpoint:** src/backend/src/routes/jobs.js
+- **Evidence:** Code read and probe: a job could be opened for a cancelled or completed order, for a cancelled line, or on a work center that is switched off; a plan with recorded work could be replaced, deleting its time entries. Found this phase: asking for the plan of another branch's job answered "no plan" instead of not found.
+- **Expected:** Work is opened only for live orders; recorded work is never replaced.
+- **Actual:** No check.
+- **Operational impact:** Work done for an order nobody wants; labor records deleted by a re-plan.
+- **Recommended correction:** Each case is refused (400 or 409) with a sentence. Re-planning before any work replaces the steps; after work is recorded it is refused. The plan address answers 404 for a job the person cannot see.
+- **Required tests:** Each refusal saves nothing; two planners at once leave one plan.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** A check added during the phase refused a job on a work center at another branch than the order. The full regression run showed that this broke an established practice (an order sold at one branch and processed at another; 147 simulation steps failed). The check was withdrawn the same day: the job follows its work center, as before, and a branch planner still cannot reach another branch's work center.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: the first 10 "Work order creation and routing" scenarios; "an order sold at one branch can be worked at another"; "a job belongs to its order's branch"; qa/tools/db-facts.mjs "jobs whose plan is at a branch other than their work center"; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-013 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Coil work orders
+- **Workflow:** Holding, substituting and choosing material
+- **Category:** Quality hold bypass; traceability
+- **Source file or endpoint:** src/backend/src/routes/workOrders.js; lib/workOrderRules.js
+- **Evidence:** Code read and probe: a work order on quality hold could be completed directly, and there was no address to place or release the hold. Material of a different grade than the order line calls for could be cut for it with nothing recorded. Material whose quality status was failed or held could be put on a work order. Found this phase: a work order could be opened on material in a truck between branches (201).
+- **Expected:** A hold stops the run until quality releases it; a substitution is a recorded decision; material that failed quality or is in transit is not cut.
+- **Actual:** As described.
+- **Operational impact:** Held or failed material turned into sellable pieces; a customer shipped a grade they did not order with no record why.
+- **Recommended correction:** QC_HOLD can no longer go to COMPLETE. PUT /hold needs a reason; PUT /release-hold is for quality staff and production management. A different grade needs a substitution reason, kept in the audit log. Failed, held and in-transit material is refused.
+- **Required tests:** Each refusal moves no stock; the release is audited.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a coil work order put on quality hold cannot be completed, and is released only by quality or production management", "a coil work order cut for an order line in another grade is refused unless it is recorded as a substitution", "material that failed quality or is on a quality hold is not put on a work order", "material on its way to another branch cannot be cut"; qa/tools/db-facts.mjs "work orders on quality hold or cancelled that moved stock" at 0; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-014 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Operators
+- **Workflow:** Operator records
+- **Category:** Privacy; master data
+- **Source file or endpoint:** src/backend/src/routes/staff.js
+- **Evidence:** Code read and probe: every signed-in role received each operator's hourly pay rate and emergency contact. A certification could name a kind of work center that is not on file or expire before it was issued. An operator clocked on to a step could be made inactive or moved to another branch.
+- **Expected:** Pay and personal contacts are for managers; certifications are valid records; a person on the clock is not removed from under their work.
+- **Actual:** As described.
+- **Operational impact:** Pay rates readable by co-workers and sales staff; time entries pointing at an inactive operator.
+- **Recommended correction:** Private fields are sent to administrators, leadership and production managers only. Certifications are validated. Deactivating, deleting or moving a clocked-on operator is refused with 409. Operators are held to their branch.
+- **Required tests:** Each role; each refusal.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "an operator's pay rate and emergency contact are shown to managers only", "a certification must be for a kind of work center on file, and cannot expire before it was issued", "an operator who is clocked on cannot be made inactive or moved to another branch"; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-015 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Work centers; maintenance orders
+- **Workflow:** Changing a work center; running maintenance
+- **Category:** Master data integrity
+- **Source file or endpoint:** routes/workCenters.js; routes/dispatchRoutes.js; routes/maintenanceOrders.js; new lib/workCenterGuard.js
+- **Evidence:** Code read and probe: hours per day accepted -1, 25 or a word; a work center's kind or branch could be changed, or the work center deleted, with steps queued on it; a maintenance order could be completed without being started, and unknown ids answered 500.
+- **Expected:** Capacity figures are real numbers; a work center with open work keeps its kind and branch; maintenance follows scheduled, in progress, complete.
+- **Actual:** No validation.
+- **Operational impact:** Capacity plans built on impossible figures; queued steps left on a machine that can no longer run them.
+- **Recommended correction:** Validation at both addresses that change a work center; 409 when open work would be stranded; maintenance state rules and 404s.
+- **Required tests:** Each refusal; a valid change.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a work center's working hours must be a real figure, and its kind cannot be changed under open work", "an operator or work center with history is switched off, never deleted", "a work center that is switched off is given no work"; src/backend/test/phase7Rules.test.js.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-016 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Scheduling; shop-floor operations
+- **Workflow:** A machine under maintenance lockout
+- **Category:** Safety interlock
+- **Source file or endpoint:** lib/workCenterGuard.js (lockedOut); routes/dispatchRoutes.js; routes/operationsRoutes.js; routes/optimizationV1.js
+- **Evidence:** Code read: maintenance orders record lock-out/tag-out and a machine can be recorded as out of service or on a safety hold, but scheduling and step start never looked. Work could be queued and started on a machine that maintenance had locked out.
+- **Expected:** A machine locked out for maintenance in progress, or recorded as out of service, on safety hold or on quality hold, is given no work and cannot have a step started on it.
+- **Actual:** Maintenance and production did not read each other.
+- **Operational impact:** An operator directed by the system to a locked-out machine.
+- **Recommended correction:** lockedOut() is consulted by the scheduling run, the planner and step start; the answer names the machine and the maintenance order.
+- **Required tests:** Lockout stops scheduling and start; finishing maintenance releases it.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** This is a software interlock on the records. No machine is connected; the physical lockout is the maintenance crew's (L-030).
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a machine locked out for maintenance is given no work until the maintenance is finished", "a machine recorded as out of service or on a safety hold is given no work"; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-017 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Operations cockpit
+- **Workflow:** Accepting a recommendation
+- **Category:** Wrong action
+- **Source file or endpoint:** src/backend/src/routes/opsCockpit.js
+- **Evidence:** Code read and probe: "Expedite" lowered the job's priority number, and priority runs from 1 (low) to 5 (hot), so expediting pushed the job back. "Rebalance" moved jobs to the named work center whatever its kind, branch or state, including jobs already started.
+- **Expected:** Expedite raises priority; work moves only between like machines at one branch, and only jobs still waiting.
+- **Actual:** As described.
+- **Operational impact:** The opposite of what the manager asked for; jobs on a machine that cannot run them.
+- **Recommended correction:** Priority goes up by one, to at most 5, on open jobs only. Rebalance requires the target to be on, of the same kind and at the same branch, moves only jobs still waiting, and says why when it does nothing.
+- **Required tests:** Both actions, and the refusals.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "expediting a job raises its priority; moving work between work centers only happens between like machines at one branch"; mutation run.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-018 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Shop-floor operations
+- **Workflow:** Cancelling a job with a step running
+- **Category:** Labor record integrity
+- **Source file or endpoint:** lib/jobGates.js (changeJobStatusTx)
+- **Evidence:** Found while writing the scenarios: cancelling a job left its running time entry open for ever. The step could no longer be finished (the job is cancelled), so the operator stayed clocked on to it and, by the rule in L-014, could not be made inactive or moved.
+- **Expected:** Cancelling a job stops its clocks and keeps the time already worked.
+- **Actual:** The clock ran on.
+- **Operational impact:** Labor time growing without limit on cancelled work; an operator record that could not be changed.
+- **Recommended correction:** Cancelling closes every running time entry of the job at that moment with the reason "Job cancelled".
+- **Required tests:** The entry is closed with the reason; the operator is free; a cancel racing the last completion ends consistently.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job cancelled while a step is running: the step cannot be finished, and the clock is stopped with the reason", "cancelling a job while its last step is being finished" (6 rounds); qa/tools/db-facts.mjs "time entries still running on a job that is cancelled, shipped or completed" at 0; mutation run (3 scenarios fail without it).
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-019 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Branch scope
+- **Workflow:** Seeing and changing another branch's production records
+- **Category:** Location isolation
+- **Source file or endpoint:** src/backend/src/lib/branchScope.js (BRANCH_OWNED)
+- **Evidence:** Code read and probe: jobs and plans were held to a branch, but inspections, time entries and operators were not. An inspector at one branch could read, edit and decide another branch's inspection; a manager could open another branch's operator record.
+- **Expected:** Owner decision 2: staff work only at their own branch; leadership sees all.
+- **Actual:** Three production tables were outside the branch rule.
+- **Operational impact:** A branch deciding another branch's quality result; pay and certification records readable across branches.
+- **Recommended correction:** JobInspection (through its job), DispatchTimeLog (through its step's plan) and Operator (home branch) are branch-owned. Another branch gets 404.
+- **Required tests:** View, edit, decide and list from another branch.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "inspections at one branch cannot be seen or decided from another branch", "shop-floor work at one branch cannot be seen or touched from another branch", "a job belongs to its order's branch", "scheduling one branch leaves the other branch's work alone", "a production manager cannot open a work order on another branch's stock"; qa/sim/branch-boundary.mjs.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-020 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Rework
+- **Workflow:** Doing and recording rework
+- **Category:** Not built; rule not decided
+- **Source file or endpoint:** routes/qcRoutes.js (/rework); routes/operationsRoutes.js; routes/jobs.js (plan)
+- **Evidence:** qa/sim/phase7-manufacturing.mjs "rework is not routed or clocked": sending a job for rework returns it to scheduled with the instructions in its notes and it must pass a new inspection (L-001). But its steps are all finished and cannot be run again, and a rework step cannot be added because the plan has recorded work. The time spent on rework is recorded nowhere, and there is no rework count.
+- **Expected:** The owner decides how rework is recorded: reopen the failed step, or add a rework step with its own time.
+- **Actual:** Rework happens off the record between two inspections.
+- **Operational impact:** Rework labor and its causes cannot be reported.
+- **Recommended correction:** Not made: it is a new record and a labor-recording policy. Recommended: a rework step added to the plan by quality when it sends the job back, named for the failed inspection, clocked like any step.
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Question for the owner: when quality sends a job back, should the system add a rework step that operators clock on to (recommended), or reopen the original step?
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-021 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Quality control
+- **Workflow:** Which jobs must be inspected
+- **Category:** Business rule not decided
+- **Source file or endpoint:** routes/jobs.js (/complete); lib/jobGates.js
+- **Evidence:** Code read: a job with planned steps goes to inspection when its last step is finished, and cannot leave it without a pass (L-001). A job with no planned steps can be started and then completed straight to ready to ship; no inspection is called for.
+- **Expected:** The owner states whether every job is inspected.
+- **Actual:** Inspection is tied to having planned steps.
+- **Operational impact:** Unplanned jobs ship uninspected, by design or by omission.
+- **Recommended correction:** Not made: making inspection compulsory for every job is a quality policy. Recommended: every job passes inspection before packaging unless its routing is marked "no inspection".
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Question for the owner: must every job be inspected before it can be packed, including jobs with no planned steps?
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-022 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Operators; time entries
+- **Workflow:** Labor rules
+- **Category:** Business rule not decided
+- **Source file or endpoint:** lib/productionRules.js (operatorEligibility); routes/operationsRoutes.js
+- **Evidence:** qa/sim/phase7-manufacturing.mjs: an operator with no certification on file for a kind of work center is not stopped from starting a step there (only an expired one is); "one operator clocked on to two steps at once" is accepted and both clocks run; "a step left running since yesterday" produces a 20-hour entry that nothing flags. There is no timesheet approval or time-correction record.
+- **Expected:** The owner's labor rules: is a certification required to run a machine, may one operator run two, and who reviews long or forgotten entries.
+- **Actual:** None of the three is on file, and none was invented.
+- **Operational impact:** Labor hours per job can be overstated; unqualified work is possible where no certification was ever entered.
+- **Recommended correction:** Not made. Recommended: require a current certification where the kind of work center is marked as needing one; allow two steps at once only on work centers marked for it; list entries over a shift length for the supervisor to confirm or correct, with the correction audited.
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Questions for the owner: (a) must an operator hold a certification to start a step, (b) may one operator be clocked on to two steps, (c) who corrects a forgotten clock.
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-023 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-15
+- **Module:** Quality control
+- **Workflow:** Nonconformance and corrective action
+- **Category:** Not built
+- **Source file or endpoint:** No table; JobInspection.defects, disposition, reworkInstructions
+- **Evidence:** qa/sim/phase7-manufacturing.mjs "nonconformance reports and corrective actions are not part of this product" and "a scrap or return disposition on a failed inspection is a record only": a failed inspection with its defects and disposition is the only nonconformance record. There is no root cause, containment, corrective action or verification, and a SCRAP or RETURN disposition changes no stock, because a job is not tied to the stock it was made from (L-024).
+- **Expected:** A nonconformance record that follows the material to its disposition.
+- **Actual:** Not built.
+- **Operational impact:** Repeat defects cannot be traced to a cause; scrapped material stays on the books until someone scraps it by hand in inventory.
+- **Recommended correction:** Not made: a new module. The existing production-quality sample screens are to be built on real records by owner decision 4 (M-011); this belongs with that work.
+- **Deferred: reason:** A new module, not a correction to a working one; the Phase 7 instruction forbids building a new platform. Owner decision 4 already calls for the quality modules to be built on real records.
+- **Deferred: target phase:** The phase the owner issues for quality modules on real records (owner decision 4, M-011) (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Nonconformance record raised from a failed inspection, with cause, corrective action, owner and closure; a scrap disposition writes the SCRAP movement once jobs are tied to stock.
+- **Deferred: dependencies:** L-024, M-011.
+- **Deferred: acceptance criteria:** A failed inspection opens a nonconformance; its scrap disposition reduces stock with a movement; it cannot be closed without a recorded action.
+- **Deferred: verification:** Scenarios for each step.
+- **Required tests:** Per the build.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-024 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Jobs; material
+- **Workflow:** What material a job needs and uses
+- **Category:** Not built; architecture
+- **Source file or endpoint:** Job, DispatchJob (order-line jobs with steps); WorkOrder (coil processing that consumes stock); BomRecipe, BomOperation (routings)
+- **Evidence:** qa/sim/phase7-manufacturing.mjs "bills of material are not part of this product" and "material requirements planning for a job is not part of this product": the tables named Bom hold routings (steps), not materials. There are two kinds of "work order" that do not know each other: a job for an order line has steps, time and inspection but names no material; a coil work order consumes stock and makes traceable pieces but has no steps, time or inspection. Material is reserved on the order line (Phase 6), and a coil work order for that line cuts what the line reserved.
+- **Expected:** One production record from order line to steps to the material consumed and the pieces made.
+- **Actual:** Two partial records joined only by the order line.
+- **Operational impact:** Yield and material used cannot be reported per job; a scrap disposition on a job has no stock to act on; traceability from a shipped piece to the labor that made it goes through the order line, not directly.
+- **Recommended correction:** Not made: joining them changes established production workflow. Recommended: a job names the coil work orders raised for it (or a coil work order names its job), so steps, time, inspection, consumption and pieces are one chain.
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Question for the owner: should a job and the coil work orders that cut its material be linked as one production record (recommended)?
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-025 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-15
+- **Module:** Scheduling
+- **Workflow:** Capacity against the calendar
+- **Category:** Not built
+- **Source file or endpoint:** lib/capacityPlan.js; Shift, DowntimeRecord tables; work center capacity
+- **Evidence:** qa/sim/phase7-manufacturing.mjs "shift calendars, operator availability and running work are not part of the plan, and the plan says so": the planner counts minutes per day from the work center's record and nothing else. Shifts are on file but not read by the planner; the downtime table is written by no screen; jobs already running are not counted. No screen sets a work center's hours per day: it is set through the work center address only, so on a new installation every utilisation figure reads "not known".
+- **Expected:** Finite capacity from shifts, availability and downtime.
+- **Actual:** A queue order with times where estimates exist, clearly labelled.
+- **Operational impact:** The planner cannot promise dates; it can only rank and flag.
+- **Recommended correction:** Not made: a scheduling engine is a build, and its rules (shift patterns, overtime, changeover) are the owner's. Corrected this phase: the invented figures were removed and the screen says what is not counted (L-008).
+- **Deferred: reason:** New capability, and the figures it needs (shift patterns, hours per work center, changeover times) have not been entered or decided. Nothing wrong is recorded today: the plan states what it does not count.
+- **Deferred: target phase:** The phase the owner issues for scheduling against shift calendars (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** A field for hours per day on the work center screen; the planner reads shifts and recorded downtime; running jobs are counted.
+- **Deferred: dependencies:** Owner supplies shift patterns and hours.
+- **Deferred: acceptance criteria:** A job's planned end moves when a shift is removed or downtime is recorded.
+- **Deferred: verification:** Scenarios with a calendar fixture.
+- **Required tests:** Per the build.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-026 · P1 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Production costing
+- **Workflow:** What a job or a piece cost to make
+- **Category:** Not built; business rule not decided
+- **Source file or endpoint:** No table; Operator.hourlyRate; Coil and Inventory cost columns
+- **Evidence:** qa/sim/phase7-manufacturing.mjs "production costing is not part of this product" and "a work order does not carry cost from the source to the pieces it makes": jobs, steps, time entries, work orders, work centers, routings and stock movements carry no cost or rate. An operator's hourly rate is on file and nothing multiplies it by time. Pieces made by a work order have no cost; scrap has no value.
+- **Expected:** Per the owner's costing method (K-007): material cost carried to pieces by weight, labor and machine cost from recorded time and rates.
+- **Actual:** No production cost exists.
+- **Operational impact:** Job margin, the cost of scrap and rework, and inventory value of processed material cannot be reported.
+- **Affected dependencies:** K-007.
+- **Recommended correction:** Not made: the instruction forbids inventing cost rates or changing costing, and K-007 is still the owner's question.
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Depends on K-007 (which costing method). Further questions: are machine rates per work center to be kept, and is labor costed at the operator's rate or a standard rate?
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-027 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-15
+- **Module:** Manufacturing
+- **Workflow:** Outside processing; nesting
+- **Category:** Not built
+- **Source file or endpoint:** No table
+- **Evidence:** qa/sim/phase7-manufacturing.mjs "outsourced processing is not part of this product" and "nesting and cut optimisation are not part of this product": no table or column names an outside processor, a subcontract step, a nest or a cut plan. A coil work order records weights in and out and the yield that results; it plans no layout and predicts no yield.
+- **Expected:** Recorded as a gap, as the Phase 7 instruction asks.
+- **Actual:** Not built.
+- **Operational impact:** Material sent to an outside processor is tracked by hand; cut layouts are planned outside the system.
+- **Recommended correction:** Not made.
+- **Deferred: reason:** New capabilities the owner has not asked for. Nothing recorded today is wrong.
+- **Deferred: target phase:** The phase the owner issues for outside processing and nesting, if the owner wants them (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Outside processing as a transfer to a vendor location and back with a step on the routing; nesting as a planning aid that proposes, never commits.
+- **Deferred: dependencies:** Owner request.
+- **Deferred: acceptance criteria:** Per the build.
+- **Deferred: verification:** Per the build.
+- **Required tests:** None.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-028 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Quality control
+- **Workflow:** What an inspection checks
+- **Category:** Inspection standard not on file
+- **Source file or endpoint:** src/backend/src/routes/qcRoutes.js (getDefaultChecklist)
+- **Evidence:** Code read, and qa/sim/phase7-manufacturing.mjs "inspection standards, sampling plans and gauge calibration are not on file": the checklist is a list written in the program by kind of work, and one item carries a tolerance in its text (width within plus or minus 0.005 in for slitting). There is no inspection plan per customer, product or specification, no sampling plan and no gauge or calibration record.
+- **Expected:** The checklist and tolerances come from the owner's quality standard.
+- **Actual:** A fixed list of unknown origin.
+- **Operational impact:** Inspectors sign a checklist that may not be the company's standard.
+- **Recommended correction:** Not made: the instruction forbids inventing or changing inspection standards. The product now enforces the checklist it has (L-002).
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Question for the owner: is the built-in checklist (including the 0.005 in slitting tolerance) your standard, or should checklists be entered by kind of work and customer?
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-029 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-15
+- **Module:** Jobs
+- **Workflow:** Thickness not stated on a plan
+- **Category:** Schema
+- **Source file or endpoint:** DispatchJob.thickness, DispatchOperation.thickness (NOT NULL)
+- **Evidence:** Schema read: the two thickness columns do not accept empty, so "not stated" is saved as 0 and every reader treats 0 as not stated (lib/dispatchPlan.js).
+- **Expected:** An empty value for "not stated".
+- **Actual:** 0 by convention.
+- **Operational impact:** None found: the convention is applied in one place and tested.
+- **Recommended correction:** Not made in Phase 7, which ships no database change.
+- **Deferred: reason:** Needs a database change for no change in behaviour; Phase 7 deliberately ships none.
+- **Deferred: target phase:** Phase 12: final consolidation (or the next phase that ships a database change)
+- **Deferred: required correction:** Make both columns nullable and save null.
+- **Deferred: dependencies:** A SQL Editor file.
+- **Deferred: acceptance criteria:** No plan has thickness 0.
+- **Deferred: verification:** qa/tools/db-facts.mjs check.
+- **Required tests:** A plan with no thickness reads back empty.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-030 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-15
+- **Module:** Equipment
+- **Workflow:** Machines, scales, telemetry
+- **Category:** Not verified
+- **Source file or endpoint:** None
+- **Evidence:** qa/sim/phase7-manufacturing.mjs "no equipment is driven by this product": there is no machine connection, PLC, OPC or telemetry table and no such library. Starting and finishing a step are entries a person makes at a screen.
+- **Expected:** No claim of hardware certification without physical verification.
+- **Actual:** None is made.
+- **Operational impact:** Machine time is whatever the operator clocks.
+- **Recommended correction:** None.
+- **Deferred: reason:** No hardware is connected or available to test. NOT VERIFIED.
+- **Deferred: target phase:** The phase the owner issues for equipment connection, if the owner wants it (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
+- **Deferred: required correction:** Per the equipment.
+- **Deferred: dependencies:** Hardware.
+- **Deferred: acceptance criteria:** Per the equipment.
+- **Deferred: verification:** Physical test.
+- **Required tests:** None possible here.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **First recorded in:** Phase 7 manufacturing audit
+
 ### M-001 · P0 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
@@ -3793,8 +4345,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** Which backward moves a job may make
 - **Recommended correction:** Requires a business decision
 - **Required tests:** One move table used by every route; unit tests
-- **Assigned phase:** Manufacturing and processing
-- **Status note:** Open
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Open Phase 7: the first half is done. Every job status change, from every address, now goes through one function (lib/jobGates.js changeJobStatusTx) with one history entry and the same quality and open-step gates (L-001, L-006). What remains for the owner is narrower: the move table still allows some backward moves (for example in process back to ordered). Question: which backward moves should be allowed, and by whom?
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "across everything this run did: every job is where its history says"; "one job moved by two people at the same moment".
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### M-018 · P2 · IN PROGRESS

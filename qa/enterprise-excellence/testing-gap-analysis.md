@@ -1,12 +1,12 @@
 # Testing gap analysis
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit d3a130d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
 
 ## What exists
 
 | Kind | Where | Size | Runs on GitHub |
 |---|---|---|:-:|
-| Unit tests | src/backend/test (23 files) | 158 tests | yes |
+| Unit tests | src/backend/test (24 files) | 171 tests | yes |
 | Order-to-cash simulation with database checks and reconciliation | qa/sim/run.mjs | 50 jobs per cycle, 3 cycles per gate run | no |
 | Security and safeguards sweep | qa/sim/security.mjs | 20 sections | no |
 | Baseline probe (Phase 1) | qa/sim/baseline-probe.mjs | 4 sections over every write route | no |
@@ -23,9 +23,9 @@ Measured from the server's request log during the full gate run of this session 
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success | 350 of 633 (55%) |
-| Changing routes that returned a success | 122 of 332 (37%) |
-| Routes called at all (including refusals) | 626 of 633 |
+| Routes that returned a success | 380 of 635 (60%) |
+| Changing routes that returned a success | 150 of 334 (45%) |
+| Routes called at all (including refusals) | 628 of 635 |
 | Screens operated by a browser suite (not just opened) | about 30 of 142 |
 | Screens opened without a crash | 125 of 125 that take no record id |
 
@@ -36,23 +36,21 @@ Measured from the server's request log during the full gate run of this session 
 | Counter session flow (older) | 36 | 5 | 31 |
 | Material tracking, packages and drop tags | 31 | 0 | 31 |
 | Order hub and intake pipeline | 18 | 0 | 18 |
-| Processing recipes and bills of material | 11 | 0 | 11 |
-| Jobs, job board and schedule | 20 | 9 | 11 |
-| Dispatch, work centers and shop-floor operations | 17 | 6 | 11 |
+| Jobs, job board and schedule | 20 | 10 | 10 |
 | Executive tools | 10 | 0 | 10 |
-| Staff and operators | 9 | 0 | 9 |
 | Second stock list (unit tracking) | 9 | 0 | 9 |
 | AI assistant and voice | 10 | 2 | 8 |
-| Operations cockpit and dashboards | 9 | 1 | 8 |
+| Operations cockpit and dashboards | 9 | 2 | 7 |
 | Stop work | 7 | 0 | 7 |
 | Settings, tax rates and online settings | 6 | 0 | 6 |
-| Maintenance and assets | 9 | 4 | 5 |
+| Dispatch, work centers and shop-floor operations | 17 | 11 | 6 |
+| Staff and operators | 9 | 4 | 5 |
+| Routings and processing recipes | 11 | 6 | 5 |
 | Partner API | 20 | 15 | 5 |
 | Users, roles and branches | 6 | 2 | 4 |
 | Web store | 10 | 6 | 4 |
-| Quality inspections | 6 | 2 | 4 |
 | Counter quick sale | 6 | 3 | 3 |
-| Planning and optimization | 3 | 0 | 3 |
+| Maintenance and assets | 9 | 6 | 3 |
 | Sign-in and sessions | 3 | 1 | 2 |
 | RFQs and quotes | 9 | 7 | 2 |
 | Shipping | 7 | 5 | 2 |
@@ -69,7 +67,9 @@ Measured from the server's request log during the full gate run of this session 
 | Receiving | 9 | 9 | 0 |
 | Purchase orders and supply position | 1 | 1 | 0 |
 | Interbranch transfers | 9 | 9 | 0 |
-| Coil work orders | 5 | 5 | 0 |
+| Coil work orders | 7 | 7 | 0 |
+| Planning and optimization | 3 | 3 | 0 |
+| Quality inspections | 6 | 6 | 0 |
 | Integrations and scheduled work | 2 | 2 | 0 |
 | Invoices, payments, credits and refunds | 5 | 5 | 0 |
 
@@ -78,7 +78,7 @@ Measured from the server's request log during the full gate run of this session 
 - **Data isolation between runs.** The simulation, sweep and probes share one QA database and leave their records behind; the gate script rebuilds the database first. A test run on a database that was not rebuilt can pass or fail for reasons left by an earlier run.
 - **Refusal-heavy.** The sweep proves that 557 routes refuse a missing token and 534 refuse a customer, which is right, but most of those routes are never made to succeed.
 - **Browser checks read text.** They assert that a row or a message appears. They do not check layout, keyboard use or what a screen reader would say.
-- **Unit tests cover rules that were moved into `lib/`.** 23 files, none of which needs a database. Rules still inside route handlers (dispatch, operations, staff, quality, drop tags, order hub) cannot be unit tested where they are (B-014).
+- **Unit tests cover rules that were moved into `lib/`.** 24 files, none of which needs a database. Rules still inside route handlers (dispatch, operations, staff, quality, drop tags, order hub) cannot be unit tested where they are (B-014).
 - **No concurrency test outside order to cash.** Reservation, dispatch, payment and return races are tested. Nothing tests two requests at once on the second stock list, operations, counter sessions or user edits.
 - **No cross-branch test**, because there is no cross-branch rule to test (B-003).
 - **One flake seen in earlier sessions and not since**: none recorded in this session; all gates passed on two consecutive full runs before any change.

@@ -102,6 +102,8 @@ const OrderBoardPage = lazy(() => import('../pages/ModernOrderBoardPage'))
 const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
+const TransfersPage = lazy(() => import('../pages/Transfers/TransfersPage'))
+const PurchaseOrdersPage = lazy(() => import('../pages/Purchasing/PurchaseOrdersPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
 // QC Inspection Module
@@ -835,6 +837,17 @@ const router = createBrowserRouter([
             <ReceivingPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
+      },
+      // Phase 6: transfers between branches, and purchase orders
+      {
+        path: 'transfers',
+        element: (<Suspense fallback={<PageLoader />}><TransfersPage /></Suspense>),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'purchase-orders',
+        element: (<Suspense fallback={<PageLoader />}><PurchaseOrdersPage /></Suspense>),
         errorElement: <RouteErrorPage />,
       },
 

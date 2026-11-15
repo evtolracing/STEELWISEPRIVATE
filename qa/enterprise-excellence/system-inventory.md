@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -9,15 +9,15 @@ Every figure here is counted from the code or measured in a test run. The module
 | Item | Count |
 |---|---:|
 | Modules | 48 |
-| Server route files | 74 |
-| API routes (each address counted; two route files are mounted twice) | 619 |
-| API routes that change data | 323 |
-| Database tables in the schema | 159 |
+| Server route files | 75 |
+| API routes (each address counted; two route files are mounted twice) | 633 |
+| API routes that change data | 332 |
+| Database tables in the schema | 161 |
 | Enumerations | 96 |
-| Migrations | 29 |
-| Screens (routes in the browser) | 140 |
-| Frontend source files | 391 (118,172 lines) |
-| Server route code | 24,850 lines |
+| Migrations | 30 |
+| Screens (routes in the browser) | 142 |
+| Frontend source files | 393 (118,731 lines) |
+| Server route code | 25,141 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -166,7 +166,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 7 (6 real, 1 mixed): /orders/invoices, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
 - **Server:** `src/backend/src/routes/orders.js`; served at /api/orders
 - **Routes:** 7, of which 4 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 4 of 4
-- **Tables:** Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog
+- **Tables:** Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, User
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Order entry, quotes, web store, counter
 - **Feeds:** Jobs, shipments, invoices
@@ -360,8 +360,8 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Coils, plates and bars by heat and location; holds; transfers; adjustments
 - **Screens:** 4 (3 real, 1 static): /inventory, /units, /units/:id, /inventory/*
 - **Server:** `src/backend/src/routes/coils.js`, `src/backend/src/routes/inventory.js`; served at /api/coils, /api/inventory
-- **Routes:** 19, of which 9 change data. Returned a success in a test this session: 17 of 19; of the changing routes, 8 of 9
-- **Tables:** Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory
+- **Routes:** 25, of which 13 change data. Returned a success in a test this session: 23 of 25; of the changing routes, 12 of 13
+- **Tables:** Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory, StockTransfer
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, receiving
 - **Feeds:** Reservation, shipping, returns
@@ -375,12 +375,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** A receipt or an upload makes real stock with heat and location
 - **Screens:** 1 (1 real): /receiving
 - **Server:** `src/backend/src/routes/inventory.js`; served at /api/inventory
-- **Routes:** 11, of which 5 change data. Returned a success in a test this session: 11 of 11; of the changing routes, 5 of 5
-- **Tables:** Inventory, Coil, Location, MaterialMovement
+- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 17 of 17; of the changing routes, 9 of 9
+- **Tables:** Inventory, Coil, Location, MaterialMovement, StockTransfer
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats
 - **Feeds:** Stock
-- **Findings:** I-007
+- **Findings:** none open
 - **Production concern:** Receiving is not tied to a purchase order because there are none
 
 ### Second stock list (unit tracking)
@@ -390,7 +390,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** A separate unit, RFID, transfer and adjustment store
 - **Screens:** none
 - **Server:** `src/backend/src/routes/inventoryV1.js`; served at /api/v1/inventory
-- **Routes:** 13, of which 5 change data. Returned a success in a test this session: 7 of 13; of the changing routes, 0 of 5
+- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 7 of 17; of the changing routes, 0 of 9
 - **Tables:** none directly in the route files (through a service, or none)
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** None
@@ -405,7 +405,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Remnant listing, pricing, reserve and release for the store
 - **Screens:** none
 - **Server:** `src/backend/src/routes/remnants.js`; served at /api/remnants
-- **Routes:** 9, of which 4 change data. Returned a success in a test this session: 5 of 9; of the changing routes, 1 of 4
+- **Routes:** 9, of which 4 change data. Returned a success in a test this session: 7 of 9; of the changing routes, 3 of 4
 - **Tables:** none directly in the route files (through a service, or none)
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Stock, work orders (not connected)
@@ -545,7 +545,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** none
 - **Server:** `src/backend/src/routes/returns.js`; served at /api/returns
 - **Routes:** 6, of which 3 change data. Returned a success in a test this session: 3 of 6; of the changing routes, 2 of 3
-- **Tables:** Order, MaterialMovement, Inventory, InvoiceLine, Coil, OrderLine
+- **Tables:** Order, MaterialMovement, Inventory, InvoiceLine, Coil, QCHold, OrderLine
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Shipping, invoices
 - **Feeds:** Stock, credits
@@ -863,7 +863,7 @@ Finding B-014.
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
 | src/frontend/src/help/manualContent.js | 3542 | 0 |
-| src/frontend/src/router/AppRouter.jsx | 1536 | 0 |
+| src/frontend/src/router/AppRouter.jsx | 1549 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1335 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
@@ -886,8 +886,8 @@ Finding B-014.
 | src/backend/src/routes/dispatchRoutes.js | 1034 | |
 | src/backend/src/routes/stopWork.js | 985 | |
 | src/backend/src/routes/jobs.js | 948 | |
+| src/backend/src/routes/inventoryV1.js | 876 | |
 | src/backend/src/routes/opsCockpit.js | 868 | |
-| src/backend/src/routes/inventoryV1.js | 864 | |
 | src/backend/src/routes/staff.js | 720 | |
 | src/backend/src/routes/dropTagRoutes.js | 716 | |
 | src/backend/src/routes/users.js | 692 | |
@@ -902,12 +902,18 @@ Finding B-014.
 | Files over 600 lines | 66 |
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
-| Icon-only buttons | 301 |
-| aria-label attributes | 38 |
+| Icon-only buttons | 302 |
+| aria-label attributes | 47 |
 | Browser alert or confirm calls | 25 in 15 files |
 | Timers started (setInterval, setTimeout) | 67 |
 | Timers cleared | 37 |
 | console.log calls | 18 |
-| Dialogs | 123 |
+| Dialogs | 128 |
 | Frontend unit test files | 0 |
+
+## Not yet placed in a module
+
+- route file src/backend/src/routes/purchaseOrders.js
+- screen /transfers (REAL)
+- screen /purchase-orders (REAL)
 

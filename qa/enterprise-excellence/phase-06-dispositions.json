@@ -1,0 +1,52 @@
+{
+ "note": "Dispositions decided in Phase 6. Applied over the findings source by qa/tools/findings-import.mjs. Never delete an entry.",
+ "dispositions": {
+  "G-007": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer",
+   "statusNote": "Phase 6: a transfer is shipped, is in transit and is received. Sending puts the item's free quantity in an in-transit bucket at the sending branch (reservations and holds travel with it); it cannot be sold, reserved, cut, corrected or sent again. The receiving branch books it in; anything short, missing or damaged is held with a note until a manager or the inventory manager settles it. The sender can call it back before it arrives. Tables StockTransfer and StockTransferLine, column Inventory.qtyInTransit, and the balance identity now includes in transit (SQL Editor file 12).",
+   "verification": "qa/sim/phase6-inventory.mjs: the 17 \"Interbranch transfers\" scenarios and the transfer scenarios under \"Concurrency, security and recovery\"; qa/sim/ui-phase6.cjs: transfers received from the screen; src/backend/test/phase6Rules.test.js (4 tests); qa/tools/db-facts.mjs: five transfer checks at 0. Older suites updated to ship then receive (phase-06-regression-results.md)."
+  },
+  "I-007": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer",
+   "statusNote": "Phase 6, under owner decision 4 (build every sample module): purchase orders are written and placed by a buyer or the inventory manager, a receipt names the line it fills, the line counts what came (in its own unit: LB, CWT, TON or pieces), and a receipt that does not match the line (grade, product, size, over-receipt, certificate required but not on file) is received on hold with every reason. A purchase order with receipts is closed, not cancelled. No approval rule was invented (K-011). Matching the supplier's invoice is K-012.",
+   "verification": "qa/sim/phase6-inventory.mjs: the 16 \"Purchasing and replenishment\" scenarios, \"two receipts against the same purchase order line at once both count\"; qa/sim/ui-phase6.cjs: purchase order and receiving checks; qa/tools/db-facts.mjs: purchase order receipt checks at 0."
+  },
+  "C-011": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer",
+   "statusNote": "Phase 6: shelf goods are received by the piece (form SUPPLY) against a product in the catalog, with no heat or grade; the stock is counted in EA. A database check (Coil_heat_and_grade_unless_supply, SQL Editor file 12) keeps heat and grade required for every other form. The counter sale and its void already move piece stock (Phase 2 and 5).",
+   "verification": "qa/sim/phase6-inventory.mjs: \"shelf goods are received by the piece against a product, with no heat or grade\", \"shelf goods need a whole number of pieces and a product that is in the catalog\"; qa/sim/security.mjs section 20 ships a web line of pieces from a received lot; src/backend/test/phase6Rules.test.js."
+  },
+  "B-009": {
+   "status": "IN PROGRESS",
+   "phase": "Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer",
+   "statusNote": "Phase 6: the second stock list can no longer be written. POST /api/v1/inventory/adjust, /rfid-scan, /transfers and /transfers/:id/status answer 410 RETIRED with where to go instead; its reads remain so nothing on screen breaks. The order hub half was handled in Phase 5 (S-021). What remains: remove the v1 reads and their demo data once the screens that read them are pointed at the stock items list (Phase 9 screen work).",
+   "verification": "qa/sim/phase6-inventory.mjs: \"the retired v1 stock writes change nothing\", \"the old transfer address still works but now ships, and the old v1 transfer writes are retired\"."
+  },
+  "I-012": {
+   "statusNote": "Phase 6: see B-009. The second list's writes are retired; the RFID unit tables hold no rows and nothing writes them. Removing them is a destructive schema change and was not made (Phase 6 forbids destructive migrations); it stays with X-009 and B-017."
+  },
+  "J-012": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "phase": "Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer",
+   "statusNote": "Phase 6: folded into K-006. The counter remnant quick-add reads the Steel Outlet remnant list, which is not linked to stock. Connecting it waits for the remnant pricing and valuation rule (S-009, K-006)."
+  },
+  "I-017": {
+   "statusNote": "Phase 6: unchanged, and confirmed as the rule: a receipt for a heat not on file is refused with \"add it under Heats first\" (qa/sim/phase6-inventory.mjs, \"metal is received only against a heat on file\"). Adding several heats at once is a speed improvement for first load and stays deferred."
+  },
+  "I-011": {
+   "statusNote": "Phase 6: not built. The Phase 6 instruction covers purchasing, receiving and stock; inspection at receipt, nonconformance, corrective actions and supplier scorecards are quality records and stay for the quality phase. What Phase 6 added that they will stand on: suppliers on file (mills and distributors), purchase orders, receipts linked to their lines, and material held at receipt with the reason."
+  },
+  "H-014": {
+   "statusNote": "Phase 6: unchanged. Purchase orders and receipts now exist, so a supplier's shipping notice has something to refer to; the notice itself and the supplier quality records are not built (I-011)."
+  },
+  "G-013": {
+   "statusNote": "Phase 6 measurement on the 85-branch copy (100,233 stock items) after SQL Editor file 12: stock search by part of a number 116 ms median, first page of stock items 48 ms, supply position 271 ms for an all-branch login. No index was added: the instruction forbids one without evidence of need, and all are inside the half-second target."
+  },
+  "S-009": {
+   "statusNote": "Phase 6: still the owner's. It now also blocks K-006 (connecting the Steel Outlet remnant list to stock)."
+  }
+ }
+}

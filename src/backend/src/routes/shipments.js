@@ -274,7 +274,10 @@ async function consumeReserved(tx, shipment, item, userId) {
     if (left <= 1e-9) break;
     const take = Math.min(left, num(a.qtyAllocated));
     if (take <= 0) continue;
-    const held = await tx.coil.findUnique({ where: { id: a.coilId }, select: { coilNumber: true, status: true, qcStatus: true } });
+    const held = await tx.coil.findUnique({ where: { id: a.coilId }, select: { coilNumber: true, status: true, qcStatus: true, inventory: { select: { status: true } } } });
+    if (held?.inventory?.status === 'IN_TRANSIT') {
+      refuse(409, `Stock item ${held.coilNumber} reserved for this shipment is still on its way from another branch. Receive the transfer first.`);
+    }
     if (held && (held.status === 'HOLD' || ['FAILED', 'HOLD'].includes(held.qcStatus))) {
       refuse(409, `Stock item ${held.coilNumber} reserved for this shipment is on hold. Release the hold, or reserve other stock, before shipping.`);
     }

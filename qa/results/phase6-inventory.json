@@ -1,0 +1,712 @@
+{
+ "at": "2026-11-15T18:41:48.401Z",
+ "base": "http://localhost:3011",
+ "scenarios": 17,
+ "passed": 17,
+ "checks": 140,
+ "groups": {
+  "Concurrency, security and recovery": {
+   "scenarios": 17,
+   "passed": 17,
+   "checks": 140
+  }
+ },
+ "results": [
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "two people receiving the same transfer at once: one books it in",
+   "asserts": [
+    {
+     "what": "one 200 and one 409",
+     "ok": true
+    },
+    {
+     "what": "one movement; the item at L2 with 1000",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 118
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "a receipt and a call-back of the same transfer at once: exactly one happens",
+   "asserts": [
+    {
+     "what": "exactly one succeeded",
+     "ok": true
+    },
+    {
+     "what": "the item is where the winner put it",
+     "ok": true
+    },
+    {
+     "what": "nothing in transit either way",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 88
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "one item sent to two branches at once: one transfer",
+   "asserts": [
+    {
+     "what": "one 201 and one 409",
+     "ok": true
+    },
+    {
+     "what": "the item is on one transfer",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 87
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "two receipts against the same purchase order line at once both count",
+   "asserts": [
+    {
+     "what": "both accepted",
+     "ok": true
+    },
+    {
+     "what": "the line shows 7000 received, not one of them",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 89
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "two settlements of one shortage at once: one is applied",
+   "asserts": [
+    {
+     "what": "one 200 and one 409",
+     "ok": true
+    },
+    {
+     "what": "100 taken off once: 900 on hand, one ADJUST",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 122
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "a hold and a transfer of the same item at once: the hold is refused once it is on the road, or it travels held",
+   "asserts": [
+    {
+     "what": "the transfer always goes through",
+     "ok": true
+    },
+    {
+     "what": "either the hold was refused and all 1000 is in transit, or the hold came first and all 1000 travels on hold",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 103
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "customer logins and sales logins cannot see or change purchase orders, transfers or corrections",
+   "asserts": [
+    {
+     "what": "custA: purchase orders refused",
+     "ok": true
+    },
+    {
+     "what": "custA: transfers refused",
+     "ok": true
+    },
+    {
+     "what": "custA: supply position refused",
+     "ok": true
+    },
+    {
+     "what": "a sales login cannot ship a transfer",
+     "ok": true
+    },
+    {
+     "what": "an operator cannot place a purchase order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 87
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "fields a transfer form does not have are ignored",
+   "asserts": [
+    {
+     "what": "saved as SHIPPED from the item's own branch with a server number, not received",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 81
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "bad input to the stock routes is answered with a 4xx, never a server error",
+   "asserts": [
+    {
+     "what": "POST /api/inventory/transfers {\"toLocationId\":\"ff365222-958b-459c-8b8a: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/transfers {\"toLocationId\":42,\"coilIds\":[\"55f75dbc-: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/transfers/nope/receive {}: 404",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/transfers/nope/settle {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 404",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/transfers/nope/cancel {\"reason\":\"xxxxx\"}: 404",
+     "ok": true
+    },
+    {
+     "what": "GET /api/inventory/transfers/nope \"\": 404",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/receipts {\"coilNumber\":{\"a\":1}}: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/receipts {\"coilNumber\":\"RC-MWI6L7IP-14\",\"form\":\"P: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/adjust {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/adjust {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/coils/55f75dbc-a3d1-4dd0-82d2-4f08674e24a1/hold {\"holdType\":\"NOPE\",\"holdReason\":\"x\"}: 400",
+     "ok": true
+    },
+    {
+     "what": "PUT /api/purchase-orders/nope {\"status\":\"COMPLETE\"}: 404",
+     "ok": true
+    },
+    {
+     "what": "GET /api/purchase-orders/supply-position?locationId=nope \"\": 404",
+     "ok": true
+    },
+    {
+     "what": "POST /api/inventory/transfer {\"coilId\":\"55f75dbc-a3d1-4dd0-82d2-4f086: 400",
+     "ok": true
+    },
+    {
+     "what": "the item was not changed by any of it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 124
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "a transfer that fails while being saved leaves the stock exactly as it was",
+   "asserts": [
+    {
+     "what": "the answer is an error",
+     "ok": true
+    },
+    {
+     "what": "the item is on sale at L1, not in transit, and no transfer exists for it",
+     "ok": true
+    },
+    {
+     "what": "once the fault is gone the same transfer goes through",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 214
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "a receipt of a transfer that fails part way leaves it in transit, and can be received again",
+   "asserts": [
+    {
+     "what": "the answer is an error",
+     "ok": true
+    },
+    {
+     "what": "the transfer is still SHIPPED and the item still in transit at L1",
+     "ok": true
+    },
+    {
+     "what": "received on the second try, with one movement",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 224
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "a transfer sent twice with the same key is shipped once",
+   "asserts": [
+    {
+     "what": "the second answer repeats the first",
+     "ok": true
+    },
+    {
+     "what": "one transfer on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 173
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "the retired v1 stock writes change nothing",
+   "asserts": [
+    {
+     "what": "/api/v1/inventory/adjust: 410 retired",
+     "ok": true
+    },
+    {
+     "what": "/api/v1/inventory/rfid-scan: 410 retired",
+     "ok": true
+    },
+    {
+     "what": "/api/v1/inventory/transfers/TRF-001/status: 410 retired",
+     "ok": true
+    },
+    {
+     "what": "no balance moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 24
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "forty stock changes at once leave every balance in step",
+   "asserts": [
+    {
+     "what": "no server errors",
+     "ok": true
+    },
+    {
+     "what": "burst item e4bd28: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item e4bd28: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item e4bd28: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "burst item 9c0f9e: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item 9c0f9e: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item 9c0f9e: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "burst item 28ac51: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item 28ac51: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item 28ac51: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "burst item 22d9e6: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item 22d9e6: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item 22d9e6: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "burst item 73222e: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item 73222e: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item 73222e: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "burst item ebdefb: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item ebdefb: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item ebdefb: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "burst item b3d8a2: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item b3d8a2: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item b3d8a2: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "burst item 36fb06: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "burst item 36fb06: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "burst item 36fb06: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 587
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "a hold racing counts and cuts on the same item never ends in a server error",
+   "asserts": [
+    {
+     "what": "144 racing requests, none answered with a server error",
+     "ok": true
+    },
+    {
+     "what": "raced item 08776a: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item 08776a: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item 08776a: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item 388e52: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item 388e52: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item 388e52: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item 97da81: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item 97da81: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item 97da81: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item d105d8: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item d105d8: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item d105d8: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item 0e730c: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item 0e730c: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item 0e730c: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item a08023: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item a08023: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item a08023: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item fee955: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item fee955: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item fee955: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item ce38e0: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item ce38e0: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item ce38e0: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item fadc96: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item fadc96: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item fadc96: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item fa78f4: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item fa78f4: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item fa78f4: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item d405bd: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item d405bd: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item d405bd: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "raced item 01be8f: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "raced item 01be8f: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "raced item 01be8f: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 896
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "a hold queues behind a stock change in progress on the same item instead of deadlocking",
+   "asserts": [
+    {
+     "what": "the change in progress was not ended by the database",
+     "ok": true
+    },
+    {
+     "what": "the hold then went through",
+     "ok": true
+    },
+    {
+     "what": "both are saved: the item is on hold and in the new bin",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 551
+  },
+  {
+   "group": "Concurrency, security and recovery",
+   "name": "after everything above the inventory books reconcile",
+   "asserts": [
+    {
+     "what": "every balance is available + reserved + on hold + in transit",
+     "ok": true
+    },
+    {
+     "what": "nothing below zero",
+     "ok": true
+    },
+    {
+     "what": "stock in transit is exactly the stock on open transfers",
+     "ok": true
+    },
+    {
+     "what": "no item is on two open transfers",
+     "ok": true
+    },
+    {
+     "what": "every received transfer line has its movement",
+     "ok": true
+    },
+    {
+     "what": "reserved equals the reservations on file for every item",
+     "ok": true
+    },
+    {
+     "what": "purchase order lines received from this run match their receipts",
+     "ok": true
+    },
+    {
+     "what": "the stock row and its item agree on the branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 20
+  }
+ ]
+}

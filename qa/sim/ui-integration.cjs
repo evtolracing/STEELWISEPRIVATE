@@ -54,8 +54,12 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     if (!o?.id) throw new Error(`could not create an order: ${JSON.stringify(o).slice(0, 200)}`);
     await api('PUT', `/api/orders/${o.id}`, { status: 'CONFIRMED' });
     if (reserve) {
-      const rows = (await api('GET', '/api/inventory?limit=100')).body;
-      const stock = (Array.isArray(rows) ? rows : rows?.data || []).find((r) => Number(r.qtyAvailable) >= 10 && r.coil?.status === 'AVAILABLE' && !['FAILED', 'HOLD'].includes(r.coil?.qcStatus));
+      // Since Phase 6 a reservation is in the line's unit (K-001): 4 pieces come from a lot counted by
+      // the piece, received here for the test (C-011), not from an item counted in pounds.
+      const products = (await api('GET', '/api/products?limit=5')).body;
+      const sku = (Array.isArray(products) ? products : products?.data || [])[0]?.sku;
+      const lot = await api('POST', '/api/inventory/receipts', { coilNumber: `${tag}-PCS-${n}`, form: 'SUPPLY', pieces: 20, productSku: sku, locationId: o.locationId || branch.id });
+      const stock = { coilId: lot.body?.item?.id };
       const held = await api('POST', `/api/orders/${o.id}/allocate`, { lineId: o.lines[0].id, coilId: stock?.coilId, qty: 4 });
       if (held.status !== 201) throw new Error(`could not reserve: ${held.status} ${JSON.stringify(held.body).slice(0, 200)}`);
     }

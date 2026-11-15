@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -26,7 +26,7 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 |---|---:|---:|---:|---|:-:|
 | Platform infrastructure | 80 | 77% | 2 | 2 of 10 | No |
 | Sales and customer operations | 79 | 97% | 4 | 37 of 97 | No |
-| Inventory and purchasing | 76 | 97% | 3 | 20 of 40 | No |
+| Inventory and purchasing | 76 | 97% | 2 | 30 of 52 | No |
 | Manufacturing and processing | 74 | 97% | 1 | 26 of 91 | No |
 | Logistics and financial operations | 79 | 97% | 2 | 31 of 40 | No |
 | Enterprise experience | 60 | 89% | 5 | 4 of 50 | No |
@@ -60,10 +60,10 @@ The groups hide large differences. Classification and test reach per module:
 | Products, grades and heats | IMPLEMENTED AND VERIFIED | 6 of 6 | B-012 |
 | Processing recipes and bills of material | IMPLEMENTED BUT NOT VERIFIED | 0 of 11 | I-011 |
 | Customer specifications | IMPLEMENTED BUT NOT VERIFIED | n/a |  |
-| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 8 of 9 |  |
-| Receiving | IMPLEMENTED AND VERIFIED | 5 of 5 | I-007 |
-| Second stock list (unit tracking) | DISCONNECTED | 0 of 5 | B-009, D-024 |
-| Remnants | PARTIALLY IMPLEMENTED | 1 of 4 | S-009 |
+| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 12 of 13 |  |
+| Receiving | IMPLEMENTED AND VERIFIED | 9 of 9 |  |
+| Second stock list (unit tracking) | DISCONNECTED | 0 of 9 | B-009, D-024 |
+| Remnants | PARTIALLY IMPLEMENTED | 3 of 4 | S-009 |
 | Jobs, job board and schedule | IMPLEMENTED AND VERIFIED | 9 of 20 | M-017 |
 | Coil work orders | IMPLEMENTED AND VERIFIED | 5 of 5 |  |
 | Dispatch, work centers and shop-floor operations | IMPLEMENTED BUT NOT VERIFIED | 6 of 17 | B-011 |
@@ -151,7 +151,7 @@ Modules: Products, grades and heats; Processing recipes and bills of material; C
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
 | **Weighted over the 97% that has evidence** | | **76** | Target 95 |
 
-Changing routes with a success-path test: 20 of 40. Open findings against these modules: 6, of which P0 or P1: 3 (B-009, I-007, I-011).
+Changing routes with a success-path test: 30 of 52. Open findings against these modules: 5, of which P0 or P1: 2 (B-009, I-011).
 
 ### Manufacturing and processing
 

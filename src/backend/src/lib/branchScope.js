@@ -23,6 +23,8 @@
  *   WorkCenter, DispatchJob, DispatchOperation   the branch of the work center
  *   WorkOrder        the branch its source stock item is at
  *   MaterialMovement the branch it left or the branch it arrived at
+ *   StockTransfer    both branches see it; only the sending branch creates it, only the receiving branch receives it
+ *   StockTransferLine its transfer
  *   RFQ, Quote       the branch of the person who entered it (locationId). One with no branch
  *                    (a request that came from the web store or a partner) is seen by every branch
  *   RFQLine, QuoteLine              its request or quote
@@ -85,6 +87,9 @@ export const BRANCH_OWNED = {
     { orderId: null, currentLocationId: null },
   ] })),
   MaterialMovement: through((ids) => ({ OR: [{ fromLocationId: { in: ids } }, { toLocationId: { in: ids } }] })),
+  // A transfer is seen by both branches. Only the sending branch may create one (Phase 6, G-007).
+  StockTransfer: { field: 'fromLocationId', moves: false, where: (ids) => ({ OR: [{ fromLocationId: { in: ids } }, { toLocationId: { in: ids } }] }) },
+  StockTransferLine: through((ids) => ({ transfer: { OR: [{ fromLocationId: { in: ids } }, { toLocationId: { in: ids } }] } })),
 };
 
 const HOME_BRANCH_ON_CREATE = new Set(['Order', 'Quote', 'RFQ']);

@@ -1,8 +1,8 @@
 {
- "at": "2026-11-15T09:11:50.393Z",
+ "at": "2026-11-15T18:39:45.958Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
- "tables": 160,
- "totalRows": 9625,
+ "tables": 162,
+ "totalRows": 10682,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -119,7 +119,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 2348
+   "rows": 2594
   },
   {
    "table": "BomOperation",
@@ -131,7 +131,7 @@
   },
   {
    "table": "Coil",
-   "rows": 503
+   "rows": 625
   },
   {
    "table": "CommodityPrice",
@@ -215,11 +215,11 @@
   },
   {
    "table": "Grade",
-   "rows": 8
+   "rows": 9
   },
   {
    "table": "Heat",
-   "rows": 15
+   "rows": 18
   },
   {
    "table": "IntakeContact",
@@ -243,7 +243,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 503
+   "rows": 625
   },
   {
    "table": "InventoryAdjustment",
@@ -267,11 +267,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 230
+   "rows": 241
   },
   {
    "table": "InvoiceLine",
-   "rows": 241
+   "rows": 252
   },
   {
    "table": "Job",
@@ -315,7 +315,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 465
+   "rows": 640
   },
   {
    "table": "MeterReading",
@@ -335,15 +335,15 @@
   },
   {
    "table": "Order",
-   "rows": 572
+   "rows": 624
   },
   {
    "table": "OrderLine",
-   "rows": 591
+   "rows": 645
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 35
+   "rows": 47
   },
   {
    "table": "Organization",
@@ -383,7 +383,7 @@
   },
   {
    "table": "Payment",
-   "rows": 133
+   "rows": 139
   },
   {
    "table": "PipelineRun",
@@ -431,7 +431,7 @@
   },
   {
    "table": "QCHold",
-   "rows": 6
+   "rows": 27
   },
   {
    "table": "Quote",
@@ -467,7 +467,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 20
+   "rows": 22
   },
   {
    "table": "RfidScanEvent",
@@ -635,11 +635,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 252
+   "rows": 260
   },
   {
    "table": "ShipmentItem",
-   "rows": 221
+   "rows": 229
   },
   {
    "table": "ShipmentStop",
@@ -656,6 +656,14 @@
   {
    "table": "SparePartTransaction",
    "rows": 0
+  },
+  {
+   "table": "StockTransfer",
+   "rows": 60
+  },
+  {
+   "table": "StockTransferLine",
+   "rows": 64
   },
   {
    "table": "StopWorkAudit",
@@ -691,7 +699,7 @@
   },
   {
    "table": "User",
-   "rows": 27
+   "rows": 30
   },
   {
    "table": "UserDivision",
@@ -707,7 +715,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 162
+   "rows": 227
   },
   {
    "table": "WorkCenter",
@@ -719,18 +727,18 @@
   },
   {
    "table": "WorkOrder",
-   "rows": 17
+   "rows": 22
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 16
+   "rows": 21
   },
   {
    "table": "_prisma_migrations",
-   "rows": 29
+   "rows": 30
   }
  ],
- "indexes": 584,
+ "indexes": 593,
  "views": [],
  "triggers": [],
  "jsonCols": [
@@ -898,11 +906,17 @@
  ],
  "fkNoIndex": [],
  "constraintCounts": {
-  "foreign key": 188,
-  "primary key": 160,
-  "check": 25
+  "foreign key": 194,
+  "primary key": 162,
+  "check": 30
  },
  "checkConstraints": [
+  {
+   "table": "Coil",
+   "name": "Coil_heat_and_grade_unless_supply",
+   "kind": "check",
+   "def": "CHECK (((form = 'SUPPLY'::\"ProductForm\") OR ((\"heatId\" IS NOT NULL) AND (\"gradeId\" IS NOT NULL))))"
+  },
   {
    "table": "Coil",
    "name": "Coil_weights_not_negative",
@@ -919,7 +933,7 @@
    "table": "Inventory",
    "name": "Inventory_balance_identity",
    "kind": "check",
-   "def": "CHECK ((abs((\"qtyOnHand\" - ((\"qtyAvailable\" + \"qtyAllocated\") + \"qtyOnHold\"))) <= 0.0001))"
+   "def": "CHECK ((abs((\"qtyOnHand\" - (((\"qtyAvailable\" + \"qtyAllocated\") + \"qtyOnHold\") + \"qtyInTransit\"))) <= 0.0001))"
   },
   {
    "table": "Inventory",
@@ -932,6 +946,12 @@
    "name": "Inventory_qtyAvailable_not_negative",
    "kind": "check",
    "def": "CHECK ((\"qtyAvailable\" >= (0)::numeric))"
+  },
+  {
+   "table": "Inventory",
+   "name": "Inventory_qtyInTransit_not_negative",
+   "kind": "check",
+   "def": "CHECK ((\"qtyInTransit\" >= (0)::numeric))"
   },
   {
    "table": "Inventory",
@@ -1048,6 +1068,24 @@
    "def": "CHECK (((\"weightLb\" IS NULL) OR (\"weightLb\" >= (0)::numeric)))"
   },
   {
+   "table": "StockTransfer",
+   "name": "StockTransfer_branches_differ",
+   "kind": "check",
+   "def": "CHECK ((\"fromLocationId\" <> \"toLocationId\"))"
+  },
+  {
+   "table": "StockTransfer",
+   "name": "StockTransfer_status_known",
+   "kind": "check",
+   "def": "CHECK ((status = ANY (ARRAY['SHIPPED'::text, 'RECEIVED'::text, 'CANCELLED'::text])))"
+  },
+  {
+   "table": "StockTransferLine",
+   "name": "StockTransferLine_quantities",
+   "kind": "check",
+   "def": "CHECK (((\"qtyShipped\" > (0)::numeric) AND ((\"qtyReceived\" IS NULL) OR (\"qtyReceived\" >= (0)::numeric))))"
+  },
+  {
    "table": "WorkOrder",
    "name": "WorkOrder_weights_not_negative",
    "kind": "check",
@@ -1055,13 +1093,13 @@
   }
  ],
  "checks": {
-  "stock balance: on hand = available + allocated + on hold": 0,
+  "stock balance: on hand = available + allocated + on hold + in transit": 0,
   "stock: any quantity below zero": 0,
   "stock reserved differs from the reservations on file for the item": 0,
   "reservations on stock items that have no stock row": 0,
   "order line reserved more than is left to ship": 0,
   "reservations left on cancelled or completed orders": 0,
-  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 1,
+  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 0,
   "completed work orders whose output and scrap are not matched by movements on the source item": 0,
   "completed work orders whose pieces do not weigh what the work order says came out": 0,
   "pieces whose heat, grade or owner differs from the item they were cut from": 0,
@@ -1070,6 +1108,13 @@
   "stock corrections with no note or no person": 0,
   "stock row and its item disagree about the branch": 0,
   "transfers whose two branches are the same, or missing": 0,
+  "stock in transit that is not on an open transfer, or an open transfer whose stock is not in transit": 0,
+  "stock on an open transfer that is not at the sending branch": 0,
+  "an item on more than one open transfer": 0,
+  "received transfers with no TRANSFER movement for an item on them": 0,
+  "transfer lines received more than shipped, or a good line not received whole": 0,
+  "purchase order lines (by weight) whose received quantity differs from the receipts booked against them": 0,
+  "receipts booked against a line that is not on a purchase order": 0,
   "last transfer of an item did not end where the item now is": 0,
   "shipped stock movements with no shipment": 0,
   "dispatched shipment items whose quantity is not fully covered by stock movements: every shipment must come off reserved stock (G-019, refused since the owner decision of 2026-11-13)": 0,
@@ -1093,7 +1138,7 @@
   "invoice paid amount differs from its payments": 1,
   "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
   "jobs with no order and no order line": 58,
-  "stock items (coils) with no heat": 0,
+  "stock items (coils) with no heat": 2,
   "stock items with no location": 0,
   "shipments delivered with no proof of delivery name": 47,
   "users with no home branch": 2,

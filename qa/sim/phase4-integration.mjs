@@ -1095,7 +1095,12 @@ if (want(5)) {
     // Transfer with a key.
     const k2 = key(); const tb = { coilId: coil.id, fromLocationId: L1.id, toLocationId: L2.id };
     const t = await Promise.all([1, 2].map(() => raw('POST', '/api/inventory/transfer', tb, 'admin', { 'Idempotency-Key': k2 })));
-    ok('a transfer sent twice moves the item once', (await prisma.materialMovement.count({ where: { coilId: coil.id, movementType: 'TRANSFER' } })) === 1 && (await prisma.coil.findUnique({ where: { id: coil.id } })).locationId === L2.id, t.map((x) => x.status).join());
+    // Since Phase 6 a transfer ships first and is booked in by the receiving branch.
+    const sentLines = await prisma.stockTransferLine.findMany({ where: { coilId: coil.id }, select: { transferId: true } });
+    ok('a transfer sent twice ships the item once', sentLines.length === 1, `${t.map((x) => x.status).join()} ${sentLines.length} transfers`);
+    const kReceive = key();
+    const got = await Promise.all([1, 2].map(() => raw('POST', `/api/inventory/transfers/${sentLines[0]?.transferId}/receive`, {}, 'admin', { 'Idempotency-Key': kReceive })));
+    ok('a receipt sent twice books the item in once', (await prisma.materialMovement.count({ where: { coilId: coil.id, movementType: 'TRANSFER' } })) === 1 && (await prisma.coil.findUnique({ where: { id: coil.id } })).locationId === L2.id, got.map((x) => x.status).join());
     // Credit with a key.
     const { order, shipment } = await B.readyToShip(300);
     await B.dispatch(shipment);
@@ -1340,7 +1345,7 @@ if (want(6)) {
     const one = async (sql) => Number((await prisma.$queryRawUnsafe(sql))[0].n);
     ok('no invoice number is repeated', (await one(`SELECT COUNT(*)::int n FROM (SELECT "invoiceNumber" FROM "Invoice" GROUP BY 1 HAVING COUNT(*) > 1) x`)) === 0);
     ok('no stock balance is negative', (await one(`SELECT COUNT(*)::int n FROM "Inventory" WHERE "qtyOnHand" < 0 OR "qtyAvailable" < 0 OR "qtyAllocated" < 0`)) === 0);
-    ok('every balance is available plus reserved plus on hold', (await one(`SELECT COUNT(*)::int n FROM "Inventory" WHERE ABS("qtyOnHand" - ("qtyAvailable" + "qtyAllocated" + "qtyOnHold")) > 0.000001`)) === 0);
+    ok('every balance is available plus reserved plus on hold', (await one(`SELECT COUNT(*)::int n FROM "Inventory" WHERE ABS("qtyOnHand" - ("qtyAvailable" + "qtyAllocated" + "qtyOnHold" + "qtyInTransit")) > 0.000001`)) === 0);
     ok('reserved stock equals the reservations on file', (await one(`SELECT COUNT(*)::int n FROM "Inventory" i LEFT JOIN (SELECT "coilId", SUM("qtyAllocated") q FROM "OrderLineAllocation" GROUP BY 1) a ON a."coilId" = i."coilId" WHERE ABS(i."qtyAllocated" - COALESCE(a.q, 0)) > 0.000001`)) === 0);
     ok('no invoice is paid for more than its total', (await one(`SELECT COUNT(*)::int n FROM "Invoice" WHERE "kind" = 'INVOICE' AND "paidAmount" > "totalAmount" + 0.005`)) === 0);
     ok('for every invoice raised in this run, the payments add up to the amount paid', (await one(`SELECT COUNT(*)::int n FROM "Invoice" i LEFT JOIN (SELECT "invoiceId", SUM("amount") a FROM "Payment" GROUP BY 1) p ON p."invoiceId" = i."id" WHERE i."kind" = 'INVOICE' AND i."createdAt" >= '${T0}' AND ABS(i."paidAmount" - COALESCE(p.a, 0)) > 0.005`)) === 0);

@@ -66,6 +66,15 @@ async function step(sc, name, fn, expect = '2xx') {
   if (!want) sc.result = 'FAIL';
   return res;
 }
+// Since Phase 6 a transfer is shipped first and the stock is in transit
+// until the receiving branch books it in; this sends and then receives it.
+async function transferAndReceive(sc, name, body) {
+  const sent = await step(sc, name, () => A.post('/api/inventory/transfer', body));
+  const transferId = sent.body?.transfer?.id;
+  check(sc, `${name}: the item is in transit until it is received`, ok2xx(sent.status) && sent.body?.inTransit === true && !!transferId, `status ${sent.status}`);
+  if (transferId) await step(sc, `${name}: received at the other branch`, () => A.post(`/api/inventory/transfers/${transferId}/receive`, {}));
+  return sent;
+}
 function check(sc, name, cond, detail) {
   sc.invariants.push({ name, ok: !!cond, ...(cond ? {} : { detail }) });
   if (!cond) sc.result = 'FAIL';
@@ -73,12 +82,15 @@ function check(sc, name, cond, detail) {
 
 // ── Building blocks ──
 const productFor = (plastic) => ctx.products.filter((p) => (plastic ? p.division === 'PLASTICS' : p.division === 'METALS' && p.form !== 'SUPPLY'));
+const fitWithin = (want, size) => (size != null && Number(size) > 0 ? Math.min(want, Number(size)) : want);
 function lineFor(stock, qty, price = 0.65) {
   const plastic = ['HDPE', 'UHMW'].includes(stock.coil.grade.code);
   const prod = R.pick(productFor(plastic));
   return {
     productId: prod?.id, gradeId: stock.coil.gradeId, description: `${stock.coil.grade.code} ${stock.coil.form} cut to size`,
-    thicknessIn: 0.25, widthIn: 24 + R.int(0, 24), lengthIn: 48 + R.int(0, 96),
+    // Cut to size from the stock item, so never wider or longer than it (Phase 6 refuses a reservation
+    // that cannot be cut from the item; before, a 135-inch line could reserve a 96-inch plate).
+    thicknessIn: 0.25, widthIn: fitWithin(24 + R.int(0, 24), stock.coil.widthIn), lengthIn: fitWithin(48 + R.int(0, 96), stock.coil.lengthIn),
     qtyOrdered: qty, unit: 'LB', unitPrice: price, priceUnit: 'LB', extendedPrice: +(qty * price).toFixed(2),
   };
 }
@@ -180,9 +192,9 @@ async function payInvoices(sc, orderId) {
 async function checkInventory(sc, coilIds) {
   const inv = await prisma.inventory.findMany({ where: { coilId: { in: coilIds } }, include: { coil: true } });
   for (const i of inv) {
-    const [h, a, al, ho] = [num(i.qtyOnHand), num(i.qtyAvailable), num(i.qtyAllocated), num(i.qtyOnHold)];
+    const [h, a, al, ho, tr] = [num(i.qtyOnHand), num(i.qtyAvailable), num(i.qtyAllocated), num(i.qtyOnHold), num(i.qtyInTransit)];
     check(sc, `${i.coil.coilNumber}: no negative quantities`, h >= -0.001 && a >= -0.001 && al >= -0.001, `onHand ${h} avail ${a} alloc ${al}`);
-    check(sc, `${i.coil.coilNumber}: on hand = available + allocated + on hold`, Math.abs(h - (a + al + ho)) < 0.001, `${h} vs ${a}+${al}+${ho}`);
+    check(sc, `${i.coil.coilNumber}: on hand = available + allocated + on hold`, Math.abs(h - (a + al + ho + tr)) < 0.001, `${h} vs ${a}+${al}+${ho}+${tr}`);
     const openAlloc = await prisma.orderLineAllocation.aggregate({ where: { coilId: i.coilId, orderLine: { lineStatus: { in: ['OPEN', 'PARTIAL'] }, order: { status: { notIn: ['CANCELLED'] } } } }, _sum: { qtyAllocated: true } });
     check(sc, `${i.coil.coilNumber}: inventory allocated = open allocations`, Math.abs(al - num(openAlloc._sum.qtyAllocated)) < 0.001, `inventory ${al} vs allocations ${num(openAlloc._sum.qtyAllocated)}`);
     check(sc, `${i.coil.coilNumber}: inventory branch = coil branch`, i.locationId === i.coil.locationId, `inventory ${i.locationId} coil ${i.coil.locationId}`);
@@ -248,7 +260,7 @@ async function multiLocation(sc) {
   const totalBefore = await prisma.inventory.aggregate({ where: { coilId: stock.coilId }, _sum: { qtyOnHand: true } });
   if (R.chance(0.5)) {
     // Transfer the stock to the home branch, process there, ship from home.
-    await step(sc, `transfer ${stock.coil.coilNumber} ${remote.code} → ${home.code}`, () => A.post('/api/inventory/transfer', { coilId: stock.coilId, fromLocationId: remote.id, toLocationId: home.id, qty: num(stock.qtyOnHand) }));
+    await transferAndReceive(sc, `transfer ${stock.coil.coilNumber} ${remote.code} → ${home.code}`, { coilId: stock.coilId, fromLocationId: remote.id, toLocationId: home.id, qty: num(stock.qtyOnHand) });
     const after = await prisma.inventory.aggregate({ where: { coilId: stock.coilId }, _sum: { qtyOnHand: true } });
     check(sc, 'transfer did not create or lose stock', num(after._sum.qtyOnHand) === num(totalBefore._sum.qtyOnHand), `${num(totalBefore._sum.qtyOnHand)} → ${num(after._sum.qtyOnHand)}`);
     const j = await createJob(sc, order, line, R.pick(wcOf(home, ['SAW', 'SHEAR', 'LASER'])) || home.workCenters[0]);
@@ -282,7 +294,9 @@ async function transfersReceiving(sc, variant) {
   } else if (variant === 1) {
     await step(sc, 'reject a negative receipt', () => A.post('/api/inventory/receive', { coilId: stock.coilId, locationId: a.id, qty: -500 }), '4xx');
   } else if (variant === 2) {
-    await step(sc, 'transfer whole item between branches', () => A.post('/api/inventory/transfer', { coilId: stock.coilId, fromLocationId: a.id, toLocationId: b.id, qty: before }));
+    await transferAndReceive(sc, 'transfer whole item between branches', { coilId: stock.coilId, fromLocationId: a.id, toLocationId: b.id, qty: before });
+    const moved = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
+    check(sc, 'after receipt the whole item is at the other branch and on sale there', moved.locationId === b.id && num(moved.qtyOnHand) === before && num(moved.qtyInTransit) === 0, JSON.stringify(moved));
   } else if (variant === 3) {
     await step(sc, 'reject a transfer from the wrong branch', () => A.post('/api/inventory/transfer', { coilId: stock.coilId, fromLocationId: b.id === a.id ? ctx.locs[0].id : b.id, toLocationId: a.id, qty: before }), '4xx');
   } else {
@@ -679,7 +693,7 @@ async function concurrency(report) {
   const [o1, o2] = [await mk(), await mk()];
   const race = await Promise.all([o1, o2].map((o) => A.post(`/api/orders/${o.id}/allocate`, { lineId: o.lines[0].id, coilId: stock.coilId, qty: want })));
   const after = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
-  record('two reservations racing for the same stock: exactly one wins', race.filter((r) => ok2xx(r.status)).length === 1 && num(after.qtyAvailable) >= 0 && Math.abs(num(after.qtyOnHand) - num(after.qtyAvailable) - num(after.qtyAllocated) - num(after.qtyOnHold)) < 0.001, `statuses ${race.map((r) => r.status).join(',')}; available ${num(after.qtyAvailable)}`);
+  record('two reservations racing for the same stock: exactly one wins', race.filter((r) => ok2xx(r.status)).length === 1 && num(after.qtyAvailable) >= 0 && Math.abs(num(after.qtyOnHand) - num(after.qtyAvailable) - num(after.qtyAllocated) - num(after.qtyOnHold) - num(after.qtyInTransit)) < 0.001, `statuses ${race.map((r) => r.status).join(',')}; available ${num(after.qtyAvailable)}`);
   const winner = ok2xx(race[0].status) ? o1 : o2;
 
   // 3. Two shipments racing for the whole order: only one is created.
@@ -738,10 +752,10 @@ async function reconcile(report) {
   const alloc = await prisma.orderLineAllocation.groupBy({ by: ['coilId'], _sum: { qtyAllocated: true } });
   const allocBy = new Map(alloc.map((a) => [a.coilId, num(a._sum.qtyAllocated)]));
   for (const i of inv) {
-    const [h, a, al, ho] = [num(i.qtyOnHand), num(i.qtyAvailable), num(i.qtyAllocated), num(i.qtyOnHold)];
+    const [h, a, al, ho, tr] = [num(i.qtyOnHand), num(i.qtyAvailable), num(i.qtyAllocated), num(i.qtyOnHold), num(i.qtyInTransit)];
     const tag = i.coil.coilNumber;
     if (h < -0.001 || a < -0.001 || al < -0.001 || ho < -0.001) problems.push(`${tag}: negative quantity (on hand ${h}, available ${a}, reserved ${al})`);
-    if (Math.abs(h - (a + al + ho)) > 0.001) problems.push(`${tag}: on hand ${h} ≠ available ${a} + reserved ${al} + hold ${ho}`);
+    if (Math.abs(h - (a + al + ho + tr)) > 0.001) problems.push(`${tag}: on hand ${h} ≠ available ${a} + reserved ${al} + hold ${ho} + in transit ${tr}`);
     if (Math.abs(al - (allocBy.get(i.coilId) || 0)) > 0.001) problems.push(`${tag}: reserved ${al} ≠ open reservations ${allocBy.get(i.coilId) || 0}`);
     if (i.locationId !== i.coil.locationId) problems.push(`${tag}: stock record and item record disagree on location`);
   }

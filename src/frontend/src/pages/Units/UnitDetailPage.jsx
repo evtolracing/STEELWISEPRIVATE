@@ -78,7 +78,7 @@ export default function UnitDetailPage() {
     if (name === 'hold') setForm({ holdType: 'QUALITY', holdReason: '' })
     if (name === 'release') setForm({ notes: '' })
     if (name === 'move') {
-      setForm({ toLocationId: '' })
+      setForm({ toLocationId: '', carrier: '', reference: '' })
       call('/api/inventory/locations?all=true').then((l) => setLocations(Array.isArray(l) ? l : [])).catch(() => setDialogError('The locations could not be loaded.'))
     }
     if (name === 'count') setForm({ countedQty: '', reason: 'COUNT', notes: '' })
@@ -91,9 +91,9 @@ export default function UnitDetailPage() {
       if (dialog === 'hold') await call(`/api/coils/${id}/hold`, 'POST', form)
       if (dialog === 'release') await call(`/api/coils/${id}/release`, 'POST', form)
       if (dialog === 'edit') await call(`/api/coils/${id}`, 'PUT', form)
-      if (dialog === 'move') await call('/api/inventory/transfer', 'POST', { coilId: id, fromLocationId: unit.locationId, toLocationId: form.toLocationId })
+      if (dialog === 'move') await call('/api/inventory/transfers', 'POST', { coilIds: [id], toLocationId: form.toLocationId, carrier: form.carrier, reference: form.reference })
       if (dialog === 'count') await call('/api/inventory/adjust', 'POST', { coilId: id, countedQty: Number(form.countedQty), reason: form.reason, notes: form.notes })
-      setNotice(dialog === 'count' ? 'Quantity corrected' : dialog === 'hold' ? 'Item put on hold' : dialog === 'release' ? 'Hold released' : dialog === 'move' ? 'Item moved' : 'Changes saved')
+      setNotice(dialog === 'count' ? 'Quantity corrected' : dialog === 'hold' ? 'Item put on hold' : dialog === 'release' ? 'Hold released' : dialog === 'move' ? 'Sent. The item is in transit until the receiving branch receives it on the Transfers screen.' : 'Changes saved')
       setDialog(null)
       load()
     } catch (e) {
@@ -128,7 +128,7 @@ export default function UnitDetailPage() {
           {unit && (
             <Stack direction="row" spacing={1}>
               <Button startIcon={<EditIcon />} variant="outlined" onClick={() => open('edit')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Edit</Button>
-              <Button startIcon={<MoveIcon />} variant="outlined" disabled={closed || !unit.inventory} onClick={() => open('move')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Move</Button>
+              <Button startIcon={<MoveIcon />} variant="outlined" disabled={closed || !unit.inventory || unit.inventory?.status === 'IN_TRANSIT'} onClick={() => open('move')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Move</Button>
               <Button startIcon={<CountIcon />} variant="outlined" disabled={!unit.inventory} onClick={() => open('count')} sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white' }}>Correct quantity</Button>
               {onHold
                 ? <Button startIcon={<ReleaseIcon />} variant="contained" color="success" onClick={() => open('release')}>Release hold</Button>
@@ -150,6 +150,9 @@ export default function UnitDetailPage() {
               </Alert>
             )}
 
+            {inv?.status === 'IN_TRANSIT' && (
+              <Alert severity="info" sx={{ mb: 2 }}>This item is on its way to another branch. It cannot be sold, reserved, cut or shipped until it is received on the Transfers screen.</Alert>
+            )}
             <Paper sx={{ p: 2, mb: 2 }}>
               <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>Stock</Typography>
               {inv ? (
@@ -158,6 +161,7 @@ export default function UnitDetailPage() {
                   <Fact label="Available" value={amount(inv.qtyAvailable, inv.unit)} />
                   <Fact label="Reserved for orders" value={amount(inv.qtyAllocated, inv.unit)} />
                   <Fact label="On hold" value={amount(inv.qtyOnHold, inv.unit)} />
+                  {inv.status === 'IN_TRANSIT' && <Fact label="In transit to another branch" value={amount(Number(inv.qtyOnHand), inv.unit)} />}
                 </Grid>
               ) : (
                 <Typography variant="body2" color="text.secondary">This item has not been received into stock yet.</Typography>
@@ -236,7 +240,7 @@ export default function UnitDetailPage() {
       </Box>
 
       <Dialog open={Boolean(dialog)} onClose={() => !saving && setDialog(null)} maxWidth={dialog === 'edit' ? 'sm' : 'xs'} fullWidth>
-        <DialogTitle>{dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release hold' : dialog === 'move' ? 'Move to another location' : dialog === 'count' ? 'Correct the quantity on hand' : 'Edit item details'}</DialogTitle>
+        <DialogTitle>{dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release hold' : dialog === 'move' ? 'Send to another branch' : dialog === 'count' ? 'Correct the quantity on hand' : 'Edit item details'}</DialogTitle>
         <DialogContent>
           {dialog === 'hold' && (
             <Stack spacing={2} sx={{ mt: 1 }}>
@@ -255,10 +259,12 @@ export default function UnitDetailPage() {
           )}
           {dialog === 'move' && (
             <Stack spacing={2} sx={{ mt: 1 }}>
-              <Typography variant="body2">The whole item moves, with anything reserved on it. It is now at {unit?.location?.name || unit?.location?.code || 'no recorded location'}. The move is recorded in the item history.</Typography>
-              <TextField select fullWidth label="Move to" required {...field('toLocationId')}>
+              <Typography variant="body2">The whole item is sent, with anything reserved on it. It is now at {unit?.location?.name || unit?.location?.code || 'no recorded location'}. Once sent it is in transit: it cannot be sold, reserved, cut or shipped until the receiving branch receives it on the Transfers screen.</Typography>
+              <TextField select fullWidth label="Send to" required {...field('toLocationId')}>
                 {locations.filter((l) => l.id !== unit?.locationId).map((l) => <MenuItem key={l.id} value={l.id}>{l.code}{l.name && l.name !== l.code ? `: ${l.name}` : ''}</MenuItem>)}
               </TextField>
+              <TextField fullWidth label="Carrier or truck (optional)" {...field('carrier')} inputProps={{ maxLength: 120 }} />
+              <TextField fullWidth label="Reference (optional)" {...field('reference')} inputProps={{ maxLength: 120 }} />
             </Stack>
           )}
           {dialog === 'count' && (
@@ -295,7 +301,7 @@ export default function UnitDetailPage() {
         <DialogActions>
           <Button onClick={() => setDialog(null)} disabled={saving}>Cancel</Button>
           <Button variant="contained" onClick={submit} disabled={saving || (dialog === 'hold' && !String(form.holdReason || '').trim()) || (dialog === 'move' && !form.toLocationId) || (dialog === 'count' && (form.countedQty === '' || Number(form.countedQty) < 0 || String(form.notes || '').trim().length < 5))}>
-            {dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release' : dialog === 'move' ? 'Move item' : dialog === 'count' ? 'Record correction' : 'Save'}
+            {dialog === 'hold' ? 'Put on hold' : dialog === 'release' ? 'Release' : dialog === 'move' ? 'Send item' : dialog === 'count' ? 'Record correction' : 'Save'}
           </Button>
         </DialogActions>
       </Dialog>

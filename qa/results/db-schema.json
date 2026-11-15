@@ -1,5 +1,5 @@
 {
- "at": "2026-11-15T09:11:50.981Z",
+ "at": "2026-11-15T18:39:46.557Z",
  "identity": {
   "db": "steelwise_qa",
   "usr": "postgres",
@@ -9,13 +9,13 @@
   "max_connections": "100"
  },
  "counts": {
-  "tables": 160,
-  "columns": 2465,
-  "primaryKeys": 160,
-  "foreignKeys": 188,
-  "uniqueIndexes": 83,
-  "checks": 25,
-  "indexes": 584,
+  "tables": 162,
+  "columns": 2494,
+  "primaryKeys": 162,
+  "foreignKeys": 194,
+  "uniqueIndexes": 85,
+  "checks": 30,
+  "indexes": 593,
   "schemas": 1,
   "views": 0,
   "materializedViews": 0,
@@ -25,7 +25,7 @@
   "partitionedTables": 0,
   "policies": 0,
   "enums": 96,
-  "migrationsApplied": 29,
+  "migrationsApplied": 30,
   "migrationsFailed": 0
  },
  "other": {
@@ -42,7 +42,7 @@
   "partitionedTables": [],
   "policies": [],
   "enums": 96,
-  "migrationsApplied": 29,
+  "migrationsApplied": 30,
   "migrationsFailed": 0
  },
  "tables": [
@@ -91,8 +91,8 @@
   {
    "name": "AuditLog",
    "rls": false,
-   "bytes": 1581056,
-   "rows": 2348
+   "bytes": 1777664,
+   "rows": 2594
   },
   {
    "name": "BomOperation",
@@ -109,8 +109,8 @@
   {
    "name": "Coil",
    "rls": false,
-   "bytes": 507904,
-   "rows": 503
+   "bytes": 606208,
+   "rows": 625
   },
   {
    "name": "CommodityPrice",
@@ -139,7 +139,7 @@
   {
    "name": "DemandSuggestionEvent",
    "rls": false,
-   "bytes": 417792,
+   "bytes": 425984,
    "rows": 1242
   },
   {
@@ -236,13 +236,13 @@
    "name": "Grade",
    "rls": false,
    "bytes": 49152,
-   "rows": 8
+   "rows": 9
   },
   {
    "name": "Heat",
    "rls": false,
    "bytes": 114688,
-   "rows": 15
+   "rows": 18
   },
   {
    "name": "IntakeContact",
@@ -277,8 +277,8 @@
   {
    "name": "Inventory",
    "rls": false,
-   "bytes": 319488,
-   "rows": 503
+   "bytes": 409600,
+   "rows": 625
   },
   {
    "name": "InventoryAdjustment",
@@ -313,19 +313,19 @@
   {
    "name": "Invoice",
    "rls": false,
-   "bytes": 344064,
-   "rows": 230
+   "bytes": 335872,
+   "rows": 241
   },
   {
    "name": "InvoiceLine",
    "rls": false,
-   "bytes": 311296,
-   "rows": 241
+   "bytes": 270336,
+   "rows": 252
   },
   {
    "name": "Job",
    "rls": false,
-   "bytes": 335872,
+   "bytes": 352256,
    "rows": 273
   },
   {
@@ -385,8 +385,8 @@
   {
    "name": "MaterialMovement",
    "rls": false,
-   "bytes": 475136,
-   "rows": 465
+   "bytes": 581632,
+   "rows": 640
   },
   {
    "name": "MeterReading",
@@ -415,20 +415,20 @@
   {
    "name": "Order",
    "rls": false,
-   "bytes": 548864,
-   "rows": 572
+   "bytes": 647168,
+   "rows": 624
   },
   {
    "name": "OrderLine",
    "rls": false,
-   "bytes": 450560,
-   "rows": 591
+   "bytes": 434176,
+   "rows": 645
   },
   {
    "name": "OrderLineAllocation",
    "rls": false,
    "bytes": 98304,
-   "rows": 35
+   "rows": 47
   },
   {
    "name": "Organization",
@@ -487,8 +487,8 @@
   {
    "name": "Payment",
    "rls": false,
-   "bytes": 139264,
-   "rows": 133
+   "bytes": 155648,
+   "rows": 139
   },
   {
    "name": "PipelineRun",
@@ -499,7 +499,7 @@
   {
    "name": "PosSession",
    "rls": false,
-   "bytes": 253952,
+   "bytes": 270336,
    "rows": 10
   },
   {
@@ -559,13 +559,13 @@
   {
    "name": "QCHold",
    "rls": false,
-   "bytes": 81920,
-   "rows": 6
+   "bytes": 122880,
+   "rows": 27
   },
   {
    "name": "Quote",
    "rls": false,
-   "bytes": 172032,
+   "bytes": 180224,
    "rows": 57
   },
   {
@@ -589,7 +589,7 @@
   {
    "name": "RFQLine",
    "rls": false,
-   "bytes": 98304,
+   "bytes": 122880,
    "rows": 46
   },
   {
@@ -613,8 +613,8 @@
   {
    "name": "RequestKey",
    "rls": false,
-   "bytes": 155648,
-   "rows": 20
+   "bytes": 172032,
+   "rows": 22
   },
   {
    "name": "RfidScanEvent",
@@ -865,14 +865,14 @@
   {
    "name": "Shipment",
    "rls": false,
-   "bytes": 286720,
-   "rows": 252
+   "bytes": 270336,
+   "rows": 260
   },
   {
    "name": "ShipmentItem",
    "rls": false,
-   "bytes": 229376,
-   "rows": 221
+   "bytes": 237568,
+   "rows": 229
   },
   {
    "name": "ShipmentStop",
@@ -897,6 +897,18 @@
    "rls": false,
    "bytes": 32768,
    "rows": 0
+  },
+  {
+   "name": "StockTransfer",
+   "rls": false,
+   "bytes": 163840,
+   "rows": 60
+  },
+  {
+   "name": "StockTransferLine",
+   "rls": false,
+   "bytes": 106496,
+   "rows": 64
   },
   {
    "name": "StopWorkAudit",
@@ -950,7 +962,7 @@
    "name": "User",
    "rls": false,
    "bytes": 98304,
-   "rows": 27
+   "rows": 30
   },
   {
    "name": "UserDivision",
@@ -961,7 +973,7 @@
   {
    "name": "UserLocation",
    "rls": false,
-   "bytes": 188416,
+   "bytes": 196608,
    "rows": 246
   },
   {
@@ -974,7 +986,7 @@
    "name": "WebhookDelivery",
    "rls": false,
    "bytes": 573440,
-   "rows": 162
+   "rows": 227
   },
   {
    "name": "WorkCenter",
@@ -992,19 +1004,19 @@
    "name": "WorkOrder",
    "rls": false,
    "bytes": 98304,
-   "rows": 17
+   "rows": 22
   },
   {
    "name": "WorkOrderOutput",
    "rls": false,
    "bytes": 65536,
-   "rows": 16
+   "rows": 21
   },
   {
    "name": "_prisma_migrations",
    "rls": false,
    "bytes": 32768,
-   "rows": 29
+   "rows": 30
   }
  ],
  "columns": [
@@ -2483,7 +2495,7 @@
    "c": "heatId",
    "type": "text",
    "udt": "text",
-   "nullable": false,
+   "nullable": true,
    "def": null,
    "p": null,
    "s": null
@@ -2513,7 +2525,7 @@
    "c": "gradeId",
    "type": "text",
    "udt": "text",
-   "nullable": false,
+   "nullable": true,
    "def": null,
    "p": null,
    "s": null
@@ -7039,6 +7051,16 @@
    "s": null
   },
   {
+   "t": "Inventory",
+   "c": "qtyInTransit",
+   "type": "numeric",
+   "udt": "numeric",
+   "nullable": false,
+   "def": "0",
+   "p": 65,
+   "s": 30
+  },
+  {
    "t": "InventoryAdjustment",
    "c": "id",
    "type": "text",
@@ -9744,6 +9766,16 @@
    "type": "text",
    "udt": "text",
    "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "MaterialMovement",
+   "c": "orderLineId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
    "def": null,
    "p": null,
    "s": null
@@ -23789,6 +23821,276 @@
    "s": null
   },
   {
+   "t": "StockTransfer",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "transferNumber",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "fromLocationId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "toLocationId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "status",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'SHIPPED'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "carrier",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "reference",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "notes",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "createdById",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "shippedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "shippedById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "receivedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "receivedById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "cancelledAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "cancelledById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "cancelReason",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransfer",
+   "c": "updatedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "transferId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "coilId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "qtyShipped",
+   "type": "numeric",
+   "udt": "numeric",
+   "nullable": false,
+   "def": null,
+   "p": 65,
+   "s": 30
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "qtyReceived",
+   "type": "numeric",
+   "udt": "numeric",
+   "nullable": true,
+   "def": null,
+   "p": 65,
+   "s": 30
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "unit",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'LB'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "condition",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "notes",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "StockTransferLine",
+   "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
    "t": "StopWorkAudit",
    "c": "id",
    "type": "text",
@@ -25950,6 +26252,20 @@
   },
   {
    "t": "Coil",
+   "name": "Coil_heat_and_grade_unless_supply",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK (((form = 'SUPPLY'::\"ProductForm\") OR ((\"heatId\" IS NOT NULL) AND (\"gradeId\" IS NOT NULL))))",
+   "cols": [
+    "form",
+    "heatId",
+    "gradeId"
+   ]
+  },
+  {
+   "t": "Coil",
    "name": "Coil_locationId_fkey",
    "kind": "f",
    "ref": "Location",
@@ -26760,12 +27076,13 @@
    "ref": null,
    "ondelete": " ",
    "valid": true,
-   "def": "CHECK ((abs((\"qtyOnHand\" - ((\"qtyAvailable\" + \"qtyAllocated\") + \"qtyOnHold\"))) <= 0.0001))",
+   "def": "CHECK ((abs((\"qtyOnHand\" - (((\"qtyAvailable\" + \"qtyAllocated\") + \"qtyOnHold\") + \"qtyInTransit\"))) <= 0.0001))",
    "cols": [
     "qtyOnHand",
     "qtyAvailable",
     "qtyAllocated",
-    "qtyOnHold"
+    "qtyOnHold",
+    "qtyInTransit"
    ]
   },
   {
@@ -26826,6 +27143,18 @@
    "def": "CHECK ((\"qtyAvailable\" >= (0)::numeric))",
    "cols": [
     "qtyAvailable"
+   ]
+  },
+  {
+   "t": "Inventory",
+   "name": "Inventory_qtyInTransit_not_negative",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((\"qtyInTransit\" >= (0)::numeric))",
+   "cols": [
+    "qtyInTransit"
    ]
   },
   {
@@ -27444,6 +27773,18 @@
    "def": "FOREIGN KEY (\"orderId\") REFERENCES \"Order\"(id) ON UPDATE CASCADE ON DELETE SET NULL",
    "cols": [
     "orderId"
+   ]
+  },
+  {
+   "t": "MaterialMovement",
+   "name": "MaterialMovement_orderLineId_fkey",
+   "kind": "f",
+   "ref": "OrderLine",
+   "ondelete": "n",
+   "valid": true,
+   "def": "FOREIGN KEY (\"orderLineId\") REFERENCES \"OrderLine\"(id) ON UPDATE CASCADE ON DELETE SET NULL",
+   "cols": [
+    "orderLineId"
    ]
   },
   {
@@ -29649,6 +29990,128 @@
    ]
   },
   {
+   "t": "StockTransfer",
+   "name": "StockTransfer_branches_differ",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((\"fromLocationId\" <> \"toLocationId\"))",
+   "cols": [
+    "fromLocationId",
+    "toLocationId"
+   ]
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_createdById_fkey",
+   "kind": "f",
+   "ref": "User",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"createdById\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "createdById"
+   ]
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_fromLocationId_fkey",
+   "kind": "f",
+   "ref": "Location",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"fromLocationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "fromLocationId"
+   ]
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_status_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((status = ANY (ARRAY['SHIPPED'::text, 'RECEIVED'::text, 'CANCELLED'::text])))",
+   "cols": [
+    "status"
+   ]
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_toLocationId_fkey",
+   "kind": "f",
+   "ref": "Location",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"toLocationId\") REFERENCES \"Location\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "toLocationId"
+   ]
+  },
+  {
+   "t": "StockTransferLine",
+   "name": "StockTransferLine_coilId_fkey",
+   "kind": "f",
+   "ref": "Coil",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"coilId\") REFERENCES \"Coil\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "coilId"
+   ]
+  },
+  {
+   "t": "StockTransferLine",
+   "name": "StockTransferLine_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "StockTransferLine",
+   "name": "StockTransferLine_quantities",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK (((\"qtyShipped\" > (0)::numeric) AND ((\"qtyReceived\" IS NULL) OR (\"qtyReceived\" >= (0)::numeric))))",
+   "cols": [
+    "qtyShipped",
+    "qtyReceived"
+   ]
+  },
+  {
+   "t": "StockTransferLine",
+   "name": "StockTransferLine_transferId_fkey",
+   "kind": "f",
+   "ref": "StockTransfer",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"transferId\") REFERENCES \"StockTransfer\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "transferId"
+   ]
+  },
+  {
    "t": "StopWorkAudit",
    "name": "StopWorkAudit_pkey",
    "kind": "p",
@@ -30441,7 +30904,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"AuditLog_pkey\" ON public.\"AuditLog\" USING btree (id)",
-   "bytes": 180224,
+   "bytes": 221184,
    "cols": [
     "id"
    ],
@@ -30453,7 +30916,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_resourceType_resourceId_idx\" ON public.\"AuditLog\" USING btree (\"resourceType\", \"resourceId\")",
-   "bytes": 131072,
+   "bytes": 147456,
    "cols": [
     "resourceType",
     "resourceId"
@@ -30479,7 +30942,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_userId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"userId\", \"timestamp\")",
-   "bytes": 253952,
+   "bytes": 278528,
    "cols": [
     "userId",
     "timestamp"
@@ -30580,7 +31043,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"Coil_coilNumber_key\" ON public.\"Coil\" USING btree (\"coilNumber\")",
-   "bytes": 32768,
+   "bytes": 57344,
    "cols": [
     "coilNumber"
    ],
@@ -30628,7 +31091,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Coil_locationId_idx\" ON public.\"Coil\" USING btree (\"locationId\")",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "locationId"
    ],
@@ -30809,7 +31272,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"DemandSuggestionEvent_pkey\" ON public.\"DemandSuggestionEvent\" USING btree (id)",
-   "bytes": 98304,
+   "bytes": 106496,
    "cols": [
     "id"
    ],
@@ -31789,7 +32252,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Inventory_locationId_idx\" ON public.\"Inventory\" USING btree (\"locationId\")",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "locationId"
    ],
@@ -31801,7 +32264,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Inventory_pkey\" ON public.\"Inventory\" USING btree (id)",
-   "bytes": 57344,
+   "bytes": 73728,
    "cols": [
     "id"
    ],
@@ -32090,7 +32553,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Job_pkey\" ON public.\"Job\" USING btree (id)",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "id"
    ],
@@ -32572,7 +33035,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"MaterialMovement_coilId_idx\" ON public.\"MaterialMovement\" USING btree (\"coilId\")",
-   "bytes": 40960,
+   "bytes": 57344,
    "cols": [
     "coilId"
    ],
@@ -32611,6 +33074,18 @@
    "bytes": 40960,
    "cols": [
     "orderId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "MaterialMovement",
+   "name": "MaterialMovement_orderLineId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"MaterialMovement_orderLineId_idx\" ON public.\"MaterialMovement\" USING btree (\"orderLineId\")",
+   "bytes": 16384,
+   "cols": [
+    "orderLineId"
    ],
    "partial": false
   },
@@ -32899,7 +33374,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)",
-   "bytes": 90112,
+   "bytes": 131072,
    "cols": [
     "id"
    ],
@@ -32959,7 +33434,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"OrderLine_pkey\" ON public.\"OrderLine\" USING btree (id)",
-   "bytes": 57344,
+   "bytes": 73728,
    "cols": [
     "id"
    ],
@@ -33524,7 +33999,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Payment_pkey\" ON public.\"Payment\" USING btree (id)",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "id"
    ],
@@ -36460,6 +36935,105 @@
    "partial": false
   },
   {
+   "t": "StockTransfer",
+   "name": "StockTransfer_createdById_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"StockTransfer_createdById_idx\" ON public.\"StockTransfer\" USING btree (\"createdById\")",
+   "bytes": 16384,
+   "cols": [
+    "createdById"
+   ],
+   "partial": false
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_fromLocationId_status_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"StockTransfer_fromLocationId_status_idx\" ON public.\"StockTransfer\" USING btree (\"fromLocationId\", status)",
+   "bytes": 16384,
+   "cols": [
+    "fromLocationId",
+    "status"
+   ],
+   "partial": false
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"StockTransfer_pkey\" ON public.\"StockTransfer\" USING btree (id)",
+   "bytes": 16384,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_toLocationId_status_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"StockTransfer_toLocationId_status_idx\" ON public.\"StockTransfer\" USING btree (\"toLocationId\", status)",
+   "bytes": 16384,
+   "cols": [
+    "toLocationId",
+    "status"
+   ],
+   "partial": false
+  },
+  {
+   "t": "StockTransfer",
+   "name": "StockTransfer_transferNumber_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"StockTransfer_transferNumber_key\" ON public.\"StockTransfer\" USING btree (\"transferNumber\")",
+   "bytes": 16384,
+   "cols": [
+    "transferNumber"
+   ],
+   "partial": false
+  },
+  {
+   "t": "StockTransferLine",
+   "name": "StockTransferLine_coilId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"StockTransferLine_coilId_idx\" ON public.\"StockTransferLine\" USING btree (\"coilId\")",
+   "bytes": 16384,
+   "cols": [
+    "coilId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "StockTransferLine",
+   "name": "StockTransferLine_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"StockTransferLine_pkey\" ON public.\"StockTransferLine\" USING btree (id)",
+   "bytes": 16384,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "StockTransferLine",
+   "name": "StockTransferLine_transferId_coilId_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"StockTransferLine_transferId_coilId_key\" ON public.\"StockTransferLine\" USING btree (\"transferId\", \"coilId\")",
+   "bytes": 16384,
+   "cols": [
+    "transferId",
+    "coilId"
+   ],
+   "partial": false
+  },
+  {
    "t": "StopWorkAudit",
    "name": "StopWorkAudit_eventId_performedAt_idx",
    "uniq": false,
@@ -36961,7 +37535,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"UserLocation_userId_locationId_key\" ON public.\"UserLocation\" USING btree (\"userId\", \"locationId\")",
-   "bytes": 40960,
+   "bytes": 49152,
    "cols": [
     "userId",
     "locationId"
@@ -37035,7 +37609,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (\"nextRetryAt\")",
-   "bytes": 40960,
+   "bytes": 16384,
    "cols": [
     "nextRetryAt"
    ],
@@ -37071,7 +37645,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (status, \"nextRetryAt\")",
-   "bytes": 40960,
+   "bytes": 16384,
    "cols": [
     "status",
     "nextRetryAt"
@@ -37084,7 +37658,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_webhookId_eventId_key\" ON public.\"WebhookDelivery\" USING btree (\"webhookId\", \"eventId\")",
-   "bytes": 57344,
+   "bytes": 81920,
    "cols": [
     "webhookId",
     "eventId"
@@ -37293,7 +37867,7 @@
    "column": "tenantId",
    "nullable": true,
    "target": null,
-   "rows": 2348,
+   "rows": 2594,
    "set": 2,
    "orphans": null
   },
@@ -37302,7 +37876,7 @@
    "column": "targetUserId",
    "nullable": true,
    "target": "User",
-   "rows": 2348,
+   "rows": 2594,
    "set": 0,
    "orphans": null
   },
@@ -37311,8 +37885,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 2348,
-   "set": 2348,
+   "rows": 2594,
+   "set": 2594,
    "orphans": null
   },
   {
@@ -37320,7 +37894,7 @@
    "column": "sessionId",
    "nullable": true,
    "target": null,
-   "rows": 2348,
+   "rows": 2594,
    "set": 0,
    "orphans": null
   },
@@ -37329,7 +37903,7 @@
    "column": "correlationId",
    "nullable": true,
    "target": null,
-   "rows": 2348,
+   "rows": 2594,
    "set": 0,
    "orphans": null
   },
@@ -37977,7 +38551,7 @@
    "column": "ncrId",
    "nullable": true,
    "target": null,
-   "rows": 6,
+   "rows": 27,
    "set": 0,
    "orphans": null
   },
@@ -39080,6 +39654,33 @@
    "orphans": null
   },
   {
+   "table": "StockTransfer",
+   "column": "shippedById",
+   "nullable": true,
+   "target": null,
+   "rows": 60,
+   "set": 60,
+   "orphans": null
+  },
+  {
+   "table": "StockTransfer",
+   "column": "receivedById",
+   "nullable": true,
+   "target": null,
+   "rows": 60,
+   "set": 35,
+   "orphans": null
+  },
+  {
+   "table": "StockTransfer",
+   "column": "cancelledById",
+   "nullable": true,
+   "target": null,
+   "rows": 60,
+   "set": 25,
+   "orphans": null
+  },
+  {
    "table": "StopWorkAudit",
    "column": "eventId",
    "nullable": false,
@@ -39210,13 +39811,13 @@
    "column": "eventId",
    "nullable": false,
    "target": null,
-   "rows": 162,
-   "set": 162,
+   "rows": 227,
+   "set": 227,
    "orphans": null
   }
  ],
  "audit": {
-  "referenceColumnsWithNoForeignKey": 217,
+  "referenceColumnsWithNoForeignKey": 220,
   "ofWhichTargetKnown": 79,
   "ofWhichHaveOrphans": [
    "DispatchTimeLog.jobId → Job: 35 of 35",
@@ -39395,8 +39996,8 @@
   "foreignKeysNotValidated": [],
   "foreignKeyDeleteRules": {
    "cascade": 39,
-   "restrict": 78,
-   "set null": 71
+   "restrict": 83,
+   "set null": 72
   },
   "cascadesIntoMoneyOrStock": [
    "InvoiceLine.invoiceId → Invoice",

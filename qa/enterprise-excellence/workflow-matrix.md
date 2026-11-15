@@ -41,6 +41,21 @@ Written by hand in Phase 1 from the code (`src/backend/src/lib/workflowRules.js`
 
 Sales channels that create a sales order after Phase 5: order entry (including Retail POS and the mobile rep), quote acceptance, web store acceptance, counter quick sale, partner API. The counter session flow no longer creates orders. The Order Hub screen is retired; its address opens RFQs & Quotes.
 
+### Phase 6 update (2026-11-15)
+
+| Workflow | Change | Verified by |
+|---|---|---|
+| Procure to stock | Purchase orders exist: a buyer writes and places one, a receipt names the line it fills, part and full receipt, close and cancel. A mismatch, an over-receipt or a missing certificate is held. No requisition or approval step (no rule on file, K-011); supplier invoices are not matched (K-012) | `qa/sim/phase6-inventory.mjs`, groups 1 and 2; `qa/sim/ui-phase6.cjs` |
+| Branch transfer | Now send, in transit, receive, with short, missing and damaged held and settled by a manager, and call back by the sender (G-007). Still no request and approval step | same, group 5 and the concurrency group; seven reconciliation checks at 0 |
+| Reserve to ship | A reservation must fit the line: unit, grade, size, thickness tolerance, owner, and not in transit (K-001) | same, group 3 |
+| Remnant life cycle | A remnant that is stock is created from a parent or a work order, reserved, moved between branches and scrapped, keeping heat and parent. The Steel Outlet list is still separate (K-006) | same, group 4 (the ten remnant tests) |
+| Return and credit | The unit follows the stock item; an inspected return is held; a scrapped return is recorded in and out (K-003, K-004) | same, group 6 |
+| Shelf goods | Received by the piece against a product, with no heat (C-011) | same, group 2; security sweep section 20 |
+| Count and correct | Corrections with reason, note and person verified. No cycle count program exists (K-008) | same, group 6 |
+| Replenishment | A supply position per branch and grade (stock, inbound, demand). Nothing is calculated or ordered (K-010) | same, group 1 |
+
+Inventory valuation is not a workflow in the code: receiving writes no cost (K-007).
+
 ## Job types found
 
 Order types in the schema: RFQ, QUOTE, SO (sales order), PO, RETURN. PO is never used. Sales channels that create a sales order: order entry, quote acceptance, web store, counter quick sale, counter session flow, partner API. The order hub creates its own orders that are not sales orders (B-009).

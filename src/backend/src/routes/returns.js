@@ -23,9 +23,12 @@ import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
 import { positiveQty } from '../lib/workflowRules.js';
 import { lineAmount } from '../lib/billingRules.js';
 import { creditInvoice, BillingError } from '../services/billing.js';
+import { placeHold } from '../lib/holds.js';
+import { unitKey } from '../lib/reservationRules.js';
 
 const router = Router();
-const DISPOSITIONS = ['RESTOCK', 'SCRAP'];
+// RESTOCK: back on the shelf. INSPECT: back on the books but held until inspected (Phase 6). SCRAP: not restocked.
+const DISPOSITIONS = ['RESTOCK', 'INSPECT', 'SCRAP'];
 const num = (d) => Number(d || 0);
 const SERIALIZABLE = { isolationLevel: 'Serializable' };
 
@@ -37,7 +40,7 @@ const handle = (label, fn) => async (req, res) => {
   try {
     await fn(req, res);
   } catch (error) {
-    if (error instanceof Refuse || error instanceof BillingError) {
+    if (error instanceof Refuse || error instanceof BillingError || error?.refuse) {
       return res.status(error.status).json({ error: error.message });
     }
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The return has a field that is not valid' });
@@ -149,7 +152,7 @@ router.post('/', handle('create return', async (req, res) => {
         const qty = positiveQty(raw.quantity);
         if (qty === null) refuse(400, `Line ${i + 1}: quantity must be more than zero`);
         const disposition = String(raw.disposition || 'RESTOCK').toUpperCase();
-        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${i + 1}: disposition must be RESTOCK or SCRAP`);
+        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${i + 1}: disposition must be one of ${DISPOSITIONS.join(', ')}`);
         const open = num(line.qtyShipped) - (already.get(line.id) || 0);
         if (qty > open + 1e-9) {
           refuse(409, `Line ${line.lineNumber}: only ${Math.max(open, 0)} can be returned (shipped ${num(line.qtyShipped)}, already on returns ${already.get(line.id) || 0})`);
@@ -240,7 +243,7 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
       let disposition = line.returnDisposition;
       if (o.disposition) {
         disposition = String(o.disposition).toUpperCase();
-        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${line.lineNumber}: disposition must be RESTOCK or SCRAP`);
+        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${line.lineNumber}: disposition must be one of ${DISPOSITIONS.join(', ')}`);
       }
       let qty = num(line.qtyOrdered);
       if (o.qtyReceived != null) {
@@ -250,16 +253,29 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
       }
       const withCoil = o.coilId ? { ...line, notes: `coil:${o.coilId}` } : line;
       if (qty > 1e-9) {
-        if (disposition === 'RESTOCK') {
+        if (disposition === 'RESTOCK' || disposition === 'INSPECT') {
           const coilId = await restockTarget(tx, found, withCoil);
+          const stock = await tx.inventory.findUnique({ where: { coilId }, select: { unit: true, status: true, coil: { select: { coilNumber: true } } } });
+          // The quantity goes back in the unit the stock is counted in (Phase 6): 3 pieces are not 3 pounds.
+          if (unitKey(stock.unit) !== unitKey(line.unit)) {
+            refuse(409, `Line ${line.lineNumber}: the return is counted in ${line.unit} and stock item ${stock.coil.coilNumber} in ${stock.unit}. Receive it into a stock item counted in ${line.unit}, or scrap it.`);
+          }
+          if (stock.status === 'IN_TRANSIT') refuse(409, `Line ${line.lineNumber}: stock item ${stock.coil.coilNumber} is on its way to another branch. Name another stock item, or receive the return after the transfer arrives.`);
           const inv = await tx.inventory.update({
             where: { coilId },
             data: { qtyOnHand: { increment: qty }, qtyAvailable: { increment: qty }, lastMovement: new Date() },
           });
           await tx.materialMovement.create({
-            data: { coilId, movementType: 'RECEIVE', toLocationId: inv.locationId, qtyMoved: qty, unit: line.unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id },
+            data: { coilId, movementType: 'RECEIVE', toLocationId: inv.locationId, qtyMoved: qty, unit: inv.unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id },
           });
-          await tx.coil.updateMany({ where: { id: coilId, status: 'SHIPPED' }, data: { status: 'AVAILABLE' } });
+          await tx.coil.updateMany({ where: { id: coilId, status: { in: ['SHIPPED', 'CONSUMED'] } }, data: { status: 'AVAILABLE' } });
+          // INSPECT: back on the books, but held until someone has looked at it (Phase 6).
+          if (disposition === 'INSPECT') {
+            const now = await tx.coil.findUnique({ where: { id: coilId }, select: { status: true } });
+            const why = `Customer return ${found.orderNumber}, line ${line.lineNumber}: waiting for inspection. ${o.notes ? String(o.notes).slice(0, 300) : ''}`.trim();
+            if (now.status !== 'HOLD') await placeHold(tx, { coilId, holdType: 'PENDING_TEST', reason: why, userId: req.user.id });
+            else await tx.qCHold.create({ data: { coilId, holdType: 'PENDING_TEST', holdReason: why, holdById: req.user.id } });
+          }
         } else {
           const named = (withCoil.notes || '').match(/coil:([0-9a-f-]{36})/i)?.[1];
           const shipped = named ? null : await tx.materialMovement.findFirst({
@@ -267,9 +283,16 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
           });
           const coilId = named || shipped?.coilId;
           // The scrap record needs a stock item to hang on; with none, the return line itself is the record.
+          // It came back and it was scrapped: both are written, so the item's history still adds up to
+          // its balance (Phase 6). Writing only the scrap took weight off an item that never got it back.
           if (coilId) {
+            const at = await tx.inventory.findUnique({ where: { coilId }, select: { locationId: true, unit: true } });
+            const unit = at?.unit || line.unit;
             await tx.materialMovement.create({
-              data: { coilId, movementType: 'SCRAP', qtyMoved: qty, unit: line.unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id },
+              data: { coilId, movementType: 'RECEIVE', toLocationId: at?.locationId || null, qtyMoved: qty, unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: `${found.orderNumber}: returned for scrap`, createdById: req.user.id },
+            });
+            await tx.materialMovement.create({
+              data: { coilId, movementType: 'SCRAP', fromLocationId: at?.locationId || null, qtyMoved: qty, unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id },
             });
           }
         }

@@ -207,7 +207,9 @@ const navSections = [
   {
     title: 'Shipping & Logistics',
     items: [
+      { path: '/purchase-orders', label: 'Purchase Orders', icon: ReceivingIcon },
       { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
+      { path: '/transfers', label: 'Transfers', icon: ShippingIcon },
       { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
       { path: '/freight/planner', label: 'Shipment Planner', icon: LogisticsIcon },
       { path: '/freight/comparison', label: 'Freight Comparison', icon: FreightCompareIcon },

@@ -233,7 +233,7 @@ check('a sales login cannot void a counter sale', csrVoid.status === 403 && (awa
 await prisma.inventory.updateMany({ where: { locationId: csrHome, unit: 'EA', coil: { productId: gloves.id } }, data: { unit: 'EA-OLD' } });
 const loose = await sell(`P2-${run}-G`, gloves.id, 1);
 check('a product with no shelf stock on file still sells, and the answer says no stock was reduced', loose.status === 201 && /no stock was reduced/.test(loose.body.stockNote || ''), `${loose.status} ${JSON.stringify(loose.body).slice(0, 200)}`);
-const facts = await prisma.$queryRaw`SELECT count(*)::int AS n FROM "Inventory" WHERE abs("qtyOnHand" - ("qtyAvailable" + "qtyAllocated" + "qtyOnHold")) > 0.0001 OR "qtyOnHand" < 0`;
+const facts = await prisma.$queryRaw`SELECT count(*)::int AS n FROM "Inventory" WHERE abs("qtyOnHand" - ("qtyAvailable" + "qtyAllocated" + "qtyOnHold" + "qtyInTransit")) > 0.0001 OR "qtyOnHand" < 0`;
 check('stock still adds up everywhere', facts[0].n === 0, `${facts[0].n}`);
 
 // ── Work order: completed and cancelled at the same moment ──
@@ -251,18 +251,24 @@ for (let i = 0; i < 4; i++) {
 check('a work order completed and cancelled at the same moment: exactly one wins and the record matches the answer (4 rounds)', woBroken === 0, `${woBroken} rounds`);
 
 // ── Two transfers of the same stock item at once ──
-const mover = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyOnHand: { gt: 0 } } }, workOrderInputs: { none: {} } } });
+const mover = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, qtyOnHand: { gt: 0 } } }, workOrderInputs: { none: {} } } });
 const [toA, toB] = [L1, loc['QA-L02'], L4].filter((b) => b !== mover.locationId);
 const twoMoves = await Promise.all([A.post('/api/inventory/transfer', { coilId: mover.id, toLocationId: toA }), A.post('/api/inventory/transfer', { coilId: mover.id, toLocationId: toB })]);
+// Since Phase 6 a transfer ships the item and it is in transit until received, so only one of
+// two simultaneous transfers can be accepted; the other is told the item is already on its way.
+const accepted = twoMoves.filter((r) => r.status < 300);
+const openTransfers = await prisma.stockTransferLine.findMany({ where: { coilId: mover.id, transfer: { status: 'SHIPPED' } }, include: { transfer: true } });
+const winner = accepted[0]?.body?.transfer;
+if (winner) await A.post(`/api/inventory/transfers/${winner.id}/receive`, {});
 const trail = await prisma.materialMovement.findMany({ where: { coilId: mover.id, movementType: 'TRANSFER', createdAt: { gte: testStart } }, orderBy: { createdAt: 'asc' } });
 const moverNow = await prisma.coil.findUnique({ where: { id: mover.id }, include: { inventory: true } });
-check('two transfers of one stock item at once: each accepted transfer is recorded, in order, and the item is where the last one put it',
-  twoMoves.every((r) => [200, 201, 409].includes(r.status)) && trail.length === twoMoves.filter((r) => r.status < 300).length && trail.length >= 1
-  && trail.every((m, k) => m.fromLocationId === (k === 0 ? mover.locationId : trail[k - 1].toLocationId)) && moverNow.locationId === trail[trail.length - 1].toLocationId && moverNow.inventory.locationId === moverNow.locationId,
-  `${twoMoves.map((r) => r.status)} ${trail.length} movements`);
+check('two transfers of one stock item at once: exactly one is accepted, it is the only open transfer, and once received the item is where it sent it',
+  accepted.length === 1 && twoMoves.every((r) => [201, 409].includes(r.status)) && openTransfers.length === 1 && openTransfers[0].transfer.id === winner?.id
+  && trail.length === 1 && trail[0].fromLocationId === mover.locationId && trail[0].toLocationId === winner?.toLocationId && moverNow.locationId === winner?.toLocationId && moverNow.inventory.locationId === moverNow.locationId && Number(moverNow.inventory.qtyInTransit) === 0,
+  `${twoMoves.map((r) => r.status)} ${openTransfers.length} open ${trail.length} movements`);
 
 // ── Two holds on the same stock item at once ──
-const held = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', id: { not: mover.id }, inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyOnHand: { gt: 0 } } } }, include: { inventory: true } });
+const held = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', id: { not: mover.id }, inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, qtyOnHand: { gt: 0 } } } }, include: { inventory: true } });
 const holds = await Promise.all([1, 2, 3].map((n) => A.post(`/api/coils/${held.id}/hold`, { holdType: 'OTHER', holdReason: `QA phase 2 hold ${n}` })));
 const heldNow = await prisma.inventory.findUnique({ where: { coilId: held.id } });
 check('three holds on one stock item at once: the quantity is held once and the balance adds up',

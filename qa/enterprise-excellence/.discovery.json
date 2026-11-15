@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-15T09:22:11.038Z",
+ "generated": "2026-11-15T18:30:35.704Z",
  "commit": "ref: refs/heads/claude/project-thread-25z3jd",
  "schema": {
   "models": [
@@ -536,14 +536,14 @@
      {
       "field": "gradeId",
       "to": "Grade",
-      "onDelete": "default",
-      "optional": false
+      "onDelete": "Restrict",
+      "optional": true
      },
      {
       "field": "heatId",
       "to": "Heat",
-      "onDelete": "default",
-      "optional": false
+      "onDelete": "Restrict",
+      "optional": true
      },
      {
       "field": "locationId",
@@ -658,7 +658,7 @@
    {
     "name": "Inventory",
     "table": "Inventory",
-    "fields": 16,
+    "fields": 17,
     "fk": [
      {
       "field": "coilId",
@@ -695,7 +695,8 @@
      "qtyOnHand:Decimal",
      "qtyAvailable:Decimal",
      "qtyAllocated:Decimal",
-     "qtyOnHold:Decimal"
+     "qtyOnHold:Decimal",
+     "qtyInTransit:Decimal"
     ],
     "floats": [],
     "audit": {
@@ -707,8 +708,14 @@
    {
     "name": "MaterialMovement",
     "table": "MaterialMovement",
-    "fields": 14,
+    "fields": 15,
     "fk": [
+     {
+      "field": "orderLineId",
+      "to": "OrderLine",
+      "onDelete": "SetNull",
+      "optional": true
+     },
      {
       "field": "coilId",
       "to": "Coil",
@@ -758,6 +765,7 @@
      "createdById",
      "fromLocationId",
      "orderId",
+     "orderLineId",
      "shipmentId",
      "toLocationId",
      "workOrderId"
@@ -5694,6 +5702,97 @@
      "updatedAt": false,
      "createdBy": false
     }
+   },
+   {
+    "name": "StockTransfer",
+    "table": "StockTransfer",
+    "fields": 18,
+    "fk": [
+     {
+      "field": "fromLocationId",
+      "to": "Location",
+      "onDelete": "default",
+      "optional": false
+     },
+     {
+      "field": "toLocationId",
+      "to": "Location",
+      "onDelete": "default",
+      "optional": false
+     },
+     {
+      "field": "createdById",
+      "to": "User",
+      "onDelete": "default",
+      "optional": false
+     }
+    ],
+    "unique": [
+     "transferNumber"
+    ],
+    "indexes": [
+     "fromLocationId,status",
+     "toLocationId,status",
+     "createdById"
+    ],
+    "status": null,
+    "scope": {
+     "organization": false,
+     "location": true,
+     "division": false,
+     "customer": false
+    },
+    "money": [],
+    "quantity": [],
+    "floats": [],
+    "audit": {
+     "createdAt": true,
+     "updatedAt": true,
+     "createdBy": true
+    }
+   },
+   {
+    "name": "StockTransferLine",
+    "table": "StockTransferLine",
+    "fields": 9,
+    "fk": [
+     {
+      "field": "transferId",
+      "to": "StockTransfer",
+      "onDelete": "default",
+      "optional": false
+     },
+     {
+      "field": "coilId",
+      "to": "Coil",
+      "onDelete": "default",
+      "optional": false
+     }
+    ],
+    "unique": [
+     "transferId,coilId"
+    ],
+    "indexes": [
+     "coilId"
+    ],
+    "status": null,
+    "scope": {
+     "organization": false,
+     "location": false,
+     "division": false,
+     "customer": false
+    },
+    "money": [],
+    "quantity": [
+     "qtyShipped:Decimal",
+     "qtyReceived:Decimal?"
+    ],
+    "floats": [],
+    "audit": {
+     "createdAt": true,
+     "updatedAt": false,
+     "createdBy": false
+    }
    }
   ],
   "enums": {
@@ -6749,6 +6848,15 @@
     "alters": 0,
     "checks": 0,
     "indexes": 0
+   },
+   {
+    "name": "20261115200000_stock_transfers_po_receipts_piece_stock",
+    "lines": 103,
+    "creates": 2,
+    "drops": 1,
+    "alters": 17,
+    "checks": 6,
+    "indexes": 7
    }
   ],
   "sqlEditor": [
@@ -6780,6 +6888,7 @@
    "src/backend/prisma/upgrades/sql-editor/20261113220000_document_counters.sql",
    "src/backend/prisma/upgrades/sql-editor/20261113230000_webhook_delivery_once.sql",
    "src/backend/prisma/upgrades/sql-editor/20261115090000_voided_counter_sales_cancelled.sql",
+   "src/backend/prisma/upgrades/sql-editor/20261115200000_stock_transfers_po_receipts_piece_stock.sql",
    "src/backend/prisma/upgrades/sql-editor/fix-rls-app-access.sql",
    "src/backend/prisma/upgrades/supabase-sql-editor-upgrade.sql"
   ],
@@ -6787,6 +6896,30 @@
    {
     "name": "DocumentCounter_lastNumber_check",
     "rule": "\"lastNumber\" >= 0"
+   },
+   {
+    "name": "StockTransfer_branches_differ",
+    "rule": "\"fromLocationId\" <> \"toLocationId\""
+   },
+   {
+    "name": "StockTransfer_status_known",
+    "rule": "\"status\" IN ('SHIPPED', 'RECEIVED', 'CANCELLED')"
+   },
+   {
+    "name": "StockTransferLine_quantities",
+    "rule": "\"qtyShipped\" > 0 AND (\"qtyReceived\" IS NULL OR \"qtyReceived\" >= 0)"
+   },
+   {
+    "name": "Inventory_qtyInTransit_not_negative",
+    "rule": "\"qtyInTransit\" >= 0"
+   },
+   {
+    "name": "Inventory_balance_identity",
+    "rule": "abs(\"qtyOnHand\" - (\"qtyAvailable\" + \"qtyAllocated\" + \"qtyOnHold\" + \"qtyInTransit\")) <= 0.0001"
+   },
+   {
+    "name": "Coil_heat_and_grade_unless_supply",
+    "rule": "\"form\" = 'SUPPLY' OR (\"heatId\" IS NOT NULL AND \"gradeId\" IS NOT NULL)"
    }
   ],
   "dbViews": [],
@@ -6800,6 +6933,17 @@
    "UV",
    "DispatchJob",
    "Job",
+   "Coil",
+   "StockTransferLine",
+   "StockTransfer",
+   "OrderLineAllocation",
+   "stock",
+   "po",
+   "inbound",
+   "demand",
+   "keys",
+   "Location",
+   "Grade",
    "pg_tables",
    "DocumentCounter",
    "SET"
@@ -6900,6 +7044,11 @@
    {
     "prefix": "/api/orders",
     "file": "src/backend/src/routes/orders.js",
+    "router": "default"
+   },
+   {
+    "prefix": "/api/purchase-orders",
+    "file": "src/backend/src/routes/purchaseOrders.js",
     "router": "default"
    },
    {
@@ -8341,7 +8490,7 @@
     "mock": 1
    },
    "src/backend/src/routes/coils.js": {
-    "lines": 282,
+    "lines": 262,
     "routers": [
      "router"
     ],
@@ -8510,14 +8659,12 @@
       "method": "POST",
       "path": "/:id/hold",
       "line": 224,
-      "lines": 23,
+      "lines": 13,
       "guards": [],
       "models": [
-       "Coil",
-       "Inventory",
-       "QCHold"
+       "Coil"
       ],
-      "writes": 3,
+      "writes": 0,
       "transaction": true,
       "findMany": 0,
       "bounded": 0,
@@ -8536,16 +8683,13 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/release",
-      "line": 246,
-      "lines": 21,
+      "line": 236,
+      "lines": 11,
       "guards": [],
       "models": [
-       "Coil",
-       "OrderLineAllocation",
-       "Inventory",
-       "QCHold"
+       "Coil"
       ],
-      "writes": 3,
+      "writes": 0,
       "transaction": true,
       "findMany": 0,
       "bounded": 0,
@@ -8565,7 +8709,8 @@
      "src/backend/src/lib/db.js",
      "src/backend/src/lib/dbText.js",
      "src/backend/src/lib/roleAccess.js",
-     "src/backend/src/services/intakeCatalogService.js"
+     "src/backend/src/services/intakeCatalogService.js",
+     "src/backend/src/lib/holds.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -12441,7 +12586,7 @@
     "mock": 0
    },
    "src/backend/src/routes/inventory.js": {
-    "lines": 327,
+    "lines": 417,
     "routers": [
      "router"
     ],
@@ -12450,7 +12595,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 24,
+      "line": 25,
       "lines": 29,
       "guards": [],
       "models": [
@@ -12475,7 +12620,7 @@
       "router": "router",
       "method": "GET",
       "path": "/search",
-      "line": 52,
+      "line": 53,
       "lines": 18,
       "guards": [],
       "models": [],
@@ -12498,7 +12643,7 @@
       "router": "router",
       "method": "GET",
       "path": "/summary",
-      "line": 69,
+      "line": 70,
       "lines": 20,
       "guards": [],
       "models": [
@@ -12523,14 +12668,15 @@
       "router": "router",
       "method": "POST",
       "path": "/receive",
-      "line": 88,
-      "lines": 34,
+      "line": 89,
+      "lines": 57,
       "guards": [],
       "models": [
        "Coil",
        "Location",
        "Inventory",
-       "MaterialMovement"
+       "MaterialMovement",
+       "StockTransfer"
       ],
       "writes": 2,
       "transaction": true,
@@ -12551,16 +12697,134 @@
       "router": "router",
       "method": "POST",
       "path": "/transfer",
-      "line": 121,
-      "lines": 43,
+      "line": 145,
+      "lines": 26,
       "guards": [],
       "models": [
-       "Inventory",
-       "Location",
-       "Coil",
-       "MaterialMovement"
+       "Inventory"
       ],
-      "writes": 3,
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": true,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "GET",
+      "path": "/transfers",
+      "line": 170,
+      "lines": 21,
+      "guards": [],
+      "models": [
+       "StockTransfer"
+      ],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 1,
+      "bounded": 2,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "GET",
+      "path": "/transfers/:id",
+      "line": 190,
+      "lines": 11,
+      "guards": [],
+      "models": [
+       "StockTransfer"
+      ],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
+      "path": "/transfers",
+      "line": 200,
+      "lines": 10,
+      "guards": [],
+      "models": [],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
+      "path": "/transfers/:id/receive",
+      "line": 209,
+      "lines": 11,
+      "guards": [],
+      "models": [
+       "StockTransfer"
+      ],
+      "writes": 0,
+      "transaction": true,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": true,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
+      "path": "/transfers/:id/settle",
+      "line": 219,
+      "lines": 13,
+      "guards": [],
+      "models": [],
+      "writes": 0,
       "transaction": true,
       "findMany": 0,
       "bounded": 0,
@@ -12578,8 +12842,33 @@
      {
       "router": "router",
       "method": "POST",
+      "path": "/transfers/:id/cancel",
+      "line": 231,
+      "lines": 12,
+      "guards": [],
+      "models": [
+       "StockTransfer"
+      ],
+      "writes": 0,
+      "transaction": true,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": true,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
       "path": "/adjust",
-      "line": 163,
+      "line": 242,
       "lines": 33,
       "guards": [],
       "models": [
@@ -12604,7 +12893,7 @@
       "router": "router",
       "method": "GET",
       "path": "/locations",
-      "line": 195,
+      "line": 274,
       "lines": 16,
       "guards": [],
       "models": [
@@ -12629,8 +12918,8 @@
       "router": "router",
       "method": "POST",
       "path": "/receipts",
-      "line": 210,
-      "lines": 12,
+      "line": 289,
+      "lines": 17,
       "guards": [],
       "models": [],
       "writes": 0,
@@ -12652,7 +12941,7 @@
       "router": "router",
       "method": "GET",
       "path": "/receipts",
-      "line": 221,
+      "line": 305,
       "lines": 12,
       "guards": [],
       "models": [],
@@ -12675,7 +12964,7 @@
       "router": "router",
       "method": "POST",
       "path": "/bulk-upload",
-      "line": 232,
+      "line": 316,
       "lines": 37,
       "guards": [],
       "models": [],
@@ -12698,7 +12987,7 @@
       "router": "router",
       "method": "GET",
       "path": "/templates/:type",
-      "line": 268,
+      "line": 352,
       "lines": 50,
       "guards": [],
       "models": [],
@@ -12729,7 +13018,8 @@
      "src/backend/src/lib/receiving.js",
      "src/backend/src/lib/receivingRules.js",
      "src/backend/src/lib/stockChanges.js",
-     "src/backend/src/lib/numbering.js"
+     "src/backend/src/lib/numbering.js",
+     "src/backend/src/lib/transfers.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -12737,16 +13027,108 @@
     "mock": 0
    },
    "src/backend/src/routes/inventoryV1.js": {
-    "lines": 864,
+    "lines": 876,
     "routers": [
      "router"
     ],
     "endpoints": [
      {
       "router": "router",
+      "method": "POST",
+      "path": "/adjust",
+      "line": 17,
+      "lines": 2,
+      "guards": [],
+      "models": [],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": false,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
+      "path": "/rfid-scan",
+      "line": 18,
+      "lines": 2,
+      "guards": [],
+      "models": [],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": false,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
+      "path": "/transfers",
+      "line": 19,
+      "lines": 2,
+      "guards": [],
+      "models": [],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": false,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
+      "path": "/transfers/:id/status",
+      "line": 20,
+      "lines": 34,
+      "guards": [],
+      "models": [],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": false,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 42,
+      "line": 53,
       "lines": 49,
       "guards": [],
       "models": [],
@@ -12769,7 +13151,7 @@
       "router": "router",
       "method": "GET",
       "path": "/locations",
-      "line": 90,
+      "line": 101,
       "lines": 10,
       "guards": [],
       "models": [],
@@ -12792,7 +13174,7 @@
       "router": "router",
       "method": "GET",
       "path": "/catalog",
-      "line": 99,
+      "line": 110,
       "lines": 10,
       "guards": [],
       "models": [],
@@ -12815,7 +13197,7 @@
       "router": "router",
       "method": "GET",
       "path": "/summary",
-      "line": 108,
+      "line": 119,
       "lines": 48,
       "guards": [],
       "models": [],
@@ -12838,7 +13220,7 @@
       "router": "router",
       "method": "GET",
       "path": "/transfers",
-      "line": 155,
+      "line": 166,
       "lines": 24,
       "guards": [],
       "models": [],
@@ -12861,7 +13243,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 178,
+      "line": 189,
       "lines": 34,
       "guards": [],
       "models": [],
@@ -12884,7 +13266,7 @@
       "router": "router",
       "method": "POST",
       "path": "/adjust",
-      "line": 211,
+      "line": 222,
       "lines": 52,
       "guards": [],
       "models": [],
@@ -12907,7 +13289,7 @@
       "router": "router",
       "method": "POST",
       "path": "/rfid-scan",
-      "line": 262,
+      "line": 273,
       "lines": 52,
       "guards": [],
       "models": [],
@@ -12930,7 +13312,7 @@
       "router": "router",
       "method": "GET",
       "path": "/rfid/:rfidTagId",
-      "line": 313,
+      "line": 324,
       "lines": 46,
       "guards": [],
       "models": [],
@@ -12953,7 +13335,7 @@
       "router": "router",
       "method": "GET",
       "path": "/etched/:etchedId",
-      "line": 358,
+      "line": 369,
       "lines": 45,
       "guards": [],
       "models": [],
@@ -12976,7 +13358,7 @@
       "router": "router",
       "method": "POST",
       "path": "/transfers",
-      "line": 402,
+      "line": 413,
       "lines": 47,
       "guards": [],
       "models": [],
@@ -12999,7 +13381,7 @@
       "router": "router",
       "method": "POST",
       "path": "/transfers/:id/status",
-      "line": 448,
+      "line": 459,
       "lines": 82,
       "guards": [],
       "models": [],
@@ -13022,7 +13404,7 @@
       "router": "router",
       "method": "POST",
       "path": "/ai-assistant",
-      "line": 529,
+      "line": 540,
       "lines": 294,
       "guards": [],
       "models": [],
@@ -15348,7 +15730,7 @@
     "mock": 0
    },
    "src/backend/src/routes/orders.js": {
-    "lines": 439,
+    "lines": 458,
     "routers": [
      "router"
     ],
@@ -15357,7 +15739,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 133,
+      "line": 134,
       "lines": 37,
       "guards": [],
       "models": [
@@ -15383,7 +15765,7 @@
       "router": "router",
       "method": "GET",
       "path": "/credit-holds",
-      "line": 169,
+      "line": 170,
       "lines": 25,
       "guards": [],
       "models": [
@@ -15408,7 +15790,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/credit-release",
-      "line": 193,
+      "line": 194,
       "lines": 14,
       "guards": [],
       "models": [],
@@ -15431,7 +15813,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 206,
+      "line": 207,
       "lines": 22,
       "guards": [],
       "models": [
@@ -15456,7 +15838,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 227,
+      "line": 228,
       "lines": 68,
       "guards": [],
       "models": [
@@ -15484,7 +15866,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 294,
+      "line": 295,
       "lines": 84,
       "guards": [],
       "models": [
@@ -15511,12 +15893,13 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/allocate",
-      "line": 377,
-      "lines": 49,
+      "line": 378,
+      "lines": 67,
       "guards": [],
       "models": [
        "OrderLine",
        "Coil",
+       "User",
        "Inventory",
        "OrderLineAllocation",
        "AuditLog"
@@ -15544,7 +15927,8 @@
      "src/backend/src/lib/roleAccess.js",
      "src/backend/src/lib/db.js",
      "src/backend/src/lib/numbering.js",
-     "src/backend/src/lib/workflowRules.js"
+     "src/backend/src/lib/workflowRules.js",
+     "src/backend/src/lib/reservationRules.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -19416,6 +19800,125 @@
     "todo": 0,
     "mock": 0
    },
+   "src/backend/src/routes/purchaseOrders.js": {
+    "lines": 164,
+    "routers": [
+     "router"
+    ],
+    "endpoints": [
+     {
+      "router": "router",
+      "method": "GET",
+      "path": "/suppliers",
+      "line": 10,
+      "lines": 15,
+      "guards": [],
+      "models": [
+       "Organization"
+      ],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 1,
+      "bounded": 1,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "GET",
+      "path": "/supply-position",
+      "line": 24,
+      "lines": 57,
+      "guards": [],
+      "models": [
+       "Location"
+      ],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": true,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "GET",
+      "path": "/:id",
+      "line": 80,
+      "lines": 22,
+      "guards": [],
+      "models": [
+       "Order"
+      ],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "PUT",
+      "path": "/:id",
+      "line": 101,
+      "lines": 42,
+      "guards": [],
+      "models": [
+       "Order",
+       "OrderLine",
+       "AuditLog"
+      ],
+      "writes": 3,
+      "transaction": true,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": true,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": true,
+      "inMemory": false
+     }
+    ],
+    "imports": [
+     "src/backend/src/lib/db.js",
+     "src/backend/src/routes/orders.js",
+     "src/backend/src/lib/branchScope.js"
+    ],
+    "moduleLevelState": [],
+    "usesPrisma": true,
+    "todo": 0,
+    "mock": 0
+   },
    "src/backend/src/routes/qcRoutes.js": {
     "lines": 530,
     "routers": [
@@ -20367,7 +20870,7 @@
     "mock": 0
    },
    "src/backend/src/routes/returns.js": {
-    "lines": 307,
+    "lines": 330,
     "routers": [
      "router"
     ],
@@ -20376,7 +20879,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 66,
+      "line": 69,
       "lines": 20,
       "guards": [],
       "models": [
@@ -20401,7 +20904,7 @@
       "router": "router",
       "method": "GET",
       "path": "/eligible",
-      "line": 85,
+      "line": 88,
       "lines": 20,
       "guards": [],
       "models": [
@@ -20426,7 +20929,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 104,
+      "line": 107,
       "lines": 7,
       "guards": [],
       "models": [
@@ -20451,7 +20954,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 110,
+      "line": 113,
       "lines": 101,
       "guards": [],
       "models": [
@@ -20479,17 +20982,18 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/receive",
-      "line": 210,
-      "lines": 68,
+      "line": 213,
+      "lines": 88,
       "guards": [],
       "models": [
        "Order",
        "Inventory",
        "MaterialMovement",
        "Coil",
+       "QCHold",
        "OrderLine"
       ],
-      "writes": 6,
+      "writes": 8,
       "transaction": true,
       "findMany": 0,
       "bounded": 0,
@@ -20508,7 +21012,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/cancel",
-      "line": 277,
+      "line": 300,
       "lines": 13,
       "guards": [],
       "models": [
@@ -20535,7 +21039,9 @@
      "src/backend/src/lib/numbering.js",
      "src/backend/src/lib/workflowRules.js",
      "src/backend/src/lib/billingRules.js",
-     "src/backend/src/services/billing.js"
+     "src/backend/src/services/billing.js",
+     "src/backend/src/lib/holds.js",
+     "src/backend/src/lib/reservationRules.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -20889,7 +21395,7 @@
     "mock": 0
    },
    "src/backend/src/routes/shipments.js": {
-    "lines": 487,
+    "lines": 490,
     "routers": [
      "router"
     ],
@@ -21080,7 +21586,7 @@
       "method": "DELETE",
       "path": "/:id/items/:itemId",
       "line": 238,
-      "lines": 201,
+      "lines": 204,
       "guards": [],
       "models": [
        "ShipmentItem",
@@ -21114,7 +21620,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/dispatch",
-      "line": 438,
+      "line": 441,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -21137,7 +21643,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/deliver",
-      "line": 442,
+      "line": 445,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -21160,7 +21666,7 @@
       "router": "router",
       "method": "PATCH",
       "path": "/:id/status",
-      "line": 446,
+      "line": 449,
       "lines": 9,
       "guards": [],
       "models": [],
@@ -22998,7 +23504,7 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 149,
+     "ok": 165,
      "refused": 2,
      "error": 0
     }
@@ -23098,8 +23604,8 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 414,
-     "refused": 4,
+     "ok": 376,
+     "refused": 2,
      "error": 0
     }
    },
@@ -23601,7 +24107,7 @@
     "file": "src/backend/src/routes/grades.js",
     "mount": "/api/grades",
     "exercised": {
-     "ok": 13,
+     "ok": 14,
      "refused": 3,
      "error": 0
     }
@@ -23939,7 +24445,7 @@
     "file": "src/backend/src/routes/heats.js",
     "mount": "/api/heats",
     "exercised": {
-     "ok": 12,
+     "ok": 13,
      "refused": 5,
      "error": 0
     }
@@ -24144,7 +24650,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 18,
+     "ok": 19,
      "refused": 5,
      "error": 0
     }
@@ -24212,7 +24718,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 8,
+     "ok": 13,
      "refused": 12,
      "error": 0
     }
@@ -24249,7 +24755,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 5,
+     "ok": 8,
      "refused": 9,
      "error": 0
     }
@@ -24323,7 +24829,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 1,
+     "ok": 2,
      "refused": 6,
      "error": 0
     }
@@ -24333,14 +24839,12 @@
     "method": "POST",
     "path": "/:id/hold",
     "line": 224,
-    "lines": 23,
+    "lines": 13,
     "guards": [],
     "models": [
-     "Coil",
-     "Inventory",
-     "QCHold"
+     "Coil"
     ],
-    "writes": 3,
+    "writes": 0,
     "transaction": true,
     "findMany": 0,
     "bounded": 0,
@@ -24359,8 +24863,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 6,
-     "refused": 10,
+     "ok": 15,
+     "refused": 15,
      "error": 0
     }
    },
@@ -24368,16 +24872,13 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/release",
-    "line": 246,
-    "lines": 21,
+    "line": 236,
+    "lines": 11,
     "guards": [],
     "models": [
-     "Coil",
-     "OrderLineAllocation",
-     "Inventory",
-     "QCHold"
+     "Coil"
     ],
-    "writes": 3,
+    "writes": 0,
     "transaction": true,
     "findMany": 0,
     "bounded": 0,
@@ -24396,8 +24897,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 4,
-     "refused": 3,
+     "ok": 8,
+     "refused": 4,
      "error": 0
     }
    },
@@ -24405,7 +24906,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 24,
+    "line": 25,
     "lines": 29,
     "guards": [],
     "models": [
@@ -24430,7 +24931,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 27,
+     "ok": 22,
      "refused": 4,
      "error": 0
     }
@@ -24439,7 +24940,7 @@
     "router": "router",
     "method": "GET",
     "path": "/search",
-    "line": 52,
+    "line": 53,
     "lines": 18,
     "guards": [],
     "models": [],
@@ -24471,7 +24972,7 @@
     "router": "router",
     "method": "GET",
     "path": "/summary",
-    "line": 69,
+    "line": 70,
     "lines": 20,
     "guards": [],
     "models": [
@@ -24505,14 +25006,15 @@
     "router": "router",
     "method": "POST",
     "path": "/receive",
-    "line": 88,
-    "lines": 34,
+    "line": 89,
+    "lines": 57,
     "guards": [],
     "models": [
      "Coil",
      "Location",
      "Inventory",
-     "MaterialMovement"
+     "MaterialMovement",
+     "StockTransfer"
     ],
     "writes": 2,
     "transaction": true,
@@ -24542,16 +25044,179 @@
     "router": "router",
     "method": "POST",
     "path": "/transfer",
-    "line": 121,
-    "lines": 43,
+    "line": 145,
+    "lines": 26,
     "guards": [],
     "models": [
-     "Inventory",
-     "Location",
-     "Coil",
-     "MaterialMovement"
+     "Inventory"
     ],
-    "writes": 3,
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": true,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/inventory/transfer",
+    "key": "POST /api/inventory/transfer",
+    "file": "src/backend/src/routes/inventory.js",
+    "mount": "/api/inventory",
+    "exercised": {
+     "ok": 22,
+     "refused": 27,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "GET",
+    "path": "/transfers",
+    "line": 170,
+    "lines": 21,
+    "guards": [],
+    "models": [
+     "StockTransfer"
+    ],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 1,
+    "bounded": 2,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/inventory/transfers",
+    "key": "GET /api/inventory/transfers",
+    "file": "src/backend/src/routes/inventory.js",
+    "mount": "/api/inventory",
+    "exercised": {
+     "ok": 7,
+     "refused": 4,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "GET",
+    "path": "/transfers/:id",
+    "line": 190,
+    "lines": 11,
+    "guards": [],
+    "models": [
+     "StockTransfer"
+    ],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/inventory/transfers/:id",
+    "key": "GET /api/inventory/transfers/:id",
+    "file": "src/backend/src/routes/inventory.js",
+    "mount": "/api/inventory",
+    "exercised": {
+     "ok": 1,
+     "refused": 7,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/transfers",
+    "line": 200,
+    "lines": 10,
+    "guards": [],
+    "models": [],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/inventory/transfers",
+    "key": "POST /api/inventory/transfers",
+    "file": "src/backend/src/routes/inventory.js",
+    "mount": "/api/inventory",
+    "exercised": {
+     "ok": 41,
+     "refused": 11,
+     "error": 1
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/transfers/:id/receive",
+    "line": 209,
+    "lines": 11,
+    "guards": [],
+    "models": [
+     "StockTransfer"
+    ],
+    "writes": 0,
+    "transaction": true,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": true,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/inventory/transfers/:id/receive",
+    "key": "POST /api/inventory/transfers/:id/receive",
+    "file": "src/backend/src/routes/inventory.js",
+    "mount": "/api/inventory",
+    "exercised": {
+     "ok": 36,
+     "refused": 13,
+     "error": 1
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/transfers/:id/settle",
+    "line": 219,
+    "lines": 13,
+    "guards": [],
+    "models": [],
+    "writes": 0,
     "transaction": true,
     "findMany": 0,
     "bounded": 0,
@@ -24565,13 +25230,47 @@
     "scopesCustomer": false,
     "audit": false,
     "inMemory": false,
-    "full": "/api/inventory/transfer",
-    "key": "POST /api/inventory/transfer",
+    "full": "/api/inventory/transfers/:id/settle",
+    "key": "POST /api/inventory/transfers/:id/settle",
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 22,
-     "refused": 24,
+     "ok": 4,
+     "refused": 6,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/transfers/:id/cancel",
+    "line": 231,
+    "lines": 12,
+    "guards": [],
+    "models": [
+     "StockTransfer"
+    ],
+    "writes": 0,
+    "transaction": true,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": true,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/inventory/transfers/:id/cancel",
+    "key": "POST /api/inventory/transfers/:id/cancel",
+    "file": "src/backend/src/routes/inventory.js",
+    "mount": "/api/inventory",
+    "exercised": {
+     "ok": 25,
+     "refused": 6,
      "error": 0
     }
    },
@@ -24579,7 +25278,7 @@
     "router": "router",
     "method": "POST",
     "path": "/adjust",
-    "line": 163,
+    "line": 242,
     "lines": 33,
     "guards": [],
     "models": [
@@ -24604,8 +25303,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 11,
-     "refused": 23,
+     "ok": 18,
+     "refused": 41,
      "error": 0
     }
    },
@@ -24613,7 +25312,7 @@
     "router": "router",
     "method": "GET",
     "path": "/locations",
-    "line": 195,
+    "line": 274,
     "lines": 16,
     "guards": [],
     "models": [
@@ -24647,8 +25346,8 @@
     "router": "router",
     "method": "POST",
     "path": "/receipts",
-    "line": 210,
-    "lines": 12,
+    "line": 289,
+    "lines": 17,
     "guards": [],
     "models": [],
     "writes": 0,
@@ -24670,8 +25369,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 146,
-     "refused": 25,
+     "ok": 264,
+     "refused": 53,
      "error": 0
     }
    },
@@ -24679,7 +25378,7 @@
     "router": "router",
     "method": "GET",
     "path": "/receipts",
-    "line": 221,
+    "line": 305,
     "lines": 12,
     "guards": [],
     "models": [],
@@ -24702,7 +25401,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 8,
+     "ok": 12,
      "refused": 3,
      "error": 0
     }
@@ -24711,7 +25410,7 @@
     "router": "router",
     "method": "POST",
     "path": "/bulk-upload",
-    "line": 232,
+    "line": 316,
     "lines": 37,
     "guards": [],
     "models": [],
@@ -24734,7 +25433,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 4,
+     "ok": 6,
      "refused": 11,
      "error": 0
     }
@@ -24743,7 +25442,7 @@
     "router": "router",
     "method": "GET",
     "path": "/templates/:type",
-    "line": 268,
+    "line": 352,
     "lines": 50,
     "guards": [],
     "models": [],
@@ -24835,7 +25534,7 @@
     "file": "src/backend/src/routes/intakeOrders.js",
     "mount": "/api/orders/intake",
     "exercised": {
-     "ok": 11,
+     "ok": 9,
      "refused": 4,
      "error": 0
     }
@@ -25215,7 +25914,7 @@
     "file": "src/backend/src/routes/remnants.js",
     "mount": "/api/remnants",
     "exercised": {
-     "ok": 8,
+     "ok": 9,
      "refused": 2,
      "error": 0
     }
@@ -25439,7 +26138,7 @@
     "file": "src/backend/src/routes/remnants.js",
     "mount": "/api/remnants",
     "exercised": {
-     "ok": 0,
+     "ok": 1,
      "refused": 1,
      "error": 0
     }
@@ -25471,7 +26170,7 @@
     "file": "src/backend/src/routes/remnants.js",
     "mount": "/api/remnants",
     "exercised": {
-     "ok": 0,
+     "ok": 1,
      "refused": 1,
      "error": 0
     }
@@ -25536,7 +26235,7 @@
     "mount": "/api/ecom/my-orders",
     "exercised": {
      "ok": 0,
-     "refused": 16,
+     "refused": 17,
      "error": 0
     }
    },
@@ -25567,7 +26266,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/ecom/my-orders",
     "exercised": {
-     "ok": 4,
+     "ok": 5,
      "refused": 2,
      "error": 0
     }
@@ -25983,7 +26682,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 8,
+     "ok": 9,
      "refused": 4,
      "error": 0
     }
@@ -26079,7 +26778,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 2,
+     "ok": 3,
      "refused": 4,
      "error": 0
     }
@@ -27150,7 +27849,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 133,
+    "line": 134,
     "lines": 37,
     "guards": [],
     "models": [
@@ -27185,7 +27884,7 @@
     "router": "router",
     "method": "GET",
     "path": "/credit-holds",
-    "line": 169,
+    "line": 170,
     "lines": 25,
     "guards": [],
     "models": [
@@ -27219,7 +27918,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/credit-release",
-    "line": 193,
+    "line": 194,
     "lines": 14,
     "guards": [],
     "models": [],
@@ -27251,7 +27950,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 206,
+    "line": 207,
     "lines": 22,
     "guards": [],
     "models": [
@@ -27285,7 +27984,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 227,
+    "line": 228,
     "lines": 68,
     "guards": [],
     "models": [
@@ -27313,7 +28012,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 428,
+     "ok": 451,
      "refused": 53,
      "error": 0
     }
@@ -27322,7 +28021,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 294,
+    "line": 295,
     "lines": 84,
     "guards": [],
     "models": [
@@ -27349,7 +28048,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 310,
+     "ok": 334,
      "refused": 29,
      "error": 0
     }
@@ -27358,12 +28057,13 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/allocate",
-    "line": 377,
-    "lines": 49,
+    "line": 378,
+    "lines": 67,
     "guards": [],
     "models": [
      "OrderLine",
      "Coil",
+     "User",
      "Inventory",
      "OrderLineAllocation",
      "AuditLog"
@@ -27387,8 +28087,146 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 243,
-     "refused": 41,
+     "ok": 255,
+     "refused": 62,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "GET",
+    "path": "/suppliers",
+    "line": 10,
+    "lines": 15,
+    "guards": [],
+    "models": [
+     "Organization"
+    ],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 1,
+    "bounded": 1,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/purchase-orders/suppliers",
+    "key": "GET /api/purchase-orders/suppliers",
+    "file": "src/backend/src/routes/purchaseOrders.js",
+    "mount": "/api/purchase-orders",
+    "exercised": {
+     "ok": 1,
+     "refused": 0,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "GET",
+    "path": "/supply-position",
+    "line": 24,
+    "lines": 57,
+    "guards": [],
+    "models": [
+     "Location"
+    ],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": true,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/purchase-orders/supply-position",
+    "key": "GET /api/purchase-orders/supply-position",
+    "file": "src/backend/src/routes/purchaseOrders.js",
+    "mount": "/api/purchase-orders",
+    "exercised": {
+     "ok": 6,
+     "refused": 3,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "GET",
+    "path": "/:id",
+    "line": 80,
+    "lines": 22,
+    "guards": [],
+    "models": [
+     "Order"
+    ],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/purchase-orders/:id",
+    "key": "GET /api/purchase-orders/:id",
+    "file": "src/backend/src/routes/purchaseOrders.js",
+    "mount": "/api/purchase-orders",
+    "exercised": {
+     "ok": 1,
+     "refused": 3,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "PUT",
+    "path": "/:id",
+    "line": 101,
+    "lines": 42,
+    "guards": [],
+    "models": [
+     "Order",
+     "OrderLine",
+     "AuditLog"
+    ],
+    "writes": 3,
+    "transaction": true,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": true,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": true,
+    "inMemory": false,
+    "full": "/api/purchase-orders/:id",
+    "key": "PUT /api/purchase-orders/:id",
+    "file": "src/backend/src/routes/purchaseOrders.js",
+    "mount": "/api/purchase-orders",
+    "exercised": {
+     "ok": 19,
+     "refused": 4,
      "error": 0
     }
    },
@@ -27494,7 +28332,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 19,
+     "ok": 24,
      "refused": 14,
      "error": 0
     }
@@ -27526,7 +28364,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 10,
+     "ok": 15,
      "refused": 2,
      "error": 0
     }
@@ -27558,7 +28396,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 17,
+     "ok": 22,
      "refused": 6,
      "error": 0
     }
@@ -27593,8 +28431,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 14,
-     "refused": 19,
+     "ok": 17,
+     "refused": 21,
      "error": 0
     }
    },
@@ -27659,7 +28497,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 43,
+     "ok": 13,
      "refused": 5,
      "error": 0
     }
@@ -27694,7 +28532,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 8,
+     "ok": 4,
      "refused": 9,
      "error": 0
     }
@@ -27730,8 +28568,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 37,
-     "refused": 12,
+     "ok": 11,
+     "refused": 10,
      "error": 0
     }
    },
@@ -27766,8 +28604,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 208,
-     "refused": 90,
+     "ok": 206,
+     "refused": 88,
      "error": 0
     }
    },
@@ -27879,7 +28717,7 @@
     "method": "DELETE",
     "path": "/:id/items/:itemId",
     "line": 238,
-    "lines": 201,
+    "lines": 204,
     "guards": [],
     "models": [
      "ShipmentItem",
@@ -27922,7 +28760,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/dispatch",
-    "line": 438,
+    "line": 441,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -27945,8 +28783,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 188,
-     "refused": 33,
+     "ok": 192,
+     "refused": 35,
      "error": 0
     }
    },
@@ -27954,7 +28792,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/deliver",
-    "line": 442,
+    "line": 445,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -27977,7 +28815,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 114,
+     "ok": 111,
      "refused": 12,
      "error": 0
     }
@@ -27986,7 +28824,7 @@
     "router": "router",
     "method": "PATCH",
     "path": "/:id/status",
-    "line": 446,
+    "line": 449,
     "lines": 9,
     "guards": [],
     "models": [],
@@ -28009,7 +28847,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 5,
+     "ok": 4,
      "refused": 4,
      "error": 0
     }
@@ -28041,7 +28879,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 85,
+     "ok": 83,
      "refused": 5,
      "error": 0
     }
@@ -28073,7 +28911,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 6,
+     "ok": 2,
      "refused": 7,
      "error": 0
     }
@@ -28137,8 +28975,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 92,
-     "refused": 141,
+     "ok": 94,
+     "refused": 138,
      "error": 0
     }
    },
@@ -28242,7 +29080,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 66,
+    "line": 69,
     "lines": 20,
     "guards": [],
     "models": [
@@ -28276,7 +29114,7 @@
     "router": "router",
     "method": "GET",
     "path": "/eligible",
-    "line": 85,
+    "line": 88,
     "lines": 20,
     "guards": [],
     "models": [
@@ -28310,7 +29148,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 104,
+    "line": 107,
     "lines": 7,
     "guards": [],
     "models": [
@@ -28344,7 +29182,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 110,
+    "line": 113,
     "lines": 101,
     "guards": [],
     "models": [
@@ -28372,8 +29210,8 @@
     "file": "src/backend/src/routes/returns.js",
     "mount": "/api/returns",
     "exercised": {
-     "ok": 8,
-     "refused": 15,
+     "ok": 11,
+     "refused": 16,
      "error": 0
     }
    },
@@ -28381,17 +29219,18 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/receive",
-    "line": 210,
-    "lines": 68,
+    "line": 213,
+    "lines": 88,
     "guards": [],
     "models": [
      "Order",
      "Inventory",
      "MaterialMovement",
      "Coil",
+     "QCHold",
      "OrderLine"
     ],
-    "writes": 6,
+    "writes": 8,
     "transaction": true,
     "findMany": 0,
     "bounded": 0,
@@ -28410,7 +29249,7 @@
     "file": "src/backend/src/routes/returns.js",
     "mount": "/api/returns",
     "exercised": {
-     "ok": 8,
+     "ok": 11,
      "refused": 14,
      "error": 0
     }
@@ -28419,7 +29258,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/cancel",
-    "line": 277,
+    "line": 300,
     "lines": 13,
     "guards": [],
     "models": [
@@ -29058,8 +29897,8 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 419,
-     "refused": 9,
+     "ok": 381,
+     "refused": 5,
      "error": 0
     }
    },
@@ -33072,9 +33911,137 @@
    },
    {
     "router": "router",
+    "method": "POST",
+    "path": "/adjust",
+    "line": 17,
+    "lines": 2,
+    "guards": [],
+    "models": [],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": false,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/v1/inventory/adjust",
+    "key": "POST /api/v1/inventory/adjust",
+    "file": "src/backend/src/routes/inventoryV1.js",
+    "mount": "/api/v1/inventory",
+    "exercised": {
+     "ok": 0,
+     "refused": 4,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/rfid-scan",
+    "line": 18,
+    "lines": 2,
+    "guards": [],
+    "models": [],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": false,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/v1/inventory/rfid-scan",
+    "key": "POST /api/v1/inventory/rfid-scan",
+    "file": "src/backend/src/routes/inventoryV1.js",
+    "mount": "/api/v1/inventory",
+    "exercised": {
+     "ok": 0,
+     "refused": 3,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/transfers",
+    "line": 19,
+    "lines": 2,
+    "guards": [],
+    "models": [],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": false,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/v1/inventory/transfers",
+    "key": "POST /api/v1/inventory/transfers",
+    "file": "src/backend/src/routes/inventoryV1.js",
+    "mount": "/api/v1/inventory",
+    "exercised": {
+     "ok": 0,
+     "refused": 3,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/transfers/:id/status",
+    "line": 20,
+    "lines": 34,
+    "guards": [],
+    "models": [],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": false,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/v1/inventory/transfers/:id/status",
+    "key": "POST /api/v1/inventory/transfers/:id/status",
+    "file": "src/backend/src/routes/inventoryV1.js",
+    "mount": "/api/v1/inventory",
+    "exercised": {
+     "ok": 0,
+     "refused": 3,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 42,
+    "line": 53,
     "lines": 49,
     "guards": [],
     "models": [],
@@ -33106,7 +34073,7 @@
     "router": "router",
     "method": "GET",
     "path": "/locations",
-    "line": 90,
+    "line": 101,
     "lines": 10,
     "guards": [],
     "models": [],
@@ -33138,7 +34105,7 @@
     "router": "router",
     "method": "GET",
     "path": "/catalog",
-    "line": 99,
+    "line": 110,
     "lines": 10,
     "guards": [],
     "models": [],
@@ -33170,7 +34137,7 @@
     "router": "router",
     "method": "GET",
     "path": "/summary",
-    "line": 108,
+    "line": 119,
     "lines": 48,
     "guards": [],
     "models": [],
@@ -33202,7 +34169,7 @@
     "router": "router",
     "method": "GET",
     "path": "/transfers",
-    "line": 155,
+    "line": 166,
     "lines": 24,
     "guards": [],
     "models": [],
@@ -33234,7 +34201,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 178,
+    "line": 189,
     "lines": 34,
     "guards": [],
     "models": [],
@@ -33266,7 +34233,7 @@
     "router": "router",
     "method": "POST",
     "path": "/adjust",
-    "line": 211,
+    "line": 222,
     "lines": 52,
     "guards": [],
     "models": [],
@@ -33290,7 +34257,7 @@
     "mount": "/api/v1/inventory",
     "exercised": {
      "ok": 0,
-     "refused": 3,
+     "refused": 4,
      "error": 0
     }
    },
@@ -33298,7 +34265,7 @@
     "router": "router",
     "method": "POST",
     "path": "/rfid-scan",
-    "line": 262,
+    "line": 273,
     "lines": 52,
     "guards": [],
     "models": [],
@@ -33322,7 +34289,7 @@
     "mount": "/api/v1/inventory",
     "exercised": {
      "ok": 0,
-     "refused": 2,
+     "refused": 3,
      "error": 0
     }
    },
@@ -33330,7 +34297,7 @@
     "router": "router",
     "method": "GET",
     "path": "/rfid/:rfidTagId",
-    "line": 313,
+    "line": 324,
     "lines": 46,
     "guards": [],
     "models": [],
@@ -33362,7 +34329,7 @@
     "router": "router",
     "method": "GET",
     "path": "/etched/:etchedId",
-    "line": 358,
+    "line": 369,
     "lines": 45,
     "guards": [],
     "models": [],
@@ -33394,7 +34361,7 @@
     "router": "router",
     "method": "POST",
     "path": "/transfers",
-    "line": 402,
+    "line": 413,
     "lines": 47,
     "guards": [],
     "models": [],
@@ -33418,7 +34385,7 @@
     "mount": "/api/v1/inventory",
     "exercised": {
      "ok": 0,
-     "refused": 2,
+     "refused": 3,
      "error": 0
     }
    },
@@ -33426,7 +34393,7 @@
     "router": "router",
     "method": "POST",
     "path": "/transfers/:id/status",
-    "line": 448,
+    "line": 459,
     "lines": 82,
     "guards": [],
     "models": [],
@@ -33450,7 +34417,7 @@
     "mount": "/api/v1/inventory",
     "exercised": {
      "ok": 0,
-     "refused": 2,
+     "refused": 3,
      "error": 0
     }
    },
@@ -33458,7 +34425,7 @@
     "router": "router",
     "method": "POST",
     "path": "/ai-assistant",
-    "line": 529,
+    "line": 540,
     "lines": 294,
     "guards": [],
     "models": [],
@@ -38508,8 +39475,8 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 14,
-     "refused": 10,
+     "ok": 11,
+     "refused": 9,
      "error": 0
     }
    },
@@ -38606,7 +39573,7 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 2,
+     "ok": 1,
      "refused": 1,
      "error": 0
     }
@@ -41804,7 +42771,7 @@
     "file": "src/backend/src/routes/printQueue.js",
     "mount": "/api/print-queue",
     "exercised": {
-     "ok": 406,
+     "ok": 368,
      "refused": 3,
      "error": 0
     }
@@ -43695,6 +44662,7 @@
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/partner/adminRoutes.js",
      "src/backend/src/routes/pos.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/rfqs.js",
      "src/backend/src/routes/users.js",
@@ -43732,6 +44700,7 @@
      "src/backend/src/routes/auth.js",
      "src/backend/src/routes/coils.js",
      "src/backend/src/routes/jobs.js",
+     "src/backend/src/routes/orders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/salesDashboard.js",
      "src/backend/src/routes/salesRoutes.js",
@@ -43802,6 +44771,7 @@
      "src/backend/src/lib/creditControl.js",
      "src/backend/src/lib/jobHistory.js",
      "src/backend/src/lib/stockChanges.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/customers.js",
      "src/backend/src/routes/intakePricing.js",
      "src/backend/src/routes/opsCockpit.js",
@@ -43810,6 +44780,7 @@
      "src/backend/src/routes/partner/carrierRoutes.js",
      "src/backend/src/routes/partner/supplierRoutes.js",
      "src/backend/src/routes/products.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/shipments.js",
      "src/backend/src/routes/users.js",
@@ -43878,23 +44849,27 @@
    },
    "Coil": {
     "read": [
+     "src/backend/src/lib/holds.js",
      "src/backend/src/lib/receiving.js",
      "src/backend/src/lib/stockChanges.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/aiAssistant.js",
      "src/backend/src/routes/coils.js",
      "src/backend/src/routes/dashboard.js",
      "src/backend/src/routes/inventory.js",
      "src/backend/src/routes/opsCockpit.js",
      "src/backend/src/routes/orders.js",
+     "src/backend/src/routes/returns.js",
      "src/backend/src/routes/shipments.js",
      "src/backend/src/routes/workOrders.js",
      "src/backend/src/services/intakeCatalogService.js"
     ],
     "write": [
+     "src/backend/src/lib/holds.js",
      "src/backend/src/lib/receiving.js",
      "src/backend/src/lib/stockChanges.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/coils.js",
-     "src/backend/src/routes/inventory.js",
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/returns.js",
@@ -43914,6 +44889,7 @@
      "src/backend/src/routes/inventory.js",
      "src/backend/src/routes/onlineOrders.js",
      "src/backend/src/routes/orders.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/shipments.js",
      "src/backend/src/routes/staff.js",
@@ -43932,6 +44908,8 @@
    },
    "Inventory": {
     "read": [
+     "src/backend/src/lib/receiving.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/dashboard.js",
      "src/backend/src/routes/inventory.js",
      "src/backend/src/routes/quickSale.js",
@@ -43943,9 +44921,10 @@
      "src/backend/src/workflows/pos/POSWorkflowService.js"
     ],
     "write": [
+     "src/backend/src/lib/holds.js",
      "src/backend/src/lib/receiving.js",
      "src/backend/src/lib/stockChanges.js",
-     "src/backend/src/routes/coils.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/inventory.js",
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/quickSale.js",
@@ -43966,6 +44945,7 @@
     "write": [
      "src/backend/src/lib/receiving.js",
      "src/backend/src/lib/stockChanges.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/inventory.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/returns.js",
@@ -43986,7 +44966,9 @@
      "src/backend/src/routes/opsCockpit.js"
     ],
     "write": [
-     "src/backend/src/routes/coils.js"
+     "src/backend/src/lib/holds.js",
+     "src/backend/src/lib/transfers.js",
+     "src/backend/src/routes/returns.js"
     ]
    },
    "RFQ": {
@@ -44010,12 +44992,14 @@
     "write": [],
     "nested": [
      "src/backend/src/lib/creditControl.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/onlineOrders.js",
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/partner/customerRoutes.js",
      "src/backend/src/routes/partner/supplierRoutes.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/quotes.js",
      "src/backend/src/routes/returns.js",
@@ -44049,12 +45033,14 @@
     "write": [],
     "nested": [
      "src/backend/src/lib/creditControl.js",
+     "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/onlineOrders.js",
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/partner/customerRoutes.js",
      "src/backend/src/routes/partner/supplierRoutes.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/quotes.js",
      "src/backend/src/routes/returns.js",
@@ -44200,6 +45186,7 @@
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/partner/customerRoutes.js",
      "src/backend/src/routes/partner/supplierRoutes.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/quotes.js",
      "src/backend/src/routes/returns.js",
@@ -44215,6 +45202,7 @@
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/onlineOrders.js",
      "src/backend/src/routes/orders.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/quotes.js",
      "src/backend/src/routes/returns.js",
@@ -44226,6 +45214,7 @@
    },
    "OrderLine": {
     "read": [
+     "src/backend/src/lib/receiving.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/returns.js",
@@ -44234,8 +45223,10 @@
      "src/backend/src/routes/workOrders.js"
     ],
     "write": [
+     "src/backend/src/lib/receiving.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/orders.js",
+     "src/backend/src/routes/purchaseOrders.js",
      "src/backend/src/routes/returns.js",
      "src/backend/src/routes/shipments.js",
      "src/backend/src/seeds/demo/index.js"
@@ -44243,6 +45234,7 @@
    },
    "OrderLineAllocation": {
     "read": [
+     "src/backend/src/lib/holds.js",
      "src/backend/src/lib/stockChanges.js",
      "src/backend/src/routes/coils.js",
      "src/backend/src/routes/orders.js",
@@ -45096,6 +46088,23 @@
     "write": [
      "src/backend/src/lib/integrationReport.js",
      "src/backend/src/middleware/requestKeys.js"
+    ]
+   },
+   "StockTransfer": {
+    "read": [
+     "src/backend/src/lib/transfers.js",
+     "src/backend/src/routes/inventory.js"
+    ],
+    "write": [
+     "src/backend/src/lib/transfers.js"
+    ]
+   },
+   "StockTransferLine": {
+    "read": [
+     "src/backend/src/lib/transfers.js"
+    ],
+    "write": [
+     "src/backend/src/lib/transfers.js"
     ]
    }
   }
@@ -47318,7 +48327,7 @@
    },
    {
     "file": "components/layout/Sidebar.jsx",
-    "lines": 573,
+    "lines": 575,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -50539,6 +51548,24 @@
     "clears": 0
    },
    {
+    "file": "pages/Purchasing/PurchaseOrdersPage.jsx",
+    "lines": 257,
+    "reachable": true,
+    "useState": 20,
+    "useEffect": 3,
+    "ts": false,
+    "dialogs": 2,
+    "tables": 3,
+    "forms": 13,
+    "ariaLabels": 4,
+    "iconButtons": 1,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
     "file": "pages/QAQC/QualityDashboardPage.jsx",
     "lines": 273,
     "reachable": true,
@@ -50630,15 +51657,15 @@
    },
    {
     "file": "pages/ReceivingPage.jsx",
-    "lines": 244,
+    "lines": 288,
     "reachable": true,
-    "useState": 13,
+    "useState": 15,
     "useEffect": 2,
     "ts": false,
     "dialogs": 1,
-    "tables": 1,
-    "forms": 16,
-    "ariaLabels": 1,
+    "tables": 2,
+    "forms": 17,
+    "ariaLabels": 2,
     "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
@@ -50935,15 +51962,33 @@
     "clears": 0
    },
    {
+    "file": "pages/Transfers/TransfersPage.jsx",
+    "lines": 237,
+    "reachable": true,
+    "useState": 14,
+    "useEffect": 2,
+    "ts": false,
+    "dialogs": 3,
+    "tables": 3,
+    "forms": 5,
+    "ariaLabels": 4,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
     "file": "pages/Units/UnitDetailPage.jsx",
-    "lines": 306,
+    "lines": 312,
     "reachable": true,
     "useState": 10,
     "useEffect": 1,
     "ts": false,
     "dialogs": 1,
     "tables": 2,
-    "forms": 9,
+    "forms": 11,
     "ariaLabels": 3,
     "iconButtons": 1,
     "consoleLog": 0,
@@ -51062,7 +52107,7 @@
    },
    {
     "file": "router/AppRouter.jsx",
-    "lines": 1536,
+    "lines": 1549,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -52175,7 +53220,9 @@
    "/material-tracking/tags",
    "/material-tracking/staging",
    "/material-tracking/traceability",
+   "/purchase-orders",
    "/receiving",
+   "/transfers",
    "/shipping",
    "/freight/planner",
    "/freight/comparison",
@@ -52325,6 +53372,12 @@
     "mocks": 0
    },
    {
+    "file": "src/backend/test/phase6Rules.test.js",
+    "tests": 9,
+    "importsDb": false,
+    "mocks": 0
+   },
+   {
     "file": "src/backend/test/priceRules.test.js",
     "tests": 8,
     "importsDb": false,
@@ -52399,8 +53452,8 @@
    },
    {
     "file": "qa/sim/branch-boundary.mjs",
-    "lines": 116,
-    "checks": 34
+    "lines": 124,
+    "checks": 36
    },
    {
     "file": "qa/sim/fixtures.mjs",
@@ -52414,17 +53467,17 @@
    },
    {
     "file": "qa/sim/phase2-integrity.mjs",
-    "lines": 340,
+    "lines": 346,
     "checks": 65
    },
    {
     "file": "qa/sim/phase3-db.mjs",
-    "lines": 1155,
+    "lines": 1172,
     "checks": 0
    },
    {
     "file": "qa/sim/phase4-integration.mjs",
-    "lines": 1360,
+    "lines": 1365,
     "checks": 0
    },
    {
@@ -52438,14 +53491,19 @@
     "checks": 0
    },
    {
+    "file": "qa/sim/phase6-inventory.mjs",
+    "lines": 1095,
+    "checks": 0
+   },
+   {
     "file": "qa/sim/run.mjs",
-    "lines": 845,
-    "checks": 65
+    "lines": 859,
+    "checks": 67
    },
    {
     "file": "qa/sim/security.mjs",
-    "lines": 1510,
-    "checks": 291
+    "lines": 1515,
+    "checks": 292
    },
    {
     "file": "qa/sim/ui-experience.cjs",
@@ -52459,12 +53517,17 @@
    },
    {
     "file": "qa/sim/ui-inventory.cjs",
-    "lines": 161,
-    "checks": 22
+    "lines": 166,
+    "checks": 23
    },
    {
     "file": "qa/sim/ui-phase5.cjs",
     "lines": 117,
+    "checks": 14
+   },
+   {
+    "file": "qa/sim/ui-phase6.cjs",
+    "lines": 119,
     "checks": 14
    },
    {
@@ -52474,12 +53537,12 @@
    },
    {
     "file": "qa/sim/ui-shipping.cjs",
-    "lines": 209,
+    "lines": 213,
     "checks": 27
    },
    {
     "file": "qa/sim/ui-shop.cjs",
-    "lines": 185,
+    "lines": 186,
     "checks": 28
    },
    {
@@ -52892,10 +53955,10 @@
   ]
  },
  "screens": {
-  "screens": 140,
+  "screens": 142,
   "tally": {
    "STATIC": 5,
-   "REAL": 73,
+   "REAL": 75,
    "SAMPLE, LABELLED": 58,
    "MIXED": 4
   },
@@ -53328,6 +54391,18 @@
     "file": "pages/ReceivingPage.jsx"
    },
    {
+    "route": "transfers",
+    "onMenu": true,
+    "verdict": "REAL",
+    "file": "pages/Transfers/TransfersPage.jsx"
+   },
+   {
+    "route": "purchase-orders",
+    "onMenu": true,
+    "verdict": "REAL",
+    "file": "pages/Purchasing/PurchaseOrdersPage.jsx"
+   },
+   {
     "route": "material-tracking",
     "onMenu": true,
     "verdict": "REAL",
@@ -53750,17 +54825,17 @@
   ]
  },
  "exercised": {
-  "at": "2026-11-15T09:21:17.550Z",
+  "at": "2026-11-15T18:29:50.794Z",
   "sources": [
    {
     "file": "server-3011.log",
-    "requests": 6954
+    "requests": 7535
    },
    {
     "file": "server-3001.log",
-    "requests": 1950
+    "requests": 1743
    }
   ],
-  "distinct": 2206
+  "distinct": 2262
  }
 }

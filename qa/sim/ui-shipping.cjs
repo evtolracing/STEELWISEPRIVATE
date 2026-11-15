@@ -96,8 +96,12 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
     const refusedShown = await has(page, /Reserve the stock that is going out/);
     const still = (await api('GET', `/api/shipments/${shipmentId}`, clerk)).body;
     check('shipment: with nothing reserved the dispatch is refused and the screen says to reserve the stock', refusedShown && still?.status !== 'IN_TRANSIT', `shown ${refusedShown}, server ${still?.status}; ${(await body(page)).slice(-300)}`);
-    const stockRows = (await api('GET', '/api/inventory?limit=100', boss)).body;
-    const stock = (Array.isArray(stockRows) ? stockRows : stockRows?.data || []).find((r) => Number(r.qtyAvailable) >= 10 && r.coil?.status === 'AVAILABLE' && !['FAILED', 'HOLD'].includes(r.coil?.qcStatus));
+    // Since Phase 6 a reservation is in the line's unit: this line is 4 pieces, so it ships from a lot
+    // counted by the piece, received here for the test (K-001, C-011).
+    const products = (await api('GET', '/api/products?limit=5', boss)).body;
+    const sku = (Array.isArray(products) ? products : products?.data || [])[0]?.sku;
+    const lot = await api('POST', '/api/inventory/receipts', boss, { coilNumber: `${tag}-PCS`, form: 'SUPPLY', pieces: 20, productSku: sku, locationId: order.locationId || branch.id });
+    const stock = { coilId: lot.body?.item?.id };
     const onShipment = (still?.items || []).reduce((n, it) => n + Number(it.qtyShipped), 0);
     const reserved = await api('POST', `/api/orders/${order.id}/allocate`, boss, { lineId: order.lines[0].id, coilId: stock?.coilId, qty: onShipment });
     check('shipment: the stock going out is reserved on the order', reserved.status === 201, `status ${reserved.status} ${JSON.stringify(reserved.body).slice(0, 200)}`);

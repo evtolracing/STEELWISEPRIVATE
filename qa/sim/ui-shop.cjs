@@ -144,8 +144,9 @@ const OUT = arg('out', 'qa/results/ui-shop.json');
       await list.getByLabel('Good weight out (lb)').fill(String(input * 3));
       await list.getByRole('button', { name: 'Complete work order' }).click();
       check('work orders: more weight out than went in is refused with the reason', await has(list, /is more than the/), await body(list));
-      await list.getByLabel('Good weight out (lb)').fill(String(Math.round(input * 0.95)));
-      await list.getByLabel('Scrap (lb)').fill(String(Math.round(input * 0.03)));
+      // To two decimals, not rounded to a whole pound: the first item offered can be a small remnant.
+      await list.getByLabel('Good weight out (lb)').fill((input * 0.95).toFixed(2));
+      await list.getByLabel('Scrap (lb)').fill((input * 0.03).toFixed(2));
       await list.getByRole('button', { name: 'Complete work order' }).click();
       await has(list, /Work order completed|Complete$/);
       await list.waitForTimeout(800);

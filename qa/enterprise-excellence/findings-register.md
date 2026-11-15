@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,18 +11,18 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 85 | 14 |
-| P2 | 97 | 39 |
-| P3 | 73 | 25 |
-| Total | 275 | 80 |
+| P1 | 87 | 14 |
+| P2 | 105 | 42 |
+| P3 | 77 | 28 |
+| Total | 289 | 86 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 194 |
-| DEFERRED TO SPECIFIC PHASE | 57 |
-| REQUIRES BUSINESS DECISION | 18 |
-| BLOCKED | 2 |
-| IN PROGRESS | 2 |
+| VERIFIED FIXED | 202 |
+| DEFERRED TO SPECIFIC PHASE | 55 |
+| REQUIRES BUSINESS DECISION | 24 |
+| IN PROGRESS | 3 |
+| BLOCKED | 3 |
 | NOT APPLICABLE | 1 |
 | ACCEPTED RISK WITH APPROVAL | 1 |
 
@@ -32,16 +32,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 |---|---|---|---|---|---|
 | X-001 | P0 | DEFERRED TO SPECIFIC PHASE | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
 | X-002 | P0 | DEFERRED TO SPECIFIC PHASE | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
-| B-009 | P1 | DEFERRED TO SPECIFIC PHASE | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 2: architecture and code quality (after the decision) |
+| B-009 | P1 | IN PROGRESS | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | B-016 | P1 | DEFERRED TO SPECIFIC PHASE | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
 | B-019 | P1 | BLOCKED | Platform | Everything happens only when someone opens a screen or presses a button. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
 | E-014 | P1 | DEFERRED TO SPECIFIC PHASE | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
 | E-015 | P1 | ACCEPTED RISK WITH APPROVAL | Platform | No evidence that a backup has ever been restored | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
-| I-007 | P1 | REQUIRES BUSINESS DECISION | Purchasing | There is no purchase order: nothing records what was ordered from a mill, what is due, or whether a receipt matches an order or a supplier invoice | Inventory and purchasing |
 | I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
 | I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
+| K-007 | P1 | REQUIRES BUSINESS DECISION | Inventory valuation | No cost unless typed by hand. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | S-010 | P1 | REQUIRES BUSINESS DECISION | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
@@ -53,7 +53,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-017 | P2 | DEFERRED TO SPECIFIC PHASE | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
 | B-021 | P2 | DEFERRED TO SPECIFIC PHASE | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
 | C-009 | P2 | DEFERRED TO SPECIFIC PHASE | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| C-011 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | They cannot. The counter rule built in Phase 2 takes effect only where piece-counted stock exists; elsewhere the sale goes through and the receipt says no stock was reduced. | Inventory and purchasing |
 | C-013 | P2 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | Any text shaped like a recommendation moves jobs. | Manufacturing and processing |
 | D-020 | P2 | DEFERRED TO SPECIFIC PHASE |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
 | D-024 | P2 | DEFERRED TO SPECIFIC PHASE |  | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`br | By subject (see the finding) |
@@ -68,7 +67,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | F-011 | P2 | DEFERRED TO SPECIFIC PHASE | Shipping documents | Whether a bill of lading or packing list can be printed for a shipment was not examined. Print code exists in the server (`printQueue`, `printAutomationService`); the new Shipment screen has no print button | Shipping and financial operations |
 | F-012 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend build | A stray word left in `AppRouter.jsx` by a patch in this workstream passed the production build and broke every screen at run time. Caught by the browser check before commit | Shipping and financial operations |
 | G-003 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017). | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-007 | P2 | DEFERRED TO SPECIFIC PHASE | Inventory | The item is at the destination the moment the sender presses the button. What is on the road is counted as on the receiver's shelf. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-011 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-015 | P2 | BLOCKED | Platform | Unknown. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | H-012 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | With N instances a limit is up to N times its number, and the report shows the calls of the instance that answered. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
@@ -77,6 +75,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | H-015 | P2 | REQUIRES BUSINESS DECISION | Platform | Not connected. Since Phase 4 the integration report lists each one with its state and what happens without it. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
 | J-008 | P2 | REQUIRES BUSINESS DECISION | Customers | Six settings look active and do nothing. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
+| K-006 | P2 | REQUIRES BUSINESS DECISION | Steel Outlet remnants | A separate list. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| K-008 | P2 | REQUIRES BUSINESS DECISION | Cycle counts | Single-item correction only. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| K-010 | P2 | REQUIRES BUSINESS DECISION | Replenishment | Nothing. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| K-011 | P2 | REQUIRES BUSINESS DECISION | Purchasing | Exact, held. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| K-012 | P2 | DEFERRED TO SPECIFIC PHASE | Purchasing | Not recorded. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Manufacturing and processing |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
@@ -95,8 +98,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | G-013 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items, stock search, heat trace | Both grow in step with the whole company's data. Both are far inside the half-second target today. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-018 | P3 | DEFERRED TO SPECIFIC PHASE | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 9: user experience, visual design and accessibility |
-| J-012 | P3 | DEFERRED TO SPECIFIC PHASE | Retail POS | Free text, linked to no stock item (code read), so the sale has no stock record to reduce. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
+| J-012 | P3 | REQUIRES BUSINESS DECISION | Retail POS | Free text, linked to no stock item (code read), so the sale has no stock record to reduce. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | J-013 | P3 | DEFERRED TO SPECIFIC PHASE | Order intake | Visible label only. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
+| K-009 | P3 | REQUIRES BUSINESS DECISION | Warehouse locations | Free text. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| K-013 | P3 | BLOCKED | Scanning | Lookup by typed or pasted number verified; hardware not tested. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| K-014 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items | Shown on the item page and the Transfers screen only. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
@@ -271,7 +277,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase2-integrity.mjs: 6 checks. Baseline probe section 3: records saved from nothing fell from 7 routes to the 2 that are by design.
 - **First recorded in:** Phase 1 discovery
 
-### B-009 · P1 · DEFERRED TO SPECIFIC PHASE
+### B-009 · P1 · IN PROGRESS
 
 - **Discovered:** 2026-11-13
 - **Module:** Second stock list, order hub, stop work
@@ -285,15 +291,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Stock adjusted or transferred in the second list changes nothing the business ships from. At volume, each request to it reads every row.
 - **Affected dependencies:** D-024, S-021, I-011 and the open decision card "Choose which stock list is the real one".
 - **Recommended correction:** The owner chooses the real one of each pair. Then the other is removed or made a view of the first.
-- **Deferred: reason:** Decision 1 says the second stock list and the order hub are to be connected to the real tables or retired. Either needs the live contents of the two JSON stores to be read first (a read-only export the owner runs), and the screens rebuilt on the real routes, which is module work.
-- **Deferred: target phase:** The phase the owner issues for inventory and purchasing, and for sales (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12
-- **Deferred: required correction:** Export the two stores read-only; decide record by record whether each is a real order or stock item; point the screens at /api/orders and /api/coils; remove the stores.
-- **Deferred: dependencies:** A read-only export of AppSetting from the live database; decision 1.
-- **Deferred: acceptance criteria:** No route reads or writes an order or a stock record in AppSetting; the two screens show the same records as the main ones.
-- **Deferred: verification:** A database check that the two keys hold no records; the browser suites for both screens.
 - **Required tests:** A two-requests-at-once test on whichever store is kept; the audit shows one stock list.
-- **Assigned phase:** Phase 2: architecture and code quality (after the decision)
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them. Phase 3 audited the two stores and did not migrate them. The QA database holds only fixture rows in them; what the live stores hold cannot be seen from here, and moving records nobody has inspected into the order and stock tables would be changing business data on a guess. Phase 5: the Order Hub screen is retired (S-021). The second stock list and its JSON store remain; they belong with inventory in Phase 6.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them. Phase 3 audited the two stores and did not migrate them. The QA database holds only fixture rows in them; what the live stores hold cannot be seen from here, and moving records nobody has inspected into the order and stock tables would be changing business data on a guess. Phase 5: the Order Hub screen is retired (S-021). The second stock list and its JSON store remain; they belong with inventory in Phase 6. Phase 6: the second stock list can no longer be written. POST /api/v1/inventory/adjust, /rfid-scan, /transfers and /transfers/:id/status answer 410 RETIRED with where to go instead; its reads remain so nothing on screen breaks. The order hub half was handled in Phase 5 (S-021). What remains: remove the v1 reads and their demo data once the screens that read them are pointed at the stock items list (Phase 9 screen work).
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "the retired v1 stock writes change nothing", "the old transfer address still works but now ships, and the old v1 transfer writes are retired".
 - **First recorded in:** Phase 1 discovery
 
 ### B-010 · P2 · VERIFIED FIXED
@@ -837,7 +838,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs: a credit whose last step is forced to fail leaves no memo, no refund, no history line, and undoes the step before it; a sale voided twice at once is voided once, with one credit memo, one stock return and money netting to zero.
 - **First recorded in:** Phase 2 architecture review
 
-### C-011 · P2 · DEFERRED TO SPECIFIC PHASE
+### C-011 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Receiving
@@ -851,15 +852,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Shelf stock is still uncounted in practice until this is built.
 - **Affected dependencies:** I-016 (count and adjustment). The owner: may an item with no shelf stock on file be sold? Today it may, with the note.
 - **Recommended correction:** A receipt by the piece for products priced EACH, with no heat or grade.
-- **Deferred: reason:** The columns can only be relaxed together with the receiving function that needs it, and the rule for which products are counted by the piece is not decided.
-- **Deferred: target phase:** The phase the owner issues for inventory and purchasing (prompts 5 to 8 have not been issued yet); if none covers it, Phase 12
-- **Deferred: required correction:** A receipt by the piece for products priced EACH, with heat and grade optional for those products only (a database check ties the exemption to the unit).
-- **Deferred: dependencies:** I-016; the owner's list of piece goods.
-- **Deferred: acceptance criteria:** A shelf item is received by the piece, sold at the counter and reconciles.
-- **Deferred: verification:** Database scenarios: receive 10, sell 3, void 1, count 8.
 - **Required tests:** Receive 10, sell 3, void 1 sale, count 7 then 10.
-- **Assigned phase:** Inventory and purchasing
-- **Status note:** Phase 3 did not change Coil.heatId or gradeId. Making them optional changes what every stock screen and trace report may assume, and the rule for piece goods is the owner's. No database change was made on a guess.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Phase 3 did not change Coil.heatId or gradeId. Making them optional changes what every stock screen and trace report may assume, and the rule for piece goods is the owner's. No database change was made on a guess. Phase 6: shelf goods are received by the piece (form SUPPLY) against a product in the catalog, with no heat or grade; the stock is counted in EA. A database check (Coil_heat_and_grade_unless_supply, SQL Editor file 12) keeps heat and grade required for every other form. The counter sale and its void already move piece stock (Phase 2 and 5).
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "shelf goods are received by the piece against a product, with no heat or grade", "shelf goods need a whole number of pieces and a product that is in the catalog"; qa/sim/security.mjs section 20 ships a web line of pieces from a received lot; src/backend/test/phase6Rules.test.js.
 - **First recorded in:** Phase 2 architecture review
 
 ### C-012 · P3 · VERIFIED FIXED
@@ -2102,7 +2098,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs "a remnant entered against its parent...": parent 6000 to 5948.75, movement on the parent, the two together still 6000; a heavier remnant refused. On the old code the parent stays at 6000.
 - **First recorded in:** Phase 3 database audit
 
-### G-007 · P2 · DEFERRED TO SPECIFIC PHASE
+### G-007 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Inventory
@@ -2116,14 +2112,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A receiving branch can sell or reserve material that has not arrived. Loss or damage in transit has no record.
 - **Affected dependencies:** B-009 (the second stock list has transfer screens with no real data behind them); I-016.
 - **Recommended correction:** A transfer document with statuses (requested, shipped, received), an in-transit balance, and receipt by quantity with a variance.
-- **Deferred: reason:** It is a new function with screens, not a correction. Decision 4 says build everything; it belongs with the inventory module.
-- **Deferred: target phase:** The phase the owner issues for inventory and purchasing (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: required correction:** As above.
-- **Deferred: dependencies:** B-009, I-016.
-- **Deferred: acceptance criteria:** Stock in transit is on neither shelf; sender plus in transit plus receiver is constant; a receipt cannot be entered twice.
-- **Deferred: verification:** Database scenarios for each stage, including two receipts at once.
 - **Required tests:** The eight transfer scenarios of Phase 3 plus partial receipt, shortage, damage, duplicate receipt and cancellation.
-- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Phase 6: a transfer is shipped, is in transit and is received. Sending puts the item's free quantity in an in-transit bucket at the sending branch (reservations and holds travel with it); it cannot be sold, reserved, cut, corrected or sent again. The receiving branch books it in; anything short, missing or damaged is held with a note until a manager or the inventory manager settles it. The sender can call it back before it arrives. Tables StockTransfer and StockTransferLine, column Inventory.qtyInTransit, and the balance identity now includes in transit (SQL Editor file 12).
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: the 17 "Interbranch transfers" scenarios and the transfer scenarios under "Concurrency, security and recovery"; qa/sim/ui-phase6.cjs: transfers received from the screen; src/backend/test/phase6Rules.test.js (4 tests); qa/tools/db-facts.mjs: five transfer checks at 0. Older suites updated to ship then receive (phase-06-regression-results.md).
 - **First recorded in:** Phase 3 database audit
 
 ### G-008 · P2 · VERIFIED FIXED
@@ -2247,6 +2239,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/perf/phase3-plans.sh and qa/perf/branch-bench.mjs on a larger copy.
 - **Required tests:** The same two measurements at one million rows.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 6 measurement on the 85-branch copy (100,233 stock items) after SQL Editor file 12: stock search by part of a number 116 ms median, first page of stock items 48 ms, supply position 271 ms for an all-branch login. No index was added: the instruction forbids one without evidence of need, and all are inside the half-second target.
 - **First recorded in:** Phase 3 database audit
 
 ### G-014 · P3 · VERIFIED FIXED
@@ -2657,6 +2650,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Scenarios in the style of the Phase 4 supplier scenario.
 - **Required tests:** Each answers 501, never 500, and changes nothing.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Phase 6: unchanged. Purchase orders and receipts now exist, so a supplier's shipping notice has something to refer to; the notice itself and the supplier quality records are not built (I-011).
 - **Verification evidence:** qa/sim/phase4-integration.mjs: "services that are not connected say so instead of pretending".
 - **First recorded in:** Phase 4 integration audit
 
@@ -2838,7 +2832,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Screen rebuilt; `POST/GET /api/inventory/receipts`; Sweep 18; Browser: 6 checks
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-007 · P1 · REQUIRES BUSINESS DECISION
+### I-007 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Purchasing
@@ -2851,8 +2845,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Affected dependencies:** Whether purchasing is built into STEELWISE and how purchase orders are approved
 - **Recommended correction:** Requires a business decision, then a build
 - **Required tests:** A purchase order model; receipts match a PO line; a cycle with purchasing in the simulation
-- **Assigned phase:** Inventory and purchasing
-- **Status note:** Open
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Open Phase 6, under owner decision 4 (build every sample module): purchase orders are written and placed by a buyer or the inventory manager, a receipt names the line it fills, the line counts what came (in its own unit: LB, CWT, TON or pieces), and a receipt that does not match the line (grade, product, size, over-receipt, certificate required but not on file) is received on hold with every reason. A purchase order with receipts is closed, not cancelled. No approval rule was invented (K-011). Matching the supplier's invoice is K-012.
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: the 16 "Purchasing and replenishment" scenarios, "two receipts against the same purchase order line at once both count"; qa/sim/ui-phase6.cjs: purchase order and receiving checks; qa/tools/db-facts.mjs: purchase order receipt checks at 0.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-008 · P0 · VERIFIED FIXED
@@ -2919,7 +2914,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The six screens read real data and the notice is removed
 - **Required tests:** The six screens read real data and the notice is removed
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 6: not built. The Phase 6 instruction covers purchasing, receiving and stock; inspection at receipt, nonconformance, corrective actions and supplier scorecards are quality records and stay for the quality phase. What Phase 6 added that they will stand on: suppliers on file (mills and distributors), purchase orders, receipts linked to their lines, and material held at receipt with the reason.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-012 (D-024) · P1 · DEFERRED TO SPECIFIC PHASE
@@ -2939,7 +2934,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** One stock list
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Phase 6: see B-009. The second list's writes are retired; the RFID unit tables hold no rows and nothing writes them. Removing them is a destructive schema change and was not made (Phase 6 forbids destructive migrations); it stays with X-009 and B-017.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-013 (E-020) · P2 · VERIFIED FIXED
@@ -3024,7 +3019,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A heats upload template; sweep check
 - **Required tests:** A heats upload template; sweep check
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Open
+- **Status note:** Open Phase 6: unchanged, and confirmed as the rule: a receipt for a heat not on file is refused with "add it under Heats first" (qa/sim/phase6-inventory.mjs, "metal is received only against a heat on file"). Adding several heats at once is a speed improvement for first load and stays deferred.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-018 · P1 · VERIFIED FIXED
@@ -3233,7 +3228,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase5-sales.mjs: "a price check with a negative or nonsense amount is refused, never priced below zero". Failed before the change.
 - **First recorded in:** Phase 5 sales operations audit
 
-### J-012 · P3 · DEFERRED TO SPECIFIC PHASE
+### J-012 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-14
 - **Module:** Retail POS
@@ -3244,14 +3239,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Expected:** A remnant sold at the counter is a stock item on file, so the sale takes it off the books.
 - **Actual:** Free text, linked to no stock item (code read), so the sale has no stock record to reduce.
 - **Operational impact:** Remnants sold at the counter stay on the books.
-- **Deferred: reason:** Choosing a remnant from the stock items and reducing it is remnant traceability, the subject of Phase 6.
-- **Deferred: target phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
-- **Deferred: required correction:** Pick the remnant from the stock items at the clerk's branch; the sale moves it like a counter sale moves shelf stock.
-- **Deferred: dependencies:** C-011.
-- **Deferred: acceptance criteria:** A remnant sold at the counter leaves the books once and comes back on a void.
-- **Deferred: verification:** A Phase 6 scenario that sells and voids a remnant and reads the stock movements.
-- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
-- **Status note:** Phase 5 removed the fixed Michigan default. Picking a remnant from stock is a stock-traceability change.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Phase 5 removed the fixed Michigan default. Picking a remnant from stock is a stock-traceability change. Phase 6: folded into K-006. The counter remnant quick-add reads the Steel Outlet remnant list, which is not linked to stock. Connecting it waits for the remnant pricing and valuation rule (S-009, K-006).
 - **First recorded in:** Phase 5 sales operations audit
 
 ### J-013 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -3273,6 +3262,250 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The browser check finds the Location field by getByLabel.
 - **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
 - **First recorded in:** Phase 5 sales operations audit
+
+### K-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Reservations
+- **Workflow:** Reserving a stock item for an order line
+- **Category:** Data integrity: wrong material or quantity reserved
+- **Source file or endpoint:** src/backend/src/routes/orders.js (POST /:id/allocate); new src/backend/src/lib/reservationRules.js
+- **Evidence:** Probe on the QA database, before: a line for 3 pieces reserved "3" from an item counted in pounds, so 3 lb left the balance when it shipped; a line for one grade reserved stock of another; a 135 inch line reserved a 96 inch plate (the order simulation did this 17 times in one seed); material owned by one customer could be reserved for another.
+- **Expected:** A reservation is accepted only when the item can fill the line: same unit, same grade, large enough, thickness inside the tolerance the line gives, and owned by the house or by the buyer.
+- **Actual:** Only the quantity and the branch were checked.
+- **Root cause or suspected cause:** The reservation route was written around weight alone.
+- **Operational impact:** The wrong material shipped against an order; stock balances reduced by pieces as if they were pounds; a customer's own material shipped to someone else.
+- **Recommended correction:** reservationProblem() refuses with 409 and a code (UNIT_MISMATCH, GRADE_MISMATCH, SIZE_MISMATCH, OWNER_MISMATCH, IN_TRANSIT) and a sentence. Thickness is compared only when the line gives a tolerance.
+- **Required tests:** Each refusal with nothing reserved; the fitting case accepted.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "a line counted in pieces cannot reserve stock counted in pounds", "stock of another grade cannot be reserved for a line", "a piece smaller than the line needs cannot be reserved for it", "thickness is held to the line's own tolerance", "material a customer owns can be reserved only for that customer"; src/backend/test/phase6Rules.test.js (3 tests). The order simulation's first run on the new rule failed 17 jobs whose lines were longer than the stock; the generator now cuts lines from the item.
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-002 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Purchasing
+- **Workflow:** Placing a purchase order
+- **Category:** Wrong department rule
+- **Source file or endpoint:** src/backend/src/lib/roleAccess.js; new src/backend/src/routes/purchaseOrders.js
+- **Evidence:** Code read and probe: a purchase order is an order of type PO saved through /api/orders, whose department rule is sales. A buyer or the inventory manager got 403; a sales clerk could create one.
+- **Expected:** Purchasing belongs to the people who buy (owner decision 3).
+- **Actual:** Only sales logins could save a purchase order.
+- **Operational impact:** Buyers cannot record what they ordered; sales staff can.
+- **Recommended correction:** /api/purchase-orders takes the same routes for purchase orders only, for the buyer, the inventory manager and managers. The order type is forced to PO; a sales order is not found through it.
+- **Required tests:** Buyer accepted, sales and operator refused, a sales order not reachable through the address.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "a buyer places a purchase order at their own branch", "a sales login cannot place a purchase order, and nothing is saved", "the purchase order address only ever shows and changes purchase orders"; qa/sim/ui-phase6.cjs: purchase order checks.
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-003 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Returns
+- **Workflow:** A customer return that is scrapped
+- **Category:** Ledger does not add up
+- **Source file or endpoint:** src/backend/src/routes/returns.js (receive)
+- **Evidence:** Code read: receiving a return with disposition SCRAP wrote one SCRAP movement against the item it shipped from and did not change the balance. The item's movements then added up to less than its balance by the scrapped quantity.
+- **Expected:** An item's history adds up to its balance after every step.
+- **Actual:** A scrapped return left the history short.
+- **Operational impact:** The reconciliation check reports the item as out of balance, or a later correction "fixes" a balance that was right.
+- **Recommended correction:** The return is written coming back (RECEIVE, reason CUSTOMER_RETURN, "returned for scrap") and going out (SCRAP). The balance is unchanged and the history adds up.
+- **Required tests:** History equals balance after a scrapped return.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "a return that is scrapped is recorded coming back and going out, so the history still adds up".
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-004 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Returns
+- **Workflow:** A customer return that goes back to stock
+- **Category:** Wrong unit; no inspection step
+- **Source file or endpoint:** src/backend/src/routes/returns.js (receive)
+- **Evidence:** Code read and probe: a returned quantity was added to the item's balance whatever unit the item is counted in (3 pieces became 3 lb), an item on its way to another branch could be restocked into, and there was no way to bring a return back without putting it straight on sale.
+- **Expected:** A return goes back in the item's own unit, and material that needs a look is held until someone has looked.
+- **Actual:** As described.
+- **Operational impact:** Wrong balances; returned material resold before inspection.
+- **Recommended correction:** RESTOCK and the new INSPECT disposition refuse a unit mismatch and an item in transit. INSPECT restocks on a PENDING_TEST hold. An item that had shipped out entirely becomes available again.
+- **Required tests:** Restock, inspect and scrap each checked on the balance, the hold and the history.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "a return to restock goes back on the item it shipped from", "a return for inspection comes back on hold until someone has looked at it", "more cannot be returned than shipped".
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-005 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Stock items
+- **Workflow:** Holds placed by the system
+- **Category:** One rule in one place
+- **Source file or endpoint:** new src/backend/src/lib/holds.js; routes/coils.js
+- **Evidence:** Code read: placing and releasing a hold lived inside the stock item route, so a step that needed to hold material on arrival would have had to copy it.
+- **Expected:** A hold means the same thing wherever it is placed.
+- **Actual:** One copy, inside a route.
+- **Operational impact:** Low today; three new steps in this phase place holds.
+- **Recommended correction:** placeHold and releaseHold in lib/holds.js, used by the stock item screen, transfer receipt, purchase order receipt and return inspection.
+- **Required tests:** Hold and release checked through each of the four.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: the hold scenarios in receiving, transfers and returns; qa/sim/security.mjs "Stock items: lists, cost, edits, holds" unchanged and passing.
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-006 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Steel Outlet remnants
+- **Workflow:** Selling a remnant
+- **Category:** Third stock list
+- **Source file or endpoint:** src/backend/src/routes/remnants.js, table Remnant; src/frontend/src/components/pos/RemnantQuickAdd.jsx
+- **Evidence:** Schema and code read, and qa/sim/phase6-inventory.mjs "the Steel Outlet remnant list is separate from stock": the outlet's Remnant table has no link to a stock item, its "reserve" is a flag, and reserving or selling one moves no stock balance. Remnants made by a work order or entered against a parent are stock items and are fully traced; the outlet list is a different list of the same kind of material.
+- **Expected:** One stock list (owner decision 1): an outlet remnant is a stock item, and selling it takes it off the books.
+- **Actual:** A separate list.
+- **Operational impact:** A remnant can be sold at the outlet and still be on the books, or the reverse. Includes J-012 (the counter remnant quick-add).
+- **Recommended correction:** Make the outlet list a view of stock items that are remnants (parent item set, or flagged), keep its pricing fields beside the item, and make reserve and sale use the stock reservation and counter-sale rules. The outlet price of a remnant needs the owner's rule first (S-009: the 15% and 25% discounts fixed in code).
+- **Required tests:** A remnant sold at the outlet leaves the books once and returns on a void.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Question for the owner: how is a remnant priced and valued (S-009)? The connection is not built until that is answered, because the outlet list is where the remnant price lives today.
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-007 · P1 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Inventory valuation
+- **Workflow:** What stock is worth
+- **Category:** Business rule not decided
+- **Source file or endpoint:** Inventory.unitCost, landedCost, avgCost; Coil.unitCost, landedCost; lib/receiving.js
+- **Evidence:** Schema and code read, and qa/sim/phase6-inventory.mjs "receiving does not create a cost": a receipt records no cost, even against a purchase order line that has a price. Cost is typed on the item by a manager afterwards. Inventory.avgCost is never written. No movement carries a value, so scrap, shortage, count variance and cost of goods sold have no amount.
+- **Expected:** A costing method chosen by the owner (actual cost per item, average, or standard), applied at receipt and carried by every movement.
+- **Actual:** No cost unless typed by hand.
+- **Operational impact:** Inventory value, margin and the cost of scrap and shortages cannot be reported from the records.
+- **Recommended correction:** Not made: the instruction forbids changing costing rules without authorisation. Recommended: actual cost per item from the purchase order line at receipt (steel is bought and traced by the item), landed cost added when freight is known, pieces inherit cost by weight.
+- **Required tests:** Per the decision: receipt, cut, scrap, transfer and shipment each carry the value; the sum of item values equals the ledger.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Question for the owner: which costing method, and does the purchase order price become the item's cost at receipt?
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-008 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Cycle counts
+- **Workflow:** Counting stock
+- **Category:** Not built; rule not decided
+- **Source file or endpoint:** POST /api/inventory/adjust (one item at a time)
+- **Evidence:** Code read: a manager or the inventory manager can correct one item to a counted quantity with a note, and the count is recorded. There is no count sheet, no schedule, no blind count, no recount and no threshold above which a variance needs a second person.
+- **Expected:** A count program whose frequency, tolerance and approval the owner sets.
+- **Actual:** Single-item correction only.
+- **Operational impact:** Counts are done item by item with no record of what was due or missed.
+- **Recommended correction:** Not built: the frequency, the variance that needs approval and who approves are the owner's. The single-item count, its refusals and its record are verified.
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Question for the owner: how often is each class of stock counted, and what size of variance needs a manager's approval?
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-009 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Warehouse locations
+- **Workflow:** Bins and putaway
+- **Category:** Master data
+- **Source file or endpoint:** Location table (85 rows, all branches); Coil.binLocation (free text)
+- **Evidence:** Database read: every Location row is a branch. A bin is free text on the item, so two spellings of one bin are two bins, a bin that does not exist is accepted, and nothing lists what is in a bin except a text search.
+- **Expected:** Bins on file per branch, chosen from a list.
+- **Actual:** Free text.
+- **Operational impact:** Slower picking and mis-typed bins; no capacity or zone rules possible.
+- **Recommended correction:** Not built in this phase: a bin master needs each branch's real layout, which is not on file. Putaway to a typed bin is verified.
+- **Required tests:** A bin not on file refused; a bin lists its items.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Question for the owner: do the branches want bins on file (each branch supplies its list), or is a typed bin enough?
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-010 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Replenishment
+- **Workflow:** Deciding what to buy
+- **Category:** Not built; rule not decided
+- **Source file or endpoint:** new GET /api/purchase-orders/supply-position; Purchase orders screen, Supply position tab
+- **Evidence:** Schema and code read: only spare parts have a reorder point. For material there was nothing: no minimum, no maximum, no view of what is on order or coming by transfer against open sales.
+- **Expected:** The buyer sees the position per branch and grade, and reorder levels the owner sets raise suggestions.
+- **Actual:** Nothing.
+- **Operational impact:** Buying from memory; stock-outs and double orders.
+- **Recommended correction:** Built: the supply position (on hand, free, reserved, on hold, sent in transit, on order, coming by transfer, open sales not reserved, projected free), kept to the person's branches. Not built: minimums, maximums and suggested orders, which are the owner's numbers. No purchase order is created by the system.
+- **Required tests:** On-order and on-hand deltas around an order and a receipt; branch boundary.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** The supply position is VERIFIED. Question for the owner: is a reorder point wanted per grade and branch, and who sets it?
+- **Verification evidence:** qa/sim/phase6-inventory.mjs: "the supply position shows what is on order and moves it to on hand when it arrives", "the supply position keeps to the branch the person works at, and suggests nothing"; qa/sim/ui-phase6.cjs: "supply position: rows for my branch only".
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-011 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-15
+- **Module:** Purchasing
+- **Workflow:** Receiving against a purchase order line
+- **Category:** Business rule not decided
+- **Source file or endpoint:** src/backend/src/lib/receiving.js (matchPurchaseLine)
+- **Evidence:** Built in this phase with the narrowest rule that invents nothing: a receipt is compared with the line as written. Size is held to the tolerance on the line and is exact when the line gives none; any quantity over the line is an over-receipt; a mismatch is received on hold, never refused.
+- **Expected:** The owner's receiving tolerances: how much over or under a line is acceptable, and whether a mismatch is held or refused.
+- **Actual:** Exact, held.
+- **Operational impact:** More holds than the business may want (a mill shipping 2% over is normal), until a tolerance is set.
+- **Recommended correction:** A percentage over-receipt tolerance and a default size tolerance, once the owner gives them. No approval step for purchase orders was invented either.
+- **Required tests:** Per the decision.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Questions for the owner: what over-receipt is accepted without a hold (for example 5% or 10%), and does a purchase order above some value need approval before it is placed?
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-012 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-15
+- **Module:** Purchasing
+- **Workflow:** Matching the supplier's invoice
+- **Category:** Not built
+- **Source file or endpoint:** No table or route
+- **Evidence:** Schema read: purchase orders and receipts now exist and are linked; nothing records a supplier's invoice or compares it with what was ordered and received.
+- **Expected:** A supplier invoice is checked against the order and the receipts before it is paid.
+- **Actual:** Not recorded.
+- **Operational impact:** Payables are checked outside the system.
+- **Deferred: reason:** Supplier invoices and payables are accounting records; no payables module exists and none is in the scope of Phase 6.
+- **Deferred: target phase:** The phase the owner issues for finance, costing and supplier invoices
+- **Deferred: required correction:** A supplier invoice record matched to purchase order lines and receipts, with the costing decision K-007.
+- **Deferred: dependencies:** K-007.
+- **Deferred: acceptance criteria:** An invoice for more than was received is flagged.
+- **Deferred: verification:** A scenario that receives short and invoices in full.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-013 · P3 · BLOCKED
+
+- **Discovered:** 2026-11-15
+- **Module:** Scanning
+- **Workflow:** Finding an item by scanning its tag
+- **Category:** Not verified
+- **Source file or endpoint:** GET /api/coils/number/:coilNumber; stock items screen search
+- **Evidence:** An item is found by its exact number through the server, which is what a keyboard-wedge scanner types. No scanner, label printer or RFID reader was available in this environment. The old RFID scan write (/api/v1/inventory/rfid-scan) wrote to the retired second stock list and is switched off.
+- **Expected:** Scanners used at the branches are tested with the screens.
+- **Actual:** Lookup by typed or pasted number verified; hardware not tested.
+- **Operational impact:** Unknown until tried at a branch.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** HARDWARE NOT VERIFIED: blocked on access to the scanners, printers and readers the branches use. No claim of compatibility with any scanner, printer or reader is made.
+- **First recorded in:** Phase 6 inventory and purchasing audit
+
+### K-014 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-15
+- **Module:** Stock items
+- **Workflow:** How an item in transit is shown in lists
+- **Category:** Clarity
+- **Source file or endpoint:** Coil.status; stock items list
+- **Evidence:** An item in transit keeps its item status (for example AVAILABLE) and its balance carries the in-transit state. The item's own page says it is in transit and switches Move off; the stock list shows the item status and a free quantity of 0.
+- **Expected:** The list says "in transit" on the row.
+- **Actual:** Shown on the item page and the Transfers screen only.
+- **Operational impact:** A person reading only the list sees an available item with nothing free.
+- **Deferred: reason:** A wording and layout change on a list; no record is wrong and every action on the item is refused with the reason.
+- **Deferred: target phase:** Phase 9: user experience, visual design and accessibility
+- **Deferred: required correction:** Show an "In transit" chip on the stock list row.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** The row says in transit.
+- **Deferred: verification:** A browser check on the list.
+- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **First recorded in:** Phase 6 inventory and purchasing audit
 
 ### M-001 · P0 · VERIFIED FIXED
 
@@ -3701,7 +3934,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** Discount read from a setting; sweep check
 - **Assigned phase:** Sales and customer operations
-- **Status note:** Open
+- **Status note:** Open Phase 6: still the owner's. It now also blocks K-006 (connecting the Steel Outlet remnant list to stock).
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### S-010 · P1 · REQUIRES BUSINESS DECISION

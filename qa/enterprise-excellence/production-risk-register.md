@@ -1,6 +1,6 @@
 # Production risk register
 
-Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) and Phase 5 (2026-11-15). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
+Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) Phase 5 and Phase 6 (both 2026-11-15). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
 
 Likelihood and impact are a judgement from the evidence named in the row. "Blocks go-live" means the product should not carry real work for more than one branch until the risk is closed or the owner accepts it in writing.
 
@@ -81,6 +81,9 @@ What Phase 5 adds to, or changes in, the list:
 | R-34 | Orders shipped and never invoiced already exist on the live system | H-006: before Phase 4 a billing failure at dispatch was silent. How many live orders are in that state is unknown | Possible | Medium: unbilled material | No | After deployment the owner opens Admin > Integrations and reads "Shipped but not invoiced"; each is invoiced from its shipment | Owner |
 | R-35 | A partner integration goes live against routes that say "not built" | H-014: supplier shipping notices, corrective actions, scorecard and document upload answer 501 | Unlikely: they say so | Low | No | Built with purchasing and supplier quality | Engineer, in that phase |
 | R-36 | Staff believe a customer preference applies when it does not | J-008, S-020: six preference fields are saved and used by no order, quote, price or checkout. Since Phase 5 each says so on the screen | Likely without the label; low with it | Medium: a promised discount or a required PO is not enforced | No | The owner's rules for each field, then enforcement and a test per channel | Owner decision |
+| R-37 | Stock value, scrap cost and margin cannot be reported | K-007: receiving writes no cost; no costing method is chosen; purchase order prices are saved and not carried to the item | Certain | High for finance; none for stock quantities | Owner's call | The owner's costing method, then cost at receipt carried through pieces, transfers, scrap and sales, with a reconciliation | Owner decision |
+| R-38 | Staff send a transfer and the other branch never receives it on the system | G-007 (fixed): stock stays in transit, off sale at both branches, until the destination receives it or the sender calls it back | Likely in the first weeks | Medium: stock looks unavailable | No | Tell every branch before go-live; the Transfers screen lists what is on its way; a report of transfers open more than a set number of days | Owner: staff notice. Phase 9: the ageing report |
+| R-39 | Counts are not scheduled and bins are free text | K-008, K-009: corrections are controlled and audited, but nothing prompts a count and a bin can be mistyped | Likely | Medium | No | The owner's count policy and bin plan | Owner decision |
 
 ## Earlier risks changed by Phase 4
 
@@ -118,7 +121,23 @@ What Phase 5 adds to, or changes in, the list:
 
 Unchanged in substance from Phase 1, with two additions from Phase 2 and two from Phase 3 (the rule on shipping without a reservation, R-25, is settled; the host's connection settings are confirmed, R-26). A pilot at one branch is reasonable once: all eight database files are applied (R-15); every pilot login has a home branch (R-21); a restore has been tried once (R-11); only one stock list is in use (R-03); the sample modules the pilot branch does not need are off the menu (R-04); and the web store's promise dates are either real or hidden (R-05). That is a recommendation, not a decision made here.
 
+### Phase 6 update
+
+Phase 6 closed, with proof against the QA database: material on a truck counted and sold at the destination (G-007); any stock reservable for any line, including the wrong unit, grade, size or another customer's material (K-001); no purchase orders and receipts tied to nothing (I-007, K-002); a scrapped return that broke the item's history (K-003); returns in the wrong unit (K-004); shelf goods that could not be received by the piece (C-011). The second stock list can no longer be written (B-009).
+
+What Phase 6 adds to, or changes in, the list:
+
+1. **Seven database updates now wait for the owner** (R-15): files 6 to 12. File 12 adds the transfer tables, the in-transit quantity and the new balance check. The Phase 6 code needs it: do not merge before it is applied.
+2. **Stock has no value on the books** (new, K-007, P1): receiving writes no cost and no costing method is chosen. Stock value, scrap cost, shortage cost and margin cannot be reported. The owner's decision.
+3. **No cycle count program, reorder rules, receiving tolerance, purchase order approval or bin list** (K-008 to K-011): each needs the owner's rule. Until then every difference from a purchase order line is held for a manager, which is safe and slower.
+4. **Scanners, label printers and scales are NOT VERIFIED** (K-013).
+5. **Transfers already under way at go-live**: the old one-step transfer left nothing in transit, so no data needs converting. Staff need to be told that a transfer must now be received at the destination before the stock can be sold there.
+6. R-03 is reduced again: the second stock list is read-only.
+
+
 ## Rollback
+
+Phase 6 adds two tables, three optional columns, one index and replaces two checks (file 12); it deletes and rewrites nothing. The Phase 5 code runs on the new schema as long as no transfer is in transit: the replaced balance check counts the in-transit quantity, which the older code never fills. Before reverting the code, receive or call back every open transfer.
 
 Phase 4 adds one unique index and one index on `WebhookDelivery` (file 10) and renames the event id of any later duplicate row; it deletes nothing. The previous code runs on the new schema. The code changes are additive or opt-in on every route a screen calls; the partner routes had no working caller. The pull request can be reverted without touching the database.
 

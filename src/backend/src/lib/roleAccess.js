@@ -65,6 +65,8 @@ const WRITE_RULES = [
   [(p) => /^\/api\/orders\/[^/]+\/allocate$/.test(p), ['sales', 'warehouse', 'production'], 'Reserving stock for an order'],
   [(p) => /^\/api\/returns\/[^/]+\/receive$/.test(p), ['sales', 'warehouse', 'production'], 'Receiving a return'],
   [(p) => under(p, '/api/pos'), ['sales', 'warehouse'], 'Counter sales'],
+  // Phase 6 (K-002): purchase orders belong to purchasing. Managers and leadership may always change them.
+  [(p) => under(p, '/api/purchase-orders'), ['BUYER', 'INVENTORY_MANAGER'], 'Purchase orders', 'a buyer or the inventory manager'],
   [(p) => ['/api/orders', '/api/rfqs', '/api/quotes', '/api/returns', '/api/customers', '/api/invoices', '/api/sales'].some((x) => under(p, x)), ['sales'], 'Orders, quotes, customers and invoices'],
   [(p) => ['/api/inventory', '/api/coils', '/api/heats'].some((x) => under(p, x)), ['warehouse', 'production', 'quality'], 'Stock records'],
   [(p) => under(p, '/api/shipments'), ['warehouse', 'sales'], 'Shipments'],

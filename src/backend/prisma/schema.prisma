@@ -165,7 +165,8 @@ model User {
   approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
   operator         Operator?
 
-  quotesCreated Quote[] @relation("QuoteCreatedBy")
+  quotesCreated         Quote[]         @relation("QuoteCreatedBy")
+  stockTransfersCreated StockTransfer[] @relation("StockTransferCreator")
 
   @@index([customerId])
   @@index([homeLocationId])
@@ -412,10 +413,11 @@ model Heat {
 model Coil {
   id               String                @id @default(uuid())
   coilNumber       String                @unique
-  heatId           String
+  /// Required for every form except SUPPLY (shelf goods counted by the piece): database check Coil_heat_and_grade_unless_supply.
+  heatId           String?
   parentCoilId     String?
   productId        String?
-  gradeId          String
+  gradeId          String?
   ownerId          String
   form             ProductForm
   thicknessIn      Decimal?
@@ -443,8 +445,8 @@ model Coil {
   createdById      String
   updatedAt        DateTime              @updatedAt
   createdBy        User                  @relation("CoilCreator", fields: [createdById], references: [id])
-  grade            Grade                 @relation(fields: [gradeId], references: [id])
-  heat             Heat                  @relation(fields: [heatId], references: [id])
+  grade            Grade?                @relation(fields: [gradeId], references: [id], onDelete: Restrict)
+  heat             Heat?                 @relation(fields: [heatId], references: [id], onDelete: Restrict)
   location         Location?             @relation(fields: [locationId], references: [id])
   originOrder      Order?                @relation("OriginOrder", fields: [originOrderId], references: [id])
   owner            Organization          @relation(fields: [ownerId], references: [id])
@@ -458,6 +460,7 @@ model Coil {
   testResults      TestResult[]
   workOrderInputs  WorkOrder[]           @relation("WorkOrderInput")
   workOrderOutputs WorkOrderOutput[]
+  transferLines    StockTransferLine[]
 
   @@index([createdById])
   @@index([gradeId])
@@ -511,6 +514,9 @@ model Location {
   rfqsOwned   RFQ[]   @relation("RFQBranch")
   quotesOwned Quote[] @relation("QuoteBranch")
 
+  transfersOut StockTransfer[] @relation("TransferFrom")
+  transfersIn  StockTransfer[] @relation("TransferTo")
+
   @@index([ownerId])
   @@index([parentId])
 }
@@ -523,6 +529,8 @@ model Inventory {
   qtyAvailable  Decimal
   qtyAllocated  Decimal   @default(0)
   qtyOnHold     Decimal   @default(0)
+  /// Shipped to another branch and not yet received (Phase 6, G-007). On hand = available + allocated + on hold + in transit.
+  qtyInTransit  Decimal   @default(0)
   unit          String    @default("LB")
   unitCost      Decimal?
   landedCost    Decimal?
@@ -549,10 +557,13 @@ model MaterialMovement {
   orderId        String?
   workOrderId    String?
   shipmentId     String?
+  /// A receipt against a purchase order: the line it fills (Phase 6, I-007).
+  orderLineId    String?
   reasonCode     String?
   notes          String?
   createdAt      DateTime     @default(now())
   createdById    String
+  orderLine      OrderLine?   @relation("MovementOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
   coil           Coil         @relation(fields: [coilId], references: [id])
   createdBy      User         @relation(fields: [createdById], references: [id])
   fromLocation   Location?    @relation("MovementFrom", fields: [fromLocationId], references: [id])
@@ -565,6 +576,7 @@ model MaterialMovement {
   @@index([createdById])
   @@index([fromLocationId])
   @@index([orderId])
+  @@index([orderLineId])
   @@index([shipmentId])
   @@index([toLocationId])
   @@index([workOrderId])
@@ -1179,11 +1191,12 @@ model OrderLine {
   dropTags      DropTag[]
   packages      Package[]
 
-  invoiceLines InvoiceLine[] @relation("InvoiceLineOrderLine")
-  jobs         Job[]         @relation("JobOrderLine")
-  returnOfLine OrderLine?    @relation("OrderLineReturns", fields: [returnOfLineId], references: [id], onDelete: Restrict)
-  returnLines  OrderLine[]   @relation("OrderLineReturns")
-  workOrders   WorkOrder[]   @relation("WorkOrderLine")
+  invoiceLines InvoiceLine[]      @relation("InvoiceLineOrderLine")
+  jobs         Job[]              @relation("JobOrderLine")
+  returnOfLine OrderLine?         @relation("OrderLineReturns", fields: [returnOfLineId], references: [id], onDelete: Restrict)
+  returnLines  OrderLine[]        @relation("OrderLineReturns")
+  workOrders   WorkOrder[]        @relation("WorkOrderLine")
+  receipts     MaterialMovement[] @relation("MovementOrderLine")
 
   @@index([returnOfLineId])
   @@index([gradeId])
@@ -5303,4 +5316,53 @@ model RequestKey {
 
   @@unique([scope, key])
   @@index([createdAt])
+}
+
+/// Material sent from one branch to another (Phase 6, G-007). SHIPPED: on the road, off the sender's shelf and not
+/// yet on the receiver's. RECEIVED: on the receiver's books, with what arrived per line. CANCELLED: called back.
+model StockTransfer {
+  id             String              @id @default(uuid())
+  transferNumber String              @unique
+  fromLocationId String
+  toLocationId   String
+  status         String              @default("SHIPPED")
+  carrier        String?
+  reference      String?
+  notes          String?
+  createdAt      DateTime            @default(now())
+  createdById    String
+  shippedAt      DateTime?
+  shippedById    String?
+  receivedAt     DateTime?
+  receivedById   String?
+  cancelledAt    DateTime?
+  cancelledById  String?
+  cancelReason   String?
+  updatedAt      DateTime            @default(now()) @updatedAt
+  fromLocation   Location            @relation("TransferFrom", fields: [fromLocationId], references: [id])
+  toLocation     Location            @relation("TransferTo", fields: [toLocationId], references: [id])
+  createdBy      User                @relation("StockTransferCreator", fields: [createdById], references: [id])
+  lines          StockTransferLine[]
+
+  @@index([fromLocationId, status])
+  @@index([toLocationId, status])
+  @@index([createdById])
+}
+
+model StockTransferLine {
+  id          String        @id @default(uuid())
+  transferId  String
+  coilId      String
+  qtyShipped  Decimal
+  qtyReceived Decimal?
+  unit        String        @default("LB")
+  /// At receipt: GOOD, SHORT, DAMAGED or NOT_RECEIVED.
+  condition   String?
+  notes       String?
+  createdAt   DateTime      @default(now())
+  transfer    StockTransfer @relation(fields: [transferId], references: [id])
+  coil        Coil          @relation(fields: [coilId], references: [id])
+
+  @@unique([transferId, coilId])
+  @@index([coilId])
 }

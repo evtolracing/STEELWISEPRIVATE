@@ -790,7 +790,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const adminUser = await prisma.user.findUnique({ where: { email: QA_USERS.admin } });
   const csrUser = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
   // Two QA items with stock and nothing reserved: one for the hold checks, one to ship.
-  const free = await prisma.inventory.findMany({ where: { coil: { coilNumber: { startsWith: 'QA-' }, status: 'AVAILABLE' }, qtyAllocated: 0, qtyOnHold: 0, qtyAvailable: { gte: 500 } }, include: { coil: true }, orderBy: { coil: { coilNumber: 'desc' } }, take: 2 });
+  const free = await prisma.inventory.findMany({ where: { coil: { coilNumber: { startsWith: 'QA-' }, status: 'AVAILABLE' }, qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, qtyAvailable: { gte: 500 } }, include: { coil: true }, orderBy: { coil: { coilNumber: 'desc' } }, take: 2 });
   if (free.length < 2) findings.push('fewer than two free QA stock items: rebuild the QA database');
   else {
     const [a, b] = free;
@@ -1297,7 +1297,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     check('a schedule date that is not a date is refused', (await send('GET', '/api/jobs?scheduledFrom=tuesday', csrT)).status === 400, 'accepted');
 
     // --- Work orders: checked input, real moves ---
-    const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE', location: { code: { startsWith: 'QA-L' } } }, orderBy: { coilNumber: 'asc' } }); // at a branch the operator belongs to
+    const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE', location: { code: { startsWith: 'QA-L' } }, inventory: { is: { status: { not: 'IN_TRANSIT' } } } }, orderBy: { coilNumber: 'asc' } }); // at a branch the operator belongs to
     // Stock that is reserved may be cut for its order; stock that is on hold, shipped or used up may not.
     const busy = await prisma.coil.findFirst({ where: { status: { in: ['HOLD', 'SHIPPED', 'CONSUMED'] } } });
     const forged = await send('POST', '/api/work-orders', operatorT, { woType: 'SLIT', sourceCoilId: coil.id, priority: 2, notes: tag, id: 'forged-id', woNumber: 'WO-FORGED', status: 'COMPLETE', completedAt: '2020-01-01', yieldPct: 150, outputWeightLb: 999999 });
@@ -1326,7 +1326,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     const st = await send('PUT', `/api/work-orders/${woId}/start`, operatorT, {});
     check('a work order can be started', st.status === 200 && st.body?.status === 'IN_PROGRESS' && !!st.body?.startedAt, `status ${st.status}`);
     check('a started work order cannot be started again', (await send('PUT', `/api/work-orders/${woId}/start`, operatorT, {})).status === 409, 'started twice');
-    const input = Number(coil.netWeightLb);
+    const input = coilOnHand; // what the work order takes in: the balance now, which can be less than the weight first received
     check('completing needs the weight out', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, {})).status === 400, 'accepted with no weight');
     check('a negative weight is refused', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: -5 })).status === 400, 'accepted');
     check('more cannot come out than went in', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: input, scrapWeightLb: input })).status === 400 && (await prisma.workOrder.findUnique({ where: { id: woId } }))?.status === 'IN_PROGRESS', 'accepted');
@@ -1426,7 +1426,12 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       // Everything that ships comes off reserved stock: with nothing reserved the dispatch is refused.
       const unreserved = await send('PUT', `/api/shipments/${shipId}/dispatch`, shipT, {});
       check('a shipment with nothing reserved is refused, and says to reserve the stock', unreserved.status === 409 && /reserve/i.test(unreserved.body?.error || ''), `status ${unreserved.status} ${unreserved.body?.error || ''}`);
-      const stock = await prisma.inventory.findFirst({ where: { locationId: branch.id, qtyAvailable: { gte: 2 }, coil: { status: 'AVAILABLE', qcStatus: { notIn: ['FAILED', 'HOLD'] } } }, select: { coilId: true } });
+      // Since Phase 6 a reservation must be in the line's unit: a web line for pieces is filled from
+      // stock counted by the piece, so the test receives a lot of pieces at the branch to ship from.
+      const pieceProduct = await prisma.product.findFirst({ where: { isActive: true }, orderBy: { sku: 'asc' }, select: { sku: true } });
+      const pieces = await send('POST', '/api/inventory/receipts', adminT, { coilNumber: `${tag}-PCS`, form: 'SUPPLY', pieces: 10, productSku: pieceProduct?.sku, locationCode: branch.code });
+      check('a lot of pieces can be received to ship from', pieces.status === 201, `status ${pieces.status} ${pieces.body?.error || ''}`);
+      const stock = await prisma.inventory.findFirst({ where: { locationId: branch.id, unit: 'EA', qtyAvailable: { gte: 2 }, coil: { coilNumber: `${tag}-PCS`, status: 'AVAILABLE' } }, select: { coilId: true } });
       const held = await send('POST', `/api/orders/${order.id}/allocate`, adminT, { lineId: line.id, coilId: stock?.coilId, qty: 2 });
       check('the stock going out is reserved for the line', held.status === 201, `status ${held.status} ${held.body?.error || ''}`);
       const out = await send('PUT', `/api/shipments/${shipId}/dispatch`, shipT, {});

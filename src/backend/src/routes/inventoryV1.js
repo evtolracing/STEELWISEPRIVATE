@@ -13,6 +13,18 @@ import {
 
 const router = Router();
 
+// The second stock list is retired for changes (Phase 6, B-009 and owner's decision 1 of 2026-11-13: the stock
+// items list that orders, receiving, shipping and invoices update is the real stock). Nothing in it is deleted,
+// and it can still be read, so whatever the live tables hold can be looked at before anything is moved.
+const RETIRED = (what, use) => (req, res) => res.status(410).json({
+  error: `${what} on this list is closed. This list is not the company's stock: orders, receiving, shipping and invoices never see it. ${use}`,
+  code: 'RETIRED',
+});
+router.post('/adjust', RETIRED('Correcting a balance', 'Correct the stock item instead (POST /api/inventory/adjust).'));
+router.post('/rfid-scan', RETIRED('Recording a scan', 'Look the item up by its tag on the stock items screen.'));
+router.post('/transfers', RETIRED('Sending a transfer', 'Send it from the stock items screen (POST /api/inventory/transfers).'));
+router.post('/transfers/:id/status', RETIRED('Changing a transfer', 'Transfers are received on the Transfers screen (POST /api/inventory/transfers/:id/receive).'));
+
 // ============================================
 // DATA
 // ============================================

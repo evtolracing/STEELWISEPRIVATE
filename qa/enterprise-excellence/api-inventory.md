@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit c43ee25. Do not edit by hand: change the source and rerun.
 
-619 routes in 74 route files, served at 75 mount points. 323 change data.
+633 routes in 75 route files, served at 76 mount points. 332 change data.
 
 ## What the columns mean
 
@@ -15,12 +15,12 @@ Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 338 of 619 |
-| Changing routes that returned a success in a test | 115 of 323 |
+| Routes that returned a success in a test | 350 of 633 |
+| Changing routes that returned a success in a test | 122 of 332 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
-| Handlers with no try/catch of their own | 165 (many use a shared wrapper) |
-| Routes that use raw SQL | 3 |
+| Handlers with no try/catch of their own | 169 (many use a shared wrapper) |
+| Routes that use raw SQL | 4 |
 | Calls the screens make that have no server route | 66 |
 
 ## Reply shapes
@@ -47,7 +47,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/products` | products.js:40 |
 | `GET /api/heats/:heatNumber/trace` | heats.js:131 |
 | `GET /api/coils/:id/history` | coils.js:113 |
-| `GET /api/inventory/locations` | inventory.js:195 |
+| `GET /api/inventory/locations` | inventory.js:274 |
 | `GET /api/processing-recipes` | processingRecipes.js:67 |
 | `GET /api/processing-recipes/routing-templates` | processingRecipes.js:81 |
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
@@ -166,9 +166,9 @@ Mounted at /api/heats. Tables: Heat, Organization, MaterialMovement.
 | `PUT /api/heats/:id` | yes | 1 |  |  |  |  |
 | `GET /api/heats/:heatNumber/trace` | yes |  |  | yes |  |  |
 
-### coils.js (8 routes, 282 lines)
+### coils.js (8 routes, 262 lines)
 
-Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory.
+Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -178,12 +178,12 @@ Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocati
 | `GET /api/coils/:id/history` | yes |  |  | yes |  |  |
 | `POST /api/coils` |  | 1 |  |  |  |  |
 | `PUT /api/coils/:id` | yes | 1 |  |  |  |  |
-| `POST /api/coils/:id/hold` | yes | 3 | yes |  |  |  |
-| `POST /api/coils/:id/release` | yes | 3 | yes |  |  |  |
+| `POST /api/coils/:id/hold` | yes |  | yes |  |  |  |
+| `POST /api/coils/:id/release` | yes |  | yes |  |  |  |
 
-### inventory.js (11 routes, 327 lines)
+### inventory.js (17 routes, 417 lines)
 
-Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement.
+Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement, StockTransfer.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -191,7 +191,13 @@ Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement.
 | `GET /api/inventory/search` | yes |  |  |  |  |  |
 | `GET /api/inventory/summary` | yes |  |  |  |  |  |
 | `POST /api/inventory/receive` | yes | 2 | yes |  |  |  |
-| `POST /api/inventory/transfer` | yes | 3 | yes |  |  |  |
+| `POST /api/inventory/transfer` | yes |  |  |  |  |  |
+| `GET /api/inventory/transfers` | yes |  |  |  |  |  |
+| `GET /api/inventory/transfers/:id` | yes |  |  |  |  |  |
+| `POST /api/inventory/transfers` | yes |  |  |  |  |  |
+| `POST /api/inventory/transfers/:id/receive` | yes |  | yes |  |  |  |
+| `POST /api/inventory/transfers/:id/settle` | yes |  | yes |  |  |  |
+| `POST /api/inventory/transfers/:id/cancel` | yes |  | yes |  |  |  |
 | `POST /api/inventory/adjust` | yes |  | yes |  |  |  |
 | `GET /api/inventory/locations` | yes |  |  | yes |  |  |
 | `POST /api/inventory/receipts` | yes |  |  |  |  |  |
@@ -238,8 +244,8 @@ Mounted at /api/remnants. Tables: through a service or none.
 | `POST /api/remnants/pricing/batch` |  |  |  |  |  |  |
 | `GET /api/remnants/pricing/floor` | yes |  |  |  |  |  |
 | `GET /api/remnants/:id` |  |  |  |  |  |  |
-| `POST /api/remnants/:id/reserve` |  |  |  |  |  |  |
-| `POST /api/remnants/:id/release` |  |  |  |  |  |  |
+| `POST /api/remnants/:id/reserve` | yes |  |  |  |  |  |
+| `POST /api/remnants/:id/release` | yes |  |  |  |  |  |
 
 ### portal.js (12 routes, 112 lines)
 
@@ -344,9 +350,9 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (7 routes, 439 lines)
+### orders.js (7 routes, 458 lines)
 
-Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog.
+Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, User.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -357,6 +363,17 @@ Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory
 | `POST /api/orders` | yes | 4 | yes | yes |  |  |
 | `PUT /api/orders/:id` | yes | 3 | yes |  | yes |  |
 | `POST /api/orders/:id/allocate` | yes | 4 | yes |  | yes |  |
+
+### purchaseOrders.js (4 routes, 164 lines)
+
+Mounted at /api/purchase-orders. Tables: Organization, Location, Order, OrderLine, AuditLog.
+
+| Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
+|---|:-:|---:|:-:|:-:|:-:|---|
+| `GET /api/purchase-orders/suppliers` | yes |  |  |  |  |  |
+| `GET /api/purchase-orders/supply-position` | yes |  |  |  |  |  |
+| `GET /api/purchase-orders/:id` | yes |  |  |  |  |  |
+| `PUT /api/purchase-orders/:id` | yes | 3 | yes |  | yes |  |
 
 ### workOrders.js (7 routes, 209 lines)
 
@@ -372,7 +389,7 @@ Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, OrderLine, Inven
 | `PUT /api/work-orders/:id/complete` | yes | 2 | yes |  | yes |  |
 | `PUT /api/work-orders/:id/cancel` | yes |  |  |  |  |  |
 
-### shipments.js (11 routes, 487 lines)
+### shipments.js (11 routes, 490 lines)
 
 Mounted at /api/shipments. Tables: Shipment, Order, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, WorkCenter.
 
@@ -404,9 +421,9 @@ Mounted at /api/invoices. Tables: through a service or none.
 | `POST /api/invoices/:id/refund` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/cancel` | yes |  |  |  |  |  |
 
-### returns.js (6 routes, 307 lines)
+### returns.js (6 routes, 330 lines)
 
-Mounted at /api/returns. Tables: Order, MaterialMovement, Inventory, InvoiceLine, Coil, OrderLine.
+Mounted at /api/returns. Tables: Order, MaterialMovement, Inventory, InvoiceLine, Coil, QCHold, OrderLine.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -414,7 +431,7 @@ Mounted at /api/returns. Tables: Order, MaterialMovement, Inventory, InvoiceLine
 | `GET /api/returns/eligible` |  |  |  |  |  |  |
 | `GET /api/returns/:id` |  |  |  |  |  |  |
 | `POST /api/returns` | yes | 1 | yes | yes |  |  |
-| `POST /api/returns/:id/receive` | yes | 6 | yes |  |  |  |
+| `POST /api/returns/:id/receive` | yes | 8 | yes |  |  |  |
 | `POST /api/returns/:id/cancel` |  | 1 |  |  |  |  |
 
 ### taxRates.js (3 routes, 64 lines)
@@ -683,12 +700,16 @@ Mounted at /api/ai/assistant. Tables: through a service or none.
 | `POST /api/ai/assistant` | yes |  |  |  |  |  |
 | `POST /api/ai/assistant/stream` |  |  |  |  |  |  |
 
-### inventoryV1.js (13 routes, 864 lines)
+### inventoryV1.js (17 routes, 876 lines)
 
 Mounted at /api/v1/inventory. Tables: through a service or none.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
+| `POST /api/v1/inventory/adjust` |  |  |  |  |  |  |
+| `POST /api/v1/inventory/rfid-scan` |  |  |  |  |  |  |
+| `POST /api/v1/inventory/transfers` |  |  |  |  |  |  |
+| `POST /api/v1/inventory/transfers/:id/status` |  |  |  |  |  |  |
 | `GET /api/v1/inventory` | yes |  |  |  |  |  |
 | `GET /api/v1/inventory/locations` | yes |  |  |  |  |  |
 | `GET /api/v1/inventory/catalog` | yes |  |  |  |  |  |

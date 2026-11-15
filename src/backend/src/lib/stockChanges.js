@@ -26,7 +26,7 @@ const lb = (v) => `${round4(v).toLocaleString()} lb`;
 
 /** Locks the balance row of one stock item and returns it as numbers. */
 async function lockBalance(tx, coilId) {
-  const rows = await tx.$queryRaw`SELECT "id", "locationId", "unit", "qtyOnHand"::float8 AS "onHand", "qtyAvailable"::float8 AS "available",
+  const rows = await tx.$queryRaw`SELECT "id", "locationId", "unit", "status", "qtyOnHand"::float8 AS "onHand", "qtyAvailable"::float8 AS "available",
     "qtyAllocated"::float8 AS "reserved", "qtyOnHold"::float8 AS "onHold" FROM "Inventory" WHERE "coilId" = ${coilId} FOR UPDATE`;
   return rows[0] || null;
 }
@@ -47,6 +47,7 @@ async function setStatusAfter(tx, coilId, onHandAfter) {
 export async function takeFromParent(tx, { parentId, parentNumber, weight, childNumber, userId }) {
   const bal = await lockBalance(tx, parentId);
   if (!bal) refuse(409, `Parent item ${parentNumber} has no stock balance, so a piece cannot be taken from it`);
+  if (bal.status === 'IN_TRANSIT') refuse(409, `Parent item ${parentNumber} is on its way to another branch, so a piece cannot be taken from it yet`);
   if (weight > bal.available + EPS) {
     refuse(409, `Parent item ${parentNumber} has ${lb(bal.available)} free, which is less than the ${lb(weight)} of this piece. Correct the parent's balance, or release what is reserved or on hold, first.`);
   }
@@ -99,6 +100,7 @@ export async function completeWorkOrder(tx, wo, { out, scrap, pieces }, userId) 
   if (source.status === 'HOLD' || ['FAILED', 'HOLD'].includes(source.qcStatus)) refuse(409, `Stock item ${source.coilNumber} is on hold. Release the hold before completing work on it.`);
   const bal = await lockBalance(tx, source.id);
   if (!bal) refuse(409, `Stock item ${source.coilNumber} has no stock balance`);
+  if (bal.status === 'IN_TRANSIT') refuse(409, `Stock item ${source.coilNumber} is on its way to another branch. Receive the transfer before completing work on it.`);
 
   const used = round4(out + scrap);
   // What is reserved on the source for this work order's own line can be used by it.
@@ -164,6 +166,7 @@ export async function adjustStock(tx, { coilId, countedQty, change, reason, note
   if (!coil) refuse(404, 'Stock item not found');
   const bal = await lockBalance(tx, coilId);
   if (!bal) refuse(409, `Stock item ${coil.coilNumber} has no stock balance`);
+  if (bal.status === 'IN_TRANSIT') refuse(409, `Stock item ${coil.coilNumber} is on its way to another branch. Count it when it has been received.`);
   const delta = round4(countedQty != null ? countedQty - bal.onHand : change);
   const after = round4(bal.onHand + delta);
   if (after < -EPS) refuse(409, `Stock item ${coil.coilNumber} has ${lb(bal.onHand)} on hand, so ${lb(-delta)} cannot be taken off`);

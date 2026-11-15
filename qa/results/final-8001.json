@@ -1,7 +1,7 @@
 {
  "seed": 8001,
  "base": "http://localhost:3011",
- "at": "2026-11-15T09:09:22.581Z",
+ "at": "2026-11-15T18:42:22.968Z",
  "scenarios": [
   {
    "id": "S8001-01",
@@ -200,7 +200,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 659
+   "ms": 493
   },
   {
    "id": "S8001-02",
@@ -373,7 +373,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 457
+   "ms": 356
   },
   {
    "id": "S8001-03",
@@ -572,7 +572,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 469
+   "ms": 385
   },
   {
    "id": "S8001-04",
@@ -755,7 +755,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 446
+   "ms": 360
   },
   {
    "id": "S8001-05",
@@ -928,7 +928,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 454
+   "ms": 335
   },
   {
    "id": "S8001-06",
@@ -1161,7 +1161,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 621
+   "ms": 483
   },
   {
    "id": "S8001-07",
@@ -1368,7 +1368,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 569
+   "ms": 443
   },
   {
    "id": "S8001-08",
@@ -1601,7 +1601,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 737
+   "ms": 534
   },
   {
    "id": "S8001-09",
@@ -1860,7 +1860,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 813
+   "ms": 577
   },
   {
    "id": "S8001-10",
@@ -2093,7 +2093,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 663
+   "ms": 471
   },
   {
    "id": "S8001-11",
@@ -2326,7 +2326,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 645
+   "ms": 474
   },
   {
    "id": "S8001-12",
@@ -2585,7 +2585,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 690
+   "ms": 585
   },
   {
    "id": "S8001-13",
@@ -2758,7 +2758,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 502
+   "ms": 325
   },
   {
    "id": "S8001-14",
@@ -2971,7 +2971,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 537
+   "ms": 438
   },
   {
    "id": "S8001-15",
@@ -3144,7 +3144,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 450
+   "ms": 363
   },
   {
    "id": "S8001-16",
@@ -3347,7 +3347,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 580
+   "ms": 420
   },
   {
    "id": "S8001-17",
@@ -3546,7 +3546,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 483
+   "ms": 361
   },
   {
    "id": "S8001-18",
@@ -3789,7 +3789,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 670
+   "ms": 541
   },
   {
    "id": "S8001-19",
@@ -3846,7 +3846,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 136
+   "ms": 101
   },
   {
    "id": "S8001-20",
@@ -3903,7 +3903,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 105
+   "ms": 86
   },
   {
    "id": "S8001-21",
@@ -3960,7 +3960,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 95
+   "ms": 82
   },
   {
    "id": "S8001-22",
@@ -4083,7 +4083,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 201
+   "ms": 157
   },
   {
    "id": "S8001-23",
@@ -4206,7 +4206,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 214
+   "ms": 149
   },
   {
    "id": "S8001-24",
@@ -4232,6 +4232,12 @@
     },
     {
      "name": "transfer QA-L33-S2 QA-L33 → QA-L54",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L33-S2 QA-L33 → QA-L54: received at the other branch",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4287,6 +4293,10 @@
    ],
    "invariants": [
     {
+     "name": "transfer QA-L33-S2 QA-L33 → QA-L54: the item is in transit until it is received",
+     "ok": true
+    },
+    {
      "name": "transfer did not create or lose stock",
      "ok": true
     },
@@ -4333,7 +4343,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 380
+   "ms": 377
   },
   {
    "id": "S8001-25",
@@ -4450,7 +4460,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 345
+   "ms": 333
   },
   {
    "id": "S8001-26",
@@ -4476,6 +4486,12 @@
     },
     {
      "name": "transfer QA-L31-S4 QA-L31 → QA-L20",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L31-S4 QA-L31 → QA-L20: received at the other branch",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4531,6 +4547,10 @@
    ],
    "invariants": [
     {
+     "name": "transfer QA-L31-S4 QA-L31 → QA-L20: the item is in transit until it is received",
+     "ok": true
+    },
+    {
      "name": "transfer did not create or lose stock",
      "ok": true
     },
@@ -4577,7 +4597,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 468
+   "ms": 363
   },
   {
    "id": "S8001-27",
@@ -4694,7 +4714,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 350
+   "ms": 265
   },
   {
    "id": "S8001-28",
@@ -4811,7 +4831,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 324
+   "ms": 256
   },
   {
    "id": "S8001-29",
@@ -4928,7 +4948,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 355
+   "ms": 280
   },
   {
    "id": "S8001-30",
@@ -4969,7 +4989,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 28
+   "ms": 26
   },
   {
    "id": "S8001-31",
@@ -5002,7 +5022,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 23
+   "ms": 11
   },
   {
    "id": "S8001-32",
@@ -5011,11 +5031,25 @@
     {
      "name": "transfer whole item between branches",
      "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer whole item between branches: received at the other branch",
+     "expect": "2xx",
      "status": 200,
      "ok": true
     }
    ],
    "invariants": [
+    {
+     "name": "transfer whole item between branches: the item is in transit until it is received",
+     "ok": true
+    },
+    {
+     "name": "after receipt the whole item is at the other branch and on sale there",
+     "ok": true
+    },
     {
      "name": "QA-L35-S1: no negative quantities",
      "ok": true
@@ -5035,7 +5069,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 30
+   "ms": 53
   },
   {
    "id": "S8001-33",
@@ -5068,7 +5102,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 17
+   "ms": 12
   },
   {
    "id": "S8001-34",
@@ -5083,25 +5117,25 @@
    ],
    "invariants": [
     {
-     "name": "QA-L54-S1: no negative quantities",
+     "name": "QA-L54-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L54-S1: on hand = available + allocated + on hold",
+     "name": "QA-L54-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L54-S1: inventory allocated = open allocations",
+     "name": "QA-L54-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L54-S1: inventory branch = coil branch",
+     "name": "QA-L54-S2: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 19
+   "ms": 13
   },
   {
    "id": "S8001-35",
@@ -5284,7 +5318,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 407
+   "ms": 335
   },
   {
    "id": "S8001-36",
@@ -5349,7 +5383,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 72
+   "ms": 62
   },
   {
    "id": "S8001-37",
@@ -5430,7 +5464,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 117
+   "ms": 93
   },
   {
    "id": "S8001-38",
@@ -5549,7 +5583,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 218
+   "ms": 210
   },
   {
    "id": "S8001-39",
@@ -5626,7 +5660,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 125
+   "ms": 117
   },
   {
    "id": "S8001-40",
@@ -5889,7 +5923,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 601
+   "ms": 466
   },
   {
    "id": "S8001-41",
@@ -6136,7 +6170,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 571
+   "ms": 475
   },
   {
    "id": "S8001-42",
@@ -6319,7 +6353,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 425
+   "ms": 377
   },
   {
    "id": "S8001-43",
@@ -6518,7 +6552,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 488
+   "ms": 485
   },
   {
    "id": "S8001-44",
@@ -6767,7 +6801,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 484
+   "ms": 473
   },
   {
    "id": "S8001-45",
@@ -7008,7 +7042,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 548
+   "ms": 598
   },
   {
    "id": "S8001-46",
@@ -7259,7 +7293,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 574
+   "ms": 570
   },
   {
    "id": "S8001-47",
@@ -7408,18 +7442,6 @@
      "ok": true
     },
     {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 2: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -7429,6 +7451,18 @@
     },
     {
      "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -7472,11 +7506,11 @@
      "ok": true
     },
     {
-     "name": "line 1: invoiced qty = shipped qty",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
+     "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
@@ -7510,7 +7544,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 581
+   "ms": 571
   },
   {
    "id": "S8001-48",
@@ -7761,7 +7795,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 587
+   "ms": 568
   },
   {
    "id": "S8001-49",
@@ -7880,7 +7914,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 226
+   "ms": 188
   },
   {
    "id": "S8001-50",
@@ -7983,7 +8017,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 188
+   "ms": 220
   }
  ],
  "concurrency": {
@@ -7997,17 +8031,17 @@
    {
     "name": "two reservations racing for the same stock: exactly one wins",
     "pass": true,
-    "detail": "statuses 409,201; available 6800"
+    "detail": "statuses 201,409; available 6800"
    },
    {
     "name": "two shipments racing for the same order line: exactly one is created",
     "pass": true,
-    "detail": "statuses 409,201"
+    "detail": "statuses 201,409"
    },
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 409,409,200; line shipped 10200 of 10200; on hand 17000 → 6800"
+    "detail": "statuses 409,200,409; line shipped 10200 of 10200; on hand 17000 → 6800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8063,8 +8097,8 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 716,
-  "checks": 784,
+  "steps": 719,
+  "checks": 788,
   "failedSteps": {},
   "failedChecks": {}
  }

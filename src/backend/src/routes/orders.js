@@ -16,6 +16,7 @@ import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { orderMoveError, positiveQty } from '../lib/workflowRules.js';
+import { reservationProblem } from '../lib/reservationRules.js';
 
 const STALE_EDIT = 'This order was just changed by someone else. Reload and try again.';
 const router = Router();
@@ -397,9 +398,27 @@ router.post('/:id/allocate', async (req, res) => {
     // Seen through the user's branch first: a line they may not open is "not found".
     const seen = await prisma.orderLine.findUnique({ where: { id: lineId }, select: { orderId: true } });
     if (!seen || seen.orderId !== req.params.id) return res.status(404).json({ error: 'Order line not found on this order' });
-    const coil = await prisma.coil.findUnique({ where: { id: coilId }, select: { id: true, status: true, qcStatus: true, inventory: { select: { qtyAvailable: true } } } });
+    const coil = await prisma.coil.findUnique({
+      where: { id: coilId },
+      select: {
+        id: true, coilNumber: true, status: true, qcStatus: true, gradeId: true, ownerId: true, thicknessIn: true, widthIn: true, lengthIn: true,
+        grade: { select: { code: true } }, owner: { select: { name: true } }, inventory: { select: { qtyAvailable: true, unit: true, status: true } },
+      },
+    });
     if (!coil || !coil.inventory) return res.status(404).json({ error: 'Stock item not found' });
     if (coil.status === 'HOLD' || ['FAILED', 'HOLD'].includes(coil.qcStatus)) return res.status(409).json({ error: 'This stock is on hold and cannot be reserved' });
+    // What the line needs and what the item is must agree (Phase 6, lib/reservationRules.js).
+    const want = await prisma.orderLine.findUnique({
+      where: { id: lineId },
+      select: { lineNumber: true, unit: true, gradeId: true, thicknessIn: true, widthIn: true, lengthIn: true, thkTolerancePlus: true, thkToleranceMinus: true, grade: { select: { code: true } }, order: { select: { buyerId: true, sellerId: true } } },
+    });
+    const me = await prisma.user.findUnique({ where: { id: req.user.id }, select: { organizationId: true } });
+    const problem = reservationProblem({
+      line: { ...want, gradeCode: want.grade?.code }, order: want.order,
+      coil: { ...coil, gradeCode: coil.grade?.code, ownerName: coil.owner?.name }, inventory: coil.inventory,
+      houseOrgIds: [me?.organizationId, want.order?.sellerId].filter(Boolean),
+    });
+    if (problem) return res.status(problem.status).json({ error: problem.error, code: problem.code });
 
     const outcome = await prisma.$transaction(async (tx) => {
       // The order row is locked for the length of the reservation. A cancellation, or a second

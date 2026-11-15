@@ -1,7 +1,7 @@
 {
  "seed": 8002,
  "base": "http://localhost:3011",
- "at": "2026-11-15T09:09:43.887Z",
+ "at": "2026-11-15T18:37:36.694Z",
  "scenarios": [
   {
    "id": "S8002-01",
@@ -32,25 +32,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00121 → IN_PROCESS",
+     "name": "job JOB-00122 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00121 → WAITING_QC",
+     "name": "job JOB-00122 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00121 → PACKAGING",
+     "name": "job JOB-00122 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00121 → READY_TO_SHIP",
+     "name": "job JOB-00122 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -174,7 +174,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 443
+   "ms": 367
   },
   {
    "id": "S8002-02",
@@ -205,25 +205,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00123 → IN_PROCESS",
+     "name": "job JOB-00124 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00123 → WAITING_QC",
+     "name": "job JOB-00124 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00123 → PACKAGING",
+     "name": "job JOB-00124 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00123 → READY_TO_SHIP",
+     "name": "job JOB-00124 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -347,7 +347,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 420
+   "ms": 315
   },
   {
    "id": "S8002-03",
@@ -378,25 +378,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00124 → IN_PROCESS",
+     "name": "job JOB-00125 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00124 → WAITING_QC",
+     "name": "job JOB-00125 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00124 → PACKAGING",
+     "name": "job JOB-00125 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00124 → READY_TO_SHIP",
+     "name": "job JOB-00125 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -520,7 +520,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 369
+   "ms": 317
   },
   {
    "id": "S8002-04",
@@ -551,25 +551,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00125 → IN_PROCESS",
+     "name": "job JOB-00126 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 → WAITING_QC",
+     "name": "job JOB-00126 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 → PACKAGING",
+     "name": "job JOB-00126 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 → READY_TO_SHIP",
+     "name": "job JOB-00126 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -693,7 +693,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 381
+   "ms": 327
   },
   {
    "id": "S8002-05",
@@ -876,7 +876,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 433
+   "ms": 340
   },
   {
    "id": "S8002-06",
@@ -1083,7 +1083,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 519
+   "ms": 422
   },
   {
    "id": "S8002-07",
@@ -1300,7 +1300,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 562
+   "ms": 404
   },
   {
    "id": "S8002-08",
@@ -1543,7 +1543,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 719
+   "ms": 507
   },
   {
    "id": "S8002-09",
@@ -1776,7 +1776,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 682
+   "ms": 510
   },
   {
    "id": "S8002-10",
@@ -2019,7 +2019,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 680
+   "ms": 484
   },
   {
    "id": "S8002-11",
@@ -2278,7 +2278,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 760
+   "ms": 570
   },
   {
    "id": "S8002-12",
@@ -2511,7 +2511,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 667
+   "ms": 472
   },
   {
    "id": "S8002-13",
@@ -2684,7 +2684,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 438
+   "ms": 290
   },
   {
    "id": "S8002-14",
@@ -2913,7 +2913,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 647
+   "ms": 424
   },
   {
    "id": "S8002-15",
@@ -3086,7 +3086,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 423
+   "ms": 291
   },
   {
    "id": "S8002-16",
@@ -3315,7 +3315,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 562
+   "ms": 431
   },
   {
    "id": "S8002-17",
@@ -3498,7 +3498,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 411
+   "ms": 306
   },
   {
    "id": "S8002-18",
@@ -3711,7 +3711,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 531
+   "ms": 381
   },
   {
    "id": "S8002-19",
@@ -3768,7 +3768,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 127
+   "ms": 91
   },
   {
    "id": "S8002-20",
@@ -3825,7 +3825,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 108
+   "ms": 88
   },
   {
    "id": "S8002-21",
@@ -3882,7 +3882,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 115
+   "ms": 83
   },
   {
    "id": "S8002-22",
@@ -4005,7 +4005,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 193
+   "ms": 161
   },
   {
    "id": "S8002-23",
@@ -4128,7 +4128,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 209
+   "ms": 150
   },
   {
    "id": "S8002-24",
@@ -4154,6 +4154,12 @@
     },
     {
      "name": "transfer QA-L24-S5 QA-L24 → QA-L31",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L24-S5 QA-L24 → QA-L31: received at the other branch",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4209,6 +4215,10 @@
    ],
    "invariants": [
     {
+     "name": "transfer QA-L24-S5 QA-L24 → QA-L31: the item is in transit until it is received",
+     "ok": true
+    },
+    {
      "name": "transfer did not create or lose stock",
      "ok": true
     },
@@ -4255,7 +4265,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 394
+   "ms": 420
   },
   {
    "id": "S8002-25",
@@ -4281,6 +4291,12 @@
     },
     {
      "name": "transfer QA-L24-S3 QA-L24 → QA-L80",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L24-S3 QA-L24 → QA-L80: received at the other branch",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4336,6 +4352,10 @@
    ],
    "invariants": [
     {
+     "name": "transfer QA-L24-S3 QA-L24 → QA-L80: the item is in transit until it is received",
+     "ok": true
+    },
+    {
      "name": "transfer did not create or lose stock",
      "ok": true
     },
@@ -4382,7 +4402,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 398
+   "ms": 339
   },
   {
    "id": "S8002-26",
@@ -4499,7 +4519,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 373
+   "ms": 281
   },
   {
    "id": "S8002-27",
@@ -4616,7 +4636,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 363
+   "ms": 273
   },
   {
    "id": "S8002-28",
@@ -4733,7 +4753,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 364
+   "ms": 282
   },
   {
    "id": "S8002-29",
@@ -4759,6 +4779,12 @@
     },
     {
      "name": "transfer QA-L68-S2 QA-L68 → QA-L59",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L68-S2 QA-L68 → QA-L59: received at the other branch",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4814,6 +4840,10 @@
    ],
    "invariants": [
     {
+     "name": "transfer QA-L68-S2 QA-L68 → QA-L59: the item is in transit until it is received",
+     "ok": true
+    },
+    {
      "name": "transfer did not create or lose stock",
      "ok": true
     },
@@ -4860,7 +4890,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 406
+   "ms": 309
   },
   {
    "id": "S8002-30",
@@ -4901,7 +4931,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 31
+   "ms": 19
   },
   {
    "id": "S8002-31",
@@ -4934,7 +4964,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 14
+   "ms": 12
   },
   {
    "id": "S8002-32",
@@ -4943,11 +4973,25 @@
     {
      "name": "transfer whole item between branches",
      "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer whole item between branches: received at the other branch",
+     "expect": "2xx",
      "status": 200,
      "ok": true
     }
    ],
    "invariants": [
+    {
+     "name": "transfer whole item between branches: the item is in transit until it is received",
+     "ok": true
+    },
+    {
+     "name": "after receipt the whole item is at the other branch and on sale there",
+     "ok": true
+    },
     {
      "name": "QA-L36-S4: no negative quantities",
      "ok": true
@@ -4967,7 +5011,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 32
+   "ms": 59
   },
   {
    "id": "S8002-33",
@@ -5000,7 +5044,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 15
+   "ms": 13
   },
   {
    "id": "S8002-34",
@@ -5015,25 +5059,25 @@
    ],
    "invariants": [
     {
-     "name": "QA-L76-S1: no negative quantities",
+     "name": "QA-L76-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L76-S1: on hand = available + allocated + on hold",
+     "name": "QA-L76-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L76-S1: inventory allocated = open allocations",
+     "name": "QA-L76-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L76-S1: inventory branch = coil branch",
+     "name": "QA-L76-S2: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 17
+   "ms": 13
   },
   {
    "id": "S8002-35",
@@ -5232,7 +5276,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 518
+   "ms": 340
   },
   {
    "id": "S8002-36",
@@ -5297,7 +5341,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 78
+   "ms": 66
   },
   {
    "id": "S8002-37",
@@ -5316,7 +5360,7 @@
      "ok": true
     },
     {
-     "name": "allocate 400 lb from QA-L76-S2",
+     "name": "allocate 400 lb from QA-L76-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5360,25 +5404,25 @@
      "ok": true
     },
     {
-     "name": "QA-L76-S2: no negative quantities",
+     "name": "QA-L76-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: on hand = available + allocated + on hold",
+     "name": "QA-L76-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory allocated = open allocations",
+     "name": "QA-L76-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory branch = coil branch",
+     "name": "QA-L76-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 131
+   "ms": 93
   },
   {
    "id": "S8002-38",
@@ -5497,7 +5541,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 249
+   "ms": 197
   },
   {
    "id": "S8002-39",
@@ -5574,7 +5618,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 138
+   "ms": 107
   },
   {
    "id": "S8002-40",
@@ -5785,22 +5829,6 @@
      "ok": true
     },
     {
-     "name": "INV-000065: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000065: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000065: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000065: never paid more than billed",
-     "ok": true
-    },
-    {
      "name": "INV-000064: total = subtotal + tax + freight",
      "ok": true
     },
@@ -5814,6 +5842,22 @@
     },
     {
      "name": "INV-000064: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "INV-000065: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000065: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000065: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000065: never paid more than billed",
      "ok": true
     },
     {
@@ -5831,7 +5875,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 638
+   "ms": 484
   },
   {
    "id": "S8002-41",
@@ -6032,22 +6076,6 @@
      "ok": true
     },
     {
-     "name": "INV-000066: total = subtotal + tax + freight",
-     "ok": true
-    },
-    {
-     "name": "INV-000066: subtotal = its lines",
-     "ok": true
-    },
-    {
-     "name": "INV-000066: paid = its payments",
-     "ok": true
-    },
-    {
-     "name": "INV-000066: never paid more than billed",
-     "ok": true
-    },
-    {
      "name": "INV-000067: total = subtotal + tax + freight",
      "ok": true
     },
@@ -6061,6 +6089,22 @@
     },
     {
      "name": "INV-000067: never paid more than billed",
+     "ok": true
+    },
+    {
+     "name": "INV-000066: total = subtotal + tax + freight",
+     "ok": true
+    },
+    {
+     "name": "INV-000066: subtotal = its lines",
+     "ok": true
+    },
+    {
+     "name": "INV-000066: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000066: never paid more than billed",
      "ok": true
     },
     {
@@ -6078,7 +6122,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 547
+   "ms": 426
   },
   {
    "id": "S8002-42",
@@ -6261,7 +6305,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 451
+   "ms": 333
   },
   {
    "id": "S8002-43",
@@ -6280,7 +6324,7 @@
      "ok": true
     },
     {
-     "name": "allocate 300 lb from QA-L54-S1",
+     "name": "allocate 300 lb from QA-L54-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -6442,25 +6486,25 @@
      "ok": true
     },
     {
-     "name": "QA-L54-S1: no negative quantities",
+     "name": "QA-L54-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L54-S1: on hand = available + allocated + on hold",
+     "name": "QA-L54-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L54-S1: inventory allocated = open allocations",
+     "name": "QA-L54-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L54-S1: inventory branch = coil branch",
+     "name": "QA-L54-S2: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 573
+   "ms": 384
   },
   {
    "id": "S8002-44",
@@ -6709,7 +6753,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 513
+   "ms": 374
   },
   {
    "id": "S8002-45",
@@ -6852,18 +6896,6 @@
      "ok": true
     },
     {
-     "name": "line 2: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 2: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 2: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 1: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -6873,6 +6905,18 @@
     },
     {
      "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -6912,11 +6956,11 @@
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
+     "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "line 1: invoiced qty = shipped qty",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
@@ -6950,7 +6994,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 612
+   "ms": 472
   },
   {
    "id": "S8002-46",
@@ -7201,7 +7245,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 595
+   "ms": 443
   },
   {
    "id": "S8002-47",
@@ -7468,7 +7512,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 709
+   "ms": 475
   },
   {
    "id": "S8002-48",
@@ -7735,7 +7779,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 662
+   "ms": 471
   },
   {
    "id": "S8002-49",
@@ -7854,7 +7898,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 220
+   "ms": 175
   },
   {
    "id": "S8002-50",
@@ -7957,7 +8001,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 189
+   "ms": 159
   }
  ],
  "concurrency": {
@@ -7996,12 +8040,12 @@
    {
     "name": "three full payments at once on one invoice: taken once",
     "pass": true,
-    "detail": "statuses 201,409,409; paid 4680 of 4680"
+    "detail": "statuses 409,201,409; paid 4680 of 4680"
    },
    {
     "name": "one return received three times at once: counted once, one credit",
     "pass": true,
-    "detail": "statuses 409,200,409; 1 credit memo(s); source coil on hand 4800 → 6600"
+    "detail": "statuses 200,409,409; 1 credit memo(s); source coil on hand 4800 → 6600"
    }
   ]
  },
@@ -8037,8 +8081,8 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 711,
-  "checks": 785,
+  "steps": 715,
+  "checks": 790,
   "failedSteps": {},
   "failedChecks": {}
  }

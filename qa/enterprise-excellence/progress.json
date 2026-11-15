@@ -3,10 +3,10 @@
   "program": "Enterprise Excellence Program",
   "currentPhase": 5,
   "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-15T09:23:38.550Z",
+  "updated": "2026-11-15T18:30:35.902Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "fce959381f08cb620cf7d1f13251fd8344dbe68f",
+    "commit": "c43ee25ac4a6db0716101167bee3653d6ac83f6d",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 31,
     "merged": false,
@@ -24,14 +24,14 @@
     "DISCONNECTED": 3
   },
   "discovered": {
-    "apiRoutes": 619,
-    "apiRoutesThatChangeData": 323,
-    "routeFiles": 74,
-    "databaseTables": 159,
+    "apiRoutes": 633,
+    "apiRoutesThatChangeData": 332,
+    "routeFiles": 75,
+    "databaseTables": 161,
     "enumerations": 96,
-    "migrations": 29,
-    "screens": 140,
-    "frontendFiles": 391,
+    "migrations": 30,
+    "screens": 142,
+    "frontendFiles": 393,
     "roles": 48
   },
   "workflowsMapped": 17,
@@ -42,27 +42,27 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 85,
-    "P2": 97,
-    "P3": 73,
+    "P1": 87,
+    "P2": 105,
+    "P3": 77,
     "P0": 20
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 194,
-    "DEFERRED TO SPECIFIC PHASE": 57,
-    "REQUIRES BUSINESS DECISION": 18,
-    "BLOCKED": 2,
+    "VERIFIED FIXED": 202,
+    "IN PROGRESS": 3,
+    "REQUIRES BUSINESS DECISION": 24,
+    "DEFERRED TO SPECIFIC PHASE": 55,
+    "BLOCKED": 3,
     "NOT APPLICABLE": 1,
-    "ACCEPTED RISK WITH APPROVAL": 1,
-    "IN PROGRESS": 2
+    "ACCEPTED RISK WITH APPROVAL": 1
   },
   "openFindingsBySeverity": {
     "P1": 14,
-    "P2": 39,
-    "P3": 25,
+    "P2": 42,
+    "P3": 28,
     "P0": 2
   },
-  "findingsTotal": 275,
+  "findingsTotal": 289,
   "findingsAddedThisPhase": 13,
   "testsExecuted": [
     {
@@ -115,10 +115,10 @@
     }
   ],
   "testReach": {
-    "routesWithSuccess": 338,
-    "routes": 619,
-    "changingRoutesWithSuccess": 115,
-    "changingRoutes": 323
+    "routesWithSuccess": 350,
+    "routes": 633,
+    "changingRoutesWithSuccess": 122,
+    "changingRoutes": 332
   },
   "correctionsCompleted": [
     "B-001",
@@ -142,12 +142,14 @@
     "C-007",
     "C-008",
     "C-010",
+    "C-011",
     "C-012",
     "G-001",
     "G-002",
     "G-004",
     "G-005",
     "G-006",
+    "G-007",
     "G-008",
     "G-009",
     "G-010",
@@ -180,7 +182,12 @@
     "J-007",
     "J-009",
     "J-010",
-    "J-011"
+    "J-011",
+    "K-001",
+    "K-002",
+    "K-003",
+    "K-004",
+    "K-005"
   ],
   "scoreSummary": [
     {
@@ -199,7 +206,7 @@
       "group": "Inventory and purchasing",
       "weighted": 76,
       "evidenceShare": 97,
-      "openP0P1": 3
+      "openP0P1": 2
     },
     {
       "group": "Manufacturing and processing",

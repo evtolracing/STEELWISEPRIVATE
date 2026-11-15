@@ -178,7 +178,12 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '12. Foreign keys added in Phase 3 with RESTRICT: an invoiced shipment, a credited invoice, a returned order and an invoiced order line can no longer be deleted. Seed and clean-up scripts must delete children first.',
     '13. `lib/lineSpecs.js` (new in Phase 5): carries the customer\'s requirements from the request line to the quote line, the order line and the work order. Imported by requests, quotes and order intake. A change here can drop a requirement between steps. Covered by 5 unit tests and the Phase 5 traceability scenarios.',
     '14. `lib/orderTax.js` `sellingBranch()` (Phase 5): decides the branch an order is taxed at and filed under, for quotes, quote acceptance, order intake, Retail POS and web order acceptance. Covered by the Phase 5 tax and branch scenarios and the sweep.',
-    '15. `GET /api/orders/intake/branches` (Phase 5): the branch list of order entry, Retail POS and the mobile rep screen. It follows the branch boundary (`branchesOf`). Covered by the API and browser checks.', ''];
+    '15. `GET /api/orders/intake/branches` (Phase 5): the branch list of order entry, Retail POS and the mobile rep screen. It follows the branch boundary (`branchesOf`). Covered by the API and browser checks.', 
+    '16. `lib/transfers.js` (new in Phase 6): the only code that sends, receives, settles and calls back a transfer. Used by the stock routes and the old one-item transfer address. Stock in transit is refused by reservations, holds, corrections, work orders and shipping; any new code that changes a balance must refuse it too. Covered by 17 transfer scenarios and seven database checks.',
+    '17. `lib/reservationRules.js` (new in Phase 6): decides whether a stock item fits an order line (unit, grade, size, tolerance, owner, in transit). Called wherever a reservation is made. Covered by unit tests and the reservation scenarios.',
+    '18. `lib/holds.js` (new in Phase 6): places and releases holds with their reasons for receiving, transfers, returns and the stock routes.',
+    '19. `routes/purchaseOrders.js` (new in Phase 6): purchase orders are Orders of type PO. Receiving (`routes/inventory.js`, `lib/receiving.js`) reads the line and writes what was received on it; the supply position reads stock, open purchase orders, open transfers and open order lines.',
+    '20. The balance check now includes the in-transit quantity (SQL Editor file 12). Every script that writes `Inventory` directly must keep on hand = available + reserved + on hold + in transit.', ''];
   write('module-dependency-map.md', L);
 }
 
@@ -340,7 +345,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
     workflowsMapped: state.workflowsMapped ?? null, jobTypesIdentified: state.jobTypesIdentified ?? null,
     findingsBySeverity: count(F, 'severity'), findingsByStatus: count(F, 'status'), openFindingsBySeverity: count(F.filter(open), 'severity'), findingsTotal: F.length, findingsAddedThisPhase: F.filter((f) => f.id.startsWith(state.findingPrefix || 'B-')).length,
     testsExecuted: state.testsExecuted || [], testReach: { routesWithSuccess: eps.filter(okOf).length, routes: eps.length, changingRoutesWithSuccess: w.filter(okOf).length, changingRoutes: w.length },
-    correctionsCompleted: F.filter((f) => /^[BCGHJ]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
+    correctionsCompleted: F.filter((f) => /^[BCGHJK]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
     unverifiedAreas: state.unverifiedAreas || [], currentBlockers: state.currentBlockers || [], nextActions: state.nextActions || [], lastCompletedCheckpoint: state.lastCompletedCheckpoint || null,
   };
   fs.writeFileSync(path.join(DIR, 'progress.json'), `${JSON.stringify(progress, null, 2)}\n`);

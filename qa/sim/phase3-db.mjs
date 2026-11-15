@@ -88,7 +88,7 @@ async function raw(method, url, body, who = 'admin', headers = {}) {
 async function books(ok, coilId, label = 'item') {
   const inv = await invOf(coilId); const coil = await coilOf(coilId);
   if (!inv) return ok(`${label}: has a stock row`, false, 'no Inventory row');
-  ok(`${label}: on hand = available + reserved + on hold`, Math.abs(num(inv.qtyOnHand) - (num(inv.qtyAvailable) + num(inv.qtyAllocated) + num(inv.qtyOnHold))) < 1e-6, JSON.stringify(inv));
+  ok(`${label}: on hand = available + reserved + on hold`, Math.abs(num(inv.qtyOnHand) - (num(inv.qtyAvailable) + num(inv.qtyAllocated) + num(inv.qtyOnHold) + num(inv.qtyInTransit))) < 1e-6, JSON.stringify(inv));
   ok(`${label}: reserved quantity equals the reservations on file`, Math.abs(num(inv.qtyAllocated) - await allocSum(coilId)) < 1e-6, `${inv.qtyAllocated} vs ${await allocSum(coilId)}`);
   const mv = await movesOf(coilId);
   if (mv.some((m) => (m.movementType === 'RECEIVE' && ['RECEIPT', 'UPLOAD', 'CUT_PIECE'].includes(m.reasonCode)) || m.movementType === 'PROCESS')) {
@@ -500,6 +500,10 @@ await scenario(G3, 'stock reserved for an order is cut for it: the pieces stay r
 // ══ 4. Transfers between branches ════════════════════════════════════════════════════════
 const G4 = 'Interbranch transfers';
 const transfer = (coilId, from, to, qty, who = 'admin') => A.post('/api/inventory/transfer', { coilId, fromLocationId: from?.id, toLocationId: to?.id, ...(qty != null && { qty }) }, who);
+// Since Phase 6 (G-007) a transfer ships the item and it stays at the sending branch, in transit,
+// until the receiving branch books it in. sendReceive does both steps; receiver defaults to admin.
+const receiveTransfer = (t, who = 'admin') => (t.body?.transfer?.id ? A.post(`/api/inventory/transfers/${t.body.transfer.id}/receive`, {}, who) : Promise.resolve({ status: 0, body: {} }));
+const sendReceive = async (coilId, from, to, qty, who = 'admin') => { const t = await transfer(coilId, from, to, qty, who); const r = await receiveTransfer(t); return Object.assign(t, { received: r }); };
 const companyTotal = async () => num((await prisma.inventory.aggregate({ _sum: { qtyOnHand: true } }))._sum.qtyOnHand);
 await scenario(G4, 'a transfer moves the whole item, on both records, with one movement, and creates or loses nothing', async (ok) => {
   const id = await received({ weightLb: 7250.5 });
@@ -507,6 +511,10 @@ await scenario(G4, 'a transfer moves the whole item, on both records, with one m
   const [a0, b0] = [num((await prisma.inventory.aggregate({ where: { locationId: L1.id }, _sum: { qtyOnHand: true } }))._sum.qtyOnHand), num((await prisma.inventory.aggregate({ where: { locationId: L2.id }, _sum: { qtyOnHand: true } }))._sum.qtyOnHand)];
   const t = await transfer(id, L1, L2, 7250.5);
   ok('accepted', ok2(t), `${t.status} ${JSON.stringify(t.body).slice(0, 160)}`);
+  const road = await invOf(id);
+  ok('until it is received the item stays at the sending branch, all 7250.5 in transit, nothing on sale, no movement yet', road.locationId === L1.id && road.status === 'IN_TRANSIT' && num(road.qtyInTransit) === 7250.5 && num(road.qtyAvailable) === 0 && (await movesOf(id, 'TRANSFER')).length === 0, JSON.stringify(road));
+  const got = await receiveTransfer(t);
+  ok('received at the other branch', got.status === 200 && got.body?.status === 'RECEIVED', `${got.status} ${JSON.stringify(got.body).slice(0, 160)}`);
   const inv = await invOf(id); const mv = await movesOf(id, 'TRANSFER');
   ok('item and stock row are both at the destination', inv.locationId === L2.id && (await coilOf(id)).locationId === L2.id);
   ok('quantity unchanged: 7250.5', num(inv.qtyOnHand) === 7250.5 && num(inv.qtyAvailable) === 7250.5);
@@ -538,6 +546,8 @@ await scenario(G4, 'the same transfer sent twice at once happens once', async (o
   const id = await received({ weightLb: 3000 });
   const both = await Promise.all([transfer(id, L1, L2), transfer(id, L1, L2)]);
   ok('one accepted, one refused', both.filter(ok2).length === 1 && both.filter((r) => [400, 409].includes(r.status)).length === 1, both.map((r) => r.status).join(','));
+  ok('one transfer on file for the item', (await prisma.stockTransferLine.count({ where: { coilId: id } })) === 1);
+  await receiveTransfer(both.find(ok2) || {});
   ok('one movement; item at the destination with its full quantity', (await movesOf(id, 'TRANSFER')).length === 1 && (await invOf(id)).locationId === L2.id && num((await invOf(id)).qtyOnHand) === 3000);
   await books(ok, id);
 });
@@ -545,6 +555,7 @@ await scenario(G4, 'two transfers of one item to different branches at once: one
   const id = await received({ weightLb: 3000 });
   const both = await Promise.all([transfer(id, L1, L2), transfer(id, L1, L4)]);
   ok('exactly one accepted', both.filter(ok2).length === 1, both.map((r) => r.status).join(','));
+  await receiveTransfer(both.find(ok2) || {});
   const mv = await movesOf(id, 'TRANSFER'); const inv = await invOf(id);
   ok('one movement, ending at the branch the item is now at', mv.length === 1 && mv[0].toLocationId === inv.locationId, `${mv.length} ${mv[0]?.toLocationId} ${inv.locationId}`);
   await books(ok, id);
@@ -557,7 +568,10 @@ await scenario(G4, 'a branch can send its stock to another branch but cannot pul
   ok('their item has not moved', (await invOf(theirs)).locationId === L4.id && (await movesOf(theirs, 'TRANSFER')).length === 0);
   const send = await transfer(mine, L1, L4, null, 'branchWh');
   ok('send accepted', ok2(send), `${send.status} ${JSON.stringify(send.body).slice(0, 150)}`);
-  ok('the item is now at the other branch', (await invOf(mine)).locationId === L4.id);
+  const ownReceive = await receiveTransfer(send, 'branchWh');
+  ok('the sender cannot book it in at the other branch', ownReceive.status === 403 && (await invOf(mine)).locationId === L1.id, `${ownReceive.status}`);
+  await receiveTransfer(send);
+  ok('once received the item is at the other branch', (await invOf(mine)).locationId === L4.id);
   const peek = await A.get(`/api/coils/${mine}`, 'branchWh');
   ok('and the sender can no longer open it', peek.status === 404, peek.status);
 });
@@ -567,6 +581,9 @@ await scenario(G4, 'a reserved item transferred to the branch that will ship it 
   await reserve(o, o.lines[0], id, 500);
   const t = await transfer(id, L2, L1);
   ok('transfer accepted', ok2(t), `${t.status} ${JSON.stringify(t.body).slice(0, 160)}`);
+  const road = await invOf(id);
+  ok('in transit: 500 still reserved, the free 1500 in transit, nothing on sale', num(road.qtyAllocated) === 500 && num(road.qtyInTransit) === 1500 && num(road.qtyAvailable) === 0, JSON.stringify(road));
+  await receiveTransfer(t);
   const inv = await invOf(id);
   ok('at the new branch with 2000 on hand, 500 still reserved, 1500 available', inv.locationId === L1.id && num(inv.qtyOnHand) === 2000 && num(inv.qtyAllocated) === 500 && num(inv.qtyAvailable) === 1500, JSON.stringify(inv));
   ok('the reservation row is still on file against the same order line', (await prisma.orderLineAllocation.count({ where: { coilId: id, orderLineId: o.lines[0].id } })) === 1);
@@ -580,7 +597,7 @@ await scenario(G4, 'a reserved item transferred to the branch that will ship it 
 });
 await scenario(G4, 'a transfer out and back leaves two movements and the item where it started', async (ok) => {
   const id = await received({ weightLb: 1500 });
-  await transfer(id, L1, L2); const back = await transfer(id, L2, L1);
+  await sendReceive(id, L1, L2); const back = await sendReceive(id, L2, L1);
   ok('return leg accepted', ok2(back), back.status);
   const mv = await movesOf(id, 'TRANSFER');
   ok('two movements: out, then back', mv.length === 2 && mv[0].toLocationId === L2.id && mv[1].fromLocationId === L2.id && mv[1].toLocationId === L1.id);
@@ -596,7 +613,7 @@ await scenario(G4, 'an item with nothing on hand cannot be transferred', async (
   ok('refused with 409', t.status === 409, t.status);
   ok('no transfer movement', (await movesOf(id, 'TRANSFER')).length === 0);
 });
-notes.push('Transfers: on the real stock list a transfer is one immediate step. There is no request, approval, picking, in-transit or receipt stage, so partial receipt, shortage, damage in transit, lost in transit and duplicate receipt cannot occur and were NOT EXECUTED. Recorded as finding G-007.');
+notes.push('Transfers: since Phase 6 (G-007) a transfer ships the item, it is in transit until the receiving branch books it in, and short, missing or damaged arrivals go on hold for a manager. Partial receipt, shortage, damage, loss and duplicate receipt are exercised in qa/sim/phase6-inventory.mjs.');
 
 // ══ 5. Orders, invoices and money ════════════════════════════════════════════════════════
 const G5 = 'Orders, invoicing and financial records';
@@ -986,7 +1003,7 @@ await scenario(G6, 'the books are in balance at every moment while forty changes
   let violations = 0; let samples = 0; let running = true;
   const watcher = (async () => {
     while (running) {
-      const bad = num((await prisma.$queryRawUnsafe(`SELECT count(*)::int AS n FROM "Inventory" i WHERE abs(i."qtyOnHand" - (i."qtyAvailable"+i."qtyAllocated"+i."qtyOnHold")) > 0.0001 OR i."qtyAvailable" < 0 OR abs(i."qtyAllocated" - COALESCE((SELECT sum(a."qtyAllocated") FROM "OrderLineAllocation" a WHERE a."coilId"=i."coilId"),0)) > 0.0001`))[0].n);
+      const bad = num((await prisma.$queryRawUnsafe(`SELECT count(*)::int AS n FROM "Inventory" i WHERE abs(i."qtyOnHand" - (i."qtyAvailable"+i."qtyAllocated"+i."qtyOnHold"+i."qtyInTransit")) > 0.0001 OR i."qtyAvailable" < 0 OR abs(i."qtyAllocated" - COALESCE((SELECT sum(a."qtyAllocated") FROM "OrderLineAllocation" a WHERE a."coilId"=i."coilId"),0)) > 0.0001`))[0].n);
       violations += bad; samples++;
     }
   })();
@@ -1076,7 +1093,7 @@ await scenario(G7, 'a correction, a reservation and a shipment on one item at th
   ]);
   ok('no server error', all.every((r) => r.status < 500), all.map((r) => r.status).join(','));
   const inv = await invOf(id);
-  ok('nothing is negative and the identity holds', [inv.qtyOnHand, inv.qtyAvailable, inv.qtyAllocated].every((v) => num(v) >= 0) && Math.abs(num(inv.qtyOnHand) - num(inv.qtyAvailable) - num(inv.qtyAllocated) - num(inv.qtyOnHold)) < 1e-6, JSON.stringify(inv));
+  ok('nothing is negative and the identity holds', [inv.qtyOnHand, inv.qtyAvailable, inv.qtyAllocated].every((v) => num(v) >= 0) && Math.abs(num(inv.qtyOnHand) - num(inv.qtyAvailable) - num(inv.qtyAllocated) - num(inv.qtyOnHold) - num(inv.qtyInTransit)) < 1e-6, JSON.stringify(inv));
   await books(ok, id);
 });
 

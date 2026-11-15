@@ -47,7 +47,7 @@ check('a regional manager opens orders of each assigned branch', (await A.get(`/
 check('a regional manager cannot open an order of a branch outside the group', (await A.get(`/api/orders/${named.body.id}`, 'regional')).status === 404);
 
 // ── Stock ──
-const stockAt = (id) => prisma.coil.findFirst({ where: { locationId: id, status: 'AVAILABLE', inventory: { is: { qtyAllocated: 0, qtyOnHold: 0 } } }, include: { inventory: true } });
+const stockAt = (id) => prisma.coil.findFirst({ where: { locationId: id, status: 'AVAILABLE', inventory: { is: { qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0 } } }, include: { inventory: true } });
 const c1 = await stockAt(L1), c2 = await stockAt(L2), c4 = await stockAt(L4);
 for (const url of ['/api/coils?limit=500', '/api/inventory?limit=500']) {
   const list = rows((await A.get(url, 'branchWh')).body);
@@ -66,13 +66,21 @@ check('reserving your own branch\'s stock works', allocOwn.status === 201, `${al
 // ── Transfers ──
 const pull = await A.post('/api/inventory/transfer', { coilId: c4.id, toLocationId: L1 }, 'branchWh');
 check('pulling stock out of another branch is refused', pull.status === 404 && (await prisma.coil.findUnique({ where: { id: c4.id } })).locationId === L4, `${pull.status}`);
-const spare = await prisma.coil.findFirst({ where: { locationId: L1, id: { not: c1.id }, inventory: { is: { qtyAllocated: 0, qtyOnHold: 0, qtyOnHand: { gt: 0 } } } } });
+const spare = await prisma.coil.findFirst({ where: { locationId: L1, id: { not: c1.id }, inventory: { is: { qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, qtyOnHand: { gt: 0 } } } } });
 const sent = await A.post('/api/inventory/transfer', { coilId: spare.id, toLocationId: L2 }, 'branchWh');
+const transferId = sent.body?.transfer?.id;
+const onTheRoad = await prisma.coil.findUnique({ where: { id: spare.id }, include: { inventory: true } });
+// Since Phase 6 a transfer ships first: the item stays on the sender's books, in transit, until the other branch books it in.
+check('sending your own stock to another branch works and puts it in transit', sent.status === 201 && !!transferId && onTheRoad.locationId === L1 && onTheRoad.inventory.status === 'IN_TRANSIT' && Number(onTheRoad.inventory.qtyInTransit) === Number(onTheRoad.inventory.qtyOnHand), `${sent.status}`);
+const selfReceive = await A.post(`/api/inventory/transfers/${transferId}/receive`, {}, 'branchWh');
+check('the sending branch cannot book its own transfer in at the other branch', selfReceive.status === 403 && (await prisma.coil.findUnique({ where: { id: spare.id } })).locationId === L1, `${selfReceive.status}`);
+const booked = await A.post(`/api/inventory/transfers/${transferId}/receive`, {}, 'admin');
 const moved = await prisma.coil.findUnique({ where: { id: spare.id } });
 const mv = await prisma.materialMovement.findFirst({ where: { coilId: spare.id, movementType: 'TRANSFER' }, orderBy: { createdAt: 'desc' } });
-check('sending your own stock to another branch works and is recorded', sent.status === 200 && moved.locationId === L2 && mv?.fromLocationId === L1 && mv?.toLocationId === L2, `${sent.status}`);
+check('once received the item is at the other branch and the move is recorded', booked.status === 200 && moved.locationId === L2 && mv?.fromLocationId === L1 && mv?.toLocationId === L2, `${booked.status}`);
 check('after the transfer the sender no longer sees the item', (await A.get(`/api/coils/${spare.id}`, 'branchWh')).status === 404);
-await A.post('/api/inventory/transfer', { coilId: spare.id, toLocationId: L1 }, 'admin'); // put it back
+const back = await A.post('/api/inventory/transfer', { coilId: spare.id, toLocationId: L1 }, 'admin'); // put it back
+if (back.body?.transfer?.id) await A.post(`/api/inventory/transfers/${back.body.transfer.id}/receive`, {}, 'admin');
 
 // ── Shipments, jobs, invoices ──
 const shipOther = await A.post('/api/shipments', { orderId: oB.body.id, fromLocationId: L2, items: [{ orderLineId: oB.body.lines[0].id, qtyShipped: 1 }] }, 'branchA');

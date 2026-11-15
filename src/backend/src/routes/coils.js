@@ -18,13 +18,13 @@ import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
 import { COST_VIEWERS } from '../lib/roleAccess.js';
 import { unitPrice } from '../services/intakeCatalogService.js';
+import { HOLD_TYPES, placeHold, releaseHold } from '../lib/holds.js';
 
 const router = Router();
 
 const FORMS = ['COIL', 'SHEET', 'PLATE', 'BAR', 'TUBE', 'BEAM', 'REBAR', 'WIRE', 'ROD', 'SUPPLY'];
 const STATUSES = ['AVAILABLE', 'ALLOCATED', 'IN_PROCESS', 'HOLD', 'SHIPPED', 'CONSUMED'];
 const QC_STATUSES = ['PENDING', 'PASSED', 'FAILED', 'HOLD'];
-const HOLD_TYPES = ['QUALITY', 'CUSTOMER', 'PENDING_TEST', 'DAMAGE', 'DISPUTE', 'OTHER'];
 const EDGES = ['MILL', 'SLIT', 'TRIMMED'];
 const LIST_DEFAULT = 100;
 const LIST_MAX = 500;
@@ -35,7 +35,7 @@ const handle = (label, fn) => async (req, res) => {
   try {
     await fn(req, res);
   } catch (error) {
-    if (error instanceof Refuse) return res.status(error.status).json({ error: error.message });
+    if (error instanceof Refuse || error?.refuse) return res.status(error.status).json({ error: error.message });
     console.error(`Stock items: ${label} failed:`, error);
     res.status(500).json({ error: `Could not ${label}` });
   }
@@ -243,18 +243,8 @@ router.post('/:id/hold', handle('place the hold', async (req, res) => {
   const reason = text(holdReason);
   if (!reason) refuse(400, 'A reason is required');
   const result = await prisma.$transaction(async (tx) => {
-    const coil = await tx.coil.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, inventory: { select: { qtyAvailable: true } } } });
-    if (!coil) refuse(404, 'Stock item not found');
-    if (['SHIPPED', 'CONSUMED'].includes(coil.status)) refuse(409, `This item is ${coil.status.toLowerCase()} and cannot be put on hold`);
-    const claimed = await tx.coil.updateMany({ where: { id: coil.id, status: { notIn: ['HOLD', 'SHIPPED', 'CONSUMED'] } }, data: { status: 'HOLD', qcStatus: 'HOLD', holdCode: holdType } });
-    if (!claimed.count) refuse(409, 'This item is already on hold');
-    const available = Number(coil.inventory?.qtyAvailable || 0);
-    if (available > 0) {
-      const moved = await tx.inventory.updateMany({ where: { coilId: coil.id, qtyAvailable: { gte: available } }, data: { qtyAvailable: { decrement: available }, qtyOnHold: { increment: available } } });
-      if (!moved.count) refuse(409, 'The stock changed while the hold was being placed. Reload and try again.');
-    }
-    const hold = await tx.qCHold.create({ data: { coilId: coil.id, holdType, holdReason: reason, holdById: req.user.id } });
-    return { hold, coil: await tx.coil.findUnique({ where: { id: coil.id }, include: { inventory: true } }) };
+    const hold = await placeHold(tx, { coilId: req.params.id, holdType, reason, userId: req.user.id });
+    return { hold, coil: await tx.coil.findUnique({ where: { id: req.params.id }, include: { inventory: true } }) };
   });
   res.status(201).json({ hold: result.hold, coil: present(result.coil, req) });
 }));
@@ -262,18 +252,8 @@ router.post('/:id/hold', handle('place the hold', async (req, res) => {
 router.post('/:id/release', handle('release the hold', async (req, res) => {
   const notes = text(req.body?.notes);
   const result = await prisma.$transaction(async (tx) => {
-    const coil = await tx.coil.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, inventory: { select: { qtyOnHold: true } } } });
-    if (!coil) refuse(404, 'Stock item not found');
-    const reserved = await tx.orderLineAllocation.count({ where: { coilId: coil.id } });
-    const claimed = await tx.coil.updateMany({ where: { id: coil.id, status: 'HOLD' }, data: { status: reserved ? 'ALLOCATED' : 'AVAILABLE', qcStatus: 'PASSED', holdCode: null } });
-    if (!claimed.count) refuse(409, 'This item is not on hold');
-    const held = Number(coil.inventory?.qtyOnHold || 0);
-    if (held > 0) {
-      const moved = await tx.inventory.updateMany({ where: { coilId: coil.id, qtyOnHold: { gte: held } }, data: { qtyOnHold: { decrement: held }, qtyAvailable: { increment: held } } });
-      if (!moved.count) refuse(409, 'The stock changed while the hold was being released. Reload and try again.');
-    }
-    await tx.qCHold.updateMany({ where: { coilId: coil.id, status: 'ACTIVE' }, data: { status: 'RELEASED', disposition: 'USE_AS_IS', resolvedDate: new Date(), resolvedById: req.user.id, resolutionNotes: notes } });
-    return tx.coil.findUnique({ where: { id: coil.id }, include: { inventory: true, qcHolds: { orderBy: { holdDate: 'desc' } } } });
+    await releaseHold(tx, { coilId: req.params.id, notes, userId: req.user.id });
+    return tx.coil.findUnique({ where: { id: req.params.id }, include: { inventory: true, qcHolds: { orderBy: { holdDate: 'desc' } } } });
   });
   res.json({ coil: present(result, req) });
 }));

@@ -1,8 +1,8 @@
 {
- "screens": 140,
+ "screens": 142,
  "tally": {
   "STATIC": 5,
-  "REAL": 73,
+  "REAL": 75,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
  },
@@ -433,6 +433,18 @@
    "onMenu": true,
    "verdict": "REAL",
    "file": "pages/ReceivingPage.jsx"
+  },
+  {
+   "route": "transfers",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Transfers/TransfersPage.jsx"
+  },
+  {
+   "route": "purchase-orders",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Purchasing/PurchaseOrdersPage.jsx"
   },
   {
    "route": "material-tracking",

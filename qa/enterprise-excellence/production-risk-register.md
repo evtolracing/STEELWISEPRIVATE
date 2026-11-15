@@ -1,6 +1,6 @@
 # Production risk register
 
-Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
+Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) and Phase 5 (2026-11-15). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
 
 Likelihood and impact are a judgement from the evidence named in the row. "Blocks go-live" means the product should not carry real work for more than one branch until the risk is closed or the owner accepts it in writing.
 
@@ -29,6 +29,16 @@ What Phase 4 adds to the list of things that stand in the way:
 2. **Nothing alerts anyone** (R-18). There is now a screen that shows every integration failure, and it must be opened to be seen.
 3. **No outside service for email, text, cards, carriers, tax or accounting is connected** (R-16, R-31), and web checkout takes no payment (R-32).
 4. **Five database updates now wait for the owner** (R-15): files 6 to 10.
+
+### Phase 5 update
+
+Phase 5 closed, with proof against the QA database: requirements, tax and branch that were dropped between request, quote and order (J-001); work orders that got only a description (J-009); Retail POS taxing every sale in Michigan (J-006); a home page of invented orders and alerts (J-007); closed accounts that still took orders (J-002); web orders accepted with no customer or at two branches at once (J-005, J-010); expired quotes counted as open (J-004); voided counter sales still counted as sold (G-009).
+
+What Phase 5 adds to, or changes in, the list:
+
+1. **Six database updates now wait for the owner** (R-15): files 6 to 11. File 11 sets earlier voided counter sales to CANCELLED.
+2. **Customer preference rules are not applied** (R-36, new): default discount, fuel surcharge exemption, auto-approve, PO required and minimums are saved and labelled as not applied until the owner sets the rules (J-008).
+3. R-03 is reduced: the Order Hub screen is retired; the second stock list remains (Phase 6).
 
 ## Risks
 
@@ -70,6 +80,7 @@ What Phase 4 adds to the list of things that stand in the way:
 | R-33 | A limit or a breaker does not hold across server instances | H-012, with E-014 (R-13): partner limits, staff limits and the outside-service breaker count per instance | Likely on the host | Low to medium: a limit is looser by the number of instances; nothing is lost or duplicated | No | A shared counter or a firewall rule on the host (Phase 10) | Engineer, with the owner's host choice |
 | R-34 | Orders shipped and never invoiced already exist on the live system | H-006: before Phase 4 a billing failure at dispatch was silent. How many live orders are in that state is unknown | Possible | Medium: unbilled material | No | After deployment the owner opens Admin > Integrations and reads "Shipped but not invoiced"; each is invoiced from its shipment | Owner |
 | R-35 | A partner integration goes live against routes that say "not built" | H-014: supplier shipping notices, corrective actions, scorecard and document upload answer 501 | Unlikely: they say so | Low | No | Built with purchasing and supplier quality | Engineer, in that phase |
+| R-36 | Staff believe a customer preference applies when it does not | J-008, S-020: six preference fields are saved and used by no order, quote, price or checkout. Since Phase 5 each says so on the screen | Likely without the label; low with it | Medium: a promised discount or a required PO is not enforced | No | The owner's rules for each field, then enforcement and a test per channel | Owner decision |
 
 ## Earlier risks changed by Phase 4
 

@@ -217,6 +217,10 @@
    "file": "src/backend/src/routes/intakeOrders.js"
   },
   {
+   "ep": "GET /api/orders/intake/branches",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
    "ep": "GET /api/orders/intake/summary",
    "file": "src/backend/src/routes/intakeOrders.js"
   },

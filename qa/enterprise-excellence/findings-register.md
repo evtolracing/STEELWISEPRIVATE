@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,15 +11,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 82 | 14 |
-| P2 | 91 | 42 |
-| P3 | 69 | 29 |
-| Total | 262 | 87 |
+| P1 | 85 | 14 |
+| P2 | 97 | 39 |
+| P3 | 73 | 25 |
+| Total | 275 | 80 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 174 |
-| DEFERRED TO SPECIFIC PHASE | 64 |
+| VERIFIED FIXED | 194 |
+| DEFERRED TO SPECIFIC PHASE | 57 |
 | REQUIRES BUSINESS DECISION | 18 |
 | BLOCKED | 2 |
 | IN PROGRESS | 2 |
@@ -76,36 +76,29 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | H-014 | P2 | DEFERRED TO SPECIFIC PHASE | Partner API | They answered 500. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | H-015 | P2 | REQUIRES BUSINESS DECISION | Platform | Not connected. Since Phase 4 the integration report lists each one with its state and what happens without it. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
+| J-008 | P2 | REQUIRES BUSINESS DECISION | Customers | Six settings look active and do nothing. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Manufacturing and processing |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
-| S-008 | P2 | DEFERRED TO SPECIFIC PHASE | Order entry | Two entry screens list four Michigan branches in code | Sales and customer operations |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
-| S-021 | P2 | DEFERRED TO SPECIFIC PHASE | Order Hub | A second RFQ console, not in the menu, beside RFQs & Quotes | Sales and customer operations |
-| S-022 | P2 | DEFERRED TO SPECIFIC PHASE | Counter | The POS session API is called by no screen and saves no tax | Sales and customer operations |
 | S-024 | P2 | IN PROGRESS | Help manual | Pricing, Sales Dashboard, Sales Rep Mobile and customer pages described tabs, contracts, signatures, visit logs and offline use that do not exist | Sales and customer operations |
-| S-026 | P2 | DEFERRED TO SPECIFIC PHASE | Sales screens | Screen code calls 18 sales routes that do not exist: 13 under `/api/pricing` in `api/pricing.js`, 3 will-call, 2 split-shipment | Sales and customer operations |
 | S-027 | P2 | REQUIRES BUSINESS DECISION | Quotes | Quote lines are priced by hand; the screen offers no customer price because RFQ lines are free text, not products | Sales and customer operations |
 | X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
 | B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
 | B-022 | P3 | DEFERRED TO SPECIFIC PHASE | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
 | B-024 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | The 39 effect warnings are the ones that can be defects: an effect that reads a value it does not list can show stale data. They have not been read one by one. | Phase 2: architecture and code quality |
-| C-012 | P3 | DEFERRED TO SPECIFIC PHASE | Order intake | A fixed code. If the company record has another code the seller is left empty. | Sales and customer operations |
 | D-023 | P3 | DEFERRED TO SPECIFIC PHASE |  | The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed). | By subject (see the finding) |
 | D-027 | P3 | DEFERRED TO SPECIFIC PHASE |  | The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured. | By subject (see the finding) |
 | D-035 | P3 | REQUIRES BUSINESS DECISION |  | Sales tax is charged only for states that have a rate set. A sale at a branch in a state with no rate charges no tax and says so on the screen. A login with no home branch also charges no tax. A new screen, Admin > Sales | By subject (see the finding) |
 | E-018 | P3 | DEFERRED TO SPECIFIC PHASE | Code | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Phase 2: architecture and code quality |
-| G-009 | P3 | DEFERRED TO SPECIFIC PHASE | Counter quick sale | Free text. The order stays COMPLETE. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-013 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items, stock search, heat trace | Both grow in step with the whole company's data. Both are far inside the half-second target today. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-014 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Each order comes with its full lines and customer record. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-018 | P3 | DEFERRED TO SPECIFIC PHASE | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| H-011 | P3 | REQUIRES BUSINESS DECISION | Orders | Accepted. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
-| U-002 | P3 | DEFERRED TO SPECIFIC PHASE | Order Hub RFQ pages | A second RFQ console beside RFQs & Quotes | Phase 9: user experience |
+| G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 9: user experience, visual design and accessibility |
+| J-012 | P3 | DEFERRED TO SPECIFIC PHASE | Retail POS | Free text, linked to no stock item (code read), so the sale has no stock record to reduce. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
+| J-013 | P3 | DEFERRED TO SPECIFIC PHASE | Order intake | Visible label only. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
 | U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
-| U-011 | P3 | DEFERRED TO SPECIFIC PHASE | Order entry, Retail POS | Branch list fixed at four Michigan branches | Phase 9: user experience |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
 | U-019 | P3 | DEFERRED TO SPECIFIC PHASE | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
 | U-020 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | "Inventory" and "Units" were two different stock lists | Phase 9: user experience |
@@ -300,7 +293,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A database check that the two keys hold no records; the browser suites for both screens.
 - **Required tests:** A two-requests-at-once test on whichever store is kept; the audit shows one stock list.
 - **Assigned phase:** Phase 2: architecture and code quality (after the decision)
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them. Phase 3 audited the two stores and did not migrate them. The QA database holds only fixture rows in them; what the live stores hold cannot be seen from here, and moving records nobody has inspected into the order and stock tables would be changing business data on a guess.
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Decided by the owner (decision 1): the stock items list and sales orders are the real ones. Phase 2 put both second copies under a department rule and inside the gates; it did not connect or retire them. Phase 3 audited the two stores and did not migrate them. The QA database holds only fixture rows in them; what the live stores hold cannot be seen from here, and moving records nobody has inspected into the order and stock tables would be changing business data on a guess. Phase 5: the Order Hub screen is retired (S-021). The second stock list and its JSON store remain; they belong with inventory in Phase 6.
 - **First recorded in:** Phase 1 discovery
 
 ### B-010 · P2 · VERIFIED FIXED
@@ -869,7 +862,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Phase 3 did not change Coil.heatId or gradeId. Making them optional changes what every stock screen and trace report may assume, and the rule for piece goods is the owner's. No database change was made on a guess.
 - **First recorded in:** Phase 2 architecture review
 
-### C-012 · P3 · DEFERRED TO SPECIFIC PHASE
+### C-012 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Order intake
@@ -882,14 +875,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** Left from the first customer set-up.
 - **Operational impact:** None while the code matches.
 - **Recommended correction:** Use the user's organization.
-- **Deferred: reason:** Order intake is the subject of Phase 5.
-- **Deferred: target phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
-- **Deferred: required correction:** Read the selling company from the company record instead of a fixed code.
-- **Deferred: dependencies:** None.
-- **Deferred: acceptance criteria:** An order taken through intake always has a seller, whatever the company code is.
-- **Deferred: verification:** An intake scenario on a database whose company code differs from the fixed one.
 - **Required tests:** An intake order by a login of another company carries that company as seller.
-- **Assigned phase:** Sales and customer operations
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Phase 5: an intake order's seller is the company that owns the branch it is sold from; the fixed company code is used only when the branch has no owner on file.
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "order entry sells from the person's own branch: taxed, filed and sold by that branch" (seller equals the branch owner).
 - **First recorded in:** Phase 2 architecture review
 
 ### C-013 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -1918,7 +1907,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** A sweep check that the estimate equals the tax on the accepted order
 - **Assigned phase:** Shipping and financial operations
-- **Status note:** Open
+- **Status note:** Open Phase 5: reviewed. Acceptance taxes by the selling branch (rule 27) and now files the order under the same branch (J-005). The store's estimate uses the ship-to state, which is rule 27's fallback when no branch is chosen; the buyer sees an estimate and the CSR confirms. Unchanged pending the owner.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### F-009 · P2 · REQUIRES BUSINESS DECISION
@@ -2157,7 +2146,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs "one item feeding several work orders at once": three work orders of 1500 lb on a 4000 lb item completed at the same moment: two succeed, the third is refused, 1000 lb left; the third then completes with what is left and the item is marked consumed.
 - **First recorded in:** Phase 3 database audit
 
-### G-009 · P3 · DEFERRED TO SPECIFIC PHASE
+### G-009 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter quick sale
@@ -2170,14 +2159,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** No status for it.
 - **Operational impact:** Any report by order status counts a voided sale as a sale. The money side is right (credit memo and refund).
 - **Recommended correction:** A voidedAt column, or a status.
-- **Deferred: reason:** It changes what order statuses mean to every report and screen that reads them, which is a sales-module decision; the void itself is now all-or-nothing (C-010).
-- **Deferred: target phase:** The phase the owner issues for sales and customer operations (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: required correction:** As above.
-- **Deferred: dependencies:** None.
-- **Deferred: acceptance criteria:** No code reads the notes to learn that a sale is void.
-- **Deferred: verification:** A database scenario that voids and then reads the status.
 - **Required tests:** A report by status excludes voided sales.
-- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Phase 5: a void now sets the order to CANCELLED in the same conditional claim that adds the note, so every report that filters on status leaves it out; the day's counter figures leave it out. Earlier voided sales are set to CANCELLED by SQL Editor file 11 (20261115090000_voided_counter_sales_cancelled), which the owner applies.
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "a voided sale is cancelled, credited, refunded and put back on the shelf, once" and the final reconciliation ("no voided counter sale is left COMPLETE"); SQL Editor file 11 run twice on a copy of the 85-branch database: 903 voided sales left COMPLETE before, 0 after; second run skipped.
 - **First recorded in:** Phase 3 database audit
 
 ### G-010 · P2 · VERIFIED FIXED
@@ -2264,7 +2249,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
 - **First recorded in:** Phase 3 database audit
 
-### G-014 · P3 · DEFERRED TO SPECIFIC PHASE
+### G-014 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Orders
@@ -2277,15 +2262,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** One include clause for list and detail.
 - **Operational impact:** Bandwidth and server time on the busiest screen; the limit on requests per second is the size of the replies, not the database (it peaked at 16 connections).
 - **Recommended correction:** A list shape with the columns the screen shows.
-- **Deferred: reason:** Switching a screen to the summary means checking every field that screen and its dialogs read from the list. The order screens are the subject of Phase 5.
-- **Deferred: target phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
-- **Deferred: required correction:** The order list screens ask for view=summary and page with X-Total-Count; the detail screen keeps the full record.
-- **Deferred: dependencies:** H-010 (done).
-- **Deferred: acceptance criteria:** The order list loads in under 50 KB per page and shows every column it shows today.
-- **Deferred: verification:** The sales browser suite, plus a check of the request the list makes.
 - **Required tests:** Reply size and requests per second before and after.
-- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 4: the API half is done and tested (H-010): GET /api/orders?view=summary answers 50 orders in 41 KB against 95 KB in full (qa/results/phase4-load.json), and limit and offset are honoured. No screen was switched to it in this phase.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Phase 4: the API half is done and tested (H-010): GET /api/orders?view=summary answers 50 orders in 41 KB against 95 KB in full (qa/results/phase4-load.json), and limit and offset are honoured. No screen was switched to it in this phase. Phase 5: reviewed for the screens. No screen lists GET /api/orders: the All Orders screen reads the order intake list, which it shows master and detail (the selected order's lines), and the home page reads /api/dashboard. The summary view of /api/orders, built in Phase 4, is what a list without lines uses, and is checked again in Phase 5.
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "the order list answers a page in summary form" (smaller reply, line count, no lines).
 - **First recorded in:** Phase 3 database audit
 
 ### G-015 · P2 · BLOCKED
@@ -2367,6 +2347,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** db-facts in the gates; the migration run twice on a copy.
 - **Required tests:** db-facts "orders with no branch" is 0; a database scenario for the refusal.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 5: quotes, accepted quotes, web orders, order intake and counter sales now set the order's branch (J-001, J-005, S-008). The column stays optional for all-branch logins with no home branch; orders with no branch after the final gate run: 59 after the simulation and 62 after all scenarios (63 at the end of Phase 4); the rest are seed orders and orders entered by all-branch logins with no home branch.
 - **First recorded in:** Phase 3 database audit
 
 ### G-019 · P1 · VERIFIED FIXED
@@ -2402,15 +2383,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** No version or updated-at check on edits.
 - **Operational impact:** An edit can be lost without notice. No quantity or amount is at risk: totals are recomputed and checked by the database.
 - **Recommended correction:** Send the record's updatedAt with an edit and refuse the edit if it has changed (409).
-- **Deferred: reason:** The remaining edit routes belong to modules whose screens are reworked in later phases; adding the check there without the screen sending the value would protect nothing.
-- **Deferred: target phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
-- **Deferred: required correction:** Each edit screen sends the updatedAt it loaded; each edit route refuses a stale copy the same way.
-- **Deferred: dependencies:** The edit screens of each module.
-- **Deferred: acceptance criteria:** Two people saving different edits to one record: one is saved, the other is told to reload.
-- **Deferred: verification:** qa/sim/phase4-integration.mjs: "an edit made from an old copy of an order is refused instead of overwriting" and "two edits of the same order at the same moment" already cover orders; the same pair per module.
+- **Deferred: reason:** Telling a person that someone else changed the order, and offering to reload, is screen behaviour, and the order entry screen is due for its redesign in Phase 9; doing it twice would waste the work.
+- **Deferred: target phase:** Phase 9: user experience, visual design and accessibility
+- **Deferred: required correction:** PATCH /api/orders/intake/:id accepts expectedUpdatedAt and answers 409 STALE_EDIT when the order changed; the order entry screen sends the version it loaded and, on 409, says who changed it and offers to reload.
+- **Deferred: dependencies:** The Phase 9 order entry design.
+- **Deferred: acceptance criteria:** Two people edit the same order: one is saved, the other is told and loses nothing silently.
+- **Deferred: verification:** An API scenario on the intake route and a browser check with two pages open on the same order.
 - **Required tests:** Two edits at once: one 200, one 409.
-- **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged.
+- **Assigned phase:** Phase 9: user experience, visual design and accessibility
+- **Status note:** Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged. Phase 5: reviewed. No screen edits an order through PUT /api/orders/:id (the call in api/index.js has no user). Orders are edited on the order entry screen through PATCH /api/orders/intake/:id, which does not check the version. The API check from Phase 4 is tested again in Phase 5.
 - **Verification evidence:** qa/sim/phase4-integration.mjs: the two scenarios named above (orders only).
 - **First recorded in:** Phase 3 database audit
 
@@ -2598,7 +2579,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** test/listing.test.js (3 tests). qa/sim/phase4-integration.mjs: "a bare-array list can be windowed without changing its body, and says how many there are". qa/results/phase4-load.json: 50 orders for an all-branch login, 95 KB in full and 41 KB as a summary.
 - **First recorded in:** Phase 4 integration audit
 
-### H-011 · P3 · REQUIRES BUSINESS DECISION
+### H-011 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Orders
@@ -2611,8 +2592,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Empty orders can accumulate; none can be confirmed into work.
 - **Recommended correction:** Either refuse an order with no lines, or keep it as a draft and add a way to add lines.
 - **Required tests:** Per the decision.
-- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** Question for the owner: should an order with no lines be refused, or kept as a draft to fill in later? Left unchanged because changing it is a business rule. Belongs with order intake in Phase 5.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Question for the owner: should an order with no lines be refused, or kept as a draft to fill in later? Left unchanged because changing it is a business rule. Belongs with order intake in Phase 5. Phase 5, following the rule already checked by the database checks ("orders with no lines, not draft or cancelled"): an order may be kept as a draft with no lines, but cannot be created past draft or moved to any status except cancelled without a line (400 or 409 NO_LINES). The owner is asked to confirm.
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "an order with no lines may be kept as a draft but cannot go further".
 - **First recorded in:** Phase 4 integration audit
 
 ### H-012 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -2652,7 +2634,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Per the decision: remove the choice and state "on account", or connect a processor with a sandbox, verify its notifications by signature, and make them idempotent.
 - **Required tests:** Per the decision; for a processor: approved, declined, timeout, duplicate notification, refund, and reconciliation against invoices.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** Question for the owner: do web shop customers pay by card at checkout, or only on account? No order is marked paid on the word of a browser anywhere in the code (checked: web checkout, counter sale, invoice payments). Belongs with ecommerce in Phase 5.
+- **Status note:** Question for the owner: do web shop customers pay by card at checkout, or only on account? No order is marked paid on the word of a browser anywhere in the code (checked: web checkout, counter sale, invoice payments). Belongs with ecommerce in Phase 5. Phase 5: checked again. Web checkout stores no card number and records no payment; no order is marked paid by the shop. Payment scenarios are NOT APPLICABLE until the owner answers.
 - **First recorded in:** Phase 4 integration audit
 
 ### H-014 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -3063,6 +3045,235 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep section "Shipping and money records: web order tax, shipments and who did what": 37 checks, 0 problems, this session.
 - **First recorded in:** qa/engineering-quality-findings.md
 
+### J-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Quotes and orders
+- **Workflow:** Request for quote to quote to sales order
+- **Category:** Lost customer requirements; wrong tax and branch
+- **Source file or endpoint:** src/backend/src/routes/rfqs.js, quotes.js (createQuote, acceptQuote); new src/backend/src/lib/lineSpecs.js
+- **Evidence:** Probe on the QA database, before: a request line kept only a description, quantity and unit, so grade, size, tolerances, certificates and processing typed at the request were nowhere on the quote or the order. A quote saved no tax; the order made from it was untaxed unless someone edited it. The order was filed under the branch of the person who pressed accept, not the branch that owned the request.
+- **Expected:** What the customer asked for is typed once and reaches the quote, the order and the shop floor; a quote shows tax by rule 27 and the order carries it; the order belongs to the request's branch.
+- **Actual:** Requirements, tax and branch were dropped at each step.
+- **Root cause or suspected cause:** Request lines had no place for requirements; quote creation and acceptance were written before rule 27 and branch ownership.
+- **Operational impact:** Wrong material or missing certificates shipped; untaxed orders; orders filed and reported under the wrong branch.
+- **Recommended correction:** Request lines keep the requirements (validated, stored in their existing JSON column). Quote and order lines get them in their own columns, the quote line may change any of them, the order line keeps the grade record. A quote is taxed by rule 27 at the request's branch and keeps tax and total; acceptance carries them and files the order under the request's branch. No schema change.
+- **Required tests:** Requirements, tax, branch and links checked on the saved rows from request to order and invoice; a bad requirement refused with the field named.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "a request for quote keeps grade, size, tolerances, certificates and processing", "request to quote to order: every requirement, the branch, the tax and the links arrive", "a quote line can change a requirement", "a quoted order is reserved, shipped and invoiced with the quote's tax"; src/backend/test/lineSpecs.test.js (5 tests); qa/sim/ui-phase5.cjs: the request and quote screens show the requirements and "subtotal + tax = total". On the code before, the same scenarios fail on every requirement and on tax.
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-002 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Customers
+- **Workflow:** A closed customer account
+- **Category:** Rule not enforced
+- **Source file or endpoint:** routes/orders.js, rfqs.js, quotes.js (accept), onlineOrders.js (accept), services/ecomService.js (checkout), routes/customers.js
+- **Evidence:** Probe: with the account set inactive, staff order entry, a new request for quote, accepting an open quote and the web shop checkout all succeeded. Closing or reopening an account left no record of who did it.
+- **Expected:** A closed account takes no new business in any channel, its history stays readable, and closing and reopening are on the record.
+- **Actual:** Only the counter and order intake refused it.
+- **Operational impact:** Orders for accounts closed for credit, fraud or a merger; no trace of who closed or reopened one.
+- **Recommended correction:** Each channel refuses an inactive buyer with 409 CUSTOMER_INACTIVE and a sentence; the account change writes an audit row (CUSTOMER_DEACTIVATED, CUSTOMER_REACTIVATED) with the person.
+- **Required tests:** Every channel refused, nothing saved, history readable, reopening allows the same quote.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "a closed account takes no new business in any channel, and its history stays", "closing and reopening an account is on the record".
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-003 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Customers
+- **Workflow:** Accounts and divisions
+- **Category:** Data integrity
+- **Source file or endpoint:** PATCH /api/customers/:id (parentId)
+- **Evidence:** Probe: an account could be placed under its own sub-division. Pricing walks up the parents to find the contract, so a loop leaves a division without a defined price.
+- **Expected:** A parent is never one of the account's own divisions.
+- **Actual:** Saved.
+- **Operational impact:** A loop in the account tree; prices found by walking it stop at an arbitrary point.
+- **Recommended correction:** Walk up from the new parent and refuse with 400 when the account itself is met.
+- **Required tests:** Self, child and grandchild refused; the tree unchanged.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "an account cannot be placed under one of its own divisions".
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-004 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Quotes
+- **Workflow:** Expired quotes and the sales dashboard
+- **Category:** Wrong figures
+- **Source file or endpoint:** routes/quotes.js (list), routes/salesDashboard.js
+- **Evidence:** Probe: a quote past its valid-until date still listed under Sent or Draft and counted in "awaiting the customer" and the open value; the Expired filter returned nothing, because no job marks quotes expired; dashboard values summed totals including tax.
+- **Expected:** A lapsed quote reads, filters and counts as expired (lost), and pipeline values are before tax.
+- **Actual:** As described.
+- **Operational impact:** Inflated pipeline and win figures; sales staff chase quotes that can no longer be accepted.
+- **Recommended correction:** A quote is expired when its date has passed, whatever its stored status: the Expired filter includes those, the open filters leave them out, the dashboard leaves them out of open work and counts them as lost in the period; values use the subtotal. Acceptance of a lapsed quote was already refused.
+- **Required tests:** Filters and dashboard deltas measured around one live and one lapsed quote.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "an expired quote cannot be sent or accepted, and is listed as expired, not sent", "the sales dashboard counts open business before tax and leaves expired quotes out".
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-005 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Web shop
+- **Workflow:** Accepting a web order into a sales order
+- **Category:** Wrong branch; wrong unit
+- **Source file or endpoint:** routes/onlineOrders.js (accept)
+- **Evidence:** Probe: accepting a web order and naming a branch taxed it at that branch's state but filed the order under none (or the acceptor's), and per-piece web lines were saved with the default price unit (per hundredweight).
+- **Expected:** The order is taxed and filed at one and the same branch, and each web line keeps its per-piece price.
+- **Actual:** As described.
+- **Operational impact:** Branch reports and stock reservations at the wrong branch; a line total that a recalculation would change by a factor of a hundredweight.
+- **Recommended correction:** The named branch is checked and becomes the order's branch; web lines are saved as EACH; an inactive buyer is refused.
+- **Required tests:** Tax, branch and unit on the saved order; a second accept refused; a one-branch clerk refused another branch.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "accepting a web order: taxed and filed at one branch, priced per piece".
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-006 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Retail POS
+- **Workflow:** Counter order at the retail outlet
+- **Category:** Wrong tax
+- **Source file or endpoint:** src/frontend/src/pages/Orders/RetailPOSPage.jsx
+- **Evidence:** Code read and probe: the screen sent the fixed branch "JACKSON" (Jackson, Michigan) for every sale, for the tax estimate and for the order, whatever branch the clerk worked at.
+- **Expected:** A counter order is taxed and filed at the clerk's branch (rule 27, owner decision 2).
+- **Actual:** Every sale taxed in Michigan.
+- **Operational impact:** Wrong sales tax collected and reported at every outlet outside Michigan.
+- **Recommended correction:** The screen takes the clerk's branches from the server (GET /api/orders/intake/branches) and uses the home branch; the server refuses a branch that is not the clerk's.
+- **Required tests:** Browser: the tax request names the home branch; API: the old fixed branch refused for an Ohio clerk, the own branch taxed in Ohio.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/ui-phase5.cjs: "Retail POS: tax is estimated at the home branch"; qa/sim/phase5-sales.mjs: "the counter sells from the cashier's branch; another branch is refused, a manager can choose".
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-007 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Home page
+- **Workflow:** The first screen after sign-in
+- **Category:** Made-up data
+- **Source file or endpoint:** src/frontend/src/pages/Dashboard/DashboardPage.jsx (route /)
+- **Evidence:** Code read: the home page showed fixed figures, four invented orders (for example SO-2024-001 for "Acme Steel Co") and invented alerts ("Carrier reported 2hr delay on route 45"), not records.
+- **Expected:** Every figure, order and alert on the home page comes from the records.
+- **Actual:** Invented.
+- **Operational impact:** Staff act on orders and alerts that do not exist; real holds go unseen.
+- **Recommended correction:** The page reads GET /api/dashboard: stock on hand and available, open orders, quality holds, recent orders and hold alerts. The invented rows and the stock panel built on them are removed.
+- **Required tests:** Browser: the open-order count equals the server's; none of the invented rows shown.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/ui-phase5.cjs: "home: Open Orders is the server's count", "home: none of the old made-up orders or alerts".
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-008 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-14
+- **Module:** Customers
+- **Workflow:** Customer preferences
+- **Category:** Business rule not decided
+- **Source file or endpoint:** src/frontend/src/pages/Customers/CustomerPreferencesPage.jsx; table CustomerPreference
+- **Evidence:** Code search: Default Discount %, Fuel Surcharge Exempt, Auto-Approve Orders, Require PO Number, Minimum Order Quantity and Minimum Order Value are saved and read back, and no order, quote, price or checkout reads them. Extends S-020 and U-012 (the discount) to five more fields.
+- **Expected:** A setting either does what its name says or says that it does nothing yet.
+- **Actual:** Six settings look active and do nothing.
+- **Operational impact:** Staff believe a customer gets a discount, must give a PO number or is held to a minimum, and none of it happens.
+- **Recommended correction:** Interim, done: each field now says "Saved for reference. Not applied to any order or price yet." Applying them needs the owner's rules (how a discount combines with a contract tier, which channels, what a minimum blocks), which were not invented.
+- **Required tests:** Per the decision; for each rule a refusal or price test in every channel.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Question for the owner: which of these six should take effect, and for a discount, does it apply on top of the contract tier, instead of it, or only when there is no tier?
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-009 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Order intake and shop floor
+- **Workflow:** Work orders made from a sales order
+- **Category:** Lost customer requirements
+- **Source file or endpoint:** routes/intakeOrders.js (create-work-orders, buildIntakeLines)
+- **Evidence:** Probe: a work order made from an order line got only the line description; size, tolerance, certificates, finish and notes typed at order entry or carried from the quote stayed on the order line.
+- **Expected:** The shop floor sees what the customer asked for.
+- **Actual:** Description only.
+- **Operational impact:** Material cut or finished to the wrong requirement; certificates missed.
+- **Recommended correction:** Order entry lines keep the requirement fields; a work order's instructions carry them as text and its notes keep them as data. Asking twice makes no second job (unchanged).
+- **Required tests:** Job instructions and notes checked after a quoted order and after an intake order.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "the accepted order goes to the shop floor with what the customer asked for", "requirements typed at order entry reach the order line and the work order".
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-010 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Web shop
+- **Workflow:** A web order with no customer account
+- **Category:** Rule not enforced
+- **Source file or endpoint:** routes/onlineOrders.js (accept)
+- **Evidence:** qa/sim/phase5-sales.mjs, first run: a web order placed by a staff login with no customer named reached the inbox as "Online Customer"; accepting it made a confirmed sales order with no buyer, so no credit check, no exemption and no account to bill.
+- **Expected:** A sales order is made only for a customer account.
+- **Actual:** A sales order with no buyer.
+- **Operational impact:** Unbillable orders released to the floor; credit limits skipped.
+- **Recommended correction:** Acceptance refuses with 400 CUSTOMER_REQUIRED until the CSR names the customer; the inbox now shows the server's reason instead of "Action failed".
+- **Required tests:** Accept with no customer refused and nothing made; with a customer named, accepted.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "a web order cannot be placed without signing in" (staff order with no customer cannot become a sales order). Failed before the change (200 and an order made).
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-011 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-14
+- **Module:** Pricing
+- **Workflow:** Price check and tax estimate on the order screens
+- **Category:** Input validation
+- **Source file or endpoint:** routes/intakePricing.js (POST /api/pricing/calculate, /tax-estimate)
+- **Evidence:** qa/sim/phase5-sales.mjs, first run: a weight of -500 lb was priced at -1,225.00; a quantity of "heavy" priced at 0; a remnant discount of 150% would give a negative price; a negative subtotal was "taxed" at -5.75.
+- **Expected:** A nonsense amount is refused with a sentence.
+- **Actual:** Priced.
+- **Operational impact:** A screen can show a negative or zero line; saved orders were already protected by the order rules, so no wrong order could be saved.
+- **Recommended correction:** Weight and quantity must be numbers of zero or more; a remnant discount a fraction below 1; a subtotal zero or more. Refused with 400.
+- **Required tests:** Each bad amount refused.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "a price check with a negative or nonsense amount is refused, never priced below zero". Failed before the change.
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-012 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-14
+- **Module:** Retail POS
+- **Workflow:** Adding a remnant at the counter
+- **Category:** Traceability
+- **Source file or endpoint:** src/frontend/src/components/pos/RemnantQuickAdd.jsx
+- **Evidence:** Code read: the remnant quick-add takes the remnant's location as free text (it used to default to "JACKSON"); it is not one of the stock items on file.
+- **Expected:** A remnant sold at the counter is a stock item on file, so the sale takes it off the books.
+- **Actual:** Free text, linked to no stock item (code read), so the sale has no stock record to reduce.
+- **Operational impact:** Remnants sold at the counter stay on the books.
+- **Deferred: reason:** Choosing a remnant from the stock items and reducing it is remnant traceability, the subject of Phase 6.
+- **Deferred: target phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Deferred: required correction:** Pick the remnant from the stock items at the clerk's branch; the sale moves it like a counter sale moves shelf stock.
+- **Deferred: dependencies:** C-011.
+- **Deferred: acceptance criteria:** A remnant sold at the counter leaves the books once and comes back on a void.
+- **Deferred: verification:** A Phase 6 scenario that sells and voids a remnant and reads the stock movements.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Phase 5 removed the fixed Michigan default. Picking a remnant from stock is a stock-traceability change.
+- **First recorded in:** Phase 5 sales operations audit
+
+### J-013 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-14
+- **Module:** Order intake
+- **Workflow:** Order entry header
+- **Category:** Accessibility
+- **Source file or endpoint:** src/frontend/src/pages/Orders/CSRIntakePage.jsx (Source, Division, Location, Priority selects)
+- **Evidence:** Browser check (qa/sim/ui-phase5.cjs): the Location select cannot be found by its label; the MUI selects have a visible label with no link to the field, so a screen reader announces them without a name.
+- **Expected:** Each field has an accessible name.
+- **Actual:** Visible label only.
+- **Operational impact:** Screen reader users cannot tell the header fields apart.
+- **Deferred: reason:** Accessibility across the screens belongs to the user experience phase.
+- **Deferred: target phase:** Phase 9: user experience, visual design and accessibility
+- **Deferred: required correction:** Give each Select a labelId tied to its InputLabel.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** Each field found by its label.
+- **Deferred: verification:** The browser check finds the Location field by getByLabel.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **First recorded in:** Phase 5 sales operations audit
+
 ### M-001 · P0 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
@@ -3458,7 +3669,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Rule 27, decided by the owner 2026-11-13: selling branch state. Sweep 14, unit tests
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-008 · P2 · DEFERRED TO SPECIFIC PHASE
+### S-008 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Order entry
@@ -3470,14 +3681,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** The other branches cannot be picked there
 - **Affected dependencies:** S-010
 - **Recommended correction:** Deferred with justification: the branch list belongs with the promise engine (S-010), which reads the same list
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
-- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: dependencies:** S-010
-- **Deferred: acceptance criteria:** Branches come from the database
-- **Deferred: verification:** Both entry screens list the branches in the database; Browser check
 - **Required tests:** Both entry screens list the branches in the database; Browser check
-- **Assigned phase:** Sales and customer operations
-- **Status note:** Open
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Open Phase 5: order entry, Retail POS and the mobile rep screen take the branch list from the server (GET /api/orders/intake/branches): the person's own branches, home branch first, every branch for a manager. The fixed list of four Michigan branches is gone.
+- **Verification evidence:** qa/sim/ui-phase5.cjs: "order entry: the home branch is chosen to start", "order entry: only this login's branches are offered"; qa/sim/phase5-sales.mjs: "order entry sells from the person's own branch".
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### S-009 · P2 · REQUIRES BUSINESS DECISION
@@ -3669,10 +3876,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** Field applied to prices and tested, or removed
 - **Assigned phase:** Sales and customer operations
-- **Status note:** Open
+- **Status note:** Open Phase 5: the field now says it is not applied (see J-008, which extends this to five more fields). Still the owner's decision how a discount combines with a contract tier.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-021 · P2 · DEFERRED TO SPECIFIC PHASE
+### S-021 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Order Hub
@@ -3684,17 +3891,13 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Two lists of the same work
 - **Affected dependencies:** Retire Order Hub or merge it
 - **Recommended correction:** Requires a business decision
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
-- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: dependencies:** Retire Order Hub or merge it
-- **Deferred: acceptance criteria:** One place for one job
-- **Deferred: verification:** One RFQ screen; route removed or linked
 - **Required tests:** One RFQ screen; route removed or linked
-- **Assigned phase:** Sales and customer operations
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Phase 5, owner decision 1 (connect or retire the Order Hub): retired. Every /orderhub address now opens RFQs & Quotes, the one console that saves requests, quotes and orders in the database. The help text was updated.
+- **Verification evidence:** qa/sim/ui-phase5.cjs: "old Order Hub address: goes to the request inbox".
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-022 · P2 · DEFERRED TO SPECIFIC PHASE
+### S-022 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter
@@ -3706,14 +3909,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A second, untested way to sell
 - **Affected dependencies:** S-026
 - **Recommended correction:** Assigned to Workstream 6
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
-- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: dependencies:** S-026
-- **Deferred: acceptance criteria:** Unused paths are removed or finished
-- **Deferred: verification:** Contract scan and route inventory show no unused sales route
 - **Required tests:** Contract scan and route inventory show no unused sales route
-- **Assigned phase:** Sales and customer operations
-- **Status note:** Open
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Open Phase 5: the counter-session routes that created customers and orders by their own rules (no tax, no credit check) now answer 410 SESSION_FLOW_CLOSED and say which screen to use. The reading steps of the session still answer. The simulation's counter job now enters the counter order through Retail POS.
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "the unused counter-session flow no longer creates customers or orders"; qa/sim/run.mjs counter job.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### S-023 · P2 · VERIFIED FIXED
@@ -3769,7 +3968,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep section 17
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-026 · P2 · DEFERRED TO SPECIFIC PHASE
+### S-026 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Sales screens
@@ -3781,14 +3980,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Buttons that fail when pressed
 - **Affected dependencies:** S-010
 - **Recommended correction:** Assigned to Workstream 5 (will-call, split shipment) and 6 (`api/pricing.js`)
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Sales and customer operations.
-- **Deferred: target phase:** Sales and customer operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: dependencies:** S-010
-- **Deferred: acceptance criteria:** No call without a route
-- **Deferred: verification:** `api-contract.md` shows 0 sales calls without a route
 - **Required tests:** `api-contract.md` shows 0 sales calls without a route
-- **Assigned phase:** Sales and customer operations
-- **Status note:** Open
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Open Phase 5: the screen calls to routes that do not exist were removed (api/pricing.js keeps only the price check and contract lookup; api/index.js lost three order calls with no route). No screen used them.
+- **Verification evidence:** Lint and production build pass; the screen audit and every-screen-opens check pass; qa/tools/frontend-checks.mjs ratchets unchanged or lower.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### S-027 · P2 · REQUIRES BUSINESS DECISION
@@ -3820,21 +4015,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (S-012): counted figures, "Not available" where nothing is measured
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-002 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-002 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Order Hub RFQ pages
 - **Category:** User experience
 - **Source file or endpoint:** Order Hub RFQ pages
 - **Actual:** A second RFQ console beside RFQs & Quotes
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
-- **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Phase 5: see S-021.
+- **Verification evidence:** qa/sim/ui-phase5.cjs.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-003 · P3 · VERIFIED FIXED
@@ -3943,21 +4133,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (S-017, S-018): real price book, in the menu under Sales & Customers
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-011 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-011 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Order entry, Retail POS
 - **Category:** User experience
 - **Source file or endpoint:** Order entry, Retail POS
 - **Actual:** Branch list fixed at four Michigan branches
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
-- **Assigned phase:** Phase 9: user experience
-- **Status note:** Open (S-008)
+- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Status note:** Open (S-008) Phase 5: see S-008.
+- **Verification evidence:** qa/sim/ui-phase5.cjs, order entry checks.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-012 · P3 · REQUIRES BUSINESS DECISION
@@ -3968,7 +4153,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Source file or endpoint:** Customers > Preferences
 - **Actual:** "Default Discount %" is offered and applied nowhere
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open: decision S-020
+- **Status note:** Open: decision S-020 Phase 5: see J-008.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-013 · P3 · VERIFIED FIXED

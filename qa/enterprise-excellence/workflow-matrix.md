@@ -17,7 +17,7 @@ Written by hand in Phase 1 from the code (`src/backend/src/lib/workflowRules.js`
 | Exception management | A record and an acknowledge | No | No shortage, re-sourcing, reschedule or customer notice flow |
 | Counter sale | Yes | Yes | Card approval typed in by hand; no receipt sent |
 | Web store order | Yes | Yes | Promise date and cut-off shown from mock rules (X-007) |
-| Quote to order | Yes | Yes | No revisions, no approval step |
+| Quote to order | Yes | Yes | No approval step beyond credit (none exists); versions verified in Phase 5 |
 | Credit hold and release | Yes | Yes | |
 | Stock hold and release | Yes | Yes | Whether held or uninspected stock may ship is partly decided |
 | Coil work order | Yes | Yes | Does not consume or produce stock (M-016) |
@@ -27,6 +27,19 @@ Written by hand in Phase 1 from the code (`src/backend/src/lib/workflowRules.js`
 | User life cycle | Yes | Refusal only | No success-path test |
 
 17 workflows mapped. 9 verified end to end, 3 verified in part, 5 mapped only.
+
+### Phase 5 update (2026-11-15)
+
+| Workflow | Change | Verified by |
+|---|---|---|
+| Customer to cash | Requirements (grade, size, tolerances, finish, certificates, processing) carried from request to quote, order and work order; quotes carry tax by rule 27; the order belongs to the request's branch; closed accounts refused in every channel | `qa/sim/phase5-sales.mjs` (76 scenarios, 386 checks) |
+| Quote to order | Versions verified (accepting one closes the others); lapsed quotes read, filter and count as expired; still no approval step beyond credit (none exists; none invented) | same, group 3 |
+| Counter sale | A void sets the order CANCELLED (G-009) | same, group 5 |
+| Counter order (Retail POS) | At the clerk's branch, not Jackson (J-006); the old session flow's submit is closed (S-022) | same, group 5; `qa/sim/ui-phase5.cjs` |
+| Web store order | Acceptance taxes and files at one branch, per-piece lines, a customer required (J-005, J-010) | same, group 6 |
+| Order entry | Branch, seller and tax from the branch named, which must be the person's own; an order cannot leave draft with no lines (H-011) | same, group 4 |
+
+Sales channels that create a sales order after Phase 5: order entry (including Retail POS and the mobile rep), quote acceptance, web store acceptance, counter quick sale, partner API. The counter session flow no longer creates orders. The Order Hub screen is retired; its address opens RFQs & Quotes.
 
 ## Job types found
 

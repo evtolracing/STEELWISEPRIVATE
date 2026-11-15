@@ -858,25 +858,15 @@ router.post('/sessions/:sessionId/customers/select', async (req, res) => {
  * POST /api/pos/sessions/:sessionId/customers
  * Create a new quick customer
  */
-router.post('/sessions/:sessionId/customers', async (req, res) => {
-  try {
-    const customerData = req.body;
-    
-    if (!customerData.name) {
-      return res.status(400).json({ error: 'Customer name is required' });
-    }
-    
-    const result = await posWorkflowService.createQuickCustomer(req.params.sessionId, customerData);
-    
-    if (result.error) {
-      return res.status(400).json({ error: result.error });
-    }
-    
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create customer' });
-  }
+// S-022: no screen uses the session flow. Its two writing steps made customers with no code and
+// confirmed orders with no credit check (rule 32) and with tax from the session instead of
+// rule 27, a second and untested way to sell. They now say where the work is done. Every
+// reading and pricing step of the flow is unchanged.
+const SESSION_WRITES_CLOSED = (what) => (req, res) => res.status(410).json({
+  error: `${what} from a counter session is not used. Use Retail POS (counter orders), Counter Sale (shelf items) or Customers (new accounts).`,
+  code: 'SESSION_FLOW_CLOSED',
 });
+router.post('/sessions/:sessionId/customers', SESSION_WRITES_CLOSED('Creating a customer'));
 
 // ============================================
 // DIVISION & SHIP-TO OPERATIONS
@@ -1315,20 +1305,7 @@ router.get('/sessions/:sessionId/pricing', async (req, res) => {
  * Submit the order
  */
 // The counter screen posts to .../order/submit; both paths do the same thing.
-router.post(['/sessions/:sessionId/submit', '/sessions/:sessionId/order/submit'], async (req, res) => {
-  try {
-    const result = await posWorkflowService.submitOrder(req.params.sessionId);
-    
-    if (result.error) {
-      return res.status(400).json({ error: result.error });
-    }
-    
-    res.status(201).json(result);
-  } catch (error) {
-    console.error('Order submission failed:', error);
-    res.status(500).json({ error: 'Failed to submit order' });
-  }
-});
+router.post(['/sessions/:sessionId/submit', '/sessions/:sessionId/order/submit'], SESSION_WRITES_CLOSED('Submitting an order'));
 
 // Counter quick sale lives in routes/quickSale.js (mounted at /api/pos/quick-sale).
 

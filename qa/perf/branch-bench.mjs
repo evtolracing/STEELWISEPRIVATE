@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Times the list screens a branch works from, as a login held to one branch and as an
 // administrator who sees all of them, against the scaled copy of the QA database.
-//   node qa/perf/branch-bench.mjs --base http://localhost:3013 --out qa/results/phase3-branch-bench.json
+//   node qa/perf/branch-bench.mjs --base http://localhost:3013 --out qa/results/phase3-branch-bench.json [--set sales]
 import fs from 'node:fs';
 const arg = (n, d) => { const i = process.argv.indexOf(`--${n}`); return i > -1 ? process.argv[i + 1] : d; };
 const BASE = arg('base', 'http://localhost:3013');
@@ -14,6 +14,13 @@ const URLS = [
   '/api/inventory?limit=50', '/api/inventory/summary', '/api/coils?limit=50', '/api/coils?search=QA&limit=50', '/api/jobs?limit=50', '/api/work-orders?limit=50',
   '/api/quotes?limit=50', '/api/rfqs?limit=50', '/api/returns?limit=50', '/api/customers?limit=50', '/api/dashboard/stats', '/api/dispatch/jobs?limit=50',
 ];
+// Phase 5: the sales screens (--set sales).
+const SALES = [
+  '/api/dashboard', '/api/sales-dashboard?range=month', '/api/quotes?limit=50', '/api/quotes?status=SENT&limit=50', '/api/quotes?status=EXPIRED&limit=50',
+  '/api/rfqs?limit=50', '/api/orders?limit=50&view=summary', '/api/orders/intake/branches', '/api/orders/intake?limit=50', '/api/orders/credit-holds',
+  '/api/orders/online', '/api/pricing/price-list?limit=50', '/api/pricing/overview', '/api/pos/quick-sale/daily-stats', '/api/customers?limit=50&search=QA',
+];
+if (arg('set', '') === 'sales') URLS.splice(0, URLS.length, ...SALES);
 const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 async function as(email) {
   const login = await (await fetch(`${BASE}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email, password: 'qa-password-1' }) })).json();

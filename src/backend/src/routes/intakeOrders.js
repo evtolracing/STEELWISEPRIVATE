@@ -22,7 +22,9 @@ import { money } from '../lib/billingRules.js';
 import { orderMoveError, positiveQty } from '../lib/workflowRules.js';
 import { releaseAllocations } from './orders.js';
 import { walkInAccount } from './quickSale.js';
-import { orderTax, branchStateFor } from '../lib/orderTax.js';
+import { orderTax, branchStateFor, sellingBranch } from '../lib/orderTax.js';
+import { branchesOf } from '../lib/branchScope.js';
+import { readSpecs, specColumns, specsOfLine } from '../lib/lineSpecs.js';
 
 const router = Router();
 
@@ -139,6 +141,18 @@ const EDITABLE = ['DRAFT', 'PENDING'];
 const refuse = (status, error) => ({ status, error });
 
 /** Checks the lines the screen sent and turns them into order lines. { error } or { lines, totals }. */
+/** The requirements on an order line in words, for a work order: size, grade, finish, tolerances, certificates, notes. */
+function requirementText(line) {
+  const r = specsOfLine(line);
+  const size = ['thicknessIn', 'widthIn', 'lengthIn'].map((k) => r[k]).filter((v) => v != null).join(' x ');
+  const tol = [['thk', 'thickness'], ['wid', 'width'], ['len', 'length']].map(([k, w]) => (r[`${k}TolerancePlus`] != null || r[`${k}ToleranceMinus`] != null ? `${w} +${r[`${k}TolerancePlus`] ?? 0}/-${r[`${k}ToleranceMinus`] ?? 0}` : null)).filter(Boolean);
+  return [
+    size && `Size ${size} in`, r.gradeOverride && `Grade ${r.gradeOverride}`, r.surfaceFinish && `Finish ${r.surfaceFinish}`,
+    r.tolerancePreset && `Tolerance ${r.tolerancePreset}`, tol.length ? `Tolerances ${tol.join(', ')}` : null,
+    Array.isArray(r.certRequirements) && r.certRequirements.length ? `Certificates ${r.certRequirements.join(', ')}` : null, r.specNotes,
+  ].filter(Boolean).join(' · ');
+}
+
 async function buildIntakeLines(lines) {
   if (!Array.isArray(lines)) return refuse(400, 'lines must be a list');
   if (lines.length > 500) return refuse(400, 'An order can have at most 500 lines');
@@ -158,7 +172,11 @@ async function buildIntakeLines(lines) {
     const given = amount(line.extPrice ?? line.extendedPrice, 'line total');
     if (given?.error) return given;
     const uom = String(line.uom || line.unit || 'LB').toUpperCase().slice(0, 10);
+    // Tolerances, certificates, finish and other requirements, when the screen sends them (J-001).
+    const asked = readSpecs({ ...line, thicknessIn: undefined, widthIn: undefined, lengthIn: undefined });
+    if (asked.error) return refuse(400, `Line ${n}: ${asked.error}`);
     out.push({
+      ...specColumns(asked.specs),
       lineNumber: n,
       description: String(line.description || 'Material').slice(0, 500),
       // Only store productId / gradeId if they reference real DB records
@@ -239,8 +257,11 @@ router.post('/', async (req, res) => {
     const required = requestedDate ? validDate(requestedDate) : null;
     if (requestedDate && !required) return res.status(400).json({ error: 'The requested date is not a valid date' });
 
-    // Look up seller (Alro Steel)
-    const seller = await prisma.organization.findFirst({ where: { code: 'ALRO' } });
+    // The branch the order is sold from: the one the screen named, else the person's home branch.
+    // The order belongs to it, is taxed for it, and the company that owns it is the seller
+    // (S-008, C-012). Only with no branch at all is the old company lookup used.
+    const branch = await sellingBranch(req.user, location);
+    const seller = branch?.ownerId ? { id: branch.ownerId } : await prisma.organization.findFirst({ where: { code: 'ALRO' } });
 
     const shipToState = req.body?.shipToState ? String(req.body.shipToState).trim().toUpperCase().slice(0, 2) : undefined;
     const meta = { source, division, location, priority, ownership, customerName, ...(shipToState && { shipToState }) };
@@ -259,6 +280,7 @@ router.post('/', async (req, res) => {
         status: gate.status,
         buyerId,
         sellerId: seller?.id || null,
+        ...(branch && { locationId: branch.id }),
         poReference: poNumber || null,
         requiredDate: required,
         notes: packNotes(notes, meta),
@@ -320,6 +342,23 @@ router.get('/', async (req, res) => {
 });
 
 // ─── GET /summary — the signed-in person's own sales figures ────────
+
+// GET /api/orders/intake/branches: the branches this person may sell from, and their home branch.
+// The entry screens list these instead of a fixed list in the browser (S-008, U-011).
+router.get('/branches', async (req, res) => {
+  try {
+    const allowed = branchesOf(req.user);
+    const rows = await prisma.location.findMany({
+      where: { isActive: true, ...(allowed && { id: { in: allowed } }) },
+      select: { id: true, code: true, name: true, city: true, state: true }, orderBy: { code: 'asc' }, take: 500,
+    });
+    const home = req.user?.homeLocationId && rows.some((r) => r.id === req.user.homeLocationId) ? req.user.homeLocationId : rows[0]?.id || null;
+    res.json({ data: rows, homeLocationId: home, allBranches: allowed === null });
+  } catch (error) {
+    console.error('Intake branches failed:', error);
+    res.status(500).json({ error: 'The branches could not be loaded' });
+  }
+});
 
 router.get('/summary', async (req, res) => {
   try {
@@ -428,6 +467,10 @@ router.patch('/:id', async (req, res) => {
     if (required !== undefined) updateData.requiredDate = required;
     if (customerId !== undefined) updateData.buyerId = customerId || (newMeta.source === 'RETAIL' ? (await walkInAccount()).id : null);
     if (nextStatus !== undefined) updateData.status = nextStatus;
+    if (location !== undefined) {
+      const branch = await sellingBranch(req.user, location);
+      if (branch) { updateData.locationId = branch.id; if (branch.ownerId) updateData.sellerId = branch.ownerId; }
+    }
     // Lines, customer, branch or ship-to changed: work the totals and tax out again.
     const totals = await totalsFor(req, {
       subtotal: built ? built.subtotal : (existing.subtotal === null ? null : Number(existing.subtotal)),
@@ -572,12 +615,14 @@ router.post('/:id/create-work-orders', async (req, res) => {
           scheduledStart: order.requiredDate || null,
           scheduledEnd: order.requiredDate || null,
           inputWeightLb: line.qtyOrdered || null,
-          instructions: line.description || null,
+          // The shop floor gets what the customer asked for, not only the line's description (J-009).
+          instructions: [line.description, requirementText(line)].filter(Boolean).join(' · ').slice(0, 2000) || null,
           notes: JSON.stringify({
             customerName: order.buyer?.name || meta.customerName || '',
             orderNumber: order.orderNumber,
             lineNumber: line.lineNumber,
             processes,
+            requirements: specsOfLine(line),
           }),
           createdById: req.user.id,
         },

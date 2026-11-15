@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T23:09:08.039Z",
+ "at": "2026-11-15T09:21:18.288Z",
  "sections": {
   "Read-only roles cannot change anything": {
    "pass": true,
@@ -20,9 +20,10 @@
    "byStatus": {
     "200": 14,
     "201": 1,
-    "400": 157,
+    "400": 156,
     "403": 1,
     "404": 102,
+    "410": 1,
     "501": 3
    },
    "findings": [],

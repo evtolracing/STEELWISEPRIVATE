@@ -11,6 +11,11 @@
  * Rules:
  *  - Every quote answers an RFQ, so it always has a customer.
  *  - Line totals are worked out on the server.
+ *  - Tax is worked out on the server by rule 27 (the branch the request belongs to), so the
+ *    quote's total is what the order and the invoice will bill (J-001).
+ *  - What the customer asked for (grade, size, tolerances, certificates, processing) is
+ *    carried from the request to the quote and to the order (lib/lineSpecs.js, J-001).
+ *  - The order belongs to the branch of the request, not of whoever presses accept (J-001).
  *  - Accepting a quote creates a confirmed sales order with the quoted lines
  *    and prices, closes the RFQ, and rejects the RFQ's other open quotes.
  *    A quote can be accepted once; an expired quote cannot be accepted.
@@ -20,6 +25,8 @@ import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
 import { quoteLineTotal, quoteMoveError, isExpired, RFQ_OPEN } from '../lib/quoteRules.js';
+import { readSpecs, mergeSpecs, specColumns, specsOfLine } from '../lib/lineSpecs.js';
+import { orderTax, branchStateFor } from '../lib/orderTax.js';
 
 const router = Router();
 const num = (d) => Number(d || 0);
@@ -49,7 +56,7 @@ const INCLUDE = {
 };
 const toApi = (q) => q && ({
   ...q, customer: q.rfq?.customer || null, customerId: q.rfq?.customerId || null,
-  subtotal: num(q.subtotal), totalAmount: num(q.totalAmount),
+  subtotal: num(q.subtotal), taxAmount: q.taxAmount == null ? null : num(q.taxAmount), totalAmount: num(q.totalAmount),
   displayStatus: isExpired(q) && OPEN.includes(q.status) ? 'EXPIRED' : q.status,
 });
 
@@ -73,6 +80,9 @@ export async function createQuote(body, userId) {
     const priceUnit = String(raw.priceUnit || 'CWT').toUpperCase();
     const total = quoteLineTotal(quantity, unit, raw.unitPrice, priceUnit);
     if (total.error) refuse(400, `Line ${i + 1}: ${total.error}`);
+    const read = readSpecs(raw);
+    if (read.error) refuse(400, `Line ${i + 1}: ${read.error}`);
+    const specs = mergeSpecs(read.specs, from?.specifications);
     let leadTimeDays = null;
     if (raw.leadTimeDays != null && raw.leadTimeDays !== '') {
       leadTimeDays = Number(raw.leadTimeDays);
@@ -82,17 +92,19 @@ export async function createQuote(body, userId) {
       lineNumber: i + 1, rfqLineId: from?.id || null, productId: raw.productId || from?.productId || null,
       description: String(raw.description || from?.description || '').trim() || null,
       quantity: Number(quantity), unit, unitPrice: Number(raw.unitPrice), priceUnit, extendedPrice: total.extended,
-      leadTimeDays, notes: raw.notes ? String(raw.notes) : null,
+      leadTimeDays, notes: raw.notes ? String(raw.notes) : null, ...specColumns(specs),
     };
   });
   const subtotal = Math.round(lines.reduce((s, l) => s + l.extendedPrice, 0) * 100) / 100;
+  const tax = await orderTax({ subtotal, customerId: rfq.customerId, branchState: await branchStateFor({ id: userId }, rfq.locationId) });
   const version = (await prisma.quote.count({ where: { rfqId: rfq.id } })) + 1;
   const quote = await createNumbered({
     count: () => prisma.quote.count(),
     format: padded('QT', 6),
     create: (quoteNumber) => prisma.quote.create({
       data: {
-        quoteNumber, rfqId: rfq.id, version, status: 'DRAFT', subtotal, totalAmount: subtotal, validUntil,
+        quoteNumber, rfqId: rfq.id, version, status: 'DRAFT', subtotal, taxAmount: tax.taxAmount, totalAmount: Math.round((subtotal + tax.taxAmount) * 100) / 100, validUntil,
+        ...(rfq.locationId && { locationId: rfq.locationId }),
         paymentTerms: body.paymentTerms ? String(body.paymentTerms) : null, freightTerms: body.freightTerms ? String(body.freightTerms) : null,
         notes: body.notes ? String(body.notes) : null, createdById: userId, lines: { create: lines },
       },
@@ -110,7 +122,12 @@ router.get('/', handle('fetch quotes', async (req, res) => {
   if (req.query.status) {
     const status = String(req.query.status).toUpperCase();
     if (!STATUSES.includes(status)) refuse(400, `status must be one of: ${STATUSES.join(', ')}`);
-    where.status = status;
+    // The list filters by what the screen shows (displayStatus): a quote past its valid-until
+    // date is EXPIRED, not SENT (J-004).
+    const now = new Date();
+    if (status === 'EXPIRED') where.OR = [{ status: 'EXPIRED' }, { status: { in: OPEN }, validUntil: { lt: now } }];
+    else if (OPEN.includes(status)) Object.assign(where, { status, OR: [{ validUntil: null }, { validUntil: { gte: now } }] });
+    else where.status = status;
   }
   if (req.query.rfqId) where.rfqId = String(req.query.rfqId);
   if (req.query.customerId) where.rfq = { customerId: String(req.query.customerId) };
@@ -169,16 +186,25 @@ router.post('/:id/reject', handle('reject quote', async (req, res) => {
  * `customerId` limits the action to that customer's quotes.
  */
 export async function acceptQuote(id, body = {}, actor, { customerId, onOrder } = {}) {
-  const quote = await prisma.quote.findUnique({ where: { id }, include: { lines: { orderBy: { lineNumber: 'asc' } }, rfq: true } });
+  const quote = await prisma.quote.findUnique({ where: { id }, include: { lines: { orderBy: { lineNumber: 'asc' }, include: { rfqLine: { select: { specifications: true } } } }, rfq: { include: { customer: { select: { isActive: true } } } } } });
   if (!quote || (customerId && quote.rfq.customerId !== customerId)) refuse(404, 'Quote not found');
+  if (quote.rfq.customer && quote.rfq.customer.isActive === false) refuse(409, 'This customer account is inactive. Reactivate it before taking the order.');
   const userId = actor?.id || quote.createdById;
   if (!userId) refuse(409, 'This quote has to be accepted by the sales desk');
   const why = quoteMoveError(quote, 'ACCEPTED');
   if (why) refuse(409, why);
   if (!quote.lines.length) refuse(409, 'This quote has no lines');
 
+  // The order bills what the quote said. A quote written before quotes carried tax gets its tax
+  // now, by the same rule 27 every other order is taxed by.
+  const branchId = quote.locationId || quote.rfq.locationId || null;
+  const subtotal = num(quote.subtotal);
+  const taxAmount = quote.taxAmount != null ? num(quote.taxAmount)
+    : (await orderTax({ subtotal, customerId: quote.rfq.customerId, shipToState: body.shipToState, branchState: await branchStateFor(actor?.id ? actor : { id: userId }, branchId) })).taxAmount;
+  const freightAmount = num(quote.freightAmount);
+  const totalAmount = Math.round((subtotal + taxAmount + freightAmount) * 100) / 100;
   // Rule 32: the quote is still accepted, but the order waits on hold when it would pass the credit limit.
-  const gate = await statusAfterCreditCheck(prisma, { customerId: quote.rfq.customerId, orderTotal: quote.totalAmount, wanted: 'CONFIRMED' });
+  const gate = await statusAfterCreditCheck(prisma, { customerId: quote.rfq.customerId, orderTotal: totalAmount, wanted: 'CONFIRMED' });
   const order = await createNumbered({
     count: () => prisma.order.count(),
     format: padded('SO'),
@@ -186,19 +212,22 @@ export async function acceptQuote(id, body = {}, actor, { customerId, onOrder } 
       await move(tx, quote, 'ACCEPTED', { acceptedAt: new Date() });
       const created = await tx.order.create({
         data: {
-          orderNumber, orderType: 'SO', status: gate.status, buyerId: quote.rfq.customerId,
+          orderNumber, orderType: 'SO', status: gate.status, buyerId: quote.rfq.customerId, ...(branchId && { locationId: branchId }),
           shipToAddress: body.shipToAddress ? String(body.shipToAddress) : null, shipToCity: body.shipToCity ? String(body.shipToCity) : null,
           shipToState: body.shipToState ? String(body.shipToState) : null, shipToZip: body.shipToZip ? String(body.shipToZip) : null,
-          subtotal: quote.subtotal, taxAmount: quote.taxAmount || 0, freightAmount: quote.freightAmount || 0, totalAmount: quote.totalAmount,
+          subtotal, taxAmount, freightAmount, totalAmount,
           paymentTerms: quote.paymentTerms, poReference: body.poReference ? String(body.poReference) : null,
           requiredDate: quote.rfq.requestedDate, notes: `From quote ${quote.quoteNumber}`, createdById: userId,
           lines: {
-            create: quote.lines.map((l) => ({
-              lineNumber: l.lineNumber, productId: l.productId, description: l.description,
-              thicknessIn: l.thicknessIn, widthIn: l.widthIn, lengthIn: l.lengthIn,
-              qtyOrdered: l.quantity, unit: l.unit, unitPrice: l.unitPrice,
-              priceUnit: ORDER_PRICE_UNITS.includes(l.priceUnit) ? l.priceUnit : 'CWT', extendedPrice: l.extendedPrice, notes: l.notes,
-            })),
+            create: quote.lines.map((l) => {
+              const asked = mergeSpecs(specsOfLine(l), l.rfqLine?.specifications);
+              return {
+                lineNumber: l.lineNumber, productId: l.productId, description: l.description, ...(asked.gradeId && { gradeId: asked.gradeId }),
+                qtyOrdered: l.quantity, unit: l.unit, unitPrice: l.unitPrice,
+                priceUnit: ORDER_PRICE_UNITS.includes(l.priceUnit) ? l.priceUnit : 'CWT', extendedPrice: l.extendedPrice, notes: l.notes,
+                ...specColumns(asked),
+              };
+            }),
           },
         },
         include: { lines: true, buyer: { select: { id: true, name: true } } },

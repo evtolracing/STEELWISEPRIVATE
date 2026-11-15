@@ -705,7 +705,8 @@ await scenario(G5, 'a quote keeps its price when it becomes an order, and belong
   ok('quoted', q.status === 201, `${q.status} ${JSON.stringify(q.body).slice(0, 200)}`);
   const [rfqRow, quoteRow] = [await prisma.rFQ.findUnique({ where: { id: rfq.body.id } }), await prisma.quote.findUnique({ where: { id: q.body.id } })];
   ok('both carry the branch of the person who entered them', rfqRow.locationId === L1.id && quoteRow.locationId === L1.id, `${rfqRow.locationId} ${quoteRow.locationId}`);
-  ok('quote total is 12.5 cwt x 47.35 = 591.88', cents(quoteRow.totalAmount) === 59188, quoteRow.totalAmount);
+  // Since Phase 5 a quote carries tax by rule 27 (J-001): the subtotal is the price, the total adds the tax.
+  ok('quote subtotal is 12.5 cwt x 47.35 = 591.88, total = subtotal + tax', cents(quoteRow.subtotal) === 59188 && cents(quoteRow.totalAmount) === cents(quoteRow.subtotal) + cents(quoteRow.taxAmount), `${quoteRow.subtotal} ${quoteRow.taxAmount} ${quoteRow.totalAmount}`);
   const other = await A.get(`/api/quotes/${q.body.id}`, 'branchB');
   ok('a sales login at another branch cannot open the quote', other.status === 404, other.status);
   const list = await A.get('/api/quotes?limit=200', 'branchB');
@@ -714,7 +715,7 @@ await scenario(G5, 'a quote keeps its price when it becomes an order, and belong
   const acc = await A.post(`/api/quotes/${q.body.id}/accept`, { poReference: tag('PO') }, 'branchA');
   ok('accepted', ok2(acc), `${acc.status} ${JSON.stringify(acc.body).slice(0, 200)}`);
   const made = await prisma.order.findFirst({ where: { fromQuote: { id: q.body.id } }, include: { lines: true } });
-  ok('one order, at the quoted price and total, in the same branch', !!made && num(made.lines[0].unitPrice) === 47.35 && cents(made.totalAmount) === 59188 && made.locationId === L1.id, `${made?.lines[0]?.unitPrice} ${made?.totalAmount} ${made?.locationId}`);
+  ok('one order, at the quoted price and total, in the same branch', !!made && num(made.lines[0].unitPrice) === 47.35 && cents(made.subtotal) === 59188 && cents(made.totalAmount) === cents(quoteRow.totalAmount) && made.locationId === L1.id, `${made?.lines[0]?.unitPrice} ${made?.subtotal} ${made?.totalAmount} ${made?.locationId}`);
 });
 await scenario(G5, 'the database refuses money that does not add up, whoever writes it', async (ok) => {
   const { invoice, o } = await billedOrder(100, 1);

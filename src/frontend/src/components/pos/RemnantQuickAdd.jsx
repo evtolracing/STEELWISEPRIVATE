@@ -29,7 +29,7 @@ const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits:
 /**
  * @param {{ onAddToCart: (item) => void, location?: string }} props
  */
-export default function RemnantQuickAdd({ onAddToCart, location = 'JACKSON' }) {
+export default function RemnantQuickAdd({ onAddToCart, location = '' }) {
   const [remnants, setRemnants] = useState([])
   const [pricing, setPricing] = useState({})
   const [loading, setLoading] = useState(true)

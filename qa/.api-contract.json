@@ -1,5 +1,5 @@
 {
- "total": 287,
+ "total": 270,
  "missing": [
   {
    "call": "GET /api/admin/integrations",
@@ -122,12 +122,6 @@
    ]
   },
   {
-   "call": "PATCH /api/orders/:x/status",
-   "files": [
-    "src/frontend/src/api/index.js"
-   ]
-  },
-  {
    "call": "POST /api/pos/will-call/:x/complete",
    "files": [
     "src/frontend/src/components/pos/screens/WillCallLoadScreen.jsx"
@@ -143,102 +137,6 @@
    "call": "GET /api/pos/will-call/queue",
    "files": [
     "src/frontend/src/components/pos/screens/WillCallQueueScreen.jsx"
-   ]
-  },
-  {
-   "call": "GET /api/pricing",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "GET /api/pricing-records",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "POST /api/pricing-records",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "PUT /api/pricing-records/:x",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "DELETE /api/pricing-records/:x",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "GET /api/pricing/market",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "GET /api/pricing/prices",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "POST /api/pricing/prices",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "GET /api/pricing/prices/:x",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "PUT /api/pricing/prices/:x",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "GET /api/pricing/quotes",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "POST /api/pricing/quotes",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "GET /api/pricing/quotes/:x",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "PUT /api/pricing/quotes/:x",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "GET /api/pricing/surcharges",
-   "files": [
-    "src/frontend/src/api/pricing.js"
-   ]
-  },
-  {
-   "call": "PUT /api/pricing/surcharges/:x",
-   "files": [
-    "src/frontend/src/api/pricing.js"
    ]
   },
   {

@@ -1,7 +1,7 @@
 {
  "seed": 8003,
  "base": "http://localhost:3011",
- "at": "2026-11-13T22:59:50.983Z",
+ "at": "2026-11-15T09:10:04.386Z",
  "scenarios": [
   {
    "id": "S8003-01",
@@ -32,25 +32,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00184 → IN_PROCESS",
+     "name": "job JOB-00182 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → WAITING_QC",
+     "name": "job JOB-00182 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → PACKAGING",
+     "name": "job JOB-00182 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → READY_TO_SHIP",
+     "name": "job JOB-00182 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -200,7 +200,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 345
+   "ms": 489
   },
   {
    "id": "S8003-02",
@@ -383,7 +383,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 295
+   "ms": 450
   },
   {
    "id": "S8003-03",
@@ -556,7 +556,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 279
+   "ms": 438
   },
   {
    "id": "S8003-04",
@@ -739,7 +739,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 269
+   "ms": 479
   },
   {
    "id": "S8003-05",
@@ -770,25 +770,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00188 → IN_PROCESS",
+     "name": "job JOB-00189 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00188 → WAITING_QC",
+     "name": "job JOB-00189 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00188 → PACKAGING",
+     "name": "job JOB-00189 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00188 → READY_TO_SHIP",
+     "name": "job JOB-00189 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -922,7 +922,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 288
+   "ms": 422
   },
   {
    "id": "S8003-06",
@@ -977,31 +977,31 @@
      "ok": true
     },
     {
-     "name": "assign JOB-00189 to QA-L19-LASER",
+     "name": "assign JOB-00190 to QA-L19-LASER",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → IN_PROCESS",
+     "name": "job JOB-00190 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → WAITING_QC",
+     "name": "job JOB-00190 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → PACKAGING",
+     "name": "job JOB-00190 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → READY_TO_SHIP",
+     "name": "job JOB-00190 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1139,7 +1139,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 397
+   "ms": 526
   },
   {
    "id": "S8003-07",
@@ -1194,31 +1194,31 @@
      "ok": true
     },
     {
-     "name": "assign JOB-00190 to QA-L72-SAW",
+     "name": "assign JOB-00191 to QA-L72-SAW",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → IN_PROCESS",
+     "name": "job JOB-00191 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → WAITING_QC",
+     "name": "job JOB-00191 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → PACKAGING",
+     "name": "job JOB-00191 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → READY_TO_SHIP",
+     "name": "job JOB-00191 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1372,7 +1372,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 379
+   "ms": 526
   },
   {
    "id": "S8003-08",
@@ -1403,25 +1403,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00191 → IN_PROCESS",
+     "name": "job JOB-00193 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00191 → WAITING_QC",
+     "name": "job JOB-00193 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00191 → PACKAGING",
+     "name": "job JOB-00193 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00191 → READY_TO_SHIP",
+     "name": "job JOB-00193 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1463,25 +1463,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00193 → IN_PROCESS",
+     "name": "job JOB-00195 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00193 → WAITING_QC",
+     "name": "job JOB-00195 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00193 → PACKAGING",
+     "name": "job JOB-00195 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00193 → READY_TO_SHIP",
+     "name": "job JOB-00195 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1615,7 +1615,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 479
+   "ms": 719
   },
   {
    "id": "S8003-09",
@@ -1646,61 +1646,31 @@
      "ok": true
     },
     {
-     "name": "job JOB-00194 → IN_PROCESS",
+     "name": "job JOB-00199 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00194 → WAITING_QC",
+     "name": "job JOB-00199 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00194 → PACKAGING",
+     "name": "job JOB-00199 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00194 → READY_TO_SHIP",
+     "name": "job JOB-00199 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "create job at QA-L22-SHEAR",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00195 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00195 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00195 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00195 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L22-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1725,6 +1695,36 @@
     },
     {
      "name": "job JOB-00196 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L22-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00198 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00198 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00198 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00198 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1874,7 +1874,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 489
+   "ms": 781
   },
   {
    "id": "S8003-10",
@@ -1935,25 +1935,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00198 → IN_PROCESS",
+     "name": "job JOB-00200 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00198 → WAITING_QC",
+     "name": "job JOB-00200 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00198 → PACKAGING",
+     "name": "job JOB-00200 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00198 → READY_TO_SHIP",
+     "name": "job JOB-00200 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1965,25 +1965,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00199 → IN_PROCESS",
+     "name": "job JOB-00201 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00199 → WAITING_QC",
+     "name": "job JOB-00201 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00199 → PACKAGING",
+     "name": "job JOB-00201 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00199 → READY_TO_SHIP",
+     "name": "job JOB-00201 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2133,7 +2133,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 489
+   "ms": 691
   },
   {
    "id": "S8003-11",
@@ -2164,25 +2164,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00200 → IN_PROCESS",
+     "name": "job JOB-00202 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00200 → WAITING_QC",
+     "name": "job JOB-00202 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00200 → PACKAGING",
+     "name": "job JOB-00202 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00200 → READY_TO_SHIP",
+     "name": "job JOB-00202 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2194,25 +2194,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00201 → IN_PROCESS",
+     "name": "job JOB-00206 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00201 → WAITING_QC",
+     "name": "job JOB-00206 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00201 → PACKAGING",
+     "name": "job JOB-00206 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00201 → READY_TO_SHIP",
+     "name": "job JOB-00206 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2362,7 +2362,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 396
+   "ms": 667
   },
   {
    "id": "S8003-12",
@@ -2393,36 +2393,6 @@
      "ok": true
     },
     {
-     "name": "job JOB-00202 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00202 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00202 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00202 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L75-SHEAR",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
      "name": "job JOB-00203 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -2447,7 +2417,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L75-LASER",
+     "name": "create job at QA-L75-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2472,6 +2442,36 @@
     },
     {
      "name": "job JOB-00204 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L75-LASER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00205 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00205 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00205 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00205 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2605,7 +2605,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 475
+   "ms": 673
   },
   {
    "id": "S8003-13",
@@ -2636,25 +2636,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00205 → IN_PROCESS",
+     "name": "job JOB-00207 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → WAITING_QC",
+     "name": "job JOB-00207 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → PACKAGING",
+     "name": "job JOB-00207 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → READY_TO_SHIP",
+     "name": "job JOB-00207 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2778,7 +2778,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 265
+   "ms": 389
   },
   {
    "id": "S8003-14",
@@ -2809,61 +2809,31 @@
      "ok": true
     },
     {
-     "name": "job JOB-00206 → IN_PROCESS",
+     "name": "job JOB-00209 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00206 → WAITING_QC",
+     "name": "job JOB-00209 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00206 → PACKAGING",
+     "name": "job JOB-00209 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00206 → READY_TO_SHIP",
+     "name": "job JOB-00209 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "create job at QA-L18-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00207 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00207 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00207 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00207 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L18-PLASTIC_SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2888,6 +2858,36 @@
     },
     {
      "name": "job JOB-00208 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L18-PLASTIC_SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00210 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00210 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00210 → PACKAGING",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00210 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3037,7 +3037,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 491
+   "ms": 741
   },
   {
    "id": "S8003-15",
@@ -3068,25 +3068,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00209 → IN_PROCESS",
+     "name": "job JOB-00214 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00209 → WAITING_QC",
+     "name": "job JOB-00214 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00209 → PACKAGING",
+     "name": "job JOB-00214 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00209 → READY_TO_SHIP",
+     "name": "job JOB-00214 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3220,7 +3220,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 298
+   "ms": 417
   },
   {
    "id": "S8003-16",
@@ -3251,25 +3251,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00210 → IN_PROCESS",
+     "name": "job JOB-00212 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00210 → WAITING_QC",
+     "name": "job JOB-00212 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00210 → PACKAGING",
+     "name": "job JOB-00212 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00210 → READY_TO_SHIP",
+     "name": "job JOB-00212 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3423,7 +3423,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 366
+   "ms": 539
   },
   {
    "id": "S8003-17",
@@ -3454,25 +3454,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00212 → IN_PROCESS",
+     "name": "job JOB-00213 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00212 → WAITING_QC",
+     "name": "job JOB-00213 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00212 → PACKAGING",
+     "name": "job JOB-00213 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00212 → READY_TO_SHIP",
+     "name": "job JOB-00213 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3606,7 +3606,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 291
+   "ms": 415
   },
   {
    "id": "S8003-18",
@@ -3637,25 +3637,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00213 → IN_PROCESS",
+     "name": "job JOB-00215 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00213 → WAITING_QC",
+     "name": "job JOB-00215 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00213 → PACKAGING",
+     "name": "job JOB-00215 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00213 → READY_TO_SHIP",
+     "name": "job JOB-00215 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3667,25 +3667,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00214 → IN_PROCESS",
+     "name": "job JOB-00216 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00214 → WAITING_QC",
+     "name": "job JOB-00216 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00214 → PACKAGING",
+     "name": "job JOB-00216 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00214 → READY_TO_SHIP",
+     "name": "job JOB-00216 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3835,7 +3835,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 391
+   "ms": 607
   },
   {
    "id": "S8003-19",
@@ -3892,7 +3892,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 84
+   "ms": 151
   },
   {
    "id": "S8003-20",
@@ -3949,7 +3949,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 76
+   "ms": 100
   },
   {
    "id": "S8003-21",
@@ -4006,7 +4006,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 72
+   "ms": 101
   },
   {
    "id": "S8003-22",
@@ -4039,7 +4039,7 @@
     {
      "name": "POS: refuse to submit an empty sale",
      "expect": "4xx",
-     "status": 400,
+     "status": 410,
      "ok": true
     },
     {
@@ -4067,15 +4067,21 @@
      "ok": true
     },
     {
-     "name": "POS: submit the sale",
-     "expect": "2xx",
+     "name": "POS: the old session submit is closed and says where to go",
+     "expect": 410,
+     "status": 410,
+     "ok": true
+    },
+    {
+     "name": "Retail POS: enter the counter order",
+     "expect": 201,
      "status": 201,
      "ok": true
     },
     {
-     "name": "POS: refuse to submit the same sale twice",
-     "expect": "4xx",
-     "status": 400,
+     "name": "Retail POS: submit the counter order",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     }
    ],
@@ -4097,7 +4103,7 @@
      "ok": true
     },
     {
-     "name": "POS order belongs to the chosen customer",
+     "name": "POS order belongs to the chosen customer and the clerk's branch",
      "ok": true
     },
     {
@@ -4123,7 +4129,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 123
+   "ms": 199
   },
   {
    "id": "S8003-23",
@@ -4156,7 +4162,7 @@
     {
      "name": "POS: refuse to submit an empty sale",
      "expect": "4xx",
-     "status": 400,
+     "status": 410,
      "ok": true
     },
     {
@@ -4184,15 +4190,21 @@
      "ok": true
     },
     {
-     "name": "POS: submit the sale",
-     "expect": "2xx",
+     "name": "POS: the old session submit is closed and says where to go",
+     "expect": 410,
+     "status": 410,
+     "ok": true
+    },
+    {
+     "name": "Retail POS: enter the counter order",
+     "expect": 201,
      "status": 201,
      "ok": true
     },
     {
-     "name": "POS: refuse to submit the same sale twice",
-     "expect": "4xx",
-     "status": 400,
+     "name": "Retail POS: submit the counter order",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     }
    ],
@@ -4214,7 +4226,7 @@
      "ok": true
     },
     {
-     "name": "POS order belongs to the chosen customer",
+     "name": "POS order belongs to the chosen customer and the clerk's branch",
      "ok": true
     },
     {
@@ -4240,7 +4252,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 119
+   "ms": 200
   },
   {
    "id": "S8003-24",
@@ -4271,25 +4283,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00215 → IN_PROCESS",
+     "name": "job JOB-00217 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00215 → WAITING_QC",
+     "name": "job JOB-00217 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00215 → PACKAGING",
+     "name": "job JOB-00217 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00215 → READY_TO_SHIP",
+     "name": "job JOB-00217 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4357,7 +4369,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 254
+   "ms": 355
   },
   {
    "id": "S8003-25",
@@ -4388,25 +4400,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00216 → IN_PROCESS",
+     "name": "job JOB-00218 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → WAITING_QC",
+     "name": "job JOB-00218 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → PACKAGING",
+     "name": "job JOB-00218 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → READY_TO_SHIP",
+     "name": "job JOB-00218 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4474,7 +4486,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 238
+   "ms": 330
   },
   {
    "id": "S8003-26",
@@ -4511,25 +4523,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00217 → IN_PROCESS",
+     "name": "job JOB-00222 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → WAITING_QC",
+     "name": "job JOB-00222 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → PACKAGING",
+     "name": "job JOB-00222 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → READY_TO_SHIP",
+     "name": "job JOB-00222 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4601,7 +4613,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 250
+   "ms": 351
   },
   {
    "id": "S8003-27",
@@ -4632,25 +4644,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00218 → IN_PROCESS",
+     "name": "job JOB-00219 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → WAITING_QC",
+     "name": "job JOB-00219 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → PACKAGING",
+     "name": "job JOB-00219 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → READY_TO_SHIP",
+     "name": "job JOB-00219 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4718,7 +4730,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 261
+   "ms": 306
   },
   {
    "id": "S8003-28",
@@ -4755,25 +4767,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00219 → IN_PROCESS",
+     "name": "job JOB-00221 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → WAITING_QC",
+     "name": "job JOB-00221 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → PACKAGING",
+     "name": "job JOB-00221 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → READY_TO_SHIP",
+     "name": "job JOB-00221 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4845,7 +4857,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 272
+   "ms": 369
   },
   {
    "id": "S8003-29",
@@ -4962,7 +4974,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 248
+   "ms": 300
   },
   {
    "id": "S8003-30",
@@ -5003,7 +5015,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 18
+   "ms": 24
   },
   {
    "id": "S8003-31",
@@ -5036,7 +5048,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 8
+   "ms": 13
   },
   {
    "id": "S8003-32",
@@ -5069,7 +5081,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 17
+   "ms": 29
   },
   {
    "id": "S8003-33",
@@ -5102,7 +5114,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 8
+   "ms": 14
   },
   {
    "id": "S8003-34",
@@ -5135,7 +5147,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 10
+   "ms": 14
   },
   {
    "id": "S8003-35",
@@ -5166,25 +5178,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00221 → IN_PROCESS",
+     "name": "job JOB-00223 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → WAITING_QC",
+     "name": "job JOB-00223 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → PACKAGING",
+     "name": "job JOB-00223 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → READY_TO_SHIP",
+     "name": "job JOB-00223 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5334,7 +5346,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 317
+   "ms": 442
   },
   {
    "id": "S8003-36",
@@ -5399,7 +5411,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 49
+   "ms": 87
   },
   {
    "id": "S8003-37",
@@ -5480,7 +5492,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 87
+   "ms": 116
   },
   {
    "id": "S8003-38",
@@ -5523,25 +5535,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00222 → IN_PROCESS",
+     "name": "job JOB-00224 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → WAITING_QC",
+     "name": "job JOB-00224 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → PACKAGING",
+     "name": "job JOB-00224 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → READY_TO_SHIP",
+     "name": "job JOB-00224 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5599,7 +5611,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 171
+   "ms": 238
   },
   {
    "id": "S8003-39",
@@ -5676,7 +5688,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 96
+   "ms": 119
   },
   {
    "id": "S8003-40",
@@ -5707,25 +5719,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00223 → IN_PROCESS",
+     "name": "job JOB-00225 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → WAITING_QC",
+     "name": "job JOB-00225 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → PACKAGING",
+     "name": "job JOB-00225 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → READY_TO_SHIP",
+     "name": "job JOB-00225 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5923,7 +5935,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 433
+   "ms": 547
   },
   {
    "id": "S8003-41",
@@ -5954,25 +5966,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00224 → IN_PROCESS",
+     "name": "job JOB-00226 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → WAITING_QC",
+     "name": "job JOB-00226 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → PACKAGING",
+     "name": "job JOB-00226 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → READY_TO_SHIP",
+     "name": "job JOB-00226 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6160,7 +6172,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 393
+   "ms": 550
   },
   {
    "id": "S8003-42",
@@ -6191,19 +6203,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00225 → IN_PROCESS",
+     "name": "job JOB-00230 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → WAITING_QC",
+     "name": "job JOB-00230 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → ON_HOLD",
+     "name": "job JOB-00230 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6227,25 +6239,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00225 → IN_PROCESS",
+     "name": "job JOB-00230 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → WAITING_QC",
+     "name": "job JOB-00230 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → PACKAGING",
+     "name": "job JOB-00230 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → READY_TO_SHIP",
+     "name": "job JOB-00230 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6343,7 +6355,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 347
+   "ms": 483
   },
   {
    "id": "S8003-43",
@@ -6374,19 +6386,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00226 → IN_PROCESS",
+     "name": "job JOB-00228 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → WAITING_QC",
+     "name": "job JOB-00228 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → ON_HOLD",
+     "name": "job JOB-00228 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6410,25 +6422,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00226 → IN_PROCESS",
+     "name": "job JOB-00228 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → WAITING_QC",
+     "name": "job JOB-00228 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → PACKAGING",
+     "name": "job JOB-00228 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → READY_TO_SHIP",
+     "name": "job JOB-00228 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6446,7 +6458,7 @@
      "ok": true
     },
     {
-     "name": "ship JOB-00226 from the shop floor",
+     "name": "ship JOB-00228 from the shop floor",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6542,7 +6554,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 353
+   "ms": 469
   },
   {
    "id": "S8003-44",
@@ -6773,7 +6785,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 318
+   "ms": 405
   },
   {
    "id": "S8003-45",
@@ -6840,25 +6852,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00228 → IN_PROCESS",
+     "name": "job JOB-00231 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00228 → WAITING_QC",
+     "name": "job JOB-00231 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00228 → PACKAGING",
+     "name": "job JOB-00231 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00228 → READY_TO_SHIP",
+     "name": "job JOB-00231 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6916,18 +6928,6 @@
      "ok": true
     },
     {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 2: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -6937,6 +6937,18 @@
     },
     {
      "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -6976,11 +6988,11 @@
      "ok": true
     },
     {
-     "name": "line 1: invoiced qty = shipped qty",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
+     "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
@@ -7014,7 +7026,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 410
+   "ms": 588
   },
   {
    "id": "S8003-46",
@@ -7081,25 +7093,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00230 → IN_PROCESS",
+     "name": "job JOB-00232 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00230 → WAITING_QC",
+     "name": "job JOB-00232 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00230 → PACKAGING",
+     "name": "job JOB-00232 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00230 → READY_TO_SHIP",
+     "name": "job JOB-00232 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7255,7 +7267,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 412
+   "ms": 564
   },
   {
    "id": "S8003-47",
@@ -7292,25 +7304,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00231 → IN_PROCESS",
+     "name": "job JOB-00234 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00231 → WAITING_QC",
+     "name": "job JOB-00234 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00231 → PACKAGING",
+     "name": "job JOB-00234 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00231 → READY_TO_SHIP",
+     "name": "job JOB-00234 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7322,25 +7334,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00232 → IN_PROCESS",
+     "name": "job JOB-00237 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00232 → WAITING_QC",
+     "name": "job JOB-00237 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00232 → PACKAGING",
+     "name": "job JOB-00237 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00232 → READY_TO_SHIP",
+     "name": "job JOB-00237 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7496,7 +7508,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 392
+   "ms": 572
   },
   {
    "id": "S8003-48",
@@ -7563,25 +7575,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00234 → IN_PROCESS",
+     "name": "job JOB-00235 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00234 → WAITING_QC",
+     "name": "job JOB-00235 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00234 → PACKAGING",
+     "name": "job JOB-00235 → PACKAGING",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00234 → READY_TO_SHIP",
+     "name": "job JOB-00235 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7747,7 +7759,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 402
+   "ms": 569
   },
   {
    "id": "S8003-49",
@@ -7866,7 +7878,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 151
+   "ms": 209
   },
   {
    "id": "S8003-50",
@@ -7923,7 +7935,7 @@
    ],
    "invariants": [
     {
-     "name": "quote total = quantity x price",
+     "name": "quote subtotal = quantity x price, total = subtotal + tax",
      "ok": true
     },
     {
@@ -7969,7 +7981,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 120
+   "ms": 193
   }
  ],
  "concurrency": {
@@ -7988,12 +8000,12 @@
    {
     "name": "two shipments racing for the same order line: exactly one is created",
     "pass": true,
-    "detail": "statuses 201,409"
+    "detail": "statuses 409,201"
    },
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 409,409,200; line shipped 3960 of 3960; on hand 6600 → 2640"
+    "detail": "statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8049,7 +8061,7 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 711,
+  "steps": 713,
   "checks": 788,
   "failedSteps": {},
   "failedChecks": {}

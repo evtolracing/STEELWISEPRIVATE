@@ -487,13 +487,18 @@ async function posEcommerce(sc, variant) {
   const pricing = (await A.get(`/api/pos/sessions/${sid}/pricing`, 'csr')).body;
   check(sc, 'POS total equals the line', Math.abs(num(pricing?.summary?.subtotal) - num(line?.extendedPrice)) < 0.01 && num(pricing?.summary?.subtotal) > 0, `subtotal ${pricing?.summary?.subtotal} vs line ${line?.extendedPrice}`);
   await go('review', 'proceed_to_review');
-  const sub = await step(sc, 'POS: submit the sale', () => A.post(`/api/pos/sessions/${sid}/submit`, {}, 'csr'));
-  const orderId = sub.body?.order?.id;
+  // The session's own submit is closed (S-022, Phase 5): it built orders and customers by a
+  // second set of rules. The counter order is entered through Retail POS, as the screen does.
+  await step(sc, 'POS: the old session submit is closed and says where to go', () => A.post(`/api/pos/sessions/${sid}/submit`, {}, 'csr'), 410);
+  const home = await prisma.location.findUnique({ where: { id: csr.homeLocationId } });
+  const perLb = num(product.basePriceCwt) / 100;
+  const entered = await step(sc, 'Retail POS: enter the counter order', () => A.post('/api/orders/intake', { source: 'RETAIL', division: 'OUTLET', location: home.code, customerId: customer.id, customerName: customer.name, status: 'DRAFT', lines: [{ productId: product.id, description: product.name, qty, uom: 'LB', unitPrice: perLb }] }, 'csr'), 201);
+  const orderId = entered.body?.data?.id;
   if (!orderId) return;
-  await step(sc, 'POS: refuse to submit the same sale twice', () => A.post(`/api/pos/sessions/${sid}/submit`, {}, 'csr'), '4xx');
+  await step(sc, 'Retail POS: submit the counter order', () => A.post(`/api/orders/intake/${orderId}/submit`, {}, 'csr'));
   const saved = await prisma.order.findUnique({ where: { id: orderId }, include: { lines: true } });
-  check(sc, 'POS order saved with its total', num(saved.subtotal) > 0 && Math.abs(num(saved.subtotal) - num(saved.lines[0].extendedPrice)) < 0.01, `subtotal ${saved.subtotal}, line ${saved.lines[0]?.extendedPrice}`);
-  check(sc, 'POS order belongs to the chosen customer', saved.buyerId === customer.id, `buyer ${saved.buyerId}`);
+  check(sc, 'POS order saved with its total', num(saved.subtotal) > 0 && Math.abs(num(saved.subtotal) - num(saved.lines[0].extendedPrice)) < 0.01 && Math.abs(num(saved.subtotal) - listTotal) < 0.02, `subtotal ${saved.subtotal}, line ${saved.lines[0]?.extendedPrice}, list ${listTotal}`);
+  check(sc, 'POS order belongs to the chosen customer and the clerk\'s branch', saved.buyerId === customer.id && saved.locationId === home.id, `buyer ${saved.buyerId} branch ${saved.locationId}`);
   await checkOrderBooks(sc, orderId, { createdBy: csr.id });
 }
 
@@ -555,7 +560,8 @@ async function quoteToOrder(sc) {
   const q2 = await step(sc, 'quote it again at a lower price', () => A.post(`/api/rfqs/${rfq.body.id}/quotes`, { lines: [{ rfqLineId: rl.id, unitPrice: price1 - 2, priceUnit: 'CWT' }] }, 'csr'));
   if (!q1.body?.id || !q2.body?.id) return;
   const want = Math.round((qty / 100) * (price1 - 2) * 100) / 100;
-  check(sc, 'quote total = quantity x price', Math.abs(num(q2.body.totalAmount) - want) < 0.005, `total ${q2.body.totalAmount} vs ${want}`);
+  // Quotes carry tax by rule 27 since Phase 5 (J-001): the subtotal is quantity x price.
+  check(sc, 'quote subtotal = quantity x price, total = subtotal + tax', Math.abs(num(q2.body.subtotal) - want) < 0.005 && Math.abs(num(q2.body.totalAmount) - num(q2.body.subtotal) - num(q2.body.taxAmount)) < 0.005, `subtotal ${q2.body.subtotal} tax ${q2.body.taxAmount} total ${q2.body.totalAmount} vs ${want}`);
   await step(sc, 'a customer login cannot accept a quote through the staff route', () => A.post(`/api/quotes/${q2.body.id}/accept`, {}, 'custA'), '4xx');
   await step(sc, 'mark the quote sent', () => A.post(`/api/quotes/${q2.body.id}/send`, {}, 'csr'));
   const two = await Promise.all([1, 2].map(() => A.post(`/api/quotes/${q2.body.id}/accept`, { poReference: `QA-${sc.id}` }, 'csr')));
@@ -564,7 +570,7 @@ async function quoteToOrder(sc) {
   const orders = await prisma.order.findMany({ where: { poReference: `QA-${sc.id}`, buyerId: customer.id }, include: { lines: true } });
   check(sc, 'exactly one sales order came from the quote', orders.length === 1 && orders[0].id === orderId, `${orders.length} orders`);
   if (orders[0]) {
-    check(sc, 'the order carries the quoted quantity and price', Math.abs(num(orders[0].lines[0].qtyOrdered) - qty) < 0.001 && Math.abs(num(orders[0].totalAmount) - want) < 0.005 && orders[0].status === 'CONFIRMED', `qty ${orders[0].lines[0].qtyOrdered} total ${orders[0].totalAmount} ${orders[0].status}`);
+    check(sc, 'the order carries the quoted quantity and price', Math.abs(num(orders[0].lines[0].qtyOrdered) - qty) < 0.001 && Math.abs(num(orders[0].subtotal) - want) < 0.005 && Math.abs(num(orders[0].taxAmount) - num(q2.body.taxAmount)) < 0.005 && orders[0].status === 'CONFIRMED', `qty ${orders[0].lines[0].qtyOrdered} subtotal ${orders[0].subtotal} tax ${orders[0].taxAmount} ${orders[0].status}`);
     await checkOrderBooks(sc, orders[0].id, { createdBy: (await prisma.user.findUnique({ where: { email: 'qa-csr@qa.test' } })).id });
   }
   const first = await prisma.quote.findUnique({ where: { id: q1.body.id } });

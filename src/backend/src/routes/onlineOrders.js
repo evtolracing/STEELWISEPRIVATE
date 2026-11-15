@@ -80,9 +80,13 @@ router.post('/:id/accept', async (req, res) => {
     const createdById = req.user.id;
 
     const buyerId = customerId || online.customerId || null;
-    if (buyerId && !(await prisma.organization.findUnique({ where: { id: buyerId }, select: { id: true } }))) {
-      return res.status(400).json({ error: 'Customer not found' });
-    }
+    // A sales order needs the account it bills, checks credit for and taxes (J-010). A web order
+    // placed without one is matched to a customer by the CSR first.
+    if (!buyerId) return res.status(400).json({ error: 'This web order has no customer account. Choose the customer before accepting it.', code: 'CUSTOMER_REQUIRED' });
+    const buyer = buyerId ? await prisma.organization.findUnique({ where: { id: buyerId }, select: { id: true, isActive: true } }) : null;
+    if (buyerId && !buyer) return res.status(400).json({ error: 'Customer not found' });
+    if (buyer && buyer.isActive === false) return res.status(409).json({ error: 'This customer account is inactive. Reactivate it before accepting the order.', code: 'CUSTOMER_INACTIVE' });
+    if (locationId && !(await prisma.location.findUnique({ where: { id: String(locationId) }, select: { id: true } }))) return res.status(400).json({ error: 'Branch not found' });
 
     const items = Array.isArray(online.items) ? online.items : [];
     const products = await prisma.product.findMany({
@@ -104,6 +108,8 @@ router.post('/:id/accept', async (req, res) => {
         gradeId: product?.gradeId || null,
         qtyOrdered: qty,
         unit: 'EA',
+        // The price is per piece; without this the line said "per CWT" on the invoice (J-005).
+        priceUnit: 'EACH',
         unitPrice: price,
         extendedPrice: ext != null ? money(ext) : money(qty * price),
       };
@@ -123,6 +129,9 @@ router.post('/:id/accept', async (req, res) => {
           orderType: 'SO',
           status: gate.status,
           buyerId,
+          // The order belongs to the branch it was taxed for (J-005). With no branch named it is the
+          // branch of the person accepting it, as before, and the tax is that branch's too.
+          ...(locationId && { locationId: String(locationId) }),
           poReference: online.externalOrderId,
           subtotal,
           taxAmount: tax.taxAmount,

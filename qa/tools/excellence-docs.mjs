@@ -175,7 +175,10 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '9. `lib/moneyColumns.js` (new in Phase 3): every write to a decimal column passes through it inside the database client, after the branch boundary. A mistake here corrupts amounts everywhere. Covered by 6 unit tests, the residue check in `db-facts` and the exact-cent scenarios.',
     '10. `middleware/requestKeys.js` (new in Phase 3): sits in front of every changing route. It acts only when a request carries an Idempotency-Key. Covered by 3 unit tests and three database scenarios.',
     '11. The order row lock: a reservation, a cancellation and (through conditional updates) a status move now queue on the Order row. Any new code that changes reservations must take the same lock first, or the race of G-004 returns.',
-    '12. Foreign keys added in Phase 3 with RESTRICT: an invoiced shipment, a credited invoice, a returned order and an invoiced order line can no longer be deleted. Seed and clean-up scripts must delete children first.', ''];
+    '12. Foreign keys added in Phase 3 with RESTRICT: an invoiced shipment, a credited invoice, a returned order and an invoiced order line can no longer be deleted. Seed and clean-up scripts must delete children first.',
+    '13. `lib/lineSpecs.js` (new in Phase 5): carries the customer\'s requirements from the request line to the quote line, the order line and the work order. Imported by requests, quotes and order intake. A change here can drop a requirement between steps. Covered by 5 unit tests and the Phase 5 traceability scenarios.',
+    '14. `lib/orderTax.js` `sellingBranch()` (Phase 5): decides the branch an order is taxed at and filed under, for quotes, quote acceptance, order intake, Retail POS and web order acceptance. Covered by the Phase 5 tax and branch scenarios and the sweep.',
+    '15. `GET /api/orders/intake/branches` (Phase 5): the branch list of order entry, Retail POS and the mobile rep screen. It follows the branch boundary (`branchesOf`). Covered by the API and browser checks.', ''];
   write('module-dependency-map.md', L);
 }
 
@@ -337,7 +340,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
     workflowsMapped: state.workflowsMapped ?? null, jobTypesIdentified: state.jobTypesIdentified ?? null,
     findingsBySeverity: count(F, 'severity'), findingsByStatus: count(F, 'status'), openFindingsBySeverity: count(F.filter(open), 'severity'), findingsTotal: F.length, findingsAddedThisPhase: F.filter((f) => f.id.startsWith(state.findingPrefix || 'B-')).length,
     testsExecuted: state.testsExecuted || [], testReach: { routesWithSuccess: eps.filter(okOf).length, routes: eps.length, changingRoutesWithSuccess: w.filter(okOf).length, changingRoutes: w.length },
-    correctionsCompleted: F.filter((f) => /^[BCGH]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
+    correctionsCompleted: F.filter((f) => /^[BCGHJ]-/.test(f.id) && f.status === 'VERIFIED FIXED').map((f) => f.id), scoreSummary: state.scoreSummary,
     unverifiedAreas: state.unverifiedAreas || [], currentBlockers: state.currentBlockers || [], nextActions: state.nextActions || [], lastCompletedCheckpoint: state.lastCompletedCheckpoint || null,
   };
   fs.writeFileSync(path.join(DIR, 'progress.json'), `${JSON.stringify(progress, null, 2)}\n`);

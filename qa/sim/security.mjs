@@ -629,7 +629,9 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const customer = await prisma.organization.findUnique({ where: { code: 'QA-C06' } });
   const product = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'CWT', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
   const line = (over = {}) => ({ productId: product.id, description: 'QA intake line', qty: 200, uom: 'LB', unitPrice: 0.5, extPrice: 100, ...over });
-  const miBranch = await prisma.location.findFirst({ where: { state: 'MI' }, orderBy: { code: 'asc' } });
+  // One of the CSR's own branches: since Phase 5 an order is filed under, and sold by, the branch
+  // named, and staff may name only their own (owner decision 2; S-008, C-012).
+  const miBranch = await prisma.location.findFirst({ where: { state: 'MI', code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } });
   const create = (over = {}) => call('POST', '/api/orders/intake', { source: 'PHONE', division: 'METALS', location: miBranch.code, priority: 'STANDARD', customerId: customer.id, customerName: customer.name, lines: [line(), line({ qty: 100, extPrice: 50 })], status: 'DRAFT', ...over });
   const row = (id) => prisma.order.findUnique({ where: { id }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
 
@@ -650,7 +652,10 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     const shipped = await create({ shipToState: 'IN' });
     const shippedRow = await row(shipped.body?.data?.id);
     check('an order shipped to another state is still taxed at the selling branch state rate', wantTax > 0 && Math.abs(Number(shippedRow?.taxAmount) - wantTax) < 0.005, `tax ${shippedRow?.taxAmount}, want ${wantTax}`);
-    const ohBranch = await prisma.location.findFirst({ where: { state: 'OH' }, orderBy: { code: 'asc' } });
+    const ohBranch = await prisma.location.findFirst({ where: { state: 'OH', code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } });
+    check('the order is filed under the branch it was sold from', shippedRow?.locationId === miBranch.id, `branch ${shippedRow?.locationId}, want ${miBranch.id}`);
+    const notMine = await prisma.location.findFirst({ where: { code: { startsWith: 'DEMO-' } } });
+    if (notMine) { const refused = await create({ location: notMine.code }); check('a branch that is not the person\'s own is refused', refused.status === 403, `status ${refused.status}`); }
     const fromOhio = await create({ location: ohBranch.code });
     const ohioRow = await row(fromOhio.body?.data?.id);
     check('the same order sold from a branch in another state is taxed at that branch state rate', Math.abs(Number(ohioRow?.taxAmount) - cents(150 * await rateFor('OH'))) < 0.005, `tax ${ohioRow?.taxAmount}, want ${cents(150 * await rateFor('OH'))}`);
@@ -661,7 +666,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       const exRow = await row(ex.body?.data?.id);
       check('a tax-exempt customer is charged no tax', Number(exRow?.taxAmount) === 0 && Math.abs(Number(exRow?.totalAmount) - 150) < 0.005, `tax ${exRow?.taxAmount}, total ${exRow?.totalAmount}`);
     } finally { await prisma.organization.update({ where: { id: exemptCustomer.id }, data: { taxExempt: exemptCustomer.taxExempt } }); }
-    const branch = await prisma.location.findFirst({ where: { state: 'OH' }, orderBy: { code: 'asc' } });
+    const branch = await prisma.location.findFirst({ where: { state: 'OH', code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } });
     const retail = await create({ source: 'RETAIL', customerId: undefined, customerName: 'Walk-In', location: branch.code, status: 'SUBMITTED' });
     const retailRow = await prisma.order.findUnique({ where: { id: retail.body?.data?.id || FAKE_ID }, include: { buyer: true } });
     check('a Retail POS sale with no account is sold to the walk-in account and taxed at the branch', retail.status === 201 && retailRow?.buyer?.code === 'WALK-IN' && retailRow?.status === 'PENDING' && Math.abs(Number(retailRow?.taxAmount) - cents(150 * await rateFor('OH'))) < 0.005, `status ${retail.status}, buyer ${retailRow?.buyer?.code}, tax ${retailRow?.taxAmount}, want ${cents(150 * await rateFor('OH'))}`);

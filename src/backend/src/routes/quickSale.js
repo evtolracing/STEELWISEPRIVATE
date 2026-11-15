@@ -333,7 +333,7 @@ router.get('/daily-stats', handle('get daily stats', async (req, res) => {
     where: { poReference: { startsWith: 'QS:' }, createdAt: { gte: from, lt: to } },
     include: { invoices: { where: { kind: 'INVOICE' }, include: { payments: true } } },
   });
-  const live = orders.filter((o) => !/VOIDED/.test(o.notes || ''));
+  const live = orders.filter((o) => o.status !== 'CANCELLED' && !/VOIDED/.test(o.notes || ''));
   const byMethod = {};
   for (const o of live) {
     const m = o.invoices[0]?.payments.find((p) => num(p.amount) > 0)?.paymentMethod || 'OTHER';
@@ -354,7 +354,7 @@ router.post('/:saleId/void', handle('void sale', async (req, res) => {
   if (!reason) refuse(400, 'A reason is required to void a sale');
   const sale = await findSale(req.params.saleId);
   if (!sale) refuse(404, 'Sale not found');
-  if (/VOIDED/.test(sale.notes || '')) refuse(409, 'This sale is already voided');
+  if (sale.status === 'CANCELLED' || /VOIDED/.test(sale.notes || '')) refuse(409, 'This sale is already voided');
   const invoice = sale.invoices[0];
   const paid = invoice.payments.find((p) => num(p.amount) > 0);
   // The claim, the stock going back on the shelf, the credit memo and the refund are one
@@ -364,7 +364,9 @@ router.post('/:saleId/void', handle('void sale', async (req, res) => {
   let owed = 0;
   const credit = await creditInvoice(invoice.id, { reason: `Void ${sale.orderNumber}: ${reason}`, lines: creditLines }, req.user?.id, {
     before: async (tx) => {
-      const got = await tx.order.updateMany({ where: { id: sale.id, notes: sale.notes }, data: { notes: `${sale.notes} · VOIDED: ${reason}` } });
+      // The order is CANCELLED, so every report by order status leaves the sale out (G-009);
+      // the note keeps the reason.
+      const got = await tx.order.updateMany({ where: { id: sale.id, notes: sale.notes, status: { not: 'CANCELLED' } }, data: { notes: `${sale.notes} · VOIDED: ${reason}`, status: 'CANCELLED' } });
       if (!got.count) refuse(409, 'This sale was just changed by someone else. Reload and try again.');
       await returnShelfStock(tx, { orderId: sale.id, userId: req.user?.id });
     },

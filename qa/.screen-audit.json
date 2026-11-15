@@ -1,8 +1,8 @@
 {
- "screens": 144,
+ "screens": 140,
  "tally": {
   "STATIC": 5,
-  "REAL": 77,
+  "REAL": 73,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
  },
@@ -61,30 +61,6 @@
    "onMenu": false,
    "verdict": "REAL",
    "file": "apps/dashboard/RoleDashboardPage.jsx"
-  },
-  {
-   "route": "orderhub",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/RfqListPage.jsx"
-  },
-  {
-   "route": "orderhub/rfq/new",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/RfqCreatePage.jsx"
-  },
-  {
-   "route": "orderhub/rfq/:rfqId",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/RfqDetailPage.jsx"
-  },
-  {
-   "route": "orderhub/orders/:orderId",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/OrderDetailPage.jsx"
   },
   {
    "route": "heats",

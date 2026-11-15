@@ -402,7 +402,9 @@ export async function checkout(payload = {}, { quote = false } = {}) {
   let customerId = null;
   if (payload.customerId) {
     const key = String(payload.customerId);
-    const org = await prisma.organization.findFirst({ where: { OR: [{ id: key }, { code: key }] }, select: { id: true } });
+    const org = await prisma.organization.findFirst({ where: { OR: [{ id: key }, { code: key }] }, select: { id: true, isActive: true } });
+    // A closed account cannot place a web order, the same as at the counter and at order entry (J-002).
+    if (org && org.isActive === false) return { status: 409, error: 'This account is not active. Please call your sales representative.' };
     customerId = org?.id || null;
   }
 
@@ -436,6 +438,8 @@ export async function checkout(payload = {}, { quote = false } = {}) {
       tax,
       total: money(subtotal + tax),
       promiseStatus: payload.promiseStatus || null,
+      // What changed between the cart and the order, said to the buyer and not only in the CSR's notes.
+      ...(priceFlags.length && { priceNotices: priceFlags.map((f) => f.replace(/^PRICE CORRECTED /, 'Price updated on ').replace(/^REMNANT PRICE /, 'Remnant price to be confirmed on ')) }),
       createdAt: order.receivedAt.toISOString(),
     },
   };

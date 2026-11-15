@@ -14,20 +14,30 @@ import { taxStateFor } from './priceRules.js';
 
 export { taxStateFor };
 
-/** The state of the branch an order is sold from: a location id, code or city, else the user's home branch. */
-export async function branchStateFor(user, location) {
+/**
+ * The branch an order is sold from: a location named by id, code or city, else the user's home
+ * branch. { id, code, state, ownerId } or null. The order, its tax and its seller all follow this
+ * one branch (S-008, C-012), so a sale can no longer be taxed for one branch and filed under another.
+ */
+export async function sellingBranch(user, location) {
+  const select = { id: true, code: true, state: true, ownerId: true };
   const key = location ? String(location).trim() : '';
   if (key) {
     const city = key.replace(/_/g, ' ');
     const found = await prisma.location.findFirst({
-      where: { OR: [{ id: key }, { code: { equals: key, ...ci } }, { city: { equals: city, ...ci } }, { name: { startsWith: city, ...ci } }] },
-      select: { state: true },
+      where: { isActive: true, OR: [{ id: key }, { code: { equals: key, ...ci } }, { city: { equals: city, ...ci } }, { name: { startsWith: city, ...ci } }] },
+      select,
     }).catch(() => null);
-    if (found?.state) return found.state;
+    if (found) return found;
   }
   if (!user?.id) return null;
-  const me = await prisma.user.findUnique({ where: { id: user.id }, select: { homeLocation: { select: { state: true } } } }).catch(() => null);
-  return me?.homeLocation?.state || null;
+  const me = await prisma.user.findUnique({ where: { id: user.id }, select: { homeLocation: { select } } }).catch(() => null);
+  return me?.homeLocation || null;
+}
+
+/** The state of the branch an order is sold from: a location id, code or city, else the user's home branch. */
+export async function branchStateFor(user, location) {
+  return (await sellingBranch(user, location))?.state || null;
 }
 
 /** { taxRate, taxAmount, taxState, exempt, rateFound } for a subtotal. */

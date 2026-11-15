@@ -443,6 +443,79 @@ H(19, { module: 'Partner API', workflow: 'Many events at the same moment', sever
   correction: 'One drain per server instance that keeps going until nothing is due; eight deliveries in flight at a time; the scheduled run stops claiming after 20 seconds and reports what it left.', requiredTests: 'Forty confirmations at once: forty events delivered within ten seconds with no scheduled run.', status: 'VERIFIED FIXED',
   verification: `${T4}: "forty orders confirmed in the same second: every event is sent, once, without waiting for the scheduled run". qa/results/phase4-load.json against phase4-load-before.json: all 80 delivered after 0.6 s (before: 20.8 s and only after a scheduled run); 500 waiting events cleared at 489 a second (before 119); slow partner 36 a second (before 5).` });
 
+// ── Phase 5 findings (J-series) ─────────────────────────────────────────────────────────────
+const T5 = 'qa/sim/phase5-sales.mjs';
+const U5 = 'qa/sim/ui-phase5.cjs';
+const P6 = 'Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer';
+const P9 = 'Phase 9: user experience, visual design and accessibility';
+const J = (n, o) => findings.push({ id: `J-${String(n).padStart(3, '0')}`, discovered: '2026-11-14', source: 'Phase 5 sales operations audit', workflow: '', cause: '', dependencies: '', statusNote: '', verification: '', phase: P5, ...o });
+J(1, { module: 'Quotes and orders', workflow: 'Request for quote to quote to sales order', severity: 'P1', category: 'Lost customer requirements; wrong tax and branch', where: 'src/backend/src/routes/rfqs.js, quotes.js (createQuote, acceptQuote); new src/backend/src/lib/lineSpecs.js',
+  evidence: 'Probe on the QA database, before: a request line kept only a description, quantity and unit, so grade, size, tolerances, certificates and processing typed at the request were nowhere on the quote or the order. A quote saved no tax; the order made from it was untaxed unless someone edited it. The order was filed under the branch of the person who pressed accept, not the branch that owned the request.',
+  expected: 'What the customer asked for is typed once and reaches the quote, the order and the shop floor; a quote shows tax by rule 27 and the order carries it; the order belongs to the request\'s branch.', actual: 'Requirements, tax and branch were dropped at each step.', cause: 'Request lines had no place for requirements; quote creation and acceptance were written before rule 27 and branch ownership.',
+  impact: 'Wrong material or missing certificates shipped; untaxed orders; orders filed and reported under the wrong branch.',
+  correction: 'Request lines keep the requirements (validated, stored in their existing JSON column). Quote and order lines get them in their own columns, the quote line may change any of them, the order line keeps the grade record. A quote is taxed by rule 27 at the request\'s branch and keeps tax and total; acceptance carries them and files the order under the request\'s branch. No schema change.',
+  requiredTests: 'Requirements, tax, branch and links checked on the saved rows from request to order and invoice; a bad requirement refused with the field named.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "a request for quote keeps grade, size, tolerances, certificates and processing", "request to quote to order: every requirement, the branch, the tax and the links arrive", "a quote line can change a requirement", "a quoted order is reserved, shipped and invoiced with the quote's tax"; src/backend/test/lineSpecs.test.js (5 tests); ${U5}: the request and quote screens show the requirements and "subtotal + tax = total". On the code before, the same scenarios fail on every requirement and on tax.` });
+J(2, { module: 'Customers', workflow: 'A closed customer account', severity: 'P2', category: 'Rule not enforced', where: 'routes/orders.js, rfqs.js, quotes.js (accept), onlineOrders.js (accept), services/ecomService.js (checkout), routes/customers.js',
+  evidence: 'Probe: with the account set inactive, staff order entry, a new request for quote, accepting an open quote and the web shop checkout all succeeded. Closing or reopening an account left no record of who did it.',
+  expected: 'A closed account takes no new business in any channel, its history stays readable, and closing and reopening are on the record.', actual: 'Only the counter and order intake refused it.',
+  impact: 'Orders for accounts closed for credit, fraud or a merger; no trace of who closed or reopened one.',
+  correction: 'Each channel refuses an inactive buyer with 409 CUSTOMER_INACTIVE and a sentence; the account change writes an audit row (CUSTOMER_DEACTIVATED, CUSTOMER_REACTIVATED) with the person.', requiredTests: 'Every channel refused, nothing saved, history readable, reopening allows the same quote.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "a closed account takes no new business in any channel, and its history stays", "closing and reopening an account is on the record".` });
+J(3, { module: 'Customers', workflow: 'Accounts and divisions', severity: 'P3', category: 'Data integrity', where: 'PATCH /api/customers/:id (parentId)',
+  evidence: 'Probe: an account could be placed under its own sub-division. Pricing walks up the parents to find the contract, so a loop leaves a division without a defined price.',
+  expected: 'A parent is never one of the account\'s own divisions.', actual: 'Saved.', impact: 'A loop in the account tree; prices found by walking it stop at an arbitrary point.',
+  correction: 'Walk up from the new parent and refuse with 400 when the account itself is met.', requiredTests: 'Self, child and grandchild refused; the tree unchanged.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "an account cannot be placed under one of its own divisions".` });
+J(4, { module: 'Quotes', workflow: 'Expired quotes and the sales dashboard', severity: 'P2', category: 'Wrong figures', where: 'routes/quotes.js (list), routes/salesDashboard.js',
+  evidence: 'Probe: a quote past its valid-until date still listed under Sent or Draft and counted in "awaiting the customer" and the open value; the Expired filter returned nothing, because no job marks quotes expired; dashboard values summed totals including tax.',
+  expected: 'A lapsed quote reads, filters and counts as expired (lost), and pipeline values are before tax.', actual: 'As described.', impact: 'Inflated pipeline and win figures; sales staff chase quotes that can no longer be accepted.',
+  correction: 'A quote is expired when its date has passed, whatever its stored status: the Expired filter includes those, the open filters leave them out, the dashboard leaves them out of open work and counts them as lost in the period; values use the subtotal. Acceptance of a lapsed quote was already refused.', requiredTests: 'Filters and dashboard deltas measured around one live and one lapsed quote.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "an expired quote cannot be sent or accepted, and is listed as expired, not sent", "the sales dashboard counts open business before tax and leaves expired quotes out".` });
+J(5, { module: 'Web shop', workflow: 'Accepting a web order into a sales order', severity: 'P2', category: 'Wrong branch; wrong unit', where: 'routes/onlineOrders.js (accept)',
+  evidence: 'Probe: accepting a web order and naming a branch taxed it at that branch\'s state but filed the order under none (or the acceptor\'s), and per-piece web lines were saved with the default price unit (per hundredweight).',
+  expected: 'The order is taxed and filed at one and the same branch, and each web line keeps its per-piece price.', actual: 'As described.', impact: 'Branch reports and stock reservations at the wrong branch; a line total that a recalculation would change by a factor of a hundredweight.',
+  correction: 'The named branch is checked and becomes the order\'s branch; web lines are saved as EACH; an inactive buyer is refused.', requiredTests: 'Tax, branch and unit on the saved order; a second accept refused; a one-branch clerk refused another branch.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "accepting a web order: taxed and filed at one branch, priced per piece".` });
+J(6, { module: 'Retail POS', workflow: 'Counter order at the retail outlet', severity: 'P1', category: 'Wrong tax', where: 'src/frontend/src/pages/Orders/RetailPOSPage.jsx',
+  evidence: 'Code read and probe: the screen sent the fixed branch "JACKSON" (Jackson, Michigan) for every sale, for the tax estimate and for the order, whatever branch the clerk worked at.',
+  expected: 'A counter order is taxed and filed at the clerk\'s branch (rule 27, owner decision 2).', actual: 'Every sale taxed in Michigan.', impact: 'Wrong sales tax collected and reported at every outlet outside Michigan.',
+  correction: 'The screen takes the clerk\'s branches from the server (GET /api/orders/intake/branches) and uses the home branch; the server refuses a branch that is not the clerk\'s.', requiredTests: 'Browser: the tax request names the home branch; API: the old fixed branch refused for an Ohio clerk, the own branch taxed in Ohio.', status: 'VERIFIED FIXED',
+  verification: `${U5}: "Retail POS: tax is estimated at the home branch"; ${T5}: "the counter sells from the cashier's branch; another branch is refused, a manager can choose".` });
+J(7, { module: 'Home page', workflow: 'The first screen after sign-in', severity: 'P1', category: 'Made-up data', where: 'src/frontend/src/pages/Dashboard/DashboardPage.jsx (route /)',
+  evidence: 'Code read: the home page showed fixed figures, four invented orders (for example SO-2024-001 for "Acme Steel Co") and invented alerts ("Carrier reported 2hr delay on route 45"), not records.',
+  expected: 'Every figure, order and alert on the home page comes from the records.', actual: 'Invented.', impact: 'Staff act on orders and alerts that do not exist; real holds go unseen.',
+  correction: 'The page reads GET /api/dashboard: stock on hand and available, open orders, quality holds, recent orders and hold alerts. The invented rows and the stock panel built on them are removed.', requiredTests: 'Browser: the open-order count equals the server\'s; none of the invented rows shown.', status: 'VERIFIED FIXED',
+  verification: `${U5}: "home: Open Orders is the server's count", "home: none of the old made-up orders or alerts".` });
+J(8, { module: 'Customers', workflow: 'Customer preferences', severity: 'P2', category: 'Business rule not decided', where: 'src/frontend/src/pages/Customers/CustomerPreferencesPage.jsx; table CustomerPreference',
+  evidence: 'Code search: Default Discount %, Fuel Surcharge Exempt, Auto-Approve Orders, Require PO Number, Minimum Order Quantity and Minimum Order Value are saved and read back, and no order, quote, price or checkout reads them. Extends S-020 and U-012 (the discount) to five more fields.',
+  expected: 'A setting either does what its name says or says that it does nothing yet.', actual: 'Six settings look active and do nothing.', impact: 'Staff believe a customer gets a discount, must give a PO number or is held to a minimum, and none of it happens.',
+  correction: 'Interim, done: each field now says "Saved for reference. Not applied to any order or price yet." Applying them needs the owner\'s rules (how a discount combines with a contract tier, which channels, what a minimum blocks), which were not invented.', requiredTests: 'Per the decision; for each rule a refusal or price test in every channel.', status: 'REQUIRES BUSINESS DECISION',
+  statusNote: 'Question for the owner: which of these six should take effect, and for a discount, does it apply on top of the contract tier, instead of it, or only when there is no tier?' });
+J(9, { module: 'Order intake and shop floor', workflow: 'Work orders made from a sales order', severity: 'P2', category: 'Lost customer requirements', where: 'routes/intakeOrders.js (create-work-orders, buildIntakeLines)',
+  evidence: 'Probe: a work order made from an order line got only the line description; size, tolerance, certificates, finish and notes typed at order entry or carried from the quote stayed on the order line.',
+  expected: 'The shop floor sees what the customer asked for.', actual: 'Description only.', impact: 'Material cut or finished to the wrong requirement; certificates missed.',
+  correction: 'Order entry lines keep the requirement fields; a work order\'s instructions carry them as text and its notes keep them as data. Asking twice makes no second job (unchanged).', requiredTests: 'Job instructions and notes checked after a quoted order and after an intake order.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "the accepted order goes to the shop floor with what the customer asked for", "requirements typed at order entry reach the order line and the work order".` });
+J(10, { module: 'Web shop', workflow: 'A web order with no customer account', severity: 'P2', category: 'Rule not enforced', where: 'routes/onlineOrders.js (accept)',
+  evidence: `${T5}, first run: a web order placed by a staff login with no customer named reached the inbox as "Online Customer"; accepting it made a confirmed sales order with no buyer, so no credit check, no exemption and no account to bill.`,
+  expected: 'A sales order is made only for a customer account.', actual: 'A sales order with no buyer.', impact: 'Unbillable orders released to the floor; credit limits skipped.',
+  correction: 'Acceptance refuses with 400 CUSTOMER_REQUIRED until the CSR names the customer; the inbox now shows the server\'s reason instead of "Action failed".', requiredTests: 'Accept with no customer refused and nothing made; with a customer named, accepted.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "a web order cannot be placed without signing in" (staff order with no customer cannot become a sales order). Failed before the change (200 and an order made).` });
+J(11, { module: 'Pricing', workflow: 'Price check and tax estimate on the order screens', severity: 'P3', category: 'Input validation', where: 'routes/intakePricing.js (POST /api/pricing/calculate, /tax-estimate)',
+  evidence: `${T5}, first run: a weight of -500 lb was priced at -1,225.00; a quantity of "heavy" priced at 0; a remnant discount of 150% would give a negative price; a negative subtotal was "taxed" at -5.75.`,
+  expected: 'A nonsense amount is refused with a sentence.', actual: 'Priced.', impact: 'A screen can show a negative or zero line; saved orders were already protected by the order rules, so no wrong order could be saved.',
+  correction: 'Weight and quantity must be numbers of zero or more; a remnant discount a fraction below 1; a subtotal zero or more. Refused with 400.', requiredTests: 'Each bad amount refused.', status: 'VERIFIED FIXED',
+  verification: `${T5}: "a price check with a negative or nonsense amount is refused, never priced below zero". Failed before the change.` });
+J(12, { module: 'Retail POS', workflow: 'Adding a remnant at the counter', severity: 'P3', category: 'Traceability', where: 'src/frontend/src/components/pos/RemnantQuickAdd.jsx',
+  evidence: 'Code read: the remnant quick-add takes the remnant\'s location as free text (it used to default to "JACKSON"); it is not one of the stock items on file.', expected: 'A remnant sold at the counter is a stock item on file, so the sale takes it off the books.', actual: 'Free text, linked to no stock item (code read), so the sale has no stock record to reduce.',
+  impact: 'Remnants sold at the counter stay on the books.', status: 'DEFERRED TO SPECIFIC PHASE', statusNote: 'Phase 5 removed the fixed Michigan default. Picking a remnant from stock is a stock-traceability change.',
+  deferral: { reason: 'Choosing a remnant from the stock items and reducing it is remnant traceability, the subject of Phase 6.', targetPhase: P6, correction: 'Pick the remnant from the stock items at the clerk\'s branch; the sale moves it like a counter sale moves shelf stock.', dependencies: 'C-011.', acceptance: 'A remnant sold at the counter leaves the books once and comes back on a void.', verification: 'A Phase 6 scenario that sells and voids a remnant and reads the stock movements.' } });
+J(13, { module: 'Order intake', workflow: 'Order entry header', severity: 'P3', category: 'Accessibility', where: 'src/frontend/src/pages/Orders/CSRIntakePage.jsx (Source, Division, Location, Priority selects)',
+  evidence: `Browser check (${U5}): the Location select cannot be found by its label; the MUI selects have a visible label with no link to the field, so a screen reader announces them without a name.`, expected: 'Each field has an accessible name.', actual: 'Visible label only.',
+  impact: 'Screen reader users cannot tell the header fields apart.', status: 'DEFERRED TO SPECIFIC PHASE',
+  deferral: { reason: 'Accessibility across the screens belongs to the user experience phase.', targetPhase: P9, correction: 'Give each Select a labelId tied to its InputLabel.', dependencies: 'None.', acceptance: 'Each field found by its label.', verification: 'The browser check finds the Location field by getByLabel.' } });
+
 // The owner's decisions (owner-decisions.json) move a finding out of REQUIRES BUSINESS DECISION.
 const DEC = path.join(path.dirname(OUT), 'owner-decisions.json');
 if (fs.existsSync(DEC)) for (const d of JSON.parse(fs.readFileSync(DEC, 'utf8')).decisions) for (const id of d.findings) {
@@ -468,6 +541,14 @@ if (fs.existsSync(DISP3)) for (const [id, d] of Object.entries(JSON.parse(fs.rea
 const DISP4 = path.join(path.dirname(OUT), 'phase-04-dispositions.json');
 if (fs.existsSync(DISP4)) for (const [id, d] of Object.entries(JSON.parse(fs.readFileSync(DISP4, 'utf8')).dispositions)) {
   const f = findings.find((x) => x.id === id || x.id.startsWith(`${id} `)); if (!f) throw new Error(`Phase 4 disposition names unknown finding ${id}`);
+  if (d.statusNote && f.statusNote) d.statusNote = `${f.statusNote} ${d.statusNote}`;
+  if (d.status && d.status !== 'DEFERRED TO SPECIFIC PHASE' && !d.deferral) delete f.deferral;
+  Object.assign(f, d);
+}
+// Dispositions decided in Phase 5 (phase-05-dispositions.json).
+const DISP5 = path.join(path.dirname(OUT), 'phase-05-dispositions.json');
+if (fs.existsSync(DISP5)) for (const [id, d] of Object.entries(JSON.parse(fs.readFileSync(DISP5, 'utf8')).dispositions)) {
+  const f = findings.find((x) => x.id === id || x.id.startsWith(`${id} `)); if (!f) throw new Error(`Phase 5 disposition names unknown finding ${id}`);
   if (d.statusNote && f.statusNote) d.statusNote = `${f.statusNote} ${d.statusNote}`;
   if (d.status && d.status !== 'DEFERRED TO SPECIFIC PHASE' && !d.deferral) delete f.deferral;
   Object.assign(f, d);

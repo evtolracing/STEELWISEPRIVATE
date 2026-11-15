@@ -1,5 +1,5 @@
 {
- "at": "2026-11-13T23:01:09.948Z",
+ "at": "2026-11-15T09:11:50.981Z",
  "identity": {
   "db": "steelwise_qa",
   "usr": "postgres",
@@ -25,7 +25,7 @@
   "partitionedTables": 0,
   "policies": 0,
   "enums": 96,
-  "migrationsApplied": 28,
+  "migrationsApplied": 29,
   "migrationsFailed": 0
  },
  "other": {
@@ -42,7 +42,7 @@
   "partitionedTables": [],
   "policies": [],
   "enums": 96,
-  "migrationsApplied": 28,
+  "migrationsApplied": 29,
   "migrationsFailed": 0
  },
  "tables": [
@@ -91,8 +91,8 @@
   {
    "name": "AuditLog",
    "rls": false,
-   "bytes": 1548288,
-   "rows": 2281
+   "bytes": 1581056,
+   "rows": 2348
   },
   {
    "name": "BomOperation",
@@ -109,8 +109,8 @@
   {
    "name": "Coil",
    "rls": false,
-   "bytes": 466944,
-   "rows": 493
+   "bytes": 507904,
+   "rows": 503
   },
   {
    "name": "CommodityPrice",
@@ -122,13 +122,13 @@
    "name": "CustomerPreference",
    "rls": false,
    "bytes": 49152,
-   "rows": 0
+   "rows": 1
   },
   {
    "name": "CustomerPricingTier",
    "rls": false,
    "bytes": 49152,
-   "rows": 1
+   "rows": 11
   },
   {
    "name": "CustomerTagRequirement",
@@ -139,7 +139,7 @@
   {
    "name": "DemandSuggestionEvent",
    "rls": false,
-   "bytes": 409600,
+   "bytes": 417792,
    "rows": 1242
   },
   {
@@ -163,7 +163,7 @@
   {
    "name": "DispatchTimeLog",
    "rls": false,
-   "bytes": 114688,
+   "bytes": 122880,
    "rows": 35
   },
   {
@@ -277,8 +277,8 @@
   {
    "name": "Inventory",
    "rls": false,
-   "bytes": 303104,
-   "rows": 493
+   "bytes": 319488,
+   "rows": 503
   },
   {
    "name": "InventoryAdjustment",
@@ -313,20 +313,20 @@
   {
    "name": "Invoice",
    "rls": false,
-   "bytes": 286720,
-   "rows": 213
+   "bytes": 344064,
+   "rows": 230
   },
   {
    "name": "InvoiceLine",
    "rls": false,
-   "bytes": 262144,
-   "rows": 223
+   "bytes": 311296,
+   "rows": 241
   },
   {
    "name": "Job",
    "rls": false,
-   "bytes": 344064,
-   "rows": 271
+   "bytes": 335872,
+   "rows": 273
   },
   {
    "name": "JobInspection",
@@ -385,8 +385,8 @@
   {
    "name": "MaterialMovement",
    "rls": false,
-   "bytes": 466944,
-   "rows": 443
+   "bytes": 475136,
+   "rows": 465
   },
   {
    "name": "MeterReading",
@@ -398,7 +398,7 @@
    "name": "OnlineOrder",
    "rls": false,
    "bytes": 106496,
-   "rows": 39
+   "rows": 49
   },
   {
    "name": "Operator",
@@ -415,14 +415,14 @@
   {
    "name": "Order",
    "rls": false,
-   "bytes": 655360,
-   "rows": 532
+   "bytes": 548864,
+   "rows": 572
   },
   {
    "name": "OrderLine",
    "rls": false,
-   "bytes": 401408,
-   "rows": 549
+   "bytes": 450560,
+   "rows": 591
   },
   {
    "name": "OrderLineAllocation",
@@ -433,8 +433,8 @@
   {
    "name": "Organization",
    "rls": false,
-   "bytes": 65536,
-   "rows": 34
+   "bytes": 98304,
+   "rows": 93
   },
   {
    "name": "PMSchedule",
@@ -475,7 +475,7 @@
   {
    "name": "PartnerApiLog",
    "rls": false,
-   "bytes": 196608,
+   "bytes": 188416,
    "rows": 148
   },
   {
@@ -487,8 +487,8 @@
   {
    "name": "Payment",
    "rls": false,
-   "bytes": 98304,
-   "rows": 121
+   "bytes": 139264,
+   "rows": 133
   },
   {
    "name": "PipelineRun",
@@ -499,8 +499,8 @@
   {
    "name": "PosSession",
    "rls": false,
-   "bytes": 262144,
-   "rows": 9
+   "bytes": 253952,
+   "rows": 10
   },
   {
    "name": "PriceLevel",
@@ -554,7 +554,7 @@
    "name": "Product",
    "rls": false,
    "bytes": 65536,
-   "rows": 12
+   "rows": 17
   },
   {
    "name": "QCHold",
@@ -565,8 +565,8 @@
   {
    "name": "Quote",
    "rls": false,
-   "bytes": 114688,
-   "rows": 29
+   "bytes": 172032,
+   "rows": 57
   },
   {
    "name": "QuoteAcceptance",
@@ -577,20 +577,20 @@
   {
    "name": "QuoteLine",
    "rls": false,
-   "bytes": 81920,
-   "rows": 11
+   "bytes": 131072,
+   "rows": 41
   },
   {
    "name": "RFQ",
    "rls": false,
-   "bytes": 81920,
-   "rows": 30
+   "bytes": 131072,
+   "rows": 61
   },
   {
    "name": "RFQLine",
    "rls": false,
-   "bytes": 49152,
-   "rows": 12
+   "bytes": 98304,
+   "rows": 46
   },
   {
    "name": "RFQSource",
@@ -613,8 +613,8 @@
   {
    "name": "RequestKey",
    "rls": false,
-   "bytes": 131072,
-   "rows": 18
+   "bytes": 155648,
+   "rows": 20
   },
   {
    "name": "RfidScanEvent",
@@ -865,14 +865,14 @@
   {
    "name": "Shipment",
    "rls": false,
-   "bytes": 237568,
-   "rows": 245
+   "bytes": 286720,
+   "rows": 252
   },
   {
    "name": "ShipmentItem",
    "rls": false,
-   "bytes": 262144,
-   "rows": 214
+   "bytes": 229376,
+   "rows": 221
   },
   {
    "name": "ShipmentStop",
@@ -950,7 +950,7 @@
    "name": "User",
    "rls": false,
    "bytes": 98304,
-   "rows": 18
+   "rows": 27
   },
   {
    "name": "UserDivision",
@@ -961,7 +961,7 @@
   {
    "name": "UserLocation",
    "rls": false,
-   "bytes": 204800,
+   "bytes": 188416,
    "rows": 246
   },
   {
@@ -973,8 +973,8 @@
   {
    "name": "WebhookDelivery",
    "rls": false,
-   "bytes": 425984,
-   "rows": 146
+   "bytes": 573440,
+   "rows": 162
   },
   {
    "name": "WorkCenter",
@@ -1004,7 +1004,7 @@
    "name": "_prisma_migrations",
    "rls": false,
    "bytes": 32768,
-   "rows": 28
+   "rows": 29
   }
  ],
  "columns": [
@@ -30441,7 +30441,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"AuditLog_pkey\" ON public.\"AuditLog\" USING btree (id)",
-   "bytes": 172032,
+   "bytes": 180224,
    "cols": [
     "id"
    ],
@@ -30453,7 +30453,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_resourceType_resourceId_idx\" ON public.\"AuditLog\" USING btree (\"resourceType\", \"resourceId\")",
-   "bytes": 139264,
+   "bytes": 131072,
    "cols": [
     "resourceType",
     "resourceId"
@@ -30466,7 +30466,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_tenantId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"tenantId\", \"timestamp\")",
-   "bytes": 90112,
+   "bytes": 98304,
    "cols": [
     "tenantId",
     "timestamp"
@@ -30479,7 +30479,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_userId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"userId\", \"timestamp\")",
-   "bytes": 245760,
+   "bytes": 253952,
    "cols": [
     "userId",
     "timestamp"
@@ -30809,7 +30809,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"DemandSuggestionEvent_pkey\" ON public.\"DemandSuggestionEvent\" USING btree (id)",
-   "bytes": 90112,
+   "bytes": 98304,
    "cols": [
     "id"
    ],
@@ -32899,7 +32899,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)",
-   "bytes": 155648,
+   "bytes": 90112,
    "cols": [
     "id"
    ],
@@ -36961,7 +36961,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"UserLocation_userId_locationId_key\" ON public.\"UserLocation\" USING btree (\"userId\", \"locationId\")",
-   "bytes": 57344,
+   "bytes": 40960,
    "cols": [
     "userId",
     "locationId"
@@ -37023,7 +37023,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_eventId_idx\" ON public.\"WebhookDelivery\" USING btree (\"eventId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "eventId"
    ],
@@ -37035,7 +37035,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (\"nextRetryAt\")",
-   "bytes": 16384,
+   "bytes": 40960,
    "cols": [
     "nextRetryAt"
    ],
@@ -37071,7 +37071,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (status, \"nextRetryAt\")",
-   "bytes": 16384,
+   "bytes": 40960,
    "cols": [
     "status",
     "nextRetryAt"
@@ -37293,7 +37293,7 @@
    "column": "tenantId",
    "nullable": true,
    "target": null,
-   "rows": 2281,
+   "rows": 2348,
    "set": 2,
    "orphans": null
   },
@@ -37302,7 +37302,7 @@
    "column": "targetUserId",
    "nullable": true,
    "target": "User",
-   "rows": 2281,
+   "rows": 2348,
    "set": 0,
    "orphans": null
   },
@@ -37311,8 +37311,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 2281,
-   "set": 2281,
+   "rows": 2348,
+   "set": 2348,
    "orphans": null
   },
   {
@@ -37320,7 +37320,7 @@
    "column": "sessionId",
    "nullable": true,
    "target": null,
-   "rows": 2281,
+   "rows": 2348,
    "set": 0,
    "orphans": null
   },
@@ -37329,7 +37329,7 @@
    "column": "correlationId",
    "nullable": true,
    "target": null,
-   "rows": 2281,
+   "rows": 2348,
    "set": 0,
    "orphans": null
   },
@@ -37662,7 +37662,7 @@
    "column": "operatorId",
    "nullable": true,
    "target": "User",
-   "rows": 271,
+   "rows": 273,
    "set": 0,
    "orphans": null
   },
@@ -37752,8 +37752,8 @@
    "column": "externalOrderId",
    "nullable": false,
    "target": null,
-   "rows": 39,
-   "set": 39,
+   "rows": 49,
+   "set": 49,
    "orphans": null
   },
   {
@@ -37761,8 +37761,8 @@
    "column": "customerId",
    "nullable": true,
    "target": "Organization",
-   "rows": 39,
-   "set": 15,
+   "rows": 49,
+   "set": 24,
    "orphans": 0
   },
   {
@@ -37770,8 +37770,8 @@
    "column": "internalOrderId",
    "nullable": true,
    "target": null,
-   "rows": 39,
-   "set": 30,
+   "rows": 49,
+   "set": 31,
    "orphans": null
   },
   {
@@ -37860,8 +37860,8 @@
    "column": "userId",
    "nullable": true,
    "target": "User",
-   "rows": 9,
-   "set": 9,
+   "rows": 10,
+   "set": 10,
    "orphans": 0
   },
   {
@@ -37869,8 +37869,8 @@
    "column": "terminalId",
    "nullable": true,
    "target": null,
-   "rows": 9,
-   "set": 8,
+   "rows": 10,
+   "set": 9,
    "orphans": null
   },
   {
@@ -37995,8 +37995,8 @@
    "column": "productId",
    "nullable": true,
    "target": "Product",
-   "rows": 12,
-   "set": 4,
+   "rows": 46,
+   "set": 5,
    "orphans": 0
   },
   {
@@ -39210,8 +39210,8 @@
    "column": "eventId",
    "nullable": false,
    "target": null,
-   "rows": 146,
-   "set": 146,
+   "rows": 162,
+   "set": 162,
    "orphans": null
   }
  ],
@@ -39409,7 +39409,6 @@
    "BomOperation",
    "BomRecipe",
    "CommodityPrice",
-   "CustomerPreference",
    "CustomerTagRequirement",
    "Division",
    "DocumentLink",

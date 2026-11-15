@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
 
-618 routes in 74 route files, served at 75 mount points. 323 change data.
+619 routes in 74 route files, served at 75 mount points. 323 change data.
 
 ## What the columns mean
 
@@ -15,13 +15,13 @@ Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 328 of 618 |
-| Changing routes that returned a success in a test | 109 of 323 |
+| Routes that returned a success in a test | 338 of 619 |
+| Changing routes that returned a success in a test | 115 of 323 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
-| Handlers with no try/catch of their own | 164 (many use a shared wrapper) |
+| Handlers with no try/catch of their own | 165 (many use a shared wrapper) |
 | Routes that use raw SQL | 3 |
-| Calls the screens make that have no server route | 83 |
+| Calls the screens make that have no server route | 66 |
 
 ## Reply shapes
 
@@ -149,7 +149,7 @@ Mounted at /api/products. Tables: Product, Grade.
 | `GET /api/products` | yes |  |  | yes |  |  |
 | `GET /api/products/search` | yes |  |  |  |  |  |
 | `GET /api/products/categories` | yes |  |  |  |  |  |
-| `GET /api/products/:id` |  |  |  |  |  |  |
+| `GET /api/products/:id` | yes |  |  |  |  |  |
 | `POST /api/products` | yes | 1 | yes |  |  |  |
 | `PUT /api/products/:id` | yes | 1 | yes |  |  |  |
 
@@ -199,23 +199,24 @@ Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement.
 | `POST /api/inventory/bulk-upload` | yes |  |  |  |  |  |
 | `GET /api/inventory/templates/:type` | yes |  |  |  |  |  |
 
-### intakeOrders.js (7 routes, 606 lines)
+### intakeOrders.js (8 routes, 651 lines)
 
-Mounted at /api/orders/intake. Tables: Organization, Order, Quote, Job, OrderLine.
+Mounted at /api/orders/intake. Tables: Organization, Order, Location, Quote, Job, OrderLine.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `POST /api/orders/intake` | yes | 1 |  |  |  |  |
 | `GET /api/orders/intake` | yes |  |  |  |  |  |
+| `GET /api/orders/intake/branches` | yes |  |  |  |  |  |
 | `GET /api/orders/intake/summary` | yes |  |  |  |  |  |
 | `GET /api/orders/intake/:id` |  |  |  |  |  |  |
 | `PATCH /api/orders/intake/:id` | yes | 4 | yes |  |  |  |
 | `POST /api/orders/intake/:id/submit` | yes | 1 |  |  |  |  |
 | `POST /api/orders/intake/:id/create-work-orders` | yes | 2 | yes |  |  |  |
 
-### onlineOrders.js (4 routes, 184 lines)
+### onlineOrders.js (4 routes, 193 lines)
 
-Mounted at /api/orders/online. Tables: OnlineOrder, Organization, Product, Order.
+Mounted at /api/orders/online. Tables: OnlineOrder, Organization, Location, Product, Order.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -269,12 +270,12 @@ Mounted at /api/ecom, /api/admin/catalog. Tables: through a service or none.
 | `GET /api/ecom/catalog/divisions` | yes |  |  |  |  |  |
 | `GET /api/ecom/catalog/families` |  |  |  |  |  |  |
 | `GET /api/ecom/catalog/availability` | yes |  |  |  |  |  |
-| `GET /api/ecom/catalog/:id` |  |  |  |  |  |  |
+| `GET /api/ecom/catalog/:id` | yes |  |  |  |  |  |
 | `POST /api/ecom/pricing/config` | yes |  |  |  |  |  |
 | `POST /api/ecom/pricing/tax` | yes |  |  |  |  |  |
-| `POST /api/ecom/cart/validate` |  |  |  |  |  |  |
+| `POST /api/ecom/cart/validate` | yes |  |  |  |  |  |
 | `POST /api/ecom/checkout/submit` | yes |  |  |  |  | requireLinkedCustomer |
-| `POST /api/ecom/checkout/quote` |  |  |  |  |  | requireLinkedCustomer |
+| `POST /api/ecom/checkout/quote` | yes |  |  |  |  | requireLinkedCustomer |
 | `GET /api/admin/catalog` | yes |  |  |  |  |  |
 | `PATCH /api/admin/catalog/:productId/visibility` |  |  |  |  |  |  |
 | `PATCH /api/admin/catalog/:productId/metadata` |  |  |  |  |  |  |
@@ -299,7 +300,7 @@ Mounted at /api/demand-shaping. Tables: DemandSuggestionEvent.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `POST /api/demand-shaping/suggestions` |  | 2 |  |  |  |  |
+| `POST /api/demand-shaping/suggestions` | yes | 2 |  |  |  |  |
 | `POST /api/demand-shaping/accept` |  |  |  |  |  |  |
 | `POST /api/demand-shaping/dismiss` |  |  |  |  |  |  |
 | `GET /api/demand-shaping/analytics` | yes |  |  | yes |  |  |
@@ -320,7 +321,7 @@ Mounted at /api/metrics/compression. Tables: through a service or none.
 | `GET /api/metrics/compression/export` | yes |  |  |  |  |  |
 | `GET /api/metrics/compression/filters` | yes |  |  |  |  |  |
 
-### intakePricing.js (6 routes, 187 lines)
+### intakePricing.js (6 routes, 196 lines)
 
 Mounted at /api/pricing. Tables: Product, PriceLevel, CustomerPricingTier, AuditLog.
 
@@ -343,7 +344,7 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (7 routes, 423 lines)
+### orders.js (7 routes, 439 lines)
 
 Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog.
 
@@ -439,7 +440,7 @@ Mounted at /api/overrides. Tables: AuditLog.
 | `GET /api/overrides/stats` | yes |  |  |  |  |  |
 | `POST /api/overrides/:id/revoke` | yes | 2 | yes |  | yes |  |
 
-### salesDashboard.js (1 routes, 116 lines)
+### salesDashboard.js (1 routes, 121 lines)
 
 Mounted at /api/sales-dashboard. Tables: RFQ, Quote, User.
 
@@ -456,7 +457,7 @@ Mounted at /api/dashboard. Tables: Inventory, Order, QCHold, Coil, Shipment.
 | `GET /api/dashboard` | yes |  |  |  |  |  |
 | `GET /api/dashboard/kpis` | yes |  |  |  |  |  |
 
-### customers.js (8 routes, 424 lines)
+### customers.js (8 routes, 442 lines)
 
 Mounted at /api/customers. Tables: Organization, AuditLog, CustomerPreference, CustomerPricingTier.
 
@@ -465,13 +466,13 @@ Mounted at /api/customers. Tables: Organization, AuditLog, CustomerPreference, C
 | `GET /api/customers` | yes |  |  |  |  |  |
 | `GET /api/customers/preferences/list` | yes |  |  | yes |  |  |
 | `GET /api/customers/:id` |  |  |  |  |  |  |
-| `POST /api/customers` |  | 1 |  |  |  |  |
-| `PATCH /api/customers/:id` | yes | 2 | yes |  | yes |  |
+| `POST /api/customers` | yes | 1 |  |  |  |  |
+| `PATCH /api/customers/:id` | yes | 3 | yes |  | yes |  |
 | `GET /api/customers/:id/preferences` | yes |  |  |  |  |  |
 | `PUT /api/customers/:id/preferences` | yes | 3 | yes |  | yes |  |
 | `DELETE /api/customers/:id/preferences` |  | 1 |  |  |  |  |
 
-### rfqs.js (5 routes, 124 lines)
+### rfqs.js (5 routes, 133 lines)
 
 Mounted at /api/rfqs. Tables: RFQ, Organization, Quote.
 
@@ -480,20 +481,20 @@ Mounted at /api/rfqs. Tables: RFQ, Organization, Quote.
 | `GET /api/rfqs` | yes |  |  |  |  |  |
 | `GET /api/rfqs/:id` | yes | 1 | yes |  |  |  |
 | `POST /api/rfqs` | yes |  |  |  |  |  |
-| `PATCH /api/rfqs/:id` |  | 2 | yes |  |  |  |
+| `PATCH /api/rfqs/:id` | yes | 2 | yes |  |  |  |
 | `POST /api/rfqs/:id/quotes` | yes |  |  |  |  |  |
 
-### quotes.js (6 routes, 222 lines)
+### quotes.js (6 routes, 251 lines)
 
 Mounted at /api/quotes. Tables: Quote, RFQ, Order.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/quotes` | yes |  |  |  |  |  |
-| `GET /api/quotes/:id` |  |  |  |  |  |  |
+| `GET /api/quotes/:id` | yes |  |  |  |  |  |
 | `POST /api/quotes` | yes | 1 |  |  |  |  |
 | `POST /api/quotes/:id/send` | yes | 1 | yes |  |  |  |
-| `POST /api/quotes/:id/reject` |  | 4 | yes |  |  |  |
+| `POST /api/quotes/:id/reject` | yes | 4 | yes |  |  |  |
 | `POST /api/quotes/:id/accept` | yes |  |  |  |  |  |
 
 ### workCenters.js (10 routes, 156 lines)
@@ -566,7 +567,7 @@ Mounted at /api/documents. Tables: Document, DocumentLink, DocumentBlob, Heat.
 | `POST /api/documents/upload-multiple` |  |  |  |  |  |  |
 | `DELETE /api/documents/:id` | yes | 3 | yes |  |  |  |
 
-### quickSale.js (10 routes, 387 lines)
+### quickSale.js (10 routes, 389 lines)
 
 Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovement, AuditLog, Payment, InvoiceLine.
 
@@ -583,7 +584,7 @@ Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovemen
 | `POST /api/pos/quick-sale/email-receipt` |  |  |  |  |  |  |
 | `POST /api/pos/quick-sale/sms-receipt` |  |  |  |  |  |  |
 
-### pos.js (57 routes, 1336 lines)
+### pos.js (57 routes, 1313 lines)
 
 Mounted at /api/pos. Tables: Organization.
 

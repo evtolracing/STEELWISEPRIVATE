@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -63,9 +63,9 @@ Two views. The first is the business flow, written by hand in the module map. Th
 |---|---|---:|
 | AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Coil work orders; Shipping; Partner API; Operations cockpit and dashboards | 10 |
 | Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 10 |
+| Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Dispatch, work centers and shop-floor operations; Shipping | 9 |
 | Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Shipping; Returns; Partner API; Operations cockpit and dashboards | 9 |
 | Job | Order entry; Customer specifications; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Operations cockpit and dashboards | 9 |
-| Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Stock items and stock levels; Receiving; Dispatch, work centers and shop-floor operations; Shipping | 7 |
 | OrderLine | Order entry; Sales orders; Customer specifications; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 7 |
 | Inventory | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
 | Coil | Sales orders; Stock items and stock levels; Receiving; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 7 |
@@ -110,15 +110,17 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | services/intakeCatalogService.js | coils.js, intakePricing.js, inventory.js, products.js | 4 |
 | lib/creditControl.js | intakeOrders.js, onlineOrders.js, orders.js, quotes.js | 4 |
 | lib/billingRules.js | intakeOrders.js, onlineOrders.js, quickSale.js, returns.js | 4 |
+| lib/orderTax.js | intakeOrders.js, intakePricing.js, onlineOrders.js, quotes.js | 4 |
 | services/billing.js | invoices.js, quickSale.js, returns.js, shipments.js | 4 |
+| lib/quoteRules.js | customerRoutes.js, quotes.js, rfqs.js, salesDashboard.js | 4 |
 | lib/outbound.js | ai.js, aiAssistant.js, tts.js | 3 |
 | services/ai/AIProviderService.js | ai.js, aiAssistant.js, opsCockpit.js | 3 |
 | lib/settings.js | compressionMetrics.js, demandShaping.js, onlineSettings.js | 3 |
 | lib/customerScope.js | ecom.js, portal.js, users.js | 3 |
 | lib/customerPricing.js | ecom.js, intakePricing.js, quickSale.js | 3 |
-| lib/orderTax.js | intakeOrders.js, intakePricing.js, onlineOrders.js | 3 |
-| lib/quoteRules.js | customerRoutes.js, quotes.js, rfqs.js | 3 |
+| lib/lineSpecs.js | intakeOrders.js, quotes.js, rfqs.js | 3 |
 | lib/priceRules.js | customers.js, intakePricing.js | 2 |
+| lib/branchScope.js | intakeOrders.js, inventory.js | 2 |
 | lib/listing.js | inventory.js, orders.js | 2 |
 | lib/stockChanges.js | inventory.js, workOrders.js | 2 |
 | services/printAutomationService.js | jobs.js, printQueue.js | 2 |
@@ -132,7 +134,6 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | services/forecastService.js | executive.js | 1 |
 | services/decisionService.js | executive.js | 1 |
 | lib/integrationReport.js | integrations.js | 1 |
-| lib/branchScope.js | inventory.js | 1 |
 | lib/receiving.js | inventory.js | 1 |
 | lib/receivingRules.js | inventory.js | 1 |
 | middleware/partnerRateLimit.js | common.js | 1 |
@@ -159,4 +160,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 10. `middleware/requestKeys.js` (new in Phase 3): sits in front of every changing route. It acts only when a request carries an Idempotency-Key. Covered by 3 unit tests and three database scenarios.
 11. The order row lock: a reservation, a cancellation and (through conditional updates) a status move now queue on the Order row. Any new code that changes reservations must take the same lock first, or the race of G-004 returns.
 12. Foreign keys added in Phase 3 with RESTRICT: an invoiced shipment, a credited invoice, a returned order and an invoiced order line can no longer be deleted. Seed and clean-up scripts must delete children first.
+13. `lib/lineSpecs.js` (new in Phase 5): carries the customer's requirements from the request line to the quote line, the order line and the work order. Imported by requests, quotes and order intake. A change here can drop a requirement between steps. Covered by 5 unit tests and the Phase 5 traceability scenarios.
+14. `lib/orderTax.js` `sellingBranch()` (Phase 5): decides the branch an order is taxed at and filed under, for quotes, quote acceptance, order intake, Retail POS and web order acceptance. Covered by the Phase 5 tax and branch scenarios and the sweep.
+15. `GET /api/orders/intake/branches` (Phase 5): the branch list of order entry, Retail POS and the mobile rep screen. It follows the branch boundary (`branchesOf`). Covered by the API and browser checks.
 

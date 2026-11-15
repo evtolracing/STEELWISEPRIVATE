@@ -3,7 +3,10 @@
  *
  *   GET   /api/rfqs?status=&customerId=     list
  *   GET   /api/rfqs/:id                     one RFQ with its lines and quotes
- *   POST  /api/rfqs                         { customerId, contactName?, requestedDate?, notes?, lines: [{ description, requestedQty, unit?, productId? }] }
+ *   POST  /api/rfqs                         { customerId, contactName?, requestedDate?, notes?, lines: [{ description, requestedQty, unit?, productId?,
+ *                                             gradeId?, grade?, thicknessIn?, widthIn?, lengthIn?, finish?, tolerancePreset?, thk/wid/lenTolerancePlus/Minus?,
+ *                                             certRequirements?: ['MTR', ...], processing?, specNotes? }] }
+ *                                           The requirements are kept on the line and carried to the quote and the order (lib/lineSpecs.js).
  *   PATCH /api/rfqs/:id                     notes, contact, dates; status WITHDRAWN or REJECTED to close it
  *   POST  /api/rfqs/:id/quotes              price the RFQ: see routes/quotes.js (same as POST /api/quotes)
  */
@@ -13,6 +16,7 @@ import { createNumbered, padded } from '../lib/numbering.js';
 import { positiveQty } from '../lib/workflowRules.js';
 import { RFQ_OPEN } from '../lib/quoteRules.js';
 import { createQuote, handle, refuse } from './quotes.js';
+import { readSpecs } from '../lib/lineSpecs.js';
 
 const router = Router();
 const STATUSES = ['DRAFT', 'SUBMITTED', 'IN_REVIEW', 'QUOTED', 'ACCEPTED', 'REJECTED', 'EXPIRED', 'WITHDRAWN'];
@@ -55,15 +59,20 @@ router.get('/:id', handle('fetch RFQ', async (req, res) => {
 /** Create a submitted RFQ. Used by staff, and by the partner API for the partner's own organisation. */
 export async function createRfq(body = {}) {
   if (!body.customerId) refuse(400, 'customerId is required');
-  const customer = await prisma.organization.findUnique({ where: { id: String(body.customerId) }, select: { id: true } });
+  const customer = await prisma.organization.findUnique({ where: { id: String(body.customerId) }, select: { id: true, isActive: true } });
   if (!customer) refuse(400, 'Customer not found');
+  // The same rule as counter sales and order intake: an account that has been closed takes no new business (J-002).
+  if (!customer.isActive) refuse(409, 'This customer account is inactive. Reactivate it before taking a request for quote.');
   if (!Array.isArray(body.lines) || !body.lines.length) refuse(400, 'An RFQ needs at least one line');
   const lines = body.lines.map((raw, i) => {
     const qty = positiveQty(raw?.requestedQty ?? raw?.quantity);
     if (qty === null) refuse(400, `Line ${i + 1}: requestedQty must be more than zero`);
     const description = String(raw.description || raw.productDescription || '').trim();
     if (!description && !raw.productId) refuse(400, `Line ${i + 1}: say what is being asked for`);
+    const { specs, error } = readSpecs(raw);
+    if (error) refuse(400, `Line ${i + 1}: ${error}`);
     return {
+      specifications: Object.keys(specs).length ? specs : undefined,
       lineNumber: i + 1, description: description || null, productId: raw.productId ? String(raw.productId) : null,
       requestedQty: qty, unit: String(raw.unit || 'LB').toUpperCase().slice(0, 10), notes: raw.notes ? String(raw.notes) : null,
       materialCode: raw.materialCode ? String(raw.materialCode) : null, division: raw.division ? String(raw.division) : null,

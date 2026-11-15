@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -25,11 +25,11 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 | Module group | Weighted score | Share of the weights that has evidence | Open P0 or P1 | Changing routes with a success-path test | Meets the gate |
 |---|---:|---:|---:|---|:-:|
 | Platform infrastructure | 80 | 77% | 2 | 2 of 10 | No |
-| Sales and customer operations | 76 | 97% | 4 | 32 of 97 | No |
+| Sales and customer operations | 79 | 97% | 4 | 37 of 97 | No |
 | Inventory and purchasing | 76 | 97% | 3 | 20 of 40 | No |
 | Manufacturing and processing | 74 | 97% | 1 | 26 of 91 | No |
 | Logistics and financial operations | 79 | 97% | 2 | 31 of 40 | No |
-| Enterprise experience | 60 | 89% | 5 | 3 of 50 | No |
+| Enterprise experience | 60 | 89% | 5 | 4 of 50 | No |
 
 No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.
 
@@ -44,18 +44,18 @@ The groups hide large differences. Classification and test reach per module:
 | Access control | IMPLEMENTED AND VERIFIED | n/a | F-009 |
 | Staff and operators | IMPLEMENTED BUT NOT VERIFIED | 0 of 9 | B-012, B-014 |
 | Settings, tax rates and online settings | PARTIALLY IMPLEMENTED | 0 of 6 | X-007, D-035 |
-| Customers | IMPLEMENTED AND VERIFIED | 2 of 4 | S-009 |
-| RFQs and quotes | IMPLEMENTED AND VERIFIED | 5 of 9 | S-021, B-012 |
+| Customers | IMPLEMENTED AND VERIFIED | 3 of 4 | S-009 |
+| RFQs and quotes | IMPLEMENTED AND VERIFIED | 7 of 9 | B-012 |
 | Order entry | IMPLEMENTED AND VERIFIED | 7 of 7 | X-007 |
 | Sales orders | IMPLEMENTED AND VERIFIED | 4 of 4 | F-009 |
 | Pricing and customer tiers | IMPLEMENTED AND VERIFIED | 2 of 2 | S-009 |
 | Credit control | IMPLEMENTED AND VERIFIED | n/a |  |
 | Counter quick sale | IMPLEMENTED AND VERIFIED | 3 of 6 | D-033, D-034 |
 | Counter session flow (older) | PARTIALLY IMPLEMENTED | 5 of 36 | X-008, B-014 |
-| Web store | IMPLEMENTED AND VERIFIED | 4 of 10 | X-007, F-008 |
+| Web store | IMPLEMENTED AND VERIFIED | 6 of 10 | X-007, F-008 |
 | Customer account pages | IMPLEMENTED AND VERIFIED | 0 of 1 |  |
 | Promise dates, cut-offs, branch comparison, split shipments | PLACEHOLDER OR MOCK | n/a | X-007, S-010 |
-| Order hub and intake pipeline | DISCONNECTED | 0 of 18 | S-021, B-009 |
+| Order hub and intake pipeline | DISCONNECTED | 0 of 18 | B-009 |
 | Mobile rep | PLACEHOLDER OR MOCK | n/a | X-009 |
 | Products, grades and heats | IMPLEMENTED AND VERIFIED | 6 of 6 | B-012 |
 | Processing recipes and bills of material | IMPLEMENTED BUT NOT VERIFIED | 0 of 11 | I-011 |
@@ -83,7 +83,7 @@ The groups hide large differences. Classification and test reach per module:
 | AI assistant and voice | IMPLEMENTED BUT NOT VERIFIED | 2 of 10 | H-012 |
 | Help manual | IMPLEMENTED BUT NOT VERIFIED | n/a | M-018, X-010 |
 | Background work, notifications, schedules | PARTIALLY IMPLEMENTED | n/a | B-019, D-034, H-015 |
-| Operations cockpit and dashboards | IMPLEMENTED BUT NOT VERIFIED | 0 of 9 | B-012 |
+| Operations cockpit and dashboards | IMPLEMENTED BUT NOT VERIFIED | 1 of 9 | B-012 |
 | Executive tools | PLACEHOLDER OR MOCK | 0 of 10 | X-009 |
 | Stop work | DISCONNECTED | 0 of 7 | X-001, B-009 |
 | Safety, training, contractors, customer quality, supplier quality, production quality, provenance | PLACEHOLDER OR MOCK | n/a | X-001, X-002, X-009, B-017 |
@@ -117,20 +117,20 @@ Modules: Customers; RFQs and quotes; Order entry; Sales orders; Pricing and cust
 
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
-| Functional correctness | 15% | 80 | Placeholder counter price, tier prices, mobile orders, customer preferences save and the Pricing screen all repaired (S-001, S-002, S-005, S-014, S-017). Promise dates are still invented (S-010) |
-| Data integrity | 15% | 90 | Phase 3: order totals enforced by the database; duplicate order requests answered once (C-006); a void is one transaction (C-010); quotes keep their price and branch; an order cannot ship or bill without reserved stock (G-019, owner decision). Held at 90: the void marker is text (G-009). Was 82 (Order entry validated and transactional, tax saved, field allow-lists (S-006, S-007, S-016). 150 of 150 jobs, reconciliation 0 problems) |
-| Reliability | 12% | 78 | Phase 4: an order edit made from an old copy is refused on the API (G-020, opt-in); a quote accepted from two sides at once makes one order. Held at 78: no screen sends the version yet; most sales routes have no success-path test. Was 65 (A failed edit no longer destroys order lines. No retry or offline behaviour on mobile; says so) |
+| Functional correctness | 15% | 88 | Phase 5: tax by rule 27 on every sales path (J-001, J-005, J-006); expired quotes and pipeline values corrected (J-004); 15 pricing scenarios and the 47-check price sweep. Held at 88: discount, minimums and quote-line catalog pricing are the owner's decisions (J-008, S-027). Was 80 (Placeholder counter price, tier prices, mobile orders, customer preferences save and the Pricing screen all repaired (S-001, S-002, S-005, S-014, S-017). Promise dates are still invented (S-010)) |
+| Data integrity | 15% | 92 | Phase 5: requirements, tax and branch carried from request to quote to order to work order (J-001, J-009); closed accounts refused in every channel (J-002); a void is CANCELLED (G-009); web orders need a customer (J-010); final reconciliation of the 76 scenarios 0 problems. Held at 92: six preference fields not applied (J-008); live data unverified. Was 82 (Order entry validated and transactional, tax saved, field allow-lists (S-006, S-007, S-016). 150 of 150 jobs, reconciliation 0 problems) |
+| Reliability | 12% | 84 | Phase 5: races, retries, lost answers and a database failure mid-acceptance tested on quotes, counter sales and web checkout, each leaving one record or none. Held at 84: the order entry screen does not warn on a stale edit (G-020). Was 65 (A failed edit no longer destroys order lines. No retry or offline behaviour on mobile; says so) |
 | Security | 12% | 78 | Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 82 |
 | Operational efficiency | 10% | 62 | One price everywhere removes re-keying. Quotes still priced by hand (S-027). Credit limits are now enforced with a manager release (rule 32) |
 | User experience | 10% | 68 | Screens show the server's own error text; sample data removed from four screen groups. Branch list on entry screens still fixed (S-008) |
-| Performance | 8% | 80 | Phase 3: order, quote, request and customer lists measured at 85 branches: 5 to 57 ms at the 95th percentile. Held at 80: local machine; 244 KB reply for 50 orders (G-014). Was null (New routes are counted or capped (200 rows). No benchmark of sales routes was run in this workstream) |
+| Performance | 8% | 84 | Phase 5: every sales screen within 67 ms at the 95th percentile at 85 branches with 18,000 quotes; 40 at once 0 failed. Held at 84: local machine only. Was null (New routes are counted or capped (200 rows). No benchmark of sales routes was run in this workstream) |
 | Integration quality | 6% | 68 | Phase 4: a customer system can raise a request for quote, read and answer quotes, and read its orders, shipments and invoices, isolated from other customers (H-001); what a partner reads equals what staff see. Held at 68: no email or text (D-034, H-015); web checkout payment is a note (H-013); 18 sales calls have no route (S-026). Was 60 (Overrides, dashboard, mobile and pricing now have routes. 18 sales calls still have none (S-026). No card, email or text service (D-033, D-034)) |
 | Maintainability | 5% | 70 | One pricing rule and one tax rule, pure and unit tested (55 tests). Two unused sales paths remain (S-021, S-022) |
 | Observability | 4% | 72 | Phase 3: confirming, cancelling and reserving now leave a history line with the person, in the same transaction (G-010). Held at 72: edits to other order fields are not itemised (G-011). Was 65 (Audit entries for overrides, tier, credit limit, tax status and list price changes; request ids from Workstream 1) |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **76** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **79** | Target 95 |
 
-Changing routes with a success-path test: 32 of 97. Open findings against these modules: 13, of which P0 or P1: 4 (B-009, S-010, X-007, X-009).
+Changing routes with a success-path test: 37 of 97. Open findings against these modules: 12, of which P0 or P1: 4 (B-009, S-010, X-007, X-009).
 
 ### Inventory and purchasing
 
@@ -214,5 +214,5 @@ Modules: Sign-in and sessions; Users, roles and branches; Access control; Staff 
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
 | **Weighted over the 89% that has evidence** | | **60** | Target 95 |
 
-Changing routes with a success-path test: 3 of 50. Open findings against these modules: 10, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
+Changing routes with a success-path test: 4 of 50. Open findings against these modules: 10, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
 

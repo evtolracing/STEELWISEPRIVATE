@@ -1,8 +1,8 @@
 {
- "at": "2026-11-13T23:01:09.529Z",
+ "at": "2026-11-15T09:11:50.393Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 160,
- "totalRows": 9134,
+ "totalRows": 9625,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -10,7 +10,6 @@
   "BomOperation",
   "BomRecipe",
   "CommodityPrice",
-  "CustomerPreference",
   "CustomerTagRequirement",
   "Division",
   "DocumentLink",
@@ -120,7 +119,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 2281
+   "rows": 2348
   },
   {
    "table": "BomOperation",
@@ -132,7 +131,7 @@
   },
   {
    "table": "Coil",
-   "rows": 493
+   "rows": 503
   },
   {
    "table": "CommodityPrice",
@@ -140,11 +139,11 @@
   },
   {
    "table": "CustomerPreference",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "CustomerPricingTier",
-   "rows": 1
+   "rows": 11
   },
   {
    "table": "CustomerTagRequirement",
@@ -244,7 +243,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 493
+   "rows": 503
   },
   {
    "table": "InventoryAdjustment",
@@ -268,15 +267,15 @@
   },
   {
    "table": "Invoice",
-   "rows": 213
+   "rows": 230
   },
   {
    "table": "InvoiceLine",
-   "rows": 223
+   "rows": 241
   },
   {
    "table": "Job",
-   "rows": 271
+   "rows": 273
   },
   {
    "table": "JobInspection",
@@ -316,7 +315,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 443
+   "rows": 465
   },
   {
    "table": "MeterReading",
@@ -324,7 +323,7 @@
   },
   {
    "table": "OnlineOrder",
-   "rows": 39
+   "rows": 49
   },
   {
    "table": "Operator",
@@ -336,11 +335,11 @@
   },
   {
    "table": "Order",
-   "rows": 532
+   "rows": 572
   },
   {
    "table": "OrderLine",
-   "rows": 549
+   "rows": 591
   },
   {
    "table": "OrderLineAllocation",
@@ -348,7 +347,7 @@
   },
   {
    "table": "Organization",
-   "rows": 34
+   "rows": 93
   },
   {
    "table": "PMSchedule",
@@ -384,7 +383,7 @@
   },
   {
    "table": "Payment",
-   "rows": 121
+   "rows": 133
   },
   {
    "table": "PipelineRun",
@@ -392,7 +391,7 @@
   },
   {
    "table": "PosSession",
-   "rows": 9
+   "rows": 10
   },
   {
    "table": "PriceLevel",
@@ -428,7 +427,7 @@
   },
   {
    "table": "Product",
-   "rows": 12
+   "rows": 17
   },
   {
    "table": "QCHold",
@@ -436,7 +435,7 @@
   },
   {
    "table": "Quote",
-   "rows": 29
+   "rows": 57
   },
   {
    "table": "QuoteAcceptance",
@@ -444,15 +443,15 @@
   },
   {
    "table": "QuoteLine",
-   "rows": 11
+   "rows": 41
   },
   {
    "table": "RFQ",
-   "rows": 30
+   "rows": 61
   },
   {
    "table": "RFQLine",
-   "rows": 12
+   "rows": 46
   },
   {
    "table": "RFQSource",
@@ -468,7 +467,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 18
+   "rows": 20
   },
   {
    "table": "RfidScanEvent",
@@ -636,11 +635,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 245
+   "rows": 252
   },
   {
    "table": "ShipmentItem",
-   "rows": 214
+   "rows": 221
   },
   {
    "table": "ShipmentStop",
@@ -692,7 +691,7 @@
   },
   {
    "table": "User",
-   "rows": 18
+   "rows": 27
   },
   {
    "table": "UserDivision",
@@ -708,7 +707,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 146
+   "rows": 162
   },
   {
    "table": "WorkCenter",
@@ -728,7 +727,7 @@
   },
   {
    "table": "_prisma_migrations",
-   "rows": 28
+   "rows": 29
   }
  ],
  "indexes": 584,
@@ -1062,7 +1061,7 @@
   "reservations on stock items that have no stock row": 0,
   "order line reserved more than is left to ship": 0,
   "reservations left on cancelled or completed orders": 0,
-  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 0,
+  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 1,
   "completed work orders whose output and scrap are not matched by movements on the source item": 0,
   "completed work orders whose pieces do not weigh what the work order says came out": 0,
   "pieces whose heat, grade or owner differs from the item they were cut from": 0,
@@ -1083,11 +1082,11 @@
   "credit memos larger than the invoice they credit": 0,
   "two live invoices for the same shipment": 0,
   "quotes or requests whose branch does not exist": 0,
-  "orders with no branch": 63,
+  "orders with no branch": 62,
   "order lines shipped more than ordered": 0,
   "order line shipped quantity differs from its dispatched shipment items": 47,
   "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
-  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 5,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 6,
   "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
   "invoices paid more than their total": 0,
   "invoice total differs from subtotal + tax + freight": 0,

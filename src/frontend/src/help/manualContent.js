@@ -1994,32 +1994,28 @@ const manualModules = [
   {
     moduleId: 'commercial',
     title: 'Commercial',
-    shortDescription: 'OrderHub for managing the full order pipeline, and Demand Shaping for AI-driven demand analysis.',
+    shortDescription: 'RFQs & Quotes and All Orders for the order pipeline, and Demand Shaping for AI-driven demand analysis.',
     icon: 'BusinessCenter',
     roles: ['CSR', 'SALES_REP', 'BRANCH_MANAGER', 'SALES_MANAGER', 'ADMIN'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
-    routes: ['/orderhub', '/commercial/demand-shaping'],
+    routes: ['/sales/rfq-inbox', '/orders', '/commercial/demand-shaping'],
     sections: [
       {
         id: 'what-it-does',
         title: 'What This Module Does',
         blocks: [
-          { type: 'text', value: 'The Commercial module is where sales and operations manage the order pipeline. OrderHub is the central command for all orders across channels (phone, online, POS, mobile rep). Demand Shaping uses AI to analyze ordering patterns and suggest pricing or promotion strategies to smooth demand peaks and fill capacity valleys.' },
+          { type: 'text', value: 'The Commercial module is where sales and operations manage the order pipeline. RFQs & Quotes takes requests to quotes to orders, and All Orders lists every order from every channel (phone, online, POS, mobile rep). Demand Shaping uses AI to analyze ordering patterns and suggest pricing or promotion strategies to smooth demand peaks and fill capacity valleys.' },
         ],
       },
       {
         id: 'orderhub',
-        title: 'OrderHub',
+        title: 'Requests, quotes and orders',
         blocks: [
           { type: 'steps', items: [
-            'Click "OrderHub" under Commercial in the sidebar.',
-            'The hub shows all orders from every channel in a unified table: order number, source (Phone, Online, POS, Mobile), customer, total, status, and due date.',
-            'Use column filters to narrow by source, status, date range, CSR, or customer.',
-            'Click any order to open its detail view with full line items, processing, documents, and timeline.',
-            'Use the "Bulk Actions" dropdown to apply status changes, assign CSRs, or flag orders for review.',
-            'The sidebar summary shows today\'s order count, revenue, and average order value by channel.',
+            'Open "RFQs & Quotes" under Sales to take a customer\'s request, price it and turn an accepted quote into a sales order.',
+            'Open "All Orders" under Orders for every order from every channel (phone, web, counter, mobile rep).',
+            'The old OrderHub address now opens RFQs & Quotes: there is one request-to-order console, and its orders are the real sales orders.',
           ]},
-          { type: 'tip', value: 'OrderHub is the best place to get a cross-channel view. If you\'re looking for a specific order and don\'t know which channel it came from, start here.' },
         ],
       },
       {

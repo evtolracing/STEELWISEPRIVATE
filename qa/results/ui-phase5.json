@@ -1,0 +1,78 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-15T09:15:58.465Z",
+ "checks": 14,
+ "failed": 0,
+ "results": [
+  {
+   "name": "home: Open Orders is the server's count",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "home: none of the old made-up orders or alerts",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "home: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "old Order Hub address: goes to the request inbox",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order entry: the home branch is chosen to start",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order entry: only this login's branches are offered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order entry: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Retail POS: tax is estimated at the home branch (QA-L01)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Retail POS: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new request: a needed-by date can be given",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new request: each line has the requirement fields",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "request: its line shows the requirements",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "quote: shows subtotal + tax = total",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "request inbox: no script errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

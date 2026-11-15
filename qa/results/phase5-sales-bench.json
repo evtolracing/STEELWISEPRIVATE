@@ -1,0 +1,237 @@
+{
+ "at": "2026-11-15T09:08:37.197Z",
+ "base": "http://localhost:3021",
+ "runs": 9,
+ "branch": {
+  "rows": [
+   {
+    "url": "/api/dashboard",
+    "status": 200,
+    "bytes": 11677,
+    "p50": 26,
+    "p95": 30
+   },
+   {
+    "url": "/api/sales-dashboard?range=month",
+    "status": 200,
+    "bytes": 1840,
+    "p50": 27,
+    "p95": 48
+   },
+   {
+    "url": "/api/quotes?limit=50",
+    "status": 200,
+    "bytes": 84874,
+    "p50": 22,
+    "p95": 25
+   },
+   {
+    "url": "/api/quotes?status=SENT&limit=50",
+    "status": 200,
+    "bytes": 84672,
+    "p50": 19,
+    "p95": 21
+   },
+   {
+    "url": "/api/quotes?status=EXPIRED&limit=50",
+    "status": 200,
+    "bytes": 84632,
+    "p50": 19,
+    "p95": 21
+   },
+   {
+    "url": "/api/rfqs?limit=50",
+    "status": 200,
+    "bytes": 51211,
+    "p50": 17,
+    "p95": 25
+   },
+   {
+    "url": "/api/orders?limit=50&view=summary",
+    "status": 200,
+    "bytes": 43185,
+    "p50": 24,
+    "p95": 28
+   },
+   {
+    "url": "/api/orders/intake/branches",
+    "status": 200,
+    "bytes": 212,
+    "p50": 8,
+    "p95": 12
+   },
+   {
+    "url": "/api/orders/intake?limit=50",
+    "status": 200,
+    "bytes": 49116,
+    "p50": 26,
+    "p95": 30
+   },
+   {
+    "url": "/api/orders/credit-holds",
+    "status": 200,
+    "bytes": 30,
+    "p50": 12,
+    "p95": 16
+   },
+   {
+    "url": "/api/orders/online",
+    "status": 200,
+    "bytes": 21193,
+    "p50": 10,
+    "p95": 10
+   },
+   {
+    "url": "/api/pricing/price-list?limit=50",
+    "status": 200,
+    "bytes": 2548,
+    "p50": 8,
+    "p95": 10
+   },
+   {
+    "url": "/api/pricing/overview",
+    "status": 200,
+    "bytes": 746,
+    "p50": 8,
+    "p95": 9
+   },
+   {
+    "url": "/api/pos/quick-sale/daily-stats",
+    "status": 200,
+    "bytes": 109,
+    "p50": 12,
+    "p95": 13
+   },
+   {
+    "url": "/api/customers?limit=50&search=QA",
+    "status": 200,
+    "bytes": 7196,
+    "p50": 9,
+    "p95": 11
+   }
+  ],
+  "burst": {
+   "requests": 40,
+   "wallMs": 234,
+   "p50": 147,
+   "p95": 226,
+   "failed": 0
+  }
+ },
+ "admin": {
+  "rows": [
+   {
+    "url": "/api/dashboard",
+    "status": 200,
+    "bytes": 11172,
+    "p50": 56,
+    "p95": 67
+   },
+   {
+    "url": "/api/sales-dashboard?range=month",
+    "status": 200,
+    "bytes": 2068,
+    "p50": 57,
+    "p95": 63
+   },
+   {
+    "url": "/api/quotes?limit=50",
+    "status": 200,
+    "bytes": 84996,
+    "p50": 34,
+    "p95": 38
+   },
+   {
+    "url": "/api/quotes?status=SENT&limit=50",
+    "status": 200,
+    "bytes": 84815,
+    "p50": 24,
+    "p95": 28
+   },
+   {
+    "url": "/api/quotes?status=EXPIRED&limit=50",
+    "status": 200,
+    "bytes": 84960,
+    "p50": 32,
+    "p95": 35
+   },
+   {
+    "url": "/api/rfqs?limit=50",
+    "status": 200,
+    "bytes": 51431,
+    "p50": 22,
+    "p95": 26
+   },
+   {
+    "url": "/api/orders?limit=50&view=summary",
+    "status": 200,
+    "bytes": 41545,
+    "p50": 48,
+    "p95": 55
+   },
+   {
+    "url": "/api/orders/intake/branches",
+    "status": 200,
+    "bytes": 10536,
+    "p50": 8,
+    "p95": 10
+   },
+   {
+    "url": "/api/orders/intake?limit=50",
+    "status": 200,
+    "bytes": 43308,
+    "p50": 50,
+    "p95": 53
+   },
+   {
+    "url": "/api/orders/credit-holds",
+    "status": 200,
+    "bytes": 29,
+    "p50": 22,
+    "p95": 25
+   },
+   {
+    "url": "/api/orders/online",
+    "status": 200,
+    "bytes": 21193,
+    "p50": 10,
+    "p95": 10
+   },
+   {
+    "url": "/api/pricing/price-list?limit=50",
+    "status": 200,
+    "bytes": 2548,
+    "p50": 7,
+    "p95": 9
+   },
+   {
+    "url": "/api/pricing/overview",
+    "status": 200,
+    "bytes": 746,
+    "p50": 8,
+    "p95": 11
+   },
+   {
+    "url": "/api/pos/quick-sale/daily-stats",
+    "status": 200,
+    "bytes": 109,
+    "p50": 22,
+    "p95": 24
+   },
+   {
+    "url": "/api/customers?limit=50&search=QA",
+    "status": 200,
+    "bytes": 7196,
+    "p50": 9,
+    "p95": 11
+   }
+  ],
+  "burst": {
+   "requests": 40,
+   "wallMs": 593,
+   "p50": 362,
+   "p95": 560,
+   "failed": 0
+  }
+ }
+}

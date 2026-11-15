@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 48 |
 | Server route files | 74 |
-| API routes (each address counted; two route files are mounted twice) | 618 |
+| API routes (each address counted; two route files are mounted twice) | 619 |
 | API routes that change data | 323 |
 | Database tables in the schema | 159 |
 | Enumerations | 96 |
-| Migrations | 28 |
-| Screens (routes in the browser) | 144 |
-| Frontend source files | 390 (118,209 lines) |
-| Server route code | 24,731 lines |
+| Migrations | 29 |
+| Screens (routes in the browser) | 140 |
+| Frontend source files | 391 (118,172 lines) |
+| Server route code | 24,850 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -121,7 +121,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Customer accounts, addresses, terms, credit limit, pricing tier, preferences
 - **Screens:** 2 (2 real): /customers, /customers/preferences
 - **Server:** `src/backend/src/routes/customers.js`; served at /api/customers
-- **Routes:** 8, of which 4 change data. Returned a success in a test this session: 5 of 8; of the changing routes, 2 of 4
+- **Routes:** 8, of which 4 change data. Returned a success in a test this session: 6 of 8; of the changing routes, 3 of 4
 - **Tables:** Organization, AuditLog, CustomerPreference, CustomerPricingTier
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Access control
@@ -135,12 +135,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Requests for quote, quotes, accept and convert to an order
 - **Screens:** 3 (3 real): /commercial/demand-shaping, /sales/rfq-inbox, /sales/dashboard
 - **Server:** `src/backend/src/routes/rfqs.js`, `src/backend/src/routes/quotes.js`, `src/backend/src/routes/salesRoutes.js`, `src/backend/src/routes/salesDashboard.js`; served at /api/sales-dashboard, /api/rfqs, /api/quotes, /api/sales
-- **Routes:** 18, of which 9 change data. Returned a success in a test this session: 13 of 18; of the changing routes, 5 of 9
+- **Routes:** 18, of which 9 change data. Returned a success in a test this session: 16 of 18; of the changing routes, 7 of 9
 - **Tables:** RFQ, Quote, User, Organization, Order
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Customers, products, pricing
 - **Feeds:** Sales orders
-- **Findings:** S-021, B-012
+- **Findings:** B-012
 - **Production concern:** No quote revisions or approvals
 
 ### Order entry
@@ -150,8 +150,8 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** The order entry screen: lines, price, processing, tax, credit check
 - **Screens:** 9 (8 real, 1 mixed): /intake, /place-order, /orders/invoices, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
 - **Server:** `src/backend/src/routes/intakeOrders.js`, `src/backend/src/routes/intakePricing.js`, `src/backend/src/routes/intakeProcessing.js`; served at /api/orders/intake, /api/pricing, /api/processing
-- **Routes:** 16, of which 7 change data. Returned a success in a test this session: 14 of 16; of the changing routes, 7 of 7
-- **Tables:** Organization, Order, Quote, Job, OrderLine, Product, PriceLevel, CustomerPricingTier, AuditLog, ProcessingOperation, ProcessingTemplate
+- **Routes:** 17, of which 7 change data. Returned a success in a test this session: 15 of 17; of the changing routes, 7 of 7
+- **Tables:** Organization, Order, Location, Quote, Job, OrderLine, Product, PriceLevel, CustomerPricingTier, AuditLog, ProcessingOperation, ProcessingTemplate
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Customers, products, pricing, tax, credit
 - **Feeds:** Sales orders, jobs
@@ -238,8 +238,8 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Catalogue, cart, checkout at the system price, my orders
 - **Screens:** 8 (7 real, 1 mixed): /shop, /shop/search, /shop/remnants, /shop/products/:id, /shop/cart, /shop/checkout, /shop/orders, /shop/orders/:id
 - **Server:** `src/backend/src/routes/ecom.js`, `src/backend/src/routes/onlineOrders.js`; served at /api/orders/online, /api/ecom, /api/admin/catalog
-- **Routes:** 17, of which 10 change data. Returned a success in a test this session: 9 of 17; of the changing routes, 4 of 10
-- **Tables:** OnlineOrder, Organization, Product, Order
+- **Routes:** 17, of which 10 change data. Returned a success in a test this session: 12 of 17; of the changing routes, 6 of 10
+- **Tables:** OnlineOrder, Organization, Location, Product, Order
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, pricing, tax, customers
 - **Feeds:** Sales orders
@@ -281,14 +281,14 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** DISCONNECTED
 - **Basis:** Works on its own tables and creates nothing in sales orders. Email parsing needs an AI key and was not run
 - **Purpose:** A second RFQ, quote, order and job pipeline with AI email parsing
-- **Screens:** 4 (4 real): /orderhub, /orderhub/rfq/new, /orderhub/rfq/:rfqId, /orderhub/orders/:orderId
+- **Screens:** none
 - **Server:** `src/backend/src/routes/orderHubRoutes.js`, `src/backend/src/routes/aiOrderHubRoutes.js`, `src/backend/src/routes/ingestRoutes.js`, `src/backend/src/routes/pipelineRoutes.js`; served at /api/v1, /api/v1/ai, /api/v1/ingest, /api/v1/pipeline
 - **Routes:** 31, of which 18 change data. Returned a success in a test this session: 7 of 31; of the changing routes, 0 of 18
 - **Tables:** IntakeJob
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** None
 - **Feeds:** None
-- **Findings:** S-021, B-009
+- **Findings:** B-009
 - **Production concern:** A second order pipeline that the rest of the system does not see
 
 ### Mobile rep
@@ -314,7 +314,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Catalogue with list prices, grades and chemistry, heats with mill certificates
 - **Screens:** 2 (2 real): /heats, /heats/:id
 - **Server:** `src/backend/src/routes/products.js`, `src/backend/src/routes/grades.js`, `src/backend/src/routes/heats.js`; served at /api/grades, /api/products, /api/heats
-- **Routes:** 16, of which 6 change data. Returned a success in a test this session: 14 of 16; of the changing routes, 6 of 6
+- **Routes:** 16, of which 6 change data. Returned a success in a test this session: 15 of 16; of the changing routes, 6 of 6
 - **Tables:** Grade, Product, Heat, Organization, MaterialMovement
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Access control
@@ -713,7 +713,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Role dashboard, operations cockpit, sales and pricing dashboards, exception events
 - **Screens:** 2 (2 real): /ops-cockpit, /role-dashboard//
 - **Server:** `src/backend/src/routes/dashboard.js`, `src/backend/src/routes/opsCockpit.js`, `src/backend/src/routes/analyticsV1.js`, `src/backend/src/routes/eventsV1.js`, `src/backend/src/routes/demandShaping.js`, `src/backend/src/routes/compressionMetrics.js`; served at /api/demand-shaping, /api/metrics/compression, /api/dashboard, /api/v1/analytics, /api/v1/events, /api/ops-cockpit
-- **Routes:** 29, of which 9 change data. Returned a success in a test this session: 20 of 29; of the changing routes, 0 of 9
+- **Routes:** 29, of which 9 change data. Returned a success in a test this session: 21 of 29; of the changing routes, 1 of 9
 - **Tables:** DemandSuggestionEvent, Inventory, Order, QCHold, Coil, Shipment, Job, RFQ, Quote, Organization, WorkCenter, ExceptionEvent, DispatchOperation, MaterialMovement, Grade, AuditLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Every operational module
@@ -790,18 +790,22 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 
 ## Code nothing uses
 
-Found by following imports from the application entry points. 45 frontend files (7,079 lines) and 5 server files. Finding B-013.
+Found by following imports from the application entry points. 54 frontend files (9,354 lines) and 5 server files. Finding B-013.
 
 | File | Lines |
 |---|---:|
+| src/frontend/src/apps/orderhub/RfqCreatePage.jsx | 616 |
 | src/frontend/src/hooks/useRealTimePricing.js | 610 |
 | src/frontend/src/apps/inventory/InventoryDetailPage.jsx | 587 |
 | src/frontend/src/services/splitShipmentApi.js | 571 |
+| src/frontend/src/apps/orderhub/RfqDetailPage.jsx | 554 |
 | src/frontend/src/apps/inventory/InventoryDashboardPage.jsx | 545 |
+| src/frontend/src/apps/orderhub/OrderDetailPage.jsx | 537 |
 | src/frontend/src/hooks/useValidation.js | 529 |
 | src/frontend/src/components/InventoryAiAssistantPanel.jsx | 418 |
 | src/frontend/src/components/shipping/SplitShipmentDialog.jsx | 405 |
 | src/frontend/src/pages/OrderBoardPage.jsx | 362 |
+| src/frontend/src/apps/orderhub/RfqListPage.jsx | 331 |
 | src/frontend/src/components/logistics/DeliveryZoneMap.jsx | 302 |
 | src/frontend/src/components/shipping/ShipmentTracker.jsx | 296 |
 | src/frontend/src/components/logistics/InboundShipmentTracker.jsx | 282 |
@@ -817,9 +821,14 @@ Found by following imports from the application entry points. 45 frontend files 
 | src/frontend/src/components/help/HelpDrawer.jsx | 98 |
 | src/frontend/src/api/authFetch.js | 82 |
 | src/frontend/src/components/production/ProductionLayout.jsx | 76 |
+| src/frontend/src/services/orderApi.js | 74 |
+| src/frontend/src/services/quoteApi.js | 53 |
+| src/frontend/src/services/aiOrderHubApi.js | 52 |
+| src/frontend/src/services/contactApi.js | 39 |
 | src/frontend/src/services/inventoryAiApi.js | 31 |
 | src/frontend/src/components/logistics/index.js | 29 |
 | src/frontend/src/config/supabaseClient.js | 28 |
+| src/frontend/src/apps/orderhub/OrderHubApp.jsx | 19 |
 | src/frontend/src/hooks/index.js | 14 |
 | src/frontend/src/dashboard/index.js | 9 |
 | src/frontend/src/pages/Executive/index.js | 7 |
@@ -853,8 +862,8 @@ Finding B-014.
 
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
-| src/frontend/src/help/manualContent.js | 3546 | 0 |
-| src/frontend/src/router/AppRouter.jsx | 1541 | 0 |
+| src/frontend/src/help/manualContent.js | 3542 | 0 |
+| src/frontend/src/router/AppRouter.jsx | 1536 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1335 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
@@ -869,11 +878,11 @@ Finding B-014.
 | src/frontend/src/apps/safety/SafetyAssistantPage.jsx | 834 | 4 |
 | src/frontend/src/pages/QC/QCInspectionPage.jsx | 829 | 16 |
 | src/frontend/src/components/pos/screens/LineEntryScreen.jsx | 823 | 13 |
-| src/frontend/src/pages/Customers/CustomerPreferencesPage.jsx | 795 | 11 |
+| src/frontend/src/pages/Customers/CustomerPreferencesPage.jsx | 801 | 11 |
 | src/frontend/src/apps/safety/PermitsPage.jsx | 786 | 13 |
 | src/frontend/src/screens/ShipmentTrackingScreen.jsx | 769 | 10 |
 | src/frontend/src/pages/Maintenance/PartsInventory.jsx | 762 | 5 |
-| src/backend/src/routes/pos.js | 1336 | |
+| src/backend/src/routes/pos.js | 1313 | |
 | src/backend/src/routes/dispatchRoutes.js | 1034 | |
 | src/backend/src/routes/stopWork.js | 985 | |
 | src/backend/src/routes/jobs.js | 948 | |
@@ -884,13 +893,13 @@ Finding B-014.
 | src/backend/src/routes/users.js | 692 | |
 | src/backend/src/routes/bomV1.js | 671 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
-| src/backend/src/routes/intakeOrders.js | 606 | |
+| src/backend/src/routes/intakeOrders.js | 651 | |
 
 ## Other counts from the frontend
 
 | Item | Count |
 |---|---:|
-| Files over 600 lines | 65 |
+| Files over 600 lines | 66 |
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
 | Icon-only buttons | 301 |

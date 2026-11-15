@@ -283,13 +283,15 @@ export default function CustomerPreferencesPage() {
           <TextField fullWidth size="small" label="Default Discount %"
             type="number" value={prefs.discountPct} onChange={e => updateField('discountPct', e.target.value)}
             InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
-            inputProps={{ step: 0.5, min: 0, max: 100 }} />
+            inputProps={{ step: 0.5, min: 0, max: 100 }}
+            helperText="Saved for reference. Not applied to any order or price yet. Prices come from the pricing tier." />
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormControlLabel
             control={<Switch checked={prefs.fuelSurchargeExempt} onChange={e => updateField('fuelSurchargeExempt', e.target.checked)} />}
             label="Fuel Surcharge Exempt"
           />
+          <Typography variant="caption" color="text.secondary" display="block">Saved for reference. Not applied to any order or price yet. No fuel surcharge is charged by the system.</Typography>
         </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -490,7 +492,8 @@ export default function CustomerPreferencesPage() {
         <Grid item xs={12} sm={4}>
           <TextField fullWidth size="small" label="Max Pieces per Bundle"
             type="number" value={prefs.bundleMaxPieces} onChange={e => updateField('bundleMaxPieces', e.target.value)}
-            inputProps={{ step: 1, min: 0 }} />
+            inputProps={{ step: 1, min: 0 }}
+            helperText="Saved for reference. Not applied to any order or price yet." />
         </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -519,12 +522,14 @@ export default function CustomerPreferencesPage() {
             control={<Switch checked={prefs.requirePONumber} onChange={e => updateField('requirePONumber', e.target.checked)} />}
             label="Require PO Number"
           />
+          <Typography variant="caption" color="text.secondary" display="block">Saved for reference. Not applied to any order or price yet.</Typography>
         </Grid>
         <Grid item xs={12} sm={4}>
           <FormControlLabel
             control={<Switch checked={prefs.autoApproveOrders} onChange={e => updateField('autoApproveOrders', e.target.checked)} />}
             label="Auto-Approve Orders"
           />
+          <Typography variant="caption" color="text.secondary" display="block">Saved for reference. Not applied to any order or price yet.</Typography>
         </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -537,7 +542,8 @@ export default function CustomerPreferencesPage() {
           <TextField fullWidth size="small" label="Minimum Order Value"
             type="number" value={prefs.minOrderValue} onChange={e => updateField('minOrderValue', e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-            inputProps={{ step: 100, min: 0 }} />
+            inputProps={{ step: 100, min: 0 }}
+            helperText="Saved for reference. Not applied to any order or price yet." />
         </Grid>
       </Grid>
 

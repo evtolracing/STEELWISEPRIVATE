@@ -117,6 +117,18 @@ function buildTotals(body, lines) {
   return { data };
 }
 
+/** A closed account takes no new business, the same rule as counter sales and order intake (J-002). */
+async function inactiveBuyer(buyerId) {
+  if (!buyerId) return false;
+  const buyer = await prisma.organization.findUnique({ where: { id: String(buyerId) }, select: { isActive: true } });
+  return buyer ? buyer.isActive === false : false;
+}
+const INACTIVE = 'This customer account is inactive. Reactivate it before entering an order for it.';
+// An order with nothing on it can be kept as a draft to fill in later, but it cannot go any
+// further: there is nothing to reserve, make, ship or bill (H-011; the database check
+// "orders with no lines (not draft or cancelled)" holds the same rule).
+const NO_LINES = 'An order needs at least one line before it leaves draft.';
+
 async function checkRefs(header) {
   for (const f of ['buyerId', 'sellerId']) {
     if (header[f] && !(await prisma.organization.findUnique({ where: { id: header[f] }, select: { id: true } }))) {
@@ -243,6 +255,8 @@ router.post('/', async (req, res) => {
     }
     const refError = await checkRefs(header.data);
     if (refError) return res.status(400).json({ error: refError });
+    if (await inactiveBuyer(header.data.buyerId)) return res.status(409).json({ error: INACTIVE, code: 'CUSTOMER_INACTIVE' });
+    if (status !== 'DRAFT' && !built.lines.length) return res.status(400).json({ error: NO_LINES, code: 'NO_LINES' });
 
     // Rule 32: a sales order that would put the account over its credit limit is saved on hold.
     const gate = orderType === 'SO'
@@ -313,11 +327,13 @@ router.put('/:id', async (req, res) => {
     }
     const refError = await checkRefs(data);
     if (refError) return res.status(400).json({ error: refError });
+    if (data.buyerId && data.buyerId !== order.buyerId && (await inactiveBuyer(data.buyerId))) return res.status(409).json({ error: INACTIVE, code: 'CUSTOMER_INACTIVE' });
 
     const moving = body.status !== undefined && body.status !== order.status;
     if (moving) {
       const why = orderMoveError(order.status, body.status);
       if (why) return res.status(409).json({ error: why });
+      if (body.status !== 'CANCELLED' && !(await prisma.orderLine.count({ where: { orderId: order.id } }))) return res.status(409).json({ error: NO_LINES, code: 'NO_LINES' });
       data.status = body.status;
     }
     if (!Object.keys(data).length) return res.status(400).json({ error: 'Nothing to update' });

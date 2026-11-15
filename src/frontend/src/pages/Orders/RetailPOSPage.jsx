@@ -27,6 +27,7 @@ import { searchInventory } from '../../services/intakeInventoryApi'
 import { createIntakeOrder, submitOrder } from '../../services/intakeOrdersApi'
 import { calculateLinePrice, estimateTax } from '../../services/intakePricingApi'
 import RemnantQuickAdd from '../../components/pos/RemnantQuickAdd'
+import useSellingBranches from '../../hooks/useSellingBranches'
 
 const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
@@ -54,14 +55,18 @@ export default function RetailPOSPage() {
   // ── Derived totals ──
   const subtotal = useMemo(() => cart.reduce((s, c) => s + (c.extPrice || 0), 0), [cart])
   // Percent, from the server's tax rule for a counter sale at this branch.
+  // The counter sells from the cashier's own branch. It used to be one fixed branch for every
+  // counter, so a sale anywhere was taxed at that branch's state (J-006).
+  const { homeCode } = useSellingBranches()
   const [taxRate, setTaxRate] = useState(0)
   useEffect(() => {
+    if (!homeCode) return undefined
     let live = true
-    estimateTax({ subtotal: 0, location: 'JACKSON', source: 'RETAIL' })
+    estimateTax({ subtotal: 0, location: homeCode, source: 'RETAIL' })
       .then(t => { if (live) setTaxRate(+((Number(t.taxRate) || 0) * 100).toFixed(4)) })
       .catch(() => { if (live) setTaxRate(0) })
     return () => { live = false }
-  }, [])
+  }, [homeCode])
   const tax = +(subtotal * taxRate / 100).toFixed(2)
   const total = subtotal + tax
 
@@ -133,7 +138,7 @@ export default function RetailPOSPage() {
       const payload = {
         source: 'RETAIL',
         division: 'OUTLET',
-        location: 'JACKSON',
+        location: homeCode || undefined,
         priority: 'STANDARD',
         ownership: 'HOUSE',
         customerName: custName || 'Walk-In',
@@ -150,7 +155,7 @@ export default function RetailPOSPage() {
       setSnack({ open: true, msg: e?.message || 'Checkout failed', severity: 'error' })
     }
     setSaving(false)
-  }, [cart, custName, custPhone, custCompany])
+  }, [cart, custName, custPhone, custCompany, homeCode])
 
   const handleNewSale = () => {
     setReceiptDialog(false)
@@ -248,7 +253,8 @@ export default function RetailPOSPage() {
         <Box sx={{ width: 380, display: 'flex', flexDirection: 'column', borderLeft: 1, borderColor: 'divider', bgcolor: '#fff' }}>
           {/* Quick Remnants */}
           <Box sx={{ p: 1, borderBottom: 1, borderColor: 'divider' }}>
-            <RemnantQuickAdd onAddToCart={addToCart} location="JACKSON" />
+            {/* Remnants keep their place as free text, not a branch, so every branch's are listed with their place (Phase 6). */}
+            <RemnantQuickAdd onAddToCart={addToCart} />
           </Box>
 
           {/* Customer */}

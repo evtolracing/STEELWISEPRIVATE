@@ -1,12 +1,12 @@
 # Testing gap analysis
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit dffa7d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit fce9593. Do not edit by hand: change the source and rerun.
 
 ## What exists
 
 | Kind | Where | Size | Runs on GitHub |
 |---|---|---|:-:|
-| Unit tests | src/backend/test (21 files) | 144 tests | yes |
+| Unit tests | src/backend/test (22 files) | 149 tests | yes |
 | Order-to-cash simulation with database checks and reconciliation | qa/sim/run.mjs | 50 jobs per cycle, 3 cycles per gate run | no |
 | Security and safeguards sweep | qa/sim/security.mjs | 20 sections | no |
 | Baseline probe (Phase 1) | qa/sim/baseline-probe.mjs | 4 sections over every write route | no |
@@ -23,10 +23,10 @@ Measured from the server's request log during the full gate run of this session 
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success | 328 of 618 (53%) |
-| Changing routes that returned a success | 109 of 323 (34%) |
-| Routes called at all (including refusals) | 609 of 618 |
-| Screens operated by a browser suite (not just opened) | about 30 of 144 |
+| Routes that returned a success | 338 of 619 (55%) |
+| Changing routes that returned a success | 115 of 323 (36%) |
+| Routes called at all (including refusals) | 612 of 619 |
+| Screens operated by a browser suite (not just opened) | about 30 of 140 |
 | Screens opened without a crash | 125 of 125 that take no record id |
 
 ## Changing routes with no success-path test, by module
@@ -41,23 +41,23 @@ Measured from the server's request log during the full gate run of this session 
 | Dispatch, work centers and shop-floor operations | 17 | 6 | 11 |
 | Executive tools | 10 | 0 | 10 |
 | Staff and operators | 9 | 0 | 9 |
-| Operations cockpit and dashboards | 9 | 0 | 9 |
 | AI assistant and voice | 10 | 2 | 8 |
+| Operations cockpit and dashboards | 9 | 1 | 8 |
 | Stop work | 7 | 0 | 7 |
 | Settings, tax rates and online settings | 6 | 0 | 6 |
-| Web store | 10 | 4 | 6 |
 | Second stock list (unit tracking) | 5 | 0 | 5 |
 | Maintenance and assets | 9 | 4 | 5 |
 | Partner API | 20 | 15 | 5 |
 | Users, roles and branches | 6 | 2 | 4 |
-| RFQs and quotes | 9 | 5 | 4 |
+| Web store | 10 | 6 | 4 |
 | Quality inspections | 6 | 2 | 4 |
 | Counter quick sale | 6 | 3 | 3 |
 | Remnants | 4 | 1 | 3 |
 | Planning and optimization | 3 | 0 | 3 |
 | Sign-in and sessions | 3 | 1 | 2 |
-| Customers | 4 | 2 | 2 |
+| RFQs and quotes | 9 | 7 | 2 |
 | Shipping | 7 | 5 | 2 |
+| Customers | 4 | 3 | 1 |
 | Customer account pages | 1 | 0 | 1 |
 | Stock items and stock levels | 9 | 8 | 1 |
 | Returns | 3 | 2 | 1 |
@@ -76,7 +76,7 @@ Measured from the server's request log during the full gate run of this session 
 - **Data isolation between runs.** The simulation, sweep and probes share one QA database and leave their records behind; the gate script rebuilds the database first. A test run on a database that was not rebuilt can pass or fail for reasons left by an earlier run.
 - **Refusal-heavy.** The sweep proves that 557 routes refuse a missing token and 534 refuse a customer, which is right, but most of those routes are never made to succeed.
 - **Browser checks read text.** They assert that a row or a message appears. They do not check layout, keyboard use or what a screen reader would say.
-- **Unit tests cover rules that were moved into `lib/`.** 21 files, none of which needs a database. Rules still inside route handlers (dispatch, operations, staff, quality, drop tags, order hub) cannot be unit tested where they are (B-014).
+- **Unit tests cover rules that were moved into `lib/`.** 22 files, none of which needs a database. Rules still inside route handlers (dispatch, operations, staff, quality, drop tags, order hub) cannot be unit tested where they are (B-014).
 - **No concurrency test outside order to cash.** Reservation, dispatch, payment and return races are tested. Nothing tests two requests at once on the second stock list, operations, counter sessions or user edits.
 - **No cross-branch test**, because there is no cross-branch rule to test (B-003).
 - **One flake seen in earlier sessions and not since**: none recorded in this session; all gates passed on two consecutive full runs before any change.

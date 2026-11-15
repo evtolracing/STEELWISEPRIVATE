@@ -84,8 +84,9 @@ export default function OnlineInboxPage() {
       setSnack({ open: true, msg: `Order ${type}ed`, severity: 'success' })
       closeAction()
       loadOrders()
-    } catch {
-      setSnack({ open: true, msg: `Action failed`, severity: 'error' })
+    } catch (err) {
+      // Say why (for example, no customer account yet), not only that it failed (J-010).
+      setSnack({ open: true, msg: err?.message || 'Action failed', severity: 'error' })
     }
     setActionBusy(false)
   }

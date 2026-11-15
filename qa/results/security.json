@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-13T22:59:51.952Z",
- "endpointsInInventory": 599,
- "endpointsSwept": 599,
+ "at": "2026-11-15T09:10:05.625Z",
+ "endpointsInInventory": 600,
+ "endpointsSwept": 600,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "559 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
-   "tested": 559,
+   "summary": "560 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
+   "tested": 560,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "536 staff routes tried as a customer, 0 not refused",
-   "tested": 536,
+   "summary": "537 staff routes tried as a customer, 0 not refused",
+   "tested": 537,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -40,8 +40,8 @@
   },
   "Read routes do not crash on bad input": {
    "pass": true,
-   "summary": "792 reads, 0 server errors",
-   "tested": 792,
+   "summary": "795 reads, 0 server errors",
+   "tested": 795,
    "byFile": {},
    "findings": []
   },
@@ -78,7 +78,7 @@
   },
   "Order entry screen follows the order rules": {
    "pass": true,
-   "summary": "43 checks, 0 problems",
+   "summary": "45 checks, 0 problems",
    "findings": []
   },
   "Stock items: lists, cost, edits, holds": {

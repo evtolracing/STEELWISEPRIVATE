@@ -1,7 +1,7 @@
 {
  "seed": 8001,
  "base": "http://localhost:3011",
- "at": "2026-11-13T22:59:22.431Z",
+ "at": "2026-11-15T09:09:22.581Z",
  "scenarios": [
   {
    "id": "S8001-01",
@@ -200,7 +200,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 452
+   "ms": 659
   },
   {
    "id": "S8001-02",
@@ -373,7 +373,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 328
+   "ms": 457
   },
   {
    "id": "S8001-03",
@@ -572,7 +572,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 350
+   "ms": 469
   },
   {
    "id": "S8001-04",
@@ -755,7 +755,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 322
+   "ms": 446
   },
   {
    "id": "S8001-05",
@@ -928,7 +928,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 308
+   "ms": 454
   },
   {
    "id": "S8001-06",
@@ -1161,7 +1161,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 455
+   "ms": 621
   },
   {
    "id": "S8001-07",
@@ -1368,7 +1368,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 381
+   "ms": 569
   },
   {
    "id": "S8001-08",
@@ -1601,7 +1601,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 467
+   "ms": 737
   },
   {
    "id": "S8001-09",
@@ -1860,7 +1860,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 523
+   "ms": 813
   },
   {
    "id": "S8001-10",
@@ -2093,7 +2093,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 437
+   "ms": 663
   },
   {
    "id": "S8001-11",
@@ -2326,7 +2326,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 452
+   "ms": 645
   },
   {
    "id": "S8001-12",
@@ -2585,7 +2585,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 463
+   "ms": 690
   },
   {
    "id": "S8001-13",
@@ -2758,7 +2758,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 278
+   "ms": 502
   },
   {
    "id": "S8001-14",
@@ -2971,7 +2971,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 379
+   "ms": 537
   },
   {
    "id": "S8001-15",
@@ -3144,7 +3144,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 274
+   "ms": 450
   },
   {
    "id": "S8001-16",
@@ -3347,7 +3347,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 355
+   "ms": 580
   },
   {
    "id": "S8001-17",
@@ -3546,7 +3546,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 339
+   "ms": 483
   },
   {
    "id": "S8001-18",
@@ -3789,7 +3789,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 487
+   "ms": 670
   },
   {
    "id": "S8001-19",
@@ -3846,7 +3846,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 109
+   "ms": 136
   },
   {
    "id": "S8001-20",
@@ -3903,7 +3903,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 76
+   "ms": 105
   },
   {
    "id": "S8001-21",
@@ -3960,7 +3960,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 76
+   "ms": 95
   },
   {
    "id": "S8001-22",
@@ -3993,7 +3993,7 @@
     {
      "name": "POS: refuse to submit an empty sale",
      "expect": "4xx",
-     "status": 400,
+     "status": 410,
      "ok": true
     },
     {
@@ -4021,15 +4021,21 @@
      "ok": true
     },
     {
-     "name": "POS: submit the sale",
-     "expect": "2xx",
+     "name": "POS: the old session submit is closed and says where to go",
+     "expect": 410,
+     "status": 410,
+     "ok": true
+    },
+    {
+     "name": "Retail POS: enter the counter order",
+     "expect": 201,
      "status": 201,
      "ok": true
     },
     {
-     "name": "POS: refuse to submit the same sale twice",
-     "expect": "4xx",
-     "status": 400,
+     "name": "Retail POS: submit the counter order",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     }
    ],
@@ -4051,7 +4057,7 @@
      "ok": true
     },
     {
-     "name": "POS order belongs to the chosen customer",
+     "name": "POS order belongs to the chosen customer and the clerk's branch",
      "ok": true
     },
     {
@@ -4077,7 +4083,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 139
+   "ms": 201
   },
   {
    "id": "S8001-23",
@@ -4110,7 +4116,7 @@
     {
      "name": "POS: refuse to submit an empty sale",
      "expect": "4xx",
-     "status": 400,
+     "status": 410,
      "ok": true
     },
     {
@@ -4138,15 +4144,21 @@
      "ok": true
     },
     {
-     "name": "POS: submit the sale",
-     "expect": "2xx",
+     "name": "POS: the old session submit is closed and says where to go",
+     "expect": 410,
+     "status": 410,
+     "ok": true
+    },
+    {
+     "name": "Retail POS: enter the counter order",
+     "expect": 201,
      "status": 201,
      "ok": true
     },
     {
-     "name": "POS: refuse to submit the same sale twice",
-     "expect": "4xx",
-     "status": 400,
+     "name": "Retail POS: submit the counter order",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     }
    ],
@@ -4168,7 +4180,7 @@
      "ok": true
     },
     {
-     "name": "POS order belongs to the chosen customer",
+     "name": "POS order belongs to the chosen customer and the clerk's branch",
      "ok": true
     },
     {
@@ -4194,7 +4206,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 144
+   "ms": 214
   },
   {
    "id": "S8001-24",
@@ -4321,7 +4333,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 278
+   "ms": 380
   },
   {
    "id": "S8001-25",
@@ -4438,7 +4450,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 235
+   "ms": 345
   },
   {
    "id": "S8001-26",
@@ -4565,7 +4577,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 265
+   "ms": 468
   },
   {
    "id": "S8001-27",
@@ -4682,7 +4694,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 256
+   "ms": 350
   },
   {
    "id": "S8001-28",
@@ -4799,7 +4811,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 256
+   "ms": 324
   },
   {
    "id": "S8001-29",
@@ -4916,7 +4928,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 235
+   "ms": 355
   },
   {
    "id": "S8001-30",
@@ -4957,7 +4969,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 20
+   "ms": 28
   },
   {
    "id": "S8001-31",
@@ -4990,7 +5002,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 9
+   "ms": 23
   },
   {
    "id": "S8001-32",
@@ -5023,7 +5035,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 22
+   "ms": 30
   },
   {
    "id": "S8001-33",
@@ -5056,7 +5068,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 17
   },
   {
    "id": "S8001-34",
@@ -5089,7 +5101,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 19
   },
   {
    "id": "S8001-35",
@@ -5272,7 +5284,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 316
+   "ms": 407
   },
   {
    "id": "S8001-36",
@@ -5337,7 +5349,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 52
+   "ms": 72
   },
   {
    "id": "S8001-37",
@@ -5418,7 +5430,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 73
+   "ms": 117
   },
   {
    "id": "S8001-38",
@@ -5537,7 +5549,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 169
+   "ms": 218
   },
   {
    "id": "S8001-39",
@@ -5614,7 +5626,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 84
+   "ms": 125
   },
   {
    "id": "S8001-40",
@@ -5877,7 +5889,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 418
+   "ms": 601
   },
   {
    "id": "S8001-41",
@@ -6124,7 +6136,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 385
+   "ms": 571
   },
   {
    "id": "S8001-42",
@@ -6307,7 +6319,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 312
+   "ms": 425
   },
   {
    "id": "S8001-43",
@@ -6506,7 +6518,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 356
+   "ms": 488
   },
   {
    "id": "S8001-44",
@@ -6755,7 +6767,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 352
+   "ms": 484
   },
   {
    "id": "S8001-45",
@@ -6996,7 +7008,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 428
+   "ms": 548
   },
   {
    "id": "S8001-46",
@@ -7247,7 +7259,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 428
+   "ms": 574
   },
   {
    "id": "S8001-47",
@@ -7498,7 +7510,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 423
+   "ms": 581
   },
   {
    "id": "S8001-48",
@@ -7647,18 +7659,6 @@
      "ok": true
     },
     {
-     "name": "line 2: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 2: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 2: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 1: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -7668,6 +7668,18 @@
     },
     {
      "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -7711,11 +7723,11 @@
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
+     "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "line 1: invoiced qty = shipped qty",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
@@ -7749,7 +7761,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 439
+   "ms": 587
   },
   {
    "id": "S8001-49",
@@ -7868,7 +7880,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 173
+   "ms": 226
   },
   {
    "id": "S8001-50",
@@ -7925,7 +7937,7 @@
    ],
    "invariants": [
     {
-     "name": "quote total = quantity x price",
+     "name": "quote subtotal = quantity x price, total = subtotal + tax",
      "ok": true
     },
     {
@@ -7971,7 +7983,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 138
+   "ms": 188
   }
  ],
  "concurrency": {
@@ -7990,12 +8002,12 @@
    {
     "name": "two shipments racing for the same order line: exactly one is created",
     "pass": true,
-    "detail": "statuses 201,409"
+    "detail": "statuses 409,201"
    },
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 409,200,409; line shipped 10200 of 10200; on hand 17000 → 6800"
+    "detail": "statuses 409,409,200; line shipped 10200 of 10200; on hand 17000 → 6800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8010,7 +8022,7 @@
    {
     "name": "three full payments at once on one invoice: taken once",
     "pass": true,
-    "detail": "statuses 201,409,409; paid 6630 of 6630"
+    "detail": "statuses 409,201,409; paid 6630 of 6630"
    },
    {
     "name": "one return received three times at once: counted once, one credit",
@@ -8051,7 +8063,7 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 714,
+  "steps": 716,
   "checks": 784,
   "failedSteps": {},
   "failedChecks": {}

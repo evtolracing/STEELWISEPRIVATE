@@ -7,6 +7,7 @@
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { isExpired } from '../lib/quoteRules.js';
 
 const router = Router();
 const num = (v) => Number(v || 0);
@@ -29,29 +30,33 @@ router.get('/', async (req, res) => {
     const soon = new Date(now.getTime() + 3 * 86400000);
     const dayAgo = new Date(now.getTime() - 86400000);
     const open = { in: ['DRAFT', 'PENDING_APPROVAL', 'SENT', 'COUNTERED'] };
+    // A quote past its valid-until date keeps its stored status but can no longer be accepted,
+    // so it is not open business (J-004). Values are sales before tax.
+    const live = { OR: [{ validUntil: null }, { validUntil: { gte: now } }] };
+    const lapsed = { status: open, validUntil: { lt: now } };
 
     const [
       newRfqs, drafting, awaiting, openValue, decided, rfqsInRange, firstQuotes,
       recent, expiring, pendingApproval, unanswered, rfqsWon,
     ] = await Promise.all([
       prisma.rFQ.count({ where: { createdAt: { gte: from } } }),
-      prisma.quote.count({ where: { status: { in: ['DRAFT', 'PENDING_APPROVAL'] } } }),
-      prisma.quote.count({ where: { status: { in: ['SENT', 'COUNTERED'] } } }),
-      prisma.quote.aggregate({ where: { status: open }, _sum: { totalAmount: true } }),
-      // Quotes decided in the period, with who wrote them.
+      prisma.quote.count({ where: { status: { in: ['DRAFT', 'PENDING_APPROVAL'] }, ...live } }),
+      prisma.quote.count({ where: { status: { in: ['SENT', 'COUNTERED'] }, ...live } }),
+      prisma.quote.aggregate({ where: { status: open, ...live }, _sum: { subtotal: true } }),
+      // Quotes decided in the period, with who wrote them. One that lapsed in the period counts as lost.
       prisma.quote.findMany({
-        where: { status: { in: ['ACCEPTED', 'REJECTED', 'EXPIRED'] }, updatedAt: { gte: from } },
-        select: { status: true, totalAmount: true, createdById: true },
+        where: { OR: [{ status: { in: ['ACCEPTED', 'REJECTED', 'EXPIRED'] }, updatedAt: { gte: from } }, { ...lapsed, validUntil: { lt: now, gte: from } }] },
+        select: { status: true, subtotal: true, createdById: true },
         take: 5000,
       }),
       prisma.rFQ.findMany({ where: { createdAt: { gte: from } }, select: { id: true, createdAt: true }, take: 5000 }),
       prisma.quote.groupBy({ by: ['rfqId'], where: { rfq: { createdAt: { gte: from } } }, _min: { createdAt: true } }),
       prisma.quote.findMany({
         orderBy: { createdAt: 'desc' }, take: 8,
-        select: { id: true, quoteNumber: true, status: true, totalAmount: true, createdAt: true, validUntil: true, rfq: { select: { customer: { select: { name: true } } } } },
+        select: { id: true, quoteNumber: true, status: true, subtotal: true, totalAmount: true, createdAt: true, validUntil: true, rfq: { select: { customer: { select: { name: true } } } } },
       }),
       prisma.quote.count({ where: { status: { in: ['SENT', 'COUNTERED'] }, validUntil: { gte: now, lte: soon } } }),
-      prisma.quote.count({ where: { status: 'PENDING_APPROVAL' } }),
+      prisma.quote.count({ where: { status: 'PENDING_APPROVAL', ...live } }),
       prisma.rFQ.count({ where: { status: { in: ['SUBMITTED', 'IN_REVIEW'] }, createdAt: { lt: dayAgo }, quotes: { none: {} } } }),
       // RFQs received in the period that already have an accepted quote.
       prisma.rFQ.count({ where: { createdAt: { gte: from }, quotes: { some: { status: 'ACCEPTED' } } } }),
@@ -59,7 +64,7 @@ router.get('/', async (req, res) => {
 
     const won = decided.filter((q) => q.status === 'ACCEPTED');
     const lost = decided.filter((q) => q.status !== 'ACCEPTED');
-    const wonValue = won.reduce((sum, q) => sum + num(q.totalAmount), 0);
+    const wonValue = won.reduce((sum, q) => sum + num(q.subtotal), 0);
 
     // Hours from an RFQ arriving to its first quote.
     const firstQuoteAt = new Map(firstQuotes.map((g) => [g.rfqId, g._min.createdAt]));
@@ -72,7 +77,7 @@ router.get('/', async (req, res) => {
       const key = q.createdById || 'unknown';
       const rep = byRep.get(key) || { userId: q.createdById, quotesWon: 0, decided: 0, revenue: 0 };
       rep.decided += 1;
-      if (q.status === 'ACCEPTED') { rep.quotesWon += 1; rep.revenue += num(q.totalAmount); }
+      if (q.status === 'ACCEPTED') { rep.quotesWon += 1; rep.revenue += num(q.subtotal); }
       byRep.set(key, rep);
     }
     const users = await prisma.user.findMany({ where: { id: { in: [...byRep.values()].map((r) => r.userId).filter(Boolean) } }, select: { id: true, firstName: true, lastName: true, email: true } });
@@ -92,7 +97,7 @@ router.get('/', async (req, res) => {
       pipeline: {
         newRfqs, drafting, awaitingCustomer: awaiting,
         won: won.length, lost: lost.length,
-        openValue: Math.round(num(openValue._sum.totalAmount) * 100) / 100,
+        openValue: Math.round(num(openValue._sum.subtotal) * 100) / 100,
         avgWonValue: won.length ? Math.round((wonValue / won.length) * 100) / 100 : null,
       },
       performance: {
@@ -103,7 +108,7 @@ router.get('/', async (req, res) => {
         avgMargin: null,
       },
       leaderboard,
-      recentQuotes: recent.map((q) => ({ id: q.id, quoteNumber: q.quoteNumber, customer: q.rfq?.customer?.name || '', value: num(q.totalAmount), status: q.status, date: q.createdAt.toISOString().slice(0, 10) })),
+      recentQuotes: recent.map((q) => ({ id: q.id, quoteNumber: q.quoteNumber, customer: q.rfq?.customer?.name || '', value: num(q.subtotal), status: isExpired(q, now) && ['DRAFT', 'PENDING_APPROVAL', 'SENT', 'COUNTERED'].includes(q.status) ? 'EXPIRED' : q.status, date: q.createdAt.toISOString().slice(0, 10) })),
       alerts,
     });
   } catch (error) {

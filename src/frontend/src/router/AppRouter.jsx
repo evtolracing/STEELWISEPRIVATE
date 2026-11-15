@@ -178,8 +178,6 @@ const DashboardApp = lazy(() => import('../apps/dashboard/DashboardApp.jsx'))
 const WorkCenterSelectPage = lazy(() => import('../apps/shopfloor/WorkCenterSelectPage'))
 const WorkCenterQueuePage = lazy(() => import('../apps/shopfloor/WorkCenterQueuePage'))
 
-// OrderHub App
-const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 
 // Admin Pages
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
@@ -326,15 +324,12 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // OrderHub - RFQ/Quote/Order Console
+      // The Order Hub console kept its own requests, quotes and orders beside the real ones. Under
+      // the owner's decision 1 (2026-11-13) there is one request-to-order console: RFQs & Quotes,
+      // whose orders are the real sales orders (S-021, U-002). Old links land there.
       {
         path: 'orderhub/*',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <OrderHubApp />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
+        element: <Navigate to="/sales/rfq-inbox" replace />,
       },
 
       // Heats

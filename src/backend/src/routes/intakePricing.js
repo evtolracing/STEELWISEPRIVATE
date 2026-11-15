@@ -30,6 +30,14 @@ router.post('/calculate', async (req, res) => {
     // With a customer, the customer's own level is used whatever level the screen sent.
     const priceLevel = customerId ? await customerPriceLevel(customerId) : (req.body?.priceLevel || 'RETAIL');
     if (!productId) return res.status(400).json({ error: 'productId is required' });
+    // An amount the screen sends must be a real amount of zero or more, so a price check never
+    // shows a negative line (J-011). An empty field still counts as zero.
+    for (const [name, v] of [['weight', weight], ['qty', qty]]) {
+      if (v !== '' && v !== null && !(Number(v) >= 0)) return res.status(400).json({ error: `${name} must be a number of zero or more` });
+    }
+    if (remnantDiscount != null && remnantDiscount !== '' && !(Number(remnantDiscount) >= 0 && Number(remnantDiscount) < 1)) {
+      return res.status(400).json({ error: 'remnantDiscount must be a fraction from 0 up to 1 (0.3 is 30%)' });
+    }
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) return res.status(404).json({ error: 'Product not found' });
 
@@ -67,6 +75,7 @@ router.post('/calculate', async (req, res) => {
 router.post('/tax-estimate', async (req, res) => {
   try {
     const { subtotal = 0, customerId, shipToState, location, source } = req.body || {};
+    if (!(Number(subtotal) >= 0)) return res.status(400).json({ error: 'subtotal must be a number of zero or more' });
     const tax = await orderTax({
       subtotal,
       customerId,

@@ -28,7 +28,7 @@ import {
   AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { useApiQuery } from '../../hooks/useApiQuery'
-import { getDashboardStats, getRecentOrders } from '../../api'
+import { getDashboardStats } from '../../api'
 import { DataTable, StatusChip } from '../../components/common'
 
 function StatCard({ title, value, change, changeLabel, icon: Icon, color = 'primary' }) {
@@ -226,64 +226,6 @@ function RecentOrdersTable({ orders = [] }) {
   )
 }
 
-function InventoryOverview({ inventory = {} }) {
-  const categories = [
-    { label: 'Hot Rolled', value: inventory.hotRolled || 0, max: 100, color: '#1976d2' },
-    { label: 'Cold Rolled', value: inventory.coldRolled || 0, max: 100, color: '#7b1fa2' },
-    { label: 'Galvanized', value: inventory.galvanized || 0, max: 100, color: '#2e7d32' },
-    { label: 'Stainless', value: inventory.stainless || 0, max: 100, color: '#ed6c02' },
-  ]
-
-  return (
-    <Paper sx={{ 
-      p: 2.5, 
-      height: '100%',
-      borderRadius: 3,
-      background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)',
-      border: '1px solid',
-      borderColor: 'divider',
-    }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-        <Avatar sx={{ 
-          width: 36, 
-          height: 36, 
-          bgcolor: alpha('#2e7d32', 0.1),
-        }}>
-          <InventoryIcon sx={{ color: 'success.main', fontSize: 20 }} />
-        </Avatar>
-        <Typography variant="h6" fontWeight={700}>
-          Inventory Overview
-        </Typography>
-      </Box>
-      <Stack spacing={2}>
-        {categories.map((cat) => (
-          <Box key={cat.label}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-              <Typography variant="body2" fontWeight={500}>{cat.label}</Typography>
-              <Typography variant="body2" fontWeight={700} sx={{ color: cat.color }}>
-                {cat.value}%
-              </Typography>
-            </Box>
-            <LinearProgress
-              variant="determinate"
-              value={cat.value}
-              sx={{ 
-                height: 10, 
-                borderRadius: 5,
-                bgcolor: alpha(cat.color, 0.15),
-                '& .MuiLinearProgress-bar': {
-                  bgcolor: cat.color,
-                  borderRadius: 5,
-                }
-              }}
-            />
-          </Box>
-        ))}
-      </Stack>
-    </Paper>
-  )
-}
-
 export default function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useApiQuery(
     'dashboardStats',
@@ -291,36 +233,24 @@ export default function DashboardPage() {
     { refetchInterval: 60000 } // Refresh every minute
   )
 
-  const { data: recentOrders, isLoading: ordersLoading } = useApiQuery(
-    'recentOrders',
-    () => getRecentOrders({ limit: 5 })
-  )
-
-  // Mock data for demo
-  const mockStats = {
-    totalUnits: 1247,
-    unitsChange: 12.5,
-    activeShipments: 34,
-    shipmentsChange: -2.3,
-    pendingOrders: 156,
-    ordersChange: 8.1,
-    lowStockAlerts: 7,
-  }
-
-  const mockAlerts = [
-    { severity: 'warning', title: 'Low Stock', message: 'Grade A36 below minimum threshold' },
-    { severity: 'error', title: 'QC Hold', message: '3 units pending quality review' },
-    { severity: 'info', title: 'Shipment Delay', message: 'Carrier reported 2hr delay on route 45' },
-  ]
-
-  const mockOrders = [
-    { orderNumber: 'SO-2024-001', customer: 'Acme Steel Co', type: 'SALES', status: 'IN_PROGRESS', total: 45600, createdAt: new Date() },
-    { orderNumber: 'PO-2024-042', customer: 'Metal Supply Inc', type: 'PURCHASE', status: 'PENDING', total: 128000, createdAt: new Date() },
-    { orderNumber: 'SO-2024-002', customer: 'BuildRight LLC', type: 'SALES', status: 'COMPLETED', total: 23400, createdAt: new Date() },
-  ]
-
-  const displayStats = stats || mockStats
-  const displayOrders = recentOrders?.orders || mockOrders
+  // Every figure, order and alert on this page comes from GET /api/dashboard (J-007). The page
+  // used to show three made-up orders, three made-up alerts and fixed stock percentages, and the
+  // tiles read fields the server does not send.
+  const lb = (n) => (n == null ? '—' : `${Math.round(Number(n) || 0).toLocaleString()} lb`)
+  const byStatus = stats?.orders?.byStatus || {}
+  const openOrders = ['PENDING', 'CONFIRMED', 'PARTIAL', 'HOLD'].reduce((n, k) => n + (Number(byStatus[k]) || 0), 0)
+  const holds = Array.isArray(stats?.qcHolds) ? stats.qcHolds : []
+  const displayStats = stats
+    ? { onHand: lb(stats.inventory?.totalOnHand), available: lb(stats.inventory?.available), openOrders, holds: holds.length >= 10 ? '10 or more' : holds.length }
+    : { onHand: '—', available: '—', openOrders: '—', holds: '—' }
+  const displayOrders = (Array.isArray(stats?.recentOrders) ? stats.recentOrders : []).slice(0, 5).map((o) => ({
+    id: o.id, orderNumber: o.orderNumber, customer: o.buyer?.name || '—', type: o.orderType, status: o.status,
+    total: Number(o.totalAmount) || 0, createdAt: o.createdAt,
+  }))
+  const alerts = holds.map((h) => ({
+    severity: 'error', title: 'Quality hold',
+    message: [h.coil?.coilNumber, h.coil?.grade?.code, h.reason].filter(Boolean).join(' · ') || 'A stock item is on hold',
+  }))
 
   return (
     <Box sx={{ 
@@ -381,35 +311,32 @@ export default function DashboardPage() {
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Total Units in Stock"
-            value={displayStats.totalUnits?.toLocaleString()}
-            change={displayStats.unitsChange}
+            title="Stock on Hand"
+            value={displayStats.onHand}
             icon={InventoryIcon}
             color="primary"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Active Shipments"
-            value={displayStats.activeShipments}
-            change={displayStats.shipmentsChange}
+            title="Available to Sell"
+            value={displayStats.available}
             icon={ShippingIcon}
             color="info"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Pending Orders"
-            value={displayStats.pendingOrders}
-            change={displayStats.ordersChange}
+            title="Open Orders"
+            value={displayStats.openOrders}
             icon={OrderIcon}
             color="warning"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
-            title="Low Stock Alerts"
-            value={displayStats.lowStockAlerts}
+            title="Quality Holds"
+            value={displayStats.holds}
             icon={WarningIcon}
             color="error"
           />
@@ -423,8 +350,7 @@ export default function DashboardPage() {
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack spacing={3}>
-            <AlertCard alerts={mockAlerts} />
-            <InventoryOverview inventory={{ hotRolled: 78, coldRolled: 45, galvanized: 92, stainless: 23 }} />
+            <AlertCard alerts={alerts} />
           </Stack>
         </Grid>
       </Grid>

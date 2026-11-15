@@ -48,10 +48,10 @@ import { searchCustomers } from '../../services/intakeCustomersApi'
 import { searchProducts } from '../../services/intakeProductsApi'
 import { getContractPricing } from '../../services/intakePricingApi'
 import useMobileMode from '../../hooks/useMobileMode'
+import useSellingBranches from '../../hooks/useSellingBranches'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT']
-const LOCATIONS = ['JACKSON', 'KALAMAZOO', 'GRAND_RAPIDS', 'DETROIT']
 
 const STEP_LABELS = ['Customer', 'Line Items', 'Review']
 
@@ -68,7 +68,10 @@ export default function MobileRepIntakePage() {
 
   // ── Header fields ────────────────────────────────────────────────────
   const [division, setDivision] = useState('METALS')
-  const [location, setLocation] = useState('JACKSON')
+  // The rep's own branches, from the server, starting at the home branch (S-008).
+  const { branches, homeCode } = useSellingBranches()
+  const [location, setLocation] = useState('')
+  useEffect(() => { if (!location && homeCode) setLocation(homeCode) }, [homeCode, location])
   const [priority, setPriority] = useState('STANDARD')
   const [poNumber, setPoNumber] = useState('')
   const [notes, setNotes] = useState('')
@@ -314,7 +317,7 @@ export default function MobileRepIntakePage() {
               <FormControl fullWidth>
                 <InputLabel>Location</InputLabel>
                 <Select value={location} onChange={e => setLocation(e.target.value)} label="Location" sx={{ minHeight: 52 }}>
-                  {LOCATIONS.map(l => <MenuItem key={l} value={l}>{l.replace(/_/g, ' ')}</MenuItem>)}
+                  {branches.map(b => <MenuItem key={b.id} value={b.code}>{b.name || b.code}</MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>

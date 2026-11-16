@@ -1004,14 +1004,15 @@ if (want(6)) {
     ok('it cannot become a sales order until a customer is named', blind.status === 400 && (await prisma.onlineOrder.findUnique({ where: { id: staff.body.data.id } })).internalOrderId === null, `${blind.status} ${JSON.stringify(blind.body).slice(0, 160)}`);
   }, { status: 'Guest checkout NOT APPLICABLE: off by the setting allowGuestCheckout' });
 
-  await scenario(G6, 'web checkout takes no payment, so there is no payment to time out or doubly confirm (H-013)', async (ok) => {
+  await scenario(G6, 'web checkout takes no payment and says so: every web order is on account, whatever the browser sends (H-013, owner decision 10)', async (ok) => {
     const c = await customer(); const me = await customerLogin(c);
     const r = await me.call('POST', '/api/ecom/checkout/submit', { items: [shopLine(each, 1, listEach)], deliveryMethod: 'PICKUP', paymentMethod: 'CARD', cardNumber: '4111111111111111' });
     const row = await prisma.onlineOrder.findUnique({ where: { id: r.body.data.id } });
     ok('the order is taken for review', ok2(r) && row.status === 'NEEDS_REVIEW');
     ok('no card number is stored anywhere on it', !JSON.stringify(row).includes('4111111111111111'));
     ok('no payment row exists for it', (await prisma.payment.count({ where: { referenceNumber: r.body.data.orderNumber } })) === 0);
-  }, { status: 'Payment at checkout NOT APPLICABLE until the owner answers H-013' });
+    ok('the order says "on account" and does not repeat the method the browser sent', /Payment: on account/.test(row.notes || '') && !/CARD/.test(row.notes || ''), row.notes);
+  });
 
   await scenario(G6, 'a quote request from the web shop reaches the inbox as a quote request', async (ok) => {
     const c = await customer(); const me = await customerLogin(c);

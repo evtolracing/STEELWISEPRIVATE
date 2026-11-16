@@ -1,5 +1,5 @@
 /**
- * CheckoutForm — ship-to, date, payment method, notes for e-commerce checkout.
+ * CheckoutForm — ship-to, date, PO number, notes for e-commerce checkout. No payment is taken: web orders are on account (H-013).
  */
 import React, { useState, useMemo } from 'react'
 import {
@@ -13,13 +13,6 @@ import {
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
 import ShipDatePickerWithPromise from './ShipDatePickerWithPromise'
 
-const PAYMENT_METHODS = [
-  { value: 'ACCOUNT_TERMS', label: 'Account Terms (Net 30)' },
-  { value: 'CREDIT_CARD', label: 'Credit Card' },
-  { value: 'COD', label: 'Cash on Delivery' },
-  { value: 'PREPAY', label: 'Prepay / Wire' },
-]
-
 const DELIVERY_OPTIONS = [
   { value: 'DELIVERY', label: 'Delivery to Address' },
   { value: 'WILL_CALL', label: 'Will Call — Pick Up at Branch' },
@@ -30,7 +23,6 @@ const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','
 
 export default function CheckoutForm({ onSubmit, submitting = false, hasReviewRequired = false, onPromiseChange, cartItems = [] }) {
   const { session, locations } = useCustomerSession()
-  const acct = session.accountType === 'ACCOUNT'
 
   const [form, setForm] = useState({
     deliveryMethod: 'DELIVERY',
@@ -41,7 +33,6 @@ export default function CheckoutForm({ onSubmit, submitting = false, hasReviewRe
     shipToZip: session.shipTo?.zip || '',
     locationId: session.locationId || '',
     requestedDate: '',
-    paymentMethod: acct ? 'ACCOUNT_TERMS' : 'CREDIT_CARD',
     poNumber: '',
     orderNotes: '',
     acceptTerms: false,
@@ -63,7 +54,6 @@ export default function CheckoutForm({ onSubmit, submitting = false, hasReviewRe
       if (!form.shipToZip.trim()) errs.shipToZip = 'ZIP required'
     }
     if (form.deliveryMethod === 'WILL_CALL' && !form.locationId) errs.locationId = 'Select pickup location'
-    if (!form.paymentMethod) errs.paymentMethod = 'Select payment method'
     if (!form.acceptTerms) errs.acceptTerms = 'Must accept terms'
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -160,15 +150,10 @@ export default function CheckoutForm({ onSubmit, submitting = false, hasReviewRe
           <Typography variant="subtitle2" fontWeight={600}>Payment</Typography>
         </Box>
         <Grid container spacing={1.5}>
-          <Grid item xs={6}>
-            <TextField size="small" fullWidth select label="Payment Method *" value={form.paymentMethod}
-              onChange={set('paymentMethod')} error={!!errors.paymentMethod} helperText={errors.paymentMethod}>
-              {PAYMENT_METHODS.filter(m => acct || m.value !== 'ACCOUNT_TERMS').map(m => (
-                <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
-              ))}
-            </TextField>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="body2" data-testid="checkout-on-account">On account. No card is taken here and nothing is charged now. An invoice follows when your order ships.</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <TextField size="small" fullWidth label="PO Number" value={form.poNumber} onChange={set('poNumber')}
               placeholder="Optional" />
           </Grid>

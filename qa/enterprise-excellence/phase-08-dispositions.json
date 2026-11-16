@@ -1,10 +1,73 @@
 {
  "note": "Dispositions decided in Phase 8. Applied over the findings source by qa/tools/findings-import.mjs. Never delete an entry.",
  "dispositions": {
-  "F-011": { "status": "VERIFIED FIXED", "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout", "statusNote": "Phase 8: examined (N-014, N-019). A packing list and a bill of lading are drawn for a shipment from what is on file, with blanks for what is not, and opened from the shipment screen.", "verification": "qa/sim/phase8-fulfillment.mjs: \"the bill of lading and packing list are drawn from the shipment, with nothing invented (N-014)\"; qa/sim/ui-phase8.cjs: packing list and bill of lading checks." },
-  "U-036": { "status": "VERIFIED FIXED", "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout", "statusNote": "Phase 8: the shipment screen has \"Packing list\" and \"Bill of lading\" buttons that open the paper as it will print (N-019).", "verification": "qa/sim/ui-phase8.cjs: \"packing list: opens as it will print, with the shipment, the order and the stock item\", \"bill of lading: drawn from the shipment\"." },
-  "F-012": { "status": "VERIFIED FIXED", "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout", "statusNote": "Phase 8: checked in this session. A file with an undefined name was added to the frontend and linted: eslint answered \"'strayWord' is not defined (no-undef)\", 1 error. The file was removed. Lint runs in every gate run.", "verification": "npx eslint on a file with an undefined name: 1 error (no-undef), 2026-11-16. qa/tools/run-gates.sh \"lint, frontend\": 0 errors." },
-  "L-026": { "statusNote": "Phase 8: the cost of what is sold is now fixed on the stock movement when it leaves (database file 14), and an order shows its cost and margin from actual item cost, job labor and scrap (N-017). Still not built: posting to a ledger, overhead, freight cost and stock valuation reports; these wait on the owner (N-025)." },
-  "K-007": { "statusNote": "Phase 8: shipment movements now carry the item's unit cost (N-017). A valuation report and a ledger are not built (N-025)." }
+  "F-011": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "statusNote": "Phase 8: examined (N-014, N-019). A packing list and a bill of lading are drawn for a shipment from what is on file, with blanks for what is not, and opened from the shipment screen.",
+   "verification": "qa/sim/phase8-fulfillment.mjs: \"the bill of lading and packing list are drawn from the shipment, with nothing invented (N-014)\"; qa/sim/ui-phase8.cjs: packing list and bill of lading checks."
+  },
+  "U-036": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "statusNote": "Phase 8: the shipment screen has \"Packing list\" and \"Bill of lading\" buttons that open the paper as it will print (N-019).",
+   "verification": "qa/sim/ui-phase8.cjs: \"packing list: opens as it will print, with the shipment, the order and the stock item\", \"bill of lading: drawn from the shipment\"."
+  },
+  "F-012": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "statusNote": "Phase 8: checked in this session. A file with an undefined name was added to the frontend and linted: eslint answered \"'strayWord' is not defined (no-undef)\", 1 error. The file was removed. Lint runs in every gate run.",
+   "verification": "npx eslint on a file with an undefined name: 1 error (no-undef), 2026-11-16. qa/tools/run-gates.sh \"lint, frontend\": 0 errors."
+  },
+  "L-026": {
+   "statusNote": "Phase 8: the cost of what is sold is now fixed on the stock movement when it leaves (database file 14), and an order shows its cost and margin from actual item cost, job labor and scrap (N-017). Still not built: posting to a ledger, overhead, freight cost and stock valuation reports; these wait on the owner (N-025)."
+  },
+  "K-007": {
+   "statusNote": "Phase 8: shipment movements now carry the item's unit cost (N-017). A valuation report and a ledger are not built (N-025)."
+  },
+  "N-027": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "where": "src/backend/src/routes/shipments.js (markLost, PUT /api/shipments/:id/lost); src/backend/src/services/billing.js (creditInvoice, rest); SQL Editor file 20261116230000_shipment_lost",
+   "correction": "Owner decision 10. A manager (the roles that may issue a credit) ends a shipment that has a problem on record as LOST, naming the kind (lost, destroyed, refused for good) and what happened. In the same save every quantity not yet credited on its invoice, its tax and its freight are credited. Stock is not moved a second time: it left the books at dispatch, and the cost stays on the order as a sale with no revenue. Nothing is automatic, and it cannot be undone. Material that comes back is a return, as before.",
+   "statusNote": "Built after the Phase 8 report, by owner decision 10. Needs database file 15 (one new shipment state).",
+   "verification": "qa/sim/phase8-fulfillment.mjs: \"a load that never arrives is ended as lost by a manager, with what happened, and its invoice is credited in full\", \"only a shipment with a problem on record can be ended as lost; when the invoice was already paid the credit is owed back\", \"a lost load credits only what earlier credits left\", \"two managers ending the same shipment as lost at the same moment leave one credit\"; src/backend/test/decision10.test.js; qa/sim/ui-phase8.cjs (lost load). Removed one at a time, each of these failed a scenario: the manager rule (both guards), the reason, the credit, the credit for what is left. The problem-state rule is held by two checks; removing either alone fails nothing, removing both fails a scenario. Ending once under a race is held by the state check and by the invoice having nothing left to credit; removing the state check alone fails nothing."
+  },
+  "F-009": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "where": "src/backend/src/lib/roleAccess.js (INVOICE_READERS, invoiceReadDenial); src/backend/src/lib/invoiceView.js (new)",
+   "expected": "Owner decision 10: invoices and payments are read by sales, accounting and managers.",
+   "correction": "Reads of /api/invoices are refused (403) to staff outside sales, managers, leadership and the view-only roles. Where another answer carries an invoice (a shipment, an order, the answer to a dispatch), those staff receive its number and status only. Counter sales are untouched: the clerk who takes the money sees the receipt. Customers keep their own rules.",
+   "statusNote": "Decided by the owner (decision 10) and built. Boundary stated: the closeout panel still tells any staff reader that an amount is unpaid on an order, because the dock is asked whether an order is finished; it shows no invoice or payment record.",
+   "verification": "qa/sim/phase8-fulfillment.mjs: \"invoices and payments are read by sales, accounting and managers only\"; src/backend/test/decision10.test.js (6 tests); qa/sim/ui-phase8.cjs (shipping desk). With the rule removed the scenario fails; with the answer guard removed the scenario fails."
+  },
+  "H-013": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "correction": "Owner decision 10: the web shop sells on account only and says so. The checkout form has no payment method; it reads \"On account. No card is taken here and nothing is charged now.\" The server writes \"Payment: on account\" on every web order whatever the browser sends, and stores no card detail.",
+   "statusNote": "Decided by the owner (decision 10) and built. Card payment through a processor remains not built (H-015).",
+   "verification": "qa/sim/phase5-sales.mjs: \"web checkout takes no payment and says so: every web order is on account, whatever the browser sends\" (fails with the old line restored); qa/sim/ui-phase8.cjs (web checkout: 2 checks)."
+  },
+  "N-026": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "statusNote": "Owner decision 10: tracking numbers typed by dispatch for now; a carrier is connected when a contract exists.",
+   "deferral": {
+    "reason": "Owner decision 10 (2026-11-15): start with tracking numbers typed by dispatch, which works today; connect one carrier when a contract exists.",
+    "targetPhase": "The phase the owner issues once a carrier contract exists; if none, Phase 12 records it as not built",
+    "correction": "Rating, labels, pickups and tracking through the chosen carrier's own service, behind the outside-call guard, with a sandbox account for tests.",
+    "dependencies": "A carrier contract and its credentials, which are the owner's.",
+    "acceptance": "A rate, a label and a tracking update from the carrier's sandbox, each verified by a scenario.",
+    "verification": "None yet."
+   }
+  },
+  "S-010": {
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "statusNote": "Owner decision 10 (2026-11-15): \"leave the promise date for demo purposes its fine\". The delivery promise, cutoff and branch comparison screens stay on sample data, and the screens stay labelled as samples. Risk accepted by the owner: a promise date shown at web checkout is not worked out from real stock or capacity."
+  },
+  "N-025": {
+   "statusNote": "Owner, 2026-11-15: asked for advice on an internal basic ledger for reports and AI queries, to connect to outside accounting software later, and said not to build yet. Advice given. Three answers are needed before a build: when cost of goods counts (recommended: at shipment), the chart of accounts, and the start date."
+  }
  }
 }

@@ -1,6 +1,6 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-16T02:19:46.823Z",
+ "at": "2026-11-16T03:20:45.301Z",
  "checks": 30,
  "failed": 0,
  "results": [
@@ -60,7 +60,7 @@
    "detail": ""
   },
   {
-   "name": "shipment: the invoice raised by the dispatch is shown with its total",
+   "name": "shipment: the invoice raised by the dispatch is shown to the dock by number, with no amount",
    "ok": true,
    "detail": ""
   },

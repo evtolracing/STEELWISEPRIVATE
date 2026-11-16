@@ -10,6 +10,7 @@
  *   DELETE /api/shipments/:id/items/:itemId
  *   PUT    /api/shipments/:id/dispatch        leaves the dock: order lines, order status and stock are updated
  *   PUT    /api/shipments/:id/deliver         proof of delivery: who received it, or why there is no name
+ *   PUT    /api/shipments/:id/lost            { kind: LOST|DESTROYED|REFUSED, reason } — a manager ends a shipment with a problem and credits its invoice
  *   PATCH  /api/shipments/:id/status          { status } — same rules as above. EXCEPTION needs a reason.
  *   GET    /api/shipments/:id/documents       what the pick list, packing list and bill of lading print
  *
@@ -24,7 +25,8 @@ import {
   SHIPPABLE_ORDER_STATUSES, shipmentMoveError, positiveQty, lineStatusFor, orderStatusFromLines, jobsBlockingShipment,
 } from '../lib/workflowRules.js';
 
-import { invoiceShipment } from '../services/billing.js';
+import { invoiceShipment, creditInvoice, BillingError } from '../services/billing.js';
+import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { moveJobsWhere } from '../lib/jobHistory.js';
 import { recordBusinessEvent, kick } from '../services/webhookService.js';
 import { acrossBranches, currentScope } from '../lib/branchScope.js';
@@ -45,7 +47,7 @@ const handle = (label, fn) => async (req, res) => {
   try {
     await fn(req, res);
   } catch (error) {
-    if (error instanceof Refuse) return res.status(error.status).json({ error: error.message });
+    if (error instanceof Refuse || error instanceof BillingError) return res.status(error.status).json({ error: error.message });
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'Shipment has a field that is not valid' });
     console.error(`Shipments: ${label} failed:`, error);
     res.status(500).json({ error: `Failed to ${label}` });
@@ -134,7 +136,7 @@ async function checkItems(db, orderId, rawItems, ignoreShipmentId) {
   return items;
 }
 
-const SHIPMENT_STATUSES = ['PENDING', 'LOADING', 'IN_TRANSIT', 'DELIVERED', 'EXCEPTION', 'CANCELLED'];
+const SHIPMENT_STATUSES = ['PENDING', 'LOADING', 'IN_TRANSIT', 'DELIVERED', 'EXCEPTION', 'CANCELLED', 'LOST'];
 const LIST_MAX = 200;
 // The customer as the shipping desk needs it: who and where, not credit terms or pricing.
 const BUYER = { select: { id: true, code: true, name: true, city: true, state: true } };
@@ -444,6 +446,43 @@ async function move(id, to, extra = {}, userId = null, note = null) {
   return prisma.shipment.findUnique({ where: { id }, include: { items: true } });
 }
 
+const LOST_KINDS = { LOST: 'Lost in transit', DESTROYED: 'Destroyed in transit', REFUSED: 'Refused by the customer and not coming back' };
+
+/**
+ * A load that never arrives (N-027, owner decision 10). A manager's decision, never automatic:
+ * the shipment has a problem on record, the manager says which kind and what happened, and in one
+ * save the shipment ends as LOST and whatever is not yet credited on its invoice is credited.
+ * The stock left the books when the truck did, so nothing is moved a second time; the cost of
+ * what was lost stays on the order as a sale with no revenue. Material that does come back is a
+ * return, not this.
+ */
+async function markLost(id, body, user) {
+  if (!MONEY_MANAGERS.has(user?.role)) refuse(403, 'Recording a lost load credits its invoice and needs a manager.');
+  const kind = String(body.kind || '').toUpperCase();
+  if (!LOST_KINDS[kind]) refuse(400, `kind must be one of: ${Object.keys(LOST_KINDS).join(', ')}`);
+  const reason = podText(body.reason, 'reason', 300);
+  if (!reason) refuse(400, 'Say what happened. It is kept in the shipment\'s history and on the credit.');
+  const shipment = await prisma.shipment.findUnique({ where: { id }, select: { id: true, status: true, shipmentNumber: true, orderId: true } });
+  if (!shipment) refuse(404, 'Shipment not found');
+  if (shipment.status === 'LOST') refuse(409, 'This shipment is already recorded as lost.');
+  if (shipment.status !== 'EXCEPTION') refuse(409, 'Only a shipment with a problem on record can be ended as lost. Report the problem first.');
+  // The invoice belongs to the branch that sold the order.
+  const invoice = await acrossBranches(() => prisma.invoice.findFirst({ where: { shipmentId: id, kind: 'INVOICE', status: { not: 'CANCELLED' } }, select: { id: true, totalAmount: true, credits: { where: { status: { not: 'CANCELLED' } }, select: { totalAmount: true } } } }));
+  if (!invoice) refuse(409, 'This shipment has no invoice. Raise it from the invoices page first, so the credit has something to stand against.');
+  const note = `${LOST_KINDS[kind]}. ${reason}`;
+  const end = async (tx) => {
+    const changed = await tx.shipment.updateMany({ where: { id, status: 'EXCEPTION' }, data: { status: 'LOST' } });
+    if (!changed.count) refuse(409, 'This shipment was just changed by someone else. Reload and try again.');
+    await recordShipmentEvent(tx, { shipment, from: 'EXCEPTION', to: 'LOST', userId: user.id, note });
+  };
+  const left = Math.round((Number(invoice.totalAmount) + invoice.credits.reduce((a, c) => a + Number(c.totalAmount), 0)) * 100) / 100;
+  let credit = null;
+  if (left > 0.005) credit = await acrossBranches(() => creditInvoice(invoice.id, { reason: `Shipment ${shipment.shipmentNumber}: ${note}`, rest: true }, user.id, { before: end }));
+  else await prisma.$transaction(end);
+  const now = await prisma.shipment.findUnique({ where: { id }, include: { items: true } });
+  return { ...now, credit: credit && { id: credit.id, invoiceNumber: credit.invoiceNumber, totalAmount: credit.totalAmount }, ...(!credit && { creditNote: 'Its invoice was already credited in full, so no further credit was issued.' }) };
+}
+
 function podText(value, name, max) {
   if (value === undefined || value === null || value === '') return undefined;
   if (typeof value !== 'string') refuse(400, `${name} must be text`);
@@ -553,6 +592,10 @@ router.put('/:id/dispatch', handle('dispatch', async (req, res) => {
 
 router.put('/:id/deliver', handle('mark delivered', async (req, res) => {
   res.json(await deliver(req.params.id, req.body || {}, req.user?.id));
+}));
+
+router.put('/:id/lost', handle('record a lost load', async (req, res) => {
+  res.json(await markLost(req.params.id, req.body || {}, req.user));
 }));
 
 router.patch('/:id/status', handle('update shipment status', async (req, res) => {

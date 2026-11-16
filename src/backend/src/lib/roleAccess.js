@@ -48,6 +48,18 @@ export const staffGroupOf = (role) => Object.keys(STAFF_GROUPS).find((g) => STAF
 export const MONEY_MANAGERS = new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, 'CREDIT_MANAGER', 'SALES_DIRECTOR']);
 /** Who is sent what stock cost: managers, the inventory manager and buyers. Everyone else sees list price only. */
 export const COST_VIEWERS = new Set([...MONEY_MANAGERS, 'INVENTORY_MANAGER', 'BUYER']);
+/**
+ * Who reads invoices, payments and what customers owe (F-009, owner decision 10): sales, managers,
+ * leadership (accounting sits there) and the view-only roles. Shop, warehouse, quality and
+ * maintenance staff do not.
+ */
+export const INVOICE_READERS = new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, ...STAFF_GROUPS.sales, ...STAFF_GROUPS.readOnly]);
+/** null when allowed, otherwise the reason for a 403. Only staff roles are judged; customers have their own rules. */
+export function invoiceReadDenial(role, rawPath, method) {
+  if (!READ_METHODS.has(method) || !under(ruledPath(rawPath), '/api/invoices')) return null;
+  if (!staffGroupOf(role) || INVOICE_READERS.has(role)) return null;
+  return 'Invoices and payments can be read by sales, accounting and managers.';
+}
 const SHIPPING_EXTRA = new Set(['PRODUCTION_MANAGER', 'PACKAGING_LEAD', 'MATERIAL_HANDLER', 'WORKCENTER_LEAD']);
 
 // The manager of each department, for changes that need one but not a branch manager.
@@ -59,6 +71,8 @@ const MANAGER_ONLY = [
   /^\/api\/invoices\/[^/]+\/(credit|refund|cancel)$/,
   // Issuing or settling the credit of a return that was received without one (Phase 8, N-016).
   /^\/api\/returns\/[^/]+\/credit$/,
+  // Ending a shipment as lost credits its invoice (N-027, owner decision 10).
+  /^\/api\/shipments\/[^/]+\/lost$/,
   /^\/api\/pos\/quick-sale\/[^/]+\/void$/,
   /^\/api\/tax-rates(\/|$)/,
 ];
@@ -132,7 +146,7 @@ export function staffWriteDenial(role, rawPath, method) {
     return ASK_ONLY_PREFIXES.some((p) => under(path, p)) ? null : `Your role (${role}) can view records and cannot change them.`;
   }
   if (MANAGER_ONLY.some((re) => re.test(path))) {
-    return MONEY_MANAGERS.has(role) ? null : 'Credits, refunds, cancelling an invoice, voiding a sale and changing tax rates need a manager.';
+    return MONEY_MANAGERS.has(role) ? null : 'Credits, refunds, cancelling an invoice, voiding a sale, recording a lost load and changing tax rates need a manager.';
   }
   const rule = WRITE_RULES.find(([test]) => test(path, method));
   if (!rule) return null;
@@ -154,5 +168,5 @@ export function apiRoleDenial(user, path, method = 'GET') {
   if (LEADERSHIP_PREFIXES.some((p) => under(path, p)) && !LEADERSHIP_ROLES.has(role)) {
     return 'Executive pages are limited to leadership roles.';
   }
-  return staffWriteDenial(role, path, method);
+  return invoiceReadDenial(role, path, method) || staffWriteDenial(role, path, method);
 }

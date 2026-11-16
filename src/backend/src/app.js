@@ -3,6 +3,7 @@
  * This file creates and configures the Express app WITHOUT calling app.listen()
  */
 import { stockCostGuard } from './lib/costView.js';
+import { invoiceDetailGuard } from './lib/invoiceView.js';
 import integrationRoutes, { scheduledRun } from './routes/integrations.js';
 import express from 'express';
 import cors from 'cors';
@@ -185,6 +186,8 @@ app.use('/api', apiGate);
 app.use('/api', requestKeys);
 // Stock cost leaves only to the roles that manage it, whatever route carries the stock item (N-020).
 app.use('/api', stockCostGuard);
+// Invoice amounts and payments leave only to the roles that read invoices (F-009).
+app.use('/api', invoiceDetailGuard);
 
 // API Routes
 app.use('/api/auth', authRoutes);

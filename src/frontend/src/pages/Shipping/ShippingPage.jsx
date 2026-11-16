@@ -12,8 +12,8 @@ import {
 import { Add as AddIcon, Refresh as RefreshIcon, Search as SearchIcon } from '@mui/icons-material'
 import client from '../../api/client'
 
-export const SHIPMENT_STATUS_LABELS = { PENDING: 'Not yet loaded', LOADING: 'Loading', IN_TRANSIT: 'On the road', DELIVERED: 'Delivered', EXCEPTION: 'Problem', CANCELLED: 'Cancelled' }
-const STATUS_COLORS = { PENDING: 'default', LOADING: 'info', IN_TRANSIT: 'primary', DELIVERED: 'success', EXCEPTION: 'error', CANCELLED: 'default' }
+export const SHIPMENT_STATUS_LABELS = { PENDING: 'Not yet loaded', LOADING: 'Loading', IN_TRANSIT: 'On the road', DELIVERED: 'Delivered', EXCEPTION: 'Problem', LOST: 'Lost', CANCELLED: 'Cancelled' }
+const STATUS_COLORS = { PENDING: 'default', LOADING: 'info', IN_TRANSIT: 'primary', DELIVERED: 'success', EXCEPTION: 'error', LOST: 'error', CANCELLED: 'default' }
 export const ShipmentStatusChip = ({ status }) => <Chip size="small" label={SHIPMENT_STATUS_LABELS[status] || status} color={STATUS_COLORS[status] || 'default'} variant={status === 'CANCELLED' ? 'outlined' : 'filled'} />
 export const shortDate = (v) => (v ? new Date(v).toLocaleDateString() : '')
 const errorText = (e, fallback) => e.response?.data?.error || fallback

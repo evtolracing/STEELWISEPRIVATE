@@ -273,6 +273,15 @@ export async function creditInvoice(invoiceId, body = {}, userId = null, steps =
     let lines = [];
     let subtotal;
     let tax = 0;
+    let freight = 0;
+    const room0 = money(num(invoice.totalAmount) - creditedTotal);
+    // "The rest" (a load that never arrived, N-027): every quantity not yet credited, its tax and the freight.
+    const rest = body.rest === true;
+    if (rest) {
+      if (room0 <= 0.005) refuse(409, 'Nothing is left to credit on this invoice');
+      const left = invoice.lines.filter((l) => l.orderLineId).map((l) => ({ invoiceLineId: l.id, quantity: num(l.quantity) - (creditedQty.get(l.orderLineId) || 0) })).filter((r) => r.quantity > 1e-9);
+      body = left.length ? { ...body, lines: left, amount: undefined } : { ...body, lines: undefined, amount: room0 };
+    }
     if (Array.isArray(body.lines) && body.lines.length) {
       for (const [i, raw] of body.lines.entries()) {
         const line = invoice.lines.find((l) => l.id === raw?.invoiceLineId || (raw?.orderLineId && l.orderLineId === raw.orderLineId));
@@ -295,8 +304,14 @@ export async function creditInvoice(invoiceId, body = {}, userId = null, steps =
       if (money(subtotal) !== subtotal) refuse(400, 'amount cannot have fractions of a cent');
       lines = [{ lineNumber: 1, description: reason, quantity: -1, unit: 'EA', extendedPrice: -subtotal }];
     }
-    let total = money(subtotal + tax);
-    const room = money(num(invoice.totalAmount) - creditedTotal);
+    const room = room0;
+    if (rest && Array.isArray(body.lines)) {
+      if (subtotal + tax > room + 0.02) {
+        // Earlier credits by amount already took part of these lines: credit what is left as one amount.
+        lines = [{ lineNumber: 1, description: reason, quantity: -1, unit: 'EA', extendedPrice: -room }]; subtotal = room; tax = 0; body = { ...body, lines: undefined };
+      } else freight = Math.max(0, money(Math.min(num(invoice.freightAmount), room - subtotal - tax)));
+    }
+    let total = money(subtotal + tax + freight);
     if (total > room + 0.005) {
       // Rounding on the last credit of an invoice, where the tax was worked out line by line. A typed
       // amount is not rounded: more than is left is refused, to the cent (N-021).
@@ -310,7 +325,7 @@ export async function creditInvoice(invoiceId, body = {}, userId = null, steps =
     const credit = await tx.invoice.create({
       data: {
         invoiceNumber, orderId: invoice.orderId, kind: 'CREDIT', creditOfInvoiceId: invoice.id,
-        invoiceDate: new Date(), subtotal: -subtotal, taxAmount: -tax, freightAmount: 0, totalAmount: -total,
+        invoiceDate: new Date(), subtotal: -subtotal, taxAmount: -tax, freightAmount: freight ? -freight : 0, totalAmount: -total,
         paidAmount: -applied, status: invoiceStatusFor(total, applied) === 'PAID' ? 'PAID' : 'SENT',
         notes: reason, lines: { create: lines },
         ...(applied > 0 && { payments: { create: [{ amount: -applied, paymentMethod: 'CREDIT', referenceNumber: invoice.invoiceNumber, notes: 'Applied to the invoice' }] } }),

@@ -108,6 +108,21 @@
    ],
    "status": "OPEN",
    "date": "2026-11-15"
+  },
+  {
+   "n": 10,
+   "asked": "The six decisions left open by Phase 8: accounting and cost of goods (N-025); carriers and freight (N-026); a load that never arrives (N-027); who may read invoices (F-009); delivery promise dates from invented data (S-010); the payment method at web checkout (H-013).",
+   "answer": "\"LETS GO WITH YOUR RECCOMENDED EXCEPT LEAVE THE PROMISE DATE FOR DEMO PURPOSES ITS FINE.\" He also asked for advice, not a build, on an internal basic accounting module.",
+   "recorded": "Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date).",
+   "findings": [
+    "N-027",
+    "F-009",
+    "H-013",
+    "N-026",
+    "S-010"
+   ],
+   "status": "OPEN",
+   "date": "2026-11-15"
   }
  ]
 }

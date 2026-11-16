@@ -1353,7 +1353,7 @@ if (want(6)) {
     ok('no event is on file twice for one subscriber', (await one(`SELECT COUNT(*)::int n FROM (SELECT "webhookId", "eventId" FROM "WebhookDelivery" GROUP BY 1, 2 HAVING COUNT(*) > 1) x`)) === 0);
     ok('no delivery has been tried more than its limit', (await one(`SELECT COUNT(*)::int n FROM "WebhookDelivery" WHERE "attempts" > "maxAttempts"`)) === 0);
     ok('no request key is left claimed and unanswered from this run', (await prisma.requestKey.count({ where: { status: 'IN_PROGRESS', key: { startsWith: `qa-${run}` }, createdAt: { lt: new Date(Date.now() - 5000) } } })) === 0);
-    const dispatched = await one(`SELECT COUNT(*)::int n FROM "Shipment" s WHERE s."status" IN ('IN_TRANSIT','DELIVERED','EXCEPTION') AND s."createdAt" >= '${T0}' AND NOT EXISTS (SELECT 1 FROM "MaterialMovement" m WHERE m."shipmentId" = s."id")`);
+    const dispatched = await one(`SELECT COUNT(*)::int n FROM "Shipment" s WHERE s."status" IN ('IN_TRANSIT','DELIVERED','EXCEPTION','LOST') AND s."createdAt" >= '${T0}' AND NOT EXISTS (SELECT 1 FROM "MaterialMovement" m WHERE m."shipmentId" = s."id")`);
     ok('every shipment that left in this run has its stock movement', dispatched === 0, dispatched);
   });
 }

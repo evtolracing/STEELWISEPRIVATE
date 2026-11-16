@@ -233,6 +233,54 @@ const OUT = arg('out', 'qa/results/ui-phase8.json');
     check('packing screen: no script errors', page.errors.length === 0, page.errors.join(' | '));
     await page.close();
   }
+  // ── Owner decision 10: a load that never arrives, who reads invoices, checkout on account ─────
+  {
+    const c = await B.readyToShip(150);
+    must(await B.dispatch(c.shipment), 'dispatch'); must(await A.patch(`/api/shipments/${c.shipment.id}/status`, { status: 'EXCEPTION', reason: 'Trailer stolen' }, 'shipping'), 'problem');
+    let page = await open(desk, `/shipping/${c.shipment.id}`);
+    await has(page, 'Lost for good');
+    let text = await body(page);
+    check('shipping desk: the shipment shows its invoice by number, with no amount', /INV-\d+/.test(text) && !/INV-\d+\s*\$/.test(text), (text.match(/.{0,20}INV-.{0,40}/) || [''])[0]);
+    await page.getByRole('button', { name: 'Lost for good' }).click();
+    let dialog = page.getByRole('dialog');
+    await dialog.getByLabel('What happened').fill('Trailer stolen from the yard');
+    await dialog.getByRole('button', { name: 'End as lost and credit' }).click();
+    check('lost load: the shipping desk is told it needs a manager, and nothing changes', await has(page, /needs? a manager/) && (await shipmentOf(c.shipment.id)).status === 'EXCEPTION');
+    await page.close();
+    page = await open(desk, '/orders/invoices');
+    check('shipping desk: the invoices screen says who may read invoices and lists none', await has(page, /sales, accounting and managers/) && !/INV-\d+/.test(await body(page)));
+    await page.close();
+
+    page = await open(office, `/shipping/${c.shipment.id}`);
+    await has(page, 'Lost for good');
+    await page.getByRole('button', { name: 'Lost for good' }).click();
+    dialog = page.getByRole('dialog');
+    const end = dialog.getByRole('button', { name: 'End as lost and credit' });
+    check('lost load: it cannot be saved without what happened, and says it cannot be undone', await end.isDisabled() && /cannot be undone/.test(await dialog.innerText()));
+    await dialog.getByLabel('What happened').fill('Trailer stolen from the yard, police report 5512');
+    await end.click();
+    const told = await has(page, /Recorded as lost\. Credit CM-/);
+    await dialog.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    text = await body(page);
+    const credits = await prisma.invoice.findMany({ where: { orderId: c.order.id, kind: 'CREDIT' } });
+    check('lost load: a manager ends it, is told the credit number, and the screen shows Lost with the credit', told && (await shipmentOf(c.shipment.id)).status === 'LOST' && credits.length === 1 && /Lost/.test(text) && text.includes(credits[0].invoiceNumber), text.slice(0, 300));
+    check('lost load: no further step is offered on a lost shipment', !/Lost for good|Mark delivered|Back on the road/.test(text));
+    check('lost load: what happened is in the history', /Trailer stolen from the yard, police report 5512/.test(text));
+    check('lost load screen: no script errors', page.errors.length === 0, page.errors.join(' | '));
+    await page.close();
+
+    // Web checkout: no payment method to choose.
+    const shop = await contextFor(boss);
+    await shop.addInitScript(() => { localStorage.setItem('steelwise_cart', JSON.stringify([{ productId: 'qa-ui-item', name: 'QA checkout item', quantity: 1, unit: 'EA', unitPrice: 12.5, priceSource: 'RETAIL' }])); });
+    page = await open(shop, '/shop/checkout');
+    const shown = await has(page, /On account\. No card is taken here/);
+    text = await body(page);
+    check('web checkout: it says the order is on account and that nothing is charged now', shown, text.slice(0, 300));
+    check('web checkout: there is no payment method to choose and no card field', !/Payment Method|Credit Card|Cash on Delivery|Prepay|Card number/i.test(text), (text.match(/.{0,30}(Payment Method|Credit Card|Cash on Delivery|Prepay|Card number).{0,30}/i) || [''])[0]);
+    check('web checkout screen: no script errors', page.errors.length === 0, page.errors.join(' | '));
+    await page.close(); await shop.close();
+  }
   // ── Phone width ───────────────────────────────────────────────────────────────────────────────
   {
     const phone = await contextFor(boss, { width: 390, height: 844 });

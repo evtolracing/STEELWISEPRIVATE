@@ -10,6 +10,19 @@
   },
   "testsExecuted": [
     {
+      "test": "Owner decision 10 (lost loads N-027, who reads invoices F-009, web checkout on account H-013): full run of every check on a rebuilt database",
+      "result": "Phase 8 scenarios 155 of 155 (518 checks); Phase 7 141 of 141; Phase 6 106 of 106; Phase 5 76 of 76; Phase 4 66 of 66; Phase 3 74 of 74; unit tests 209 of 209; browser checks 285 of 286 in the run, the one failure being an older dock check that expected an invoice amount the dock no longer receives (F-009), updated and its suite rerun alone 30 of 30; all 75 database checks equal the previous run; the same four planted server errors",
+      "before": "Second full run of Phase 8: 150 of 150 Phase 8 scenarios, 201 unit tests, 45 Phase 8 browser checks"
+    },
+    {
+      "test": "Proof the decision 10 checks fail without the rules",
+      "result": "8 rules or pairs of rules removed; each made 1 or more scenarios fail. Two single removals failed nothing because a second check refuses the same request; recorded, not counted"
+    },
+    {
+      "test": "Database change for decision 10",
+      "result": "SQL Editor file 15 (20261116230000_shipment_lost): adds one shipment state. Run twice on a copy of the 85-branch database; the second run changed nothing; 50,869 shipments before and after"
+    },
+    {
       "test": "Phase 8 fulfilment scenarios (qa/sim/phase8-fulfillment.mjs, new in Phase 8)",
       "result": "150 of 150 scenarios pass, 496 checks, in the second full run on the final code. 142 verify built behaviour and 8 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: release, picking and packaging 20 and 0; shipment creation, partial shipments and back orders 25 and 0; dispatch, carriers, freight and delivery 21 and 4; invoicing, payments and accounting 22 and 3; costing, reconciliation and closeout 19 and 1; returns and credits 15 and 0; concurrency, security and recovery 20 and 0",
       "before": "Did not exist. A probe on the starting code (qa/sim/p8-probe.mjs) reproduced the defects before any fix"
@@ -79,30 +92,29 @@
   ],
   "unverifiedAreas": [
     "The live database and the host: nothing in Phase 8 was run against either. Live shipments reserved against another branch's stock, branches with no street address and waiting print jobs are unknown until the owner runs check-before-phase-8.sql (R-50, R-52, R-54)",
-    "SQL Editor files 6 to 14 on the live database: the owner has not sent the result of the read-only check (verify-6-to-14.sql)",
+    "SQL Editor files 6 to 14 on the live database: the owner confirmed on 2026-11-15 that they are applied, and pull request 31 was merged; the result of the read-only check was not sent, so this rests on his word. File 15 has not been applied (verify-6-to-15.sql)",
     "Printers, label printers, scales and scanners (K-013). The bill of lading and packing list were never printed on paper",
-    "Accounting, ledger, cost of goods and stock valuation: not built (N-025, K-007). Carriers, freight rating and tracking: not built (N-026). Lost loads: no rule (N-027). Notices: not built (N-028)",
+    "Accounting, ledger, cost of goods and stock valuation: not built (N-025, K-007). Carriers, freight rating and tracking: not built (N-026). Notices: not built (N-028)",
     "Order margin beyond material, labor and scrap: overhead, freight paid and packaging are not in it; orders shipped before file 14 carry no cost",
     "Accessibility of the shipping, packing and closeout screens: not assessed (Phase 9)",
     "Time per task with real users: no minutes-saved figure is claimed. More than one server at once: not run",
     "Earlier unverified areas unchanged: machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), backup and restore (E-015), host pool (G-015)"
   ],
   "currentBlockers": [
-    "Owner: SQL Editor files 6 to 14 must be applied in order and confirmed before pull request 31 is merged. The Phase 8 code fails at dispatch, delivery and the print queue on a database without file 14 (R-49)",
-    "Owner: N-025 (accounting system and when cost of goods is recognised), N-026 (carriers, rating, tracking), N-027 (a load that never arrives)",
-    "Owner: F-009 (who may read invoices), S-010 (delivery promise from invented data), H-013 (payment method at web checkout)",
+    "Owner: SQL Editor file 15 must be applied before the decision 10 code is deployed, or the \"Lost for good\" step fails (R-57)",
+    "Owner: N-025 (accounting). Advice given on an internal ledger; three answers needed before a build: when cost of goods counts, the chart of accounts, the start date",
     "Owner: labor rates per kind of work center, without which order margin shows material and scrap only",
     "L-026 with K-007 (P1): IN PROGRESS. Cost now reaches the sale (N-017); stock valuation, overhead and cost of goods are not built",
     "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-015, B-019, E-015, K-013, L-023 to L-027, L-030"
   ],
   "nextActions": [
-    "Owner: apply SQL Editor files 6 to 14 in order, send the result of verify-6-to-14.sql, and run the read-only check-before-phase-8.sql on the live database",
-    "Owner: tell dispatch, drivers and packing staff about the sixteen behaviour changes in phase-08-report.md before go-live (R-50, R-51)",
-    "Owner: answer the six questions in phase-08-report.md under \"Decisions that are the owner's\"",
-    "Owner: say when to merge pull request 31",
+    "Owner: apply SQL Editor file 15, then say when to merge the decision 10 pull request",
+    "Owner: run the read-only check-before-phase-8.sql and verify-6-to-15.sql on the live database and send the results",
+    "Owner: tell the branches that the Invoices screen is now for sales, accounting and managers, and that managers can end a lost load (R-58, R-59)",
+    "Owner: answer the three accounting questions if the internal ledger is wanted",
     "Owner: issue the Phase 9 prompt (enterprise UI and UX). Phase 9 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 8: second full gate run on the final code; 150 of 150 Phase 8 scenarios (142 verified, 8 not built); 45 browser checks; 31 rules proven by mutation; eighteen calls timed at 85 branches; 29 findings recorded (N-001 to N-029: 24 fixed and verified, 1 fixed not verified, 3 for the owner, 1 deferred); SQL Editor file 14. Continuation point: nothing of Phase 8 remains that does not need the owner",
+  "lastCompletedCheckpoint": "Owner decision 10 built after pull request 31 was merged: lost loads (N-027), who reads invoices (F-009), web checkout on account (H-013); 155 of 155 Phase 8 scenarios, 209 unit tests, 56 Phase 8 browser checks; SQL Editor file 15. Before that: Phase 8: second full gate run on the final code; 150 of 150 Phase 8 scenarios (142 verified, 8 not built); 45 browser checks; 31 rules proven by mutation; eighteen calls timed at 85 branches; 29 findings recorded (N-001 to N-029: 24 fixed and verified, 1 fixed not verified, 3 for the owner, 1 deferred); SQL Editor file 14. Continuation point: nothing of Phase 8 remains that does not need the owner",
   "currentPhase": 8,
   "findingPrefix": "N-",
   "phase2BaselineCommit": "0ad7857",
@@ -260,14 +272,14 @@
     {
       "group": "Logistics and financial operations",
       "category": "Functional correctness",
-      "score": 87,
-      "evidence": "Phase 8: 142 verified scenarios across release, packing, shipments, dispatch, delivery, invoices, payments, credits, returns, costing and closeout; the packaging chain completes for the first time (N-008); stock leaves only the dock it stands at and the holding branch ships (N-001, N-002); papers are built from records with nothing invented (N-014); an order's open items are answered in one place (N-018). Held at 87: no carriers, freight rating or tracking (N-026); no accounting or cost of goods (N-025); no rule for a lost load (N-027); freight planning screens are samples (U-035). Was 75"
+      "score": 89,
+      "evidence": "Owner decision 10: a load that never arrives is ended as lost by a manager, with its invoice credited in the same save (N-027); web checkout says it is on account (H-013). Held at 89: no carriers (N-026, deferred by the owner), no accounting (N-025), freight planning screens are samples. Before decision 10 (87): Phase 8: 142 verified scenarios across release, packing, shipments, dispatch, delivery, invoices, payments, credits, returns, costing and closeout; the packaging chain completes for the first time (N-008); stock leaves only the dock it stands at and the holding branch ships (N-001, N-002); papers are built from records with nothing invented (N-014); an order's open items are answered in one place (N-018). Held at 87: no carriers, freight rating or tracking (N-026); no accounting or cost of goods (N-025); no rule for a lost load (N-027); freight planning screens are samples (U-035). Was 75"
     },
     {
       "group": "Logistics and financial operations",
       "category": "Security",
-      "score": 88,
-      "evidence": "Phase 8: stock cost removed from every answer for roles outside cost viewers (N-020); print jobs per branch (N-015); shipment changes held to the dock they leave from (N-002); text on printed papers escaped (N-019); custody notes only in the writer's own name (N-011); 337 changing routes, 0 with no rule. Held at 88: who may read invoices is undecided (F-009); live roles NOT VERIFIED. Was 78"
+      "score": 90,
+      "evidence": "Owner decision 10: invoices and payments are read by sales, managers, leadership and view-only roles; other staff receive an invoice's number and status only, on every answer (F-009); 2 rule removals each failed a scenario. Held at 90: live roles NOT VERIFIED. Before decision 10 (88): Phase 8: stock cost removed from every answer for roles outside cost viewers (N-020); print jobs per branch (N-015); shipment changes held to the dock they leave from (N-002); text on printed papers escaped (N-019); custody notes only in the writer's own name (N-011); 337 changing routes, 0 with no rule. Held at 88: who may read invoices is undecided (F-009); live roles NOT VERIFIED. Was 78"
     },
     {
       "group": "Logistics and financial operations",
@@ -290,7 +302,8 @@
   ],
   "pullRequest": 31,
   "previousPullRequests": [
-    30
+    30,
+    31
   ],
   "phase3BaselineCommit": "181a874",
   "phase4BaselineCommit": "dffa7d2",

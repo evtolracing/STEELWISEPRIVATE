@@ -613,6 +613,10 @@
    "file": "src/backend/src/routes/shipments.js"
   },
   {
+   "ep": "PUT /api/shipments/:id/lost",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
    "ep": "PATCH /api/shipments/:id/status",
    "file": "src/backend/src/routes/shipments.js"
   },
@@ -3770,7 +3774,8 @@
    "IN_TRANSIT",
    "DELIVERED",
    "EXCEPTION",
-   "CANCELLED"
+   "CANCELLED",
+   "LOST"
   ],
   "InvoiceStatus": [
    "DRAFT",

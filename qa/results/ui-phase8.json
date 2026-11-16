@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-16T02:23:51.158Z",
- "checks": 45,
+ "at": "2026-11-16T03:13:57.585Z",
+ "checks": 56,
  "failed": 0,
  "results": [
   {
@@ -196,6 +196,61 @@
   },
   {
    "name": "packing screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipping desk: the shipment shows its invoice by number, with no amount",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost load: the shipping desk is told it needs a manager, and nothing changes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipping desk: the invoices screen says who may read invoices and lists none",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost load: it cannot be saved without what happened, and says it cannot be undone",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost load: a manager ends it, is told the credit number, and the screen shows Lost with the credit",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost load: no further step is offered on a lost shipment",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost load: what happened is in the history",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "lost load screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "web checkout: it says the order is on account and that nothing is charged now",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "web checkout: there is no payment method to choose and no card field",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "web checkout screen: no script errors",
    "ok": true,
    "detail": ""
   },

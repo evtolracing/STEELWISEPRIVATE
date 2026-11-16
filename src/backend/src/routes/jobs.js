@@ -16,7 +16,7 @@ const STALE = 'This job was changed by someone else a moment ago. Reload it and 
 async function shippedByHandError(job, to) {
   if (to !== 'SHIPPED' || !job.orderId) return null;
   const left = await prisma.shipment.count({
-    where: { orderId: job.orderId, status: { in: ['IN_TRANSIT', 'DELIVERED', 'EXCEPTION'] }, ...(job.orderLineId && { items: { some: { orderLineId: job.orderLineId } } }) },
+    where: { orderId: job.orderId, status: { notIn: ['PENDING', 'LOADING', 'CANCELLED'] }, ...(job.orderLineId && { items: { some: { orderLineId: job.orderLineId } } }) },
   });
   return left ? null : 'This job is for a customer order, so it is marked shipped when its shipment is dispatched. Nothing has shipped for it yet.';
 }

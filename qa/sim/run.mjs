@@ -790,7 +790,7 @@ async function reconcile(report) {
     if (priced && o.subtotal != null && Math.abs(num(o.subtotal) - sum) > 0.01) problems.push(`${o.orderNumber}: subtotal ${num(o.subtotal)} ≠ lines ${sum.toFixed(2)}`);
     if (o.subtotal != null && o.totalAmount != null && Math.abs(num(o.totalAmount) - (num(o.subtotal) + num(o.taxAmount) + num(o.freightAmount))) > 0.01) problems.push(`${o.orderNumber}: total ${num(o.totalAmount)} ≠ subtotal + tax + freight`);
     for (const l of o.lines) {
-      const out = o.shipments.filter((s) => ['IN_TRANSIT', 'DELIVERED', 'EXCEPTION'].includes(s.status)).flatMap((s) => s.items).filter((it) => it.orderLineId === l.id).reduce((t, it) => t + num(it.qtyShipped), 0);
+      const out = o.shipments.filter((s) => ['IN_TRANSIT', 'DELIVERED', 'EXCEPTION', 'LOST'].includes(s.status)).flatMap((s) => s.items).filter((it) => it.orderLineId === l.id).reduce((t, it) => t + num(it.qtyShipped), 0);
       if (Math.abs(num(l.qtyShipped) - out) > 0.001) problems.push(`${o.orderNumber} line ${l.lineNumber}: shipped ${num(l.qtyShipped)} ≠ shipments that left ${out}`);
       if (num(l.qtyShipped) > num(l.qtyOrdered) + 0.001) problems.push(`${o.orderNumber} line ${l.lineNumber}: shipped more than ordered`);
       const held = l.allocations.reduce((t, x) => t + num(x.qtyAllocated), 0);

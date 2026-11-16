@@ -2495,19 +2495,19 @@
    "workflow": "",
    "severity": "P2",
    "category": "Access",
-   "where": "`lib/roleAccess.js`; a check written for it was withdrawn because it tested a rule nobody set",
+   "where": "src/backend/src/lib/roleAccess.js (INVOICE_READERS, invoiceReadDenial); src/backend/src/lib/invoiceView.js (new)",
    "evidence": "`lib/roleAccess.js`; a check written for it was withdrawn because it tested a rule nobody set",
-   "expected": "To be decided",
+   "expected": "Owner decision 10: invoices and payments are read by sales, accounting and managers.",
    "actual": "Any staff login can read every invoice and its payments (reads are open to all staff by design; only changes are restricted)",
    "cause": "",
    "impact": "Shop staff can see what customers owe and paid",
    "dependencies": "Who may read invoices and payments",
-   "correction": "Requires a business decision",
+   "correction": "Reads of /api/invoices are refused (403) to staff outside sales, managers, leadership and the view-only roles. Where another answer carries an invoice (a shipment, an order, the answer to a dispatch), those staff receive its number and status only. Counter sales are untouched: the clerk who takes the money sees the receipt. Customers keep their own rules.",
    "requiredTests": "A sweep check per role",
-   "phase": "Shipping and financial operations",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open",
-   "verification": ""
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
+   "status": "VERIFIED FIXED",
+   "statusNote": "Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Decided by the owner (decision 10) and built. Boundary stated: the closeout panel still tells any staff reader that an amount is unpaid on an order, because the dock is asked whether an order is finished; it shows no invoice or payment record.",
+   "verification": "qa/sim/phase8-fulfillment.mjs: \"invoices and payments are read by sales, accounting and managers only\"; src/backend/test/decision10.test.js (6 tests); qa/sim/ui-phase8.cjs (shipping desk). With the rule removed the scenario fails; with the answer guard removed the scenario fails."
   },
   {
    "id": "F-010",
@@ -3334,9 +3334,9 @@
    "workflow": "Checkout",
    "cause": "",
    "dependencies": "",
-   "statusNote": "Question for the owner: do web shop customers pay by card at checkout, or only on account? No order is marked paid on the word of a browser anywhere in the code (checked: web checkout, counter sale, invoice payments). Belongs with ecommerce in Phase 5. Phase 5: checked again. Web checkout stores no card number and records no payment; no order is marked paid by the shop. Payment scenarios are NOT APPLICABLE until the owner answers.",
-   "verification": "",
-   "phase": "Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication",
+   "statusNote": "Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Phase 5: checked again. Web checkout stores no card number and records no payment; no order is marked paid by the shop. Payment scenarios are NOT APPLICABLE until the owner answers. Decided by the owner (decision 10) and built. Card payment through a processor remains not built (H-015).",
+   "verification": "qa/sim/phase5-sales.mjs: \"web checkout takes no payment and says so: every web order is on account, whatever the browser sends\" (fails with the old line restored); qa/sim/ui-phase8.cjs (web checkout: 2 checks).",
+   "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
    "module": "Web shop",
    "severity": "P2",
    "category": "Payment not connected",
@@ -3345,9 +3345,9 @@
    "expected": "Either the shop sells on account only and says so, or a card is authorised by a processor and the order is marked paid only on the processor's confirmed notification.",
    "actual": "A payment method is collected and has no effect.",
    "impact": "A customer may believe a card was charged. No order is wrongly marked paid: the risk is unpaid orders shipped to customers without terms.",
-   "correction": "Per the decision: remove the choice and state \"on account\", or connect a processor with a sandbox, verify its notifications by signature, and make them idempotent.",
+   "correction": "Owner decision 10: the web shop sells on account only and says so. The checkout form has no payment method; it reads \"On account. No card is taken here and nothing is charged now.\" The server writes \"Payment: on account\" on every web order whatever the browser sends, and stores no card detail.",
    "requiredTests": "Per the decision; for a processor: approved, declined, timeout, duplicate notification, refund, and reconciliation against invoices.",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "H-014",
@@ -6200,7 +6200,7 @@
    "workflow": "Ledger, cost of goods and valuation",
    "cause": "",
    "dependencies": "",
-   "statusNote": "The owner decides: which accounting system, if any, the product posts to; the chart of accounts; when cost of goods is recognised (at shipment, at invoice or at delivery); whether overhead and freight cost are part of cost; the period-close rule. Nothing was assumed.",
+   "statusNote": "The owner decides: which accounting system, if any, the product posts to; the chart of accounts; when cost of goods is recognised (at shipment, at invoice or at delivery); whether overhead and freight cost are part of cost; the period-close rule. Nothing was assumed. Owner, 2026-11-15: asked for advice on an internal basic ledger for reports and AI queries, to connect to outside accounting software later, and said not to build yet. Advice given. Three answers are needed before a build: when cost of goods counts (recommended: at shipment), the chart of accounts, and the start date.",
    "verification": "",
    "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
    "module": "Accounting",
@@ -6222,7 +6222,7 @@
    "workflow": "Rates, labels, pickups, tracking",
    "cause": "",
    "dependencies": "",
-   "statusNote": "The owner decides which carriers or rating service to connect and the freight rules (rate tables, minimums, accessorials, who pays). The sample screens stay marked as samples (U-035, Phase 9).",
+   "statusNote": "Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10: tracking numbers typed by dispatch for now; a carrier is connected when a contract exists.",
    "verification": "",
    "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
    "module": "Freight and carriers",
@@ -6235,7 +6235,15 @@
    "impact": "Rating, booking and tracking are done outside the product.",
    "correction": "Not made.",
    "requiredTests": "None until a carrier is chosen.",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "deferral": {
+    "reason": "Owner decision 10 (2026-11-15): start with tracking numbers typed by dispatch, which works today; connect one carrier when a contract exists.",
+    "targetPhase": "The phase the owner issues once a carrier contract exists; if none, Phase 12 records it as not built",
+    "correction": "Rating, labels, pickups and tracking through the chosen carrier's own service, behind the outside-call guard, with a sandbox account for tests.",
+    "dependencies": "A carrier contract and its credentials, which are the owner's.",
+    "acceptance": "A rate, a label and a tracking update from the carrier's sandbox, each verified by a scenario.",
+    "verification": "None yet."
+   }
   },
   {
    "id": "N-027",
@@ -6244,20 +6252,20 @@
    "workflow": "A load that is lost, destroyed or refused for good",
    "cause": "",
    "dependencies": "",
-   "statusNote": "The owner decides: who may write a load off, whether stock is written off or claimed from the carrier, whether the invoice is credited automatically, and whether a replacement ships on the same order.",
-   "verification": "",
+   "statusNote": "Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Built after the Phase 8 report, by owner decision 10. Needs database file 15 (one new shipment state).",
+   "verification": "qa/sim/phase8-fulfillment.mjs: \"a load that never arrives is ended as lost by a manager, with what happened, and its invoice is credited in full\", \"only a shipment with a problem on record can be ended as lost; when the invoice was already paid the credit is owed back\", \"a lost load credits only what earlier credits left\", \"two managers ending the same shipment as lost at the same moment leave one credit\"; src/backend/test/decision10.test.js; qa/sim/ui-phase8.cjs (lost load). Removed one at a time, each of these failed a scenario: the manager rule (both guards), the reason, the credit, the credit for what is left. The problem-state rule is held by two checks; removing either alone fails nothing, removing both fails a scenario. Ending once under a race is held by the state check and by the invoice having nothing left to credit; removing the state check alone fails nothing.",
    "phase": "Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout",
    "module": "Shipping",
    "severity": "P2",
    "category": "Needs the owner",
-   "where": "routes/shipments.js (moves)",
+   "where": "src/backend/src/routes/shipments.js (markLost, PUT /api/shipments/:id/lost); src/backend/src/services/billing.js (creditInvoice, rest); SQL Editor file 20261116230000_shipment_lost",
    "evidence": "qa/sim/phase8-fulfillment.mjs: \"a shipment with a problem can end delivered, and cannot be cancelled or put back on the dock\". A shipment that has left has taken stock and raised an invoice. From \"problem\" it can go back on the road or be delivered. There is no way to end it as lost or destroyed, and none was invented.",
    "expected": "A rule from the owner for loads that never arrive.",
    "actual": "Handled today by a return (material back) or a credit memo (money back), each by hand.",
    "impact": "A lost load stays \"problem\" and holds its order open on the closeout list, which is visible and correct, until someone credits it.",
-   "correction": "Not made.",
+   "correction": "Owner decision 10. A manager (the roles that may issue a credit) ends a shipment that has a problem on record as LOST, naming the kind (lost, destroyed, refused for good) and what happened. In the same save every quantity not yet credited on its invoice, its tax and its freight are credited. Stock is not moved a second time: it left the books at dispatch, and the cost stays on the order as a sale with no revenue. Nothing is automatic, and it cannot be undone. Material that comes back is a return, as before.",
    "requiredTests": "None until decided.",
-   "status": "REQUIRES BUSINESS DECISION"
+   "status": "VERIFIED FIXED"
   },
   {
    "id": "N-028",
@@ -6527,8 +6535,8 @@
    "correction": "Requires a business decision, then a build",
    "requiredTests": "Promise dates come from a server route; contract scan shows no promise call without a route",
    "phase": "Sales and customer operations",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Open",
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "statusNote": "Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10 (2026-11-15): \"leave the promise date for demo purposes its fine\". The delivery promise, cutoff and branch comparison screens stay on sample data, and the screens stay labelled as samples. Risk accepted by the owner: a promise date shown at web checkout is not worked out from real stock or capacity.",
    "verification": ""
   },
   {

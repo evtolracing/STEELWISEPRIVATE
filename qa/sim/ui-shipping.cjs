@@ -113,7 +113,9 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
     text = await body(page);
     check('shipment: dispatch is saved, and the history names who dispatched', sent?.status === 'IN_TRANSIT' && /Not yet loaded to\s+On the road/.test(text), `server ${sent?.status}; ${text.slice(-300)}`);
     const invoice = sent?.invoices?.[0];
-    check('shipment: the invoice raised by the dispatch is shown with its total', !!invoice && text.includes(invoice.invoiceNumber) && Math.abs(Number(invoice.totalAmount) - 79.5) < 0.005 && /\$79\.50/.test(text), `${JSON.stringify(invoice ?? null)}; ${text.slice(-300)}`);
+    // Owner decision 10 (F-009): the dock sees that the invoice was raised, by number and status, and no
+    // amount. The amount is checked on the record, read as sales, and on the Invoices screen below.
+    check('shipment: the invoice raised by the dispatch is shown to the dock by number, with no amount', !!invoice && text.includes(invoice.invoiceNumber) && Math.abs(Number(invoice.totalAmount) - 79.5) < 0.005 && !/\$79\.50/.test(text), `${JSON.stringify(invoice ?? null)}; ${text.slice(-300)}`);
     check('shipment: once dispatched it cannot be cancelled or edited', (await page.getByRole('button', { name: 'Cancel shipment' }).count()) === 0 && (await page.getByRole('button', { name: 'Carrier and truck' }).count()) === 0, 'buttons still there');
 
     // Delivered, with who signed.

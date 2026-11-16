@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 306525a. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -12,19 +12,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 |---|---:|---:|
 | P0 | 20 | 2 |
 | P1 | 103 | 15 |
-| P2 | 140 | 45 |
+| P2 | 140 | 42 |
 | P3 | 86 | 31 |
-| Total | 350 | 94 |
+| Total | 350 | 91 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 255 |
-| DEFERRED TO SPECIFIC PHASE | 58 |
-| REQUIRES BUSINESS DECISION | 25 |
+| VERIFIED FIXED | 258 |
+| DEFERRED TO SPECIFIC PHASE | 59 |
+| REQUIRES BUSINESS DECISION | 20 |
 | IN PROGRESS | 6 |
 | BLOCKED | 3 |
+| ACCEPTED RISK WITH APPROVAL | 2 |
 | NOT APPLICABLE | 1 |
-| ACCEPTED RISK WITH APPROVAL | 1 |
 | FIXED — NOT VERIFIED | 1 |
 
 ## Open findings, most severe first
@@ -46,7 +46,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | K-007 | P1 | IN PROGRESS | Inventory valuation | No cost unless typed by hand. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-026 | P1 | IN PROGRESS | Production costing | No production cost exists. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
-| S-010 | P1 | REQUIRES BUSINESS DECISION | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
+| S-010 | P1 | ACCEPTED RISK WITH APPROVAL | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
 | X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
 | B-012 | P2 | DEFERRED TO SPECIFIC PHASE | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
@@ -65,12 +65,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | E-019 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Some tables carry a tenant id; whether every query honours it has not been audited | Phase 2: architecture and code quality |
 | E-021 | P2 | DEFERRED TO SPECIFIC PHASE | API | List routes answer in two shapes: a bare list, or `{ data, meta }` | Phase 2: architecture and code quality |
 | F-008 | P2 | REQUIRES BUSINESS DECISION | Web store checkout | The store shows the buyer an estimate of tax by the ship-to state. On acceptance the order is taxed by the selling branch (rule 27). The two can differ | Shipping and financial operations |
-| F-009 | P2 | REQUIRES BUSINESS DECISION | Invoices | Any staff login can read every invoice and its payments (reads are open to all staff by design; only changes are restricted) | Shipping and financial operations |
 | G-003 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017). | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-011 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-015 | P2 | BLOCKED | Platform | Unknown. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | H-012 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | With N instances a limit is up to N times its number, and the report shows the calls of the instance that answered. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
-| H-013 | P2 | REQUIRES BUSINESS DECISION | Web shop | A payment method is collected and has no effect. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | H-014 | P2 | DEFERRED TO SPECIFIC PHASE | Partner API | They answered 500. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | H-015 | P2 | REQUIRES BUSINESS DECISION | Platform | Not connected. Since Phase 4 the integration report lists each one with its state and what happens without it. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
@@ -86,8 +84,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
 | N-025 | P2 | REQUIRES BUSINESS DECISION | Accounting | Not built. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
-| N-026 | P2 | REQUIRES BUSINESS DECISION | Freight and carriers | None is. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
-| N-027 | P2 | REQUIRES BUSINESS DECISION | Shipping | Handled today by a return (material back) or a credit memo (money back), each by hand. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
+| N-026 | P2 | DEFERRED TO SPECIFIC PHASE | Freight and carriers | None is. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
 | S-024 | P2 | IN PROGRESS | Help manual | Pricing, Sales Dashboard, Sales Rep Mobile and customer pages described tabs, contracts, signatures, visit logs and offline use that do not exist | Sales and customer operations |
@@ -1917,21 +1914,22 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open Phase 5: reviewed. Acceptance taxes by the selling branch (rule 27) and now files the order under the same branch (J-005). The store's estimate uses the ship-to state, which is rule 27's fallback when no branch is chosen; the buyer sees an estimate and the CSR confirms. Unchanged pending the owner.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### F-009 · P2 · REQUIRES BUSINESS DECISION
+### F-009 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Invoices
 - **Category:** Access
-- **Source file or endpoint:** `lib/roleAccess.js`; a check written for it was withdrawn because it tested a rule nobody set
+- **Source file or endpoint:** src/backend/src/lib/roleAccess.js (INVOICE_READERS, invoiceReadDenial); src/backend/src/lib/invoiceView.js (new)
 - **Evidence:** `lib/roleAccess.js`; a check written for it was withdrawn because it tested a rule nobody set
-- **Expected:** To be decided
+- **Expected:** Owner decision 10: invoices and payments are read by sales, accounting and managers.
 - **Actual:** Any staff login can read every invoice and its payments (reads are open to all staff by design; only changes are restricted)
 - **Operational impact:** Shop staff can see what customers owe and paid
 - **Affected dependencies:** Who may read invoices and payments
-- **Recommended correction:** Requires a business decision
+- **Recommended correction:** Reads of /api/invoices are refused (403) to staff outside sales, managers, leadership and the view-only roles. Where another answer carries an invoice (a shipment, an order, the answer to a dispatch), those staff receive its number and status only. Counter sales are untouched: the clerk who takes the money sees the receipt. Customers keep their own rules.
 - **Required tests:** A sweep check per role
-- **Assigned phase:** Shipping and financial operations
-- **Status note:** Open
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Decided by the owner (decision 10) and built. Boundary stated: the closeout panel still tells any staff reader that an amount is unpaid on an order, because the dock is asked whether an order is finished; it shows no invoice or payment record.
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "invoices and payments are read by sales, accounting and managers only"; src/backend/test/decision10.test.js (6 tests); qa/sim/ui-phase8.cjs (shipping desk). With the rule removed the scenario fails; with the answer guard removed the scenario fails.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### F-010 · P2 · VERIFIED FIXED
@@ -2616,7 +2614,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
 - **First recorded in:** Phase 4 integration audit
 
-### H-013 · P2 · REQUIRES BUSINESS DECISION
+### H-013 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Web shop
@@ -2627,10 +2625,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Expected:** Either the shop sells on account only and says so, or a card is authorised by a processor and the order is marked paid only on the processor's confirmed notification.
 - **Actual:** A payment method is collected and has no effect.
 - **Operational impact:** A customer may believe a card was charged. No order is wrongly marked paid: the risk is unpaid orders shipped to customers without terms.
-- **Recommended correction:** Per the decision: remove the choice and state "on account", or connect a processor with a sandbox, verify its notifications by signature, and make them idempotent.
+- **Recommended correction:** Owner decision 10: the web shop sells on account only and says so. The checkout form has no payment method; it reads "On account. No card is taken here and nothing is charged now." The server writes "Payment: on account" on every web order whatever the browser sends, and stores no card detail.
 - **Required tests:** Per the decision; for a processor: approved, declined, timeout, duplicate notification, refund, and reconciliation against invoices.
-- **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** Question for the owner: do web shop customers pay by card at checkout, or only on account? No order is marked paid on the word of a browser anywhere in the code (checked: web checkout, counter sale, invoice payments). Belongs with ecommerce in Phase 5. Phase 5: checked again. Web checkout stores no card number and records no payment; no order is marked paid by the shop. Payment scenarios are NOT APPLICABLE until the owner answers.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Phase 5: checked again. Web checkout stores no card number and records no payment; no order is marked paid by the shop. Payment scenarios are NOT APPLICABLE until the owner answers. Decided by the owner (decision 10) and built. Card payment through a processor remains not built (H-015).
+- **Verification evidence:** qa/sim/phase5-sales.mjs: "web checkout takes no payment and says so: every web order is on account, whatever the browser sends" (fails with the old line restored); qa/sim/ui-phase8.cjs (web checkout: 2 checks).
 - **First recorded in:** Phase 4 integration audit
 
 ### H-014 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -4814,10 +4813,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made. Built this phase: cost of sale per order (N-017) and receivables by age.
 - **Required tests:** None until decided.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** The owner decides: which accounting system, if any, the product posts to; the chart of accounts; when cost of goods is recognised (at shipment, at invoice or at delivery); whether overhead and freight cost are part of cost; the period-close rule. Nothing was assumed.
+- **Status note:** The owner decides: which accounting system, if any, the product posts to; the chart of accounts; when cost of goods is recognised (at shipment, at invoice or at delivery); whether overhead and freight cost are part of cost; the period-close rule. Nothing was assumed. Owner, 2026-11-15: asked for advice on an internal basic ledger for reports and AI queries, to connect to outside accounting software later, and said not to build yet. Advice given. Three answers are needed before a build: when cost of goods counts (recommended: at shipment), the chart of accounts, and the start date.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
-### N-026 · P2 · REQUIRES BUSINESS DECISION
+### N-026 · P2 · DEFERRED TO SPECIFIC PHASE
 
 - **Discovered:** 2026-11-16
 - **Module:** Freight and carriers
@@ -4829,26 +4828,33 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** None is.
 - **Operational impact:** Rating, booking and tracking are done outside the product.
 - **Recommended correction:** Not made.
+- **Deferred: reason:** Owner decision 10 (2026-11-15): start with tracking numbers typed by dispatch, which works today; connect one carrier when a contract exists.
+- **Deferred: target phase:** The phase the owner issues once a carrier contract exists; if none, Phase 12 records it as not built
+- **Deferred: required correction:** Rating, labels, pickups and tracking through the chosen carrier's own service, behind the outside-call guard, with a sandbox account for tests.
+- **Deferred: dependencies:** A carrier contract and its credentials, which are the owner's.
+- **Deferred: acceptance criteria:** A rate, a label and a tracking update from the carrier's sandbox, each verified by a scenario.
+- **Deferred: verification:** None yet.
 - **Required tests:** None until a carrier is chosen.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** The owner decides which carriers or rating service to connect and the freight rules (rate tables, minimums, accessorials, who pays). The sample screens stay marked as samples (U-035, Phase 9).
+- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10: tracking numbers typed by dispatch for now; a carrier is connected when a contract exists.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
-### N-027 · P2 · REQUIRES BUSINESS DECISION
+### N-027 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-16
 - **Module:** Shipping
 - **Workflow:** A load that is lost, destroyed or refused for good
 - **Category:** Needs the owner
-- **Source file or endpoint:** routes/shipments.js (moves)
+- **Source file or endpoint:** src/backend/src/routes/shipments.js (markLost, PUT /api/shipments/:id/lost); src/backend/src/services/billing.js (creditInvoice, rest); SQL Editor file 20261116230000_shipment_lost
 - **Evidence:** qa/sim/phase8-fulfillment.mjs: "a shipment with a problem can end delivered, and cannot be cancelled or put back on the dock". A shipment that has left has taken stock and raised an invoice. From "problem" it can go back on the road or be delivered. There is no way to end it as lost or destroyed, and none was invented.
 - **Expected:** A rule from the owner for loads that never arrive.
 - **Actual:** Handled today by a return (material back) or a credit memo (money back), each by hand.
 - **Operational impact:** A lost load stays "problem" and holds its order open on the closeout list, which is visible and correct, until someone credits it.
-- **Recommended correction:** Not made.
+- **Recommended correction:** Owner decision 10. A manager (the roles that may issue a credit) ends a shipment that has a problem on record as LOST, naming the kind (lost, destroyed, refused for good) and what happened. In the same save every quantity not yet credited on its invoice, its tax and its freight are credited. Stock is not moved a second time: it left the books at dispatch, and the cost stays on the order as a sale with no revenue. Nothing is automatic, and it cannot be undone. Material that comes back is a return, as before.
 - **Required tests:** None until decided.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** The owner decides: who may write a load off, whether stock is written off or claimed from the carrier, whether the invoice is credited automatically, and whether a replacement ships on the same order.
+- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Built after the Phase 8 report, by owner decision 10. Needs database file 15 (one new shipment state).
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a load that never arrives is ended as lost by a manager, with what happened, and its invoice is credited in full", "only a shipment with a problem on record can be ended as lost; when the invoice was already paid the credit is owed back", "a lost load credits only what earlier credits left", "two managers ending the same shipment as lost at the same moment leave one credit"; src/backend/test/decision10.test.js; qa/sim/ui-phase8.cjs (lost load). Removed one at a time, each of these failed a scenario: the manager rule (both guards), the reason, the credit, the credit for what is left. The problem-state rule is held by two checks; removing either alone fails nothing, removing both fails a scenario. Ending once under a race is held by the state check and by the invoice having nothing left to credit; removing the state check alone fails nothing.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
 ### N-028 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -5031,7 +5037,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open Phase 6: still the owner's. It now also blocks K-006 (connecting the Steel Outlet remnant list to stock).
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### S-010 · P1 · REQUIRES BUSINESS DECISION
+### S-010 · P1 · ACCEPTED RISK WITH APPROVAL
 
 - **Discovered:** 2026-11-13
 - **Module:** Delivery promise
@@ -5045,7 +5051,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision, then a build
 - **Required tests:** Promise dates come from a server route; contract scan shows no promise call without a route
 - **Assigned phase:** Sales and customer operations
-- **Status note:** Open
+- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10 (2026-11-15): "leave the promise date for demo purposes its fine". The delivery promise, cutoff and branch comparison screens stay on sample data, and the screens stay labelled as samples. Risk accepted by the owner: a promise date shown at web checkout is not worked out from real stock or capacity.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### S-011 · P1 · VERIFIED FIXED

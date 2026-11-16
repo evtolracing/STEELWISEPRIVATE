@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 306525a. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 50 |
 | Server route files | 75 |
-| API routes (each address counted; two route files are mounted twice) | 648 |
-| API routes that change data | 337 |
+| API routes (each address counted; two route files are mounted twice) | 649 |
+| API routes that change data | 338 |
 | Database tables in the schema | 161 |
 | Enumerations | 96 |
-| Migrations | 32 |
+| Migrations | 33 |
 | Screens (routes in the browser) | 144 |
-| Frontend source files | 396 (119,494 lines) |
-| Server route code | 25,121 lines |
+| Frontend source files | 396 (119,520 lines) |
+| Server route code | 25,164 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -79,7 +79,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
 - **Feeds:** Every module
-- **Findings:** F-009
+- **Findings:** none open
 - **Production concern:** No branch, division or region boundary. 16 areas have no department rule
 
 ### Staff and operators
@@ -170,7 +170,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Order entry, quotes, web store, counter
 - **Feeds:** Jobs, shipments, invoices
-- **Findings:** F-009
+- **Findings:** none open
 
 ### Pricing and customer tiers
 
@@ -559,7 +559,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Create, dispatch and deliver a shipment; partial shipments; proof of delivery
 - **Screens:** 2 (2 real): /shipping, /shipping/:id
 - **Server:** `src/backend/src/routes/shipments.js`, `src/backend/src/routes/shippingV1.js`; served at /api/shipments, /api/v1/shipping, /api/v1/shipments
-- **Routes:** 16, of which 7 change data. Returned a success in a test this session: 15 of 16; of the changing routes, 7 of 7
+- **Routes:** 17, of which 8 change data. Returned a success in a test this session: 16 of 17; of the changing routes, 8 of 8
 - **Tables:** Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders, jobs, stock
@@ -655,7 +655,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Shipping, counter, returns
 - **Feeds:** Customer account pages, partner API
-- **Findings:** F-009, B-019
+- **Findings:** B-019
 - **Production concern:** No statements, no ageing, no overdue by date, no export to accounting
 
 ### Sales tax
@@ -944,6 +944,6 @@ Finding B-014.
 | Timers started (setInterval, setTimeout) | 68 |
 | Timers cleared | 38 |
 | console.log calls | 18 |
-| Dialogs | 134 |
+| Dialogs | 135 |
 | Frontend unit test files | 0 |
 

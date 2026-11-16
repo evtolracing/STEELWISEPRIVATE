@@ -115,7 +115,7 @@ export default function MyOrderDetailPage() {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Typography variant="caption" color="text.secondary">Payment</Typography>
-            <Typography variant="body2" fontWeight={500}>{order.paymentMethod || 'ACCOUNT_TERMS'}</Typography>
+            <Typography variant="body2" fontWeight={500}>On account</Typography>
           </Grid>
         </Grid>
 

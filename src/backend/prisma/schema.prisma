@@ -1836,6 +1836,7 @@ enum ShipmentStatus {
   DELIVERED
   EXCEPTION
   CANCELLED
+  LOST
 }
 
 enum InvoiceStatus {

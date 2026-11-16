@@ -60,7 +60,7 @@ This table was measured before the order board change below; the board row shows
 
 ## All screens on the development server
 
-From the audit (not the production build, so slower than above): time until the network is quiet, at desktop size. Before: median 2465 ms, 95th percentile 3558 ms, slowest 6505 ms on 130 screens. Now: median 2278 ms, 95th percentile 3141 ms, slowest 6150 ms on 154 screens. The two runs are not a clean comparison: the later one opens 24 more record pages and ran with other work on the machine.
+From the audit (not the production build, so slower than above): time until the network is quiet, at desktop size. Before: median 2465 ms, 95th percentile 3558 ms, slowest 6505 ms on 130 screens. Now: median 2533 ms, 95th percentile 3685 ms, slowest 5011 ms on 154 screens. The two runs are not a clean comparison: the later one opens 24 more record pages and ran with other work on the machine.
 
 ## Not fixed
 

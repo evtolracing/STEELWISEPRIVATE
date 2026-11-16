@@ -4,12 +4,12 @@
  "ceilings": {
   "controlsWithNoName": 0,
   "fieldsWithNoLabel": 0,
-  "hardToReadTexts": 42,
-  "screensWithNoMainHeading": 6,
+  "hardToReadTexts": 17,
+  "screensWithNoMainHeading": 0,
   "screensWithSeveralMainHeadings": 0,
   "screensWiderThanTheWindow": 0,
   "smallTargetsOnAPhone": 3,
   "screensWithAPageError": 0,
-  "screensSharingATitle": 34
+  "screensSharingATitle": 32
  }
 }

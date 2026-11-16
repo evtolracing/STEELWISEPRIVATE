@@ -35,7 +35,7 @@ Component defaults set once: the focus ring that component styles cannot overrid
 
 | Measure | Before | Now |
 |---|---:|---:|
-| Texts under 4.5 to 1 | 1,751 on 130 screens | 42 on 10 screens |
+| Texts under 4.5 to 1 | 1,751 on 130 screens | 17 on 4 of 154 screens |
 | Controls with no visible focus ring among the first twenty stops of the shell | Several (menu items, chips, filled buttons) | 0 (scenario) |
 | Touch targets under 24 by 24 on a phone | 458 | 3 |
 | Required fields marked by a typed asterisk | 22 | 0 |
@@ -44,7 +44,7 @@ Component defaults set once: the focus ring that component styles cannot overrid
 
 | Item | Size | Disposition |
 |---|---|---|
-| Screen files that set a colour of their own | 94 files, 92 colours | V-035, Phase 12. Not changed: replacing them changes the look of a third of the product and Phase 9 forbids an uncontrolled redesign. The 42 hard-to-read texts that remain are all of this kind (V-011) |
+| Screen files that set a colour of their own | 94 files, 92 colours | V-035, Phase 12. Not changed: replacing them changes the look of a third of the product and Phase 9 forbids an uncontrolled redesign. The 17 hard-to-read texts that remain are all of this kind (V-011) |
 | Tables built by hand | 109 files; 3 use the shared table | V-036, Phase 12 |
 | Three kinds of loading indicator (spinner, bar, skeleton) | 173 files | Not merged. Each screen says it is loading; the scenarios check that a slow list says so |
 | Order of buttons in dialogs (Cancel left or right) | About 100 dialogs | Not changed. The application's own question box puts Cancel first and the action last, in the action's colour |

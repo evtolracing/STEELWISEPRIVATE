@@ -68,7 +68,7 @@ if (audit) {
   const cats = ui ? ui.byCat : {};
   write('phase-09-interaction-audit.md', ['# Phase 9: interaction audit', '', made, '',
     '## What was counted', '',
-    `The audit read every control on every screen at three sizes: ${audit.summary.controls.toLocaleString('en-US')} controls in all, ${totalDesktop.toLocaleString('en-US')} at desktop size on ${D.length} screens. About ${shell} of those on each screen are the shell (menu, top bar, search), which is the same on every screen. By kind, all sizes: ${Object.entries(kinds).map(([k, n]) => `${k} ${n.toLocaleString('en-US')}`).join(', ')}. The count per screen and per kind is in \`qa/results/ui-audit.json\`; the totals per screen are in \`phase-09-screen-inventory.md\`.`, '',
+    `The audit read every control on every screen: ${totalDesktop.toLocaleString('en-US')} controls at desktop size on ${D.length} screens. The same screens were read again at tablet size (${sum(audit.results.filter((x) => x.viewport === 'tablet'), (x) => x.controls).toLocaleString('en-US')} controls) and phone size (${sum(audit.results.filter((x) => x.viewport === 'phone'), (x) => x.controls).toLocaleString('en-US')}); these are the same controls drawn again, not more controls. About ${shell} of those on each screen are the shell (menu, top bar, search), which is the same on every screen. By kind, at desktop size: ${Object.entries(kinds).map(([k, n]) => `${k} ${n.toLocaleString('en-US')}`).join(', ')}. The count per screen and per kind is in \`qa/results/ui-audit.json\`; the totals per screen are in \`phase-09-screen-inventory.md\`.`, '',
     '## The limit of this audit, stated plainly', '',
     `Not every one of the ${totalDesktop.toLocaleString('en-US')} controls was pressed and its effect read. What was done for every control, and what was done for a part, is below. A control is classed VERIFIED WORKING only where a scenario pressed it and compared the result with the record.`, '',
     '## Checked on every control, by tool', '', '| Check | Tool | Before | Now |', '|---|---|---:|---:|',
@@ -222,5 +222,57 @@ if (prod) {
     `| The browser's confirm, alert or prompt | 0 | 26 before Phase 9 (V-008, V-009) |`,
     `| A loading indicator | ${has(/CircularProgress|LinearProgress|Skeleton/)} | Three kinds in use; not merged |`, '',
     '## Position', '', 'Phase 9 did not merge components. Its instruction forbids a rebuild and an uncontrolled redesign, and merging 100 hand-built tables is both. What it did is make the behaviours a user depends on the same everywhere, in place, and hold each with a static check that fails when a new screen breaks the rule: a name on every control, a heading on every page, keyboard opening on every clickable row, an answer from every button, no browser boxes.', '']);
+}
+
+// ── phase-09-regression-results.md ───────────────────────────────────────────────────────────
+{
+  const read = (f) => { try { return fs.readFileSync(path.join(root, f), 'utf8'); } catch (e) { return ''; } };
+  const g1 = read('qa/results/phase9-gate-run-1.txt'); const g2 = read('qa/results/phase9-final-browser-run.txt');
+  const section = (text, name) => { const i = text.indexOf(`== ${name}\n`); if (i < 0) return ''; const j = text.indexOf('\n== ', i + 4); return text.slice(i + name.length + 4, j < 0 ? undefined : j).trim(); };
+  const line = (text, re) => (text.split('\n').find((l) => re.test(l)) || '').trim();
+  const phase = (n, name) => { const l = line(g1, new RegExp(`^✓ Phase ${n} `)); const m = l.match(/(\d+) of (\d+) pass, (\d+) checks/); return `| ${name} | ${m ? `${m[1]} of ${m[2]}, ${m[3]} checks` : l || 'NOT RUN'} |`; };
+  const suites = ['ui-experience', 'ui-shipping', 'ui-shop', 'ui-sales', 'ui-inventory', 'ui-integration', 'ui-phase5', 'ui-phase6', 'ui-phase7', 'ui-phase8'];
+  const suite = (text, t) => { const m = section(text, t).match(/(\d+) checks, (\d+) failed/); return m ? [Number(m[1]), Number(m[2])] : null; };
+  const tot = (text) => suites.map((t) => suite(text, t)).reduce((a, x) => (x ? [a[0] + x[0], a[1] + x[1]] : a), [0, 0]);
+  const p9 = (text) => line(text, /^Phase 9 UI scenarios:/).replace('Phase 9 UI scenarios: ', '');
+  const gate = (text) => section(text, 'every screen measured at three sizes').split('\n').filter((l) => /^[✓✗]/.test(l));
+  const sweep = section(g1, 'sweep').split('\n').filter((l) => l.startsWith('✓')); const t1 = tot(g1); const t2 = tot(g2);
+  const errs = (g1.match(/"serverErrors": \[([\s\S]*?)\]/) || ['', ''])[1].split('\n').map((l) => l.trim().replace(/[",]/g, '')).filter(Boolean);
+  write('phase-09-regression-results.md', ['# Phase 9: regression results', '', made, '',
+    'Two runs are reported, and they are not the same thing.', '',
+    '1. **The full run** (`qa/tools/run-gates.sh`, output kept in `qa/results/phase9-gate-run-1.txt`): the database rebuilt from nothing, then every suite from Phase 2 to Phase 9 in order.',
+    '2. **The second browser run** (`qa/results/phase9-final-browser-run.txt`): after the faults the full run found were fixed, every browser suite again on the final code, on the database the full run left. The fixes changed screen code only; no server code changed after the full run started, so the server-side suites were not run a second time.', '',
+    '## 1. The full run', '', '| Suite | Result |', '|---|---|',
+    `| Simulation, three seeds | ${section(g1, 'simulation').split('\n').filter((l) => /reconciliation/.test(l)).map((l) => l.replace(/^reconciliation ✓ /, '')).join('; ')} |`,
+    `| Security sweep | ${sweep.length} sections, ${sweep.reduce((n, l) => n + Number((l.match(/(\d+) (checks|cases)/) || [0, 0])[1]), 0)} checks, ${/ALL SECTIONS PASS/.test(section(g1, 'sweep')) ? 'all pass' : 'see the output'} |`,
+    `| Branch boundary | ${line(g1, /^✓ Branch boundary/).replace('✓ Branch boundary: ', '')} |`, `| Phase 2 integrity | ${line(g1, /^✓ Phase 2 integrity/).replace('✓ Phase 2 integrity: ', '')} |`,
+    phase(3, 'Phase 3 database scenarios'), phase(4, 'Phase 4 integration scenarios'), phase(5, 'Phase 5 sales scenarios'), phase(6, 'Phase 6 inventory scenarios'), phase(7, 'Phase 7 manufacturing scenarios'), phase(8, 'Phase 8 fulfilment scenarios'),
+    `| Unit tests | ${line(g1, /^# pass/).replace('# pass ', '')} of ${line(g1, /^# tests/).replace('# tests ', '')}, ${line(g1, /^# fail/).replace('# fail ', '')} failed |`,
+    `| Browser checks, ten earlier suites | ${t1[0]} checks, ${t1[1]} failed |`, `| Phase 9 UI scenarios, one pass | ${p9(g1)} |`,
+    `| Every screen opens (smoke) | No call to a missing route except the made-up record ids the run uses |`,
+    `| Every screen measured at three sizes | ${gate(g1).map((l) => l.replace(/^✓ /, '').replace(/^✗ /, '**over:** ')).join('; ')} |`,
+    `| Baseline probe | ${/ALL SECTIONS PASS qa\/results\/baseline-probe/.test(g1) ? 'All sections pass' : 'see the output'} |`, `| Department rule coverage | ${line(g1, /changing routes:/)} |`,
+    `| Screen audit | ${line(g1, /screens show made-up data/)} |`, `| Lint, screens | ${/LINT-OK/.test(section(g1, 'lint, frontend')) ? '0 errors' : 'errors'} |`, `| Lint, whole repository | ${line(section(g1, 'lint, whole repository'), /problems/)} |`, `| Build | ${line(section(g1, 'build'), /built/)} |`, '',
+    '### What the full run found', '',
+    '| Found | What it was | What was done |', '|---|---|---|',
+    '| 1 of 231 Phase 9 scenarios failed: "a scheduler signs in at the form..." | A real fault. The work order list had no entry in the menu for any role (V-038). The scenario had been written to expect one | Work Orders added to the Production section; a scenario added for the menu and the search; proved by removing the entry |',
+    '| Hard-to-read texts: 85, over the ceiling of 42 set from the earlier measure | Two things. On the operations cockpit, 39 texts were measured as white on white at a moment when the screen, which refreshes itself, was redrawing its cards. Measured again and looked at, they are dark on white: a fault of the measure, not of the screen. On four real screens (shop floor, users, processing recipes, planning) the fuller database showed colours the earlier measure had not met | The measure now keeps a hard-to-read pair only if a second look, a second later, finds it too. The four screens were corrected |',
+    '| 1 screen with no main heading | The web shop\'s "Order not found" state | Heading added |',
+    '| Lint, whole repository: 1 error | A line added in Phase 9 to `qa/tools/excellence-docs.mjs` | Corrected; the count of errors is 0 in the second run |',
+    '| Screen audit: 1 screen of unknown kind | The new "Page not found" page, which the static audit could not place | Classed as static |', '',
+    '### Database checks after the run', '', 'All 75 were read after the Phase 2 to 8 scenarios. 64 read 0. The 11 that do not are counts of demo seed data and of records the scenarios make on purpose. Every one of the 75 equals its value in the last full run before Phase 9 (owner decision 10).', '',
+    '### Server errors in the run', '', 'Read from the log of calls the tests made:', '', ...errs.map((e) => `- ${e}`), '',
+    'The four answers of 500 are the same four routes as in the Phase 8 runs, each planted by a scenario that breaks a save on purpose. The 501, 502, 503 and 504 answers are routes that say they are not built and the AI and speech routes, which have no provider in the test setup. None is from a Phase 9 change.', '',
+    '## 2. The second browser run, on the final code', '', g2 ? ['| Suite | Result |', '|---|---|',
+      ...suites.map((t) => { const x = suite(g2, t); return `| ${t} | ${x ? `${x[0]} checks, ${x[1]} failed` : 'NOT RUN'} |`; }), `| Ten earlier suites together | ${t2[0]} checks, ${t2[1]} failed |`,
+      `| Phase 9 UI scenarios, one pass | ${p9(g2) || 'NOT RUN'} |`, `| Every screen measured at three sizes | ${gate(g2).map((l) => l.replace(/^✓ /, '').replace(/^✗ /, '**over:** ')).join('; ') || 'NOT RUN'} |`,
+      `| Lint, screens | ${/LINT-OK/.test(section(g2, 'lint, frontend')) ? '0 errors' : 'errors'} |`, `| Lint, whole repository | ${line(section(g2, 'lint, whole repository'), /problems/)} |`, `| Screen ratchets | ${line(section(g2, 'screen ratchets'), /phase 9/).replace(/^phase 9 \([^)]*\): /, '')} |`, `| Build | ${line(section(g2, 'build'), /built/)} |`, ''] : ['NOT RUN.', ''],
+    '## 3. Checks changed in older suites, and why', '', 'None was removed, skipped or loosened in Phase 9. The ten earlier browser suites passed unchanged after the shell was rebuilt (search, titles, start pages), because they sign in with a token and open each page by address.', '',
+    '| Tool | Change | Reason |', '|---|---|---|',
+    '| `qa/sim/ui-audit.cjs` | Waits for a screen to draw before measuring it; confirms a hard-to-read pair with a second look | Screens whose code arrives late were measured blank; colours in the middle of a fade were counted |',
+    '| `qa/tools/frontend-checks.mjs` | New ratchets: unnamed icon buttons, unlabelled fields, pages with no heading, buttons with no action, click-only rows, browser boxes | Phase 9 fixes must not come back |',
+    '| `qa/tools/run-gates.sh` | Runs the Phase 9 scenarios and the screen measure with its ceilings | So every later phase runs them |',
+    '| `qa/tools/screen-audit.mjs`, `qa/tools/excellence-docs.mjs` | The catch-all "Page not found" page is classed | It is new |', '',
+    '## 4. Not verified', '', '- The live database and the host. Phase 9 has no database change and nothing was run against either.', '- Any browser but Chromium; any real phone, tablet or shop terminal.', '- The server-side suites were not repeated after the screen-only fixes of section 2.', '- No screen reader, and no member of staff.', '']);
 }
 console.log('done');

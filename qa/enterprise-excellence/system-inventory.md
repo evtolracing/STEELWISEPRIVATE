@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -946,8 +946,4 @@ Finding B-014.
 | console.log calls | 17 |
 | Dialogs | 137 |
 | Frontend unit test files | 0 |
-
-## Not yet placed in a module
-
-- screen /* (UNKNOWN)
 

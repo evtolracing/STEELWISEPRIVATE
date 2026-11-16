@@ -1,12 +1,12 @@
 {
   "programVersion": "1.0",
   "program": "Enterprise Excellence Program",
-  "currentPhase": 8,
-  "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-16T06:45:17.734Z",
+  "currentPhase": 9,
+  "phaseStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
+  "updated": "2026-11-16T07:26:27.623Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "4a88a8df4190fffaf1f52c4a66f3b34e6db32ede",
+    "commit": "143cdcf4fe76e844809d74c60750119c76521bff",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 32,
     "merged": false,
@@ -44,15 +44,15 @@
   },
   "findingsBySeverity": {
     "P1": 108,
-    "P2": 154,
+    "P2": 156,
     "P3": 103,
     "P0": 20,
     "P4": 1
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 290,
+    "VERIFIED FIXED": 291,
     "IN PROGRESS": 6,
-    "DEFERRED TO SPECIFIC PHASE": 59,
+    "DEFERRED TO SPECIFIC PHASE": 60,
     "BLOCKED": 3,
     "NOT APPLICABLE": 1,
     "REQUIRES BUSINESS DECISION": 21,
@@ -61,14 +61,45 @@
   },
   "openFindingsBySeverity": {
     "P1": 15,
-    "P2": 43,
+    "P2": 44,
     "P3": 34,
     "P4": 1,
     "P0": 2
   },
-  "findingsTotal": 386,
-  "findingsAddedThisPhase": 29,
+  "findingsTotal": 388,
+  "findingsAddedThisPhase": 38,
   "testsExecuted": [
+    {
+      "test": "Phase 9: every screen opened in a browser at desktop, tablet and phone size and measured (qa/sim/ui-audit.cjs)",
+      "result": "154 screens at three sizes: 0 controls with no name, 0 fields with no label, 17 hard-to-read texts on 4 screens, 0 screens with no main heading, 0 wider than the window, 3 touch targets too small, 0 page errors. Each count is a ceiling in the gate run",
+      "before": "Baseline on 130 screens: 613 controls with no name, 280 fields with no label, 1,751 hard-to-read texts, 129 screens with no main heading, 458 touch targets too small, 0 screens wider than the window"
+    },
+    {
+      "test": "Phase 9 UI scenarios in a browser (qa/sim/phase9-ui.cjs), eight groups, 200 required",
+      "result": "Second run on the final code, one pass: 232 of 232 passed, 0 failed, 0 not applicable, 1,093 checks (navigation 43, forms 41, sales 26, inventory 27, manufacturing 26, shipping 25, responsive and accessibility 20, failure and recovery 24). The full run on a rebuilt database before the last fixes read 230 of 231",
+      "before": "None existed"
+    },
+    {
+      "test": "Phase 9: proof the scenarios fail without the fix (qa/tools/phase9-mutations.cjs)",
+      "result": "27 fixes removed one at a time; each made at least one scenario fail; the source was restored after each"
+    },
+    {
+      "test": "Phase 9: full run of every check on a rebuilt database (qa/results/phase9-gate-run-1.txt)",
+      "result": "Phase 8 scenarios 155 of 155; Phase 7 141 of 141; Phase 6 106 of 106; Phase 5 76 of 76; Phase 4 66 of 66; Phase 3 74 of 74; Phase 2 integrity 82 checks, 0 problems; branch boundary 39, 0 problems; unit tests 209 of 209; ten earlier browser suites 286 checks, 0 failed; Phase 9 scenarios 230 of 231, the one failure a real fault (Work Orders missing from the menu, V-038), fixed; all 75 database checks equal the owner decision 10 run; the same four planted server errors",
+      "before": "Owner decision 10 run"
+    },
+    {
+      "test": "Phase 9: second browser run on the final code (qa/results/phase9-final-browser-run.txt)",
+      "result": "Lint 0 errors; build made; ten earlier browser suites 286 checks, 0 failed; Phase 9 scenarios 232 of 232; every screen opens with no call to a missing route except made-up record ids; every screen measured, 0 counts over a ceiling. Server-side suites were not run again: no server code changed after the full run began"
+    },
+    {
+      "test": "Phase 9: front-end performance on the production build, 20 main screens, median of three loads",
+      "result": "Heading on screen in 654 ms (median), network quiet in 1,154 ms, 76 API calls; order board block 1,175 ms before paging its columns, 488 to 512 ms after. Local machine"
+    },
+    {
+      "test": "Phase 9: five high-frequency tasks counted in keys and clicks (qa/tools/productivity.cjs)",
+      "result": "All five completed; for example an order found by number and opened from any screen with 2 keys and 8 typed characters. No real user was timed"
+    },
     {
       "test": "Owner decision 10 (lost loads N-027, who reads invoices F-009, web checkout on account H-013): full run of every check on a rebuilt database",
       "result": "Phase 8 scenarios 155 of 155 (518 checks); Phase 7 141 of 141; Phase 6 106 of 106; Phase 5 76 of 76; Phase 4 66 of 66; Phase 3 74 of 74; unit tests 209 of 209; browser checks 285 of 286 in the run, the one failure being an older dock check that expected an invoice amount the dock no longer receives (F-009), updated and its suite rerun alone 30 of 30; all 75 database checks equal the previous run; the same four planted server errors",
@@ -259,63 +290,63 @@
     {
       "group": "Platform infrastructure",
       "weighted": 80,
-      "evidenceShare": 77,
+      "evidenceShare": 90,
       "openP0P1": 2
     },
     {
       "group": "Sales and customer operations",
-      "weighted": 79,
-      "evidenceShare": 97,
+      "weighted": 80,
+      "evidenceShare": 100,
       "openP0P1": 4
     },
     {
       "group": "Inventory and purchasing",
       "weighted": 77,
-      "evidenceShare": 97,
+      "evidenceShare": 100,
       "openP0P1": 3
     },
     {
       "group": "Manufacturing and processing",
-      "weighted": 81,
-      "evidenceShare": 97,
+      "weighted": 82,
+      "evidenceShare": 100,
       "openP0P1": 1
     },
     {
       "group": "Logistics and financial operations",
       "weighted": 86,
-      "evidenceShare": 97,
+      "evidenceShare": 100,
       "openP0P1": 2
     },
     {
       "group": "Enterprise experience",
       "weighted": 60,
-      "evidenceShare": 89,
+      "evidenceShare": 92,
       "openP0P1": 5
     }
   ],
   "unverifiedAreas": [
-    "The live database and the host: nothing in Phase 8 was run against either. Live shipments reserved against another branch's stock, branches with no street address and waiting print jobs are unknown until the owner runs check-before-phase-8.sql (R-50, R-52, R-54)",
-    "SQL Editor files 6 to 14 on the live database: the owner confirmed on 2026-11-15 that they are applied, and pull request 31 was merged; the result of the read-only check was not sent, so this rests on his word. File 15 has not been applied (verify-6-to-15.sql)",
-    "Printers, label printers, scales and scanners (K-013). The bill of lading and packing list were never printed on paper",
-    "Accounting, ledger, cost of goods and stock valuation: not built (N-025, K-007). Carriers, freight rating and tracking: not built (N-026). Notices: not built (N-028)",
-    "Order margin beyond material, labor and scrap: overhead, freight paid and packaging are not in it; orders shipped before file 14 carry no cost",
-    "Accessibility of the shipping, packing and closeout screens: not assessed (Phase 9)",
-    "Time per task with real users: no minutes-saved figure is claimed. More than one server at once: not run",
-    "Earlier unverified areas unchanged: machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), backup and restore (E-015), host pool (G-015)"
+    "Real devices: every size was a browser window on a local machine. No phone, tablet, shop terminal, glove, scanner or printer was used",
+    "Assistive technology: no screen reader user, no switch or voice control. Phase 9 does not certify WCAG 2.2 AA; it measured names, labels, contrast, headings, focus and keyboard reach by tool",
+    "Real users: no member of staff has used the new search, the role start pages or the dialogs; no time per task is claimed",
+    "Not every control was pressed: 24,586 controls were measured for a name, reach and an action; the scenarios press and verify the controls of the main workflows (phase-09-interaction-audit.md)",
+    "Five dashboards are not reconciled tile by tile to the records (V-037, Phase 11). 58 sample screens remain samples under a notice (owner decision 4)",
+    "Front-end speed on the host, on a real network and at 85-branch data: NOT VERIFIED (V-027)",
+    "The live database and the host: nothing in Phase 9 was run against either. Phase 9 changes no database structure. File 15 (owner decision 10) is still to be applied (verify-6-to-15.sql)",
+    "Earlier unverified areas unchanged: printers, scales and scanners (K-013), machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), card payment (H-015), backup and restore (E-015), host pool (G-015), more than one server at once"
   ],
   "currentBlockers": [
-    "Owner: SQL Editor file 15 must be applied before the decision 10 code is deployed, or the \"Lost for good\" step fails (R-57)",
-    "Owner: N-025 (accounting). Advice given on an internal ledger; three answers needed before a build: when cost of goods counts, the chart of accounts, the start date",
-    "Owner: labor rates per kind of work center, without which order margin shows material and scrap only",
-    "L-026 with K-007 (P1): IN PROGRESS. Cost now reaches the sale (N-017); stock valuation, overhead and cost of goods are not built",
+    "Owner: SQL Editor file 15 must be applied before pull request 32 is merged, or the \"Lost for good\" step fails (R-57). Pull request 32 now carries owner decision 10 and Phase 9",
+    "Owner: V-030. \"Duplicate order\" was a dead button on two real screens and is removed; whether it should be built is his decision",
+    "Owner: N-025 (accounting), parked by him until the remaining phases are done",
+    "Deferred from Phase 9 with a named phase: V-028 (Phase 10), V-027 and V-037 (Phase 11), V-011, V-018, V-029, V-035, V-036 (Phase 12)",
     "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-015, B-019, E-015, K-013, L-023 to L-027, L-030"
   ],
   "nextActions": [
-    "Owner: apply SQL Editor file 15, then say when to merge the decision 10 pull request",
-    "Owner: run the read-only check-before-phase-8.sql and verify-6-to-15.sql on the live database and send the results",
-    "Owner: tell the branches that the Invoices screen is now for sales, accounting and managers, and that managers can end a lost load (R-58, R-59)",
-    "Owner: answer the three accounting questions if the internal ledger is wanted",
-    "Owner: issue the Phase 9 prompt (enterprise UI and UX). Phase 9 has not been started"
+    "Owner: apply SQL Editor file 15, run verify-6-to-15.sql, then say when to merge pull request 32 (owner decision 10 and Phase 9; Phase 9 has no database file)",
+    "Owner: tell the branches what changes on the screens: each role starts on its own page, Work Orders is in the menu, the notifications bell is gone until notices are built, sample buttons say \"not built\" (R-60 to R-66)",
+    "Owner: look at the start page chosen for each role (phase-09-role-workspaces.md) and say if any should differ",
+    "Owner: decide V-030 (duplicate an order)",
+    "Owner: issue the Phase 10 prompt (security, reliability, recovery). Phase 10 has not been started"
   ],
-  "lastCompletedCheckpoint": "Owner decision 10 built after pull request 31 was merged: lost loads (N-027), who reads invoices (F-009), web checkout on account (H-013); 155 of 155 Phase 8 scenarios, 209 unit tests, 56 Phase 8 browser checks; SQL Editor file 15. Before that: Phase 8: second full gate run on the final code; 150 of 150 Phase 8 scenarios (142 verified, 8 not built); 45 browser checks; 31 rules proven by mutation; eighteen calls timed at 85 branches; 29 findings recorded (N-001 to N-029: 24 fixed and verified, 1 fixed not verified, 3 for the owner, 1 deferred); SQL Editor file 14. Continuation point: nothing of Phase 8 remains that does not need the owner"
+  "lastCompletedCheckpoint": "Phase 9 implemented and verified by tool on a local machine: 38 findings (29 VERIFIED FIXED, 7 deferred to a named phase, 1 for the owner, 1 accepted under owner decision 10), 232 of 232 UI scenarios on the final code, 27 fixes proven by removal, full regression of Phases 2 to 8 unchanged. Not verified: real devices, assistive technology, real users, the host. Rides on pull request 32 with owner decision 10; no database file. Phase 10 not started"
 }

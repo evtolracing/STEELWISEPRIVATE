@@ -1,0 +1,54 @@
+== lint, frontend
+LINT-OK
+== screen ratchets
+phase 9 (each must be 0; pages with no title found, ceiling 2): {"iconButtonsWithNoName":0,"fieldsWithNoName":0,"pagesMissingAMainHeading":0,"pagesWhereNoTitleCouldBeFound":1,"sampleButtonsWithNoActionAndNoNotice":0,"clickOnlyRowsAndCards":0,"browserPopUpBoxes":0}
+effects that read a value they do not list: 38 (ceiling 38); screens that invent a record when the server fails: 0 (ceiling 0)
+== lint, whole repository
+✖ 1557 problems (0 errors, 1557 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+== build
+✓ built in 17.53s
+== ui-experience
+22 checks, 0 failed → qa/results/ui-experience.json
+== ui-shipping
+30 checks, 0 failed → qa/results/ui-shipping.json
+== ui-shop
+31 checks, 0 failed → qa/results/ui-shop.json
+== ui-sales
+24 checks, 0 failed → qa/results/ui-sales.json
+== ui-inventory
+23 checks, 0 failed → qa/results/ui-inventory.json
+== ui-integration
+33 checks, 0 failed
+== ui-phase5
+14 checks, 0 failed → qa/results/ui-phase5.json
+== ui-phase6
+14 checks, 0 failed → qa/results/ui-phase6.json
+== ui-phase7
+39 checks, 0 failed → qa/results/ui-phase7.json
+== ui-phase8
+56 checks, 0 failed → qa/results/ui-phase8.json
+== phase 9 UI scenarios
+Phase 9 UI scenarios: 232 of 232 passed, 0 failed, 0 not applicable, 1093 checks
+== every screen opens
+  GET /api/coils/:id → 404  ← /units/:id
+  GET /api/work-orders/:id → 404  ← /work-orders/:id
+  GET /api/qc/inspections/:id → 404  ← /qc/inspect/:id
+  GET /api/jobs/:id → 404  ← /jobs/:id
+  GET /api/jobs/:id/history → 404  ← /jobs/:id
+  GET /api/orders/intake/:id → 404  ← /orders/:id
+  GET /api/ecom/catalog/:id → 404  ← /shop/products/:id
+  GET /api/ecom/my-orders/:id → 404  ← /shop/orders/:id
+== every screen measured at three sizes
+✓ controlsWithNoName: 0 (ceiling 0)
+✓ fieldsWithNoLabel: 0 (ceiling 0)
+✓ hardToReadTexts: 17 (ceiling 42)
+✓ screensWithNoMainHeading: 0 (ceiling 6)
+✓ screensWithSeveralMainHeadings: 0 (ceiling 0)
+✓ screensWiderThanTheWindow: 0 (ceiling 0)
+✓ smallTargetsOnAPhone: 3 (ceiling 3)
+✓ screensWithAPageError: 0 (ceiling 0)
+✓ screensSharingATitle: 32 (ceiling 34)
+154 screens measured; 0 counts over the ceiling
+== FINAL DONE

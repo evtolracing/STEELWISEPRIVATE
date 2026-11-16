@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -12,14 +12,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 |---|---:|---:|
 | P0 | 20 | 2 |
 | P1 | 108 | 15 |
-| P2 | 154 | 43 |
+| P2 | 156 | 44 |
 | P3 | 103 | 34 |
-| Total | 386 | 95 |
+| Total | 388 | 96 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 290 |
-| DEFERRED TO SPECIFIC PHASE | 59 |
+| VERIFIED FIXED | 291 |
+| DEFERRED TO SPECIFIC PHASE | 60 |
 | REQUIRES BUSINESS DECISION | 21 |
 | IN PROGRESS | 6 |
 | ACCEPTED RISK WITH APPROVAL | 5 |
@@ -90,6 +90,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | S-027 | P2 | REQUIRES BUSINESS DECISION | Quotes | Quote lines are priced by hand; the screen offers no customer price because RFQ lines are free text, not products | Sales and customer operations |
 | V-027 | P2 | DEFERRED TO SPECIFIC PHASE | Order board, production board, schedule | Grows with the data. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-028 | P2 | DEFERRED TO SPECIFIC PHASE | Dispatch API | Readable across branches by asking. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-037 | P2 | DEFERRED TO SPECIFIC PHASE | Dashboards | Verified for the home dashboard's recent orders, the quality station counts, what customers owe by age and the time report. Not for the five dashboards named. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
 | B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
@@ -119,7 +120,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | U-037 | P3 | DEFERRED TO SPECIFIC PHASE | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
 | U-040 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
 | U-041 | P3 | ACCEPTED RISK WITH APPROVAL | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-011 | P3 | DEFERRED TO SPECIFIC PHASE | Sample screens mostly | 42. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-011 | P3 | DEFERRED TO SPECIFIC PHASE | Sample screens mostly | 17. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-018 | P3 | DEFERRED TO SPECIFIC PHASE | Other long forms | Order entry only. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-029 | P3 | DEFERRED TO SPECIFIC PHASE | Dialogs | Focus on the dialog. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-030 | P3 | REQUIRES BUSINESS DECISION | Orders | Dead buttons on real screens. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
@@ -6022,8 +6023,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Status and text colours darkened once, in the theme, with named tokens (tint, ink); no screen was restyled by hand except where it set its own colour.
 - **Required tests:** Audit count falls and cannot rise.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
-- **Status note:** The 42 that remain are V-011.
-- **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 42 texts on 10 screens. qa/tools/ui-audit-gate.cjs holds the ceiling.
+- **Status note:** The 17 that remain are V-011.
+- **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 17 texts on 4 screens. qa/tools/ui-audit-gate.cjs holds the ceiling.
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-011 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -6032,11 +6033,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Module:** Sample screens mostly
 - **Workflow:** Reading the screen
 - **Category:** Colour contrast
-- **Source file or endpoint:** 42 texts on 10 screens; 12 colour pairs
-- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 42 texts on 10 screens remain below 4.5 to 1. The largest groups: an information chip in blue on pale blue (14 texts, 4.04 and 3.78 to 1), chart limit labels drawn in the colour of their own line (12), a "Last One!" chip (8).
+- **Source file or endpoint:** 17 texts on 4 screens; 6 colour pairs
+- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 17 texts on 4 screens remain below 4.5 to 1: chart limit labels on the statistical process control sample screen, which the tool reads as drawn in the colour of their own line (12); two figures on the order speed metrics dashboard, which the tool reads as white on white because they sit on a shaded panel it cannot read (2); and three status chips on the stop-work sample screens at 3.96 to 4.23 to 1 (3). An earlier measure read 42 on 10 screens; the fall to 17 is the four real screens corrected after the full run and a correction of the measure, which had counted text caught while fading in.
 - **Expected:** 0.
-- **Actual:** 42.
-- **Operational impact:** Small labels on a few screens.
+- **Actual:** 17.
+- **Operational impact:** Small labels on four screens, three of them samples.
 - **Recommended correction:** Not made in Phase 9: each sets its colour in its own file, most on sample screens that are to be rebuilt on real records.
 - **Deferred: reason:** Each is a one-off colour in a screen file, most of them sample screens due to be rebuilt (owner decision 4).
 - **Deferred: target phase:** Phase 12
@@ -6469,13 +6470,13 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Module:** Design system
 - **Workflow:** One look across the product
 - **Category:** Consistency
-- **Source file or endpoint:** 91 of 259 screen and component files
-- **Evidence:** Static count in Phase 9: 91 files set a colour of their own in code (106 different colours) where the theme has a token for the meaning.
+- **Source file or endpoint:** 94 screen and component files
+- **Evidence:** Static count in Phase 9: 94 files set a colour of their own in code (92 different colours) where the theme has tokens for the meanings.
 - **Expected:** Screens take colours, spacing and radii from the theme.
 - **Actual:** A third of the files carry their own.
-- **Operational impact:** The same status is a slightly different colour on different screens; the 42 hard-to-read texts left (V-011) are all of this kind.
+- **Operational impact:** The same status is a slightly different colour on different screens; the 17 hard-to-read texts left (V-011) are all of this kind.
 - **Recommended correction:** Not made in Phase 9, which fixed the theme itself and the colours that failed contrast. Phase 9 forbids an uncontrolled global redesign.
-- **Deferred: reason:** Replacing 106 colours across 91 files changes how every such screen looks and needs the owner to see it; most are sample screens to be rebuilt.
+- **Deferred: reason:** Replacing 92 colours across 94 files changes how every such screen looks and needs the owner to see it; most are sample screens to be rebuilt.
 - **Deferred: target phase:** Phase 12
 - **Deferred: required correction:** Replace each with the theme token of the same meaning, a module at a time, with before and after pictures.
 - **Deferred: dependencies:** Owner decision 4 for the sample modules.
@@ -6505,6 +6506,46 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A static count that only falls.
 - **Required tests:** None.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-037 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Dashboards
+- **Workflow:** Trusting a summary figure
+- **Category:** Not reconciled
+- **Source file or endpoint:** Operations cockpit, sales dashboard, role dashboard, material tracking dashboard, order speed metrics
+- **Evidence:** qa/sim/phase9-ui.cjs: "dashboards show no figure the server did not send: with the server failing, no tile shows a number" proves no figure is invented on six real dashboards. No test compares each summary figure with the records it summarises (testing gap 8, open since Phase 1).
+- **Expected:** Each figure on a dashboard equals the same figure worked out from the records.
+- **Actual:** Verified for the home dashboard's recent orders, the quality station counts, what customers owe by age and the time report. Not for the five dashboards named.
+- **Operational impact:** A wrong summary would not be noticed by a test.
+- **Recommended correction:** Not made in Phase 9.
+- **Deferred: reason:** It needs a data set with known totals; the full simulation cycles of Phase 11 produce one.
+- **Deferred: target phase:** Phase 11: performance and full simulation cycles
+- **Deferred: required correction:** After a simulation cycle, read each dashboard in a browser and compare every figure with a query.
+- **Deferred: dependencies:** The Phase 11 simulation.
+- **Deferred: acceptance criteria:** Every tile of the five dashboards equals its query.
+- **Deferred: verification:** A browser scenario per dashboard.
+- **Required tests:** A run with known totals, compared tile by tile.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-038 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Menu
+- **Workflow:** Reaching a real screen
+- **Category:** Navigation
+- **Source file or endpoint:** config/navigation.jsx
+- **Evidence:** Found by the one Phase 9 scenario that failed in the full run ("a scheduler signs in at the form...": the menu did not offer Work Orders). The static screen audit confirms it: the work order list, a real screen that planners and schedulers use, had no entry in the menu for any role and was reached only from links on other screens. The same is true of the production workflow board (/production), bill of material recipes (/bom), schedule optimisation (/optimization) and the three account pages of the web shop, which are reached from buttons on their parent screens.
+- **Expected:** A real list screen can be reached from the menu and found by the search.
+- **Actual:** The work order list could not.
+- **Operational impact:** Planners reached work orders only through a job or by a saved address; the search, which offers the pages of the menu, did not offer it.
+- **Recommended correction:** Work Orders is in the Production section of the menu, for the roles that may open it, and so in the search.
+- **Required tests:** A scheduler's menu offers Work Orders.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** The other screens named are reached from their parent screens and were left as they are: adding them to the menu is a choice about the menu's shape, which is the owner's.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "a scheduler signs in at the form, starts at /schedule, and the menu and the server refuse what the role may not open" (failed in the full run before the entry was added, passes after).
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### X-001 · P0 · DEFERRED TO SPECIFIC PHASE

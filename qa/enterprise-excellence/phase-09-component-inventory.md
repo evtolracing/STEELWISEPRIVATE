@@ -86,7 +86,7 @@ Written by `qa/tools/phase9-docs.cjs` from a static read of `src/frontend/src`. 
 |---|---:|---|
 | A table built by hand | 109 | 3 use the shared table. Sorting, paging and the empty state differ from list to list (V-036, Phase 12). Names, headings and keyboard row opening were made the same everywhere by codemod |
 | A dialog | 100 | The 12 form dialogs the scenarios open each have a name, keep focus and close on Escape with nothing sent. The others were measured for names and labels only. Buttons are not in one order everywhere; not changed |
-| A colour set in the file | 94 | 92 different colours where the theme has a token (V-035, Phase 12) |
+| A colour set in the file | 94 | 91 different colours where the theme has a token (V-035, Phase 12) |
 | The browser's confirm, alert or prompt | 0 | 26 before Phase 9 (V-008, V-009) |
 | A loading indicator | 173 | Three kinds in use; not merged |
 

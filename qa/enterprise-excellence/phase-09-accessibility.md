@@ -6,47 +6,34 @@ Written by `qa/tools/phase9-docs.cjs` from the result files named in each sectio
 
 ## Measured on every screen
 
-Before: 130 screens (2026-11-16T03:29:34.619Z). Now: 154 screens (2026-11-16T05:59:00.002Z); the later run also opens record pages on real records, which is why it has more.
+Before: 130 screens (2026-11-16T03:29:34.619Z). Now: 154 screens (2026-11-16T07:25:05.016Z); the later run also opens record pages on real records, which is why it has more.
 
 | Measure | WCAG 2.2 | Before | Now |
 |---|---|---:|---:|
 | Controls with no name | 4.1.2 | 613 | 0 |
 | Fields with no label | 1.3.1, 3.3.2 | 280 | 0 |
-| Texts below 4.5 to 1 against their background | 1.4.3 | 1,751 | 42 on 10 screens |
-| Screens with no main heading | 1.3.1, 2.4.6 | 129 | 6 |
-| Screens sharing a browser title with another | 2.4.2 | 130 | 34 |
+| Texts below 4.5 to 1 against their background | 1.4.3 | 1,751 | 17 on 4 screens |
+| Screens with no main heading | 1.3.1, 2.4.6 | 129 | 0 |
+| Screens sharing a browser title with another | 2.4.2 | 130 | 32 |
 | Screens wider than the window at any size | 1.4.10 | 0 | 0 |
 | Touch targets under 24 by 24 on a phone | 2.5.8 | 458 | 3 |
 
 Held in the gate run by `qa/tools/ui-audit-gate.cjs` against `qa/ui-audit-ceilings.json`: a count may fall and may not rise.
 
-Screens that still share a title are addresses that show the same page (an old address and its new one, a list and the same list reached from another menu entry, record pages opened on the same record, and unknown record ids that all say "Page not found"). "Page not found · SteelWise" 3; "Shop Floor Control · SteelWise" 2; "Inventory · SteelWise" 2; "Shipping · SteelWise" 2; "SHP-00524 · SteelWise" 2; "RFQs and quotes · SteelWise" 9; "Quality Dashboard · SteelWise" 2; "Production Workflow · SteelWise" 2; "Traceability · SteelWise" 2; "Freight Comparison · SteelWise" 2; "Shipment Tracking · SteelWise" 2; "Orders · SteelWise" 2; "My Orders · SteelWise" 2.
+Screens that still share a title are addresses that show the same page (an old address and its new one, a list and the same list reached from another menu entry, record pages opened on the same record, and unknown record ids that all say "Page not found"). "Page not found · SteelWise" 3; "Shop Floor Control · SteelWise" 2; "Inventory · SteelWise" 2; "Shipping · SteelWise" 2; "SHP-00533 · SteelWise" 2; "RFQs and quotes · SteelWise" 9; "Quality Dashboard · SteelWise" 2; "Production Workflow · SteelWise" 2; "Traceability · SteelWise" 2; "Freight Comparison · SteelWise" 2; "Shipment Tracking · SteelWise" 2; "Orders · SteelWise" 2.
 
-### Screens still with no main heading
-
-- `/maintenance/pm-schedules` (first heading found: none)
-- `/orders/invoices` (first heading found: none)
-- `/shop/search` (first heading found: H6 Aluminum 6061-T6 Plate)
-- `/shop/checkout` (first heading found: none)
-- `/shop/orders/:id` (first heading found: none)
-- `/help/manual` (first heading found: none)
+Every screen has a main heading.
 
 ### Hard-to-read texts that remain (V-011)
 
 | Colours | Ratio | Texts | Screens | Example |
 |---|---:|---:|---:|---|
-| #1976d2 on #e8f1fb | 4.04 | 12 | 2 | QA saw |
 | #c62828 on #c62828 | 1 | 8 | 1 | UCL |
-| #c77e53 on #fff3e0 | 2.93 | 8 | 1 | Last One! |
 | #2e7d32 on #2e7d32 | 1 | 4 | 1 | CL |
-| #1976d2 on #dfeaf6 | 3.78 | 2 | 2 | QA saw |
 | #ffffff on #ffffff | 1 | 2 | 1 | 6.4h |
-| #d84315 on #fcf0ec | 3.96 | 1 | 1 | Heat Treatment |
-| #aeb1b5 on #f5f7fa | 2 | 1 | 1 | Refresh |
 | #d32f2f on #fae5e5 | 4.12 | 1 | 1 | ACTIVE |
 | #b45309 on #f6eae0 | 4.23 | 1 | 1 | MITIGATION IN PROGRESS |
 | #b45309 on #ede3dc | 3.96 | 1 | 1 | MITIGATION IN PROGRESS |
-| #ff6b35 on #ffffff | 2.84 | 1 | 1 | 50 |
 
 ## Fixed in this phase
 
@@ -67,10 +54,50 @@ Screens that still share a title are addresses that show the same page (an old a
 
 | Group | Scenario | Result |
 |---|---|---|
+| NAV | every page has its own browser title, taken from its heading | PASS |
+| NAV | moving between pages by the menu announces the page and moves focus to it | PASS |
+| NAV | the skip link is the first stop and jumps past the menu | PASS |
+| NAV | menu sections open and close and say so to a screen reader | PASS |
+| NAV | search: a page is found by name and opened with the keyboard alone | PASS |
+| NAV | search: nothing found says what to try, and Escape closes and clears | PASS |
+| NAV | search: arrow keys move through results and the choice is announced | PASS |
+| FORM | /customers "New Customer": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /heats "Add Heat": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /shipping "New shipment": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /receiving "Receive item": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /purchase-orders "New purchase order": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /orders/returns "New return": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /admin/users "Add User": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /admin/staff "Add Operator": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /sales/rfq-inbox "New RFQ": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /shopfloor "New Work Center": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /order-board "New Job": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | /material-tracking/packages "Open a package": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved | PASS |
+| FORM | a new heat: the save button comes on only when the required entries are in | PASS |
+| FORM | a sample form that used to announce a save now says nothing was saved | PASS |
+| SALES | choosing an order in the list shows its lines, and Enter on the keyboard does the same | PASS |
+| SALES | an order page: the tabs work from the keyboard and the history names who did what | PASS |
+| SALES | the More actions menu on a customer opens, closes on Escape and gives focus back | PASS |
+| STOCK | a stock item opens from its row with the keyboard and shows what is on file | PASS |
+| STOCK | a stock item: "Move" opens a named dialog, cannot be saved empty, and Cancel changes nothing | PASS |
+| STOCK | a stock item: "Correct quantity" opens a named dialog, cannot be saved empty, and Cancel changes nothing | PASS |
+| STOCK | a stock item: "Put on hold" opens a named dialog, cannot be saved empty, and Cancel changes nothing | PASS |
+| STOCK | a stock item: "Edit" opens a named dialog, cannot be saved empty, and Cancel changes nothing | PASS |
+| STOCK | a heat page shows its grade and its stock items, and the tabs can be worked by keyboard | PASS |
+| STOCK | stock columns have headers a screen reader can use, and status is said in words | PASS |
+| MAKE | a work order opens from its row by keyboard and shows the stored source item and weights | PASS |
+| MAKE | the schedule: the Queue View tab lists jobs waiting, by keyboard | PASS |
+| MAKE | a job card opens with Enter and shows the stored customer and operation, and Escape closes it | PASS |
+| SHIP | a shipment opens from its row by keyboard and shows the stored order, customer and quantities | PASS |
+| FIT | the keyboard’s place is always visible: every stop of the first twenty has a focus ring | PASS |
+| FIT | each main screen has one heading, one main area, a named menu and a search landmark | PASS |
+| FIT | a person who asks for less motion gets none: dialogs and the menu do not animate | PASS |
+| FIT | a form tells a screen reader what is required and what is wrong | PASS |
+| FIT | messages that appear by themselves are announced, and the page can be zoomed | PASS |
 
 ## Known to remain
 
-- 42 hard-to-read texts on 10 screens (V-011, Phase 12).
+- 17 hard-to-read texts on 4 screens (V-011, Phase 12).
 - Dialogs open with focus on the dialog, not on the first field (V-029). This conforms; it costs one key press.
 - Charts (schedule bars, control charts, dashboards) have no text alternative or data table. Not measured by the audit; NOT VERIFIED and likely to fail 1.1.1 on the sample screens that draw charts.
 - Drag and drop on the order board and the schedule has a keyboard alternative only where a button or menu does the same move (the board's status menu). 2.5.7 is NOT VERIFIED screen by screen.

@@ -1,18 +1,18 @@
 {
- "at": "2026-11-16T06:34:12.852Z",
+ "at": "2026-11-16T07:13:56.766Z",
  "app": "http://localhost:5199",
  "api": "http://localhost:3001",
  "tally": {
-  "scenarios": 231,
-  "passed": 230,
-  "failed": 1,
+  "scenarios": 232,
+  "passed": 232,
+  "failed": 0,
   "notApplicable": 0,
-  "checks": 1090
+  "checks": 1093
  },
  "byCat": {
   "NAV": {
-   "pass": 41,
-   "fail": 1,
+   "pass": 43,
+   "fail": 0,
    "na": 0
   },
   "FORM": {
@@ -101,7 +101,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3881
+   "ms": 3730
   },
   {
    "id": 2,
@@ -152,7 +152,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3892
+   "ms": 3808
   },
   {
    "id": 3,
@@ -213,7 +213,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4917
+   "ms": 4278
   },
   {
    "id": 4,
@@ -269,13 +269,13 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4351
+   "ms": 3740
   },
   {
    "id": 5,
    "cat": "NAV",
    "name": "a scheduler signs in at the form, starts at /schedule, and the menu and the server refuse what the role may not open",
-   "status": "FAIL",
+   "status": "PASS",
    "checks": [
     {
      "what": "starts at the role’s own workspace",
@@ -294,8 +294,8 @@
     },
     {
      "what": "the menu offers the role’s own work",
-     "ok": false,
-     "detail": "/work-orders not in /ops-cockpit /role-dashboard /order-board /orders /orders/credit-holds /orders/intake /orders/online-inbox /pos/retail /orders/invoices /orders/returns /orders/closeout /planning"
+     "ok": true,
+     "detail": ""
     },
     {
      "what": "an allowed page opens",
@@ -325,7 +325,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4035
+   "ms": 3725
   },
   {
    "id": 6,
@@ -386,7 +386,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4756
+   "ms": 4380
   },
   {
    "id": 7,
@@ -442,7 +442,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4357
+   "ms": 4229
   },
   {
    "id": 8,
@@ -498,7 +498,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3851
+   "ms": 4398
   },
   {
    "id": 9,
@@ -554,7 +554,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3654
+   "ms": 3671
   },
   {
    "id": 10,
@@ -615,7 +615,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4145
+   "ms": 4293
   },
   {
    "id": 11,
@@ -666,7 +666,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3755
+   "ms": 3669
   },
   {
    "id": 12,
@@ -717,7 +717,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3787
+   "ms": 3482
   },
   {
    "id": 13,
@@ -773,7 +773,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3521
+   "ms": 3464
   },
   {
    "id": 14,
@@ -819,7 +819,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3272
+   "ms": 2983
   },
   {
    "id": 15,
@@ -865,7 +865,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3092
+   "ms": 3121
   },
   {
    "id": 16,
@@ -901,7 +901,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4837
+   "ms": 4875
   },
   {
    "id": 17,
@@ -922,7 +922,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 829
+   "ms": 915
   },
   {
    "id": 18,
@@ -948,7 +948,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3093
+   "ms": 3419
   },
   {
    "id": 19,
@@ -979,7 +979,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 867
+   "ms": 885
   },
   {
    "id": 20,
@@ -1010,7 +1010,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3109
+   "ms": 2950
   },
   {
    "id": 21,
@@ -1061,7 +1061,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 8370
+   "ms": 8015
   },
   {
    "id": 22,
@@ -1092,7 +1092,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2042
+   "ms": 2207
   },
   {
    "id": 23,
@@ -1113,7 +1113,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2145
+   "ms": 1619
   },
   {
    "id": 24,
@@ -1139,7 +1139,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1861
+   "ms": 1487
   },
   {
    "id": 25,
@@ -1165,7 +1165,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2779
+   "ms": 2918
   },
   {
    "id": 26,
@@ -1196,7 +1196,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1496
+   "ms": 1755
   },
   {
    "id": 27,
@@ -1222,7 +1222,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1695
+   "ms": 1812
   },
   {
    "id": 28,
@@ -1243,7 +1243,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2821
+   "ms": 3238
   },
   {
    "id": 29,
@@ -1284,7 +1284,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3804
+   "ms": 3895
   },
   {
    "id": 30,
@@ -1315,7 +1315,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3341
+   "ms": 3794
   },
   {
    "id": 31,
@@ -1346,7 +1346,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1771
+   "ms": 1936
   },
   {
    "id": 32,
@@ -1382,7 +1382,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1750
+   "ms": 1571
   },
   {
    "id": 33,
@@ -1408,7 +1408,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1685
+   "ms": 1782
   },
   {
    "id": 34,
@@ -1429,7 +1429,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1376
+   "ms": 1560
   },
   {
    "id": 35,
@@ -1455,7 +1455,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1390
+   "ms": 1705
   },
   {
    "id": 36,
@@ -1491,7 +1491,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1863
+   "ms": 2202
   },
   {
    "id": 37,
@@ -1532,7 +1532,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2568
+   "ms": 2595
   },
   {
    "id": 38,
@@ -1563,7 +1563,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1402
+   "ms": 1638
   },
   {
    "id": 39,
@@ -1599,7 +1599,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 28367
+   "ms": 28362
   },
   {
    "id": 40,
@@ -1620,7 +1620,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2483
+   "ms": 2519
   },
   {
    "id": 41,
@@ -1641,7 +1641,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2383
+   "ms": 2560
   },
   {
    "id": 42,
@@ -1667,10 +1667,36 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 5478
+   "ms": 5489
   },
   {
    "id": 43,
+   "cat": "NAV",
+   "name": "the work order list is in the menu and in the search for a planner (V-038)",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Work Orders is in the menu",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the search offers it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and it opens",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2424
+  },
+  {
+   "id": 44,
    "cat": "FORM",
    "name": "/customers \"New Customer\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -1723,10 +1749,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2102
+   "ms": 2100
   },
   {
-   "id": 44,
+   "id": 45,
    "cat": "FORM",
    "name": "/heats \"Add Heat\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -1779,10 +1805,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1793
+   "ms": 1830
   },
   {
-   "id": 45,
+   "id": 46,
    "cat": "FORM",
    "name": "/shipping \"New shipment\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -1835,10 +1861,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2094
+   "ms": 1986
   },
   {
-   "id": 46,
+   "id": 47,
    "cat": "FORM",
    "name": "/receiving \"Receive item\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -1891,10 +1917,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3347
+   "ms": 3475
   },
   {
-   "id": 47,
+   "id": 48,
    "cat": "FORM",
    "name": "/purchase-orders \"New purchase order\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -1947,10 +1973,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2232
+   "ms": 2188
   },
   {
-   "id": 48,
+   "id": 49,
    "cat": "FORM",
    "name": "/orders/returns \"New return\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -2003,10 +2029,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1655
+   "ms": 1661
   },
   {
-   "id": 49,
+   "id": 50,
    "cat": "FORM",
    "name": "/admin/users \"Add User\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -2059,10 +2085,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2371
+   "ms": 2334
   },
   {
-   "id": 50,
+   "id": 51,
    "cat": "FORM",
    "name": "/admin/staff \"Add Operator\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -2115,10 +2141,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2382
+   "ms": 2338
   },
   {
-   "id": 51,
+   "id": 52,
    "cat": "FORM",
    "name": "/sales/rfq-inbox \"New RFQ\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -2171,10 +2197,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1549
+   "ms": 1528
   },
   {
-   "id": 52,
+   "id": 53,
    "cat": "FORM",
    "name": "/shopfloor \"New Work Center\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -2227,10 +2253,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2762
+   "ms": 3050
   },
   {
-   "id": 53,
+   "id": 54,
    "cat": "FORM",
    "name": "/order-board \"New Job\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -2283,10 +2309,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6734
+   "ms": 7501
   },
   {
-   "id": 54,
+   "id": 55,
    "cat": "FORM",
    "name": "/material-tracking/packages \"Open a package\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
    "status": "PASS",
@@ -2339,10 +2365,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1524
+   "ms": 1627
   },
   {
-   "id": 55,
+   "id": 56,
    "cat": "FORM",
    "name": "/customers \"New Customer\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2370,10 +2396,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2750
+   "ms": 2638
   },
   {
-   "id": 56,
+   "id": 57,
    "cat": "FORM",
    "name": "/heats \"Add Heat\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2401,10 +2427,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1456
+   "ms": 1312
   },
   {
-   "id": 57,
+   "id": 58,
    "cat": "FORM",
    "name": "/shipping \"New shipment\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2432,10 +2458,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1474
+   "ms": 1572
   },
   {
-   "id": 58,
+   "id": 59,
    "cat": "FORM",
    "name": "/receiving \"Receive item\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2463,10 +2489,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2351
+   "ms": 2441
   },
   {
-   "id": 59,
+   "id": 60,
    "cat": "FORM",
    "name": "/purchase-orders \"New purchase order\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2494,10 +2520,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1605
+   "ms": 1636
   },
   {
-   "id": 60,
+   "id": 61,
    "cat": "FORM",
    "name": "/orders/returns \"New return\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2525,10 +2551,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1365
+   "ms": 1354
   },
   {
-   "id": 61,
+   "id": 62,
    "cat": "FORM",
    "name": "/admin/users \"Add User\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2556,10 +2582,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2628
+   "ms": 2641
   },
   {
-   "id": 62,
+   "id": 63,
    "cat": "FORM",
    "name": "/admin/staff \"Add Operator\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2587,10 +2613,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2925
+   "ms": 2740
   },
   {
-   "id": 63,
+   "id": 64,
    "cat": "FORM",
    "name": "/sales/rfq-inbox \"New RFQ\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2618,10 +2644,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1313
+   "ms": 1331
   },
   {
-   "id": 64,
+   "id": 65,
    "cat": "FORM",
    "name": "/shopfloor \"New Work Center\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2649,10 +2675,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3180
+   "ms": 3085
   },
   {
-   "id": 65,
+   "id": 66,
    "cat": "FORM",
    "name": "/order-board \"New Job\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2680,10 +2706,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4804
+   "ms": 5178
   },
   {
-   "id": 66,
+   "id": 67,
    "cat": "FORM",
    "name": "/material-tracking/packages \"Open a package\": an empty form cannot be saved and says what is missing",
    "status": "PASS",
@@ -2711,10 +2737,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1368
+   "ms": 1361
   },
   {
-   "id": 67,
+   "id": 68,
    "cat": "FORM",
    "name": "a new customer typed once and saved with a double click is stored once",
    "status": "PASS",
@@ -2742,10 +2768,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2962
+   "ms": 2973
   },
   {
-   "id": 68,
+   "id": 69,
    "cat": "FORM",
    "name": "a customer code already in use is refused with the reason, and what was typed is kept",
    "status": "PASS",
@@ -2773,10 +2799,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2890
+   "ms": 2951
   },
   {
-   "id": 69,
+   "id": 70,
    "cat": "FORM",
    "name": "when the server fails on save, the form says so and keeps every entry",
    "status": "PASS",
@@ -2809,10 +2835,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3035
+   "ms": 3076
   },
   {
-   "id": 70,
+   "id": 71,
    "cat": "FORM",
    "name": "a new shipment for an order number that is not on file says so and creates nothing",
    "status": "PASS",
@@ -2835,10 +2861,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1630
+   "ms": 1730
   },
   {
-   "id": 71,
+   "id": 72,
    "cat": "FORM",
    "name": "a new return for an order number that is not on file says so and creates nothing",
    "status": "PASS",
@@ -2861,10 +2887,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1527
+   "ms": 1697
   },
   {
-   "id": 72,
+   "id": 73,
    "cat": "FORM",
    "name": "a new package for an order number that is not on file says so and creates nothing",
    "status": "PASS",
@@ -2887,10 +2913,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1555
+   "ms": 1756
   },
   {
-   "id": 73,
+   "id": 74,
    "cat": "FORM",
    "name": "a new heat: the save button comes on only when the required entries are in",
    "status": "PASS",
@@ -2918,10 +2944,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1388
+   "ms": 1474
   },
   {
-   "id": 74,
+   "id": 75,
    "cat": "FORM",
    "name": "a new purchase order: lines can be added and removed, and a line with no quantity cannot be saved",
    "status": "PASS",
@@ -2949,10 +2975,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1687
+   "ms": 1800
   },
   {
-   "id": 75,
+   "id": 76,
    "cat": "FORM",
    "name": "order entry: leaving with an order half typed asks first, and Stay keeps every entry",
    "status": "PASS",
@@ -2980,10 +3006,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1661
+   "ms": 1907
   },
   {
-   "id": 76,
+   "id": 77,
    "cat": "FORM",
    "name": "order entry: choosing to leave does leave, and an untouched form never asks",
    "status": "PASS",
@@ -3006,10 +3032,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3369
+   "ms": 3540
   },
   {
-   "id": 77,
+   "id": 78,
    "cat": "FORM",
    "name": "order entry: closing or reloading the tab with an order half typed brings the browser warning",
    "status": "PASS",
@@ -3032,10 +3058,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6393
+   "ms": 6757
   },
   {
-   "id": 78,
+   "id": 79,
    "cat": "FORM",
    "name": "a button on a sample screen says it is not built and sends nothing",
    "status": "PASS",
@@ -3063,10 +3089,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1345
+   "ms": 1208
   },
   {
-   "id": 79,
+   "id": 80,
    "cat": "FORM",
    "name": "Print on an order sends the order to the printer and the menu is left off the paper",
    "status": "PASS",
@@ -3099,10 +3125,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1220
+   "ms": 1286
   },
   {
-   "id": 80,
+   "id": 81,
    "cat": "FORM",
    "name": "a new user with a malformed email or a short password is refused and not created",
    "status": "PASS",
@@ -3125,10 +3151,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3066
+   "ms": 3172
   },
   {
-   "id": 81,
+   "id": 82,
    "cat": "FORM",
    "name": "a request for quote typed in the dialog is saved once and appears in the list",
    "status": "PASS",
@@ -3156,10 +3182,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1728
+   "ms": 1750
   },
   {
-   "id": 82,
+   "id": 83,
    "cat": "FORM",
    "name": "deactivating a user asks in the application's own box, and Cancel changes nothing",
    "status": "PASS",
@@ -3187,10 +3213,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 5584
+   "ms": 5683
   },
   {
-   "id": 83,
+   "id": 84,
    "cat": "FORM",
    "name": "a sample form that used to announce a save now says nothing was saved",
    "status": "PASS",
@@ -3213,10 +3239,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2184
+   "ms": 2235
   },
   {
-   "id": 84,
+   "id": 85,
    "cat": "SALES",
    "name": "the order list shows the orders the server sent, newest first, with customer and total",
    "status": "PASS",
@@ -3254,10 +3280,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2225
+   "ms": 2287
   },
   {
-   "id": 85,
+   "id": 86,
    "cat": "SALES",
    "name": "choosing an order in the list shows its lines, and Enter on the keyboard does the same",
    "status": "PASS",
@@ -3280,10 +3306,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1272
+   "ms": 1356
   },
   {
-   "id": 86,
+   "id": 87,
    "cat": "SALES",
    "name": "an order page shows the number, customer, lines and money exactly as stored",
    "status": "PASS",
@@ -3321,10 +3347,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2224
+   "ms": 2278
   },
   {
-   "id": 87,
+   "id": 88,
    "cat": "SALES",
    "name": "an order page: the tabs work from the keyboard and the history names who did what",
    "status": "PASS",
@@ -3352,10 +3378,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2497
+   "ms": 2501
   },
   {
-   "id": 88,
+   "id": 89,
    "cat": "SALES",
    "name": "an order that does not exist says so, with no blank page and no error",
    "status": "PASS",
@@ -3373,10 +3399,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 21645
+   "ms": 21670
   },
   {
-   "id": 89,
+   "id": 90,
    "cat": "SALES",
    "name": "New Order on the order list opens order entry",
    "status": "PASS",
@@ -3394,10 +3420,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1388
+   "ms": 1443
   },
   {
-   "id": 90,
+   "id": 91,
    "cat": "SALES",
    "name": "Refresh on the order list asks the server again and shows an order made meanwhile",
    "status": "PASS",
@@ -3415,10 +3441,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2437
+   "ms": 2572
   },
   {
-   "id": 91,
+   "id": 92,
    "cat": "SALES",
    "name": "the customer list shows the customers the server sent, and the count it reports",
    "status": "PASS",
@@ -3456,10 +3482,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2219
+   "ms": 2088
   },
   {
-   "id": 92,
+   "id": 93,
    "cat": "SALES",
    "name": "searching customers narrows the list to what the server finds for that text",
    "status": "PASS",
@@ -3482,10 +3508,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4068
+   "ms": 4179
   },
   {
-   "id": 93,
+   "id": 94,
    "cat": "SALES",
    "name": "the next page of customers is the server’s second page, and Previous goes back",
    "status": "PASS",
@@ -3513,10 +3539,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3183
+   "ms": 3105
   },
   {
-   "id": 94,
+   "id": 95,
    "cat": "SALES",
    "name": "a customer name holding markup is shown as text and runs nothing",
    "status": "PASS",
@@ -3549,10 +3575,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2335
+   "ms": 2407
   },
   {
-   "id": 95,
+   "id": 96,
    "cat": "SALES",
    "name": "the address /customers?search= opens the list already narrowed",
    "status": "PASS",
@@ -3570,10 +3596,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2099
+   "ms": 1968
   },
   {
-   "id": 96,
+   "id": 97,
    "cat": "SALES",
    "name": "the More actions menu on a customer opens, closes on Escape and gives focus back",
    "status": "PASS",
@@ -3606,10 +3632,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1399
+   "ms": 1518
   },
   {
-   "id": 97,
+   "id": 98,
    "cat": "SALES",
    "name": "the RFQ list shows the requests the server sent for the Open view",
    "status": "PASS",
@@ -3642,10 +3668,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2049
+   "ms": 2039
   },
   {
-   "id": 98,
+   "id": 99,
    "cat": "SALES",
    "name": "the RFQ list: \"Won\" asks the server for that view and shows only what it sent",
    "status": "PASS",
@@ -3673,10 +3699,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2720
+   "ms": 2811
   },
   {
-   "id": 99,
+   "id": 100,
    "cat": "SALES",
    "name": "the RFQ list: \"Lost\" asks the server for that view and shows only what it sent",
    "status": "PASS",
@@ -3704,10 +3730,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2677
+   "ms": 2704
   },
   {
-   "id": 100,
+   "id": 101,
    "cat": "SALES",
    "name": "the RFQ list: \"All\" asks the server for that view and shows only what it sent",
    "status": "PASS",
@@ -3735,10 +3761,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2760
+   "ms": 2841
   },
   {
-   "id": 101,
+   "id": 102,
    "cat": "SALES",
    "name": "opening an RFQ shows what the customer asked for, as stored",
    "status": "PASS",
@@ -3761,10 +3787,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1921
+   "ms": 1964
   },
   {
-   "id": 102,
+   "id": 103,
    "cat": "SALES",
    "name": "the price list search narrows the products shown and clearing it brings them back",
    "status": "PASS",
@@ -3787,10 +3813,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3926
+   "ms": 3945
   },
   {
-   "id": 103,
+   "id": 104,
    "cat": "SALES",
    "name": "the price list shows the list price stored for a product",
    "status": "PASS",
@@ -3803,10 +3829,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2096
+   "ms": 2149
   },
   {
-   "id": 104,
+   "id": 105,
    "cat": "SALES",
    "name": "order entry: the customer lookup finds a customer and puts them on the order",
    "status": "PASS",
@@ -3834,10 +3860,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3453
+   "ms": 3579
   },
   {
-   "id": 105,
+   "id": 106,
    "cat": "SALES",
    "name": "order entry: Submit with no customer and no lines is stopped, says why, and saves nothing",
    "status": "PASS",
@@ -3860,10 +3886,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1304
+   "ms": 1456
   },
   {
-   "id": 106,
+   "id": 107,
    "cat": "SALES",
    "name": "the dashboard’s recent orders are the server’s newest orders, not sample rows",
    "status": "PASS",
@@ -3886,10 +3912,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3873
+   "ms": 3851
   },
   {
-   "id": 107,
+   "id": 108,
    "cat": "SALES",
    "name": "the web shop lists products the server sent and searching narrows them",
    "status": "PASS",
@@ -3917,10 +3943,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3837
+   "ms": 3704
   },
   {
-   "id": 108,
+   "id": 109,
    "cat": "SALES",
    "name": "the web shop: a customer’s order list holds only that customer’s orders",
    "status": "PASS",
@@ -3943,10 +3969,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 25408
+   "ms": 6781
   },
   {
-   "id": 109,
+   "id": 110,
    "cat": "SALES",
    "name": "the web checkout takes no card and says the order is on account",
    "status": "PASS",
@@ -3964,10 +3990,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2573
+   "ms": 2576
   },
   {
-   "id": 110,
+   "id": 111,
    "cat": "STOCK",
    "name": "the stock list shows the items the server sent, with heat, grade and location",
    "status": "PASS",
@@ -4005,10 +4031,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2343
+   "ms": 2430
   },
   {
-   "id": 111,
+   "id": 112,
    "cat": "STOCK",
    "name": "searching stock narrows the list to what the server finds, and an unknown number says so",
    "status": "PASS",
@@ -4031,10 +4057,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4225
+   "ms": 4272
   },
   {
-   "id": 112,
+   "id": 113,
    "cat": "STOCK",
    "name": "a stock item opens from its row with the keyboard and shows what is on file",
    "status": "PASS",
@@ -4067,10 +4093,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3317
+   "ms": 3386
   },
   {
-   "id": 113,
+   "id": 114,
    "cat": "STOCK",
    "name": "stock reserved for an order shows as reserved and not available, as the server holds it",
    "status": "PASS",
@@ -4093,10 +4119,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2085
+   "ms": 2312
   },
   {
-   "id": 114,
+   "id": 115,
    "cat": "STOCK",
    "name": "a stock item: \"Move\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
    "status": "PASS",
@@ -4129,10 +4155,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1567
+   "ms": 1716
   },
   {
-   "id": 115,
+   "id": 116,
    "cat": "STOCK",
    "name": "a stock item: \"Correct quantity\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
    "status": "PASS",
@@ -4165,10 +4191,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1590
+   "ms": 1645
   },
   {
-   "id": 116,
+   "id": 117,
    "cat": "STOCK",
    "name": "a stock item: \"Put on hold\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
    "status": "PASS",
@@ -4201,10 +4227,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1575
+   "ms": 1671
   },
   {
-   "id": 117,
+   "id": 118,
    "cat": "STOCK",
    "name": "a stock item: \"Edit\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
    "status": "PASS",
@@ -4232,10 +4258,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1665
+   "ms": 1850
   },
   {
-   "id": 118,
+   "id": 119,
    "cat": "STOCK",
    "name": "a quantity correction made on screen is stored once with its reason and shows in the history",
    "status": "PASS",
@@ -4273,10 +4299,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2579
+   "ms": 2703
   },
   {
-   "id": 119,
+   "id": 120,
    "cat": "STOCK",
    "name": "a branch’s stock list holds only that branch’s stock",
    "status": "PASS",
@@ -4309,10 +4335,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6593
+   "ms": 6735
   },
   {
-   "id": 120,
+   "id": 121,
    "cat": "STOCK",
    "name": "the heat list shows the heats the server sent and searching narrows it",
    "status": "PASS",
@@ -4350,10 +4376,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3192
+   "ms": 3369
   },
   {
-   "id": 121,
+   "id": 122,
    "cat": "STOCK",
    "name": "a heat page shows its grade and its stock items, and the tabs can be worked by keyboard",
    "status": "PASS",
@@ -4386,10 +4412,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3425
+   "ms": 3521
   },
   {
-   "id": 122,
+   "id": 123,
    "cat": "STOCK",
    "name": "receiving lists what is expected from open purchase orders and what was received, from the server",
    "status": "PASS",
@@ -4417,10 +4443,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2819
+   "ms": 3022
   },
   {
-   "id": 123,
+   "id": 124,
    "cat": "STOCK",
    "name": "receiving an item on screen: an unknown heat is said first, then a real item is stored once and listed",
    "status": "PASS",
@@ -4458,10 +4484,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4101
+   "ms": 4008
   },
   {
-   "id": 124,
+   "id": 125,
    "cat": "STOCK",
    "name": "the receipts search narrows the list and says when nothing matches",
    "status": "PASS",
@@ -4479,10 +4505,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3905
+   "ms": 3937
   },
   {
-   "id": 125,
+   "id": 126,
    "cat": "STOCK",
    "name": "the purchase order list shows the orders the server sent, with supplier and total",
    "status": "PASS",
@@ -4520,10 +4546,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2073
+   "ms": 2141
   },
   {
-   "id": 126,
+   "id": 127,
    "cat": "STOCK",
    "name": "a purchase order opens from its row and shows its lines and total as stored",
    "status": "PASS",
@@ -4556,10 +4582,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2172
+   "ms": 2338
   },
   {
-   "id": 127,
+   "id": 128,
    "cat": "STOCK",
    "name": "the Supply position tab shows figures from the server and the tabs keep their place",
    "status": "PASS",
@@ -4587,10 +4613,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3345
+   "ms": 3383
   },
   {
-   "id": 128,
+   "id": 129,
    "cat": "STOCK",
    "name": "a receiving clerk may receive but may not raise or change a purchase order",
    "status": "PASS",
@@ -4613,10 +4639,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2272
+   "ms": 2344
   },
   {
-   "id": 129,
+   "id": 130,
    "cat": "STOCK",
    "name": "the packing list of packages shows what the server sent",
    "status": "PASS",
@@ -4649,10 +4675,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2205
+   "ms": 2279
   },
   {
-   "id": 130,
+   "id": 131,
    "cat": "STOCK",
    "name": "the stock list pages: the second page is the server’s second page",
    "status": "PASS",
@@ -4675,10 +4701,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2879
+   "ms": 3070
   },
   {
-   "id": 131,
+   "id": 132,
    "cat": "STOCK",
    "name": "stock columns have headers a screen reader can use, and status is said in words",
    "status": "PASS",
@@ -4701,10 +4727,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1308
+   "ms": 1407
   },
   {
-   "id": 132,
+   "id": 133,
    "cat": "STOCK",
    "name": "the stock upload dialog explains its steps and cannot continue without a choice",
    "status": "PASS",
@@ -4727,10 +4753,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 13415
+   "ms": 13473
   },
   {
-   "id": 133,
+   "id": 134,
    "cat": "STOCK",
    "name": "a buyer starts at stock and can reach purchase orders; a clerk in sales cannot receive",
    "status": "PASS",
@@ -4753,10 +4779,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2989
+   "ms": 2940
   },
   {
-   "id": 134,
+   "id": 135,
    "cat": "STOCK",
    "name": "Refresh on the stock list shows an item received meanwhile, without reloading the page",
    "status": "PASS",
@@ -4779,10 +4805,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2440
+   "ms": 2567
   },
   {
-   "id": 135,
+   "id": 136,
    "cat": "STOCK",
    "name": "a receiving clerk cannot correct a quantity: the server refuses, and the screen does not pretend it worked",
    "status": "PASS",
@@ -4805,10 +4831,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2508
+   "ms": 2626
   },
   {
-   "id": 136,
+   "id": 137,
    "cat": "STOCK",
    "name": "an item on its way to another branch says In Transit on its row in the stock list (K-014)",
    "status": "PASS",
@@ -4826,10 +4852,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3172
+   "ms": 3420
   },
   {
-   "id": 137,
+   "id": 138,
    "cat": "MAKE",
    "name": "the work order list shows the work orders the server sent",
    "status": "PASS",
@@ -4857,10 +4883,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2076
+   "ms": 2265
   },
   {
-   "id": 138,
+   "id": 139,
    "cat": "MAKE",
    "name": "the work order search narrows the list on screen and an unknown number says so",
    "status": "PASS",
@@ -4878,10 +4904,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3527
+   "ms": 3744
   },
   {
-   "id": 139,
+   "id": 140,
    "cat": "MAKE",
    "name": "a work order opens from its row by keyboard and shows the stored source item and weights",
    "status": "PASS",
@@ -4909,10 +4935,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2804
+   "ms": 2870
   },
   {
-   "id": 140,
+   "id": 141,
    "cat": "MAKE",
    "name": "a work order that does not exist says so",
    "status": "PASS",
@@ -4930,10 +4956,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 21621
+   "ms": 21685
   },
   {
-   "id": 141,
+   "id": 142,
    "cat": "MAKE",
    "name": "a new work order cannot be created without a source item, and says so",
    "status": "PASS",
@@ -4956,10 +4982,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1046
+   "ms": 1242
   },
   {
-   "id": 142,
+   "id": 143,
    "cat": "MAKE",
    "name": "the schedule shows only the manager’s own branch’s work centres, and the jobs the server sent for the day",
    "status": "PASS",
@@ -4987,10 +5013,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2395
+   "ms": 2463
   },
   {
-   "id": 143,
+   "id": 144,
    "cat": "MAKE",
    "name": "the schedule: Next Day and Previous Day ask the server for that day, and Today comes back",
    "status": "PASS",
@@ -5018,10 +5044,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6117
+   "ms": 6626
   },
   {
-   "id": 144,
+   "id": 145,
    "cat": "MAKE",
    "name": "the schedule: the Queue View tab lists jobs waiting, by keyboard",
    "status": "PASS",
@@ -5044,10 +5070,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3170
+   "ms": 3154
   },
   {
-   "id": 145,
+   "id": 146,
    "cat": "MAKE",
    "name": "the order board shows real jobs in the column of their stored status",
    "status": "PASS",
@@ -5075,10 +5101,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4169
+   "ms": 4441
   },
   {
-   "id": 146,
+   "id": 147,
    "cat": "MAKE",
    "name": "a job card opens with Enter and shows the stored customer and operation, and Escape closes it",
    "status": "PASS",
@@ -5111,10 +5137,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6398
+   "ms": 7490
   },
   {
-   "id": 147,
+   "id": 148,
    "cat": "MAKE",
    "name": "the order board search narrows the cards to jobs matching the text",
    "status": "PASS",
@@ -5132,10 +5158,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 5028
+   "ms": 5398
   },
   {
-   "id": 148,
+   "id": 149,
    "cat": "MAKE",
    "name": "a job page shows its history with who did each step, as stored",
    "status": "PASS",
@@ -5163,10 +5189,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2183
+   "ms": 2304
   },
   {
-   "id": 149,
+   "id": 150,
    "cat": "MAKE",
    "name": "Change status on a job offers only real next steps and Cancel changes nothing",
    "status": "PASS",
@@ -5189,10 +5215,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1597
+   "ms": 1662
   },
   {
-   "id": 150,
+   "id": 151,
    "cat": "MAKE",
    "name": "a job at another branch cannot be opened by address",
    "status": "PASS",
@@ -5215,10 +5241,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 21714
+   "ms": 21710
   },
   {
-   "id": 151,
+   "id": 152,
    "cat": "MAKE",
    "name": "the quality station: the counts and the queue are the server’s",
    "status": "PASS",
@@ -5246,10 +5272,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2356
+   "ms": 2434
   },
   {
-   "id": 152,
+   "id": 153,
    "cat": "MAKE",
    "name": "the quality station tabs each show what the server sent for them",
    "status": "PASS",
@@ -5277,10 +5303,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4646
+   "ms": 4684
   },
   {
-   "id": 153,
+   "id": 154,
    "cat": "MAKE",
    "name": "a saw operator cannot record a quality result: the server refuses and the queue offers no way round",
    "status": "PASS",
@@ -5298,10 +5324,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 16
+   "ms": 14
   },
   {
-   "id": 154,
+   "id": 155,
    "cat": "MAKE",
    "name": "the shop floor lists the work centres of the operator’s branch and opens one",
    "status": "PASS",
@@ -5329,10 +5355,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 5743
+   "ms": 5719
   },
   {
-   "id": 155,
+   "id": 156,
    "cat": "MAKE",
    "name": "an operator sees no button to create a work centre that the server would refuse",
    "status": "PASS",
@@ -5355,10 +5381,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2730
+   "ms": 2853
   },
   {
-   "id": 156,
+   "id": 157,
    "cat": "MAKE",
    "name": "the production board lists real jobs under their stored stage",
    "status": "PASS",
@@ -5381,10 +5407,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3832
+   "ms": 3965
   },
   {
-   "id": 157,
+   "id": 158,
    "cat": "MAKE",
    "name": "the time report: tabs, filters and the totals come from the server, and the export holds the same rows",
    "status": "PASS",
@@ -5417,10 +5443,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4417
+   "ms": 4670
   },
   {
-   "id": 158,
+   "id": 159,
    "cat": "MAKE",
    "name": "the New Job dialog: a job typed once and saved with a double click is stored once",
    "status": "PASS",
@@ -5443,10 +5469,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 11368
+   "ms": 12902
   },
   {
-   "id": 159,
+   "id": 160,
    "cat": "MAKE",
    "name": "the bills of material screen says plainly that it is a sample and saves nothing",
    "status": "PASS",
@@ -5469,10 +5495,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3238
+   "ms": 3221
   },
   {
-   "id": 160,
+   "id": 161,
    "cat": "MAKE",
    "name": "the manufacturing lists can be read on a tablet without the page scrolling sideways",
    "status": "PASS",
@@ -5520,10 +5546,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 10541
+   "ms": 11528
   },
   {
-   "id": 161,
+   "id": 162,
    "cat": "MAKE",
    "name": "a scheduler may plan but may not change a price or read invoices",
    "status": "PASS",
@@ -5546,10 +5572,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2065
+   "ms": 2280
   },
   {
-   "id": 162,
+   "id": 163,
    "cat": "MAKE",
    "name": "a full column on the order board draws its first cards and offers the rest",
    "status": "PASS",
@@ -5577,10 +5603,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6938
+   "ms": 7261
   },
   {
-   "id": 163,
+   "id": 164,
    "cat": "SHIP",
    "name": "the shipment list shows the shipments the server sent",
    "status": "PASS",
@@ -5608,10 +5634,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2160
+   "ms": 2359
   },
   {
-   "id": 164,
+   "id": 165,
    "cat": "SHIP",
    "name": "searching shipments narrows the list to what the server finds, and nothing found says so",
    "status": "PASS",
@@ -5634,10 +5660,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4082
+   "ms": 4142
   },
   {
-   "id": 165,
+   "id": 166,
    "cat": "SHIP",
    "name": "a shipment opens from its row by keyboard and shows the stored order, customer and quantities",
    "status": "PASS",
@@ -5665,10 +5691,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3294
+   "ms": 3467
   },
   {
-   "id": 166,
+   "id": 167,
    "cat": "SHIP",
    "name": "Dispatch asks first, and a double click on Dispatch now ships once and raises one invoice",
    "status": "PASS",
@@ -5711,10 +5737,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1700
+   "ms": 1684
   },
   {
-   "id": 167,
+   "id": 168,
    "cat": "SHIP",
    "name": "two people on one shipment: the second Dispatch is told it already left and nothing is billed twice",
    "status": "PASS",
@@ -5747,10 +5773,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2891
+   "ms": 2980
   },
   {
-   "id": 168,
+   "id": 169,
    "cat": "SHIP",
    "name": "a shipment with no stock reserved cannot be dispatched and the screen says what to do",
    "status": "PASS",
@@ -5778,10 +5804,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1309
+   "ms": 1407
   },
   {
-   "id": 169,
+   "id": 170,
    "cat": "SHIP",
    "name": "delivery cannot be saved without who received it; with a name it is stored once",
    "status": "PASS",
@@ -5809,10 +5835,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1813
+   "ms": 1909
   },
   {
-   "id": 170,
+   "id": 171,
    "cat": "SHIP",
    "name": "Cancel shipment asks first; No keeps it, Yes cancels it once and leaves the stock reserved to the order",
    "status": "PASS",
@@ -5845,10 +5871,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1893
+   "ms": 2078
   },
   {
-   "id": 171,
+   "id": 172,
    "cat": "SHIP",
    "name": "the packing list and the bill of lading open as papers with the stored lines, and print without the app around them",
    "status": "PASS",
@@ -5886,10 +5912,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1536
+   "ms": 1866
   },
   {
-   "id": 172,
+   "id": 173,
    "cat": "SHIP",
    "name": "carrier and truck details typed on screen are stored and shown",
    "status": "PASS",
@@ -5907,10 +5933,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1565
+   "ms": 1719
   },
   {
-   "id": 173,
+   "id": 174,
    "cat": "SHIP",
    "name": "the dock sees that an invoice was raised and its number, and no amount; sales sees the amount",
    "status": "PASS",
@@ -5938,10 +5964,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2374
+   "ms": 2816
   },
   {
-   "id": 174,
+   "id": 175,
    "cat": "SHIP",
    "name": "the invoice list shows the invoices the server sent for the Open view",
    "status": "PASS",
@@ -5974,10 +6000,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2371
+   "ms": 2570
   },
   {
-   "id": 175,
+   "id": 176,
    "cat": "SHIP",
    "name": "the invoice list: \"Paid\" asks the server for that view and every row fits it",
    "status": "PASS",
@@ -6000,10 +6026,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3417
+   "ms": 3699
   },
   {
-   "id": 176,
+   "id": 177,
    "cat": "SHIP",
    "name": "the invoice list: \"Overdue\" asks the server for that view and every row fits it",
    "status": "PASS",
@@ -6026,10 +6052,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3509
+   "ms": 3799
   },
   {
-   "id": 177,
+   "id": 178,
    "cat": "SHIP",
    "name": "the invoice list: \"All\" asks the server for that view and every row fits it",
    "status": "PASS",
@@ -6052,10 +6078,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3500
+   "ms": 3632
   },
   {
-   "id": 178,
+   "id": 179,
    "cat": "SHIP",
    "name": "an invoice opens with every figure as stored: subtotal, tax, freight, total, paid and balance",
    "status": "PASS",
@@ -6093,10 +6119,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1591
+   "ms": 1801
   },
   {
-   "id": 179,
+   "id": 180,
    "cat": "SHIP",
    "name": "a payment larger than the balance is refused; a right one saved with a double click is recorded once",
    "status": "PASS",
@@ -6129,10 +6155,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3140
+   "ms": 3336
   },
   {
-   "id": 180,
+   "id": 181,
    "cat": "SHIP",
    "name": "an auditor may read invoices and may not record a payment",
    "status": "PASS",
@@ -6160,10 +6186,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3000
+   "ms": 3325
   },
   {
-   "id": 181,
+   "id": 182,
    "cat": "SHIP",
    "name": "the invoices page tells a shop role who may read invoices, and shows none",
    "status": "PASS",
@@ -6181,10 +6207,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2805
+   "ms": 2940
   },
   {
-   "id": 182,
+   "id": 183,
    "cat": "SHIP",
    "name": "“Owed by age” shows the server’s figures for what customers owe",
    "status": "PASS",
@@ -6202,10 +6228,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3718
+   "ms": 3782
   },
   {
-   "id": 183,
+   "id": 184,
    "cat": "SHIP",
    "name": "the returns list shows the returns the server sent, with their value",
    "status": "PASS",
@@ -6223,10 +6249,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2624
+   "ms": 2721
   },
   {
-   "id": 184,
+   "id": 185,
    "cat": "SHIP",
    "name": "orders not closed: a filter asks the server and the rows are what it sent",
    "status": "PASS",
@@ -6249,10 +6275,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3871
+   "ms": 4085
   },
   {
-   "id": 185,
+   "id": 186,
    "cat": "SHIP",
    "name": "a shipment of another branch cannot be opened by address",
    "status": "PASS",
@@ -6275,10 +6301,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 21676
+   "ms": 21763
   },
   {
-   "id": 186,
+   "id": 187,
    "cat": "SHIP",
    "name": "on a phone a shipment can be read and dispatched: nothing runs off the screen and the buttons are big enough",
    "status": "PASS",
@@ -6311,10 +6337,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1652
+   "ms": 1850
   },
   {
-   "id": 187,
+   "id": 188,
    "cat": "SHIP",
    "name": "a lost load can be ended only by a manager: the dock is told so and nothing is credited",
    "status": "PASS",
@@ -6337,10 +6363,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 187
+   "ms": 209
   },
   {
-   "id": 188,
+   "id": 189,
    "cat": "FIT",
    "name": "/orders fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
    "status": "PASS",
@@ -6423,10 +6449,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 12596
+   "ms": 14360
   },
   {
-   "id": 189,
+   "id": 190,
    "cat": "FIT",
    "name": "/customers fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
    "status": "PASS",
@@ -6509,10 +6535,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 11896
+   "ms": 13274
   },
   {
-   "id": 190,
+   "id": 191,
    "cat": "FIT",
    "name": "/units fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
    "status": "PASS",
@@ -6595,10 +6621,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 13260
+   "ms": 13984
   },
   {
-   "id": 191,
+   "id": 192,
    "cat": "FIT",
    "name": "/shipping fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
    "status": "PASS",
@@ -6681,10 +6707,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 12133
+   "ms": 13054
   },
   {
-   "id": 192,
+   "id": 193,
    "cat": "FIT",
    "name": "/orders/invoices fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
    "status": "PASS",
@@ -6767,10 +6793,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 13256
+   "ms": 13919
   },
   {
-   "id": 193,
+   "id": 194,
    "cat": "FIT",
    "name": "with text at twice the size the main screens still do not scroll sideways",
    "status": "PASS",
@@ -6808,10 +6834,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 8455
+   "ms": 9415
   },
   {
-   "id": 194,
+   "id": 195,
    "cat": "FIT",
    "name": "on a phone a wide table scrolls inside its own frame and keeps its headers",
    "status": "PASS",
@@ -6849,10 +6875,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3910
+   "ms": 4028
   },
   {
-   "id": 195,
+   "id": 196,
    "cat": "FIT",
    "name": "on a phone every button and link in the main lists is big enough for a finger",
    "status": "PASS",
@@ -6880,10 +6906,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 10080
+   "ms": 10385
   },
   {
-   "id": 196,
+   "id": 197,
    "cat": "FIT",
    "name": "on a tablet the menu is put away and the page uses the whole width",
    "status": "PASS",
@@ -6906,10 +6932,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2223
+   "ms": 2282
   },
   {
-   "id": 197,
+   "id": 198,
    "cat": "FIT",
    "name": "a phone turned sideways: a dialog fits the height and its buttons can be reached",
    "status": "PASS",
@@ -6927,10 +6953,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1514
+   "ms": 1754
   },
   {
-   "id": 198,
+   "id": 199,
    "cat": "FIT",
    "name": "signing in and opening a page needs no mouse",
    "status": "PASS",
@@ -6948,10 +6974,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2130
+   "ms": 2008
   },
   {
-   "id": 199,
+   "id": 200,
    "cat": "FIT",
    "name": "the keyboard’s place is always visible: every stop of the first twenty has a focus ring",
    "status": "PASS",
@@ -6969,10 +6995,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6791
+   "ms": 6855
   },
   {
-   "id": 200,
+   "id": 201,
    "cat": "FIT",
    "name": "each main screen has one heading, one main area, a named menu and a search landmark",
    "status": "PASS",
@@ -7030,10 +7056,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 22204
+   "ms": 23530
   },
   {
-   "id": 201,
+   "id": 202,
    "cat": "FIT",
    "name": "on the main screens no control is without a name and no field without a label",
    "status": "PASS",
@@ -7091,10 +7117,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 24044
+   "ms": 25044
   },
   {
-   "id": 202,
+   "id": 203,
    "cat": "FIT",
    "name": "text on the main screens is readable against its background (4.5 to 1, or 3 to 1 for large text)",
    "status": "PASS",
@@ -7132,10 +7158,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 15692
+   "ms": 16188
   },
   {
-   "id": 203,
+   "id": 204,
    "cat": "FIT",
    "name": "a person who asks for less motion gets none: dialogs and the menu do not animate",
    "status": "PASS",
@@ -7153,10 +7179,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2735
+   "ms": 2957
   },
   {
-   "id": 204,
+   "id": 205,
    "cat": "FIT",
    "name": "a form tells a screen reader what is required and what is wrong",
    "status": "PASS",
@@ -7184,10 +7210,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3043
+   "ms": 3132
   },
   {
-   "id": 205,
+   "id": 206,
    "cat": "FIT",
    "name": "messages that appear by themselves are announced, and the page can be zoomed",
    "status": "PASS",
@@ -7205,10 +7231,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 1321
+   "ms": 1337
   },
   {
-   "id": 206,
+   "id": 207,
    "cat": "FIT",
    "name": "tables say which column is which: header cells are real headers on every main list",
    "status": "PASS",
@@ -7246,10 +7272,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 7216
+   "ms": 7696
   },
   {
-   "id": 207,
+   "id": 208,
    "cat": "FIT",
    "name": "pictures and icons: none is read out as noise, none is missing its description",
    "status": "PASS",
@@ -7277,10 +7303,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 8852
+   "ms": 9329
   },
   {
-   "id": 208,
+   "id": 209,
    "cat": "FAIL",
    "name": "/orders: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
    "status": "PASS",
@@ -7316,7 +7342,7 @@
    "ms": 4804
   },
   {
-   "id": 209,
+   "id": 210,
    "cat": "FAIL",
    "name": "/customers: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
    "status": "PASS",
@@ -7349,10 +7375,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4804
+   "ms": 4926
   },
   {
-   "id": 210,
+   "id": 211,
    "cat": "FAIL",
    "name": "/units: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
    "status": "PASS",
@@ -7385,10 +7411,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 5075
+   "ms": 5102
   },
   {
-   "id": 211,
+   "id": 212,
    "cat": "FAIL",
    "name": "/shipping: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
    "status": "PASS",
@@ -7421,10 +7447,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4728
+   "ms": 4821
   },
   {
-   "id": 212,
+   "id": 213,
    "cat": "FAIL",
    "name": "/work-orders: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
    "status": "PASS",
@@ -7457,10 +7483,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4586
+   "ms": 4873
   },
   {
-   "id": 213,
+   "id": 214,
    "cat": "FAIL",
    "name": "/orders/invoices: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
    "status": "PASS",
@@ -7493,10 +7519,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 6989
+   "ms": 7322
   },
   {
-   "id": 214,
+   "id": 215,
    "cat": "FAIL",
    "name": "/customers: when there is nothing to list, the screen says there is nothing, not that something failed",
    "status": "PASS",
@@ -7524,10 +7550,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3190
+   "ms": 3144
   },
   {
-   "id": 215,
+   "id": 216,
    "cat": "FAIL",
    "name": "/units: when there is nothing to list, the screen says there is nothing, not that something failed",
    "status": "PASS",
@@ -7555,10 +7581,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3453
+   "ms": 3549
   },
   {
-   "id": 216,
+   "id": 217,
    "cat": "FAIL",
    "name": "/shipping: when there is nothing to list, the screen says there is nothing, not that something failed",
    "status": "PASS",
@@ -7586,10 +7612,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3217
+   "ms": 3358
   },
   {
-   "id": 217,
+   "id": 218,
    "cat": "FAIL",
    "name": "/work-orders: when there is nothing to list, the screen says there is nothing, not that something failed",
    "status": "PASS",
@@ -7617,10 +7643,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3057
+   "ms": 3423
   },
   {
-   "id": 218,
+   "id": 219,
    "cat": "FAIL",
    "name": "a slow server: the list says it is loading, then shows the records",
    "status": "PASS",
@@ -7643,10 +7669,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3884
+   "ms": 3946
   },
   {
-   "id": 219,
+   "id": 220,
    "cat": "FAIL",
    "name": "the connection drops: the screen says so, does not crash, and works again when it is back",
    "status": "PASS",
@@ -7669,10 +7695,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 4087
+   "ms": 4207
   },
   {
-   "id": 220,
+   "id": 221,
    "cat": "FAIL",
    "name": "the session ends in the middle of work: the person is told, signs in, and is back on the same page",
    "status": "PASS",
@@ -7705,10 +7731,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2700
+   "ms": 3238
   },
   {
-   "id": 221,
+   "id": 222,
    "cat": "FAIL",
    "name": "signed out in another tab: the next page asked for leads to sign-in, and shows nothing",
    "status": "PASS",
@@ -7726,10 +7752,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2566
+   "ms": 2833
   },
   {
-   "id": 222,
+   "id": 223,
    "cat": "FAIL",
    "name": "a role loses a permission mid-session: the screen says it is not allowed, and shows no stale records as if current",
    "status": "PASS",
@@ -7752,10 +7778,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2995
+   "ms": 3106
   },
   {
-   "id": 223,
+   "id": 224,
    "cat": "FAIL",
    "name": "an answer that is not what the screen expects does not blank the page",
    "status": "PASS",
@@ -7778,10 +7804,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3106
+   "ms": 3258
   },
   {
-   "id": 224,
+   "id": 225,
    "cat": "FAIL",
    "name": "a record that is not on file says so on its own page: stock, heat, shipment, job",
    "status": "PASS",
@@ -7829,10 +7855,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 67615
+   "ms": 67967
   },
   {
-   "id": 225,
+   "id": 226,
    "cat": "FAIL",
    "name": "the order save helper sends the version it read, and the server refuses a save made from an older one",
    "status": "PASS",
@@ -7855,10 +7881,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 2332
+   "ms": 2488
   },
   {
-   "id": 226,
+   "id": 227,
    "cat": "FAIL",
    "name": "two people cancel and dispatch the same shipment at once: one wins, the other is told, the books agree",
    "status": "PASS",
@@ -7881,10 +7907,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 5358
+   "ms": 5402
   },
   {
-   "id": 227,
+   "id": 228,
    "cat": "FAIL",
    "name": "a payment the server fails to save is not shown as paid, and the amount typed is kept",
    "status": "PASS",
@@ -7912,10 +7938,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3085
+   "ms": 3250
   },
   {
-   "id": 228,
+   "id": 229,
    "cat": "FAIL",
    "name": "Back and Forward move between a list and a record without errors or a second save",
    "status": "PASS",
@@ -7943,10 +7969,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3371
+   "ms": 3402
   },
   {
-   "id": 229,
+   "id": 230,
    "cat": "FAIL",
    "name": "too many requests: the screen says to wait, and does not show an empty list as if there were no records",
    "status": "PASS",
@@ -7964,10 +7990,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 3461
+   "ms": 3492
   },
   {
-   "id": 230,
+   "id": 231,
    "cat": "FAIL",
    "name": "a long round of 24 screens in one tab: no page error, no failed call, no screen left blank",
    "status": "PASS",
@@ -7995,10 +8021,10 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 49425
+   "ms": 48690
   },
   {
-   "id": 231,
+   "id": 232,
    "cat": "FAIL",
    "name": "dashboards show no figure the server did not send: with the server failing, no tile shows a number",
    "status": "PASS",
@@ -8041,7 +8067,7 @@
    ],
    "crashed": "",
    "why": "",
-   "ms": 25516
+   "ms": 25739
   }
  ]
 }

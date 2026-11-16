@@ -25,6 +25,26 @@ Touch targets under 24 by 24 at phone size: 458 before, 3 now (`/freight/planner
 
 | Scenario | Checks | Result |
 |---|---:|---|
+| /orders fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach | 15 | PASS |
+| /customers fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach | 15 | PASS |
+| /units fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach | 15 | PASS |
+| /shipping fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach | 15 | PASS |
+| /orders/invoices fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach | 15 | PASS |
+| with text at twice the size the main screens still do not scroll sideways | 6 | PASS |
+| on a phone a wide table scrolls inside its own frame and keeps its headers | 6 | PASS |
+| on a phone every button and link in the main lists is big enough for a finger | 4 | PASS |
+| on a tablet the menu is put away and the page uses the whole width | 3 | PASS |
+| a phone turned sideways: a dialog fits the height and its buttons can be reached | 2 | PASS |
+| signing in and opening a page needs no mouse | 2 | PASS |
+| the keyboard’s place is always visible: every stop of the first twenty has a focus ring | 2 | PASS |
+| each main screen has one heading, one main area, a named menu and a search landmark | 10 | PASS |
+| on the main screens no control is without a name and no field without a label | 10 | PASS |
+| text on the main screens is readable against its background (4.5 to 1, or 3 to 1 for large text) | 6 | PASS |
+| a person who asks for less motion gets none: dialogs and the menu do not animate | 2 | PASS |
+| a form tells a screen reader what is required and what is wrong | 4 | PASS |
+| messages that appear by themselves are announced, and the page can be zoomed | 2 | PASS |
+| tables say which column is which: header cells are real headers on every main list | 6 | PASS |
+| pictures and icons: none is read out as noise, none is missing its description | 4 | PASS |
 
 ## Not verified
 

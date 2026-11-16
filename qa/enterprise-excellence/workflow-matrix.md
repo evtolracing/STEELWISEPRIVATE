@@ -98,7 +98,7 @@ Not part of any workflow, because they do not exist: an accounting ledger (N-025
 
 ### Phase 9 update (2026-11-16)
 
-Phase 9 changed no workflow rule. It walked the screens of each workflow in a browser (231 scenarios, `qa/sim/phase9-ui.cjs`) and compared what each shows with the record. What the screens now guarantee, by workflow:
+Phase 9 changed no workflow rule. It walked the screens of each workflow in a browser (232 scenarios, `qa/sim/phase9-ui.cjs`) and compared what each shows with the record. What the screens now guarantee, by workflow:
 
 | Workflow | Before Phase 9 | Now |
 |---|---|---|

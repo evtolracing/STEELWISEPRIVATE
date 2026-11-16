@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { bomApi } from '../../services/bomApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function BomRecipeListPage() {
   const navigate = useNavigate();
@@ -179,7 +180,7 @@ export default function BomRecipeListPage() {
                 </TableRow>
               ) : (
                 recipes.map((recipe) => (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={recipe.id}
                     hover
                     onClick={() => handleRowClick(recipe.id)}

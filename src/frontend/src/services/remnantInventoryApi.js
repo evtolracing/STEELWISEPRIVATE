@@ -26,14 +26,14 @@ export const REMNANT_TYPE = {
 
 export const REMNANT_CONDITION = {
   A: { code: 'A', label: 'Prime — clean edges, no defects',      color: '#2e7d32' },
-  B: { code: 'B', label: 'Good — minor surface marks / edge burr', color: '#f9a825' },
-  C: { code: 'C', label: 'Fair — oxidation, scratches, usable',  color: '#e65100' },
+  B: { code: 'B', label: 'Good — minor surface marks / edge burr', color: '#8A6100' },
+  C: { code: 'C', label: 'Fair — oxidation, scratches, usable',  color: '#A63A00' },
 }
 
 export const AGING_BUCKET = {
   FRESH:    { label: '< 30 days',    days: 30,   color: '#2e7d32', badge: 'New' },
-  MID:      { label: '30–60 days',   days: 60,   color: '#f9a825', badge: '30+' },
-  OLD:      { label: '60–90 days',   days: 90,   color: '#e65100', badge: '60+' },
+  MID:      { label: '30–60 days',   days: 60,   color: '#8A6100', badge: '30+' },
+  OLD:      { label: '60–90 days',   days: 90,   color: '#A63A00', badge: '60+' },
   STALE:    { label: '90+ days',     days: 9999, color: '#b71c1c', badge: '90+' },
 }
 

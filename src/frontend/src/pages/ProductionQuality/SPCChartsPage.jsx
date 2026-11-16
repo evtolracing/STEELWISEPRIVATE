@@ -50,6 +50,7 @@ import {
   Search,
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock SPC Chart Data
 const spcCharts = [
@@ -408,7 +409,7 @@ const SPCChartsPage = () => {
         <Grid container spacing={3}>
           {filteredCharts.map((chart) => (
             <Grid item xs={12} md={6} key={chart.id}>
-              <Card 
+              <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
                 sx={{ 
                   cursor: 'pointer',
                   border: chart.status === 'ALERT' ? 2 : chart.status === 'WARNING' ? 1 : 0,

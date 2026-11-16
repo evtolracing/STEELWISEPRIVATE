@@ -19,6 +19,7 @@ import ProductCardGrid from '../../components/ecommerce/ProductCardGrid'
 import { searchProducts, getDivisions } from '../../services/ecomCatalogApi'
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
 import { useCart } from '../../contexts/CartContext'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function ShopHomePage() {
   const navigate = useNavigate()
@@ -149,7 +150,7 @@ export default function ShopHomePage() {
             { label: 'Steel Outlet', desc: 'Drops, offcuts & overruns — save up to 65%', path: '/shop/remnants', icon: '♻️' },
           ].map(lnk => (
             <Grid item xs={12} sm={4} key={lnk.path}>
-              <Paper variant="outlined" sx={{ p: 2, cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, borderRadius: 2 }}
+              <Paper role="button" tabIndex={0} onKeyDown={activateOnKey} variant="outlined" sx={{ p: 2, cursor: 'pointer', '&:hover': { borderColor: 'primary.main' }, borderRadius: 2 }}
                 onClick={() => navigate(lnk.path)}>
                 <Typography variant="h5" sx={{ mb: 0.5 }}>{lnk.icon}</Typography>
                 <Typography variant="subtitle2" fontWeight={600}>{lnk.label}</Typography>

@@ -230,7 +230,7 @@ export default function QualityDashboardPage() {
             </Box>
             <Stack spacing={2}>
               {mockHolds.map((hold) => (
-                <Card key={hold.id} variant="outlined" sx={{ bgcolor: 'warning.light' }}>
+                <Card key={hold.id} variant="outlined" sx={{ bgcolor: 'warning.tint' }}>
                   <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <Box>

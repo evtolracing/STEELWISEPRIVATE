@@ -90,7 +90,7 @@ function DocumentRow({ document, onPrint, onEmail, printing }) {
 
 function CompletionSummary({ completion }) {
   return (
-    <Card variant="outlined" sx={{ bgcolor: 'success.light', borderColor: 'success.main' }}>
+    <Card variant="outlined" sx={{ bgcolor: 'success.tint', borderColor: 'success.main' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <Avatar sx={{ bgcolor: 'success.main', width: 56, height: 56 }}>

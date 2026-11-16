@@ -63,6 +63,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock decision log data
 const mockDecisions = [
@@ -417,7 +418,7 @@ const DecisionLog = () => {
             <TableBody>
               {filteredDecisions.map((decision) => (
                 <React.Fragment key={decision.id}>
-                  <TableRow 
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} 
                     hover 
                     sx={{ 
                       cursor: 'pointer',

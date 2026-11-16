@@ -163,7 +163,7 @@ export default function DemandShapingDashboard() {
                       <Avatar
                         sx={{
                           width: 28, height: 28,
-                          bgcolor: `${suggestionColor(row.type)}.light`,
+                          bgcolor: `${suggestionColor(row.type)}.tint`,
                           color: `${suggestionColor(row.type)}.dark`,
                         }}
                       >

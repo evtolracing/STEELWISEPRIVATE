@@ -46,10 +46,11 @@ import {
   Construction,
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Stat Card Component
 const MetricCard = ({ title, value, subtitle, trend, trendValue, color, icon: Icon, onClick }) => (
-  <Card sx={{ height: '100%', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+  <Card role="button" tabIndex={0} onKeyDown={activateOnKey} sx={{ height: '100%', cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
     <CardContent>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
         <Typography variant="body2" color="text.secondary">

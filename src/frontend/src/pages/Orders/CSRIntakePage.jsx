@@ -41,6 +41,7 @@ import TimeEstimatePreview from '../../components/processing/TimeEstimatePreview
 import useCustomerDefaults from '../../hooks/useCustomerDefaults'
 import DemandShapingSuggestionPanel from '../../components/orders/DemandShapingSuggestionPanel'
 import useDemandShaping from '../../hooks/useDemandShaping'
+import UnsavedWorkGuard from '../../components/common/UnsavedWorkGuard'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -352,6 +353,7 @@ export default function CSRIntakePage() {
   // ──────────────────── RENDER ──────────────────
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+      <UnsavedWorkGuard when={!orderId && (Boolean(customer) || lines.length > 0 || Boolean(poNumber) || Boolean(notes))} what="an order" />
       {/* Breadcrumb */}
       <Breadcrumbs sx={{ mb: 2 }}>
         <MuiLink underline="hover" color="inherit" href="/" onClick={e => { e.preventDefault(); navigate('/') }}>Home</MuiLink>

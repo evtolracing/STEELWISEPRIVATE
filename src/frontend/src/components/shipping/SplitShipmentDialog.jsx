@@ -339,7 +339,7 @@ export default function SplitShipmentDialog({ open, onClose, order, onConfirm, c
                 sx={{
                   p: 2,
                   borderColor: validationResult?.valid ? 'success.main' : 'divider',
-                  bgcolor: validationResult?.valid ? alpha('#4caf50', 0.04) : 'inherit',
+                  bgcolor: validationResult?.valid ? alpha('#2E7D32', 0.04) : 'inherit',
                 }}
               >
                 <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>

@@ -143,7 +143,7 @@ export default function RouteMap({
           sx={{ 
             mt: 2, 
             p: 1.5, 
-            bgcolor: 'primary.light', 
+            bgcolor: 'primary.tint', 
             borderRadius: 1,
             display: 'flex',
             alignItems: 'center',

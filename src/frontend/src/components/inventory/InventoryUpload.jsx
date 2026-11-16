@@ -50,6 +50,7 @@ import {
   Description as TemplateIcon,
   Info as InfoIcon,
 } from '@mui/icons-material'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Template definitions for different inventory types
 export const INVENTORY_TEMPLATES = {
@@ -481,7 +482,7 @@ export default function InventoryUpload({
               
               <Stack spacing={2}>
                 {Object.entries(INVENTORY_TEMPLATES).map(([key, template]) => (
-                  <Paper
+                  <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
                     key={key}
                     sx={{
                       p: 2,
@@ -552,7 +553,7 @@ export default function InventoryUpload({
               </Typography>
               
               {!file ? (
-                <Paper
+                <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
                   sx={{
                     p: 6,
                     border: '2px dashed',
@@ -672,15 +673,15 @@ export default function InventoryUpload({
                       <Typography variant="h4" fontWeight={700}>{stats?.total}</Typography>
                       <Typography variant="body2" color="text.secondary">Total Rows</Typography>
                     </Paper>
-                    <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: alpha('#4caf50', 0.05) }}>
+                    <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: alpha('#2E7D32', 0.05) }}>
                       <Typography variant="h4" fontWeight={700} color="success.main">{stats?.valid}</Typography>
                       <Typography variant="body2" color="text.secondary">Valid</Typography>
                     </Paper>
-                    <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: alpha('#f44336', 0.05) }}>
+                    <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: alpha('#C62828', 0.05) }}>
                       <Typography variant="h4" fontWeight={700} color="error.main">{stats?.errors}</Typography>
                       <Typography variant="body2" color="text.secondary">Errors</Typography>
                     </Paper>
-                    <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: alpha('#ff9800', 0.05) }}>
+                    <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: alpha('#B45309', 0.05) }}>
                       <Typography variant="h4" fontWeight={700} color="warning.main">{stats?.warnings}</Typography>
                       <Typography variant="body2" color="text.secondary">Warnings</Typography>
                     </Paper>
@@ -712,7 +713,7 @@ export default function InventoryUpload({
                         {validationResults?.slice(0, 10).map((result, idx) => (
                           <TableRow 
                             key={idx}
-                            sx={{ bgcolor: result.valid ? 'inherit' : alpha('#f44336', 0.05) }}
+                            sx={{ bgcolor: result.valid ? 'inherit' : alpha('#C62828', 0.05) }}
                           >
                             <TableCell>{result.row._rowNumber}</TableCell>
                             <TableCell>

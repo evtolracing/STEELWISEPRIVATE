@@ -309,7 +309,7 @@ const WorkCenterSchedule = ({
                   sx={{
                     minWidth: 100,
                     fontWeight: 600,
-                    backgroundColor: hour === new Date().getHours() ? 'primary.light' : undefined,
+                    backgroundColor: hour === new Date().getHours() ? 'primary.tint' : undefined,
                     color: hour === new Date().getHours() ? 'primary.contrastText' : undefined,
                   }}
                 >

@@ -17,6 +17,7 @@ import { getEntityDocuments, deleteDocument, getDocumentDownloadUrl } from '../.
 import { StatusChip, FileUploadZone } from '../../components/common'
 import { HEAT_STATUSES, MELT_TYPES, CAST_TYPES, day, pounds } from './HeatListPage'
 import { unitSize } from '../Units/UnitListPage'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const label = (pairs, value) => (pairs.find(([v]) => v === value) || [])[1] || ''
 const Fact = ({ name, children }) => (
@@ -196,7 +197,7 @@ export default function HeatDetailPage() {
             <TableHead><TableRow><TableCell>Item</TableCell><TableCell>Form</TableCell><TableCell>Size</TableCell><TableCell align="right">Weight</TableCell><TableCell>Location</TableCell><TableCell>Quality</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
             <TableBody>
               {units.map((u) => (
-                <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${u.id}`)}>
+                <TableRow tabIndex={0} onKeyDown={activateOnKey} key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${u.id}`)}>
                   <TableCell><Typography variant="body2" fontWeight={600} color="primary">{u.coilNumber}</Typography></TableCell>
                   <TableCell>{u.form}</TableCell>
                   <TableCell>{unitSize(u)}</TableCell>

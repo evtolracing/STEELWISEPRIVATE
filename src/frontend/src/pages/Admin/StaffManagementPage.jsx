@@ -36,6 +36,7 @@ import {
   getStaffStats,
 } from '../../api/staff'
 import { getWorkCenters } from '../../api/workCenters'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -77,10 +78,10 @@ const STATUS_COLORS = {
 }
 
 const SKILL_COLORS = {
-  NOVICE: '#9e9e9e',
-  STANDARD: '#2196f3',
-  ADVANCED: '#ff9800',
-  EXPERT: '#4caf50',
+  NOVICE: '#616161',
+  STANDARD: '#1565C0',
+  ADVANCED: '#B45309',
+  EXPERT: '#2E7D32',
 }
 
 // ============================================================================
@@ -316,10 +317,10 @@ export default function StaffManagementPage() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {[
             { label: 'Total Operators', value: stats.totalOperators, icon: <PeopleIcon />, color: '#1976d2' },
-            { label: 'Active', value: stats.activeOperators, icon: <ActiveIcon />, color: '#4caf50' },
-            { label: 'On Leave', value: stats.onLeave, icon: <ScheduleIcon />, color: '#ff9800' },
+            { label: 'Active', value: stats.activeOperators, icon: <ActiveIcon />, color: '#2E7D32' },
+            { label: 'On Leave', value: stats.onLeave, icon: <ScheduleIcon />, color: '#B45309' },
             { label: 'Active Certifications', value: stats.totalSkills, icon: <VerifiedIcon />, color: '#9c27b0' },
-            { label: 'Today\'s Shifts', value: stats.todayShifts, icon: <ShiftIcon />, color: '#00bcd4' },
+            { label: 'Today\'s Shifts', value: stats.todayShifts, icon: <ShiftIcon />, color: '#00738A' },
           ].map((stat) => (
             <Grid item xs={12} sm={6} md key={stat.label}>
               <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
@@ -500,7 +501,7 @@ function OperatorsTab({
                   </TableRow>
                 ) : (
                   paginated.map((op) => (
-                    <TableRow
+                    <TableRow tabIndex={0} onKeyDown={activateOnKey}
                       key={op.id}
                       hover
                       sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}

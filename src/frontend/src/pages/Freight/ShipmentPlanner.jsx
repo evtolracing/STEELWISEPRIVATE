@@ -52,6 +52,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock packages ready to ship
 const readyPackages = [
@@ -348,7 +349,7 @@ const ShipmentPlanner = () => {
             {/* Package List */}
             <List sx={{ maxHeight: 450, overflow: 'auto' }}>
               {filteredPackages.map((pkg) => (
-                <Card 
+                <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
                   key={pkg.id} 
                   variant="outlined" 
                   sx={{ 

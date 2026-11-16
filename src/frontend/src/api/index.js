@@ -27,7 +27,9 @@ export const getRecentOrders = (params) => client.get('/orders', { params }).the
 export const getOrders = (params) => client.get('/orders', { params }).then(r => r.data)
 export const getOrder = (id) => client.get(`/orders/${id}`).then(r => r.data)
 export const createOrder = (data) => client.post('/orders', data).then(r => r.data)
-export const updateOrder = (id, data) => client.put(`/orders/${id}`, data).then(r => r.data)
+// An edit says which saved version of the order it was made from (the order's updatedAt as it was
+// read). If someone else has saved since, the server answers 409 STALE_EDIT instead of overwriting (G-020).
+export const updateOrder = (id, data, readAt) => client.put(`/orders/${id}`, readAt ? { ...data, expectedUpdatedAt: readAt } : data).then(r => r.data)
 export const allocateOrder = (id, data) => client.post(`/orders/${id}/allocate`, data).then(r => r.data)
 // A status change is a PUT with { status } (routes/orders.js); the PATCH /status helpers that were here had no route (S-026).
 

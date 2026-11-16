@@ -31,7 +31,7 @@ const TYPE_ICONS = {
 }
 
 const TYPE_CHIP_COLORS = {
-  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: { bgcolor: '#fff3e0', color: '#e65100', border: '1px solid #ffcc80' },
+  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: { bgcolor: '#fff3e0', color: '#A63A00', border: '1px solid #ffcc80' },
   [OVERRIDE_TYPE.CAPACITY_WARNING]: { bgcolor: '#fffde7', color: '#f57f17', border: '1px solid #fff176' },
   [OVERRIDE_TYPE.PRICING_OVERRIDE]: { bgcolor: '#e3f2fd', color: '#1565c0', border: '1px solid #90caf9' },
 }
@@ -62,7 +62,7 @@ export default function OverrideIndicator({ overrides = [], compact = false, onV
           <IconButton
             size="small"
             onClick={e => setAnchorEl(e.currentTarget)}
-            sx={{ color: active.length > 0 ? '#e65100' : 'text.secondary' }}
+            sx={{ color: active.length > 0 ? '#A63A00' : 'text.secondary' }}
           >
             <Badge badgeContent={active.length} color="warning" max={9}>
               <OverrideIcon fontSize="small" />

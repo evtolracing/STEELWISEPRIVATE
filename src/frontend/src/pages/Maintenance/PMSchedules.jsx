@@ -58,6 +58,7 @@ import {
   PlayArrow,
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock Data
 const pmSchedules = [
@@ -401,7 +402,7 @@ const PMSchedules = () => {
               </TableHead>
               <TableBody>
                 {filteredSchedules.map((pm) => (
-                  <TableRow 
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} 
                     key={pm.id} 
                     hover 
                     sx={{ cursor: 'pointer' }}

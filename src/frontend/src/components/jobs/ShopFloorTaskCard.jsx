@@ -26,6 +26,7 @@ import {
 import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
 import { PRIORITY_LEVELS_CONFIG } from '../../constants/materials'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Large touch-friendly component for shop floor operators
 const ShopFloorTaskCard = ({
@@ -65,7 +66,7 @@ const ShopFloorTaskCard = ({
   }
 
   return (
-    <Card
+    <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
       onClick={onClick}
       sx={{
         minHeight: 280,

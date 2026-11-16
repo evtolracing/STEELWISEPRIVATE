@@ -54,6 +54,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock cockpit data
 const cockpitData = {
@@ -194,7 +195,7 @@ const ExecutiveCockpit = () => {
 
   // Tile Component
   const CockpitTile = ({ title, icon, children, status, trend, onClick }) => (
-    <Paper 
+    <Paper role="button" tabIndex={0} onKeyDown={activateOnKey} 
       sx={{ 
         p: 2, 
         height: '100%',
@@ -248,7 +249,7 @@ const ExecutiveCockpit = () => {
             sx={{ 
               px: 3, 
               py: 1.5, 
-              bgcolor: cockpitData.overallRisk.level === 'MEDIUM' ? 'warning.light' : 
+              bgcolor: cockpitData.overallRisk.level === 'MEDIUM' ? 'warning.tint' : 
                        cockpitData.overallRisk.level === 'LOW' ? 'success.light' : 'error.light',
               display: 'flex',
               alignItems: 'center',

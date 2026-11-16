@@ -72,6 +72,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock data
 const mockPermits = [
@@ -669,7 +670,7 @@ export default function PermitsPage() {
               {filteredPermits
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((permit) => (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={permit.id}
                     hover
                     sx={{ cursor: 'pointer' }}

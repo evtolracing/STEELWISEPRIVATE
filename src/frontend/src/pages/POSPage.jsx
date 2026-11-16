@@ -275,22 +275,22 @@ export function POSPage() {
           <Grid container spacing={2}>
             <Grid item xs={6} md={3}>
               <Typography variant="caption" color="text.secondary">
-                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0' }}>F2</kbd> - Standard Order
+                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0', color: '#1A1A2E' }}>F2</kbd> - Standard Order
               </Typography>
             </Grid>
             <Grid item xs={6} md={3}>
               <Typography variant="caption" color="text.secondary">
-                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0' }}>F3</kbd> - Quick Sale
+                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0', color: '#1A1A2E' }}>F3</kbd> - Quick Sale
               </Typography>
             </Grid>
             <Grid item xs={6} md={3}>
               <Typography variant="caption" color="text.secondary">
-                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0' }}>F4</kbd> - Will Call Pickup
+                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0', color: '#1A1A2E' }}>F4</kbd> - Will Call Pickup
               </Typography>
             </Grid>
             <Grid item xs={6} md={3}>
               <Typography variant="caption" color="text.secondary">
-                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0' }}>F5</kbd> - Convert Quote
+                <kbd style={{ padding: '2px 6px', borderRadius: 4, background: '#e0e0e0', color: '#1A1A2E' }}>F5</kbd> - Convert Quote
               </Typography>
             </Grid>
           </Grid>

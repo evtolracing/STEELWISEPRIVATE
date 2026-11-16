@@ -13,6 +13,7 @@ import {
   DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar, LinearProgress, Chip, Stack, Link as MuiLink,
 } from '@mui/material'
 import { LocalShipping as TransferIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // A list answer is the rows themselves, or { data } when a page of them was asked for.
 const listOf = (b) => (Array.isArray(b) ? b : b?.data || [])
@@ -156,7 +157,7 @@ export default function TransfersPage() {
               {rows.map((t) => {
                 const odd = (t.lines || []).filter((l) => l.condition && !['GOOD', 'SETTLED_FOUND'].includes(l.condition))
                 return (
-                  <TableRow key={t.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpen(t)}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={t.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpen(t)}>
                     <TableCell>{t.transferNumber}</TableCell>
                     <TableCell>{branch(t.fromLocation)}</TableCell>
                     <TableCell>{branch(t.toLocation)}</TableCell>

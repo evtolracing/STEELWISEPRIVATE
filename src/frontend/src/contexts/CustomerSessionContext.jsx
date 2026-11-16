@@ -81,8 +81,12 @@ export function CustomerSessionProvider({ children }) {
   const [preferences, setPreferences] = useState(null)
   const [prefBadges, setPrefBadges] = useState([])
 
+  // Asked for only by the web shop (see useCustomerSession). It used to be asked on every staff screen,
+  // although no staff screen reads it.
+  const [wanted, setWanted] = useState(false)
+  const loadPreferences = useCallback(() => setWanted(true), [])
   useEffect(() => {
-    if (!session.customerId) return
+    if (!wanted || !session.customerId) return
     getCustomerPreferences(session.customerId)
       .then(res => {
         if (res.hasPreferences) {
@@ -102,18 +106,18 @@ export function CustomerSessionProvider({ children }) {
         }
       })
       .catch(() => { /* preferences are optional */ })
-  }, [session.customerId])
+  }, [wanted, session.customerId])
 
   const value = useMemo(() => {
     const v = {
       ...session, locations: LOCATIONS, preferences, prefBadges,
-      setLocation, setDivision, setShipTo, addRecentConfig,
+      setLocation, setDivision, setShipTo, addRecentConfig, loadPreferences,
     }
     // Most store pages read `const { session } = useCustomerSession()`, so expose
     // the same object under `session` as well as flat.
     v.session = v
     return v
-  }, [session, setLocation, setDivision, setShipTo, addRecentConfig, preferences, prefBadges])
+  }, [session, setLocation, setDivision, setShipTo, addRecentConfig, loadPreferences, preferences, prefBadges])
 
   return <CustomerSessionContext.Provider value={value}>{children}</CustomerSessionContext.Provider>
 }
@@ -121,6 +125,10 @@ export function CustomerSessionProvider({ children }) {
 export function useCustomerSession() {
   const ctx = useContext(CustomerSessionContext)
   if (!ctx) throw new Error('useCustomerSession must be used within CustomerSessionProvider')
+  const { loadPreferences } = ctx
+  useEffect(() => {
+    if (/^\/(shop|account|place-order)(\/|$)/.test(window.location.pathname)) loadPreferences()
+  }, [loadPreferences])
   return ctx
 }
 

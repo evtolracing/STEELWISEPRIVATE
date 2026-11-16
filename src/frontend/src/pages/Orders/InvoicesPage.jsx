@@ -8,6 +8,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography,
 } from '@mui/material'
 import client from '../../api/client'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const usd = (n) => `$${(Number(n) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const day = (d) => (d ? new Date(d).toLocaleDateString() : '')
@@ -240,7 +241,7 @@ export default function InvoicesPage() {
           </TableHead>
           <TableBody>
             {rows.map((inv) => (
-              <TableRow key={inv.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpenId(inv.id)}>
+              <TableRow tabIndex={0} onKeyDown={activateOnKey} key={inv.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpenId(inv.id)}>
                 <TableCell>{inv.invoiceNumber}</TableCell>
                 <TableCell>{inv.order?.buyer?.name || ''}</TableCell>
                 <TableCell>{inv.order?.orderNumber}</TableCell>

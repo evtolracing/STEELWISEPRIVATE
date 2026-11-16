@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material'
 import { searchProducts } from '../../services/intakeProductsApi'
 import { searchInventory } from '../../services/intakeInventoryApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -319,7 +320,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
               </TableHead>
               <TableBody>
                 {liveResults.map(coil => (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={coil.id} hover
                     sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
                     onClick={() => handleSelectCoil(coil)}
@@ -411,7 +412,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
               </TableHead>
               <TableBody>
                 {results.map(p => (
-                  <TableRow key={p.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'product', ...p }); onClose() }}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={p.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'product', ...p }); onClose() }}>
                     <TableCell><Typography variant="body2" fontFamily="monospace">{p.sku}</Typography></TableCell>
                     <TableCell><Typography variant="body2" fontWeight={500}>{p.name}</Typography></TableCell>
                     <TableCell>{p.grade}</TableCell>
@@ -447,7 +448,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
               </TableHead>
               <TableBody>
                 {results.map(inv => (
-                  <TableRow key={inv.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'inventory', ...inv }); onClose() }}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={inv.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'inventory', ...inv }); onClose() }}>
                     <TableCell><Typography variant="body2" fontFamily="monospace">{inv.lotNumber}</Typography></TableCell>
                     <TableCell><Typography variant="body2">{inv.description}</Typography></TableCell>
                     <TableCell>{inv.locationName}</TableCell>

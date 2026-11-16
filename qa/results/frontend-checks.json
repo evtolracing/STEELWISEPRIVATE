@@ -1,19 +1,19 @@
 {
- "at": "2026-11-16T03:19:26.795Z",
+ "at": "2026-11-16T04:09:15.102Z",
  "effects": [
-  "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:89",
-  "src/frontend/src/apps/bom/BomRecipeListPage.jsx:39",
+  "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:90",
+  "src/frontend/src/apps/bom/BomRecipeListPage.jsx:40",
   "src/frontend/src/apps/inventory/InventoryDetailPage.jsx:80",
   "src/frontend/src/apps/orderhub/OrderDetailPage.jsx:82",
   "src/frontend/src/apps/orderhub/RfqDetailPage.jsx:76",
-  "src/frontend/src/apps/orderhub/RfqListPage.jsx:81",
+  "src/frontend/src/apps/orderhub/RfqListPage.jsx:82",
   "src/frontend/src/apps/shopfloor/CreateWorkCenterDialog.jsx:101",
-  "src/frontend/src/apps/shopfloor/WorkCenterQueuePage.jsx:188",
+  "src/frontend/src/apps/shopfloor/WorkCenterQueuePage.jsx:189",
   "src/frontend/src/components/MapComponent.jsx:143",
   "src/frontend/src/components/common/SearchInput.jsx:21",
   "src/frontend/src/components/jobs/JobPlanningDialog.jsx:78",
   "src/frontend/src/components/jobs/JobPlanningDialog.jsx:110",
-  "src/frontend/src/components/jobs/ModernJobCard.jsx:164",
+  "src/frontend/src/components/jobs/ModernJobCard.jsx:165",
   "src/frontend/src/components/layout/CutoffClockChip.jsx:41",
   "src/frontend/src/components/layout/HeaderAIAssistant.jsx:145",
   "src/frontend/src/components/layout/HeaderAIAssistant.jsx:147",
@@ -36,9 +36,17 @@
   "src/frontend/src/hooks/useRealTimePricing.js:111",
   "src/frontend/src/pages/Admin/UserManagementPage.jsx:100",
   "src/frontend/src/pages/Ecommerce/OnlineSettingsPage.jsx:63",
-  "src/frontend/src/pages/Executive/CompressionMetricsDashboard.jsx:150",
+  "src/frontend/src/pages/Executive/CompressionMetricsDashboard.jsx:151",
   "src/frontend/src/pages/Orders/CSRIntakePage.jsx:289",
-  "src/frontend/src/pages/Orders/RetailPOSPage.jsx:158"
+  "src/frontend/src/pages/Orders/RetailPOSPage.jsx:163"
  ],
- "invented": []
+ "invented": [],
+ "phase9": {
+  "iconButtonsWithNoName": 0,
+  "fieldsWithNoName": 0,
+  "pagesMissingAMainHeading": 0,
+  "pagesWhereNoTitleCouldBeFound": 2,
+  "sampleButtonsWithNoActionAndNoNotice": 0,
+  "clickOnlyRowsAndCards": 1
+ }
 }

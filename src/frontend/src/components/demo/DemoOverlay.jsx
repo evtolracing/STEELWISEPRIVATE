@@ -40,6 +40,7 @@ import {
   FormatListNumbered as StepsIcon,
 } from '@mui/icons-material';
 import { useDemo, DEMO_STEPS } from '../../contexts/DemoContext';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function DemoOverlay() {
   const {
@@ -64,7 +65,7 @@ export default function DemoOverlay() {
   if (isMinimized) {
     return (
       <Fade in>
-        <Paper
+        <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
           elevation={8}
           onClick={toggleMinimize}
           sx={{
@@ -185,13 +186,13 @@ export default function DemoOverlay() {
           <Box sx={{ maxHeight: 250, overflowY: 'auto', bgcolor: 'grey.50' }}>
             <List dense>
               {DEMO_STEPS.map((step, i) => (
-                <ListItem
+                <ListItem tabIndex={0} onKeyDown={activateOnKey}
                   key={step.id}
                   button
                   onClick={() => { goToStep(i); setShowStepList(false); }}
                   selected={i === currentStepIndex}
                   sx={{
-                    bgcolor: i === currentStepIndex ? 'primary.light' : 'transparent',
+                    bgcolor: i === currentStepIndex ? 'primary.tint' : 'transparent',
                     color: i === currentStepIndex ? 'white' : 'text.primary',
                     '&:hover': { bgcolor: i === currentStepIndex ? 'primary.main' : 'action.hover' },
                   }}
@@ -245,7 +246,7 @@ export default function DemoOverlay() {
             sx={{
               p: 1.5,
               mb: 2,
-              bgcolor: 'warning.light',
+              bgcolor: 'warning.tint',
               borderLeft: '4px solid',
               borderLeftColor: 'warning.main',
               borderRadius: 1,

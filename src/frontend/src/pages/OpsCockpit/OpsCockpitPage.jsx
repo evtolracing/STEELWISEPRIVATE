@@ -64,12 +64,12 @@ import {
 // ============================================
 function FlowStatePanel({ data, changes }) {
   const columns = [
-    { key: 'ordered', label: 'Ordered', color: '#9e9e9e' },
-    { key: 'scheduled', label: 'Scheduled', color: '#2196f3' },
-    { key: 'inProcess', label: 'In Process', color: '#ff9800' },
+    { key: 'ordered', label: 'Ordered', color: '#616161' },
+    { key: 'scheduled', label: 'Scheduled', color: '#1565C0' },
+    { key: 'inProcess', label: 'In Process', color: '#B45309' },
     { key: 'packaging', label: 'Packaging / QC', color: '#9c27b0' },
-    { key: 'readyToShip', label: 'Ready to Ship', color: '#4caf50' },
-    { key: 'shipped', label: 'Shipped', color: '#00bcd4' },
+    { key: 'readyToShip', label: 'Ready to Ship', color: '#2E7D32' },
+    { key: 'shipped', label: 'Shipped', color: '#00738A' },
   ];
 
   return (
@@ -113,7 +113,7 @@ function FlowStatePanel({ data, changes }) {
                   size="small"
                   sx={{
                     mt: 1,
-                    bgcolor: change > 0 ? 'success.light' : 'warning.light',
+                    bgcolor: change > 0 ? 'success.tint' : 'warning.tint',
                     color: change > 0 ? 'success.dark' : 'warning.dark',
                     fontWeight: 600,
                   }}
@@ -158,7 +158,7 @@ function PromiseRiskPanel({ hotJobs = [], atRiskJobs = [], safeCount = 0 }) {
             </Typography>
             <Stack spacing={1} sx={{ mb: 2 }}>
               {hotJobs.map((job) => (
-                <Box key={job.id} sx={{ p: 1.5, borderRadius: 1, bgcolor: 'error.light', border: '1px solid', borderColor: 'error.main' }}>
+                <Box key={job.id} sx={{ p: 1.5, borderRadius: 1, bgcolor: 'error.tint', border: '1px solid', borderColor: 'error.main' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="subtitle2" fontWeight={600}>{job.id} - {job.customer}</Typography>
                     <Chip label={job.due} size="small" color="error" />
@@ -179,7 +179,7 @@ function PromiseRiskPanel({ hotJobs = [], atRiskJobs = [], safeCount = 0 }) {
             </Typography>
             <Stack spacing={1}>
               {atRiskJobs.slice(0, 5).map((job) => (
-                <Box key={job.id} sx={{ p: 1, borderRadius: 1, bgcolor: 'warning.light', border: '1px solid', borderColor: 'warning.main' }}>
+                <Box key={job.id} sx={{ p: 1, borderRadius: 1, bgcolor: 'warning.tint', border: '1px solid', borderColor: 'warning.main' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="body2" fontWeight={500}>{job.id} - {job.customer}</Typography>
                     <Chip label={job.due} size="small" color="warning" />
@@ -234,7 +234,7 @@ function UtilizationStrip({ workCenters = [] }) {
               key={wc.id}
               sx={{
                 display: 'flex', alignItems: 'center', gap: 2, p: 1, borderRadius: 1,
-                bgcolor: wc.status === 'bottleneck' ? 'error.light' : 'grey.50',
+                bgcolor: wc.status === 'bottleneck' ? 'error.tint' : 'grey.50',
               }}
             >
               <Tooltip title={`${wc.type} — ${(wc.capabilities || []).join(', ')}`}>
@@ -274,9 +274,9 @@ function UtilizationStrip({ workCenters = [] }) {
 function ExceptionFeed({ exceptions = [] }) {
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case 'error': return 'error.light';
-      case 'warning': return 'warning.light';
-      default: return 'info.light';
+      case 'error': return 'error.tint';
+      case 'warning': return 'warning.tint';
+      default: return 'info.tint';
     }
   };
 
@@ -865,7 +865,7 @@ function MaterialAvailabilityPanel({ data = {} }) {
           <Typography variant="subtitle2" color="error.main" fontWeight={600} sx={{ mb: 1 }}>🔴 Stock Outs (blocking work)</Typography>
           <Stack spacing={0.5} sx={{ mb: 2 }}>
             {stockouts.map((item, idx) => (
-              <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, bgcolor: 'error.light', borderRadius: 1 }}>
+              <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, bgcolor: 'error.tint', borderRadius: 1 }}>
                 <Typography variant="body2">{item.material}</Typography>
                 <Typography variant="caption">Need: {item.need} | Have: {item.have}</Typography>
                 <Chip label={item.eta} size="small" />
@@ -880,7 +880,7 @@ function MaterialAvailabilityPanel({ data = {} }) {
           <Typography variant="subtitle2" color="warning.main" fontWeight={600} sx={{ mb: 1 }}>🟡 Low Stock</Typography>
           <Stack spacing={0.5} sx={{ mb: 2 }}>
             {lowStock.map((item, idx) => (
-              <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, bgcolor: 'warning.light', borderRadius: 1 }}>
+              <Box key={idx} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1, bgcolor: 'warning.tint', borderRadius: 1 }}>
                 <Typography variant="body2">{item.material}</Typography>
                 <Typography variant="caption">Stock: {item.stock}%</Typography>
                 <Chip label={item.status} size="small" variant="outlined" />

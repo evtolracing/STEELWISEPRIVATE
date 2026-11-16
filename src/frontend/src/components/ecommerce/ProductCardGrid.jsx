@@ -15,7 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 
 const DIV_ICON = { METALS: MetalsIcon, PLASTICS: PlasticsIcon, SUPPLIES: SuppliesIcon, OUTLET: OutletIcon }
-const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#e65100', OUTLET: '#c62828' }
+const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#A63A00', OUTLET: '#c62828' }
 
 const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 

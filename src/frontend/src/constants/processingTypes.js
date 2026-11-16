@@ -44,21 +44,21 @@ export const PROCESSING_TYPE_CONFIG = {
     label: 'Sawing',
     description: 'Saw bars, beams, or plate',
     icon: 'Handyman',
-    color: '#2196F3',
+    color: '#1565C0',
     defaultWorkCenter: 'SAW',
   },
   [PROCESSING_TYPES.BLANKING]: {
     label: 'Blanking',
     description: 'Cut blanks from sheet',
     icon: 'GridOn',
-    color: '#00BCD4',
+    color: '#00738A',
     defaultWorkCenter: 'PRESS',
   },
   [PROCESSING_TYPES.WELDING]: {
     label: 'Welding/Fab',
     description: 'Welding and fabrication',
     icon: 'FlashOn',
-    color: '#FF5722',
+    color: '#BF360C',
     defaultWorkCenter: 'WELDER',
   },
   [PROCESSING_TYPES.MULTI_STEP]: {
@@ -105,7 +105,7 @@ export const WORK_CENTER_TYPE_CONFIG = {
   [WORK_CENTER_TYPES.SAW]: {
     label: 'Saw',
     icon: 'Handyman',
-    color: '#2196F3',
+    color: '#1565C0',
     processingTypes: [PROCESSING_TYPES.SAWING],
   },
   [WORK_CENTER_TYPES.LEVELER]: {
@@ -117,13 +117,13 @@ export const WORK_CENTER_TYPE_CONFIG = {
   [WORK_CENTER_TYPES.PRESS]: {
     label: 'Press/Blanker',
     icon: 'GridOn',
-    color: '#00BCD4',
+    color: '#00738A',
     processingTypes: [PROCESSING_TYPES.BLANKING],
   },
   [WORK_CENTER_TYPES.WELDER]: {
     label: 'Welder',
     icon: 'FlashOn',
-    color: '#FF5722',
+    color: '#BF360C',
     processingTypes: [PROCESSING_TYPES.WELDING],
   },
   [WORK_CENTER_TYPES.INSPECTION]: {
@@ -135,7 +135,7 @@ export const WORK_CENTER_TYPE_CONFIG = {
   [WORK_CENTER_TYPES.PACKAGING]: {
     label: 'Packaging',
     icon: 'Inventory2',
-    color: '#00BCD4',
+    color: '#00738A',
     processingTypes: [],
   },
 }

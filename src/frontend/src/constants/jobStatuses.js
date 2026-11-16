@@ -27,7 +27,7 @@ export const JOB_STATUSES = {
 export const JOB_STATUS_CONFIG = {
   [JOB_STATUSES.ORDERED]: {
     label: 'Ordered',
-    color: '#9E9E9E',
+    color: '#616161',
     bgColor: '#F5F5F5',
     icon: ReceiptIcon,
     next: [JOB_STATUSES.SCHEDULED],
@@ -35,7 +35,7 @@ export const JOB_STATUS_CONFIG = {
   },
   [JOB_STATUSES.SCHEDULED]: {
     label: 'Scheduled',
-    color: '#FF9800',
+    color: '#B45309',
     bgColor: '#FFF3E0',
     icon: ScheduleIcon,
     next: [JOB_STATUSES.IN_PROCESS, JOB_STATUSES.ON_HOLD],
@@ -43,7 +43,7 @@ export const JOB_STATUS_CONFIG = {
   },
   [JOB_STATUSES.IN_PROCESS]: {
     label: 'In Process',
-    color: '#4CAF50',
+    color: '#2E7D32',
     bgColor: '#E8F5E9',
     icon: PrecisionManufacturingIcon,
     next: [JOB_STATUSES.WAITING_QC, JOB_STATUSES.PACKAGING, JOB_STATUSES.ON_HOLD],
@@ -59,7 +59,7 @@ export const JOB_STATUS_CONFIG = {
   },
   [JOB_STATUSES.PACKAGING]: {
     label: 'Packaging',
-    color: '#00BCD4',
+    color: '#00738A',
     bgColor: '#E0F7FA',
     icon: Inventory2Icon,
     next: [JOB_STATUSES.READY_TO_SHIP],
@@ -83,7 +83,7 @@ export const JOB_STATUS_CONFIG = {
   },
   [JOB_STATUSES.COMPLETED]: {
     label: 'Completed',
-    color: '#4CAF50',
+    color: '#2E7D32',
     bgColor: '#E8F5E9',
     icon: CheckCircleIcon,
     next: [],
@@ -91,7 +91,7 @@ export const JOB_STATUS_CONFIG = {
   },
   [JOB_STATUSES.CANCELLED]: {
     label: 'Cancelled',
-    color: '#F44336',
+    color: '#C62828',
     bgColor: '#FFEBEE',
     icon: CancelIcon,
     next: [],
@@ -99,7 +99,7 @@ export const JOB_STATUS_CONFIG = {
   },
   [JOB_STATUSES.ON_HOLD]: {
     label: 'On Hold',
-    color: '#FF9800',
+    color: '#B45309',
     bgColor: '#FFF3E0',
     icon: PauseIcon,
     next: [JOB_STATUSES.SCHEDULED, JOB_STATUSES.IN_PROCESS],

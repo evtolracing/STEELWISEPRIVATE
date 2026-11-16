@@ -44,6 +44,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock POD data
 const podData = {
@@ -280,7 +281,7 @@ const PODViewer = () => {
                   <Grid container spacing={2}>
                     {podData.photos.map((photo) => (
                       <Grid item xs={12} sm={4} key={photo.id}>
-                        <Card 
+                        <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
                           sx={{ cursor: 'pointer', '&:hover': { boxShadow: 3 } }}
                           onClick={() => { setSelectedPhoto(photo); setPhotoDialogOpen(true); }}
                         >

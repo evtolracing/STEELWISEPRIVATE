@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import client from '../../api/client'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const usd = (n) => `$${(Number(n) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const day = (d) => (d ? new Date(d).toLocaleDateString() : '')
@@ -270,7 +271,7 @@ export default function QuotesPage() {
           </TableHead>
           <TableBody>
             {rows.map((r) => (
-              <TableRow key={r.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpenId(r.id)}>
+              <TableRow tabIndex={0} onKeyDown={activateOnKey} key={r.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpenId(r.id)}>
                 <TableCell>{r.rfqNumber}</TableCell>
                 <TableCell>{r.customer?.name || ''}</TableCell>
                 <TableCell>{day(r.createdAt)}</TableCell>

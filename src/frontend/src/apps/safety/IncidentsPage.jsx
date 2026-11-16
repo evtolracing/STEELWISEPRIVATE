@@ -62,6 +62,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock data
 const mockIncidents = [
@@ -575,7 +576,7 @@ export default function IncidentsPage() {
               {filteredIncidents
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((incident) => (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={incident.id}
                     hover
                     sx={{ cursor: 'pointer' }}

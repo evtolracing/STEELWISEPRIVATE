@@ -22,7 +22,7 @@ import { evaluatePromise } from '../../services/promiseApi'
 import PromiseBadge from '../../components/ecommerce/PromiseBadge'
 import PromiseSummaryPanel from '../../components/ecommerce/PromiseSummaryPanel'
 
-const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#e65100', OUTLET: '#c62828' }
+const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#A63A00', OUTLET: '#c62828' }
 const SOURCE_COLOR = { CONTRACT: 'success', RETAIL: 'primary', REMNANT: 'warning', REVIEW_REQUIRED: 'error' }
 
 export default function CartPage() {

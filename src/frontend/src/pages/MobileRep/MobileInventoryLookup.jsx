@@ -43,6 +43,7 @@ import {
 } from '@mui/icons-material'
 import useMobileMode from '../../hooks/useMobileMode'
 import { searchInventory } from '../../services/intakeInventoryApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Stock comes from the live inventory search (/api/inventory/search).
 const num = (v) => (v == null ? null : Number(v))
@@ -201,7 +202,7 @@ export default function MobileInventoryLookup() {
         const expanded = expandedId === item.id
 
         return (
-          <Paper
+          <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
             key={item.id}
             elevation={0}
             onClick={() => setExpandedId(expanded ? null : item.id)}

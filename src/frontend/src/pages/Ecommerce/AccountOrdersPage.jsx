@@ -22,6 +22,7 @@ import {
 import { useNavigate, Link } from 'react-router-dom'
 import { listAccountOrders, exportOrdersCSV } from '../../services/customerAccountApi'
 import useEnterpriseAccount from '../../hooks/useEnterpriseAccount'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const STATUS_CFG = {
   NEEDS_REVIEW:  { color: 'warning',   icon: <RateReview fontSize="inherit" />,   label: 'Needs Review' },
@@ -218,7 +219,7 @@ export default function AccountOrdersPage() {
 
                 return (
                   <React.Fragment key={order.id}>
-                    <TableRow hover sx={{ cursor: 'pointer', '& > td': { borderBottom: expanded ? 0 : undefined } }}
+                    <TableRow tabIndex={0} onKeyDown={activateOnKey} hover sx={{ cursor: 'pointer', '& > td': { borderBottom: expanded ? 0 : undefined } }}
                       onClick={() => setExpandedRow(expanded ? null : order.id)}>
                       <TableCell>
                         <Typography variant="body2" fontWeight={600} color="primary">{order.orderNumber}</Typography>

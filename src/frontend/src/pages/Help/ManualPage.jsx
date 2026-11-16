@@ -265,7 +265,7 @@ export default function ManualPage() {
                 width: 40,
                 height: 40,
                 borderRadius: 2,
-                bgcolor: 'primary.light',
+                bgcolor: 'primary.tint',
                 color: 'primary.contrastText',
                 display: 'flex',
                 alignItems: 'center',

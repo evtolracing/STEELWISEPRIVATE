@@ -49,6 +49,7 @@ import { searchProducts } from '../../services/intakeProductsApi'
 import { getContractPricing } from '../../services/intakePricingApi'
 import useMobileMode from '../../hooks/useMobileMode'
 import useSellingBranches from '../../hooks/useSellingBranches'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT']
@@ -279,7 +280,7 @@ export default function MobileRepIntakePage() {
             <Paper elevation={3} sx={{ mb: 2, maxHeight: 200, overflow: 'auto', borderRadius: 2 }}>
               <List dense disablePadding>
                 {customerResults.map(c => (
-                  <ListItem
+                  <ListItem tabIndex={0} onKeyDown={activateOnKey}
                     key={c.id}
                     button
                     onClick={() => selectCustomer(c)}

@@ -63,6 +63,7 @@ import {
   completeMaintenanceOrder,
   getMaintenanceAssets,
 } from '../../api/maintenanceOrders';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const WorkOrderCenter = () => {
   const [tab, setTab] = useState(0);
@@ -461,7 +462,7 @@ const WorkOrderCenter = () => {
                   </TableCell>
                 </TableRow>
               ) : filteredWOs.map((wo) => (
-                <TableRow 
+                <TableRow tabIndex={0} onKeyDown={activateOnKey} 
                   key={wo.id} 
                   hover 
                   sx={{ cursor: 'pointer' }}

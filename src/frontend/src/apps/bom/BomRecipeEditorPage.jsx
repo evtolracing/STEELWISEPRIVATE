@@ -31,6 +31,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import SearchIcon from '@mui/icons-material/Search';
 import { bomApi } from '../../services/bomApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function BomRecipeEditorPage() {
   const { recipeId } = useParams();
@@ -751,7 +752,7 @@ export default function BomRecipeEditorPage() {
         {/* Right Column: AI Assistant */}
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 2, position: 'sticky', top: 16 }}>
-            <Box
+            <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
               sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
               onClick={() => setAiExpanded(!aiExpanded)}
             >
@@ -808,7 +809,7 @@ export default function BomRecipeEditorPage() {
           
           {/* Match Tester */}
           <Paper sx={{ p: 2, mt: 2 }}>
-            <Box
+            <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
               sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
               onClick={() => setMatchTesterExpanded(!matchTesterExpanded)}
             >

@@ -48,6 +48,7 @@ import {
   PlayCircle as InProgressIcon
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { activateOnKey } from '../../../utils/activateOnKey'
 
 // ============================================
 // STATUS CHIP
@@ -82,7 +83,7 @@ function QueueStatsCards({ stats }) {
   return (
     <Grid container spacing={2} sx={{ mb: 3 }}>
       <Grid item xs={6} md={3}>
-        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'success.light' }}>
+        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'success.tint' }}>
           <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.dark' }}>
             {stats.ready}
           </Typography>
@@ -90,7 +91,7 @@ function QueueStatsCards({ stats }) {
         </Paper>
       </Grid>
       <Grid item xs={6} md={3}>
-        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'info.light' }}>
+        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'info.tint' }}>
           <Typography variant="h4" sx={{ fontWeight: 700, color: 'info.dark' }}>
             {stats.scheduled}
           </Typography>
@@ -98,7 +99,7 @@ function QueueStatsCards({ stats }) {
         </Paper>
       </Grid>
       <Grid item xs={6} md={3}>
-        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'warning.light' }}>
+        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'warning.tint' }}>
           <Typography variant="h4" sx={{ fontWeight: 700, color: 'warning.dark' }}>
             {stats.waiting}
           </Typography>
@@ -123,7 +124,7 @@ function QueueStatsCards({ stats }) {
 
 function OrderRow({ order, onSelect }) {
   return (
-    <TableRow 
+    <TableRow tabIndex={0} onKeyDown={activateOnKey} 
       hover 
       onClick={() => onSelect(order)}
       sx={{ cursor: 'pointer' }}

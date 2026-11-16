@@ -42,6 +42,7 @@ import {
   estimateDeliveryTime,
   reverseGeocode,
 } from '../../services/mapService';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function InboundShipmentTracker({
   shipments = [],
@@ -155,7 +156,7 @@ export default function InboundShipmentTracker({
                   
                   return (
                     <React.Fragment key={shipment.id}>
-                      <ListItem
+                      <ListItem tabIndex={0} onKeyDown={activateOnKey}
                         button
                         selected={isSelected}
                         onClick={() => handleSelectShipment(shipment)}

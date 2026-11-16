@@ -30,8 +30,8 @@ const TYPE_ICONS = {
 }
 
 const TYPE_COLORS = {
-  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: '#e65100',
-  [OVERRIDE_TYPE.CAPACITY_WARNING]: '#f9a825',
+  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: '#A63A00',
+  [OVERRIDE_TYPE.CAPACITY_WARNING]: '#8A6100',
   [OVERRIDE_TYPE.PRICING_OVERRIDE]: '#1565c0',
 }
 
@@ -105,7 +105,7 @@ export default function OverrideDialog({
   }
 
   const typeLabel = OVERRIDE_TYPE_LABELS[overrideType] || 'Override'
-  const typeColor = TYPE_COLORS[overrideType] || '#e65100'
+  const typeColor = TYPE_COLORS[overrideType] || '#A63A00'
 
   return (
     <Dialog

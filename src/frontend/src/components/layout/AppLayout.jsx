@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, Navigate, Link as RouterLink } from 'react-router-dom'
 import { Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
-import { canAccessPath, homeFor } from '../../config/roleAccess'
+import { canAccessPath, homeFor, workspaceFor } from '../../config/roleAccess'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import PrintQueueDrawer from './PrintQueueDrawer'
@@ -51,6 +51,9 @@ function RoleGate() {
   const location = useLocation()
   const { user } = useAuth()
   const role = user?.role
+  // Straight after signing in, a person starts at the screen their job uses most.
+  const start = workspaceFor(role)
+  if (location.pathname === '/' && location.state?.justSignedIn && start !== '/') return <Navigate to={start} replace />
   if (canAccessPath(role, location.pathname)) return <Outlet />
   const home = homeFor(role)
   if (location.pathname === '/' && home !== '/') return <Navigate to={home} replace />

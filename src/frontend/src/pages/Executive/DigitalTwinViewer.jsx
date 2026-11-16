@@ -61,6 +61,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock digital twin data
 const mockTwinData = {
@@ -197,19 +198,19 @@ const DigitalTwinViewer = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'CRITICAL': return '#f44336';
-      case 'WARNING': return '#ff9800';
-      case 'OPTIMAL': return '#4caf50';
-      case 'IDLE': return '#9e9e9e';
-      default: return '#2196f3';
+      case 'CRITICAL': return '#C62828';
+      case 'WARNING': return '#B45309';
+      case 'OPTIMAL': return '#2E7D32';
+      case 'IDLE': return '#616161';
+      default: return '#1565C0';
     }
   };
 
   const getUtilizationColor = (util) => {
-    if (util >= 90) return '#f44336';
-    if (util >= 80) return '#ff9800';
-    if (util >= 60) return '#4caf50';
-    return '#2196f3';
+    if (util >= 90) return '#C62828';
+    if (util >= 80) return '#B45309';
+    if (util >= 60) return '#2E7D32';
+    return '#1565C0';
   };
 
   const handleLocationClick = (location) => {
@@ -281,7 +282,7 @@ const DigitalTwinViewer = () => {
           key={location.id} 
           title={`${location.name} - ${location.utilization || location.capacity}% ${location.type === 'PRODUCTION' ? 'Utilization' : 'Capacity'}`}
         >
-          <Box
+          <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
             onClick={() => handleLocationClick(location)}
             sx={{
               position: 'absolute',
@@ -359,15 +360,15 @@ const DigitalTwinViewer = () => {
         <Typography variant="caption" fontWeight={600}>Status</Typography>
         <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#4caf50' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#2E7D32' }} />
             <Typography variant="caption">Optimal</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#ff9800' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#B45309' }} />
             <Typography variant="caption">Warning</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#f44336' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#C62828' }} />
             <Typography variant="caption">Critical</Typography>
           </Box>
         </Box>

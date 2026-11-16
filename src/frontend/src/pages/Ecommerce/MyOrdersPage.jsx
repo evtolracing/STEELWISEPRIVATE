@@ -17,6 +17,7 @@ import { useNavigate, Link } from 'react-router-dom'
 
 import { listMyOrders } from '../../services/customerOrdersApi'
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const STATUS_CFG = {
   DRAFT:         { color: 'default', icon: <Schedule fontSize="inherit" /> },
@@ -116,7 +117,7 @@ export default function MyOrdersPage() {
               {orders.map(order => {
                 const cfg = STATUS_CFG[order.status] || STATUS_CFG.DRAFT
                 return (
-                  <TableRow key={order.id} hover sx={{ cursor: 'pointer' }}
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={order.id} hover sx={{ cursor: 'pointer' }}
                     onClick={() => navigate(`/shop/orders/${order.id}`)}>
                     <TableCell>
                       <Typography variant="body2" fontWeight={600} color="primary">

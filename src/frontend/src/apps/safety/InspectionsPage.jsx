@@ -72,6 +72,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock data
 const mockInspections = [
@@ -609,7 +610,7 @@ export default function InspectionsPage() {
               {filteredInspections
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((inspection) => (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={inspection.id}
                     hover
                     sx={{ cursor: 'pointer' }}

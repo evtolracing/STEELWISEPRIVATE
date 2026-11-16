@@ -29,11 +29,12 @@ import {
   OVERRIDE_TYPE, OVERRIDE_STATUS, OVERRIDE_TYPE_LABELS,
   getOverrideAuditLog, revokeOverride,
 } from '../../services/overrideApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const TYPE_ICONS = {
-  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: <ScheduleIcon fontSize="small" sx={{ color: '#e65100' }} />,
+  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: <ScheduleIcon fontSize="small" sx={{ color: '#A63A00' }} />,
   [OVERRIDE_TYPE.CAPACITY_WARNING]: <CapacityIcon fontSize="small" sx={{ color: '#f57f17' }} />,
   [OVERRIDE_TYPE.PRICING_OVERRIDE]: <PricingIcon fontSize="small" sx={{ color: '#1565c0' }} />,
 }
@@ -45,7 +46,7 @@ const STATUS_CHIPS = {
 }
 
 const TYPE_CHIP_COLORS = {
-  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: { bgcolor: '#fff3e0', color: '#e65100' },
+  [OVERRIDE_TYPE.CUTOFF_VIOLATION]: { bgcolor: '#fff3e0', color: '#A63A00' },
   [OVERRIDE_TYPE.CAPACITY_WARNING]: { bgcolor: '#fffde7', color: '#f57f17' },
   [OVERRIDE_TYPE.PRICING_OVERRIDE]: { bgcolor: '#e3f2fd', color: '#1565c0' },
 }
@@ -203,7 +204,7 @@ export default function AuditLogViewer({ orderId, canRevoke = false, maxHeight =
               {filtered.map(row => (
                 <React.Fragment key={row.id}>
                   {/* Main row */}
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     hover
                     sx={{ cursor: 'pointer', '& > *': { borderBottom: expandedId === row.id ? 'none' : undefined } }}
                     onClick={() => setExpandedId(expandedId === row.id ? null : row.id)}

@@ -87,6 +87,7 @@ import {
   formatHours,
   slaColor,
 } from '../../services/compressionMetricsApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // ─── STAGE ICONS ─────────────────────────────────────────────────────────────
 
@@ -612,7 +613,7 @@ const CompressionMetricsDashboard = () => {
       {/* ─── SLA RISK ORDERS ──────────────────────────────────────────── */}
       {slaRisk && slaRisk.data?.length > 0 && (
         <Paper sx={{ p: 2, mb: 3 }}>
-          <Box
+          <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
             onClick={() => setShowSlaDetails(!showSlaDetails)}
           >

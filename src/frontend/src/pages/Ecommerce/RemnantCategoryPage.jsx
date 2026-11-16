@@ -160,7 +160,7 @@ export default function RemnantCategoryPage() {
             {[
               { icon: <StockIcon />, value: stats.totalPieces, label: 'Pieces Available', color: '#2e7d32' },
               { icon: <WeightIcon />, value: `${(stats.totalWeight / 1000).toFixed(1)}k lbs`, label: 'Total Weight', color: '#1565c0' },
-              { icon: <TagIcon />, value: fmt(stats.totalValue), label: 'Total Value', color: '#e65100' },
+              { icon: <TagIcon />, value: fmt(stats.totalValue), label: 'Total Value', color: '#A63A00' },
               { icon: <DiscountIcon />, value: 'Up to 65%', label: 'Savings vs. List', color: '#b71c1c' },
             ].map((card, i) => (
               <Grid item xs={6} sm={3} key={i}>
@@ -183,8 +183,8 @@ export default function RemnantCategoryPage() {
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               {[
                 { label: 'Fresh (< 30d)', count: stats.byAging.FRESH, color: '#2e7d32' },
-                { label: '30–60 days', count: stats.byAging.MID, color: '#f9a825' },
-                { label: '60–90 days', count: stats.byAging.OLD, color: '#e65100' },
+                { label: '30–60 days', count: stats.byAging.MID, color: '#8A6100' },
+                { label: '60–90 days', count: stats.byAging.OLD, color: '#A63A00' },
                 { label: '90+ days', count: stats.byAging.STALE, color: '#b71c1c' },
               ].map(b => (
                 <Chip

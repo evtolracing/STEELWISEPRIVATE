@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material'
 import { searchRemnants, getAgeDays, getAgingBucket, REMNANT_CONDITION } from '../../services/remnantInventoryApi'
 import { calculateRemnantPrice } from '../../services/remnantPricingApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
@@ -100,7 +101,7 @@ export default function RemnantQuickAdd({ onAddToCart, location = '' }) {
       }}
     >
       {/* Header */}
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
         sx={{
           p: 1.5,
           display: 'flex',
@@ -168,7 +169,7 @@ export default function RemnantQuickAdd({ onAddToCart, location = '' }) {
                           sx={{ bgcolor: `${condDef?.color || '#666'}18`, color: condDef?.color || '#666', fontWeight: 600, fontSize: '0.65rem', height: 20 }}
                         />
                         {r.qtyAvailable <= 1 && (
-                          <Chip label="Last One!" size="small" sx={{ bgcolor: '#fff3e0', color: '#e65100', fontWeight: 700, fontSize: '0.65rem', height: 20 }} />
+                          <Chip label="Last One!" size="small" sx={{ bgcolor: '#fff3e0', color: '#A63A00', fontWeight: 700, fontSize: '0.65rem', height: 20 }} />
                         )}
                       </Box>
 

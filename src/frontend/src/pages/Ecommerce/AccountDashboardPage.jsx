@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material'
 import { useNavigate, Link } from 'react-router-dom'
 import useEnterpriseAccount from '../../hooks/useEnterpriseAccount'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 function fmtCurrency(n) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -113,7 +114,7 @@ export default function AccountDashboardPage() {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {KPI_CARDS.map(kpi => (
           <Grid item xs={6} sm={3} key={kpi.label}>
-            <Paper
+            <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
               elevation={0}
               onClick={() => kpi.path && navigate(kpi.path)}
               sx={{

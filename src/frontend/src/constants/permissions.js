@@ -36,7 +36,7 @@ export const USER_ROLE_CONFIG = {
   [USER_ROLES.QC_INSPECTOR]: {
     label: 'QC Inspector',
     description: 'Quality control and inspection',
-    color: '#F57C00',
+    color: '#B45309',
   },
   [USER_ROLES.SHIPPING_CLERK]: {
     label: 'Shipping Clerk',

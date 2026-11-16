@@ -73,6 +73,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Simulation change types
 const changeTypes = [
@@ -297,7 +298,7 @@ const SimulationWorkspace = () => {
             <Divider sx={{ mb: 2 }} />
             
             {scenarios.map((scenario) => (
-              <Paper
+              <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
                 key={scenario.id}
                 sx={{
                   p: 2,
@@ -647,7 +648,7 @@ const SimulationWorkspace = () => {
           <Grid container spacing={2}>
             {changeTypes.map((type) => (
               <Grid item xs={6} md={4} key={type.id}>
-                <Paper
+                <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
                   sx={{
                     p: 2,
                     cursor: 'pointer',

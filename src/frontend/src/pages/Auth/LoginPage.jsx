@@ -40,7 +40,8 @@ export default function LoginPage() {
     e.preventDefault()
     const result = await login(formData.email, formData.password)
     if (result.success) {
-      navigate(next, { replace: true })
+      // With nowhere to go back to, the layout sends the person to their own workspace.
+      navigate(next, { replace: true, state: { justSignedIn: !params.get('next') } })
     }
   }
 

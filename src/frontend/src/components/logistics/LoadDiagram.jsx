@@ -4,6 +4,7 @@ import {
   Train as TrainIcon,
   DirectionsBoat as ShipIcon,
 } from '@mui/icons-material'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const vehicleIcons = {
   truck: TruckIcon,
@@ -106,14 +107,14 @@ export default function LoadDiagram({
                 </Box>
               }
             >
-              <Paper
+              <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
                 elevation={2}
                 onClick={() => onUnitClick?.(unit)}
                 sx={{
                   p: 1,
                   cursor: onUnitClick ? 'pointer' : 'default',
                   textAlign: 'center',
-                  bgcolor: unit.status === 'LOADED' ? 'success.light' : 
+                  bgcolor: unit.status === 'LOADED' ? 'success.tint' : 
                            unit.status === 'PENDING' ? 'warning.light' : 'background.paper',
                   '&:hover': {
                     boxShadow: 4,

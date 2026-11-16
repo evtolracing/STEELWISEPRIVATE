@@ -26,6 +26,7 @@ import {
   PRICING_TIERS, PACKAGING_TYPES, SURFACE_FINISHES, STEEL_GRADES,
   summarizePreferences,
 } from '../../services/customerPreferencesApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function CustomerPreferencesPage() {
   // Customer list
@@ -664,7 +665,7 @@ export default function CustomerPreferencesPage() {
                   }) : []
 
                   return (
-                    <ListItem key={cust.id} button selected={selectedId === cust.id}
+                    <ListItem tabIndex={0} onKeyDown={activateOnKey} key={cust.id} button selected={selectedId === cust.id}
                       onClick={() => handleSelectCustomer(cust.id)}
                       sx={{ borderRadius: 1, mb: 0.5, border: selectedId === cust.id ? 2 : 1,
                         borderColor: selectedId === cust.id ? 'primary.main' : 'grey.200' }}>

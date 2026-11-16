@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import { Add as AddIcon, Refresh as RefreshIcon, Search as SearchIcon } from '@mui/icons-material'
 import client from '../../api/client'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export const SHIPMENT_STATUS_LABELS = { PENDING: 'Not yet loaded', LOADING: 'Loading', IN_TRANSIT: 'On the road', DELIVERED: 'Delivered', EXCEPTION: 'Problem', LOST: 'Lost', CANCELLED: 'Cancelled' }
 const STATUS_COLORS = { PENDING: 'default', LOADING: 'info', IN_TRANSIT: 'primary', DELIVERED: 'success', EXCEPTION: 'error', LOST: 'error', CANCELLED: 'default' }
@@ -202,7 +203,7 @@ export default function ShippingPage() {
             </TableHead>
             <TableBody>
               {rows.map((s) => (
-                <TableRow key={s.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/shipping/${s.id}`)}>
+                <TableRow tabIndex={0} onKeyDown={activateOnKey} key={s.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/shipping/${s.id}`)}>
                   <TableCell><Typography variant="body2" fontWeight={600} color="primary">{s.shipmentNumber}</Typography></TableCell>
                   <TableCell>{s.order?.orderNumber}</TableCell>
                   <TableCell>{s.order?.buyer?.name || ''}</TableCell>

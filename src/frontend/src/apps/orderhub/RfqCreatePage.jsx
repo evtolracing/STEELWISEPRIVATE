@@ -44,6 +44,7 @@ import {
 import { createRfq } from '../../services/rfqApi';
 import { searchContacts } from '../../services/contactApi';
 import { parseEmailRfq } from '../../services/aiOrderHubApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const COMMODITIES = ['METALS', 'PLASTICS', 'SUPPLIES'];
 const FORMS = ['PLATE', 'SHEET', 'BAR', 'TUBE', 'PIPE', 'ANGLE', 'CHANNEL', 'BEAM', 'ROD'];
@@ -272,7 +273,7 @@ export default function RfqCreatePage() {
               {contactResults.length > 0 && (
                 <Paper variant="outlined" sx={{ mb: 2, maxHeight: 150, overflow: 'auto' }}>
                   {contactResults.map((c) => (
-                    <Box
+                    <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                       key={c.id}
                       sx={{
                         p: 1,

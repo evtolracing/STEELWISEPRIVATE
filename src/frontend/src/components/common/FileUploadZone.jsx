@@ -41,6 +41,7 @@ import {
   Description as DocFileIcon,
 } from '@mui/icons-material'
 import { uploadDocument, uploadMultipleDocuments } from '../../api/documents'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const FILE_ICONS = {
   'application/pdf': PdfIcon,
@@ -238,7 +239,7 @@ export default function FileUploadZone({
       />
 
       {/* Drop zone */}
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
         onDragEnter={handleDrag}
         onDragOver={handleDrag}
         onDragLeave={handleDrag}
@@ -250,10 +251,10 @@ export default function FileUploadZone({
           borderRadius: 2,
           p: 3,
           textAlign: 'center',
-          bgcolor: dragActive ? 'primary.light' : 'grey.50',
+          bgcolor: dragActive ? 'primary.tint' : 'grey.50',
           cursor: uploading ? 'default' : 'pointer',
           transition: 'all 0.2s',
-          '&:hover': uploading ? {} : { borderColor: 'primary.main', bgcolor: 'primary.light' },
+          '&:hover': uploading ? {} : { borderColor: 'primary.main', bgcolor: 'primary.tint' },
           opacity: uploading ? 0.6 : 1,
         }}
       >

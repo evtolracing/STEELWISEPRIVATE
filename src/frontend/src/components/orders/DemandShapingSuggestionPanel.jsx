@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material'
 
 import { SUGGESTION_TYPE, SUGGESTION_LABELS, formatSavings, suggestionColor } from '../../services/demandShapingApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // ─── ICON MAP ────────────────────────────────────────────────────────────────
 
@@ -88,7 +89,7 @@ function SuggestionCard({ suggestion, onAccept, onDismiss, compact }) {
       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, pr: 3 }}>
         <Avatar
           sx={{
-            bgcolor: `${color}.light`,
+            bgcolor: `${color}.tint`,
             color: `${color}.dark`,
             width: compact ? 28 : 34,
             height: compact ? 28 : 34,
@@ -176,7 +177,7 @@ export default function DemandShapingSuggestionPanel({
   return (
     <Box>
       {/* Header */}
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
         sx={{
           display: 'flex',
           alignItems: 'center',

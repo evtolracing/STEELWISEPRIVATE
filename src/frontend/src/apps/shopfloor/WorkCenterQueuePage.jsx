@@ -57,12 +57,13 @@ import {
 } from '@mui/icons-material'
 import { getQueue, getOperators } from '../../services/dispatchApi'
 import { startOperation, pauseOperation, completeOperation } from '../../services/operationsApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Priority config
 const PRIORITY_CONFIG = {
   VIP: { color: '#9c27b0', icon: VipIcon, label: 'VIP' },
   RUSH: { color: '#d32f2f', icon: RushIcon, label: 'RUSH' },
-  HOT: { color: '#f57c00', icon: HotIcon, label: 'HOT' },
+  HOT: { color: '#B45309', icon: HotIcon, label: 'HOT' },
   NORMAL: { color: '#666', icon: null, label: 'NORMAL' },
 }
 
@@ -365,14 +366,14 @@ function WorkCenterQueuePage() {
                       const isActive = isOperationActive(op)
                       
                       return (
-                        <TableRow
+                        <TableRow tabIndex={0} onKeyDown={activateOnKey}
                           key={op.id}
                           hover
                           selected={isSelected}
                           onClick={() => setSelectedOperation(op)}
                           sx={{
                             cursor: 'pointer',
-                            bgcolor: isActive ? alpha('#4caf50', 0.1) : 'inherit',
+                            bgcolor: isActive ? alpha('#2E7D32', 0.1) : 'inherit',
                             '&.Mui-selected': {
                               bgcolor: alpha('#1976d2', 0.15),
                               '&:hover': { bgcolor: alpha('#1976d2', 0.2) },
@@ -444,7 +445,7 @@ function WorkCenterQueuePage() {
                   sx={{
                     p: 3,
                     background: isOperationActive(selectedOperation)
-                      ? 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'
+                      ? 'linear-gradient(135deg, #2e7d32 0%, #2E7D32 100%)'
                       : 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)',
                     color: 'white',
                   }}

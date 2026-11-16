@@ -487,7 +487,7 @@ export default function HeaderAIAssistant() {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              bgcolor: voiceMode ? '#FF5722' : '#4CAF50',
+              bgcolor: voiceMode ? '#BF360C' : '#2E7D32',
               border: '2px solid',
               borderColor: open ? 'primary.main' : 'background.paper',
               animation: voiceMode ? 'pulse 1s ease-in-out infinite' : 'none',
@@ -533,7 +533,7 @@ export default function HeaderAIAssistant() {
                       px: 2,
                       py: 1.5,
                       background: voiceMode
-                        ? 'linear-gradient(135deg, #E65100 0%, #FF6D00 100%)'
+                        ? 'linear-gradient(135deg, #A63A00 0%, #FF6D00 100%)'
                         : 'linear-gradient(135deg, #1565C0 0%, #1976D2 100%)',
                       color: 'white',
                       display: 'flex',

@@ -53,6 +53,7 @@ import {
   QrCode2,
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock Data
 const spareParts = [
@@ -423,7 +424,7 @@ const PartsInventory = () => {
               </TableHead>
               <TableBody>
                 {filteredParts.map((part) => (
-                  <TableRow 
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} 
                     key={part.id} 
                     hover 
                     sx={{ cursor: 'pointer' }}

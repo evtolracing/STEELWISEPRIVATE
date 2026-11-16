@@ -13,6 +13,7 @@ import { Search as SearchIcon, Inventory as UnitIcon, Upload as UploadIcon, Refr
 import { StatusChip } from '../../components/common'
 import { InventoryUpload } from '../../components/inventory'
 import { bulkUploadInventory } from '../../api/inventory'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const PAGE = 25
 const STATUSES = [
@@ -132,7 +133,7 @@ export default function UnitListPage() {
               </TableHead>
               <TableBody>
                 {rows.map((u) => (
-                  <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${u.id}`)}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${u.id}`)}>
                     <TableCell><Typography variant="body2" fontWeight={600} color="primary">{u.coilNumber}</Typography></TableCell>
                     <TableCell>{u.heat?.heatNumber || ''}</TableCell>
                     <TableCell>{u.grade?.code || ''}</TableCell>

@@ -59,6 +59,7 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock inspection detail with checklist
 const mockInspectionDetail = {
@@ -536,7 +537,7 @@ export default function InspectionDetailPage() {
             </Typography>
             <List dense>
               {inspection.previousInspections.map((prev) => (
-                <ListItem 
+                <ListItem tabIndex={0} onKeyDown={activateOnKey} 
                   key={prev.id} 
                   sx={{ px: 0, cursor: 'pointer' }}
                   onClick={() => navigate(`/safety/inspections/${prev.id}`)}

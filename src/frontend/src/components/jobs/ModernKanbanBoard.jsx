@@ -168,7 +168,7 @@ const ModernKanbanColumn = ({
                   size="small" 
                   sx={{ 
                     height: 24,
-                    bgcolor: alpha('#f44336', 0.1),
+                    bgcolor: alpha('#C62828', 0.1),
                     color: 'error.main',
                     fontWeight: 700,
                     '& .MuiChip-icon': { color: 'error.main' }
@@ -184,7 +184,7 @@ const ModernKanbanColumn = ({
                   size="small" 
                   sx={{ 
                     height: 24,
-                    bgcolor: alpha('#ff9800', 0.1),
+                    bgcolor: alpha('#B45309', 0.1),
                     color: 'warning.dark',
                     fontWeight: 700,
                     '& .MuiChip-icon': { color: 'warning.dark' }
@@ -431,7 +431,7 @@ const ModernKanbanBoard = ({
               icon={<FireIcon sx={{ fontSize: '14px !important' }} />}
               label={`${hotJobs} hot`} 
               size="small" 
-              sx={{ fontWeight: 600, bgcolor: alpha('#f44336', 0.1), color: 'error.main' }}
+              sx={{ fontWeight: 600, bgcolor: alpha('#C62828', 0.1), color: 'error.main' }}
             />
           )}
           {overdueJobs > 0 && (
@@ -439,14 +439,14 @@ const ModernKanbanBoard = ({
               icon={<WarningIcon sx={{ fontSize: '14px !important' }} />}
               label={`${overdueJobs} overdue`} 
               size="small" 
-              sx={{ fontWeight: 600, bgcolor: alpha('#ff9800', 0.1), color: 'warning.dark' }}
+              sx={{ fontWeight: 600, bgcolor: alpha('#B45309', 0.1), color: 'warning.dark' }}
             />
           )}
           <Chip 
             icon={<SpeedIcon sx={{ fontSize: '14px !important' }} />}
             label={`${inProgressJobs} in progress`} 
             size="small" 
-            sx={{ fontWeight: 600, bgcolor: alpha('#4caf50', 0.1), color: 'success.main' }}
+            sx={{ fontWeight: 600, bgcolor: alpha('#2E7D32', 0.1), color: 'success.main' }}
           />
         </Stack>
 

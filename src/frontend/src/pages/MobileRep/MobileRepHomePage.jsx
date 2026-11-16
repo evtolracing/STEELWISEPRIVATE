@@ -29,6 +29,7 @@ import {
   CheckCircle as DoneIcon,
 } from '@mui/icons-material'
 import useMobileMode from '../../hooks/useMobileMode'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Figures are the signed-in person's own orders, from /api/orders/intake/summary.
 const NO_STATS = { ordersToday: null, quotesOpen: null, revenueMTD: null, avgOrderValue: null, drafts: 0 }
@@ -162,7 +163,7 @@ export default function MobileRepHomePage() {
       <Grid container spacing={2}>
         {TILES.map(tile => (
           <Grid item xs={6} key={tile.path}>
-            <Paper
+            <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
               elevation={0}
               onClick={() => navigate(tile.path)}
               sx={{
@@ -212,7 +213,7 @@ export default function MobileRepHomePage() {
 
       {/* ── Pending promise badge ───────────────────────────── */}
       {stats.drafts > 0 && (
-        <Paper
+        <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
           elevation={0}
           onClick={() => navigate('/mobile-rep/place-order')}
           sx={{

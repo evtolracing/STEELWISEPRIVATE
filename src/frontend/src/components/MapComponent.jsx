@@ -330,15 +330,15 @@ const MapComponent = ({
           size = 42;
           break;
         case 'stop':
-          bgColor = '#ff9800';
+          bgColor = '#B45309';
           icon = location.stopNumber || '•';
           break;
         case 'origin':
-          bgColor = '#4caf50';
+          bgColor = '#2E7D32';
           icon = '🏠';
           break;
         case 'destination':
-          bgColor = '#f44336';
+          bgColor = '#C62828';
           icon = '🎯';
           break;
       }

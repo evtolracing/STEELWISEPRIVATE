@@ -79,19 +79,19 @@ dayjs.extend(relativeTime);
 // Severity colors
 const severityColors = {
   CRITICAL: '#d32f2f',
-  HIGH: '#f57c00',
-  MEDIUM: '#ffa000',
-  LOW: '#4caf50',
+  HIGH: '#B45309',
+  MEDIUM: '#B45309',
+  LOW: '#2E7D32',
 };
 
 // Status colors
 const statusColors = {
   ACTIVE: '#d32f2f',
   UNDER_INVESTIGATION: '#9c27b0',
-  MITIGATION_IN_PROGRESS: '#f57c00',
-  PENDING_VERIFICATION: '#2196f3',
-  PENDING_APPROVAL: '#00bcd4',
-  CLEARED: '#4caf50',
+  MITIGATION_IN_PROGRESS: '#B45309',
+  PENDING_VERIFICATION: '#1565C0',
+  PENDING_APPROVAL: '#00738A',
+  CLEARED: '#2E7D32',
   ESCALATED: '#d50000',
 };
 
@@ -370,7 +370,7 @@ export default function StopWorkDashboard() {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ borderLeft: '4px solid #2196f3' }}>
+          <Card sx={{ borderLeft: '4px solid #1565C0' }}>
             <CardContent>
               <Typography variant="overline" color="text.secondary">
                 Avg. Resolution Time

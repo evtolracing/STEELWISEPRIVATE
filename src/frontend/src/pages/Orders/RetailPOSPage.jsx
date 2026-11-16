@@ -28,10 +28,15 @@ import { createIntakeOrder, submitOrder } from '../../services/intakeOrdersApi'
 import { calculateLinePrice, estimateTax } from '../../services/intakePricingApi'
 import RemnantQuickAdd from '../../components/pos/RemnantQuickAdd'
 import useSellingBranches from '../../hooks/useSellingBranches'
+import { useAuth } from '../../hooks/useAuth'
 
 const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 export default function RetailPOSPage() {
+  // The clerk shown is the person signed in (the screen used to show the letters JD for everyone).
+  const { user } = useAuth()
+  const clerkName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || 'this user'
+  const clerkInitials = (clerkName.match(/\b\w/g) || ['?']).slice(0, 2).join('').toUpperCase()
   const navigate = useNavigate()
 
   // ── customer ──
@@ -178,7 +183,7 @@ export default function RetailPOSPage() {
           <Badge badgeContent={cart.length} color="error">
             <CartIcon />
           </Badge>
-          <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main', ml: 1 }}>JD</Avatar>
+          <Avatar title={clerkName} aria-label={`Signed in as ${clerkName}`} sx={{ width: 32, height: 32, bgcolor: 'secondary.main', color: 'secondary.contrastText', fontSize: '0.8rem', fontWeight: 700, ml: 1 }}>{clerkInitials}</Avatar>
         </Toolbar>
       </AppBar>
 

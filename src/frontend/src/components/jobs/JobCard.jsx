@@ -48,6 +48,7 @@ import {
 import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
 import { PRIORITY_LEVELS_CONFIG } from '../../constants/materials'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const JobCard = ({
   job,
@@ -107,7 +108,7 @@ const JobCard = ({
   }
 
   return (
-    <Card
+    <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
       draggable={draggable && !editing}
       onDragStart={handleDragStart}
       onClick={(e) => {

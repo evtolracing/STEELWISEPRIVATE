@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import { ArrowBack as BackIcon, PlayArrow as StartIcon, CheckCircle as CompleteIcon, Cancel as CancelIcon, Send as ReleaseIcon } from '@mui/icons-material'
 import client from '../../api/client'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export const WO_TYPE_LABELS = { SLIT: 'Slitting', CTL: 'Cut to length', BLANK: 'Blanking', LEVELCUT: 'Level cut', MULTIBLANKING: 'Multi-blanking', SHEAR: 'Shearing' }
 export const WO_STATUS_LABELS = { DRAFT: 'Draft', READY: 'Ready', IN_PROGRESS: 'In progress', QC_HOLD: 'Quality hold', COMPLETE: 'Complete', CANCELLED: 'Cancelled' }
@@ -178,7 +179,7 @@ export default function WorkOrderDetailPage() {
                   <TableHead><TableRow><TableCell>Piece</TableCell><TableCell>Stock item</TableCell><TableCell align="right">Weight</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
                   <TableBody>
                     {wo.outputs.map((o) => (
-                      <TableRow key={o.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${o.outputCoil?.id}`)}>
+                      <TableRow tabIndex={0} onKeyDown={activateOnKey} key={o.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${o.outputCoil?.id}`)}>
                         <TableCell>{o.sequence}</TableCell>
                         <TableCell>{o.outputCoil?.coilNumber}</TableCell>
                         <TableCell align="right">{pounds(o.outputCoil?.netWeightLb ?? o.actualWeight)}</TableCell>

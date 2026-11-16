@@ -281,7 +281,7 @@ const ShipmentTrackingScreen = () => {
       const route = await getTrafficRoute(waypoints);
       setRouteData({
         ...route,
-        color: shipment.status === 'delayed' ? '#f44336' : '#1976d2',
+        color: shipment.status === 'delayed' ? '#C62828' : '#1976d2',
         showArrows: true,
       });
     } catch (error) {

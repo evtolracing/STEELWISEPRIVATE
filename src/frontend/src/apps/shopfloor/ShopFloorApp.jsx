@@ -19,24 +19,24 @@ const shopFloorTheme = createTheme({
       dark: '#0d1f33',
     },
     secondary: {
-      main: '#ff9800',
+      main: '#B45309',
       light: '#ffb74d',
-      dark: '#f57c00',
+      dark: '#B45309',
     },
     success: {
       main: '#2e7d32',
-      light: '#4caf50',
+      light: '#2E7D32',
       dark: '#1b5e20',
     },
     error: {
       main: '#c62828',
-      light: '#ef5350',
+      light: '#C62828',
       dark: '#b71c1c',
     },
     warning: {
       main: '#ed6c02',
-      light: '#ff9800',
-      dark: '#e65100',
+      light: '#B45309',
+      dark: '#A63A00',
     },
     background: {
       default: '#f0f2f5',

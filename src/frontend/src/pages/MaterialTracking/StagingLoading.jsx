@@ -135,7 +135,7 @@ const StagingLoading = () => {
         <TableContainer component={Paper} sx={{ mb: 4 }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: 'success.light' }}>
+              <TableRow sx={{ bgcolor: 'success.tint' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Job</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Order</TableCell>
@@ -196,7 +196,7 @@ const StagingLoading = () => {
         <TableContainer component={Paper}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ bgcolor: 'primary.light' }}>
+              <TableRow sx={{ bgcolor: 'primary.tint' }}>
                 <TableCell sx={{ fontWeight: 600 }}>Job</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Customer</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Carrier</TableCell>

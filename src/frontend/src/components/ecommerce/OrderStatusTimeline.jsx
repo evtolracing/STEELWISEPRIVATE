@@ -10,13 +10,13 @@ import {
 } from '@mui/icons-material'
 
 const ALL_STEPS = [
-  { key: 'DRAFT',          label: 'Draft',          icon: DraftsOutlined,       color: '#9e9e9e' },
-  { key: 'NEEDS_REVIEW',   label: 'Needs Review',   icon: RateReview,           color: '#ff9800' },
-  { key: 'CONFIRMED',      label: 'Confirmed',      icon: Verified,             color: '#2196f3' },
+  { key: 'DRAFT',          label: 'Draft',          icon: DraftsOutlined,       color: '#616161' },
+  { key: 'NEEDS_REVIEW',   label: 'Needs Review',   icon: RateReview,           color: '#B45309' },
+  { key: 'CONFIRMED',      label: 'Confirmed',      icon: Verified,             color: '#1565C0' },
   { key: 'SCHEDULED',      label: 'Scheduled',      icon: CalendarMonth,        color: '#9c27b0' },
-  { key: 'IN_PROCESS',     label: 'In Process',     icon: Engineering,          color: '#00bcd4' },
-  { key: 'READY_TO_SHIP',  label: 'Ready to Ship',  icon: Warehouse,            color: '#ff5722' },
-  { key: 'SHIPPED',        label: 'Shipped',         icon: LocalShipping,        color: '#4caf50' },
+  { key: 'IN_PROCESS',     label: 'In Process',     icon: Engineering,          color: '#00738A' },
+  { key: 'READY_TO_SHIP',  label: 'Ready to Ship',  icon: Warehouse,            color: '#BF360C' },
+  { key: 'SHIPPED',        label: 'Shipped',         icon: LocalShipping,        color: '#2E7D32' },
   { key: 'COMPLETED',      label: 'Completed',       icon: CheckCircleOutline,   color: '#2e7d32' },
 ]
 

@@ -55,6 +55,7 @@ import {
   Lock as LockIcon
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { activateOnKey } from '../../../utils/activateOnKey'
 
 // ============================================
 // CUSTOMER SUMMARY CARD
@@ -302,7 +303,7 @@ function OrderLinesTable({ lines, pricingWarnings, onEditLine }) {
   
   return (
     <Paper variant="outlined">
-      <Box 
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey} 
         sx={{ 
           p: 2, 
           display: 'flex', 
@@ -351,7 +352,7 @@ function OrderLinesTable({ lines, pricingWarnings, onEditLine }) {
                 const margin = line.pricing?.margin;
                 
                 return (
-                  <TableRow key={line.id} hover sx={{ bgcolor: warning ? 'warning.light' : undefined }}>
+                  <TableRow key={line.id} hover sx={{ bgcolor: warning ? 'warning.tint' : undefined }}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box>

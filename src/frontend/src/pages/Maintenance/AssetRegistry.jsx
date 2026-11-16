@@ -53,6 +53,7 @@ import {
 import { getAssets, getAssetStats, getAssetTypes, createAsset, seedAssetsFromWorkCenters } from '../../api/assets';
 import { getLocations } from '../../api/inventory';
 import { getWorkCenters } from '../../api/workCenters';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const AssetRegistry = () => {
   const [tab, setTab] = useState(0);
@@ -416,7 +417,7 @@ const AssetRegistry = () => {
                   </TableCell>
                 </TableRow>
               ) : filteredAssets.map((asset) => (
-                <TableRow key={asset.id} hover sx={{ cursor: 'pointer' }}
+                <TableRow tabIndex={0} onKeyDown={activateOnKey} key={asset.id} hover sx={{ cursor: 'pointer' }}
                   onClick={() => { setSelectedAsset(asset); setDetailOpen(true); }}
                 >
                   <TableCell>

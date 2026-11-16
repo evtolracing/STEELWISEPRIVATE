@@ -67,6 +67,7 @@ import {
   getMockSlaRiskJobs,
 } from '../../services/mockDashboardData';
 import { askOpsAssistant } from '../../services/aiConsoleApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // ============================================
 // Loading & Error Wrapper Component
@@ -159,7 +160,7 @@ export function FlowBoardWidget({ title = 'Job Flow', data, loading, error, onRe
                 </Stack>
                 <Stack spacing={0.5}>
                   {groupedJobs[status].slice(0, 3).map((job) => (
-                    <Box
+                    <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                       key={job.id}
                       onClick={() => onJobClick?.(job)}
                       sx={{
@@ -651,7 +652,7 @@ export function ExceptionsFeedWidget({ title = 'Exceptions', data, loading, erro
                     sx={{
                       width: 24,
                       height: 24,
-                      bgcolor: `${getSeverityColor(exc.severity)}.light`,
+                      bgcolor: `${getSeverityColor(exc.severity)}.tint`,
                       color: `${getSeverityColor(exc.severity)}.main`,
                     }}
                   >
@@ -842,7 +843,7 @@ export function AiAssistantPanel({ title = 'Ops Assistant', role, context, onAsk
       <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', pt: 0 }}>
         <Box sx={{ flex: 1, mb: 2, overflow: 'auto', maxHeight: 200 }}>
           {answer ? (
-            <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'primary.light', borderRadius: 1 }}>
+            <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'primary.tint', borderRadius: 1 }}>
               <Typography variant="body2">{answer}</Typography>
             </Paper>
           ) : (

@@ -29,7 +29,7 @@ import {
 const STAT_CARDS = [
   { key: 'totalActive', label: 'Active Overrides',  icon: <ActiveIcon />, color: '#2e7d32' },
   { key: 'totalAllTime', label: 'Total (All Time)',  icon: <StatsIcon />,  color: '#546e7a' },
-  { key: 'todayCount',   label: "Today's Overrides", icon: <GavelIcon />,  color: '#e65100' },
+  { key: 'todayCount',   label: "Today's Overrides", icon: <GavelIcon />,  color: '#A63A00' },
 ]
 
 const TYPE_ICON_MAP = {

@@ -106,7 +106,7 @@ function ItemChecklist({ items, onToggle, onScan }) {
             <TableRow 
               key={item.lineId}
               sx={{ 
-                bgcolor: item.loaded ? 'success.light' : 'inherit',
+                bgcolor: item.loaded ? 'success.tint' : 'inherit',
                 opacity: item.loaded ? 0.8 : 1
               }}
             >

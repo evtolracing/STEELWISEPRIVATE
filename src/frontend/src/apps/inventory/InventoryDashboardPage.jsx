@@ -57,6 +57,7 @@ import { getInventory, getInventorySummary, getLocations } from '../../services/
 import InventoryAiAssistantPanel from '../../components/InventoryAiAssistantPanel';
 import { InventoryUpload } from '../../components/inventory';
 import { bulkUploadInventory } from '../../api/inventory';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function InventoryDashboardPage() {
   const navigate = useNavigate();
@@ -417,7 +418,7 @@ export default function InventoryDashboardPage() {
                       </TableRow>
                     ) : (
                       paginatedInventory.map((inv) => (
-                        <TableRow
+                        <TableRow tabIndex={0} onKeyDown={activateOnKey}
                           key={inv.id}
                           hover
                           sx={{ cursor: 'pointer' }}

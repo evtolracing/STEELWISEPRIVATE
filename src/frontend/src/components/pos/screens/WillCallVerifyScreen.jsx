@@ -50,6 +50,7 @@ import {
   Assignment as OrderIcon
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { activateOnKey } from '../../../utils/activateOnKey'
 
 // ============================================
 // ID TYPES
@@ -123,7 +124,7 @@ function AuthorizedPersonsList({ persons, onSelect, selectedPerson }) {
   return (
     <List>
       {persons.map((person, index) => (
-        <ListItem 
+        <ListItem tabIndex={0} onKeyDown={activateOnKey} 
           key={person.id || index}
           button
           selected={selectedPerson?.id === person.id}
@@ -408,7 +409,7 @@ export function WillCallVerifyScreen({ screen, onNext, onBack }) {
       {isValid && (
         <Paper 
           variant="outlined" 
-          sx={{ p: 2, mt: 3, bgcolor: 'success.light', borderColor: 'success.main' }}
+          sx={{ p: 2, mt: 3, bgcolor: 'success.tint', borderColor: 'success.main' }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <VerifiedIcon color="success" fontSize="large" />

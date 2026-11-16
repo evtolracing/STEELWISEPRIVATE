@@ -38,6 +38,7 @@ import {
   QrCodeScanner as RfidIcon,
 } from '@mui/icons-material';
 import { askInventoryAssistant } from '../services/inventoryAiApi';
+import { activateOnKey } from '../utils/activateOnKey'
 
 const QUICK_PROMPTS = [
   'Where is RFID-HR-001-A7F3?',
@@ -206,7 +207,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
             {/* Supporting Data */}
             {response.supportingData && (
               <Box>
-                <Box
+                <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -369,7 +370,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
           <Collapse in={showHistory}>
             <List dense sx={{ maxHeight: 150, overflowY: 'auto' }}>
               {history.map((item, idx) => (
-                <ListItem
+                <ListItem tabIndex={0} onKeyDown={activateOnKey}
                   key={idx}
                   button
                   onClick={() => handleAsk(item.query)}

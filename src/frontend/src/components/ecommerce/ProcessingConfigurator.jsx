@@ -12,6 +12,7 @@ import {
   AutoFixHigh as FinishIcon, Add as AddIcon, Delete as DeleteIcon, ExpandMore, ExpandLess,
 } from '@mui/icons-material'
 import { listProcesses } from '../../services/intakeProcessingApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const TYPE_ICON = { CUT: CutIcon, FORM: FormIcon, MACHINE: MachineIcon, FINISH: FinishIcon }
 const TYPE_COLOR = { CUT: 'error', FORM: 'primary', MACHINE: 'info', FINISH: 'success' }
@@ -46,7 +47,7 @@ export default function ProcessingConfigurator({ steps = [], onChange, division,
 
   return (
     <Paper variant="outlined" sx={{ borderRadius: 2 }}>
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
         onClick={() => setExpanded(!expanded)}
         sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 2, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
       >

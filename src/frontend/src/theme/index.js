@@ -12,8 +12,8 @@ export const tokens = {
   // One meaning, one colour. `main` reads on white; `tint` is a background that `ink` reads on.
   status: {
     good: { main: '#2E7D32', tint: '#E8F5E9', ink: '#1B5E20' },
-    attention: { main: '#B45309', tint: '#FFF3E0', ink: '#8A3D00' },
-    problem: { main: '#D32F2F', tint: '#FDECEA', ink: '#B71C1C' },
+    attention: { main: '#A34A00', tint: '#FFF3E0', ink: '#7A3600' },
+    problem: { main: '#C62828', tint: '#FDECEA', ink: '#9F1B1B' },
     information: { main: '#0B6FB0', tint: '#E3F2FD', ink: '#01579B' },
     neutral: { main: '#5F6377', tint: '#EEF1F6', ink: '#3D4152' },
   },
@@ -32,16 +32,24 @@ const theme = createTheme({
       main: '#1E3A5F',
       light: '#4A6FA5',
       dark: '#0D1F33',
+      tint: '#E8EEF6',
+      ink: '#0D1F33',
       contrastText: '#FFFFFF',
     },
     secondary: {
       main: '#FF6B35',
       light: '#FF9066',
-      dark: '#CC4A1A',
+      // Orange text on white: 5.6 to 1 (the brand orange itself is 2.8 to 1 and is for fills).
+      dark: '#B8400F',
+      tint: '#FFF0EA',
+      ink: '#B8400F',
       // The brand orange is a light colour: white on it is 2.8 to 1, dark ink is 6.0 to 1.
       contrastText: tokens.ink.primary,
     },
     success: {
+      // A background that dark text reads on, and the dark text for it.
+      tint: tokens.status.good.tint,
+      ink: tokens.status.good.ink,
       main: '#2E7D32',
       light: '#4CAF50',
       dark: '#1B5E20',
@@ -49,18 +57,28 @@ const theme = createTheme({
     // Darker than the Material default, so warning text and outlined warning chips read on white
     // (5.0 to 1; the default #ED6C02 is 3.1 to 1).
     warning: {
+      // A background that dark text reads on, and the dark text for it.
+      tint: tokens.status.attention.tint,
+      ink: tokens.status.attention.ink,
       main: tokens.status.attention.main,
       light: '#FF9800',
       dark: tokens.status.attention.ink,
       contrastText: '#FFFFFF',
     },
+    // Slightly darker than the Material default, so red text reads on its own tint (4.9 to 1).
     error: {
-      main: '#D32F2F',
+      tint: tokens.status.problem.tint,
+      ink: tokens.status.problem.ink,
+      main: tokens.status.problem.main,
       light: '#EF5350',
-      dark: '#C62828',
+      dark: tokens.status.problem.ink,
+      contrastText: '#FFFFFF',
     },
     // 5.4 to 1 on white (the default #0288D1 is 3.9 to 1).
     info: {
+      // A background that dark text reads on, and the dark text for it.
+      tint: tokens.status.information.tint,
+      ink: tokens.status.information.ink,
       main: tokens.status.information.main,
       light: '#03A9F4',
       dark: tokens.status.information.ink,
@@ -193,6 +211,8 @@ const theme = createTheme({
         },
       },
     },
+    // The Material default (light text on light grey) is 1.8 to 1.
+    MuiAvatar: { styleOverrides: { colorDefault: { backgroundColor: tokens.status.neutral.main, color: '#FFFFFF' } } },
     MuiTooltip: { defaultProps: { arrow: true, enterDelay: 400 } },
     MuiDialog: { styleOverrides: { paper: { borderRadius: tokens.radius.card } } },
     MuiDialogTitle: { styleOverrides: { root: { fontWeight: 600, fontSize: '1.125rem' } } },
@@ -206,6 +226,8 @@ const theme = createTheme({
           borderRadius: 6,
           padding: '8px 16px',
         },
+        textSecondary: { color: '#B8400F' },
+        outlinedSecondary: { color: '#B8400F', borderColor: '#E0885F' },
         containedPrimary: {
           '&:hover': {
             backgroundColor: '#2A4A70',
@@ -230,6 +252,7 @@ const theme = createTheme({
     },
     MuiChip: {
       styleOverrides: {
+        outlinedSecondary: { color: '#B8400F', borderColor: '#E0885F' },
         root: {
           borderRadius: 6,
           fontWeight: 500,

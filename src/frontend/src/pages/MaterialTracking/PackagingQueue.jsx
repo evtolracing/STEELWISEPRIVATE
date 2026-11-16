@@ -163,7 +163,7 @@ const PackagingQueue = () => {
     <Box sx={{ flex: 1, minWidth: 280, maxWidth: 340 }}>
       <Paper
         sx={{
-          p: 1.5, mb: 1, bgcolor: `${color}.light`,
+          p: 1.5, mb: 1, bgcolor: `${color}.tint`,
           borderLeft: 4, borderColor: `${color}.main`,
         }}
       >

@@ -48,6 +48,7 @@ import {
   TrendingDown as TrendDownIcon,
 } from '@mui/icons-material'
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock Claims Data
 const mockClaims = [
@@ -421,7 +422,7 @@ export default function ClaimsInboxPage() {
                 const status = statusConfig[claim.status]
                 const severity = severityConfig[claim.severity]
                 return (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={claim.id}
                     hover
                     sx={{

@@ -56,6 +56,7 @@ import {
   Comment,
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock Data
 const ncrs = [
@@ -351,7 +352,7 @@ const NCRManagement = () => {
             </TableHead>
             <TableBody>
               {filteredNCRs.map((ncr) => (
-                <TableRow 
+                <TableRow tabIndex={0} onKeyDown={activateOnKey} 
                   key={ncr.id} 
                   hover 
                   sx={{ cursor: 'pointer' }}

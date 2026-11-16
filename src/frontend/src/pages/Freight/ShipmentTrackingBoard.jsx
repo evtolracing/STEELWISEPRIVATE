@@ -42,6 +42,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock shipments by status
 const mockShipments = {
@@ -242,7 +243,7 @@ const ShipmentTrackingBoard = () => {
   };
 
   const ShipmentCard = ({ shipment, status }) => (
-    <Card 
+    <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
       sx={{ 
         mb: 1.5, 
         cursor: 'pointer',

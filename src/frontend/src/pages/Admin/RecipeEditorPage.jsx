@@ -65,7 +65,7 @@ const OP_TYPE_ICONS = {
 }
 
 const OP_TYPE_COLORS = {
-  [OPERATION_TYPE.CUT]:        '#e65100',
+  [OPERATION_TYPE.CUT]:        '#A63A00',
   [OPERATION_TYPE.FORM]:       '#1565c0',
   [OPERATION_TYPE.MACHINE]:    '#6a1b9a',
   [OPERATION_TYPE.FINISH]:     '#2e7d32',

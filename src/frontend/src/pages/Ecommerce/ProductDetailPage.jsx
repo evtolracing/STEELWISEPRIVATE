@@ -28,7 +28,7 @@ import { evaluatePromise } from '../../services/promiseApi'
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
 import { useCart } from '../../contexts/CartContext'
 
-const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#e65100', OUTLET: '#c62828' }
+const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#A63A00', OUTLET: '#c62828' }
 
 export default function ProductDetailPage() {
   const { id } = useParams()

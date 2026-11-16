@@ -31,6 +31,7 @@ const M = [
   ['a full board column draws thirty cards at a time', F('components/jobs/ModernKanbanBoard.jsx'), [['sortedJobs.slice(0, shown).map', 'sortedJobs.map']], 'a full column on the order board'],
   ['a question is asked in the application\u2019s own box', F('pages/Admin/UserManagementPage.jsx'), [["if (!(await ask(`Deactivate ${person.firstName} ${person.lastName}? They will no longer be able to sign in.`, { title: 'Deactivate user', confirmText: 'Deactivate', danger: true }))) return;", "if (!window.confirm('Deactivate?')) return;"]], 'deactivating a user asks'],
   ['a sample form does not announce a save', F('pages/Maintenance/PMSchedules.jsx'), [["sayNotBuilt('Create PM schedule');", "alert('PM Schedule created!');"]], 'a sample form that used to announce'],
+  ['an item in transit says so on its row', F('pages/Units/UnitListPage.jsx'), [["u.inventory?.status === 'IN_TRANSIT' ?", "false ?"]], 'on its way to another branch'],
   ['web shop preferences are not asked on staff screens', F('contexts/CustomerSessionContext.jsx'), [['if (!wanted || !session.customerId) return', 'if (!session.customerId) return']], 'a long round of 24 screens', false, 'skip'],
 ];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

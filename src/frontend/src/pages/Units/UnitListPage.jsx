@@ -142,7 +142,8 @@ export default function UnitListPage() {
                     <TableCell align="right">{u.inventory ? qty(u.inventory.qtyOnHand, u.inventory.unit) : 'Not received'}</TableCell>
                     <TableCell align="right">{u.inventory ? qty(u.inventory.qtyAvailable, u.inventory.unit) : ''}</TableCell>
                     <TableCell>{[u.location?.name || u.location?.code, u.binLocation].filter(Boolean).join(', ')}</TableCell>
-                    <TableCell><StatusChip status={u.status} /></TableCell>
+                    {/* An item sent to another branch says so on its row (K-014): it cannot be sold or cut until it is received. */}
+                    <TableCell>{u.inventory?.status === 'IN_TRANSIT' ? <StatusChip status="IN_TRANSIT" /> : <StatusChip status={u.status} />}</TableCell>
                   </TableRow>
                 ))}
                 {!loading && rows.length === 0 && (

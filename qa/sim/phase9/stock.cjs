@@ -245,4 +245,17 @@ module.exports = async (s) => {
     } else t.check('the button is not offered', true);
     const inv = await prisma.inventory.findFirst({ where: { coilId: id } }); t.check('the books still hold 900 lb', Number(inv.qtyOnHand) === 900, inv.qtyOnHand);
   });
+  await sc('STOCK', 'an item on its way to another branch says In Transit on its row in the stock list (K-014)', async (t) => {
+    const id = await B.received({ weightLb: 1717 }); const coil = await prisma.coil.findUnique({ where: { id }, include: { inventory: true } });
+    await prisma.inventory.update({ where: { id: coil.inventory.id }, data: { status: 'IN_TRANSIT' } });
+    try {
+      const c = await ctx(P.stock); const page = await open(c, `/units`); await settle(page);
+      const got = page.waitForResponse((r) => /\/api\/coils\?.*search=/.test(r.url()) && r.status() === 200);
+      await page.locator('main').getByLabel(/Search/).first().fill(coil.coilNumber); const sentRows = rowsOf(await (await got).json()); await settle(page, 500);
+      const row = page.locator('main tbody tr', { hasText: coil.coilNumber });
+      t.check('the server says the item is in transit', sentRows.find((r) => r.id === id)?.inventory?.status === 'IN_TRANSIT');
+      t.check('the row says In Transit', /in transit/i.test(await row.innerText()), (await row.innerText()).replace(/\s+/g, ' ').slice(0, 160));
+      await c.close();
+    } finally { await prisma.inventory.update({ where: { id: coil.inventory.id }, data: { status: coil.inventory.status } }); }
+  });
 };

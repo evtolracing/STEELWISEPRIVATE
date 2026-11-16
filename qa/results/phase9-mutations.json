@@ -145,6 +145,12 @@
    "what": "a sample form does not announce a save",
    "scenario": "a sample form that used to announce",
    "result": "HOLDS: 1 of 1 fail (no browser box claims a schedule was created: 1 browser boxes), run after the fix was added"
+  },
+  {
+   "n": 25,
+   "what": "an item in transit says so on its row",
+   "scenario": "on its way to another branch",
+   "result": "HOLDS: 1 of 1 fail (the row says In Transit), run after the fix was added"
   }
  ]
 }

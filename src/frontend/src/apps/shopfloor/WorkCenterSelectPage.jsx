@@ -489,8 +489,11 @@ function WorkCenterSelectPage() {
                             label={typeLabel}
                             size="small"
                             sx={{
+                              // The type's colour marks the chip; its words are in the text colour, which
+                              // can be read on any tint (a type's own colour on its tint often cannot).
                               bgcolor: alpha(color, 0.1),
-                              color: color,
+                              color: 'text.primary',
+                              borderLeft: `3px solid ${color}`,
                               fontWeight: 600,
                             }}
                           />
@@ -551,7 +554,7 @@ function WorkCenterSelectPage() {
                               textAlign: 'center',
                             }}
                           >
-                            <Typography variant="body2" fontWeight={600} color={color}>
+                            <Typography variant="body2" fontWeight={600} color="text.primary">
                               {queueCount} job{queueCount !== 1 ? 's' : ''} in queue
                             </Typography>
                           </Box>
@@ -635,7 +638,8 @@ function WorkCenterSelectPage() {
                   size="small"
                   sx={{
                     bgcolor: alpha(type.color, 0.1),
-                    color: type.color,
+                    color: 'text.primary',
+                    '& .MuiChip-icon': { color: type.color },
                   }}
                 />
               )

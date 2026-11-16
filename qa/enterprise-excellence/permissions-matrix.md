@@ -1,6 +1,6 @@
 # Permissions matrix
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 84cc890. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
 
 How access is decided today, read from `src/backend/src/middleware/apiGate.js`, `lib/roleAccess.js`, `lib/customerScope.js` and the route guards, and checked by the sweep and the baseline probe.
 
@@ -19,7 +19,7 @@ How access is decided today, read from `src/backend/src/middleware/apiGate.js`, 
 - **No tenant boundary between companies on staff routes.** Only the user list is filtered by organization. The system runs as one company. If a second company is ever hosted in the same database, every staff route would show it both (E-019).
 - **No approval authority.** ApprovalRequest and ApprovalDecision tables exist with no code. The only approvals are: a manager releases a credit hold; a manager issues credits and refunds.
 - **No permission inheritance.** `Role`, `UserRoleAssignment` tables are saved by the user screen and read by no access check; access comes from the single `User.role` value.
-- **The screens have their own list** (`src/frontend/src/config/roleAccess.js`, 113 lines; `constants/permissions.js` is imported by nothing). The server list is the one that counts.
+- **The screens have their own list** (`src/frontend/src/config/roleAccess.js`, 129 lines; `constants/permissions.js` is imported by nothing). The server list is the one that counts.
 
 ## Roles and their department
 
@@ -82,6 +82,24 @@ Any staff login that is not read-only can change these. Measured with a saw-oper
 | Quality inspections | 6 | /api/qc |
 | Operations cockpit actions | 3 | /api/ops-cockpit |
 
+## Where each role starts, and what the screens were seen to refuse (Phase 9)
+
+After sign-in a role starts at its workspace (`src/frontend/src/config/roleAccess.js`, `ROLE_START`). This is a convenience of the screens, not an access rule: the server rules above decide what a role may read and change. A role not listed starts at the dashboard.
+
+| Starts at | Roles |
+|---|---|
+| `/orders` | SALES_DIRECTOR, SALES_REP, CSR, ESTIMATOR, CREDIT_MANAGER, SUPPORT_AGENT |
+| `/schedule` | PRODUCTION_MANAGER, SCHEDULER |
+| `/shopfloor` | WORKCENTER_LEAD, OPERATOR_SAW, OPERATOR_ROUTER, OPERATOR_SHEAR, OPERATOR_PLASMA, OPERATOR_GENERAL, MILL_OPERATOR, PACKAGING_LEAD, MATERIAL_HANDLER |
+| `/units` | INVENTORY_MANAGER, BUYER |
+| `/receiving` | RECEIVING_CLERK |
+| `/shipping` | SHIPPING_COORDINATOR |
+| `/qc` | QC_MANAGER, QC_INSPECTOR |
+
+Verified in a browser for fifteen staff roles and a web shop customer, each signed in at the form (`qa/sim/phase9-ui.cjs`, navigation group): the start page; that a page the role may not open is absent from its menu and from the search, and says "No access" by address; and that the server refuses the call behind it. The table of roles tested is in `phase-09-role-workspaces.md`. No permission was added, removed or loosened in Phase 9.
+
+Found in Phase 9 and not fixed: `GET /api/v1/dispatch/work-centers?locationId=` answers another branch's work centres to an operator who asks for them, and `GET /api/v1/dispatch/locations` lists every branch to any signed-in user (V-028, Phase 10). Names and types only.
+
 ## Evidence from this session
 
 | Check | Result |
@@ -89,7 +107,7 @@ Any staff login that is not read-only can change these. Measured with a saw-oper
 | Read-only roles cannot change anything | 576 write calls as auditor and data analyst, 0 not refused |
 | A second address follows the same department rules | 4 checks, 0 problems |
 | Write routes sent an empty body do not crash | 293 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing |
-| Branch to branch access (reported, not judged) | a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0 |
+| Branch to branch access (reported, not judged) | a login whose home branch is DEMO-KZO read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0 |
 
 ## Decisions needed from the owner
 

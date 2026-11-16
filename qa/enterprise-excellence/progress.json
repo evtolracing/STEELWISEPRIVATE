@@ -3,10 +3,10 @@
   "program": "Enterprise Excellence Program",
   "currentPhase": 8,
   "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-16T03:21:50.637Z",
+  "updated": "2026-11-16T06:45:17.734Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "84cc89006c14d223e5643a17e44daefefd385287",
+    "commit": "4a88a8df4190fffaf1f52c4a66f3b34e6db32ede",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 32,
     "merged": false,
@@ -31,8 +31,8 @@
     "databaseTables": 161,
     "enumerations": 96,
     "migrations": 33,
-    "screens": 144,
-    "frontendFiles": 396,
+    "screens": 145,
+    "frontendFiles": 405,
     "roles": 48
   },
   "workflowsMapped": 17,
@@ -43,30 +43,30 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 103,
-    "P2": 140,
-    "P3": 86,
+    "P1": 108,
+    "P2": 154,
+    "P3": 103,
     "P0": 20,
     "P4": 1
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 258,
+    "VERIFIED FIXED": 290,
     "IN PROGRESS": 6,
     "DEFERRED TO SPECIFIC PHASE": 59,
     "BLOCKED": 3,
     "NOT APPLICABLE": 1,
-    "REQUIRES BUSINESS DECISION": 20,
-    "ACCEPTED RISK WITH APPROVAL": 2,
+    "REQUIRES BUSINESS DECISION": 21,
+    "ACCEPTED RISK WITH APPROVAL": 5,
     "FIXED — NOT VERIFIED": 1
   },
   "openFindingsBySeverity": {
     "P1": 15,
-    "P2": 42,
-    "P3": 31,
+    "P2": 43,
+    "P3": 34,
     "P4": 1,
     "P0": 2
   },
-  "findingsTotal": 350,
+  "findingsTotal": 386,
   "findingsAddedThisPhase": 29,
   "testsExecuted": [
     {
@@ -151,9 +151,9 @@
     }
   ],
   "testReach": {
-    "routesWithSuccess": 420,
+    "routesWithSuccess": 421,
     "routes": 649,
-    "changingRoutesWithSuccess": 176,
+    "changingRoutesWithSuccess": 177,
     "changingRoutes": 338
   },
   "correctionsCompleted": [
@@ -167,6 +167,7 @@
     "B-008",
     "B-010",
     "B-011",
+    "B-015",
     "B-018",
     "B-023",
     "B-025",
@@ -221,11 +222,13 @@
     "J-009",
     "J-010",
     "J-011",
+    "J-013",
     "K-001",
     "K-002",
     "K-003",
     "K-004",
     "K-005",
+    "K-014",
     "K-015",
     "L-001",
     "L-002",

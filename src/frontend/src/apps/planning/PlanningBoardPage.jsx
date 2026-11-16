@@ -162,7 +162,7 @@ function PlanningBoardPage() {
               <Typography variant="caption" color="text.secondary">
                 Waiting QC
               </Typography>
-              <Typography variant="h4" fontWeight={600} color="secondary">
+              <Typography variant="h4" fontWeight={600} color="text.primary">
                 {statusCounts.WAITING_QC}
               </Typography>
             </CardContent>

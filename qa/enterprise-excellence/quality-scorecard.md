@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 84cc890. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -29,7 +29,7 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 | Inventory and purchasing | 77 | 97% | 3 | 47 of 62 | No |
 | Manufacturing and processing | 81 | 97% | 1 | 63 of 95 | No |
 | Logistics and financial operations | 86 | 97% | 2 | 36 of 42 | No |
-| Enterprise experience | 60 | 89% | 5 | 9 of 50 | No |
+| Enterprise experience | 60 | 89% | 5 | 10 of 50 | No |
 
 No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.
 
@@ -40,7 +40,7 @@ The groups hide large differences. Classification and test reach per module:
 | Module | Classification | Changing routes with a success-path test | Open findings |
 |---|---|---|---|
 | Sign-in and sessions | IMPLEMENTED AND VERIFIED | 1 of 3 |  |
-| Users, roles and branches | IMPLEMENTED BUT NOT VERIFIED | 2 of 6 |  |
+| Users, roles and branches | IMPLEMENTED BUT NOT VERIFIED | 3 of 6 |  |
 | Access control | IMPLEMENTED AND VERIFIED | n/a |  |
 | Staff and operators | PARTIALLY IMPLEMENTED | 4 of 9 | B-012, B-014 |
 | Settings, tax rates and online settings | PARTIALLY IMPLEMENTED | 0 of 6 | X-007, D-035 |
@@ -60,10 +60,10 @@ The groups hide large differences. Classification and test reach per module:
 | Products, grades and heats | IMPLEMENTED AND VERIFIED | 6 of 6 | B-012 |
 | Routings and processing recipes | PARTIALLY IMPLEMENTED | 7 of 11 | I-011 |
 | Customer specifications | IMPLEMENTED BUT NOT VERIFIED | n/a |  |
-| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 12 of 13 | K-007, K-008, K-009, K-014 |
+| Stock items and stock levels | IMPLEMENTED AND VERIFIED | 12 of 13 | K-007, K-008, K-009 |
 | Receiving | IMPLEMENTED AND VERIFIED | 9 of 9 | K-011, K-013 |
 | Purchase orders and supply position | IMPLEMENTED AND VERIFIED | 1 of 1 | K-010, K-011, K-012 |
-| Interbranch transfers | IMPLEMENTED AND VERIFIED | 9 of 9 | K-014 |
+| Interbranch transfers | IMPLEMENTED AND VERIFIED | 9 of 9 |  |
 | Second stock list (unit tracking) | DISCONNECTED | 0 of 9 | B-009, D-024 |
 | Remnants | PARTIALLY IMPLEMENTED | 3 of 4 | S-009 |
 | Jobs, job board and schedule | IMPLEMENTED AND VERIFIED | 10 of 20 | M-017, L-029 |
@@ -153,7 +153,7 @@ Modules: Products, grades and heats; Routings and processing recipes; Customer s
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
 | **Weighted over the 97% that has evidence** | | **77** | Target 95 |
 
-Changing routes with a success-path test: 47 of 62. Open findings against these modules: 13, of which P0 or P1: 3 (B-009, I-011, K-007).
+Changing routes with a success-path test: 47 of 62. Open findings against these modules: 12, of which P0 or P1: 3 (B-009, I-011, K-007).
 
 ### Manufacturing and processing
 
@@ -216,5 +216,5 @@ Modules: Sign-in and sessions; Users, roles and branches; Access control; Staff 
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
 | **Weighted over the 89% that has evidence** | | **60** | Target 95 |
 
-Changing routes with a success-path test: 9 of 50. Open findings against these modules: 9, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
+Changing routes with a success-path test: 10 of 50. Open findings against these modules: 9, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
 

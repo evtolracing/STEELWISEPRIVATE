@@ -1,0 +1,8047 @@
+{
+ "at": "2026-11-16T06:34:12.852Z",
+ "app": "http://localhost:5199",
+ "api": "http://localhost:3001",
+ "tally": {
+  "scenarios": 231,
+  "passed": 230,
+  "failed": 1,
+  "notApplicable": 0,
+  "checks": 1090
+ },
+ "byCat": {
+  "NAV": {
+   "pass": 41,
+   "fail": 1,
+   "na": 0
+  },
+  "FORM": {
+   "pass": 41,
+   "fail": 0,
+   "na": 0
+  },
+  "SALES": {
+   "pass": 26,
+   "fail": 0,
+   "na": 0
+  },
+  "STOCK": {
+   "pass": 27,
+   "fail": 0,
+   "na": 0
+  },
+  "MAKE": {
+   "pass": 26,
+   "fail": 0,
+   "na": 0
+  },
+  "SHIP": {
+   "pass": 25,
+   "fail": 0,
+   "na": 0
+  },
+  "FIT": {
+   "pass": 20,
+   "fail": 0,
+   "na": 0
+  },
+  "FAIL": {
+   "pass": 24,
+   "fail": 0,
+   "na": 0
+  }
+ },
+ "results": [
+  {
+   "id": 1,
+   "cat": "NAV",
+   "name": "a sales representative signs in at the form, starts at /orders, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/schedule says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3881
+  },
+  {
+   "id": 2,
+   "cat": "NAV",
+   "name": "a customer service clerk signs in at the form, starts at /orders, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/work-orders says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3892
+  },
+  {
+   "id": 3,
+   "cat": "NAV",
+   "name": "a saw operator signs in at the form, starts at /shopfloor, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4917
+  },
+  {
+   "id": 4,
+   "cat": "NAV",
+   "name": "a production manager signs in at the form, starts at /schedule, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4351
+  },
+  {
+   "id": 5,
+   "cat": "NAV",
+   "name": "a scheduler signs in at the form, starts at /schedule, and the menu and the server refuse what the role may not open",
+   "status": "FAIL",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": false,
+     "detail": "/work-orders not in /ops-cockpit /role-dashboard /order-board /orders /orders/credit-holds /orders/intake /orders/online-inbox /pos/retail /orders/invoices /orders/returns /orders/closeout /planning"
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4035
+  },
+  {
+   "id": 6,
+   "cat": "NAV",
+   "name": "a receiving clerk signs in at the form, starts at /receiving, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/schedule says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4756
+  },
+  {
+   "id": 7,
+   "cat": "NAV",
+   "name": "a shipping coordinator signs in at the form, starts at /shipping, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/qc says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4357
+  },
+  {
+   "id": 8,
+   "cat": "NAV",
+   "name": "an inventory manager signs in at the form, starts at /units, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/executive/cockpit says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3851
+  },
+  {
+   "id": 9,
+   "cat": "NAV",
+   "name": "a buyer signs in at the form, starts at /units, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/schedule says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3654
+  },
+  {
+   "id": 10,
+   "cat": "NAV",
+   "name": "a quality inspector signs in at the form, starts at /qc, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4145
+  },
+  {
+   "id": 11,
+   "cat": "NAV",
+   "name": "an auditor signs in at the form, starts at /, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3755
+  },
+  {
+   "id": 12,
+   "cat": "NAV",
+   "name": "a credit manager signs in at the form, starts at /orders, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/schedule says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3787
+  },
+  {
+   "id": 13,
+   "cat": "NAV",
+   "name": "a maintenance manager signs in at the form, starts at /, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses /api/invoices too",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3521
+  },
+  {
+   "id": 14,
+   "cat": "NAV",
+   "name": "a data analyst signs in at the form, starts at /, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3272
+  },
+  {
+   "id": 15,
+   "cat": "NAV",
+   "name": "the chief financial officer signs in at the form, starts at /, and the menu and the server refuse what the role may not open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts at the role’s own workspace",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has links",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers nothing from a refused area",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu offers the role’s own work",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an allowed page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users says No access",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3092
+  },
+  {
+   "id": 16,
+   "cat": "NAV",
+   "name": "a web shop customer starts in the shop and cannot open a staff page",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "starts in the shop",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/orders is refused",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units is refused",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/admin/users is refused",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses the stock list",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4837
+  },
+  {
+   "id": 17,
+   "cat": "NAV",
+   "name": "a deep link opened while signed out comes back after sign-in",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "sent to the sign-in page with the way back",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "lands on the page first asked for, not the workspace",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 829
+  },
+  {
+   "id": 18,
+   "cat": "NAV",
+   "name": "the way back after sign-in cannot be pointed at another site",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "\"//evil.example/x\" is ignored",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "\"https://evil.example/x\" is ignored",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "\"/login?x=1\" is ignored",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3093
+  },
+  {
+   "id": 19,
+   "cat": "NAV",
+   "name": "wrong password: a spoken error, the email kept, nobody signed in",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "an alert says why",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "still on the sign-in page",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the email is kept",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no token was stored",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 867
+  },
+  {
+   "id": 20,
+   "cat": "NAV",
+   "name": "signing out clears the session and Back does not bring a page back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "back at the sign-in page",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the token is gone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Back does not show orders",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "asking for orders again leads to sign-in",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3109
+  },
+  {
+   "id": 21,
+   "cat": "NAV",
+   "name": "every page has its own browser title, taken from its heading",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/orders: the title is \"Orders · SteelWise\"",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers: the title is \"Customers · SteelWise\"",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: the title is \"Inventory · SteelWise\"",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: the title is \"Shipping · SteelWise\"",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/receiving: the title is \"Receiving · SteelWise\"",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/work-orders: the title is \"Work Orders · SteelWise\"",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/orders/invoices: the title is \"Invoices · SteelWise\"",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "seven pages, seven titles",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 8370
+  },
+  {
+   "id": 22,
+   "cat": "NAV",
+   "name": "moving between pages by the menu announces the page and moves focus to it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the announcer names the page",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus is on the page content",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu marks the current page",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "only one item is marked current",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2042
+  },
+  {
+   "id": 23,
+   "cat": "NAV",
+   "name": "on a record page the menu marks the list the record belongs to",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Shipping is marked, and nothing else",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the title names the shipment",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2145
+  },
+  {
+   "id": 24,
+   "cat": "NAV",
+   "name": "the skip link is the first stop and jumps past the menu",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "first Tab lands on the skip link",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it is visible while focused",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Enter moves focus to the page content",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1861
+  },
+  {
+   "id": 25,
+   "cat": "NAV",
+   "name": "menu sections open and close and say so to a screen reader",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the state flips",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Enter flips it back",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the links shown change with it",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2779
+  },
+  {
+   "id": 26,
+   "cat": "NAV",
+   "name": "search: a page is found by name and opened with the keyboard alone",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Ctrl+K puts the cursor in the search",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first result is Receiving",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Enter opens it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the search is cleared",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1496
+  },
+  {
+   "id": 27,
+   "cat": "NAV",
+   "name": "search: an order is found by its number and opens the order",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the order is listed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it opens that order",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the order page shows the number",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1695
+  },
+  {
+   "id": 28,
+   "cat": "NAV",
+   "name": "search: a customer is found by name and the customer list opens filtered to it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the customer is listed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the list is filtered to that customer",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2821
+  },
+  {
+   "id": 29,
+   "cat": "NAV",
+   "name": "search: stock, a heat and a shipment are found by number",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the stock item is listed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the stock item opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the shipment is listed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the shipment opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heat is listed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heat opens",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3804
+  },
+  {
+   "id": 30,
+   "cat": "NAV",
+   "name": "search shows a role only the pages and records it may open",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the Customers page is not offered to an operator",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the customer list is not asked for",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no customer is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a page the operator may open is offered",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3341
+  },
+  {
+   "id": 31,
+   "cat": "NAV",
+   "name": "search: nothing found says what to try, and Escape closes and clears",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "says nothing was found",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the count is spoken",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes the results",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a second Escape clears the box",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1771
+  },
+  {
+   "id": 32,
+   "cat": "NAV",
+   "name": "search: arrow keys move through results and the choice is announced",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the first result is active",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Down moves to the second",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it is marked selected",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Up moves back",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the box says its list is open",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1750
+  },
+  {
+   "id": 33,
+   "cat": "NAV",
+   "name": "search survives the server failing: it says so and still finds pages",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "says the search could not reach the server",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "pages are still found",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1685
+  },
+  {
+   "id": 34,
+   "cat": "NAV",
+   "name": "the help button opens the instruction manual",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the manual opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it has content",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1376
+  },
+  {
+   "id": 35,
+   "cat": "NAV",
+   "name": "the account menu names the signed-in person and their role",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the button names the person",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu shows the email or the role",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it and focus returns",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1390
+  },
+  {
+   "id": 36,
+   "cat": "NAV",
+   "name": "an address that is not a page says so and offers a way on",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "says Page not found",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "names the address",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the title says so",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the way on works",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a deep wrong address does not show the dashboard",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1863
+  },
+  {
+   "id": 37,
+   "cat": "NAV",
+   "name": "on a phone the menu is a drawer: it opens, traps nothing behind it, and closes on a choice",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the menu is not on screen at first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the drawer opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Tab stays inside the open drawer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "choosing a page goes there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and closes the drawer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2568
+  },
+  {
+   "id": 38,
+   "cat": "NAV",
+   "name": "on a desktop the menu stays put and a click does not open the phone drawer",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the menu is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "there is no menu button",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no drawer backdrop appears",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu is still on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1402
+  },
+  {
+   "id": 39,
+   "cat": "NAV",
+   "name": "two branches: each clerk’s order list holds only their own branch’s orders",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "branch 1: the server serves the branch 1 order",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the search finds it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "branch 2: the server refuses the branch 1 order",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the search does not find it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "opening it by address shows no order",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 28367
+  },
+  {
+   "id": 40,
+   "cat": "NAV",
+   "name": "the counter sale screen shows the initials of the person signed in",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the badge names the person",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it shows their initials",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2483
+  },
+  {
+   "id": 41,
+   "cat": "NAV",
+   "name": "the top bar shows no notification the server did not send",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the top bar has its controls",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "there is no notifications bell and no invented count",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2383
+  },
+  {
+   "id": 42,
+   "cat": "NAV",
+   "name": "the addresses of two retired screens lead to the real ones (U-020, U-028)",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the second stock list leads to Inventory",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu has one stock list",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the old operator screen leads to the shop floor",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 5478
+  },
+  {
+   "id": 43,
+   "cat": "FORM",
+   "name": "/customers \"New Customer\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2102
+  },
+  {
+   "id": 44,
+   "cat": "FORM",
+   "name": "/heats \"Add Heat\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1793
+  },
+  {
+   "id": 45,
+   "cat": "FORM",
+   "name": "/shipping \"New shipment\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2094
+  },
+  {
+   "id": 46,
+   "cat": "FORM",
+   "name": "/receiving \"Receive item\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3347
+  },
+  {
+   "id": 47,
+   "cat": "FORM",
+   "name": "/purchase-orders \"New purchase order\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2232
+  },
+  {
+   "id": 48,
+   "cat": "FORM",
+   "name": "/orders/returns \"New return\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1655
+  },
+  {
+   "id": 49,
+   "cat": "FORM",
+   "name": "/admin/users \"Add User\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2371
+  },
+  {
+   "id": 50,
+   "cat": "FORM",
+   "name": "/admin/staff \"Add Operator\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2382
+  },
+  {
+   "id": 51,
+   "cat": "FORM",
+   "name": "/sales/rfq-inbox \"New RFQ\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1549
+  },
+  {
+   "id": 52,
+   "cat": "FORM",
+   "name": "/shopfloor \"New Work Center\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2762
+  },
+  {
+   "id": 53,
+   "cat": "FORM",
+   "name": "/order-board \"New Job\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6734
+  },
+  {
+   "id": 54,
+   "cat": "FORM",
+   "name": "/material-tracking/packages \"Open a package\": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the button opens a dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus moved into the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "25 presses of Tab never leave the dialog",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page behind is hidden from a screen reader",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button that opened it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to be saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1524
+  },
+  {
+   "id": 55,
+   "cat": "FORM",
+   "name": "/customers \"New Customer\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog stays open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says what is wrong",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2750
+  },
+  {
+   "id": 56,
+   "cat": "FORM",
+   "name": "/heats \"Add Heat\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1456
+  },
+  {
+   "id": 57,
+   "cat": "FORM",
+   "name": "/shipping \"New shipment\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1474
+  },
+  {
+   "id": 58,
+   "cat": "FORM",
+   "name": "/receiving \"Receive item\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2351
+  },
+  {
+   "id": 59,
+   "cat": "FORM",
+   "name": "/purchase-orders \"New purchase order\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1605
+  },
+  {
+   "id": 60,
+   "cat": "FORM",
+   "name": "/orders/returns \"New return\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1365
+  },
+  {
+   "id": 61,
+   "cat": "FORM",
+   "name": "/admin/users \"Add User\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog stays open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says what is wrong",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2628
+  },
+  {
+   "id": 62,
+   "cat": "FORM",
+   "name": "/admin/staff \"Add Operator\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog stays open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says what is wrong",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2925
+  },
+  {
+   "id": 63,
+   "cat": "FORM",
+   "name": "/sales/rfq-inbox \"New RFQ\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1313
+  },
+  {
+   "id": 64,
+   "cat": "FORM",
+   "name": "/shopfloor \"New Work Center\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog stays open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says what is wrong",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3180
+  },
+  {
+   "id": 65,
+   "cat": "FORM",
+   "name": "/order-board \"New Job\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4804
+  },
+  {
+   "id": 66,
+   "cat": "FORM",
+   "name": "/material-tracking/packages \"Open a package\": an empty form cannot be saved and says what is missing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off until the form is filled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the form marks what is required, or says what to do first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1368
+  },
+  {
+   "id": 67,
+   "cat": "FORM",
+   "name": "a new customer typed once and saved with a double click is stored once",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the dialog closes",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "exactly one customer is in the database",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "one save was accepted",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the list shows the new customer",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2962
+  },
+  {
+   "id": 68,
+   "cat": "FORM",
+   "name": "a customer code already in use is refused with the reason, and what was typed is kept",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the dialog stays open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says the code is taken",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the name typed is still there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no second customer has that code",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2890
+  },
+  {
+   "id": 69,
+   "cat": "FORM",
+   "name": "when the server fails on save, the form says so and keeps every entry",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the dialog stays open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an error is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the entries are kept",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing reached the database",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3035
+  },
+  {
+   "id": 70,
+   "cat": "FORM",
+   "name": "a new shipment for an order number that is not on file says so and creates nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says the order is not on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the create button stays off",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1630
+  },
+  {
+   "id": 71,
+   "cat": "FORM",
+   "name": "a new return for an order number that is not on file says so and creates nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says the order is not on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the create button stays off",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1527
+  },
+  {
+   "id": 72,
+   "cat": "FORM",
+   "name": "a new package for an order number that is not on file says so and creates nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says the order is not on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the create button stays off",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1555
+  },
+  {
+   "id": 73,
+   "cat": "FORM",
+   "name": "a new heat: the save button comes on only when the required entries are in",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "off when empty",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "still off with only the number",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the required fields are marked",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1388
+  },
+  {
+   "id": 74,
+   "cat": "FORM",
+   "name": "a new purchase order: lines can be added and removed, and a line with no quantity cannot be saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Add line adds a line",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Remove line takes it away",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "saving stays off without a supplier, a quantity and a price",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1687
+  },
+  {
+   "id": 75,
+   "cat": "FORM",
+   "name": "order entry: leaving with an order half typed asks first, and Stay keeps every entry",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a question appears",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says the order would be lost",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Stay keeps the page",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and the entry",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1661
+  },
+  {
+   "id": 76,
+   "cat": "FORM",
+   "name": "order entry: choosing to leave does leave, and an untouched form never asks",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Leave goes to the page asked for",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an untouched form leaves without a question",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no order was created by any of it",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3369
+  },
+  {
+   "id": 77,
+   "cat": "FORM",
+   "name": "order entry: closing or reloading the tab with an order half typed brings the browser warning",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "an untouched form reloads with no warning",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a typed form warns before reload",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "staying keeps the entry",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6393
+  },
+  {
+   "id": 78,
+   "cat": "FORM",
+   "name": "a button on a sample screen says it is not built and sends nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a button answered with the notice",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the notice names the button and says nothing was saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the screen says it is a sample",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1345
+  },
+  {
+   "id": 79,
+   "cat": "FORM",
+   "name": "Print on an order sends the order to the printer and the menu is left off the paper",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the browser was asked to print once",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu is not printed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the search and account bar are not printed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the order number is printed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the Print button itself is not printed",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1220
+  },
+  {
+   "id": 80,
+   "cat": "FORM",
+   "name": "a new user with a malformed email or a short password is refused and not created",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the dialog stays open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says what is wrong",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no user was created",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3066
+  },
+  {
+   "id": 81,
+   "cat": "FORM",
+   "name": "a request for quote typed in the dialog is saved once and appears in the list",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button comes on",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog closes or the request opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "one request was saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "exactly one request line with that text is in the database",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1728
+  },
+  {
+   "id": 82,
+   "cat": "FORM",
+   "name": "deactivating a user asks in the application's own box, and Cancel changes nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the question is the application's own box, not the browser's",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it names the person and what will happen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Cancel sends nothing and the user stays active",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Deactivate is sent once and the user can no longer sign in",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 5584
+  },
+  {
+   "id": 83,
+   "cat": "FORM",
+   "name": "a sample form that used to announce a save now says nothing was saved",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "no browser box claims a schedule was created",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the notice says it is not built and nothing was saved",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was sent to the server",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2184
+  },
+  {
+   "id": 84,
+   "cat": "SALES",
+   "name": "the order list shows the orders the server sent, newest first, with customer and total",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first 6 records the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "in the order the server sent them",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's customer is shown as sent (QA Customer 1)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's total is shown as sent ($71.50)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2225
+  },
+  {
+   "id": 85,
+   "cat": "SALES",
+   "name": "choosing an order in the list shows its lines, and Enter on the keyboard does the same",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the lines table shows both lines",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with the quantities ordered",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and the order total",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1272
+  },
+  {
+   "id": 86,
+   "cat": "SALES",
+   "name": "an order page shows the number, customer, lines and money exactly as stored",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the heading is the order number",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the customer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "line 1: quantity and extended price",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "line 2: quantity and extended price",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the total",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the status",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2224
+  },
+  {
+   "id": 87,
+   "cat": "SALES",
+   "name": "an order page: the tabs work from the keyboard and the history names who did what",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "there are tabs",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the arrow key moves to the next tab",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the history has entries",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the details show the customer’s PO",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2497
+  },
+  {
+   "id": 88,
+   "cat": "SALES",
+   "name": "an order that does not exist says so, with no blank page and no error",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says the order was not found",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 21645
+  },
+  {
+   "id": 89,
+   "cat": "SALES",
+   "name": "New Order on the order list opens order entry",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "order entry opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with its heading",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1388
+  },
+  {
+   "id": 90,
+   "cat": "SALES",
+   "name": "Refresh on the order list asks the server again and shows an order made meanwhile",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the new order is not on screen yet",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "after Refresh it is",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2437
+  },
+  {
+   "id": 91,
+   "cat": "SALES",
+   "name": "the customer list shows the customers the server sent, and the count it reports",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first 6 records the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "in the order the server sent them",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's name is shown as sent (Acme <script>alert(1)</script> & Sons)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the count on screen is the server’s",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2219
+  },
+  {
+   "id": 92,
+   "cat": "SALES",
+   "name": "searching customers narrows the list to what the server finds for that text",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server found it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the rows on screen are the rows found",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a search that finds nothing says so",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4068
+  },
+  {
+   "id": 93,
+   "cat": "SALES",
+   "name": "the next page of customers is the server’s second page, and Previous goes back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "page two holds different customers",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "page two is what is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "page one is gone from the screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Previous shows page one again",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3183
+  },
+  {
+   "id": 94,
+   "cat": "SALES",
+   "name": "a customer name holding markup is shown as text and runs nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the customer was stored",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the name is shown letter for letter",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no script ran",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no image was made from it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nor in the search results",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2335
+  },
+  {
+   "id": 95,
+   "cat": "SALES",
+   "name": "the address /customers?search= opens the list already narrowed",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the search box holds the text",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every row matches",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2099
+  },
+  {
+   "id": 96,
+   "cat": "SALES",
+   "name": "the More actions menu on a customer opens, closes on Escape and gives focus back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a menu opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it has items",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "focus returns to the button",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was changed",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1399
+  },
+  {
+   "id": 97,
+   "cat": "SALES",
+   "name": "the RFQ list shows the requests the server sent for the Open view",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first 6 records the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "in the order the server sent them",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's customer is shown as sent (QA Customer 1)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2049
+  },
+  {
+   "id": 98,
+   "cat": "SALES",
+   "name": "the RFQ list: \"Won\" asks the server for that view and shows only what it sent",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the request names the view",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal rows sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "each has the right status",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the button shows it is the one chosen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2720
+  },
+  {
+   "id": 99,
+   "cat": "SALES",
+   "name": "the RFQ list: \"Lost\" asks the server for that view and shows only what it sent",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the request names the view",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal rows sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an empty view says so",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the button shows it is the one chosen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2677
+  },
+  {
+   "id": 100,
+   "cat": "SALES",
+   "name": "the RFQ list: \"All\" asks the server for that view and shows only what it sent",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the request names the view",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal rows sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "each has the right status",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the button shows it is the one chosen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2760
+  },
+  {
+   "id": 101,
+   "cat": "SALES",
+   "name": "opening an RFQ shows what the customer asked for, as stored",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the number and the customer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "line 1: what and how much",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1921
+  },
+  {
+   "id": 102,
+   "cat": "SALES",
+   "name": "the price list search narrows the products shown and clearing it brings them back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "fewer rows are shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "each row shown matches",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "clearing the search brings the list back",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3926
+  },
+  {
+   "id": 103,
+   "cat": "SALES",
+   "name": "the price list shows the list price stored for a product",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the list shows products",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2096
+  },
+  {
+   "id": 104,
+   "cat": "SALES",
+   "name": "order entry: the customer lookup finds a customer and puts them on the order",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the customer is found",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the dialog closes",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the order now names the customer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing is saved by looking up",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3453
+  },
+  {
+   "id": 105,
+   "cat": "SALES",
+   "name": "order entry: Submit with no customer and no lines is stopped, says why, and saves nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Submit is off until the order has a customer and a line",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no order was created",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no order was sent",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1304
+  },
+  {
+   "id": 106,
+   "cat": "SALES",
+   "name": "the dashboard’s recent orders are the server’s newest orders, not sample rows",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the order just made is listed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every order number on the dashboard is a real order",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Refresh keeps it real",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3873
+  },
+  {
+   "id": 107,
+   "cat": "SALES",
+   "name": "the web shop lists products the server sent and searching narrows them",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the shop opens for a customer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the search page opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server was asked",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "results or a clear “nothing found” are shown",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3837
+  },
+  {
+   "id": 108,
+   "cat": "SALES",
+   "name": "the web shop: a customer’s order list holds only that customer’s orders",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "no order of another customer was sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "another customer’s order is refused by the server",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and its page shows nothing of it",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 25408
+  },
+  {
+   "id": 109,
+   "cat": "SALES",
+   "name": "the web checkout takes no card and says the order is on account",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "an empty cart cannot be checked out and says so",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no card field exists",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2573
+  },
+  {
+   "id": 110,
+   "cat": "STOCK",
+   "name": "the stock list shows the items the server sent, with heat, grade and location",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first 6 records the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "in the order the server sent them",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's location is shown as sent (QA Branch 1 (METALS))",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's grade is shown as sent (A36)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2343
+  },
+  {
+   "id": 111,
+   "cat": "STOCK",
+   "name": "searching stock narrows the list to what the server finds, and an unknown number says so",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "one item is found and shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with its weight on hand",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "an unknown number says nothing was found",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4225
+  },
+  {
+   "id": 112,
+   "cat": "STOCK",
+   "name": "a stock item opens from its row with the keyboard and shows what is on file",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the row opens the item",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading is the item number",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "on hand",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "heat, grade and location",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the title names the item",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3317
+  },
+  {
+   "id": 113,
+   "cat": "STOCK",
+   "name": "stock reserved for an order shows as reserved and not available, as the server holds it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "on hand 900 lb",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "reserved 400 lb",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "available 500 lb",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2085
+  },
+  {
+   "id": 114,
+   "cat": "STOCK",
+   "name": "a stock item: \"Move\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a dialog opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it asks for what the step needs",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off while empty",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Cancel closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the item is unchanged",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1567
+  },
+  {
+   "id": 115,
+   "cat": "STOCK",
+   "name": "a stock item: \"Correct quantity\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a dialog opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it asks for what the step needs",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off while empty",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Cancel closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the item is unchanged",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1590
+  },
+  {
+   "id": 116,
+   "cat": "STOCK",
+   "name": "a stock item: \"Put on hold\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a dialog opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it asks for what the step needs",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button is off while empty",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Cancel closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the item is unchanged",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1575
+  },
+  {
+   "id": 117,
+   "cat": "STOCK",
+   "name": "a stock item: \"Edit\" opens a named dialog, cannot be saved empty, and Cancel changes nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a dialog opens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it asks for what the step needs",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Cancel closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the item is unchanged",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1665
+  },
+  {
+   "id": 118,
+   "cat": "STOCK",
+   "name": "a quantity correction made on screen is stored once with its reason and shows in the history",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button comes on",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the books now hold 940 lb",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "one change was accepted",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the screen shows 940 lb",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the history holds the reason once, with who did it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the history on screen shows it",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2579
+  },
+  {
+   "id": 119,
+   "cat": "STOCK",
+   "name": "a branch’s stock list holds only that branch’s stock",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "every item sent is at the manager’s own branch",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the other branch’s item cannot be found",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and the server refuses it by address",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "its page shows nothing of it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the own-branch item is found",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6593
+  },
+  {
+   "id": 120,
+   "cat": "STOCK",
+   "name": "the heat list shows the heats the server sent and searching narrows it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first 6 records the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "in the order the server sent them",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's grade is shown as sent (A36)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the rows on screen are the rows found",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3192
+  },
+  {
+   "id": 121,
+   "cat": "STOCK",
+   "name": "a heat page shows its grade and its stock items, and the tabs can be worked by keyboard",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the heading names the heat",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the grade",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the Stock items tab counts what the server will list",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the tab opens a list of items",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it is marked selected",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3425
+  },
+  {
+   "id": 122,
+   "cat": "STOCK",
+   "name": "receiving lists what is expected from open purchase orders and what was received, from the server",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the screen opens for a receiving clerk",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it explains what is expected",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every purchase order number shown is on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2819
+  },
+  {
+   "id": 123,
+   "cat": "STOCK",
+   "name": "receiving an item on screen: an unknown heat is said first, then a real item is stored once and listed",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a heat not on file is said before saving",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and the save button is off",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the screen says it was received",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "exactly one item is in the database, at 1,234 lb",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "at the clerk’s own branch",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it is listed",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4101
+  },
+  {
+   "id": 124,
+   "cat": "STOCK",
+   "name": "the receipts search narrows the list and says when nothing matches",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "nothing matching says so",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "clearing brings the list back",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3905
+  },
+  {
+   "id": 125,
+   "cat": "STOCK",
+   "name": "the purchase order list shows the orders the server sent, with supplier and total",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first 6 records the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "in the order the server sent them",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's supplier is shown as sent (Nucor Steel Berkeley)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's total is shown as sent ($2,000.00)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2073
+  },
+  {
+   "id": 126,
+   "cat": "STOCK",
+   "name": "a purchase order opens from its row and shows its lines and total as stored",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter on the row opens it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the number",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the total",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "one row per line",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it and nothing changed",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2172
+  },
+  {
+   "id": 127,
+   "cat": "STOCK",
+   "name": "the Supply position tab shows figures from the server and the tabs keep their place",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server was asked for it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the tab is selected",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it shows a table or says there is nothing",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "going back shows the orders again",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3345
+  },
+  {
+   "id": 128,
+   "cat": "STOCK",
+   "name": "a receiving clerk may receive but may not raise or change a purchase order",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server refuses a purchase order from a receiving clerk",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the list is readable",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no purchase order was created",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2272
+  },
+  {
+   "id": 129,
+   "cat": "STOCK",
+   "name": "the packing list of packages shows what the server sent",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first 6 records the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "in the order the server sent them",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first record's status is shown as sent (Open)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2205
+  },
+  {
+   "id": 130,
+   "cat": "STOCK",
+   "name": "the stock list pages: the second page is the server’s second page",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "page two is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "page one is not",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page marker moved",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2879
+  },
+  {
+   "id": 131,
+   "cat": "STOCK",
+   "name": "stock columns have headers a screen reader can use, and status is said in words",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "every column has a header",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every row states its status in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows can be reached by Tab",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1308
+  },
+  {
+   "id": 132,
+   "cat": "STOCK",
+   "name": "the stock upload dialog explains its steps and cannot continue without a choice",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the three steps are named",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the last step is off until the earlier ones are done",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it and nothing was sent",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 13415
+  },
+  {
+   "id": 133,
+   "cat": "STOCK",
+   "name": "a buyer starts at stock and can reach purchase orders; a clerk in sales cannot receive",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the buyer may read purchase orders",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses a receipt from a sales clerk",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the sales clerk’s screen does not offer to receive, or the server refuses",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2989
+  },
+  {
+   "id": 134,
+   "cat": "STOCK",
+   "name": "Refresh on the stock list shows an item received meanwhile, without reloading the page",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the new item is not on screen yet",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "after Refresh it is, at the top",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was changed by refreshing",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2440
+  },
+  {
+   "id": 135,
+   "cat": "STOCK",
+   "name": "a receiving clerk cannot correct a quantity: the server refuses, and the screen does not pretend it worked",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server refuses a correction from a receiving clerk",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "pressing it is refused in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the books still hold 900 lb",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2508
+  },
+  {
+   "id": 136,
+   "cat": "STOCK",
+   "name": "an item on its way to another branch says In Transit on its row in the stock list (K-014)",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server says the item is in transit",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the row says In Transit",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3172
+  },
+  {
+   "id": 137,
+   "cat": "MAKE",
+   "name": "the work order list shows the work orders the server sent",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records with a woNumber",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "records sent are on screen (5 looked for)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with named columns",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2076
+  },
+  {
+   "id": 138,
+   "cat": "MAKE",
+   "name": "the work order search narrows the list on screen and an unknown number says so",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "only matching rows remain",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing matching says so",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3527
+  },
+  {
+   "id": 139,
+   "cat": "MAKE",
+   "name": "a work order opens from its row by keyboard and shows the stored source item and weights",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter opens the work order",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading is the number",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the source item is named",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says plainly what a work order does and does not do to stock",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2804
+  },
+  {
+   "id": 140,
+   "cat": "MAKE",
+   "name": "a work order that does not exist says so",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "not found is said",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 21621
+  },
+  {
+   "id": 141,
+   "cat": "MAKE",
+   "name": "a new work order cannot be created without a source item, and says so",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Create is off until a source item is chosen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the required field is marked",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no work order was created",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1046
+  },
+  {
+   "id": 142,
+   "cat": "MAKE",
+   "name": "the schedule shows only the manager’s own branch’s work centres, and the jobs the server sent for the day",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "work centres were sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "none belongs to another branch",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "each is a row of the schedule",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every job on the schedule is one the server sent for the day",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2395
+  },
+  {
+   "id": 143,
+   "cat": "MAKE",
+   "name": "the schedule: Next Day and Previous Day ask the server for that day, and Today comes back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Next Day asks for one day later",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Previous Day twice asks for the day before today",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Today comes back",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was changed by looking",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6117
+  },
+  {
+   "id": 144,
+   "cat": "MAKE",
+   "name": "the schedule: the Queue View tab lists jobs waiting, by keyboard",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the tab is selected",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it lists jobs or says the queue is empty",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every job number shown is a real job",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3170
+  },
+  {
+   "id": 145,
+   "cat": "MAKE",
+   "name": "the order board shows real jobs in the column of their stored status",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "jobs were sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the same jobs the server lists to this manager, and no others",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "open jobs are on the board",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the board names its columns",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4169
+  },
+  {
+   "id": 146,
+   "cat": "MAKE",
+   "name": "a job card opens with Enter and shows the stored customer and operation, and Escape closes it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter opens the job",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it is that job",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with its stored instructions or operation",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape closes it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing changed",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6398
+  },
+  {
+   "id": 147,
+   "cat": "MAKE",
+   "name": "the order board search narrows the cards to jobs matching the text",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "fewer cards",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "all matching",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 5028
+  },
+  {
+   "id": 148,
+   "cat": "MAKE",
+   "name": "a job page shows its history with who did each step, as stored",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the heading is the job number",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the status on file is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the history table names when, what and by whom",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the title names the job",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2183
+  },
+  {
+   "id": 149,
+   "cat": "MAKE",
+   "name": "Change status on a job offers only real next steps and Cancel changes nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "choices open",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the current status is not offered as a step, or is marked",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the job is unchanged",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1597
+  },
+  {
+   "id": 150,
+   "cat": "MAKE",
+   "name": "a job at another branch cannot be opened by address",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server refuses it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page shows nothing of it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and says it was not found",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 21714
+  },
+  {
+   "id": 151,
+   "cat": "MAKE",
+   "name": "the quality station: the counts and the queue are the server’s",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the tab count equals the queue sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the queue rows are the jobs sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal jobs sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no job of another branch is in the inspector’s queue",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2356
+  },
+  {
+   "id": 152,
+   "cat": "MAKE",
+   "name": "the quality station tabs each show what the server sent for them",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "inspections were sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "they are on screen with their result",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Completed shows no inspection still in progress",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the chosen tab is marked",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4646
+  },
+  {
+   "id": 153,
+   "cat": "MAKE",
+   "name": "a saw operator cannot record a quality result: the server refuses and the queue offers no way round",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server refuses an inspection from an operator",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the job still waits for quality",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 16
+  },
+  {
+   "id": 154,
+   "cat": "MAKE",
+   "name": "the shop floor lists the work centres of the operator’s branch and opens one",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the branch’s work centre is there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a work centre of another branch is not",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "its queue opens with the centre named in the heading",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every job in its queue is a real job of this branch",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 5743
+  },
+  {
+   "id": 155,
+   "cat": "MAKE",
+   "name": "an operator sees no button to create a work centre that the server would refuse",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server refuses a new work centre from an operator",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "none was created",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the button is not offered",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2730
+  },
+  {
+   "id": 156,
+   "cat": "MAKE",
+   "name": "the production board lists real jobs under their stored stage",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "open jobs sent are on the board",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the stage headings are there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3832
+  },
+  {
+   "id": 157,
+   "cat": "MAKE",
+   "name": "the time report: tabs, filters and the totals come from the server, and the export holds the same rows",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the entry count on screen is a number",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "\"By Operator\" can be chosen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "\"By Work Center\" can be chosen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "\"Time Log Details\" can be chosen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the export is a CSV with a header row",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4417
+  },
+  {
+   "id": 158,
+   "cat": "MAKE",
+   "name": "the New Job dialog: a job typed once and saved with a double click is stored once",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save button comes on once the required entries are in",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "exactly one job was created",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "one save was accepted",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 11368
+  },
+  {
+   "id": 159,
+   "cat": "MAKE",
+   "name": "the bills of material screen says plainly that it is a sample and saves nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says it is a sample screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it points to the real screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing is sent",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3238
+  },
+  {
+   "id": 160,
+   "cat": "MAKE",
+   "name": "the manufacturing lists can be read on a tablet without the page scrolling sideways",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/work-orders: the page is no wider than the screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/work-orders: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/schedule: the page is no wider than the screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/schedule: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/order-board: the page is no wider than the screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/order-board: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/qc: the page is no wider than the screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/qc: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 10541
+  },
+  {
+   "id": 161,
+   "cat": "MAKE",
+   "name": "a scheduler may plan but may not change a price or read invoices",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the scheduler reads jobs",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "invoices are refused",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the pricing page says No access",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2065
+  },
+  {
+   "id": 162,
+   "cat": "MAKE",
+   "name": "a full column on the order board draws its first cards and offers the rest",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "not every job is drawn at once",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the rest are offered",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the button says how many are left and draws up to thirty more",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a job far down the list is still found by the search",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6938
+  },
+  {
+   "id": 163,
+   "cat": "SHIP",
+   "name": "the shipment list shows the shipments the server sent",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records with a shipmentNumber",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "records sent are on screen (5 looked for)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with named columns",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2160
+  },
+  {
+   "id": 164,
+   "cat": "SHIP",
+   "name": "searching shipments narrows the list to what the server finds, and nothing found says so",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "only that shipment remains",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with its order and customer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing found says so",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4082
+  },
+  {
+   "id": 165,
+   "cat": "SHIP",
+   "name": "a shipment opens from its row by keyboard and shows the stored order, customer and quantities",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Enter opens it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "heading, order and customer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the quantity on this shipment",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the state in words",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3294
+  },
+  {
+   "id": 166,
+   "cat": "SHIP",
+   "name": "Dispatch asks first, and a double click on Dispatch now ships once and raises one invoice",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it warns that this cannot be undone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing has happened yet",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the screen says it is on the road",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "exactly one invoice was raised",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the shipment left once",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the stock came off the books once",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the buttons for a shipment not yet gone are no longer offered",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1700
+  },
+  {
+   "id": 167,
+   "cat": "SHIP",
+   "name": "two people on one shipment: the second Dispatch is told it already left and nothing is billed twice",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a colleague dispatched it meanwhile",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the screen says why, in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "still one invoice",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "stock taken once",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2891
+  },
+  {
+   "id": 168,
+   "cat": "SHIP",
+   "name": "a shipment with no stock reserved cannot be dispatched and the screen says what to do",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a shipment with nothing reserved was made",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it says to reserve the stock first",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no invoice",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "still not gone",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1309
+  },
+  {
+   "id": 169,
+   "cat": "SHIP",
+   "name": "delivery cannot be saved without who received it; with a name it is stored once",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the save is off while the name is empty",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the shipment is delivered with that name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "one delivery was accepted",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the screen names who received it",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1813
+  },
+  {
+   "id": 170,
+   "cat": "SHIP",
+   "name": "Cancel shipment asks first; No keeps it, Yes cancels it once and leaves the stock reserved to the order",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a question appears",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Escape keeps the shipment",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it is cancelled",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing left the books",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no invoice",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1893
+  },
+  {
+   "id": 171,
+   "cat": "SHIP",
+   "name": "the packing list and the bill of lading open as papers with the stored lines, and print without the app around them",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Packing list: names the shipment and the order",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Packing list: carries the quantity",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Bill of lading: names the shipment and the order",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Bill of lading: carries the quantity",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "reading papers changes no shipment: the only thing sent is the paper to the print queue",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the shipment is as it was",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1536
+  },
+  {
+   "id": 172,
+   "cat": "SHIP",
+   "name": "carrier and truck details typed on screen are stored and shown",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the truck is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and stored",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1565
+  },
+  {
+   "id": 173,
+   "cat": "SHIP",
+   "name": "the dock sees that an invoice was raised and its number, and no amount; sales sees the amount",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the invoice number is on the dock’s screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "its amount is not",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses the invoice to the dock",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the credit manager sees the invoice with its total",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2374
+  },
+  {
+   "id": 174,
+   "cat": "SHIP",
+   "name": "the invoice list shows the invoices the server sent for the Open view",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server sent records with a invoiceNumber",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "records sent are on screen (5 looked for)",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal invoices sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "none sent is fully paid",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2371
+  },
+  {
+   "id": 175,
+   "cat": "SHIP",
+   "name": "the invoice list: \"Paid\" asks the server for that view and every row fits it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server was asked again",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal rows sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every row fits the view",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3417
+  },
+  {
+   "id": 176,
+   "cat": "SHIP",
+   "name": "the invoice list: \"Overdue\" asks the server for that view and every row fits it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server was asked again",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal rows sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every row fits the view",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3509
+  },
+  {
+   "id": 177,
+   "cat": "SHIP",
+   "name": "the invoice list: \"All\" asks the server for that view and every row fits it",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server was asked again",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "rows on screen equal rows sent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every row fits the view",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3500
+  },
+  {
+   "id": 178,
+   "cat": "SHIP",
+   "name": "an invoice opens with every figure as stored: subtotal, tax, freight, total, paid and balance",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "subtotal $130.00",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tax $7.80",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "freight $20.00",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "total $157.80",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the balance is the whole total",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "who issued it is named",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1591
+  },
+  {
+   "id": 179,
+   "cat": "SHIP",
+   "name": "a payment larger than the balance is refused; a right one saved with a double click is recorded once",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "too much is refused with a reason",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was recorded",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the screen says the payment was recorded",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "exactly one payment of $100.00 is on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the balance on screen is what is left",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3140
+  },
+  {
+   "id": 180,
+   "cat": "SHIP",
+   "name": "an auditor may read invoices and may not record a payment",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the auditor reads the invoice",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the server refuses a payment from the auditor",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "none was recorded",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "if the button is offered, pressing it is refused in words and records nothing",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3000
+  },
+  {
+   "id": 181,
+   "cat": "SHIP",
+   "name": "the invoices page tells a shop role who may read invoices, and shows none",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says who may read invoices",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no invoice number is shown",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2805
+  },
+  {
+   "id": 182,
+   "cat": "SHIP",
+   "name": "“Owed by age” shows the server’s figures for what customers owe",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server was asked",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "figures the server sent are on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3718
+  },
+  {
+   "id": 183,
+   "cat": "SHIP",
+   "name": "the returns list shows the returns the server sent, with their value",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "returns are listed, or the screen says there are none",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "every return number shown is a real return",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2624
+  },
+  {
+   "id": 184,
+   "cat": "SHIP",
+   "name": "orders not closed: a filter asks the server and the rows are what it sent",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server was asked for that view",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the orders sent are on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "each row says it waits for payment",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3871
+  },
+  {
+   "id": 185,
+   "cat": "SHIP",
+   "name": "a shipment of another branch cannot be opened by address",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server refuses it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page shows nothing of it",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and says so",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 21676
+  },
+  {
+   "id": 186,
+   "cat": "SHIP",
+   "name": "on a phone a shipment can be read and dispatched: nothing runs off the screen and the buttons are big enough",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the page is no wider than the phone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Dispatch is on screen and at least 36 px tall",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the question fits the phone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it ships",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "one invoice",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1652
+  },
+  {
+   "id": 187,
+   "cat": "SHIP",
+   "name": "a lost load can be ended only by a manager: the dock is told so and nothing is credited",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server refuses the dock",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the shipment is not lost",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the invoice is untouched",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 187
+  },
+  {
+   "id": 188,
+   "cat": "FIT",
+   "name": "/orders fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "wide 1920px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop 1280px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet 768px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone 390px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small 320px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 12596
+  },
+  {
+   "id": 189,
+   "cat": "FIT",
+   "name": "/customers fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "wide 1920px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop 1280px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet 768px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone 390px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small 320px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 11896
+  },
+  {
+   "id": 190,
+   "cat": "FIT",
+   "name": "/units fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "wide 1920px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop 1280px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet 768px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone 390px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small 320px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 13260
+  },
+  {
+   "id": 191,
+   "cat": "FIT",
+   "name": "/shipping fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "wide 1920px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop 1280px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet 768px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone 390px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small 320px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 12133
+  },
+  {
+   "id": 192,
+   "cat": "FIT",
+   "name": "/orders/invoices fits five screen sizes, from a wide monitor to a small phone, with nothing out of reach",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "wide 1920px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "wide: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop 1280px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "laptop: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet 768px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "tablet: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone 390px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "phone: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small 320px: the page does not scroll sideways",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: nothing in the page is out of reach",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "small: the heading is on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 13256
+  },
+  {
+   "id": 193,
+   "cat": "FIT",
+   "name": "with text at twice the size the main screens still do not scroll sideways",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/orders: no sideways scroll at 200% text",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/orders: the heading is still whole",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: no sideways scroll at 200% text",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: the heading is still whole",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: no sideways scroll at 200% text",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: the heading is still whole",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 8455
+  },
+  {
+   "id": 194,
+   "cat": "FIT",
+   "name": "on a phone a wide table scrolls inside its own frame and keeps its headers",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/customers: the table has a scrolling frame no wider than the phone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers: the column headers are there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: the table has a scrolling frame no wider than the phone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: the column headers are there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: the table has a scrolling frame no wider than the phone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: the column headers are there",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3910
+  },
+  {
+   "id": 195,
+   "cat": "FIT",
+   "name": "on a phone every button and link in the main lists is big enough for a finger",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/orders: nothing under 24 by 24 px",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: nothing under 24 by 24 px",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: nothing under 24 by 24 px",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers: nothing under 24 by 24 px",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 10080
+  },
+  {
+   "id": 196,
+   "cat": "FIT",
+   "name": "on a tablet the menu is put away and the page uses the whole width",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the menu is not taking space",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the content is the full 768 px wide",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the menu button is offered",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2223
+  },
+  {
+   "id": 197,
+   "cat": "FIT",
+   "name": "a phone turned sideways: a dialog fits the height and its buttons can be reached",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the dialog is no taller than the screen",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the save button can be brought on screen",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1514
+  },
+  {
+   "id": 198,
+   "cat": "FIT",
+   "name": "signing in and opening a page needs no mouse",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "signed in with the keyboard alone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and reached another page the same way",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2130
+  },
+  {
+   "id": 199,
+   "cat": "FIT",
+   "name": "the keyboard’s place is always visible: every stop of the first twenty has a focus ring",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "no stop is without a visible ring",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing on the page jumps the Tab order",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6791
+  },
+  {
+   "id": 200,
+   "cat": "FIT",
+   "name": "each main screen has one heading, one main area, a named menu and a search landmark",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/orders: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/orders/invoices: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/receiving: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/work-orders: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/heats: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/purchase-orders: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/sales/rfq-inbox: one h1, one main, menu, search, header, language",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 22204
+  },
+  {
+   "id": 201,
+   "cat": "FIT",
+   "name": "on the main screens no control is without a name and no field without a label",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/orders: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/orders/invoices: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/receiving: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/work-orders: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/heats: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/purchase-orders: every control has a name",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/sales/rfq-inbox: every control has a name",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 24044
+  },
+  {
+   "id": 202,
+   "cat": "FIT",
+   "name": "text on the main screens is readable against its background (4.5 to 1, or 3 to 1 for large text)",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/orders: no text below the ratio",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers: no text below the ratio",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: no text below the ratio",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: no text below the ratio",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/orders/invoices: no text below the ratio",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/work-orders: no text below the ratio",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 15692
+  },
+  {
+   "id": 203,
+   "cat": "FIT",
+   "name": "a person who asks for less motion gets none: dialogs and the menu do not animate",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "no transition lasts longer than a hundredth of a millisecond",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "while a person who did not ask still gets the usual motion",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2735
+  },
+  {
+   "id": 204,
+   "cat": "FIT",
+   "name": "a form tells a screen reader what is required and what is wrong",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the required field says so",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the empty required field is marked wrong",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and the reason is tied to the field or announced",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "a failed sign-in is announced as an alert",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3043
+  },
+  {
+   "id": 205,
+   "cat": "FIT",
+   "name": "messages that appear by themselves are announced, and the page can be zoomed",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the notice is a status or an alert",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "zooming is not switched off",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 1321
+  },
+  {
+   "id": 206,
+   "cat": "FIT",
+   "name": "tables say which column is which: header cells are real headers on every main list",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/customers: headers for every column",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/units: headers for every column",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: headers for every column",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/orders/invoices: headers for every column",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/work-orders: headers for every column",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/heats: headers for every column",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 7216
+  },
+  {
+   "id": 207,
+   "cat": "FIT",
+   "name": "pictures and icons: none is read out as noise, none is missing its description",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/orders: images described, icons silent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/customers: images described, icons silent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/shipping: images described, icons silent",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/: images described, icons silent",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 8852
+  },
+  {
+   "id": 208,
+   "cat": "FAIL",
+   "name": "/orders: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading and the menu are still there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with the server back the records appear",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4804
+  },
+  {
+   "id": 209,
+   "cat": "FAIL",
+   "name": "/customers: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading and the menu are still there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with the server back the records appear",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4804
+  },
+  {
+   "id": 210,
+   "cat": "FAIL",
+   "name": "/units: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading and the menu are still there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with the server back the records appear",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 5075
+  },
+  {
+   "id": 211,
+   "cat": "FAIL",
+   "name": "/shipping: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading and the menu are still there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with the server back the records appear",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4728
+  },
+  {
+   "id": 212,
+   "cat": "FAIL",
+   "name": "/work-orders: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading and the menu are still there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with the server back the records appear",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4586
+  },
+  {
+   "id": 213,
+   "cat": "FAIL",
+   "name": "/orders/invoices: when the server fails, the screen says so in words, invents no records, and loads again once the server is back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the heading and the menu are still there",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "with the server back the records appear",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 6989
+  },
+  {
+   "id": 214,
+   "cat": "FAIL",
+   "name": "/customers: when there is nothing to list, the screen says there is nothing, not that something failed",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says there is nothing",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it does not call it a failure",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is invented",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3190
+  },
+  {
+   "id": 215,
+   "cat": "FAIL",
+   "name": "/units: when there is nothing to list, the screen says there is nothing, not that something failed",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says there is nothing",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it does not call it a failure",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is invented",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3453
+  },
+  {
+   "id": 216,
+   "cat": "FAIL",
+   "name": "/shipping: when there is nothing to list, the screen says there is nothing, not that something failed",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says there is nothing",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it does not call it a failure",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is invented",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3217
+  },
+  {
+   "id": 217,
+   "cat": "FAIL",
+   "name": "/work-orders: when there is nothing to list, the screen says there is nothing, not that something failed",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "it says there is nothing",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it does not call it a failure",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no record is invented",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the page did not crash",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3057
+  },
+  {
+   "id": 218,
+   "cat": "FAIL",
+   "name": "a slow server: the list says it is loading, then shows the records",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "a loading sign is shown while waiting",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no “nothing here” message is shown while still loading",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "then the shipments appear",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3884
+  },
+  {
+   "id": 219,
+   "cat": "FAIL",
+   "name": "the connection drops: the screen says so, does not crash, and works again when it is back",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said in words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "back on line the list returns",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 4087
+  },
+  {
+   "id": 220,
+   "cat": "FAIL",
+   "name": "the session ends in the middle of work: the person is told, signs in, and is back on the same page",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "sent to sign-in",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "told that the session ended",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the way back is kept",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the old token is gone",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "after signing in the same page is back",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2700
+  },
+  {
+   "id": 221,
+   "cat": "FAIL",
+   "name": "signed out in another tab: the next page asked for leads to sign-in, and shows nothing",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the first tab is sent to sign-in",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "and shows no stock",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2566
+  },
+  {
+   "id": 222,
+   "cat": "FAIL",
+   "name": "a role loses a permission mid-session: the screen says it is not allowed, and shows no stale records as if current",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the refusal is said in the server’s words",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no shipment is listed",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "not sent to sign-in for a refusal",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2995
+  },
+  {
+   "id": 223,
+   "cat": "FAIL",
+   "name": "an answer that is not what the screen expects does not blank the page",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the page is not blank",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing from the bad answer is shown as a customer",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the person can still move on",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3106
+  },
+  {
+   "id": 224,
+   "cat": "FAIL",
+   "name": "a record that is not on file says so on its own page: stock, heat, shipment, job",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "units: says it is not on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "units: no crash and a way back",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "heats: says it is not on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "heats: no crash and a way back",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "shipping: says it is not on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "shipping: no crash and a way back",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "jobs: says it is not on file",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "jobs: no crash and a way back",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 67615
+  },
+  {
+   "id": 225,
+   "cat": "FAIL",
+   "name": "the order save helper sends the version it read, and the server refuses a save made from an older one",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the first save is accepted",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the second, made from the older copy, is refused as stale",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the first person’s note stands",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 2332
+  },
+  {
+   "id": 226,
+   "cat": "FAIL",
+   "name": "two people cancel and dispatch the same shipment at once: one wins, the other is told, the books agree",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "exactly one of the two happened",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the books agree with the winner",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the other person is told in words",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 5358
+  },
+  {
+   "id": 227,
+   "cat": "FAIL",
+   "name": "a payment the server fails to save is not shown as paid, and the amount typed is kept",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the failure is said",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it is not shown as paid",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "the amount typed is kept",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing is on file",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3085
+  },
+  {
+   "id": 228,
+   "cat": "FAIL",
+   "name": "Back and Forward move between a list and a record without errors or a second save",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "Back returns to the list",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "Forward returns to the shipment",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "nothing was saved by moving about",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no page error",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3371
+  },
+  {
+   "id": 229,
+   "cat": "FAIL",
+   "name": "too many requests: the screen says to wait, and does not show an empty list as if there were no records",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "the server’s message or a failure is shown",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "it does not say there is no stock",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 3461
+  },
+  {
+   "id": 230,
+   "cat": "FAIL",
+   "name": "a long round of 24 screens in one tab: no page error, no failed call, no screen left blank",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "no page error in 24 screens",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no call answered with a server error",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no screen was blank",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no staff screen asks for a web shop customer's preferences",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 49425
+  },
+  {
+   "id": 231,
+   "cat": "FAIL",
+   "name": "dashboards show no figure the server did not send: with the server failing, no tile shows a number",
+   "status": "PASS",
+   "checks": [
+    {
+     "what": "/ is still on screen and did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/ops-cockpit is still on screen and did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/sales/dashboard is still on screen and did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/material-tracking is still on screen and did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/executive/compression-metrics is still on screen and did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "/qc is still on screen and did not crash",
+     "ok": true,
+     "detail": ""
+    },
+    {
+     "what": "no dashboard shows a figure of its own when the server sends none",
+     "ok": true,
+     "detail": ""
+    }
+   ],
+   "crashed": "",
+   "why": "",
+   "ms": 25516
+  }
+ ]
+}

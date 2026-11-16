@@ -1,0 +1,69 @@
+{
+ "note": "Dispositions decided in Phase 9. Applied over the findings source by qa/tools/findings-import.mjs. Never delete an entry.",
+ "dispositions": {
+  "B-015": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification",
+   "statusNote": "Phase 9: measured at 613 controls with no name and 280 fields with no label on 154 screens; both are 0 (V-006). The 26 browser confirm, alert and prompt boxes are replaced by the application's own (V-008, V-009). An automated accessibility measure runs in the gates.",
+   "verification": "qa/sim/ui-audit.cjs final run: 0 and 0; qa/tools/ui-audit-gate.cjs holds them; qa/tools/frontend-checks.mjs fails on a new unnamed icon button or a browser box (each proved by adding one); qa/sim/phase9-ui.cjs: \"deactivating a user asks in the application's own box, and Cancel changes nothing\"."
+  },
+  "J-013": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification",
+   "statusNote": "Phase 9: the four selects on order entry, and every other field in the product, have a name a screen reader can say (V-006).",
+   "verification": "qa/sim/ui-audit.cjs final run: 0 fields with no label on /orders/intake and on every other screen; held at 0 by qa/tools/ui-audit-gate.cjs."
+  },
+  "K-014": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification",
+   "statusNote": "Phase 9: a stock item on its way to another branch says \"In Transit\" on its row in the stock list. The list answer now carries the stock record's state.",
+   "verification": "qa/sim/phase9-ui.cjs: \"an item on its way to another branch says In Transit on its row in the stock list (K-014)\"; qa/tools/phase9-mutations.cjs 25."
+  },
+  "U-020": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification",
+   "statusNote": "Phase 9: verified. The menu has one stock list, Inventory, and the address of the second list leads to it.",
+   "verification": "qa/sim/phase9-ui.cjs: \"the addresses of two retired screens lead to the real ones (U-020, U-028)\"."
+  },
+  "U-028": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification",
+   "statusNote": "Phase 9: verified. The old operator screen's address leads to the real shop floor.",
+   "verification": "qa/sim/phase9-ui.cjs: \"the addresses of two retired screens lead to the real ones (U-020, U-028)\"."
+  },
+  "U-008": {
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "phase": "Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification",
+   "statusNote": "Phase 9: this is the delivery promise logic of S-010. Owner decision 10 (2026-11-15) leaves promise dates as they are for demonstration. The caution notice stays on the screen."
+  },
+  "U-041": {
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "phase": "Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification",
+   "statusNote": "Phase 9: this is the delivery promise and branch suggestion logic of S-010. Owner decision 10 (2026-11-15) leaves it as it is for demonstration. The cutoff shown in the top bar is the same logic (V-031)."
+  },
+  "U-004": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "statusNote": "Phase 9: on opening, no screen of the 130 in the smoke run calls a route that does not exist (the only 404 answers are for the made-up record ids the run uses). The static scan (qa/api-contract.md) still finds 66 calls written in screen code with no server route, down from 155; they sit behind controls on sample screens, which now answer \"not built\" (V-007) and do not make the call.",
+   "deferral": { "reason": "The 66 calls are in the code of sample modules that are to be rebuilt on real records (owner decision 4).", "targetPhase": "Phase 12", "correction": "Remove each call with its sample screen, or build its route with the module.", "dependencies": "Owner decision 4.", "acceptance": "qa/api-contract.md reports 0 calls with no route.", "verification": "qa/tools/api-contract.mjs in the gate run." }
+  },
+  "U-019": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: examined. The six screens stay marked as samples. Every control on them now has a name, every button answers (with the not-built notice where nothing is behind it, V-007) and none announces a save that did not happen (V-008).",
+   "deferral": { "reason": "Owner decision 4 (2026-11-14): the sample modules are to be built on real records later; they are not to be removed or dressed up.", "targetPhase": "The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built", "correction": "Build supplier quality on real records.", "dependencies": "Owner decision 4.", "acceptance": "The screens read and write real records and the sample notice is gone.", "verification": "qa/tools/screen-audit.mjs classes them REAL." } },
+  "U-029": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: examined. The screens stay marked as samples. Two buttons that announced \"NCR created successfully!\" and \"Inspection submitted successfully!\" with nothing saved now say nothing was saved (V-008).",
+   "deferral": { "reason": "Owner decision 4 (2026-11-14).", "targetPhase": "The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built", "correction": "Build production quality and bills of material on real records.", "dependencies": "Owner decision 4.", "acceptance": "The screens read and write real records and the sample notice is gone.", "verification": "qa/tools/screen-audit.mjs classes them REAL." } },
+  "U-035": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: examined. The freight screens stay marked as samples. \"Book shipment\" announced a booking with a carrier that was never made; it now says nothing was booked (V-008). No carrier is connected (N-026).",
+   "deferral": { "reason": "Owner decision 4, and N-026: tracking numbers are typed by dispatch until a carrier contract exists.", "targetPhase": "The phase the owner issues for carriers and freight; if none does, Phase 12 records them as not built", "correction": "Build freight on a real carrier connection.", "dependencies": "A carrier contract (N-026).", "acceptance": "The screens read real rates and tracking and the sample notice is gone.", "verification": "qa/tools/screen-audit.mjs classes them REAL." } },
+  "U-037": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: examined. The screens stay marked as samples. Three maintenance buttons that announced a purchase order, a parts receipt and a schedule with nothing saved now say nothing was saved (V-008).",
+   "deferral": { "reason": "Owner decision 4 (2026-11-14).", "targetPhase": "The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built", "correction": "Build each module on real records.", "dependencies": "Owner decision 4.", "acceptance": "The screens read and write real records and the sample notice is gone.", "verification": "qa/tools/screen-audit.mjs classes them REAL." } },
+  "U-040": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: the 58 sample screens are still in the menu beside the real ones, each with its standing notice. They were not hidden (the Phase 9 instruction forbids hiding in place of fixing) and not removed (owner decision 4). The search and each role's menu offer only the pages the role may open. The menu itself does not mark which entries are samples; that is a small change the owner may want and is not made here because it changes the look of the menu for every user.",
+   "deferral": { "reason": "Owner decision 4 (2026-11-14).", "targetPhase": "The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built", "correction": "Build the modules, or mark sample entries in the menu if the owner asks.", "dependencies": "Owner decision 4.", "acceptance": "No sample screen sits unmarked beside a real one.", "verification": "qa/tools/screen-audit.mjs." } },
+  "U-022": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: examined. Receiving against a heat not on file is refused with what to do (Phase 6). Adding several heats in one step is a speed improvement for a first load and was not built.",
+   "deferral": { "reason": "A new function, not a defect in a screen; it needs the owner's word on how mill certificates arrive.", "targetPhase": "Phase 12", "correction": "Add a heat from the receiving form, or several from a file.", "dependencies": "I-017.", "acceptance": "A receipt for a new heat is completed on one screen.", "verification": "A receiving scenario." } },
+  "B-024": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: 38 remain, held by the ceiling in qa/tools/frontend-checks.mjs. None was added by the Phase 9 changes. They were read one by one in Phase 2 and the one defect among them was fixed then.",
+   "deferral": { "reason": "Rewriting 38 effects changes when screens reload their data, with no defect known among them; it is consolidation work, not a user-facing fault.", "targetPhase": "Phase 12", "correction": "Rewrite each effect so it lists what it reads.", "dependencies": "None.", "acceptance": "qa/tools/frontend-checks.mjs reports 0.", "verification": "The ratchet." } },
+  "E-021": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: the new search and the Phase 9 scenarios read both list shapes through one reader. The routes still answer in two shapes, pinned by the Phase 4 contract tests.",
+   "deferral": { "reason": "Changing a list's shape changes every screen that reads it and the contract tests; it is consolidation work.", "targetPhase": "Phase 12", "correction": "Move every screen to one reader, then change the routes.", "dependencies": "The Phase 4 contract tests.", "acceptance": "One list shape on every route.", "verification": "Contract tests." } },
+  "G-020": { "status": "DEFERRED TO SPECIFIC PHASE", "statusNote": "Phase 9: the screens' order save helper now sends the version it read, and the server refuses a save made from an older one (409). No screen edits an order's header fields today, so no user can meet the fault through the product. The other edit routes (customers, stock items, work orders) are unchanged.",
+   "verification": "qa/sim/phase9-ui.cjs: \"the order save helper sends the version it read, and the server refuses a save made from an older one\".",
+   "deferral": { "reason": "The remaining edit routes need the same server check, which is reliability work.", "targetPhase": "Phase 10: security and infrastructure", "correction": "Require the version on every edit route and send it from every edit form.", "dependencies": "None.", "acceptance": "Two people editing the same record: the second is told and loses nothing silently.", "verification": "A two-user scenario per record type." } }
+ }
+}

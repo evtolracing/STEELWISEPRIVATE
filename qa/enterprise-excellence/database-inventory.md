@@ -1,8 +1,8 @@
 # Database inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 84cc890. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
 
-Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-16 03:08 UTC); they describe test data, not the live database, which was not touched.
+Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-16 06:11 UTC); they describe test data, not the live database, which was not touched.
 
 ## Totals
 
@@ -11,7 +11,7 @@ Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are re
 | Tables | 161 |
 | Tables no server code reads or writes | 53 |
 | Tables empty after a full test run | 74 of 162 |
-| Rows in the QA database | 17,975 |
+| Rows in the QA database | 17,965 |
 | Indexes | 596 |
 | Foreign keys | 196 |
 | Foreign keys with no index | 0 |
@@ -233,14 +233,14 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | Division | 7 | 0 | 1 | 0 |  |  | yes | 0 | users | nothing |
 | ApprovalRequest | 12 | 1 | 0 | 2 | ApprovalStatus |  | yes | 0 | nothing | nothing |
 | ApprovalDecision | 6 | 2 | 0 | 2 |  |  |  | 0 | nothing | nothing |
-| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 4631 | creditControl, integrationReport, jobGates, jobHistory, … | creditControl, jobHistory, stockChanges, transfers, … |
+| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 4628 | creditControl, integrationReport, jobGates, jobHistory, … | creditControl, jobHistory, stockChanges, transfers, … |
 | Grade | 17 | 0 | 1 | 0 |  |  |  | 9 | lineSpecs, receiving, aiAssistant, coils, … | lineSpecs, grades, index, supabaseSeed |
 | Product | 20 | 1 | 1 | 1 |  |  |  | 17 | receiving, aiAssistant, coils, intakeOrders, … | intakePricing, products, index, ecomService |
 | Heat | 15 | 4 | 1 | 4 | HeatStatus |  |  | 18 | receiving, aiAssistant, coils, heats, … | documents, heats, index, supabaseSeed |
-| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 938 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
+| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 937 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
 | Location | 19 | 2 | 1 | 2 |  |  | yes | 85 | orderTax, receiving, coils, compressionMetrics, … | dispatchRoutes, index, supabaseSeed |
-| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 938 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
-| MaterialMovement | 16 | 8 | 0 | 8 |  | yes |  | 1210 | orderCloseout, receiving, shippingDocuments, coils, … | receiving, stockChanges, transfers, inventory, … |
+| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 937 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
+| MaterialMovement | 16 | 8 | 0 | 8 |  | yes |  | 1207 | orderCloseout, receiving, shippingDocuments, coils, … | receiving, stockChanges, transfers, inventory, … |
 | TestResult | 16 | 4 | 0 | 4 |  |  |  | 0 | (with its parent) | (with its parent) |
 | QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 59 | coils, dashboard, opsCockpit | holds, transfers, returns |
 | RFQ | 14 | 2 | 1 | 2 | RFQStatus | yes |  | 61 | aiAssistant, analyticsV1, customerRoutes, quotes, … | quotes, rfqs, index |
@@ -261,7 +261,7 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | OrderLine | 36 | 4 | 0 | 4 |  |  |  | 1060 | orderCloseout, receiving, jobs, orders, … | receiving, intakeOrders, orders, purchaseOrders, … |
 | OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 111 | holds, orderCloseout, shippingDocuments, stockChanges, … | stockChanges, orders, shipments |
 | WorkOrder | 20 | 4 | 1 | 4 | WOStatus |  |  | 70 | costing, workOrders, printAutomationService | workOrders |
-| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 57 | nothing | stockChanges |
+| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 55 | nothing | stockChanges |
 | Shipment | 22 | 3 | 1 | 3 | ShipmentStatus | yes |  | 453 | orderCloseout, shippingDocuments, aiAssistant, dashboard, … | orders, shipments, index |
 | ShipmentItem | 6 | 2 | 0 | 2 |  |  |  | 422 | orderCloseout, shipments | shipments, index |
 | ShipmentStop | 12 | 1 | 0 | 1 |  |  |  | 0 | (with its parent) | (with its parent) |

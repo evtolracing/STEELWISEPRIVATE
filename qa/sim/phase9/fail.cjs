@@ -121,8 +121,21 @@ module.exports = async (s) => {
   });
 
   await sc('FAIL', 'a long round of 24 screens in one tab: no page error, no failed call, no screen left blank', async (t) => {
-    const c = await ctx(boss); const page = await open(c, '/orders'); const failed = []; page.on('response', (r) => { if (/\/api\//.test(r.url()) && !/\/src\//.test(r.url()) && r.status() >= 500) failed.push(`${r.status()} ${r.url().replace(/^.*\/api/, '')}`); }); const blank = [];
+    const c = await ctx(boss); const page = await open(c, '/orders'); const failed = []; const shopCalls = []; page.on('request', (q) => { if (/preferences/i.test(q.url()) && /\/api\//.test(q.url())) shopCalls.push(q.url().replace(/^.*\/api/, '')); }); page.on('response', (r) => { if (/\/api\//.test(r.url()) && !/\/src\//.test(r.url()) && r.status() >= 500) failed.push(`${r.status()} ${r.url().replace(/^.*\/api/, '')}`); }); const blank = [];
     for (const url of ['/', '/orders', '/orders/intake', '/customers', '/sales/rfq-inbox', '/pricing', '/units', '/heats', '/receiving', '/purchase-orders', '/work-orders', '/schedule', '/order-board', '/production', '/qc', '/time-tracking', '/shopfloor', '/shipping', '/material-tracking/packages', '/orders/invoices', '/orders/returns', '/orders/closeout', '/admin/users', '/help/manual']) { await page.goto(APP + url, { waitUntil: 'domcontentloaded' }); await page.locator('main h1, main h2').first().waitFor({ timeout: 15000 }).catch(() => {}); await settle(page, 300); if ((await text(page, 'main')).trim().length < 40) blank.push(url); }
     t.check('no page error in 24 screens', page.errors.length === 0, page.errors.slice(0, 2).join(' | ')); t.check('no call answered with a server error', failed.length === 0, failed.slice(0, 3).join(' | ')); t.check('no screen was blank', blank.length === 0, blank.join(' '));
+    t.check('no staff screen asks for a web shop customer\'s preferences', shopCalls.length === 0, `${shopCalls.length} calls ${shopCalls.slice(0, 2).join(' ')}`);
+  });
+  await sc('FAIL', 'dashboards show no figure the server did not send: with the server failing, no tile shows a number', async (t) => {
+    const shown = [];
+    for (const url of ['/', '/ops-cockpit', '/sales/dashboard', '/material-tracking', '/executive/compression-metrics', '/qc']) {
+      const c = await ctx(boss); await c.route(/\/api\/(?!auth\/)/, (r) => (/\/src\//.test(r.request().url()) ? r.continue() : r.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"planted failure"}' })));
+      const page = await open(c, url); await settle(page, 2500);
+      const figures = await page.locator('main h2, main h3, main h4, main h5').evaluateAll((els) => els.map((e) => (e.textContent || '').trim()).filter((x) => /^\$?[\d,]+(\.\d+)?\s?(%|k|K|M|lb|lbs|h|hrs)?$/.test(x) && Number(x.replace(/[^\d.]/g, '')) !== 0));
+      if (figures.length) shown.push(`${url}: ${figures.slice(0, 4).join(', ')}`);
+      t.check(`${url} is still on screen and did not crash`, page.errors.length === 0 && (await text(page, 'main')).trim().length > 20, page.errors.slice(0, 1).join(' '));
+      await c.close();
+    }
+    t.check('no dashboard shows a figure of its own when the server sends none', shown.length === 0, shown.join(' | '));
   });
 };

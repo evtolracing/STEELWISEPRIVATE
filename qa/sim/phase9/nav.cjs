@@ -309,4 +309,36 @@ module.exports = async (s) => {
       if (!expectSees) { const p2 = await open(c, `/orders/${mine.id}`); await settle(p2, 800); t.check('opening it by address shows no order', !(await text(p2)).includes(mine.orderNumber), (await text(p2, 'main')).slice(0, 120)); }
     }
   });
+  await sc('NAV', 'the counter sale screen shows the initials of the person signed in', async (t) => {
+    const c = await ctx(clerk); const page = await open(c, '/pos/retail'); await settle(page, 800);
+    const name = [clerk.user.firstName, clerk.user.lastName].filter(Boolean).join(' '); const initials = (name.match(/\b\w/g) || []).slice(0, 2).join('').toUpperCase();
+    const badge = page.getByLabel(`Signed in as ${name}`);
+    t.check('the badge names the person', await badge.count() === 1, name);
+    t.check('it shows their initials', (await badge.innerText().catch(() => '')).trim() === initials, `${await badge.innerText().catch(() => '')} for ${initials}`);
+    await c.close();
+  });
+  await sc('NAV', 'the top bar shows no notification the server did not send', async (t) => {
+    const c = await ctx(boss); const page = await open(c, '/orders'); await settle(page, 600);
+    const bar = page.locator('header'); const names = await bar.getByRole('button').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label') || e.textContent.trim()));
+    t.check('the top bar has its controls', names.length >= 2, names.join(' | '));
+    t.check('there is no notifications bell and no invented count', !names.some((n) => /notif|alerts?$/i.test(n)) && await bar.locator('.MuiBadge-badge').count() === 0, names.join(' | '));
+    await c.close();
+  });
+  await sc('NAV', 'the addresses of two retired screens lead to the real ones (U-020, U-028)', async (t) => {
+    const c = await ctx(boss); let page = await open(c, '/inventory/list'); await settle(page, 800);
+    t.check('the second stock list leads to Inventory', pathOf(page) === '/units', pathOf(page));
+    t.check('the menu has one stock list', await page.locator('nav[aria-label="Main menu"] a[href="/units"]').count() === 1 && await page.locator('nav[aria-label="Main menu"] a[href^="/inventory"]').count() === 0);
+    await page.close(); page = await open(c, '/shop-floor'); await settle(page, 800);
+    t.check('the old operator screen leads to the shop floor', pathOf(page) === '/shopfloor', pathOf(page));
+    await c.close();
+  });
+  await sc('NAV', 'the work order list is in the menu and in the search for a planner (V-038)', async (t) => {
+    const c = await ctx(P.scheduler); const page = await open(c, '/schedule'); await settle(page, 600);
+    const links = await menuLinks(page);
+    t.check('Work Orders is in the menu', links.includes('/work-orders'), links.join(' ').slice(0, 200));
+    await page.getByTestId('global-search').fill('work orders'); const option = page.locator('[role="option"]', { hasText: 'Work Orders' }).first(); await option.waitFor({ timeout: 6000 }).catch(() => {});
+    t.check('the search offers it', await option.count() === 1); await page.keyboard.press('Enter'); await until(() => pathOf(page) === '/work-orders', 6000);
+    t.check('and it opens', pathOf(page) === '/work-orders', pathOf(page));
+    await c.close();
+  });
 };

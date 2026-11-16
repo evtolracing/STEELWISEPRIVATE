@@ -151,6 +151,18 @@
    "what": "an item in transit says so on its row",
    "scenario": "on its way to another branch",
    "result": "HOLDS: 1 of 1 fail (the row says In Transit), run after the fix was added"
+  },
+  {
+   "n": 26,
+   "what": "Work Orders is in the menu",
+   "scenario": "the work order list is in the menu",
+   "result": "HOLDS: 1 of 1 fail (Work Orders is in the menu), run after the fix was added"
+  },
+  {
+   "n": 27,
+   "what": "web shop preferences are not asked on staff screens",
+   "scenario": "a long round of 24 screens",
+   "result": "HOLDS: 1 of 1 fail (no staff screen asks for a web shop customer's preferences: 48 calls), run after the check was added to the scenario"
   }
  ]
 }

@@ -1,7 +1,7 @@
 {
- "screens": 144,
+ "screens": 145,
  "tally": {
-  "STATIC": 5,
+  "STATIC": 6,
   "REAL": 77,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
@@ -877,6 +877,12 @@
    "onMenu": true,
    "verdict": "STATIC",
    "file": "pages/Help/ManualPage.jsx"
+  },
+  {
+   "route": "*",
+   "onMenu": false,
+   "verdict": "STATIC",
+   "file": "components/common/NotFoundPage.jsx"
   }
  ]
 }

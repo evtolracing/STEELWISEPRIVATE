@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 84cc890. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
 
 649 routes in 75 route files, served at 76 mount points. 338 change data.
 
@@ -15,8 +15,8 @@ Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 84cc890. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 420 of 649 |
-| Changing routes that returned a success in a test | 176 of 338 |
+| Routes that returned a success in a test | 421 of 649 |
+| Changing routes that returned a success in a test | 177 of 338 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
 | Handlers with no try/catch of their own | 196 (many use a shared wrapper) |
@@ -98,7 +98,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 ## Every route, by route file
 
-### auth.js (4 routes, 125 lines)
+### auth.js (4 routes, 127 lines)
 
 Mounted at /api/auth. Tables: User.
 
@@ -119,7 +119,7 @@ Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserR
 | `GET /api/users/:id` | yes |  |  |  |  |  |
 | `POST /api/users` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 | `PUT /api/users/:id` | yes | 8 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
-| `DELETE /api/users/:id` |  | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
+| `DELETE /api/users/:id` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `POST /api/users/:id/reset-password` |  | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `GET /api/users/roles/list` | yes |  |  | yes |  |  |
 | `GET /api/users/roles/:id` |  |  |  |  |  |  |
@@ -350,7 +350,7 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (10 routes, 508 lines)
+### orders.js (10 routes, 513 lines)
 
 Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, Shipment, User.
 

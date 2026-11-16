@@ -76,7 +76,8 @@ export default function MyOrderDetailPage() {
   if (!order) {
     return (
       <Container maxWidth="lg" sx={{ py: 3 }}>
-        <Alert severity="error">Order not found</Alert>
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ mb: 2 }}>Order not found</Typography>
+        <Alert severity="error">This order is not on your account, or the address is wrong.</Alert>
         <Button startIcon={<ArrowBack />} onClick={() => navigate('/shop/orders')} sx={{ mt: 2 }}>Back to Orders</Button>
       </Container>
     )

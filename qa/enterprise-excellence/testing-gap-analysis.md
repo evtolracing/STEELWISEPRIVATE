@@ -1,6 +1,6 @@
 # Testing gap analysis
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 84cc890. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
 
 ## What exists
 
@@ -23,10 +23,10 @@ Measured from the server's request log during the full gate run of this session 
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success | 420 of 649 (65%) |
-| Changing routes that returned a success | 176 of 338 (52%) |
+| Routes that returned a success | 421 of 649 (65%) |
+| Changing routes that returned a success | 177 of 338 (52%) |
 | Routes called at all (including refusals) | 642 of 649 |
-| Screens operated by a browser suite (not just opened) | about 30 of 144 |
+| Screens operated by a browser suite (not just opened) | about 30 of 145 |
 | Screens opened without a crash | 125 of 125 that take no record id |
 
 ## Changing routes with no success-path test, by module
@@ -46,9 +46,9 @@ Measured from the server's request log during the full gate run of this session 
 | Staff and operators | 9 | 4 | 5 |
 | Dispatch, work centers and shop-floor operations | 17 | 12 | 5 |
 | Partner API | 20 | 15 | 5 |
-| Users, roles and branches | 6 | 2 | 4 |
 | Web store | 10 | 6 | 4 |
 | Routings and processing recipes | 11 | 7 | 4 |
+| Users, roles and branches | 6 | 3 | 3 |
 | Counter quick sale | 6 | 3 | 3 |
 | Maintenance and assets | 9 | 6 | 3 |
 | Sign-in and sessions | 3 | 1 | 2 |

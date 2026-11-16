@@ -353,7 +353,9 @@ export default function UserManagementPage() {
                       key={user.id} 
                       hover
                       sx={{ 
-                        opacity: user.isActive ? 1 : 0.6,
+                        // An inactive user is marked by the "Inactive" chip and a grey badge. The row is not
+                        // dimmed: dimmed text falls below the contrast a person needs to read it.
+                        bgcolor: user.isActive ? undefined : 'action.hover',
                         '&:hover': { backgroundColor: 'action.hover' }
                       }}
                     >
@@ -364,7 +366,7 @@ export default function UserManagementPage() {
                             sx={{ 
                               width: 36, 
                               height: 36,
-                              bgcolor: user.isActive ? 'primary.main' : 'grey.400'
+                              bgcolor: user.isActive ? 'primary.main' : 'grey.700'
                             }}
                           >
                             {getInitials(user.firstName, user.lastName)}

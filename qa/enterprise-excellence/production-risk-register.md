@@ -1,6 +1,6 @@
 # Production risk register
 
-Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) Phase 5 and Phase 6 (both 2026-11-15). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
+Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) Phase 5 and Phase 6 (both 2026-11-15), Phase 8 and Phase 9 (both 2026-11-16). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
 
 Likelihood and impact are a judgement from the evidence named in the row. "Blocks go-live" means the product should not carry real work for more than one branch until the risk is closed or the owner accepts it in writing.
 
@@ -104,6 +104,13 @@ What Phase 5 adds to, or changes in, the list:
 | R-57 | The code of owner decision 10 is deployed before database file 15 | Ending a shipment as lost writes a shipment state the database does not yet know | Possible | Low: only that one step fails, with an error; reading and every other step are unaffected (the code names the new state nowhere else) | Yes, until file 15 is applied | Apply file 15 first; `verify-6-to-15.sql` shows it | Owner |
 | R-58 | Shop, warehouse, quality and maintenance staff who used the Invoices screen find it closed | F-009, owner decision 10: invoices and payments are read by sales, managers, leadership and view-only roles | Likely for anyone who used it | Low: the screen says who may read invoices; shipments and orders still show the invoice number and status | No | Tell the branches. If another role should read invoices, the owner says so and one list changes (`INVOICE_READERS`) | Owner |
 | R-59 | A lost load is credited when it should have been reshipped or claimed from the carrier | N-027: the step always credits what is left on the invoice and cannot be undone | Possible | Medium: a credit owed to the customer that must be offset by a new order; no carrier claim is tracked | No | The dialog says what it does and that it cannot be undone; only managers may do it; a reshipment is a new order | Managers |
+| R-60 | Staff meet a different first screen after sign-in and take it for a fault | V-016: each role now starts at its workspace (sales at Orders, planners at the schedule, operators at the shop floor, stock at Inventory, receiving at Receiving, the dock at Shipping, quality at the quality station) | Likely on the first day | Low: the dashboard is one click away in the menu | No | Tell the branches before the Phase 9 code is deployed; any line of the table can be changed (`config/roleAccess.js`) | Owner |
+| R-61 | Someone relied on a sample screen that said "saved" | V-008: ten buttons announced a purchase order, a parts receipt, a schedule, an NCR, a booking or an email that was never made. They now say nothing was saved | Possible, if any branch used the sample modules for real | Medium for that person: records they believe exist do not, and never did | No | The standing notice on each sample screen already said so; the buttons now agree. Ask the branches whether anyone kept maintenance, NCR or freight records there | Owner |
+| R-62 | The accessibility figures are read as conformance to WCAG 2.2 AA | `phase-09-accessibility.md`: automated measures on 154 screens and keyboard scenarios; no screen reader, no user with a disability, charts and drag and drop not verified | Possible | Medium if a customer contract or a law requires a conformance statement | No | Do not state conformance. Commission a manual audit with assistive technology before any such statement | Owner |
+| R-63 | The order board, the production board and the schedule slow down as jobs grow | V-027: they ask the server for every job or work centre. Measured with 451 jobs: the board blocks for about 0.5 s after the Phase 9 change (1.2 s before) | Likely for roles that see every branch | Medium: slow, not wrong | No | Phase 11: bounded loads, measured at 85-branch scale | Engineering |
+| R-64 | An operator reads another branch's work centre names | V-028: two dispatch routes answer across branches when asked directly. No screen asks. Names and types only | Unlikely | Low | No | Phase 10: apply the branch scope to both routes and add them to the branch boundary suite | Engineering |
+| R-65 | The new search loads the server at scale | V-001, V-019: each pause in typing asks up to five lists with a text match (orders, customers, stock, heats, shipments), 5 rows each. Not measured against 85-branch data | Possible | Medium: slow search; a text match on a large table with no index for it | No | Phase 11: time the five searches at scale and add indexes or a minimum length if needed. The search waits 250 ms after typing stops and drops stale answers | Engineering |
+| R-66 | The shell behaves differently on a device that was not tested | Every browser check ran in one engine (Chromium) at emulated sizes. Safari on an iPad, a touch terminal on the floor and a real phone are NOT VERIFIED | Possible | Medium on the shop floor, where the terminals are | No | Try the shop floor, shipping and receiving screens on one real terminal and one tablet before the first branch uses them | Owner, with one branch |
 
 ## Earlier risks changed by Phase 4
 
@@ -154,6 +161,13 @@ What Phase 6 adds to, or changes in, the list:
 5. **Transfers already under way at go-live**: the old one-step transfer left nothing in transit, so no data needs converting. Staff need to be told that a transfer must now be received at the destination before the stock can be sold there.
 6. R-03 is reduced again: the second stock list is read-only.
 
+
+### Phase 9 update (2026-11-16)
+
+1. Closed in code and verified in a browser: a double click that cancelled a shipment just dispatched (V-022); an order page that showed a total worked out from an invented tax rate (V-020); forms on sample screens that announced a save that never happened (V-008); a search, a help button and a bell that did nothing or showed invented notices (V-001 to V-003); 613 controls and 280 fields a screen reader could not name (V-006); 87 rows that opened only with a mouse (V-012).
+2. New risks R-60 to R-66 are about a change of first screen that staff should be told of, the limits of what was measured, and three items handed to Phases 10 and 11.
+3. Phase 9 has no database change. Nothing was run against the live database or the host. The previous code runs unchanged if the Phase 9 code is reverted.
+4. The overall position is unchanged by Phase 9: the screens are safer and easier to use; what stands between the product and many branches is still the list above.
 
 ### Phase 8 update (2026-11-16)
 

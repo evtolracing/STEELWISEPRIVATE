@@ -121,6 +121,8 @@ for (const m of router.matchAll(/\{ path: '([^']+)', element: <Navigate /g)) row
 const wild = [...router.matchAll(/path: '([^']+\/\*)'/g)].map((m) => m[1]);
 const screens = rows.filter((r) => r.kind === 'screen');
 const verdict = (r) => {
+  // The catch-all address is the "Page not found" page of the shell (Phase 9): it reads nothing.
+  if (r.route === '*') { r.file = 'components/common/NotFoundPage.jsx'; return 'STATIC'; }
   if (!r.file) return 'UNKNOWN';
   if (r.labelled) return 'SAMPLE, LABELLED';
   if (r.mock && !r.callsServer) return 'SAMPLE, NOT LABELLED';

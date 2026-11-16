@@ -231,6 +231,13 @@ const measure = (viewportName) => {
         await page.waitForTimeout(300);
         r.landedOn = new URL(page.url()).pathname;
         Object.assign(r, await page.evaluate(measure, vp.name));
+        // A colour caught in the middle of a transition (a card fading in on a screen that refreshes itself)
+        // is not a colour a person reads. A hard-to-read pair is kept only if a second look, later, finds it too.
+        if ((r.contrast || []).length) {
+          await page.waitForTimeout(900); const again = new Map(((await page.evaluate(measure, vp.name)).contrast || []).map((c) => [c.pair, c]));
+          r.contrastAtFirstLook = r.contrast.reduce((n, c) => n + c.count, 0);
+          r.contrast = r.contrast.filter((c) => again.has(c.pair)).map((c) => ({ ...c, count: Math.min(c.count, again.get(c.pair).count) }));
+        }
       } catch (e) { r.failed = String(e.message).slice(0, 200); }
       const settled = calls.slice();
       const counts = {}; for (const c of settled) counts[c] = (counts[c] || 0) + 1;

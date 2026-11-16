@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 84cc890. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 4a88a8d. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,19 +11,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 103 | 15 |
-| P2 | 140 | 42 |
-| P3 | 86 | 31 |
-| Total | 350 | 91 |
+| P1 | 108 | 15 |
+| P2 | 154 | 43 |
+| P3 | 103 | 34 |
+| Total | 386 | 95 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 258 |
+| VERIFIED FIXED | 290 |
 | DEFERRED TO SPECIFIC PHASE | 59 |
-| REQUIRES BUSINESS DECISION | 20 |
+| REQUIRES BUSINESS DECISION | 21 |
 | IN PROGRESS | 6 |
+| ACCEPTED RISK WITH APPROVAL | 5 |
 | BLOCKED | 3 |
-| ACCEPTED RISK WITH APPROVAL | 2 |
 | NOT APPLICABLE | 1 |
 | FIXED — NOT VERIFIED | 1 |
 
@@ -51,7 +51,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
 | B-012 | P2 | DEFERRED TO SPECIFIC PHASE | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
 | B-014 | P2 | DEFERRED TO SPECIFIC PHASE | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
-| B-015 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend | Most icon buttons have no name (some have tooltips, which were not counted). | Phase 9: user experience |
 | B-017 | P2 | DEFERRED TO SPECIFIC PHASE | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
 | B-021 | P2 | DEFERRED TO SPECIFIC PHASE | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
 | C-009 | P2 | DEFERRED TO SPECIFIC PHASE | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
@@ -89,6 +88,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
 | S-024 | P2 | IN PROGRESS | Help manual | Pricing, Sales Dashboard, Sales Rep Mobile and customer pages described tabs, contracts, signatures, visit logs and offline use that do not exist | Sales and customer operations |
 | S-027 | P2 | REQUIRES BUSINESS DECISION | Quotes | Quote lines are priced by hand; the screen offers no customer price because RFQ lines are free text, not products | Sales and customer operations |
+| V-027 | P2 | DEFERRED TO SPECIFIC PHASE | Order board, production board, schedule | Grows with the data. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-028 | P2 | DEFERRED TO SPECIFIC PHASE | Dispatch API | Readable across branches by asking. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
 | B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
@@ -102,26 +103,29 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | G-018 | P3 | DEFERRED TO SPECIFIC PHASE | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 9: user experience, visual design and accessibility |
 | J-012 | P3 | REQUIRES BUSINESS DECISION | Retail POS | Free text, linked to no stock item (code read), so the sale has no stock record to reduce. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| J-013 | P3 | DEFERRED TO SPECIFIC PHASE | Order intake | Visible label only. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
 | K-009 | P3 | REQUIRES BUSINESS DECISION | Warehouse locations | Free text. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-013 | P3 | BLOCKED | Scanning | Lookup by typed or pasted number verified; hardware not tested. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| K-014 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items | Shown on the item page and the Transfers screen only. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | L-027 | P3 | DEFERRED TO SPECIFIC PHASE | Manufacturing | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-029 | P3 | DEFERRED TO SPECIFIC PHASE | Jobs | 0 by convention. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-030 | P3 | DEFERRED TO SPECIFIC PHASE | Equipment | None is made. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | N-028 | P3 | DEFERRED TO SPECIFIC PHASE | Customer communication | Not built. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
 | U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
-| U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
+| U-008 | P3 | ACCEPTED RISK WITH APPROVAL | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
 | U-019 | P3 | DEFERRED TO SPECIFIC PHASE | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
-| U-020 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | "Inventory" and "Units" were two different stock lists | Phase 9: user experience |
 | U-022 | P3 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be added before its stock, one at a time | Phase 9: user experience |
-| U-028 | P3 | DEFERRED TO SPECIFIC PHASE | Old operator screen | Recorded output into nothing | Phase 9: user experience |
 | U-029 | P3 | DEFERRED TO SPECIFIC PHASE | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
 | U-035 | P3 | DEFERRED TO SPECIFIC PHASE | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
 | U-037 | P3 | DEFERRED TO SPECIFIC PHASE | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
 | U-040 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
-| U-041 | P3 | DEFERRED TO SPECIFIC PHASE | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user experience |
+| U-041 | P3 | ACCEPTED RISK WITH APPROVAL | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-011 | P3 | DEFERRED TO SPECIFIC PHASE | Sample screens mostly | 42. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-018 | P3 | DEFERRED TO SPECIFIC PHASE | Other long forms | Order entry only. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-029 | P3 | DEFERRED TO SPECIFIC PHASE | Dialogs | Focus on the dialog. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-030 | P3 | REQUIRES BUSINESS DECISION | Orders | Dead buttons on real screens. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-031 | P3 | ACCEPTED RISK WITH APPROVAL | Application shell | A fixed list. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-035 | P3 | DEFERRED TO SPECIFIC PHASE | Design system | A third of the files carry their own. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-036 | P3 | DEFERRED TO SPECIFIC PHASE | Tables and dialogs | Tables are built by hand per screen, so sorting, paging, an empty state and keyboard row opening exist on some and not on others. Phase 9 made the behaviours that matter for access the same everywhere (names, headings, k | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 
 ## Every finding in full
 
@@ -415,7 +419,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Phase 2 moved three rules into testable units: the branch boundary (lib/branchScope.js), who may change a login (lib/userAdminRules.js) and the department table (lib/roleAccess.js). phase-02-business-rule-ownership.md lists every critical rule, its owner file and whether a unit test reaches it.
 - **First recorded in:** Phase 1 discovery
 
-### B-015 · P2 · DEFERRED TO SPECIFIC PHASE
+### B-015 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Frontend
@@ -429,13 +433,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Keyboard and screen-reader users; inconsistent confirmations.
 - **Affected dependencies:** None.
 - **Recommended correction:** Name every icon button; replace the 25 native boxes; add an automated accessibility check to the browser suites.
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: dependencies:** None.
-- **Deferred: acceptance criteria:** Every control has a name a screen reader can say; confirmations use the application's own dialogs.
-- **Deferred: verification:** An accessibility scan in the browser suites.
 - **Required tests:** An accessibility scan in the browser suites.
-- **Assigned phase:** Phase 9: user experience
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 9: measured at 613 controls with no name and 280 fields with no label on 154 screens; both are 0 (V-006). The 26 browser confirm, alert and prompt boxes are replaced by the application's own (V-008, V-009). An automated accessibility measure runs in the gates.
+- **Verification evidence:** qa/sim/ui-audit.cjs final run: 0 and 0; qa/tools/ui-audit-gate.cjs holds them; qa/tools/frontend-checks.mjs fails on a new unnamed icon button or a browser box (each proved by adding one); qa/sim/phase9-ui.cjs: "deactivating a user asks in the application's own box, and Cancel changes nothing".
 - **First recorded in:** Phase 1 discovery
 
 ### B-016 · P1 · DEFERRED TO SPECIFIC PHASE
@@ -621,15 +622,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Possible stale data on screens; noise that hides new problems.
 - **Affected dependencies:** None.
 - **Recommended correction:** Read the 39 effect warnings and fix the real ones; remove unused imports; then make the root lint a pull-request check with a warning ceiling.
-- **Deferred: reason:** The other 38 change no saved data. Rewriting each effect is screen work with a visual check, which belongs to the screen phase.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** Rewrite each effect so it lists what it reads, screen by screen.
-- **Deferred: dependencies:** X-008 for the session counter files.
+- **Deferred: reason:** Rewriting 38 effects changes when screens reload their data, with no defect known among them; it is consolidation work, not a user-facing fault.
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Rewrite each effect so it lists what it reads.
+- **Deferred: dependencies:** None.
 - **Deferred: acceptance criteria:** qa/tools/frontend-checks.mjs reports 0.
-- **Deferred: verification:** The ratchet in the gates: the ceiling is 38 and can only go down.
+- **Deferred: verification:** The ratchet.
 - **Required tests:** Root lint with a ceiling that can only go down.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Phase 2 read all 39. One was a defect and is fixed: on the order entry screen the override confirmation could submit through an older copy of the submit handler (C-008). 28 are the same harmless shape (load once when the screen opens). 10 are in the session counter flow, the map and the voice assistant.
+- **Status note:** Phase 2 read all 39. One was a defect and is fixed: on the order entry screen the override confirmation could submit through an older copy of the submit handler (C-008). 28 are the same harmless shape (load once when the screen opens). 10 are in the session counter flow, the map and the voice assistant. Phase 9: 38 remain, held by the ceiling in qa/tools/frontend-checks.mjs. None was added by the Phase 9 changes. They were read one by one in Phase 2 and the one defect among them was fixed then.
 - **First recorded in:** Phase 1 discovery
 
 ### B-025 · P2 · VERIFIED FIXED
@@ -1755,15 +1756,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Screens need per-route handling; totals unavailable on bare lists
 - **Affected dependencies:** Screen changes with each route
 - **Recommended correction:** Assigned to Workstreams 2 to 5, per module
-- **Deferred: reason:** Changing a list reply from a bare list to { data, meta } breaks every screen that reads it. Phase 2 may not introduce an incompatible contract.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** Move the screens to one reader that accepts both, then change the routes.
-- **Deferred: dependencies:** E-008 (paging).
+- **Deferred: reason:** Changing a list's shape changes every screen that reads it and the contract tests; it is consolidation work.
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Move every screen to one reader, then change the routes.
+- **Deferred: dependencies:** The Phase 4 contract tests.
 - **Deferred: acceptance criteria:** One list shape on every route.
-- **Deferred: verification:** qa/tools/api-contract.mjs extended to check the shape.
+- **Deferred: verification:** Contract tests.
 - **Required tests:** Every list route in the module answers `{ data, meta }` and its screens are updated; contract scan shows no mismatch
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each. Phase 4: the present reply shapes are now pinned by contract tests, so they cannot drift further unnoticed, and paging was added to the bare-array lists through headers without changing a body (H-010). Making every list one shape is still a change to every screen and stays where it was assigned.
+- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each. Phase 4: the present reply shapes are now pinned by contract tests, so they cannot drift further unnoticed, and paging was added to the bare-array lists through headers without changing a body (H-010). Making every list one shape is still a change to every screen and stays where it was assigned. Phase 9: the new search and the Phase 9 scenarios read both list shapes through one reader. The routes still answer in two shapes, pinned by the Phase 4 contract tests.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-023 · P1 · DEFERRED TO SPECIFIC PHASE
@@ -2377,16 +2378,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** No version or updated-at check on edits.
 - **Operational impact:** An edit can be lost without notice. No quantity or amount is at risk: totals are recomputed and checked by the database.
 - **Recommended correction:** Send the record's updatedAt with an edit and refuse the edit if it has changed (409).
-- **Deferred: reason:** Telling a person that someone else changed the order, and offering to reload, is screen behaviour, and the order entry screen is due for its redesign in Phase 9; doing it twice would waste the work.
-- **Deferred: target phase:** Phase 9: user experience, visual design and accessibility
-- **Deferred: required correction:** PATCH /api/orders/intake/:id accepts expectedUpdatedAt and answers 409 STALE_EDIT when the order changed; the order entry screen sends the version it loaded and, on 409, says who changed it and offers to reload.
-- **Deferred: dependencies:** The Phase 9 order entry design.
-- **Deferred: acceptance criteria:** Two people edit the same order: one is saved, the other is told and loses nothing silently.
-- **Deferred: verification:** An API scenario on the intake route and a browser check with two pages open on the same order.
+- **Deferred: reason:** The remaining edit routes need the same server check, which is reliability work.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** Require the version on every edit route and send it from every edit form.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** Two people editing the same record: the second is told and loses nothing silently.
+- **Deferred: verification:** A two-user scenario per record type.
 - **Required tests:** Two edits at once: one 200, one 409.
 - **Assigned phase:** Phase 9: user experience, visual design and accessibility
-- **Status note:** Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged. Phase 5: reviewed. No screen edits an order through PUT /api/orders/:id (the call in api/index.js has no user). Orders are edited on the order entry screen through PATCH /api/orders/intake/:id, which does not check the version. The API check from Phase 4 is tested again in Phase 5.
-- **Verification evidence:** qa/sim/phase4-integration.mjs: the two scenarios named above (orders only).
+- **Status note:** Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged. Phase 5: reviewed. No screen edits an order through PUT /api/orders/:id (the call in api/index.js has no user). Orders are edited on the order entry screen through PATCH /api/orders/intake/:id, which does not check the version. The API check from Phase 4 is tested again in Phase 5. Phase 9: the screens' order save helper now sends the version it read, and the server refuses a save made from an older one (409). No screen edits an order's header fields today, so no user can meet the fault through the product. The other edit routes (customers, stock items, work orders) are unchanged.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "the order save helper sends the version it read, and the server refuses a save made from an older one".
 - **First recorded in:** Phase 3 database audit
 
 ### H-001 · P1 · VERIFIED FIXED
@@ -3245,7 +3246,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Phase 5 removed the fixed Michigan default. Picking a remnant from stock is a stock-traceability change. Phase 6: folded into K-006. The counter remnant quick-add reads the Steel Outlet remnant list, which is not linked to stock. Connecting it waits for the remnant pricing and valuation rule (S-009, K-006).
 - **First recorded in:** Phase 5 sales operations audit
 
-### J-013 · P3 · DEFERRED TO SPECIFIC PHASE
+### J-013 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-14
 - **Module:** Order intake
@@ -3256,13 +3257,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Expected:** Each field has an accessible name.
 - **Actual:** Visible label only.
 - **Operational impact:** Screen reader users cannot tell the header fields apart.
-- **Deferred: reason:** Accessibility across the screens belongs to the user experience phase.
-- **Deferred: target phase:** Phase 9: user experience, visual design and accessibility
-- **Deferred: required correction:** Give each Select a labelId tied to its InputLabel.
-- **Deferred: dependencies:** None.
-- **Deferred: acceptance criteria:** Each field found by its label.
-- **Deferred: verification:** The browser check finds the Location field by getByLabel.
-- **Assigned phase:** Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 9: the four selects on order entry, and every other field in the product, have a name a screen reader can say (V-006).
+- **Verification evidence:** qa/sim/ui-audit.cjs final run: 0 fields with no label on /orders/intake and on every other screen; held at 0 by qa/tools/ui-audit-gate.cjs.
 - **First recorded in:** Phase 5 sales operations audit
 
 ### K-001 · P1 · VERIFIED FIXED
@@ -3490,7 +3487,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** HARDWARE NOT VERIFIED: blocked on access to the scanners, printers and readers the branches use. No claim of compatibility with any scanner, printer or reader is made.
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
-### K-014 · P3 · DEFERRED TO SPECIFIC PHASE
+### K-014 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-15
 - **Module:** Stock items
@@ -3501,13 +3498,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Expected:** The list says "in transit" on the row.
 - **Actual:** Shown on the item page and the Transfers screen only.
 - **Operational impact:** A person reading only the list sees an available item with nothing free.
-- **Deferred: reason:** A wording and layout change on a list; no record is wrong and every action on the item is refused with the reason.
-- **Deferred: target phase:** Phase 9: user experience, visual design and accessibility
-- **Deferred: required correction:** Show an "In transit" chip on the stock list row.
-- **Deferred: dependencies:** None.
-- **Deferred: acceptance criteria:** The row says in transit.
-- **Deferred: verification:** A browser check on the list.
-- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 9: a stock item on its way to another branch says "In Transit" on its row in the stock list. The list answer now carries the stock record's state.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "an item on its way to another branch says In Transit on its row in the stock list (K-014)"; qa/tools/phase9-mutations.cjs 25.
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
 ### K-015 · P2 · VERIFIED FIXED
@@ -5379,14 +5372,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Category:** User experience
 - **Source file or endpoint:** Several secondary screens
 - **Actual:** Call server routes that do not exist (D-020)
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
+- **Deferred: reason:** The 66 calls are in the code of sample modules that are to be rebuilt on real records (owner decision 4).
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Remove each call with its sample screen, or build its route with the module.
+- **Deferred: dependencies:** Owner decision 4.
+- **Deferred: acceptance criteria:** qa/api-contract.md reports 0 calls with no route.
+- **Deferred: verification:** qa/tools/api-contract.mjs in the gate run.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open; 18 are sales calls (S-026)
+- **Status note:** Open; 18 are sales calls (S-026) Phase 9: on opening, no screen of the 130 in the smoke run calls a route that does not exist (the only 404 answers are for the made-up record ids the run uses). The static scan (qa/api-contract.md) still finds 66 calls written in screen code with no server route, down from 155; they sit behind controls on sample screens, which now answer "not built" (V-007) and do not make the call.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-005 · P3 · VERIFIED FIXED
@@ -5425,21 +5418,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (S-005)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-008 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-008 · P3 · ACCEPTED RISK WITH APPROVAL
 
 - **Discovered:** 2026-11-13
 - **Module:** Sales Rep Mobile, delivery preview
 - **Category:** User experience
 - **Source file or endpoint:** Sales Rep Mobile, delivery preview
 - **Actual:** A date nobody computed
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
-- **Assigned phase:** Phase 9: user experience
-- **Status note:** Caution notice added; engine open (S-010)
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Caution notice added; engine open (S-010) Phase 9: this is the delivery promise logic of S-010. Owner decision 10 (2026-11-15) leaves promise dates as they are for demonstration. The caution notice stays on the screen.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-009 · P3 · VERIFIED FIXED
@@ -5568,31 +5555,26 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Category:** User experience
 - **Source file or endpoint:** Supplier quality, six screens
 - **Actual:** Invented data presented as real
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
+- **Deferred: reason:** Owner decision 4 (2026-11-14): the sample modules are to be built on real records later; they are not to be removed or dressed up.
+- **Deferred: target phase:** The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built
+- **Deferred: required correction:** Build supplier quality on real records.
+- **Deferred: dependencies:** Owner decision 4.
+- **Deferred: acceptance criteria:** The screens read and write real records and the sample notice is gone.
+- **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The six screens stay marked as samples. Every control on them now has a name, every button answers (with the not-built notice where nothing is behind it, V-007) and none announces a save that did not happen (V-008).
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-020 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-020 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Menu
 - **Category:** User experience
 - **Source file or endpoint:** Menu
 - **Actual:** "Inventory" and "Units" were two different stock lists
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
-- **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Phase 9: verified. The menu has one stock list, Inventory, and the address of the second list leads to it.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "the addresses of two retired screens lead to the real ones (U-020, U-028)".
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-021 · P3 · VERIFIED FIXED
@@ -5614,14 +5596,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Category:** User experience
 - **Source file or endpoint:** Receiving
 - **Actual:** A heat must be added before its stock, one at a time
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
+- **Deferred: reason:** A new function, not a defect in a screen; it needs the owner's word on how mill certificates arrive.
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Add a heat from the receiving form, or several from a file.
+- **Deferred: dependencies:** I-017.
+- **Deferred: acceptance criteria:** A receipt for a new heat is completed on one screen.
+- **Deferred: verification:** A receiving scenario.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open (I-017)
+- **Status note:** Open (I-017) Phase 9: examined. Receiving against a heat not on file is refused with what to do (Phase 6). Adding several heats in one step is a speed improvement for a first load and was not built.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-023 · P3 · VERIFIED FIXED
@@ -5684,21 +5666,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (M-007): list with server search, detail with Release, Start, Complete (weights) and Cancel, and history
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-028 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-028 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Old operator screen
 - **Category:** User experience
 - **Source file or endpoint:** Old operator screen
 - **Actual:** Recorded output into nothing
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
-- **Assigned phase:** Phase 9: user experience
-- **Status note:** Removed (M-010): opens the real shop floor
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Removed (M-010): opens the real shop floor Phase 9: verified. The old operator screen's address leads to the real shop floor.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "the addresses of two retired screens lead to the real ones (U-020, U-028)".
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-029 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -5708,14 +5685,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Category:** User experience
 - **Source file or endpoint:** Production quality, BOMs
 - **Actual:** Invented data presented as real
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
+- **Deferred: reason:** Owner decision 4 (2026-11-14).
+- **Deferred: target phase:** The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built
+- **Deferred: required correction:** Build production quality and bills of material on real records.
+- **Deferred: dependencies:** Owner decision 4.
+- **Deferred: acceptance criteria:** The screens read and write real records and the sample notice is gone.
+- **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The screens stay marked as samples. Two buttons that announced "NCR created successfully!" and "Inspection submitted successfully!" with nothing saved now say nothing was saved (V-008).
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-030 · P3 · VERIFIED FIXED
@@ -5785,14 +5762,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Category:** User experience
 - **Source file or endpoint:** Freight and logistics
 - **Actual:** Invented routes, rates and tracking presented as real
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
+- **Deferred: reason:** Owner decision 4, and N-026: tracking numbers are typed by dispatch until a carrier contract exists.
+- **Deferred: target phase:** The phase the owner issues for carriers and freight; if none does, Phase 12 records them as not built
+- **Deferred: required correction:** Build freight on a real carrier connection.
+- **Deferred: dependencies:** A carrier contract (N-026).
+- **Deferred: acceptance criteria:** The screens read real rates and tracking and the sample notice is gone.
+- **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The freight screens stay marked as samples. "Book shipment" announced a booking with a carrier that was never made; it now says nothing was booked (V-008). No carrier is connected (N-026).
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-036 · P3 · VERIFIED FIXED
@@ -5814,14 +5791,14 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Category:** User experience
 - **Source file or endpoint:** Safety, maintenance, training, contractors, customer quality, executive, provenance
 - **Actual:** Invented data presented as real
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
+- **Deferred: reason:** Owner decision 4 (2026-11-14).
+- **Deferred: target phase:** The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built
+- **Deferred: required correction:** Build each module on real records.
+- **Deferred: dependencies:** Owner decision 4.
+- **Deferred: acceptance criteria:** The screens read and write real records and the sample notice is gone.
+- **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The screens stay marked as samples. Three maintenance buttons that announced a purchase order, a parts receipt and a schedule with nothing saved now say nothing was saved (V-008).
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-038 · P3 · VERIFIED FIXED
@@ -5855,32 +5832,680 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Category:** User experience
 - **Source file or endpoint:** Menu
 - **Actual:** Lists 58 sample screens beside the real ones
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
+- **Deferred: reason:** Owner decision 4 (2026-11-14).
+- **Deferred: target phase:** The phase the owner issues for building the sample modules; if none does, Phase 12 records them as not built
+- **Deferred: required correction:** Build the modules, or mark sample entries in the menu if the owner asks.
+- **Deferred: dependencies:** Owner decision 4.
+- **Deferred: acceptance criteria:** No sample screen sits unmarked beside a real one.
+- **Deferred: verification:** qa/tools/screen-audit.mjs.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open (X-009)
+- **Status note:** Open (X-009) Phase 9: the 58 sample screens are still in the menu beside the real ones, each with its standing notice. They were not hidden (the Phase 9 instruction forbids hiding in place of fixing) and not removed (owner decision 4). The search and each role's menu offer only the pages the role may open. The menu itself does not mark which entries are samples; that is a small change the owner may want and is not made here because it changes the look of the menu for every user.
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-041 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-041 · P3 · ACCEPTED RISK WITH APPROVAL
 
 - **Discovered:** 2026-11-13
 - **Module:** Checkout, order entry
 - **Category:** User experience
 - **Source file or endpoint:** Checkout, order entry
 - **Actual:** Promise dates and branch suggestions from invented rules
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
-- **Assigned phase:** Phase 9: user experience
-- **Status note:** Open (X-007)
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Open (X-007) Phase 9: this is the delivery promise and branch suggestion logic of S-010. Owner decision 10 (2026-11-15) leaves it as it is for demonstration. The cutoff shown in the top bar is the same logic (V-031).
 - **First recorded in:** qa/ux-improvement-register.md
+
+### V-001 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Application shell
+- **Workflow:** Finding a record
+- **Category:** Control with nothing behind it
+- **Source file or endpoint:** src/frontend/src/components/layout/TopBar (search box)
+- **Evidence:** Baseline audit and code read: the search box in the top bar took typing and did nothing. No handler, no call.
+- **Expected:** The search finds pages and records the person may open.
+- **Actual:** A box that looked like a search and searched nothing.
+- **Operational impact:** Every user met a dead control on every screen. Finding an order meant opening the Orders page and paging through the list.
+- **Recommended correction:** A real search (components/layout/GlobalSearch.jsx): pages of the menu by name, and orders, customers, stock, heats and shipments by number or name, from lists the server already limits by branch and role. Ctrl+K or Command+K from anywhere; arrow keys and Enter.
+- **Required tests:** Find each kind of record; a role is offered only its own pages; another branch's record is not found.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs, navigation group: the search scenarios (pages, each record kind, keyboard, roles, branches). qa/tools/phase9-mutations.cjs 13: with the role filter removed a scenario fails.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-002 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Application shell
+- **Workflow:** Help and settings
+- **Category:** Control with nothing behind it
+- **Source file or endpoint:** Top bar Help icon; sidebar settings icon
+- **Evidence:** Baseline audit: both icons had no action.
+- **Expected:** An icon does something or is not there.
+- **Actual:** Two dead icons on every screen.
+- **Operational impact:** Small, but on every screen.
+- **Recommended correction:** Help opens the instruction manual. The settings icon was a second, dead way to nowhere and is gone; settings pages are in the menu for the roles that have them.
+- **Required tests:** Help opens the manual.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs, navigation group: "the help button opens the instruction manual".
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-003 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Application shell
+- **Workflow:** Notifications
+- **Category:** Invented data
+- **Source file or endpoint:** Top bar bell
+- **Evidence:** Code read: the bell showed a fixed count and three invented notifications, the same for every user.
+- **Expected:** No invented operational data (Phase 9 prohibition).
+- **Actual:** Invented notifications presented as real.
+- **Operational impact:** Users could act on a notice that was never raised.
+- **Recommended correction:** The bell is removed. No notification service exists in the product; email and text notices are owner decision 5 (later).
+- **Required tests:** No screen shows a notification that the server did not send.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** An in-product notification list is not built. It belongs with owner decision 5 and is not invented here.
+- **Verification evidence:** qa/sim/phase9-ui.cjs, navigation group: "the top bar shows no notification the server did not send".
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-004 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** All screens
+- **Workflow:** Knowing where you are
+- **Category:** Accessibility and orientation
+- **Source file or endpoint:** index.html title; 129 page components
+- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json): 130 screens shared one browser title ("SteelWise ERP"); 129 of 154 had no main heading.
+- **Expected:** Each page has its own title and one main heading (WCAG 2.4.2, 1.3.1, 2.4.6).
+- **Actual:** A screen reader user, and anyone with several tabs open, could not tell one page from another.
+- **Operational impact:** Orientation, tab switching, browser history.
+- **Recommended correction:** Each page has one main heading (codemod qa/tools/codemods/phase9-a11y.cjs plus hand edits), the browser title follows it, a record page is titled with its number, and focus moves to the content on a real change of page. A skip link leads past the menu.
+- **Required tests:** Titles differ; one main heading; focus and skip link.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: see phase-09-accessibility.md for the count of screens left without a main heading. qa/sim/phase9-ui.cjs: "every page has its own browser title, taken from its heading", "each main screen has one heading, one main area, a named menu and a search landmark", "the skip link is the first stop and jumps past the menu", "moving between pages by the menu announces the page and moves focus to it". qa/tools/phase9-mutations.cjs 14. qa/tools/frontend-checks.mjs fails if a page component loses its heading.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-005 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Sign-in
+- **Workflow:** A session that ends while working
+- **Category:** Lost place
+- **Source file or endpoint:** src/frontend/src/api/client.js; pages/Auth/LoginPage.jsx
+- **Evidence:** Reproduced in a browser before the fix: with an expired token on /orders/invoices the person was sent to sign in and then landed on the home page.
+- **Expected:** After signing in again the person is back where they were, and is told why they were asked.
+- **Actual:** Dropped at home with no explanation.
+- **Operational impact:** Lost place many times a day on shared terminals.
+- **Recommended correction:** The sign-in page says the session ended and returns to the page asked for. The way back is checked: only a path inside the application is accepted.
+- **Required tests:** Expired session returns to the page; an outside address is ignored.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "the session ends in the middle of work: the person is told, signs in, and is back on the same page" and "the way back after sign-in cannot be pointed at another site". qa/tools/phase9-mutations.cjs 17 and 18.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-006 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** All screens
+- **Workflow:** Using the product with a keyboard or a screen reader
+- **Category:** Accessibility
+- **Source file or endpoint:** 613 controls and 280 fields across 154 screens
+- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json): 613 controls with no name a screen reader can say and 280 fields with no label. This is the measured size of B-015 and J-013.
+- **Expected:** Every control and field has an accessible name (WCAG 4.1.2, 1.3.1, 3.3.2).
+- **Actual:** Icon buttons announced as "button"; fields announced as "edit text".
+- **Operational impact:** The product could not be used without sight on most screens.
+- **Recommended correction:** Every icon button is named and every field labelled (codemod plus hand edits); a column with no name is not offered for sorting.
+- **Required tests:** Audit reads 0 and 0.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 0 controls with no name, 0 fields with no label. qa/tools/ui-audit-gate.cjs holds both at 0 in the gate run; qa/tools/frontend-checks.mjs fails on a new unnamed icon button (proved by adding one).
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-007 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Sample screens and several real ones
+- **Workflow:** Pressing a button
+- **Category:** Control with nothing behind it
+- **Source file or endpoint:** 206 buttons
+- **Evidence:** Static scan (qa/tools/codemods/phase9-not-built.cjs): 206 buttons had no action at all.
+- **Expected:** A button acts, or says plainly that it is not built. It is not hidden.
+- **Actual:** Pressing did nothing and said nothing.
+- **Operational impact:** Users pressed, waited and pressed again.
+- **Recommended correction:** 34 were connected to the function that already existed. 172, all on screens marked as samples, now answer with a notice: the name of the button, "is not built yet", "Nothing was saved or sent".
+- **Required tests:** Press sample buttons: each answers; nothing is sent.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** The functions behind the 172 are not built. They belong to the sample modules (owner decision 4, U-040).
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "a button on a sample screen says it is not built and sends nothing". qa/tools/phase9-mutations.cjs 19. qa/tools/frontend-checks.mjs fails on a new button with no action.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-008 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Sample screens; counter sales
+- **Workflow:** Saving a form
+- **Category:** False confirmation
+- **Source file or endpoint:** Maintenance (PM schedules, parts), production quality (inspection, NCR), freight comparison, counter sale confirmation, will-call completion, order hub
+- **Evidence:** Code read in Phase 9: ten buttons opened a browser box announcing "Purchase order created!", "Parts received and inventory updated!", "PM Schedule created!", "NCR created successfully!", "Disposition saved successfully!", "Inspection submitted successfully!", "Shipment booked with ...", "Email confirmation sent to ..." and the like. None sent anything to the server.
+- **Expected:** The product never says a record was saved, sent or booked when it was not.
+- **Actual:** A plain statement of success for work that did not happen. Two were on real counter-sale screens (the email confirmations).
+- **Operational impact:** A person could walk away believing an NCR, a purchase order or a customer email existed.
+- **Recommended correction:** Each now shows the not-built notice: "is not built yet. Nothing was saved or sent."
+- **Required tests:** Press one: no browser box, the notice shows, nothing is sent.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "a sample form that used to announce a save now says nothing was saved". qa/tools/phase9-mutations.cjs 24.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-009 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shop floor, staff, users, order audit log, schedule optimisation
+- **Workflow:** Confirming an action
+- **Category:** Dialogs
+- **Source file or endpoint:** 16 uses of the browser's confirm(), alert() and prompt()
+- **Evidence:** Static scan: 26 browser boxes in all (10 are V-008). The other 16 asked real questions or reported real errors through the browser's own box, which freezes the page, reads "localhost says" and cannot be styled.
+- **Expected:** The application's own dialogs (the second half of B-015).
+- **Actual:** Browser boxes.
+- **Operational impact:** Inconsistent, poor for screen readers, and blocked by some browser settings so the action silently never happens.
+- **Recommended correction:** One service (utils/ask.js, components/common/AskHost.jsx): a question with named buttons, an optional required reason, and a message bar. All 26 uses are gone.
+- **Required tests:** Deactivate a user: asked in the application's box; Cancel sends nothing; confirm sends once.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "deactivating a user asks in the application's own box, and Cancel changes nothing". qa/tools/phase9-mutations.cjs 23. qa/tools/frontend-checks.mjs fails on any browser box (proved by adding one).
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-010 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Design system
+- **Workflow:** Reading the screen
+- **Category:** Colour contrast
+- **Source file or endpoint:** src/frontend/src/theme/index.js; chips, captions, status colours
+- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json): 1,751 texts below 4.5 to 1 against their background (WCAG 1.4.3).
+- **Expected:** Text can be read.
+- **Actual:** Grey captions, status chips and tinted labels below the ratio on most screens.
+- **Operational impact:** Hard to read on a shop terminal or in daylight.
+- **Recommended correction:** Status and text colours darkened once, in the theme, with named tokens (tint, ink); no screen was restyled by hand except where it set its own colour.
+- **Required tests:** Audit count falls and cannot rise.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** The 42 that remain are V-011.
+- **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 42 texts on 10 screens. qa/tools/ui-audit-gate.cjs holds the ceiling.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-011 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Sample screens mostly
+- **Workflow:** Reading the screen
+- **Category:** Colour contrast
+- **Source file or endpoint:** 42 texts on 10 screens; 12 colour pairs
+- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 42 texts on 10 screens remain below 4.5 to 1. The largest groups: an information chip in blue on pale blue (14 texts, 4.04 and 3.78 to 1), chart limit labels drawn in the colour of their own line (12), a "Last One!" chip (8).
+- **Expected:** 0.
+- **Actual:** 42.
+- **Operational impact:** Small labels on a few screens.
+- **Recommended correction:** Not made in Phase 9: each sets its colour in its own file, most on sample screens that are to be rebuilt on real records.
+- **Deferred: reason:** Each is a one-off colour in a screen file, most of them sample screens due to be rebuilt (owner decision 4).
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Use the theme tokens in those ten screens.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** The audit reads 0 hard-to-read texts.
+- **Deferred: verification:** qa/tools/ui-audit-gate.cjs, ceiling lowered to 0.
+- **Required tests:** Audit reads 0.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-012 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Lists and cards on 60 screens
+- **Workflow:** Opening a record without a mouse
+- **Category:** Accessibility
+- **Source file or endpoint:** 87 rows and cards with a click handler only
+- **Evidence:** Static scan (qa/tools/codemods/phase9-clickable.cjs): 87 table rows and cards opened on a mouse click and could not be reached or opened from the keyboard (WCAG 2.1.1).
+- **Expected:** Anything that opens with a click opens with the keyboard.
+- **Actual:** Mouse only.
+- **Operational impact:** Keyboard and switch users could see a list and not open anything in it.
+- **Recommended correction:** Each takes focus and opens on Enter or Space (utils/activateOnKey.js).
+- **Required tests:** Open a stock item from its row with the keyboard.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "a stock item opens from its row with the keyboard and shows what is on file", and the same for a work order and a shipment. qa/tools/phase9-mutations.cjs 11. qa/tools/frontend-checks.mjs fails on a new click-only row (proved).
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-013 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Design system
+- **Workflow:** Seeing where the keyboard is
+- **Category:** Accessibility
+- **Source file or endpoint:** theme/index.js
+- **Evidence:** Found by a Phase 9 scenario that tabs through the shell: several controls took focus with no visible ring (WCAG 2.4.7); the theme's ring was overridden by component styles.
+- **Expected:** A visible ring on every control that has keyboard focus.
+- **Actual:** No ring on menu items, chips and contained buttons.
+- **Operational impact:** A keyboard user loses their place.
+- **Recommended correction:** One rule in the theme that component styles cannot override; a white ring where the control is itself the brand colour.
+- **Required tests:** Tab through the shell: every stop has a ring.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "the keyboard's place is always visible: every stop of the first twenty has a focus ring". qa/tools/phase9-mutations.cjs 10.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-014 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Routing
+- **Workflow:** A wrong or old address
+- **Category:** Error handling
+- **Source file or endpoint:** router catch-all
+- **Evidence:** Reproduced: an address that does not exist showed the dashboard under the wrong address.
+- **Expected:** A page that says the address is wrong and offers the way back.
+- **Actual:** The dashboard, silently.
+- **Operational impact:** An old bookmark looks as if it worked.
+- **Recommended correction:** A "Page not found" page (components/common/NotFoundPage.jsx).
+- **Required tests:** Open an unknown address.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "an address that is not a page says so and offers a way on". qa/tools/phase9-mutations.cjs 6.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-015 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Application shell on a phone
+- **Workflow:** Opening the menu
+- **Category:** Accessibility
+- **Source file or endpoint:** components/layout/Sidebar.jsx
+- **Evidence:** Found by a Phase 9 scenario: on a phone the menu was outside any navigation landmark and Tab left the open menu for the page behind it.
+- **Expected:** The menu is a navigation landmark and keeps focus while open.
+- **Actual:** Neither.
+- **Operational impact:** Screen reader and keyboard use on phones.
+- **Recommended correction:** Both menus are a navigation landmark named "Main menu"; the phone menu keeps focus and closes on Escape.
+- **Required tests:** Phone width: open, tab, Escape.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "on a phone the menu is a drawer: it opens, traps nothing behind it, and closes on a choice". qa/tools/phase9-mutations.cjs 9.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-016 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Role workspaces
+- **Workflow:** Starting work after sign-in
+- **Category:** Productivity
+- **Source file or endpoint:** config/roleAccess.js; LoginPage; AppLayout
+- **Evidence:** Every role landed on the same general dashboard, which several roles could not use for their work.
+- **Expected:** A role starts where its work is.
+- **Actual:** One more navigation at every sign-in.
+- **Operational impact:** One click and one page load per sign-in for most staff.
+- **Recommended correction:** Each role starts at its workspace: sales at Orders, planners at the schedule, operators at the shop floor, stock and buying at Inventory, receiving at Receiving, the dock at Shipping, quality at QC; managers and leadership at the dashboard. A page asked for by address still wins.
+- **Required tests:** Seventeen roles sign in: each lands on its workspace and sees only its menu.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** The mapping of role to start page is the engineer's choice from the role's permissions; the owner may change any of them in config/roleAccess.js.
+- **Verification evidence:** qa/sim/phase9-ui.cjs, navigation group: one scenario per role, "signs in at the form, starts at its workspace, and the menu and the server refuse what the role may not open". qa/tools/phase9-mutations.cjs 5. Measured in qa/results/productivity.json.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-017 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Order entry
+- **Workflow:** Leaving a half-entered order
+- **Category:** Unsaved work
+- **Source file or endpoint:** pages/Orders/CSRIntakePage.jsx
+- **Evidence:** Reproduced: a half-entered order was lost without a word on a menu click, a browser Back or a reload.
+- **Expected:** A warning before typed work is thrown away.
+- **Actual:** Silent loss.
+- **Operational impact:** Re-keying an order.
+- **Recommended correction:** A guard (components/common/UnsavedWorkGuard.jsx) asks before leaving inside the application and before a reload or tab close.
+- **Required tests:** Type, leave: asked. Stay keeps the work. Leave goes.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Applied to order entry, the longest form. Other long forms are V-018.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: the three "order entry:" scenarios (leaving asks and Stay keeps every entry; Leave leaves and an untouched form never asks; closing or reloading the tab warns). qa/tools/phase9-mutations.cjs 7 and 8.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-018 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Other long forms
+- **Workflow:** Leaving a half-entered form
+- **Category:** Unsaved work
+- **Source file or endpoint:** Quote builder, receiving, purchase order entry, customer form, user form
+- **Evidence:** Code read: only order entry uses the guard. Dialog forms close on Cancel without asking; that is checked ("Cancel changes nothing") and is the intended behaviour, but a typed dialog closed by Escape loses its text.
+- **Expected:** The same warning wherever more than a few fields can be lost.
+- **Actual:** Order entry only.
+- **Operational impact:** Occasional re-keying.
+- **Recommended correction:** Not made.
+- **Deferred: reason:** Phase 9 guarded the form where loss costs most and proved the guard; the others are the same component applied form by form.
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Use UnsavedWorkGuard in the remaining full-page forms; ask before Escape closes a typed dialog.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** Each named form asks before typed work is lost.
+- **Deferred: verification:** Scenarios as for V-017.
+- **Required tests:** As V-017 for each form.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-019 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Orders
+- **Workflow:** Searching orders
+- **Category:** Search that does not narrow
+- **Source file or endpoint:** src/backend/src/routes/orders.js (list)
+- **Evidence:** Found by a Phase 9 scenario: the order list ignored the search text and answered the first page whatever was typed.
+- **Expected:** The list narrows to the text.
+- **Actual:** Unfiltered.
+- **Operational impact:** An order outside the first page could not be found by number.
+- **Recommended correction:** The list accepts a search over order number, purchase order reference and buyer name. It only narrows: branch and role limits are applied first.
+- **Required tests:** Search a number; search nonsense.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "search: an order is found by its number and opens the order" and "search: nothing found says what to try, and Escape closes and clears" (an unknown number must find no order). qa/tools/phase9-mutations.cjs 4.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-020 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Orders
+- **Workflow:** Reading an order's money
+- **Category:** Wrong figures on screen
+- **Source file or endpoint:** pages/Orders/OrderDetailPage.jsx; components/orders/PricingSummaryPanel.jsx
+- **Evidence:** Found by a Phase 9 scenario comparing the screen with the record: the order page computed tax at a fixed 6% and showed no freight, so its total differed from the order on file and from the invoice. It also did not name the customer.
+- **Expected:** The screen shows the subtotal, tax, freight and total on file.
+- **Actual:** A total recomputed on the screen from an invented rate.
+- **Operational impact:** Staff quoting a wrong total to a customer. No stored figure was wrong.
+- **Recommended correction:** The panel shows the stored figures. The customer is named at the top of the order.
+- **Required tests:** Compare each figure on screen with the record.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "an order page shows the number, customer, lines and money exactly as stored". qa/tools/phase9-mutations.cjs 2 and 3.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-021 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shop floor
+- **Workflow:** Choosing a work centre
+- **Category:** Wrong branch by default
+- **Source file or endpoint:** apps/shopfloor/WorkCenterSelectPage.jsx; routes/auth.js
+- **Evidence:** Found by a Phase 9 scenario: the shop floor opened on the first branch in the list for everyone.
+- **Expected:** It opens on the person's own branch.
+- **Actual:** Another branch's work centres, until changed by hand.
+- **Operational impact:** An operator could open another branch's queue.
+- **Recommended correction:** The screen starts at the person's home branch; the sign-in answer carries it.
+- **Required tests:** An operator of branch 1 opens the shop floor.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** The server still answers another branch's work centres if asked: V-028, Phase 10.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "the shop floor lists the work centres of the operator's branch and opens one". qa/tools/phase9-mutations.cjs 15.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-022 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping
+- **Workflow:** Dispatching a shipment
+- **Category:** Double click
+- **Source file or endpoint:** pages/Shipping/ShipmentPage.jsx
+- **Evidence:** Found by a Phase 9 scenario: a double click on "Dispatch now" in the confirmation dialog dispatched the shipment and then, the dialog having moved on to its next state, sent the next action too, which cancelled the shipment.
+- **Expected:** One press, one action.
+- **Actual:** A shipment that had just left was marked cancelled.
+- **Operational impact:** A truck on the road with a cancelled shipment and its invoice in question.
+- **Recommended correction:** The confirm button is off while a save is in flight and each dialog acts only on the question it asked.
+- **Required tests:** Double click the confirmation.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "Dispatch asks first, and a double click on Dispatch now ships once and raises one invoice". qa/tools/phase9-mutations.cjs 1.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-023 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Customers
+- **Workflow:** A bad answer from the server
+- **Category:** Error handling
+- **Source file or endpoint:** pages/Customers/CustomersPage.jsx
+- **Evidence:** Found by a Phase 9 scenario feeding the screen an answer of the wrong shape: the page crashed to the error boundary.
+- **Expected:** An error message and a way to retry.
+- **Actual:** A crash.
+- **Operational impact:** A blank page on a proxy or network fault.
+- **Recommended correction:** An answer that cannot be read is an error with Retry.
+- **Required tests:** Feed an unreadable answer.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "/customers: when there is nothing to list, the screen says there is nothing, not that something failed". qa/tools/phase9-mutations.cjs 12 (the first scenario chosen for this proof could not catch it and was replaced; recorded in qa/results/phase9-mutations.json).
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-024 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Forms
+- **Workflow:** Knowing what is required
+- **Category:** Forms
+- **Source file or endpoint:** 22 fields on six screens
+- **Evidence:** Code read: required fields were marked by typing an asterisk into the label, which a screen reader reads as "star" and the browser does not treat as required.
+- **Expected:** Required is a property of the field.
+- **Actual:** A typed asterisk.
+- **Operational impact:** Accessibility; inconsistent marking.
+- **Recommended correction:** The 22 fields are marked required.
+- **Required tests:** A required field says so to assistive technology.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "a form tells a screen reader what is required and what is wrong". qa/tools/phase9-mutations.cjs 16.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-025 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Application shell
+- **Workflow:** Every page load
+- **Category:** Wasted call
+- **Source file or endpoint:** contexts/CustomerSessionContext.jsx
+- **Evidence:** Baseline audit: every staff screen asked the server for the web shop preferences of a fixed sample customer.
+- **Expected:** A screen asks only for what it shows.
+- **Actual:** One wasted call per page load, for every user.
+- **Operational impact:** Load; noise in logs.
+- **Recommended correction:** Asked for only by the web shop pages.
+- **Required tests:** Twenty-four staff screens: no such call.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "a long round of 24 screens in one tab" checks that no staff screen makes the call. qa/results/frontend-performance.json: 76 calls for 20 screens, none of them this one.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-026 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Order board
+- **Workflow:** Opening the board
+- **Category:** Performance
+- **Source file or endpoint:** components/jobs/ModernKanbanBoard.jsx
+- **Evidence:** qa/tools/frontend-performance.cjs on the production build: with 451 jobs the board blocked the page for 1,175 ms while it drew every card.
+- **Expected:** No freeze a person notices.
+- **Actual:** Over a second.
+- **Operational impact:** Worse with every job added.
+- **Recommended correction:** A column draws its 30 most urgent cards and offers the rest; counts and search still cover every job.
+- **Required tests:** A full column offers more; search finds a job far down.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** The board still receives every job from the server: V-027.
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "a full column on the order board draws its first cards and offers the rest". qa/tools/phase9-mutations.cjs 22. Measured after: 488 to 512 ms.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-027 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Order board, production board, schedule
+- **Workflow:** Loading
+- **Category:** Performance
+- **Source file or endpoint:** GET /api/jobs with no limit; work centre list for administrators
+- **Evidence:** qa/results/frontend-performance.json and the audit: the order board and the production board ask for every job (451 in the QA data) and the schedule for every work centre the role may see. The board still blocks for about 0.5 s.
+- **Expected:** A bounded first load.
+- **Actual:** Grows with the data.
+- **Operational impact:** Slow boards at 85 branches for roles that see all branches.
+- **Recommended correction:** Not made: it changes what the job list answers, which other screens and the contract tests depend on.
+- **Deferred: reason:** A server change to a shared list, best made with the performance measurements of Phase 11.
+- **Deferred: target phase:** Phase 11: performance and full simulation cycles
+- **Deferred: required correction:** Ask for open jobs by column with a limit; load work centres by branch.
+- **Deferred: dependencies:** The job list contract (Phase 4).
+- **Deferred: acceptance criteria:** The boards block for under 200 ms at 85-branch scale.
+- **Deferred: verification:** qa/tools/frontend-performance.cjs against scale data.
+- **Required tests:** Measured load at 85-branch scale.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-028 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Dispatch API
+- **Workflow:** Reading work centres
+- **Category:** Branch boundary
+- **Source file or endpoint:** GET /api/v1/dispatch/work-centers?locationId=; GET /api/v1/dispatch/locations
+- **Evidence:** Found while fixing V-021: asked with another branch's id, the route answers that branch's work centres to an operator, and the locations route lists all branches to any signed-in user. Read only: names and types of work centres.
+- **Expected:** A branch-limited role reads its own branch.
+- **Actual:** Readable across branches by asking.
+- **Operational impact:** Low: no stock, order, customer or money data. It is still a boundary that does not hold.
+- **Recommended correction:** Not made in Phase 9. The screen no longer asks for another branch by default.
+- **Deferred: reason:** A server access rule; Phase 10 is the security phase and owns the branch boundary suite.
+- **Deferred: target phase:** Phase 10: security and infrastructure
+- **Deferred: required correction:** Apply the branch scope to both routes.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** An operator cannot read another branch's work centres.
+- **Deferred: verification:** qa/sim/branch-boundary.mjs gains the two routes.
+- **Required tests:** An operator asks for another branch: refused or empty.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-029 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Dialogs
+- **Workflow:** Opening a dialog with the keyboard
+- **Category:** Accessibility
+- **Source file or endpoint:** About 60 dialogs
+- **Evidence:** Phase 9 dialog scenarios: every dialog has a name, keeps focus inside and closes on Escape. Focus lands on the dialog itself, not on its first field, so a keyboard user presses Tab once before typing.
+- **Expected:** Focus on the first field of a form dialog.
+- **Actual:** Focus on the dialog.
+- **Operational impact:** One extra key press per dialog. It meets WCAG as it is.
+- **Recommended correction:** Not made.
+- **Deferred: reason:** It conforms as it is; the change is an autoFocus per dialog, about sixty edits, with a risk of stealing focus from an error message.
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Give the first field of each form dialog initial focus.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** Each form dialog opens with the first field focused.
+- **Deferred: verification:** The dialog scenarios gain the check.
+- **Required tests:** Open a form dialog: the first field has focus.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-030 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Orders
+- **Workflow:** Duplicating an order
+- **Category:** Not built
+- **Source file or endpoint:** Order list and order page
+- **Evidence:** Code read: two "Duplicate" buttons had no action and there is no server route that copies an order.
+- **Expected:** A button acts or says it is not built.
+- **Actual:** Dead buttons on real screens.
+- **Operational impact:** Small.
+- **Recommended correction:** The two buttons were taken off the real screens, because a "not built" notice on a working order page reads as a fault. Recorded here so the function is not forgotten.
+- **Required tests:** None until built.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** The owner decides whether copying an order is wanted, and what a copy carries over (prices at today's price book or the old ones, the purchase order reference, the dates).
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-031 · P3 · ACCEPTED RISK WITH APPROVAL
+
+- **Discovered:** 2026-11-16
+- **Module:** Application shell
+- **Workflow:** The branch and cutoff shown in the top bar
+- **Category:** Invented rule
+- **Source file or endpoint:** Top bar chip ("Jackson, Metals, Cutoff 3:30"); contexts/CustomerSessionContext.jsx
+- **Evidence:** Code read: the chip takes its branch names and cutoff times from a fixed list in the screen code, not from the branches on file. It is part of the promise-date sample logic (S-010, U-041).
+- **Expected:** Real branches and a real rule, or nothing.
+- **Actual:** A fixed list.
+- **Operational impact:** A user may read the cutoff as policy.
+- **Recommended correction:** Not changed.
+- **Required tests:** None.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Owner decision 10 (2026-11-15): promise dates are left as they are for demonstration. The chip is the same logic and is left with it.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-032 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Counter sales
+- **Workflow:** Who is signed in
+- **Category:** Invented data
+- **Source file or endpoint:** pages/Orders/RetailPOSPage.jsx and the counter sale screens
+- **Evidence:** Code read: the counter sale screen showed the initials "JD" for every user.
+- **Expected:** The person signed in.
+- **Actual:** A fixed pair of letters.
+- **Operational impact:** Small; misleading on a shared till.
+- **Recommended correction:** The badge shows the initials and name of the person signed in.
+- **Required tests:** Open the screen as a named user.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/phase9-ui.cjs: "the counter sale screen shows the initials of the person signed in".
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-033 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Web shop
+- **Workflow:** Checkout with an empty cart; product search
+- **Category:** Accessibility
+- **Source file or endpoint:** pages/Ecommerce/CheckoutPage.jsx; SearchResultsPage.jsx
+- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), clean run: these two screens had no main heading.
+- **Expected:** One main heading.
+- **Actual:** None.
+- **Operational impact:** Orientation.
+- **Recommended correction:** Headings added.
+- **Required tests:** Audit.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run; see phase-09-accessibility.md.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-034 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Phones
+- **Workflow:** Touching a control
+- **Category:** Responsive
+- **Source file or endpoint:** Icon buttons, chips and links on phone width
+- **Evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json): 458 touch targets smaller than 24 by 24 CSS pixels at phone width (WCAG 2.5.8).
+- **Expected:** Targets large enough to hit.
+- **Actual:** 458 too small.
+- **Operational impact:** Mis-taps on phones and on gloved shop terminals.
+- **Recommended correction:** Minimum sizes set once in the theme for icon buttons, chips with actions and small buttons.
+- **Required tests:** Audit.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 3 remain (a search box and a slider on two sample screens and one on the counter sale screen, each a text box measured by its inner part). Held by the ceiling.
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-035 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Design system
+- **Workflow:** One look across the product
+- **Category:** Consistency
+- **Source file or endpoint:** 91 of 259 screen and component files
+- **Evidence:** Static count in Phase 9: 91 files set a colour of their own in code (106 different colours) where the theme has a token for the meaning.
+- **Expected:** Screens take colours, spacing and radii from the theme.
+- **Actual:** A third of the files carry their own.
+- **Operational impact:** The same status is a slightly different colour on different screens; the 42 hard-to-read texts left (V-011) are all of this kind.
+- **Recommended correction:** Not made in Phase 9, which fixed the theme itself and the colours that failed contrast. Phase 9 forbids an uncontrolled global redesign.
+- **Deferred: reason:** Replacing 106 colours across 91 files changes how every such screen looks and needs the owner to see it; most are sample screens to be rebuilt.
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Replace each with the theme token of the same meaning, a module at a time, with before and after pictures.
+- **Deferred: dependencies:** Owner decision 4 for the sample modules.
+- **Deferred: acceptance criteria:** No screen file sets a colour the theme defines.
+- **Deferred: verification:** A static count in qa/tools/frontend-checks.mjs, as a ceiling that only falls.
+- **Required tests:** Static count.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
+
+### V-036 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Tables and dialogs
+- **Workflow:** Reusing one component
+- **Category:** Component reuse
+- **Source file or endpoint:** 109 files draw a table; 3 use components/common/DataTable.jsx. 98 files draw a dialog
+- **Evidence:** Static count in Phase 9.
+- **Expected:** One table component with sorting, paging, empty and error states.
+- **Actual:** Tables are built by hand per screen, so sorting, paging, an empty state and keyboard row opening exist on some and not on others. Phase 9 made the behaviours that matter for access the same everywhere (names, headings, keyboard rows, focus) by codemod, not by merging the components.
+- **Operational impact:** Each new list repeats the work and can miss a state.
+- **Recommended correction:** Not made: merging 109 tables is a rebuild of most screens, which Phase 9 forbids.
+- **Deferred: reason:** A rebuild of most list screens; the access behaviours are already uniform and held by ratchets.
+- **Deferred: target phase:** Phase 12
+- **Deferred: required correction:** Move lists to the shared table as each module is next changed.
+- **Deferred: dependencies:** None.
+- **Deferred: acceptance criteria:** New and changed lists use the shared table.
+- **Deferred: verification:** A static count that only falls.
+- **Required tests:** None.
+- **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **First recorded in:** Phase 9 screen and interaction audit
 
 ### X-001 · P0 · DEFERRED TO SPECIFIC PHASE
 

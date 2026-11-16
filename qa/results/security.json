@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-16T03:05:16.851Z",
- "endpointsInInventory": 625,
- "endpointsSwept": 625,
+ "at": "2026-11-16T06:07:33.661Z",
+ "endpointsInInventory": 626,
+ "endpointsSwept": 626,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "585 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
-   "tested": 585,
+   "summary": "586 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
+   "tested": 586,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "562 staff routes tried as a customer, 0 not refused",
-   "tested": 562,
+   "summary": "563 staff routes tried as a customer, 0 not refused",
+   "tested": 563,
    "findings": []
   },
   "Customers and divisions cannot see each other": {

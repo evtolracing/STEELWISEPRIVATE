@@ -148,6 +148,7 @@ export const navSections = [
     items: [
       { path: '/planning', label: 'Planning', icon: PlanningIcon },
       { path: '/schedule', label: 'Schedule', icon: ScheduleIcon },
+      { path: '/work-orders', label: 'Work Orders', icon: WorkOrderIcon },
       { path: '/shopfloor', label: 'Shop Floor', icon: WorkCenterIcon },
       { path: '/time-tracking', label: 'Time Tracking', icon: TimeTrackingIcon },
     ],

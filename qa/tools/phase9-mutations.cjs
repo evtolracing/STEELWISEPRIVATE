@@ -29,6 +29,8 @@ const M = [
   ['the menu is left off the paper', F('theme/index.js'), [["'.MuiDrawer-root, .MuiAppBar-root, .skip-link, .no-print, .MuiSnackbar-root, nav': { display: 'none !important' },", '']], 'Print on an order'],
   ['less motion when asked', F('theme/index.js'), [["'*, *::before, *::after': { animationDuration: '0.01ms !important', animationIterationCount: '1 !important', transitionDuration: '0.01ms !important', scrollBehavior: 'auto !important' },", '']], 'a person who asks for less motion'],
   ['a full board column draws thirty cards at a time', F('components/jobs/ModernKanbanBoard.jsx'), [['sortedJobs.slice(0, shown).map', 'sortedJobs.map']], 'a full column on the order board'],
+  ['a question is asked in the application\u2019s own box', F('pages/Admin/UserManagementPage.jsx'), [["if (!(await ask(`Deactivate ${person.firstName} ${person.lastName}? They will no longer be able to sign in.`, { title: 'Deactivate user', confirmText: 'Deactivate', danger: true }))) return;", "if (!window.confirm('Deactivate?')) return;"]], 'deactivating a user asks'],
+  ['a sample form does not announce a save', F('pages/Maintenance/PMSchedules.jsx'), [["sayNotBuilt('Create PM schedule');", "alert('PM Schedule created!');"]], 'a sample form that used to announce'],
   ['web shop preferences are not asked on staff screens', F('contexts/CustomerSessionContext.jsx'), [['if (!wanted || !session.customerId) return', 'if (!session.customerId) return']], 'a long round of 24 screens', false, 'skip'],
 ];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

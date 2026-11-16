@@ -37,6 +37,7 @@ import {
 } from '../../api/staff'
 import { getWorkCenters } from '../../api/workCenters'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { ask } from '../../utils/ask'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -226,7 +227,7 @@ export default function StaffManagementPage() {
 
   const handleDelete = async (op) => {
     setMenuAnchor(null)
-    if (!window.confirm(`Deactivate operator ${op.firstName} ${op.lastName}?`)) return
+    if (!(await ask(`Deactivate operator ${op.firstName} ${op.lastName}?`, { title: 'Deactivate operator', confirmText: 'Deactivate', danger: true }))) return
     try {
       await deleteOperator(op.id)
       loadOperators()
@@ -382,7 +383,7 @@ export default function StaffManagementPage() {
           onAddShift={() => { setEditingShift(null); setShiftDialog(true) }}
           onEditShift={(s) => { setEditingShift(s); setShiftDialog(true) }}
           onCancelShift={async (s) => {
-            if (!window.confirm('Cancel this shift?')) return
+            if (!(await ask('Cancel this shift?', { title: 'Cancel shift', confirmText: 'Cancel shift', cancelText: 'Keep shift', danger: true }))) return
             await cancelShift(s.id)
             loadShifts()
           }}
@@ -966,7 +967,7 @@ function SkillDialog({ open, onClose, operator, wcTypes, onSave, onRemove }) {
   }
 
   const handleRemove = async (skillId) => {
-    if (!window.confirm('Remove this certification?')) return
+    if (!(await ask('Remove this certification?', { title: 'Remove certification', confirmText: 'Remove', danger: true }))) return
     await onRemove(operator.id, skillId)
   }
 

@@ -57,6 +57,7 @@ import {
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const ncrs = [
@@ -615,7 +616,7 @@ const NCRManagement = () => {
             onClick={() => {
               setShowDispositionDialog(false);
               setSelectedNCR(null);
-              alert('Disposition saved successfully!');
+              sayNotBuilt('Save disposition');
             }}
           >
             Set Disposition
@@ -682,7 +683,7 @@ const NCRManagement = () => {
             variant="contained" 
             onClick={() => {
               setShowCreateDialog(false);
-              alert('NCR created successfully!');
+              sayNotBuilt('Create NCR');
             }}
           >
             Create NCR

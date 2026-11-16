@@ -8,3 +8,8 @@ export function notBuilt(event) {
   const label = (el?.getAttribute?.('aria-label') || el?.textContent || '').replace(/\s+/g, ' ').trim()
   window.dispatchEvent(new CustomEvent(NOT_BUILT_EVENT, { detail: { label } }))
 }
+
+/** The same notice, for a step that is not built, raised from code and named in words. */
+export function sayNotBuilt(label) {
+  window.dispatchEvent(new CustomEvent(NOT_BUILT_EVENT, { detail: { label } }))
+}

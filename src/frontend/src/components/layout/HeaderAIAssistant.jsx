@@ -30,6 +30,7 @@ import {
 } from '@mui/icons-material';
 import { speak, stopSpeaking, isSpeaking, isVoiceEnabled, setVoiceEnabled, createSpeechQueue } from '../../services/voiceService';
 import VoiceSettingsDialog from './VoiceSettingsDialog';
+import { tell } from '../../utils/ask'
 
 const ASSISTANT_API = '/api/ai/assistant';
 const STREAM_API = '/api/ai/assistant/stream';
@@ -187,7 +188,7 @@ export default function HeaderAIAssistant() {
 
   const startListening = (autoSend = false) => {
     if (!recognitionRef.current) {
-      alert('Speech recognition is not supported. Use Chrome or Edge.');
+      tell('Speech recognition is not supported in this browser. Use Chrome or Edge.', 'warning');
       return;
     }
     autoSendRef.current = autoSend;

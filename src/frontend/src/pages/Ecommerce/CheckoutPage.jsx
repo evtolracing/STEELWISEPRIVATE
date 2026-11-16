@@ -149,6 +149,7 @@ export default function CheckoutPage() {
   if (items.length === 0 && !confirmOpen) {
     return (
       <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ mb: 2 }}>Checkout</Typography>
         <Alert severity="info" sx={{ mb: 2 }}>Your cart is empty.</Alert>
         <Button variant="contained" onClick={() => navigate('/shop')}>Back to Shop</Button>
       </Container>

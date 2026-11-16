@@ -227,4 +227,31 @@ module.exports = async (s) => {
     const saved = await until(async () => { const n = await prisma.rFQLine.count({ where: { OR: [{ description: what }, { notes: what }, { materialCode: what }] } }).catch(() => -1); return n !== 0 ? n : null; }, 5000);
     t.check('exactly one request line with that text is in the database', saved === 1, saved);
   });
+  await sc('FORM', 'deactivating a user asks in the application\'s own box, and Cancel changes nothing', async (t) => {
+    const admin = await prisma.user.findFirst({ where: { email: 'qa-admin@qa.test' } }); const email = `qa-p9-leaver-${run}@qa.test`;
+    const leaver = await prisma.user.create({ data: { email, passwordHash: admin.passwordHash, firstName: 'QA', lastName: `Leaver ${run}`, role: 'VIEWER', organizationId: admin.organizationId } });
+    const c = await ctx(boss); const page = await open(c, '/admin/users'); let native = 0; page.on('dialog', (d) => { native += 1; d.dismiss().catch(() => {}); });
+    await page.locator('main').getByLabel('Search by name or email').fill(email); await settle(page, 900);
+    const row = page.locator('main tbody tr', { hasText: email }); await row.getByRole('button', { name: 'More actions' }).click(); await page.getByRole('menuitem', { name: /Deactivate User/ }).click();
+    const box = page.getByTestId('ask-dialog'); await box.waitFor({ timeout: 5000 }).catch(() => {});
+    t.check('the question is the application\'s own box, not the browser\'s', native === 0 && await box.isVisible(), `${native} browser boxes`);
+    t.check('it names the person and what will happen', (await box.innerText().catch(() => '')).includes(`Leaver ${run}`) && /sign in/i.test(await box.innerText().catch(() => '')));
+    const before = page.writes.length; await page.getByTestId('ask-cancel').click(); await settle(page, 600);
+    t.check('Cancel sends nothing and the user stays active', page.writes.length === before && (await prisma.user.findUnique({ where: { id: leaver.id } })).isActive !== false, `${page.writes.length - before} writes`);
+    await row.getByRole('button', { name: 'More actions' }).click(); await page.getByRole('menuitem', { name: /Deactivate User/ }).click(); await page.getByTestId('ask-confirm').click(); await settle(page, 1200);
+    const after = await prisma.user.findUnique({ where: { id: leaver.id } });
+    t.check('Deactivate is sent once and the user can no longer sign in', page.writes.length === before + 1 && (!after || after.isActive === false), `${page.writes.length - before} writes; active ${after ? after.isActive : 'removed'}`);
+    await c.close();
+  });
+
+  await sc('FORM', 'a sample form that used to announce a save now says nothing was saved', async (t) => {
+    const c = await ctx(boss); const page = await open(c, '/maintenance/pm-schedules'); let native = 0; page.on('dialog', (d) => { native += 1; d.dismiss().catch(() => {}); });
+    await page.getByRole('button', { name: 'New PM Schedule' }).click(); const dialog = page.getByRole('dialog'); await dialog.waitFor();
+    const before = page.writes.length; await dialog.getByRole('button', { name: 'Create Schedule' }).click(); await settle(page, 700);
+    const notice = await page.getByTestId('not-built-notice').innerText().catch(() => '');
+    t.check('no browser box claims a schedule was created', native === 0, `${native} browser boxes`);
+    t.check('the notice says it is not built and nothing was saved', /not built/i.test(notice) && /nothing was saved/i.test(notice), notice);
+    t.check('nothing was sent to the server', page.writes.length === before);
+    await c.close();
+  });
 };

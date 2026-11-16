@@ -58,6 +58,7 @@ import {
 import { getQueue, getOperators } from '../../services/dispatchApi'
 import { startOperation, pauseOperation, completeOperation } from '../../services/operationsApi'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { ask, tell } from '../../utils/ask'
 
 // Priority config
 const PRIORITY_CONFIG = {
@@ -205,7 +206,7 @@ function WorkCenterQueuePage() {
   // Handle start
   const handleStart = async (operation) => {
     if (!selectedOperator) {
-      alert('Please select an operator')
+      tell('Choose an operator first.', 'warning')
       return
     }
     
@@ -218,7 +219,7 @@ function WorkCenterQueuePage() {
       await loadQueue()
     } catch (err) {
       console.error('Failed to start operation:', err)
-      alert(`Failed to start: ${err.message}`)
+      tell(`Could not start: ${err.message}`, 'error')
     } finally {
       setActionLoading(false)
     }
@@ -238,7 +239,7 @@ function WorkCenterQueuePage() {
       await loadQueue()
     } catch (err) {
       console.error('Failed to pause operation:', err)
-      alert(`Failed to pause: ${err.message}`)
+      tell(`Could not pause: ${err.message}`, 'error')
     } finally {
       setActionLoading(false)
     }
@@ -246,7 +247,7 @@ function WorkCenterQueuePage() {
 
   // Handle complete
   const handleComplete = async (operation) => {
-    if (!confirm('Mark this operation as complete?')) return
+    if (!(await ask('Mark this operation as complete?', { title: 'Complete operation', confirmText: 'Complete' }))) return
     
     setActionLoading(true)
     try {
@@ -257,7 +258,7 @@ function WorkCenterQueuePage() {
       await loadQueue()
     } catch (err) {
       console.error('Failed to complete operation:', err)
-      alert(`Failed to complete: ${err.message}`)
+      tell(`Could not complete: ${err.message}`, 'error')
     } finally {
       setActionLoading(false)
     }

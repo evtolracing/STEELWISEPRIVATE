@@ -35,7 +35,9 @@ echo "== unit"; (cd src/backend && npm test 2>&1 | grep -E "^not ok|^# (tests|pa
 (PORT=3001 nohup qa/tools/start-qa-server.sh > "$LOGS/server-3001.log" 2>&1 &); wait_for http://localhost:3001/api/health || exit 1
 curl -s -m2 -o /dev/null http://localhost:5199 || { (cd src/frontend && nohup npx vite --port 5199 --strictPort > "$LOGS/vite.log" 2>&1 &); wait_for http://localhost:5199; }
 for t in ui-experience ui-shipping ui-shop ui-sales ui-inventory ui-integration ui-phase5 ui-phase6 ui-phase7 ui-phase8; do echo "== $t"; node qa/sim/$t.cjs 2>&1 | grep "✗\|checks,"; done
+echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8
+echo "== every screen measured at three sizes"; node qa/sim/ui-audit.cjs --out qa/results/ui-audit.json > "$LOGS/ui-audit.log" 2>&1; node qa/tools/ui-audit-gate.cjs qa/results/ui-audit.json
 echo "== calls the tests made"; node qa/tools/exercised.mjs "$LOGS/server-3011.log" "$LOGS/server-3001.log" | sed -n '/"distinct"/,$p'
 echo "== baseline probe"; node qa/tools/discover.mjs > /dev/null; node qa/sim/baseline-probe.mjs --base http://localhost:3011 --max-crash 0 2>&1 | tail -12
 echo "== department rule coverage"; node qa/tools/access-coverage.mjs

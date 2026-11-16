@@ -38,6 +38,7 @@ import {
   AccessTime as TimeIcon
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { sayNotBuilt } from '../../../utils/notBuilt'
 
 // ============================================
 // DOCUMENT ROW
@@ -227,9 +228,8 @@ export function WillCallCompleteScreen({ screen, onNext, onBack }) {
   
   // Handle email
   const handleEmail = async (document) => {
-    // In production, would call email API
-    console.log('Emailing document:', document.name, 'to', order.customer?.email);
-    alert(`Document "${document.name}" will be emailed to ${order.customer?.email || 'customer'}`);
+    // No email is sent by this product yet (owner decision 5), and the screen says so.
+    sayNotBuilt(`Email ${document.name}`);
   };
   
   // Handle next pickup

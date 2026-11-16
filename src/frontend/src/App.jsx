@@ -5,6 +5,7 @@ import { AuthProvider } from './hooks/useAuth'
 import { AppRouter } from './router'
 import { ErrorBoundary } from './components/common'
 import NotBuiltNotice from './components/common/NotBuiltNotice'
+import AskHost from './components/common/AskHost'
 import { CartProvider } from './contexts/CartContext'
 import { CustomerSessionProvider } from './contexts/CustomerSessionContext'
 import theme from './theme'
@@ -27,6 +28,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <NotBuiltNotice />
+          <AskHost />
           <AuthProvider>
             <CartProvider>
               <CustomerSessionProvider>

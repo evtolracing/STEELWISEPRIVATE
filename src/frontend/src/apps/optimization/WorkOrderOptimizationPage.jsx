@@ -32,6 +32,7 @@ import {
   ExpandLess,
 } from '@mui/icons-material';
 import { getOptimizationPreview, applyOptimization, getOptimizationAnalysis } from '../../services/optimizationApi';
+import { tell } from '../../utils/ask'
 
 export default function WorkOrderOptimizationPage() {
   const [loading, setLoading] = useState(false);
@@ -79,12 +80,12 @@ export default function WorkOrderOptimizationPage() {
       // Says what the server saved, not what was sent: a job that started in the meantime is not rescheduled.
       const result = await applyOptimization(preview.optimizedJobs);
       const skipped = result?.skipped || [];
-      alert(`Schedule saved for ${result?.appliedCount ?? 0} of ${preview.optimizedJobs.length} jobs.${skipped.length ? ` ${skipped.length} not saved: ${skipped[0].reason}${skipped.length > 1 ? ' (and others)' : ''}.` : ''}`);
+      tell(`Schedule saved for ${result?.appliedCount ?? 0} of ${preview.optimizedJobs.length} jobs.${skipped.length ? ` ${skipped.length} not saved: ${skipped[0].reason}${skipped.length > 1 ? ' (and others)' : ''}.` : ''}`, skipped.length ? 'warning' : 'success');
       setPreview(null);
       loadAnalysis();
     } catch (error) {
       console.error('Failed to apply optimization:', error);
-      alert('Failed to apply optimization');
+      tell('The schedule could not be saved. Nothing was changed.', 'error');
     } finally {
       setApplying(false);
     }

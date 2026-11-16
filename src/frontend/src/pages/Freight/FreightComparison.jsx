@@ -48,6 +48,7 @@ import {
   Info,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 // Mock shipment data
 const shipmentData = {
@@ -214,8 +215,8 @@ const FreightComparison = () => {
   const handleBook = () => {
     setShowBookDialog(false);
     setShowOverrideDialog(false);
-    alert(`Shipment booked with ${selectedQuote.carrierName}!`);
-    navigate('/freight/tracking');
+    // No carrier is connected (N-026): nothing is booked, and the screen says so.
+    sayNotBuilt('Book shipment');
   };
 
   return (

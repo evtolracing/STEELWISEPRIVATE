@@ -226,6 +226,8 @@ const measure = (viewportName) => {
         await page.goto(APP + url, { waitUntil: 'domcontentloaded', timeout: 20000 });
         await page.waitForLoadState('networkidle', { timeout: 6000 }).catch(() => {});
         r.settledMs = Date.now() - t0;
+        // A screen whose code arrives late is measured once it has drawn, not while it is still blank.
+        await page.locator('main h1, main h2, main [role="alert"]').first().waitFor({ timeout: 5000 }).catch(() => {});
         await page.waitForTimeout(300);
         r.landedOn = new URL(page.url()).pathname;
         Object.assign(r, await page.evaluate(measure, vp.name));

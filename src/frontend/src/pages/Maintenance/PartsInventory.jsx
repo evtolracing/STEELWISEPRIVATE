@@ -54,6 +54,7 @@ import {
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const spareParts = [
@@ -692,7 +693,7 @@ const PartsInventory = () => {
           <Button onClick={() => setShowOrderDialog(false)}>Cancel</Button>
           <Button 
             variant="contained" 
-            onClick={() => { setShowOrderDialog(false); alert('Purchase order created!'); }}
+            onClick={() => { setShowOrderDialog(false); sayNotBuilt('Create purchase order'); }}
           >
             Create Order
           </Button>
@@ -750,7 +751,7 @@ const PartsInventory = () => {
           <Button 
             variant="contained" 
             startIcon={<CheckCircle />}
-            onClick={() => { setShowReceiveDialog(false); alert('Parts received and inventory updated!'); }}
+            onClick={() => { setShowReceiveDialog(false); sayNotBuilt('Receive parts'); }}
           >
             Receive Parts
           </Button>

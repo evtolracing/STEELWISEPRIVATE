@@ -30,6 +30,7 @@ import {
   getOverrideAuditLog, revokeOverride,
 } from '../../services/overrideApi'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { ask } from '../../utils/ask'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -111,7 +112,7 @@ export default function AuditLogViewer({ orderId, canRevoke = false, maxHeight =
   }, [entries, searchTerm])
 
   const handleRevoke = async (id) => {
-    const reason = prompt('Revoke reason:')
+    const reason = await ask('The override is withdrawn and the reason is kept in the audit log.', { title: 'Revoke override', confirmText: 'Revoke', danger: true, reasonLabel: 'Reason' })
     if (!reason) return
     setRevoking(id)
     try {

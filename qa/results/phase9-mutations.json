@@ -133,6 +133,18 @@
    "what": "a full board column draws thirty cards at a time",
    "scenario": "a full column on the order board",
    "result": "HOLDS: 1 of 1 fail (the button says how many are left and draws up to thirty more: Show 30 more of 80: 416 then 416), run alone after the fix was added"
+  },
+  {
+   "n": 23,
+   "what": "a question is asked in the application’s own box",
+   "scenario": "deactivating a user asks",
+   "result": "HOLDS: 1 of 1 fail (the application box never opens), run after the fix was added"
+  },
+  {
+   "n": 24,
+   "what": "a sample form does not announce a save",
+   "scenario": "a sample form that used to announce",
+   "result": "HOLDS: 1 of 1 fail (no browser box claims a schedule was created: 1 browser boxes), run after the fix was added"
   }
  ]
 }

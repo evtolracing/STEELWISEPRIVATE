@@ -41,6 +41,7 @@ import {
 } from '@mui/icons-material';
 import { getOrder, planOrder, markOrderPackaging } from '../../services/orderApi';
 import { TOLERANCE_PRESETS, CERT_OPTIONS } from '../../services/customerPreferencesApi';
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 const orderStatuses = ['NEW', 'PLANNING', 'IN_PRODUCTION', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED'];
 const statusColors = {
@@ -514,7 +515,7 @@ export default function OrderDetailPage() {
                     fullWidth
                     variant="outlined"
                     startIcon={<ShipIcon />}
-                    onClick={() => alert('Shipping handoff - implement as needed')}
+                    onClick={() => sayNotBuilt('Create Shipment')}
                   >
                     Create Shipment
                   </Button>

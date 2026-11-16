@@ -149,6 +149,8 @@ export default function SearchResultsPage() {
           <Typography color="text.primary">Search</Typography>
         </Breadcrumbs>
 
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ mb: 1.5 }}>Product search</Typography>
+
         {/* Search bar */}
         <CatalogSearchBar onSearch={handleSearch} initialValue={query} />
 

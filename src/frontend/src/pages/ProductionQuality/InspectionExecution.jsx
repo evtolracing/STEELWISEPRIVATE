@@ -49,6 +49,7 @@ import {
   Add,
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const pendingInspections = [
@@ -185,7 +186,7 @@ const InspectionExecution = () => {
       setShowNCRDialog(true);
     } else {
       // Submit as passed
-      alert('Inspection submitted successfully!');
+      sayNotBuilt('Submit inspection');
       setSelectedInspection(null);
       setMeasurements({});
     }
@@ -439,7 +440,7 @@ const InspectionExecution = () => {
             <Button onClick={() => setShowNCRDialog(false)}>Cancel</Button>
             <Button variant="contained" color="error" onClick={() => {
               setShowNCRDialog(false);
-              alert('NCR created and inspection submitted');
+              sayNotBuilt('Create NCR');
               setSelectedInspection(null);
               setMeasurements({});
             }}>

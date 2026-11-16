@@ -61,6 +61,7 @@ import { ICON_MAP, resolveIcon } from './iconMap'
 import { useAuth } from '../../hooks/useAuth'
 import CreateWorkCenterDialog from './CreateWorkCenterDialog'
 import ManageWorkCenterTypesDialog from './ManageWorkCenterTypesDialog'
+import { ask } from '../../utils/ask'
 
 function WorkCenterSelectPage() {
   const { user } = useAuth()
@@ -198,7 +199,7 @@ function WorkCenterSelectPage() {
 
   // Delete (take offline) a work center
   const handleDeleteWorkCenter = async (wc) => {
-    if (!window.confirm(`Take "${wc.name}" offline? Active operations must be completed first.`)) return
+    if (!(await ask(`Take "${wc.name}" offline? Active operations must be completed first.`, { title: 'Take work center offline', confirmText: 'Take offline', danger: true }))) return
     try {
       await deleteWorkCenter(wc.id)
       setSnackbar({ open: true, message: `"${wc.name}" taken offline`, severity: 'info' })

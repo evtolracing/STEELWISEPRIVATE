@@ -59,6 +59,7 @@ import {
 } from '@mui/icons-material';
 import { notBuilt } from '../../utils/notBuilt'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const pmSchedules = [
@@ -741,7 +742,7 @@ const PMSchedules = () => {
           <Button onClick={() => setShowCreateDialog(false)}>Cancel</Button>
           <Button 
             variant="contained" 
-            onClick={() => { setShowCreateDialog(false); alert('PM Schedule created!'); }}
+            onClick={() => { setShowCreateDialog(false); sayNotBuilt('Create PM schedule'); }}
           >
             Create Schedule
           </Button>

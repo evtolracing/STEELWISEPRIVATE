@@ -49,6 +49,7 @@ import {
 } from '@mui/icons-material'
 import { ICON_MAP, AVAILABLE_ICONS } from './iconMap'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { ask } from '../../utils/ask'
 
 // Curated color palette for work center types
 const COLOR_PALETTE = [
@@ -382,7 +383,7 @@ export default function ManageWorkCenterTypesDialog({
   }
 
   const handleDelete = async (typeId) => {
-    if (!window.confirm(`Deactivate work center type "${typeId}"?`)) return
+    if (!(await ask(`Deactivate work center type "${typeId}"?`, { title: 'Deactivate type', confirmText: 'Deactivate', danger: true }))) return
     setSaving(true)
     setError(null)
     try {

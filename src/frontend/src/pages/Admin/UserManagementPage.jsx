@@ -46,6 +46,7 @@ import { getUsers, getRoleEnums, deleteUser, getRoleDisplayName, getRoleCategory
 import UserFormDialog from './UserFormDialog';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import RetentionNotice from '../../components/common/RetentionNotice';
+import { ask } from '../../utils/ask'
 
 const roleColorMap = {
   System: 'error',
@@ -155,12 +156,12 @@ export default function UserManagementPage() {
 
   const handleDeleteUser = async () => {
     if (!menuUser) return;
-    if (!window.confirm(`Are you sure you want to deactivate ${menuUser.firstName} ${menuUser.lastName}?`)) {
-      handleMenuClose();
-      return;
-    }
+    // The person is kept in a local name: closing the menu clears menuUser while the question is open.
+    const person = menuUser;
+    handleMenuClose();
+    if (!(await ask(`Deactivate ${person.firstName} ${person.lastName}? They will no longer be able to sign in.`, { title: 'Deactivate user', confirmText: 'Deactivate', danger: true }))) return;
     try {
-      await deleteUser(menuUser.id);
+      await deleteUser(person.id);
       loadUsers();
     } catch (err) {
       console.error('Failed to delete user:', err);

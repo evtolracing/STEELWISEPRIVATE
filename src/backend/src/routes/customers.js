@@ -231,9 +231,17 @@ router.patch('/:id', async (req, res) => {
     if (updateData.parentId) {
       if (updateData.parentId === id) return res.status(400).json({ error: 'An account cannot be its own parent' });
       if (!(await prisma.organization.findUnique({ where: { id: updateData.parentId } }))) return res.status(400).json({ error: 'Parent account not found' });
+      // An account cannot sit under one of its own divisions: prices and credit are read up the
+      // chain to the top account, and a loop has no top (J-003).
+      let up = updateData.parentId;
+      for (let i = 0; up && i < 20; i++) {
+        if (up === id) return res.status(400).json({ error: 'That account is already one of this account\'s divisions, so it cannot be its parent' });
+        up = (await prisma.organization.findUnique({ where: { id: up }, select: { parentId: true } }))?.parentId || null;
+      }
     }
 
     const taxChanged = updateData.taxExempt !== undefined && updateData.taxExempt !== before.taxExempt;
+    const activeChanged = updateData.isActive !== undefined && updateData.isActive !== before.isActive;
     const customer = await prisma.$transaction(async (tx) => {
       const saved = await tx.organization.update({ where: { id }, data: updateData });
       // Tax-exempt status changes what the customer is charged, so every change is on the record.
@@ -243,6 +251,16 @@ router.patch('/:id', async (req, res) => {
             category: 'FINANCIAL', eventType: 'CUSTOMER_TAX_STATUS_CHANGED', severity: 'WARNING', action: 'UPDATE', userId: req.user.id,
             resourceType: 'Organization', resourceId: id,
             details: { customer: before.name, from: before.taxExempt, to: saved.taxExempt, by: req.user.email },
+          },
+        });
+      }
+      // Closing or reopening an account decides whether it can be sold to, so it is on the record too.
+      if (activeChanged) {
+        await tx.auditLog.create({
+          data: {
+            category: 'DATA', eventType: saved.isActive ? 'CUSTOMER_REACTIVATED' : 'CUSTOMER_DEACTIVATED', severity: 'INFO', action: 'UPDATE', userId: req.user.id,
+            resourceType: 'Organization', resourceId: id,
+            details: { customer: before.name, from: before.isActive, to: saved.isActive, by: req.user.email },
           },
         });
       }

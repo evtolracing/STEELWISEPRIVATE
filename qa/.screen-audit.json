@@ -1,8 +1,8 @@
 {
- "screens": 143,
+ "screens": 144,
  "tally": {
   "STATIC": 5,
-  "REAL": 76,
+  "REAL": 77,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
  },
@@ -61,30 +61,6 @@
    "onMenu": false,
    "verdict": "REAL",
    "file": "apps/dashboard/RoleDashboardPage.jsx"
-  },
-  {
-   "route": "orderhub",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/RfqListPage.jsx"
-  },
-  {
-   "route": "orderhub/rfq/new",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/RfqCreatePage.jsx"
-  },
-  {
-   "route": "orderhub/rfq/:rfqId",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/RfqDetailPage.jsx"
-  },
-  {
-   "route": "orderhub/orders/:orderId",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "apps/orderhub/OrderDetailPage.jsx"
   },
   {
    "route": "heats",
@@ -459,6 +435,18 @@
    "file": "pages/ReceivingPage.jsx"
   },
   {
+   "route": "transfers",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Transfers/TransfersPage.jsx"
+  },
+  {
+   "route": "purchase-orders",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Purchasing/PurchaseOrdersPage.jsx"
+  },
+  {
    "route": "material-tracking",
    "onMenu": true,
    "verdict": "REAL",
@@ -469,6 +457,12 @@
    "onMenu": true,
    "verdict": "REAL",
    "file": "pages/MaterialTracking/PackagingQueue.jsx"
+  },
+  {
+   "route": "material-tracking/packages",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/PackagesPage.jsx"
   },
   {
    "route": "material-tracking/tags",
@@ -639,6 +633,12 @@
    "file": "pages/Orders/InvoicesPage.jsx"
   },
   {
+   "route": "orders/closeout",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Orders/OrderCloseoutPage.jsx"
+  },
+  {
    "route": "orders/returns",
    "onMenu": true,
    "verdict": "REAL",
@@ -745,6 +745,12 @@
    "onMenu": true,
    "verdict": "REAL",
    "file": "pages/Customers/CustomerPreferencesPage.jsx"
+  },
+  {
+   "route": "admin/integrations",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/IntegrationsPage.jsx"
   },
   {
    "route": "admin/users",

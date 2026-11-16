@@ -1,35 +1,37 @@
 {
   "programVersion": "1.0",
   "program": "Enterprise Excellence Program",
-  "currentPhase": 2,
+  "currentPhase": 8,
   "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-13T19:01:57.756Z",
+  "updated": "2026-11-16T02:31:35.885Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "bcba5a1917cc9ba3e104657cdf1423472fa01132",
+    "commit": "b2e8c5deca054d3af966f7140626ddf8f944b024",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
-    "pullRequest": 30,
-    "merged": false
+    "pullRequest": 31,
+    "merged": false,
+    "previousPullRequests": [
+      30
+    ]
   },
-  "modulesDiscovered": 47,
-  "modulesAudited": 46,
+  "modulesDiscovered": 50,
+  "modulesAudited": 50,
   "modulesByClassification": {
-    "IMPLEMENTED AND VERIFIED": 22,
-    "IMPLEMENTED BUT NOT VERIFIED": 12,
-    "PARTIALLY IMPLEMENTED": 4,
+    "IMPLEMENTED AND VERIFIED": 27,
+    "IMPLEMENTED BUT NOT VERIFIED": 6,
+    "PARTIALLY IMPLEMENTED": 9,
     "PLACEHOLDER OR MOCK": 5,
-    "DISCONNECTED": 3,
-    "NOT APPLICABLE": 1
+    "DISCONNECTED": 3
   },
   "discovered": {
-    "apiRoutes": 611,
-    "apiRoutesThatChangeData": 319,
-    "routeFiles": 72,
-    "databaseTables": 157,
+    "apiRoutes": 648,
+    "apiRoutesThatChangeData": 337,
+    "routeFiles": 75,
+    "databaseTables": 161,
     "enumerations": 96,
-    "migrations": 23,
-    "screens": 143,
-    "frontendFiles": 387,
+    "migrations": 32,
+    "screens": 144,
+    "frontendFiles": 396,
     "roles": 48
   },
   "workflowsMapped": 17,
@@ -40,118 +42,105 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 71,
-    "P2": 72,
-    "P3": 60,
-    "P0": 20
+    "P1": 103,
+    "P2": 140,
+    "P3": 86,
+    "P0": 20,
+    "P4": 1
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 142,
+    "VERIFIED FIXED": 255,
+    "IN PROGRESS": 6,
     "DEFERRED TO SPECIFIC PHASE": 58,
-    "REQUIRES BUSINESS DECISION": 19,
-    "BLOCKED": 1,
+    "BLOCKED": 3,
     "NOT APPLICABLE": 1,
-    "IN PROGRESS": 2
+    "REQUIRES BUSINESS DECISION": 25,
+    "ACCEPTED RISK WITH APPROVAL": 1,
+    "FIXED — NOT VERIFIED": 1
   },
   "openFindingsBySeverity": {
-    "P1": 17,
-    "P2": 38,
-    "P3": 23,
+    "P1": 15,
+    "P2": 45,
+    "P3": 31,
+    "P4": 1,
     "P0": 2
   },
-  "findingsTotal": 223,
-  "findingsAddedThisPhase": 13,
+  "findingsTotal": 350,
+  "findingsAddedThisPhase": 29,
   "testsExecuted": [
     {
-      "test": "Order-to-cash simulation, seeds 8001 to 8003, rebuilt QA database",
-      "result": "150 of 150 jobs pass (50 per seed); 714, 709 and 711 steps; 784, 785 and 788 checks; 8 concurrency probes pass in each; reconciliation 0 problems",
-      "before": "150 of 150 at the Phase 2 baseline"
+      "test": "Phase 8 fulfilment scenarios (qa/sim/phase8-fulfillment.mjs, new in Phase 8)",
+      "result": "150 of 150 scenarios pass, 496 checks, in the second full run on the final code. 142 verify built behaviour and 8 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: release, picking and packaging 20 and 0; shipment creation, partial shipments and back orders 25 and 0; dispatch, carriers, freight and delivery 21 and 4; invoicing, payments and accounting 22 and 3; costing, reconciliation and closeout 19 and 1; returns and credits 15 and 0; concurrency, security and recovery 20 and 0",
+      "before": "Did not exist. A probe on the starting code (qa/sim/p8-probe.mjs) reproduced the defects before any fix"
     },
     {
-      "test": "Security and safeguards sweep",
-      "result": "20 of 20 sections pass",
-      "before": "20 of 20"
+      "test": "Proof the Phase 8 checks fail without the fixes",
+      "result": "31 rules removed one at a time; each made 1 or more scenarios fail; source restored. Two further removals failed nothing because a second check covers the same request; recorded, not counted. The retry around the order save (second half of N-029) fails only about one round in twelve without it and is not counted"
     },
     {
-      "test": "Branch boundary (qa/sim/branch-boundary.mjs, new in Phase 2)",
-      "result": "37 of 37 checks pass",
-      "before": "Did not exist. 25 of the checks fail with the boundary switched off"
+      "test": "First full run of every check on the Phase 8 code",
+      "result": "Every suite passed. Reading the server log of the run then showed six dispatch requests answered 500 (a deadlock between an order cancel and a dispatch, N-029), one database check that counted the wrong series, and one scenario fixture that left an order subtotal wrong. All three corrected"
     },
     {
-      "test": "Phase 2 integrity and concurrency (qa/sim/phase2-integrity.mjs, new in Phase 2)",
-      "result": "80 of 80 checks pass",
-      "before": "Did not exist. 32 of the first 43 checks fail on the code before the corrections"
-    },
-    {
-      "test": "Unit tests (src/backend, npm test)",
-      "result": "105 of 105 pass",
-      "before": "90 of 90"
-    },
-    {
-      "test": "Browser suites: experience, shipping, shop, sales, inventory",
-      "result": "22, 27, 30, 24 and 22 checks, 0 failed",
-      "before": "Same counts, 0 failed"
-    },
-    {
-      "test": "Every route opens in a browser",
-      "result": "125 routes open with no crash",
-      "before": "125"
-    },
-    {
-      "test": "Baseline probe",
-      "result": "4 of 4 sections pass: 540 changing calls by view-only roles, 0 not refused; 275 changing routes sent an empty body, 0 server errors; 2 saved a record from nothing, both by design",
-      "before": "3 server errors and 7 saves from nothing at the Phase 2 baseline"
-    },
-    {
-      "test": "Department rule coverage (qa/tools/access-coverage.mjs, new in Phase 2)",
-      "result": "319 changing routes, 0 with no rule or stated reason",
-      "before": "Did not exist. 16 areas had no rule (B-004)"
-    },
-    {
-      "test": "Screen audit",
-      "result": "143 screens, 0 show made-up data with no notice (76 real, 58 labelled samples, 5 static, 4 mixed)",
-      "before": "Same"
-    },
-    {
-      "test": "Screen ratchets (qa/tools/frontend-checks.mjs, new in Phase 2)",
-      "result": "38 effect-dependency warnings (ceiling 38), 0 screens that invent records on failure (ceiling 0)",
-      "before": "Did not exist. 2 inventing screens on the code before"
-    },
-    {
-      "test": "Lint, frontend and whole repository",
-      "result": "Frontend passes; repository 0 errors, 1,524 warnings",
-      "before": "Same"
-    },
-    {
-      "test": "Frontend production build",
-      "result": "passes",
-      "before": "passes"
-    },
-    {
-      "test": "Database consistency checks on the QA database after the simulation (read-only)",
-      "result": "0 problems outside the demo seed rows; every counter-sale line of a stocked product has its stock movement",
-      "before": "Counter-sale lines moved no stock (B-025)"
-    },
-    {
-      "test": "SQL Editor file 20261113190000_order_branch.sql, run twice on a populated copy",
-      "result": "First run gave 163 of 170 orders a branch; second run changed nothing",
+      "test": "Phase 8 browser checks (qa/sim/ui-phase8.cjs, new)",
+      "result": "45 of 45: shipment papers and print buttons, delivery with a name or a reason, the Packing screen through the whole chain, Orders Not Closed, the closeout and cost panel, phone width",
       "before": "Did not exist"
     },
     {
-      "test": "Package audit (npm audit, both packages)",
-      "result": "0 critical. Backend 1 moderate; frontend 1 high and 3 moderate, the high one in the development server only",
-      "before": "Not re-measured since Workstream 3"
+      "test": "Unit tests (src/backend, npm test)",
+      "result": "201 of 201 (23 new: phase8Rules)",
+      "before": "178 of 178"
     },
     {
-      "test": "Pull-request workflow on GitHub for the final Phase 2 commit",
-      "result": "NOT VERIFIED at the time of writing; see the pull request"
+      "test": "Shipping, invoicing and closeout calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices, 20,000 print jobs)",
+      "result": "Median of 7: eighteen calls, 6 to 206 ms; the slowest is the first page of orders not closed (133 ms all branches, 206 ms one branch); every other call under 40 ms. Measured before the N-029 correction, which changes no query. No packages in the scale data, so packing was not timed at scale",
+      "before": "Shipment and invoice lists only (Phase 3)"
+    },
+    {
+      "test": "Order-to-cash simulation, seeds 8001 to 8003 (second full run, final code)",
+      "result": "150 of 150 jobs, 0 reconciliation problems; payment and return races taken once in each seed",
+      "before": "150 of 150, 0 problems"
+    },
+    {
+      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, 4, 5, 6 and 7 scenarios (second full run)",
+      "result": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 76 of 76 (386); 106 of 106 (494); 141 of 141 (618)",
+      "before": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 75 of 76 (386), the one failure being a test that depended on the time of day (N-024); 106 of 106 (494); 141 of 141 (618)"
+    },
+    {
+      "test": "Browser suites, every screen opens, baseline probe, department coverage, screen audit, lint, build (second full run)",
+      "result": "Browser suites 22, 30, 31, 24, 23, 33, 14, 14, 39 and 45 (275 checks, 0 failed); 130 of 130 screens open; 574 write calls as read-only roles, 0 not refused; 292 write routes with an empty body, 0 server errors; 337 changing routes, 0 with no rule; 0 screens with unlabelled made-up data; lint 0 errors, 1,522 warnings; build passes",
+      "before": "Browser suites 22, 29, 31, 24, 23, 33, 14, 14, 39; 334 changing routes, 0 with no rule; 1,526 warnings, 0 errors"
+    },
+    {
+      "test": "Database checks after the full run",
+      "result": "75 checks read; 64 at 0; the rest are counts of demo seed data and of records made on purpose, each explained in phase-08-regression-results.md section 2. The 8 Phase 8 checks: 6 at 0, and two counts to be read (9 shipments with no invoice, each listed for billing; 48 deliveries with neither name nor reason, 47 of the demo seed and 1 stripped on purpose by a scenario)"
+    },
+    {
+      "test": "Server errors in the full run",
+      "result": "Four answers of 500, the same four as the baseline, each planted by a scenario. No dispatch or order save answered a server error (six in the first run, N-029)"
+    },
+    {
+      "test": "Database change",
+      "result": "SQL Editor file 14 (20261116200000_fulfilment_costing): adds three columns. Run twice on a copy without them; the first run added the columns, the second changed nothing; row counts unchanged"
+    },
+    {
+      "test": "Printers, label printers, scales, scanners",
+      "result": "NOT EXECUTED: no hardware. Papers were read in a browser"
+    },
+    {
+      "test": "Carriers, freight rating, tracking, accounting system, card payments, customer notices",
+      "result": "NOT APPLICABLE: not built (N-025, N-026, N-028, H-013). Recorded with evidence; nothing was invented"
+    },
+    {
+      "test": "The host and live data",
+      "result": "NOT VERIFIED. No access from this environment"
     }
   ],
   "testReach": {
-    "routesWithSuccess": 284,
-    "routes": 611,
-    "changingRoutesWithSuccess": 87,
-    "changingRoutes": 319
+    "routesWithSuccess": 419,
+    "routes": 648,
+    "changingRoutesWithSuccess": 175,
+    "changingRoutes": 337
   },
   "correctionsCompleted": [
     "B-001",
@@ -163,44 +152,120 @@
     "B-007",
     "B-008",
     "B-010",
+    "B-011",
+    "B-018",
     "B-023",
     "B-025",
     "C-001",
+    "C-002",
     "C-003",
     "C-004",
     "C-005",
+    "C-006",
     "C-007",
-    "C-008"
+    "C-008",
+    "C-010",
+    "C-011",
+    "C-012",
+    "G-001",
+    "G-002",
+    "G-004",
+    "G-005",
+    "G-006",
+    "G-007",
+    "G-008",
+    "G-009",
+    "G-010",
+    "G-012",
+    "G-014",
+    "G-016",
+    "G-017",
+    "G-019",
+    "H-001",
+    "H-002",
+    "H-003",
+    "H-004",
+    "H-005",
+    "H-006",
+    "H-007",
+    "H-008",
+    "H-009",
+    "H-010",
+    "H-011",
+    "H-016",
+    "H-017",
+    "H-018",
+    "H-019",
+    "J-001",
+    "J-002",
+    "J-003",
+    "J-004",
+    "J-005",
+    "J-006",
+    "J-007",
+    "J-009",
+    "J-010",
+    "J-011",
+    "K-001",
+    "K-002",
+    "K-003",
+    "K-004",
+    "K-005",
+    "K-015",
+    "L-001",
+    "L-002",
+    "L-003",
+    "L-004",
+    "L-005",
+    "L-006",
+    "L-007",
+    "L-008",
+    "L-009",
+    "L-010",
+    "L-011",
+    "L-012",
+    "L-013",
+    "L-014",
+    "L-015",
+    "L-016",
+    "L-017",
+    "L-018",
+    "L-019",
+    "L-020",
+    "L-021",
+    "L-022",
+    "L-024",
+    "L-031"
   ],
   "scoreSummary": [
     {
       "group": "Platform infrastructure",
-      "weighted": 73,
+      "weighted": 80,
       "evidenceShare": 77,
       "openP0P1": 2
     },
     {
       "group": "Sales and customer operations",
-      "weighted": 72,
-      "evidenceShare": 89,
+      "weighted": 79,
+      "evidenceShare": 97,
       "openP0P1": 4
     },
     {
       "group": "Inventory and purchasing",
-      "weighted": 73,
-      "evidenceShare": 89,
-      "openP0P1": 4
+      "weighted": 77,
+      "evidenceShare": 97,
+      "openP0P1": 3
     },
     {
       "group": "Manufacturing and processing",
-      "weighted": 73,
-      "evidenceShare": 89,
-      "openP0P1": 2
+      "weighted": 81,
+      "evidenceShare": 97,
+      "openP0P1": 1
     },
     {
       "group": "Logistics and financial operations",
-      "weighted": 75,
-      "evidenceShare": 89,
+      "weighted": 85,
+      "evidenceShare": 97,
       "openP0P1": 2
     },
     {
@@ -211,31 +276,29 @@
     }
   ],
   "unverifiedAreas": [
-    "Forty-five route files and 18 service files were examined by tool only, not read line by line",
-    "Remnant creation from processing: a completed work order moves no stock, so the scenario cannot run (M-016)",
-    "Background jobs, retries and schedules: none exist (B-018, B-019)",
-    "Dashboard and report figures against the records they summarise",
-    "Records with no branch column: quotes, requests for quotation, packages, drop tags, documents, the second stock list and the order hub (C-009)",
-    "Cost of the branch filter at 80 branches and real volume; resource use; many users at once",
-    "Partner API success paths and webhook delivery; carrier partner routes (C-002)",
-    "Planning and optimization, customer specifications, AI assistant and voice (need provider keys)",
-    "Shipping documents and printing (F-011)",
-    "Accessibility, tablet and mobile layouts",
-    "Test coverage by line was not measured; reach is counted by route (see testReach)",
-    "The live database and the host: not touched. Nothing in Phase 2 was run against production"
+    "The live database and the host: nothing in Phase 8 was run against either. Live shipments reserved against another branch's stock, branches with no street address and waiting print jobs are unknown until the owner runs check-before-phase-8.sql (R-50, R-52, R-54)",
+    "SQL Editor files 6 to 14 on the live database: the owner has not sent the result of the read-only check (verify-6-to-14.sql)",
+    "Printers, label printers, scales and scanners (K-013). The bill of lading and packing list were never printed on paper",
+    "Accounting, ledger, cost of goods and stock valuation: not built (N-025, K-007). Carriers, freight rating and tracking: not built (N-026). Lost loads: no rule (N-027). Notices: not built (N-028)",
+    "Order margin beyond material, labor and scrap: overhead, freight paid and packaging are not in it; orders shipped before file 14 carry no cost",
+    "Accessibility of the shipping, packing and closeout screens: not assessed (Phase 9)",
+    "Time per task with real users: no minutes-saved figure is claimed. More than one server at once: not run",
+    "Earlier unverified areas unchanged: machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), backup and restore (E-015), host pool (G-015)"
   ],
   "currentBlockers": [
-    "B-018 and B-019: no scheduler; whether the host may run a scheduled trigger is undecided",
-    "Rules only the owner can give: what a completed work order consumes and produces (M-016), stock adjustment (I-016), promise dates and cut-offs (X-007), purchasing (I-007), scheduling rules behind the cockpit (C-013)",
-    "E-011: package upgrades are major versions and need the owner's approval",
-    "E-015: a restore test needs the owner's database"
+    "Owner: SQL Editor files 6 to 14 must be applied in order and confirmed before pull request 31 is merged. The Phase 8 code fails at dispatch, delivery and the print queue on a database without file 14 (R-49)",
+    "Owner: N-025 (accounting system and when cost of goods is recognised), N-026 (carriers, rating, tracking), N-027 (a load that never arrives)",
+    "Owner: F-009 (who may read invoices), S-010 (delivery promise from invented data), H-013 (payment method at web checkout)",
+    "Owner: labor rates per kind of work center, without which order margin shows material and scrap only",
+    "L-026 with K-007 (P1): IN PROGRESS. Cost now reaches the sale (N-017); stock valuation, overhead and cost of goods are not built",
+    "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-015, B-019, E-015, K-013, L-023 to L-027, L-030"
   ],
   "nextActions": [
-    "Owner: issue the Phase 3 prompt. Phase 3 has not been started",
-    "Owner: apply the five SQL Editor files in order before merging pull request 30; the fifth is 20261113190000_order_branch.sql",
-    "Owner: give every staff login a home branch before merging; a login with none and no all-branch role sees no orders, stock, jobs or shipments",
-    "Owner: review the list of roles that see every branch and the department table (phase-02-service-boundaries.md)",
-    "Phase 3: see the handoff in phase-02-report.md"
+    "Owner: apply SQL Editor files 6 to 14 in order, send the result of verify-6-to-14.sql, and run the read-only check-before-phase-8.sql on the live database",
+    "Owner: tell dispatch, drivers and packing staff about the sixteen behaviour changes in phase-08-report.md before go-live (R-50, R-51)",
+    "Owner: answer the six questions in phase-08-report.md under \"Decisions that are the owner's\"",
+    "Owner: say when to merge pull request 31",
+    "Owner: issue the Phase 9 prompt (enterprise UI and UX). Phase 9 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 2: five correction batches committed and tested; full gate run on the final code (qa/tools/run-gates.sh) all green; nine Phase 2 files written; registers rebuilt"
+  "lastCompletedCheckpoint": "Phase 8: second full gate run on the final code; 150 of 150 Phase 8 scenarios (142 verified, 8 not built); 45 browser checks; 31 rules proven by mutation; eighteen calls timed at 85 branches; 29 findings recorded (N-001 to N-029: 24 fixed and verified, 1 fixed not verified, 3 for the owner, 1 deferred); SQL Editor file 14. Continuation point: nothing of Phase 8 remains that does not need the owner"
 }

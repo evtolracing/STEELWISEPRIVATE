@@ -23,9 +23,13 @@ import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
 import { positiveQty } from '../lib/workflowRules.js';
 import { lineAmount } from '../lib/billingRules.js';
 import { creditInvoice, BillingError } from '../services/billing.js';
+import { placeHold } from '../lib/holds.js';
+import { unitKey } from '../lib/reservationRules.js';
+import { CREDIT_NOT_ISSUED, CREDIT_ISSUED_LATER } from '../lib/orderCloseout.js';
 
 const router = Router();
-const DISPOSITIONS = ['RESTOCK', 'SCRAP'];
+// RESTOCK: back on the shelf. INSPECT: back on the books but held until inspected (Phase 6). SCRAP: not restocked.
+const DISPOSITIONS = ['RESTOCK', 'INSPECT', 'SCRAP'];
 const num = (d) => Number(d || 0);
 const SERIALIZABLE = { isolationLevel: 'Serializable' };
 
@@ -37,7 +41,7 @@ const handle = (label, fn) => async (req, res) => {
   try {
     await fn(req, res);
   } catch (error) {
-    if (error instanceof Refuse || error instanceof BillingError) {
+    if (error instanceof Refuse || error instanceof BillingError || error?.refuse) {
       return res.status(error.status).json({ error: error.message });
     }
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The return has a field that is not valid' });
@@ -96,7 +100,13 @@ router.get('/', handle('fetch returns', async (req, res) => {
     prisma.order.findMany({ where, take, skip, orderBy: { createdAt: 'desc' }, include: INCLUDE }),
     prisma.order.count({ where }),
   ]);
-  res.json({ data: await Promise.all(rows.map(toApi)), meta: { total, limit: take, offset: skip } });
+  // Which of these came back without their credit and are still waiting for a manager (N-016).
+  const ids = rows.map((r) => r.id);
+  const marks = ids.length ? await prisma.auditLog.findMany({ where: { resourceType: 'Order', resourceId: { in: ids }, eventType: { in: ['CREDIT_NOT_ISSUED', 'CREDIT_NOT_ISSUED_SETTLED'] } }, select: { resourceId: true, eventType: true } }) : [];
+  const settled = new Set(marks.filter((m) => m.eventType === 'CREDIT_NOT_ISSUED_SETTLED').map((m) => m.resourceId));
+  const waiting = new Set(marks.filter((m) => m.eventType === 'CREDIT_NOT_ISSUED' && !settled.has(m.resourceId)).map((m) => m.resourceId));
+  const data = await Promise.all(rows.map(toApi));
+  res.json({ data: data.map((r) => ({ ...r, creditNotIssued: waiting.has(r.id) })), meta: { total, limit: take, offset: skip } });
 }));
 
 /** What can still come back on an order: looked up by order number for the "new return" form. */
@@ -149,7 +159,7 @@ router.post('/', handle('create return', async (req, res) => {
         const qty = positiveQty(raw.quantity);
         if (qty === null) refuse(400, `Line ${i + 1}: quantity must be more than zero`);
         const disposition = String(raw.disposition || 'RESTOCK').toUpperCase();
-        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${i + 1}: disposition must be RESTOCK or SCRAP`);
+        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${i + 1}: disposition must be one of ${DISPOSITIONS.join(', ')}`);
         const open = num(line.qtyShipped) - (already.get(line.id) || 0);
         if (qty > open + 1e-9) {
           refuse(409, `Line ${line.lineNumber}: only ${Math.max(open, 0)} can be returned (shipped ${num(line.qtyShipped)}, already on returns ${already.get(line.id) || 0})`);
@@ -240,7 +250,7 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
       let disposition = line.returnDisposition;
       if (o.disposition) {
         disposition = String(o.disposition).toUpperCase();
-        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${line.lineNumber}: disposition must be RESTOCK or SCRAP`);
+        if (!DISPOSITIONS.includes(disposition)) refuse(400, `Line ${line.lineNumber}: disposition must be one of ${DISPOSITIONS.join(', ')}`);
       }
       let qty = num(line.qtyOrdered);
       if (o.qtyReceived != null) {
@@ -250,16 +260,30 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
       }
       const withCoil = o.coilId ? { ...line, notes: `coil:${o.coilId}` } : line;
       if (qty > 1e-9) {
-        if (disposition === 'RESTOCK') {
+        if (disposition === 'RESTOCK' || disposition === 'INSPECT') {
           const coilId = await restockTarget(tx, found, withCoil);
+          const stock = await tx.inventory.findUnique({ where: { coilId }, select: { unit: true, status: true, coil: { select: { coilNumber: true, unitCost: true } } } });
+          // The quantity goes back in the unit the stock is counted in (Phase 6): 3 pieces are not 3 pounds.
+          if (unitKey(stock.unit) !== unitKey(line.unit)) {
+            refuse(409, `Line ${line.lineNumber}: the return is counted in ${line.unit} and stock item ${stock.coil.coilNumber} in ${stock.unit}. Receive it into a stock item counted in ${line.unit}, or scrap it.`);
+          }
+          if (stock.status === 'IN_TRANSIT') refuse(409, `Line ${line.lineNumber}: stock item ${stock.coil.coilNumber} is on its way to another branch. Name another stock item, or receive the return after the transfer arrives.`);
           const inv = await tx.inventory.update({
             where: { coilId },
             data: { qtyOnHand: { increment: qty }, qtyAvailable: { increment: qty }, lastMovement: new Date() },
           });
           await tx.materialMovement.create({
-            data: { coilId, movementType: 'RECEIVE', toLocationId: inv.locationId, qtyMoved: qty, unit: line.unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id },
+            // It comes back at the cost it carries (Phase 8, N-017), so the cost of the sale falls by what returned.
+            data: { coilId, movementType: 'RECEIVE', toLocationId: inv.locationId, qtyMoved: qty, unit: inv.unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id, unitCost: stock.coil.unitCost ?? null },
           });
-          await tx.coil.updateMany({ where: { id: coilId, status: 'SHIPPED' }, data: { status: 'AVAILABLE' } });
+          await tx.coil.updateMany({ where: { id: coilId, status: { in: ['SHIPPED', 'CONSUMED'] } }, data: { status: 'AVAILABLE' } });
+          // INSPECT: back on the books, but held until someone has looked at it (Phase 6).
+          if (disposition === 'INSPECT') {
+            const now = await tx.coil.findUnique({ where: { id: coilId }, select: { status: true } });
+            const why = `Customer return ${found.orderNumber}, line ${line.lineNumber}: waiting for inspection. ${o.notes ? String(o.notes).slice(0, 300) : ''}`.trim();
+            if (now.status !== 'HOLD') await placeHold(tx, { coilId, holdType: 'PENDING_TEST', reason: why, userId: req.user.id });
+            else await tx.qCHold.create({ data: { coilId, holdType: 'PENDING_TEST', holdReason: why, holdById: req.user.id } });
+          }
         } else {
           const named = (withCoil.notes || '').match(/coil:([0-9a-f-]{36})/i)?.[1];
           const shipped = named ? null : await tx.materialMovement.findFirst({
@@ -267,9 +291,17 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
           });
           const coilId = named || shipped?.coilId;
           // The scrap record needs a stock item to hang on; with none, the return line itself is the record.
+          // It came back and it was scrapped: both are written, so the item's history still adds up to
+          // its balance (Phase 6). Writing only the scrap took weight off an item that never got it back.
           if (coilId) {
+            const at = await tx.inventory.findUnique({ where: { coilId }, select: { locationId: true, unit: true, coil: { select: { unitCost: true } } } });
+            const unitCost = at?.coil?.unitCost ?? null;
+            const unit = at?.unit || line.unit;
             await tx.materialMovement.create({
-              data: { coilId, movementType: 'SCRAP', qtyMoved: qty, unit: line.unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id },
+              data: { coilId, movementType: 'RECEIVE', toLocationId: at?.locationId || null, qtyMoved: qty, unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: `${found.orderNumber}: returned for scrap`, createdById: req.user.id, unitCost },
+            });
+            await tx.materialMovement.create({
+              data: { coilId, movementType: 'SCRAP', fromLocationId: at?.locationId || null, qtyMoved: qty, unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id, unitCost },
             });
           }
         }
@@ -286,10 +318,54 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
   try {
     await creditReturn(ret, req.user?.id);
   } catch (error) {
-    console.error(`Returns: could not credit return ${ret.orderNumber}:`, error?.message || error);
-    creditError = 'The material was received, but the credit memo could not be issued. Issue it from the invoice.';
+    // The material is back and stays back. The missing credit is put on record, said in the answer,
+    // shown on the order's closeout and listed in the integration report until it is settled (N-016).
+    const reason = String(error?.message || error).slice(0, 300);
+    console.error(JSON.stringify({ level: 'error', msg: 'credit_not_issued', returnNumber: ret.orderNumber, reason }));
+    creditError = `The material was received, but the credit memo could not be issued: ${error instanceof BillingError ? reason : 'the credit failed'}. A manager can issue it from the return.`;
+    await prisma.auditLog.create({ data: { category: 'FINANCIAL', eventType: CREDIT_NOT_ISSUED, severity: 'ERROR', action: 'CREATE', userId: req.user?.id || null, resourceType: 'Order', resourceId: ret.id, details: { returnNumber: ret.orderNumber, originalOrderId: ret.returnOfOrderId, reason } } }).catch(() => {});
   }
   res.json({ ...(await toApi(ret)), ...(creditError && { warning: creditError }) });
+}));
+
+/**
+ * The credit of a return that was received without one (N-016). A manager either issues it now,
+ * or records that it was settled another way (a credit already given by hand) with the reason.
+ * It can be issued only once: a return that already has a credit memo is refused.
+ */
+router.post('/:id/credit', handle('credit return', async (req, res) => {
+  const ret = await prisma.order.findFirst({ where: { id: req.params.id, orderType: 'RETURN' }, include: INCLUDE });
+  if (!ret) refuse(404, 'Return not found');
+  if (ret.status !== 'COMPLETE') refuse(409, `This return is ${ret.status}. A return is credited once it has been received.`);
+  const body = req.body || {};
+  const [flagged, settled, credited] = await Promise.all([
+    prisma.auditLog.count({ where: { eventType: CREDIT_NOT_ISSUED, resourceType: 'Order', resourceId: ret.id } }),
+    prisma.auditLog.count({ where: { eventType: CREDIT_ISSUED_LATER, resourceType: 'Order', resourceId: ret.id } }),
+    prisma.invoice.count({ where: { kind: 'CREDIT', status: { not: 'CANCELLED' }, notes: { startsWith: `Return ${ret.orderNumber}:` } } }),
+  ]);
+  if (credited) refuse(409, 'This return already has a credit memo.');
+  if (!flagged) refuse(409, 'This return was not received without its credit.');
+  if (settled) refuse(409, 'The credit of this return was already settled.');
+  let credits = [];
+  let note;
+  if (body.settledAnotherWay) {
+    note = String(body.reason || '').trim();
+    if (note.length < 5) refuse(400, 'Say how the credit was settled (for example the number of the credit memo given by hand).');
+  } else {
+    credits = await creditReturn(ret, req.user?.id);
+    if (!credits.length) refuse(409, 'Nothing on the invoices of this order is left to credit for this return. If the credit was given another way, record that with the reason.');
+    note = `Credit ${credits.map((c) => c.invoiceNumber).join(', ')} issued`;
+  }
+  // One settlement per return: the return's row is locked while it is checked and written, so two
+  // managers pressing at the same moment leave one record.
+  const first = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT 1 FROM "Order" WHERE "id" = ${ret.id} FOR UPDATE`;
+    if (await tx.auditLog.count({ where: { eventType: CREDIT_ISSUED_LATER, resourceType: 'Order', resourceId: ret.id } })) return false;
+  await tx.auditLog.create({ data: { category: 'FINANCIAL', eventType: CREDIT_ISSUED_LATER, severity: 'INFO', action: 'UPDATE', userId: req.user?.id || null, resourceType: 'Order', resourceId: ret.id, details: { returnNumber: ret.orderNumber, originalOrderId: ret.returnOfOrderId, note, credits: credits.map((c) => c.invoiceNumber) } } });
+    return true;
+  });
+  if (!first) refuse(409, 'The credit of this return was already settled.');
+  res.status(201).json({ ...(await toApi(ret)), settled: note });
 }));
 
 router.post('/:id/cancel', handle('cancel return', async (req, res) => {

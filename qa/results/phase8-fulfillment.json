@@ -1,0 +1,3238 @@
+{
+ "at": "2026-11-16T02:18:35.652Z",
+ "base": "http://localhost:3011",
+ "scenarios": 150,
+ "passed": 150,
+ "checks": 496,
+ "groups": {
+  "Finished goods release, picking and packaging": {
+   "scenarios": 20,
+   "passed": 20,
+   "checks": 66
+  },
+  "Shipment creation, partial shipments and backorders": {
+   "scenarios": 25,
+   "passed": 25,
+   "checks": 79
+  },
+  "Dispatch, carriers, freight and delivery": {
+   "scenarios": 25,
+   "passed": 25,
+   "checks": 82
+  },
+  "Invoicing, payments and accounting sync": {
+   "scenarios": 25,
+   "passed": 25,
+   "checks": 91
+  },
+  "Costing, reconciliation and closeout": {
+   "scenarios": 20,
+   "passed": 20,
+   "checks": 71
+  },
+  "Returns, credits, refunds and adjustments": {
+   "scenarios": 15,
+   "passed": 15,
+   "checks": 51
+  },
+  "Concurrency, security, exceptions and recovery": {
+   "scenarios": 20,
+   "passed": 20,
+   "checks": 56
+  }
+ },
+ "results": [
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a shipment is put together on the dock and nothing moves until it is dispatched",
+   "asserts": [
+    {
+     "what": "the shipment waits on the dock with its line",
+     "ok": true
+    },
+    {
+     "what": "the stock is still on hand and still reserved",
+     "ok": true
+    },
+    {
+     "what": "no stock movement, no invoice and nothing counted as shipped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 126
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "an order that is not confirmed cannot be put on a shipment",
+   "asserts": [
+    {
+     "what": "a draft order is refused with the reason",
+     "ok": true
+    },
+    {
+     "what": "and no shipment was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 23
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "an order put on hold after its shipment was built cannot be dispatched",
+   "asserts": [
+    {
+     "what": "dispatch is refused and names the hold",
+     "ok": true
+    },
+    {
+     "what": "the stock did not move",
+     "ok": true
+    },
+    {
+     "what": "and no new shipment can be opened for it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 125
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a cancelled line cannot be shipped",
+   "asserts": [
+    {
+     "what": "refused, naming the line",
+     "ok": true
+    },
+    {
+     "what": "the other line still ships",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 163
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "material is not released to ship while the job that makes it is unfinished",
+   "asserts": [
+    {
+     "what": "dispatch is refused and names the job",
+     "ok": true
+    },
+    {
+     "what": "nothing left: stock, line and shipment are unchanged",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 140
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "stock placed on hold after it was reserved is not shipped",
+   "asserts": [
+    {
+     "what": "the hold was placed",
+     "ok": true
+    },
+    {
+     "what": "dispatch is refused and names the item on hold",
+     "ok": true
+    },
+    {
+     "what": "nothing left the dock",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 140
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "the pick list names the reserved stock items with their heat and bin, oldest reservation first",
+   "asserts": [
+    {
+     "what": "before dispatch the paper is a pick list",
+     "ok": true
+    },
+    {
+     "what": "it draws 300 from the first item reserved and 100 from the second",
+     "ok": true
+    },
+    {
+     "what": "each row carries the tag and the heat on file",
+     "ok": true
+    },
+    {
+     "what": "and says 100 stays on back order after this shipment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 165
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a shipment carrying more than is reserved is flagged on the pick list and refused at dispatch",
+   "asserts": [
+    {
+     "what": "the pick list says it is 300 short of reserved stock",
+     "ok": true
+    },
+    {
+     "what": "dispatch is refused: the item and heat going out must be on record",
+     "ok": true
+    },
+    {
+     "what": "nothing was taken from stock",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 176
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "stock standing at another branch is not picked for a shipment from this dock (N-001)",
+   "asserts": [
+    {
+     "what": "the reservation stands",
+     "ok": true
+    },
+    {
+     "what": "the pick list marks the item as at another branch",
+     "ok": true
+    },
+    {
+     "what": "dispatch is refused and names the branch that holds it",
+     "ok": true
+    },
+    {
+     "what": "the other branch's stock is untouched and nothing is invoiced",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 158
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "the papers show a blank, never an invented value, for what is not on file",
+   "asserts": [
+    {
+     "what": "no bill of lading number is made up",
+     "ok": true
+    },
+    {
+     "what": "the ship-from is the branch itself, with no invented street address",
+     "ok": true
+    },
+    {
+     "what": "a missing ship-to address is named, not filled in",
+     "ok": true
+    },
+    {
+     "what": "no freight class or NMFC number appears anywhere in the answer",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 108
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a package is opened only for a real order line and a known kind of package",
+   "asserts": [
+    {
+     "what": "an unknown kind is refused with the list of kinds",
+     "ok": true
+    },
+    {
+     "what": "a line of a different order is refused",
+     "ok": true
+    },
+    {
+     "what": "a good one is saved, open and empty",
+     "ok": true
+    },
+    {
+     "what": "package numbers come from a counter, one after another",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 241
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "what goes into a package is checked against the stock item",
+   "asserts": [
+    {
+     "what": "minus pieces, minus weight, an unknown heat, more weight than the item and a wrong heat are each refused",
+     "ok": true
+    },
+    {
+     "what": "only the good item is in the package",
+     "ok": true
+    },
+    {
+     "what": "its heat and grade were read from the stock item",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 185
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a packed package is sent to quality; an empty one is not (N-008)",
+   "asserts": [
+    {
+     "what": "an empty package is refused",
+     "ok": true
+    },
+    {
+     "what": "a packed one moves to waiting for quality with its gross weight",
+     "ok": true
+    },
+    {
+     "what": "sending it again is refused and writes no second record",
+     "ok": true
+    },
+    {
+     "what": "and nothing more can be added once it is with quality",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 319
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "only quality releases or holds a package",
+   "asserts": [
+    {
+     "what": "the shipping clerk is refused",
+     "ok": true
+    },
+    {
+     "what": "a hold needs a reason, and with one the package is held",
+     "ok": true
+    },
+    {
+     "what": "a held package cannot be tagged",
+     "ok": true
+    },
+    {
+     "what": "the inspector releases it, and the record carries the inspector and their real role",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 199
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a tag is printed only for a package that quality has released",
+   "asserts": [
+    {
+     "what": "the tag can be drafted while packing, numbered from a counter",
+     "ok": true
+    },
+    {
+     "what": "it cannot be made ready or printed before the release",
+     "ok": true
+    },
+    {
+     "what": "after the release it is made ready and printed",
+     "ok": true
+    },
+    {
+     "what": "the tag carries the heat, pieces and weight of what is in the package",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 254
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a package has one live tag at a time",
+   "asserts": [
+    {
+     "what": "a second tag is refused while the first stands",
+     "ok": true
+    },
+    {
+     "what": "voiding needs a reason, works once, and is refused the second time",
+     "ok": true
+    },
+    {
+     "what": "after the void a new tag can be made",
+     "ok": true
+    },
+    {
+     "what": "one void record exists, by the clerk, with the reason",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 281
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "print, apply and seal happen in that order",
+   "asserts": [
+    {
+     "what": "a tag not yet printed cannot be applied or printed again, and the package cannot be sealed",
+     "ok": true
+    },
+    {
+     "what": "a scan of the wrong package is refused, and so is sealing before the tag is on",
+     "ok": true
+    },
+    {
+     "what": "applied, then sealed once with its seal number",
+     "ok": true
+    },
+    {
+     "what": "the tag is sealed with the package",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 380
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a voided tag stays void when the package is sealed (N-010)",
+   "asserts": [
+    {
+     "what": "the package is sealed",
+     "ok": true
+    },
+    {
+     "what": "the live tag is sealed and the voided one is still void",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 346
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "a further copy of a tag needs a reason, and after three copies a manager",
+   "asserts": [
+    {
+     "what": "an unknown reason is refused",
+     "ok": true
+    },
+    {
+     "what": "three copies are allowed, the fourth is refused to the clerk and allowed to the manager",
+     "ok": true
+    },
+    {
+     "what": "the count on the tag is four and each copy has its record",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 319
+  },
+  {
+   "group": "Finished goods release, picking and packaging",
+   "name": "packing records name the real person and role, and custody records cannot be forged (N-011)",
+   "asserts": [
+    {
+     "what": "the record of opening the package names the clerk and the clerk's own role",
+     "ok": true
+    },
+    {
+     "what": "its fingerprint is a real SHA-256 value, not a random string",
+     "ok": true
+    },
+    {
+     "what": "a made-up \"job shipped\" record, a pretend hold, and a record in another person's name are all refused",
+     "ok": true
+    },
+    {
+     "what": "a plain note is kept, marked as a note, under the writer's own name",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 191
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a full shipment takes the stock, fills the line and completes the order, in one step",
+   "asserts": [
+    {
+     "what": "500 left the stock item and the reservation is used up",
+     "ok": true
+    },
+    {
+     "what": "one stock movement says what left, from which branch, for which line and shipment",
+     "ok": true
+    },
+    {
+     "what": "the line shows 500 shipped and the order is complete",
+     "ok": true
+    },
+    {
+     "what": "the shipment is on the road with its departure time and who sent it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 204
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a partial shipment leaves the rest on back order, visible and still reserved",
+   "asserts": [
+    {
+     "what": "600 shipped, the order is partly shipped",
+     "ok": true
+    },
+    {
+     "what": "400 is still reserved for it and 900 is on hand",
+     "ok": true
+    },
+    {
+     "what": "the order shows 400 still to ship",
+     "ok": true
+    },
+    {
+     "what": "and it is on the list of orders with something still to ship",
+     "ok": true
+    },
+    {
+     "what": "only what shipped was invoiced",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 221
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "the back order ships later on its own shipment and the order completes",
+   "asserts": [
+    {
+     "what": "the second shipment went and the order is complete",
+     "ok": true
+    },
+    {
+     "what": "two shipments, two invoices, each for what its shipment carried",
+     "ok": true
+    },
+    {
+     "what": "together they bill the order once",
+     "ok": true
+    },
+    {
+     "what": "nothing is left to ship or reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 307
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "an order split over three shipments is shipped exactly once in total",
+   "asserts": [
+    {
+     "what": "three movements add up to 900",
+     "ok": true
+    },
+    {
+     "what": "the stock item is down by 900 and the line shows 900",
+     "ok": true
+    },
+    {
+     "what": "a fourth shipment is refused: the order is complete",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 399
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "more than is left to ship is refused, with the figures",
+   "asserts": [
+    {
+     "what": "301 against 300 left is refused and says what is left",
+     "ok": true
+    },
+    {
+     "what": "no shipment was saved for it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 199
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "two shipments on the dock cannot together carry more than the line",
+   "asserts": [
+    {
+     "what": "the first shipment already holds all 500, so one more is refused",
+     "ok": true
+    },
+    {
+     "what": "once the first is cancelled the quantity is free again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 156
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a shipment on the dock can be changed; one that has left cannot",
+   "asserts": [
+    {
+     "what": "a second line is added",
+     "ok": true
+    },
+    {
+     "what": "and taken off again",
+     "ok": true
+    },
+    {
+     "what": "after dispatch neither its lines nor its carrier can be changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 272
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "what is typed for a shipment line is checked",
+   "asserts": [
+    {
+     "what": "not a list, zero, negative, not a number, a line of another order and a negative weight are each refused",
+     "ok": true
+    },
+    {
+     "what": "none of them left a shipment behind",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 286
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a shipment needs an order and a branch that exist",
+   "asserts": [
+    {
+     "what": "no order: 400; unknown order: 404; unknown branch: refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 123
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "carrier, truck and driver are saved as typed, and bad values are refused",
+   "asserts": [
+    {
+     "what": "all seven are on the shipment",
+     "ok": true
+    },
+    {
+     "what": "a bad date, a negative weight, nothing at all, and fields that are not editable are each refused",
+     "ok": true
+    },
+    {
+     "what": "and the status was not changed through the edit",
+     "ok": true
+    },
+    {
+     "what": "the bill of lading shows the number and carrier that were typed, and the entered weight",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 179
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "an empty shipment cannot be dispatched",
+   "asserts": [
+    {
+     "what": "it is refused",
+     "ok": true
+    },
+    {
+     "what": "and no invoice was raised",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 166
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "cancelling a shipment on the dock moves nothing and is written down",
+   "asserts": [
+    {
+     "what": "it is cancelled",
+     "ok": true
+    },
+    {
+     "what": "the stock is on hand and still reserved for the order",
+     "ok": true
+    },
+    {
+     "what": "the history says who cancelled it",
+     "ok": true
+    },
+    {
+     "what": "a cancelled shipment cannot be dispatched or brought back",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "the moves a shipment may make are fixed",
+   "asserts": [
+    {
+     "what": "from the dock it cannot jump to delivered or to a problem, and an unknown status is refused",
+     "ok": true
+    },
+    {
+     "what": "it can be marked loading and put back",
+     "ok": true
+    },
+    {
+     "what": "once on the road it cannot be cancelled or put back on the dock",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 233
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "one shipment carries two lines, one of them in part, and is billed line by line",
+   "asserts": [
+    {
+     "what": "line 1 is shipped in full, line 2 in part, the order is partly shipped",
+     "ok": true
+    },
+    {
+     "what": "each stock item gave what its line shipped",
+     "ok": true
+    },
+    {
+     "what": "the invoice has both lines at the shipped quantities and prices",
+     "ok": true
+    },
+    {
+     "what": "250 of line 2 is the back order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 254
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a line filled from two stock items records each item and heat that left",
+   "asserts": [
+    {
+     "what": "two movements: 300 from the first item, 200 from the second",
+     "ok": true
+    },
+    {
+     "what": "the first item is used up and marked as gone; the second keeps 200",
+     "ok": true
+    },
+    {
+     "what": "the packing list now shows the stock that actually left, with its heat",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 255
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "the shipping desk looks an order up by number and sees what can ship",
+   "asserts": [
+    {
+     "what": "it answers with the order and its line",
+     "ok": true
+    },
+    {
+     "what": "the line shows 1,000 open and nothing on the dock",
+     "ok": true
+    },
+    {
+     "what": "with 700 on a shipment at the dock, 300 is open to put on another",
+     "ok": true
+    },
+    {
+     "what": "after it leaves: 700 shipped, 300 open",
+     "ok": true
+    },
+    {
+     "what": "an unknown number is 404 and a missing one 400",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 235
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "an order sold by one branch is shipped and billed from the branch that holds the stock (N-002)",
+   "asserts": [
+    {
+     "what": "the warehouse at branch 1 can look the order up, marked as sold by another branch",
+     "ok": true
+    },
+    {
+     "what": "it builds and dispatches the shipment from its own dock",
+     "ok": true
+    },
+    {
+     "what": "the order is shipped and invoiced once",
+     "ok": true
+    },
+    {
+     "what": "the order still belongs to the branch that sold it, and the stock left branch 1",
+     "ok": true
+    },
+    {
+     "what": "the selling branch can see the shipment of its order",
+     "ok": true
+    },
+    {
+     "what": "but only the dock it left from can change it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 248
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a branch cannot ship another branch's order when it holds nothing for it",
+   "asserts": [
+    {
+     "what": "the order is not found for the branch 1 warehouse",
+     "ok": true
+    },
+    {
+     "what": "nor can it be looked up there",
+     "ok": true
+    },
+    {
+     "what": "its own branch ships it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 196
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a warehouse cannot open a shipment from another branch's dock",
+   "asserts": [
+    {
+     "what": "refused: that dock belongs to another branch",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 112
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a finished job shipped from the shop floor is a real shipment: stock, order and invoice follow",
+   "asserts": [
+    {
+     "what": "carrier and tracking number are required",
+     "ok": true
+    },
+    {
+     "what": "the job is shipped",
+     "ok": true
+    },
+    {
+     "what": "a shipment exists from the job's branch, on the road, carrying the line",
+     "ok": true
+    },
+    {
+     "what": "the stock left, the line is shipped and one invoice was raised",
+     "ok": true
+    },
+    {
+     "what": "shipping the job a second time is refused and adds nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 217
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a job whose line is already on a shipment at the dock is not shipped twice",
+   "asserts": [
+    {
+     "what": "the job is refused and pointed to the shipping desk",
+     "ok": true
+    },
+    {
+     "what": "the job is still ready to ship and only the one shipment exists",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a job with no work center cannot ship from the floor, and no empty shipment is left behind",
+   "asserts": [
+    {
+     "what": "refused: the branch it ships from is not known",
+     "ok": true
+    },
+    {
+     "what": "no shipment, no invoice, and the job is unchanged",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 127
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "a job that cannot be dispatched leaves no shipment behind",
+   "asserts": [
+    {
+     "what": "refused: nothing is reserved for what would go out",
+     "ok": true
+    },
+    {
+     "what": "the half-made shipment was removed, the job is still ready, nothing is invoiced",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 130
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "shipping a staged job from the staging screen does the same, and its custody record names the real role",
+   "asserts": [
+    {
+     "what": "the job is shipped",
+     "ok": true
+    },
+    {
+     "what": "with a real shipment and one invoice",
+     "ok": true
+    },
+    {
+     "what": "the custody record carries the clerk and the clerk's own role",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 227
+  },
+  {
+   "group": "Shipment creation, partial shipments and backorders",
+   "name": "cancelling an order cancels its shipments still on the dock (N-006)",
+   "asserts": [
+    {
+     "what": "the order is cancelled and so is its shipment",
+     "ok": true
+    },
+    {
+     "what": "the shipment's history says it was cancelled with the order",
+     "ok": true
+    },
+    {
+     "what": "it cannot be dispatched, and the stock never left",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 159
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a delivery is recorded with the name of the person who received it",
+   "asserts": [
+    {
+     "what": "it is delivered, with the time",
+     "ok": true
+    },
+    {
+     "what": "the name is kept, trimmed, and proof is marked as captured",
+     "ok": true
+    },
+    {
+     "what": "the history says who it was signed for by and which user recorded it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 208
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a delivery with no name and no reason is refused (N-004)",
+   "asserts": [
+    {
+     "what": "nothing, a blank name, and a two-letter reason are each refused with what to do",
+     "ok": true
+    },
+    {
+     "what": "the shipment is still on the road",
+     "ok": true
+    },
+    {
+     "what": "with a reason it is delivered, proof is marked as not captured, and the reason is kept",
+     "ok": true
+    },
+    {
+     "what": "the history carries the reason",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 244
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "proof of delivery text and image address are checked",
+   "asserts": [
+    {
+     "what": "a name over 200 letters, a name that is not text, a plain http address and a script address are each refused",
+     "ok": true
+    },
+    {
+     "what": "an https image alone is proof",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 208
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a shipment is delivered once, and never before it has left",
+   "asserts": [
+    {
+     "what": "on the dock it cannot be marked delivered",
+     "ok": true
+    },
+    {
+     "what": "the second delivery is refused and changes neither the name nor the time",
+     "ok": true
+    },
+    {
+     "what": "one delivered row in the history",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 224
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a problem on the road is recorded with what happened (N-003)",
+   "asserts": [
+    {
+     "what": "with no reason it is refused",
+     "ok": true
+    },
+    {
+     "what": "with one it becomes a shipment problem",
+     "ok": true
+    },
+    {
+     "what": "the reason and the person are in the history",
+     "ok": true
+    },
+    {
+     "what": "the order shows a shipment problem and is not closed",
+     "ok": true
+    },
+    {
+     "what": "and it is on the list of orders with a shipment problem",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 265
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a shipment with a problem goes back on the road without shipping or billing twice",
+   "asserts": [
+    {
+     "what": "it is on the road again",
+     "ok": true
+    },
+    {
+     "what": "no second stock movement, no second invoice, and the first departure time stands",
+     "ok": true
+    },
+    {
+     "what": "the line still shows 300 shipped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 225
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a shipment with a problem can end delivered, and cannot be cancelled or put back on the dock",
+   "asserts": [
+    {
+     "what": "cancel and back-to-dock are refused: the stock and the invoice already moved",
+     "ok": true
+    },
+    {
+     "what": "it is delivered with its proof",
+     "ok": true
+    },
+    {
+     "what": "a lost or destroyed load has no status of its own: it stays a problem until someone decides (recorded as a business decision)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 236
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "nothing ships to a customer whose account was closed after the order was confirmed (N-005)",
+   "asserts": [
+    {
+     "what": "dispatch is refused and says the account is closed",
+     "ok": true
+    },
+    {
+     "what": "no stock left and no invoice was raised",
+     "ok": true
+    },
+    {
+     "what": "once the account is reopened the same shipment goes",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 173
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a carrier's system reports delivery with no name: it is accepted and marked as such",
+   "asserts": [
+    {
+     "what": "the report is accepted and the shipment is delivered",
+     "ok": true
+    },
+    {
+     "what": "it is not counted as signed for: the reason says it came from the carrier's system with no name",
+     "ok": true
+    },
+    {
+     "what": "a carrier report that names the receiver is proof",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 396
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a carrier reaches only the shipments given to it",
+   "asserts": [
+    {
+     "what": "a report on another carrier's shipment is refused",
+     "ok": true
+    },
+    {
+     "what": "and that shipment is unchanged",
+     "ok": true
+    },
+    {
+     "what": "its own list holds its shipment and not the other",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 356
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "freight typed on the order is billed once, on the first shipment, and never again on a later one",
+   "asserts": [
+    {
+     "what": "two invoices were raised",
+     "ok": true
+    },
+    {
+     "what": "the freight on the order was billed in total exactly once",
+     "ok": true
+    },
+    {
+     "what": "and the two invoices together equal the order total",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 247
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "freight rates are not calculated by this product: the amount is whatever staff type on the order",
+   "asserts": [
+    {
+     "what": "there is no freight rate, tariff, lane or fuel surcharge table",
+     "ok": true
+    },
+    {
+     "what": "no rating library or carrier rate service is installed",
+     "ok": true
+    },
+    {
+     "what": "rate shopping, accessorials, fuel surcharge and freight class are therefore NOT VERIFIED and none was invented",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 6,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "no carrier is connected: there is no label purchase, pickup request or tracking pull to test",
+   "asserts": [
+    {
+     "what": "the shipping code makes no outside call",
+     "ok": true
+    },
+    {
+     "what": "there is no tracking-event, carrier-label, pickup or parcel table",
+     "ok": true
+    },
+    {
+     "what": "what exists instead: a carrier may report status to us through the partner API (verified above and in Phase 4)",
+     "ok": true
+    },
+    {
+     "what": "parcel, LTL and truckload booking are therefore NOT APPLICABLE; no carrier capability was invented",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 6,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "the six freight planning screens are marked as sample screens, not connected to records",
+   "asserts": [
+    {
+     "what": "seven freight routes exist",
+     "ok": true
+    },
+    {
+     "what": "every one is wrapped in the sample-screen notice",
+     "ok": true
+    },
+    {
+     "what": "connecting them to real shipments is deferred to Phase 9 (U-035); nothing on them is counted as working",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "the bill of lading and packing list are drawn from the shipment, with nothing invented (N-014)",
+   "asserts": [
+    {
+     "what": "both papers are queued",
+     "ok": true
+    },
+    {
+     "what": "the bill of lading shows the typed number, the carrier, the order and the branch it leaves from",
+     "ok": true
+    },
+    {
+     "what": "the packing list shows the stock item and its heat",
+     "ok": true
+    },
+    {
+     "what": "neither carries the invented address, freight class or NMFC number of the old template",
+     "ok": true
+    },
+    {
+     "what": "both say the shipment has not yet been dispatched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 222
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a paper waiting in the queue is brought up to date, never printed stale, and never queued twice",
+   "asserts": [
+    {
+     "what": "asking again returns the same two papers, not two more",
+     "ok": true
+    },
+    {
+     "what": "the waiting paper now shows the new carrier and no longer says \"not yet dispatched\"",
+     "ok": true
+    },
+    {
+     "what": "once printed, asking again queues a fresh copy and leaves the printed one as it was",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 301
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "text on a printed paper cannot carry markup",
+   "asserts": [
+    {
+     "what": "the customer name and carrier are printed as text",
+     "ok": true
+    },
+    {
+     "what": "no script or image tag from the data reaches the page",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 128
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "each branch sees and settles its own print jobs (N-015)",
+   "asserts": [
+    {
+     "what": "the job carries the branch the shipment leaves from",
+     "ok": true
+    },
+    {
+     "what": "branch 1 sees it; branch 2 does not",
+     "ok": true
+    },
+    {
+     "what": "branch 2 cannot mark it printed, skip it or draw it",
+     "ok": true
+    },
+    {
+     "what": "the queue says how many are waiting and how many it shows",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 176
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a print job is settled once, by a named person",
+   "asserts": [
+    {
+     "what": "printed once; the second time and a later skip are refused",
+     "ok": true
+    },
+    {
+     "what": "when it was printed is on the job, and one record names who printed it",
+     "ok": true
+    },
+    {
+     "what": "skipping needs a reason, and with one the job is skipped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 191
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a job label prints the real branch, order and customer PO, and blanks for what is not on file",
+   "asserts": [
+    {
+     "what": "an unknown kind of label is refused",
+     "ok": true
+    },
+    {
+     "what": "the label is queued for the job's branch",
+     "ok": true
+    },
+    {
+     "what": "it carries the order's own PO reference and the branch name",
+     "ok": true
+    },
+    {
+     "what": "pieces are blank, not \"1 EA\", and no invented address appears",
+     "ok": true
+    },
+    {
+     "what": "another branch cannot queue a label for this job",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 140
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "a load listing belongs to one shipment on the dock, at the branch it leaves from",
+   "asserts": [
+    {
+     "what": "a listing that starts at another branch than its shipment is refused",
+     "ok": true
+    },
+    {
+     "what": "a good one is saved with a number from the counter",
+     "ok": true
+    },
+    {
+     "what": "a tag of a different order cannot be put on it",
+     "ok": true
+    },
+    {
+     "what": "the listing cannot \"depart\" while its shipment is still on the dock",
+     "ok": true
+    },
+    {
+     "what": "and no listing is made for a shipment that has already left",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 668
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "the list of listings answers as a list (it used to be mistaken for a tag)",
+   "asserts": [
+    {
+     "what": "it answers 200 with rows, not \"tag not found\"",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 10
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "the shipment list is kept to the reader's branches and to a page",
+   "asserts": [
+    {
+     "what": "branch 1 sees its own shipment and not branch 2's",
+     "ok": true
+    },
+    {
+     "what": "branch 2 sees its own and not branch 1's",
+     "ok": true
+    },
+    {
+     "what": "and cannot open branch 1's shipment or its papers by id",
+     "ok": true
+    },
+    {
+     "what": "a request for a hundred thousand rows is cut to a page",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 341
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "no email or text is sent when a shipment leaves or arrives",
+   "asserts": [
+    {
+     "what": "the shipping and billing code calls no mail or text service",
+     "ok": true
+    },
+    {
+     "what": "customer notices by email and text are the owner's decision 5 (later); none was sent by any scenario",
+     "ok": true
+    },
+    {
+     "what": "what exists instead: a partner event for the customer's own system, verified in Phase 4",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Dispatch, carriers, freight and delivery",
+   "name": "the papers after delivery carry who received it",
+   "asserts": [
+    {
+     "what": "the document data names the receiver and the delivery time",
+     "ok": true
+    },
+    {
+     "what": "or, where nobody signed, the reason",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 475
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "dispatch raises one invoice for exactly what left, in the same step",
+   "asserts": [
+    {
+     "what": "one invoice, tied to the shipment and the order",
+     "ok": true
+    },
+    {
+     "what": "its line is the order line, 400 at the order price",
+     "ok": true
+    },
+    {
+     "what": "it is numbered from the invoice series",
+     "ok": true
+    },
+    {
+     "what": "due 30 days out, the default when the order names no terms",
+     "ok": true
+    },
+    {
+     "what": "one record says who issued it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 184
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "invoice numbers run one after another and are never repeated",
+   "asserts": [
+    {
+     "what": "three invoices in a row carry three consecutive numbers",
+     "ok": true
+    },
+    {
+     "what": "no invoice number appears twice anywhere",
+     "ok": true
+    },
+    {
+     "what": "the counter stands at the highest number issued: none was skipped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 575
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "a shipment is never invoiced twice",
+   "asserts": [
+    {
+     "what": "dispatching again is refused",
+     "ok": true
+    },
+    {
+     "what": "raising an invoice by hand finds nothing left to bill, or hands back the one that exists",
+     "ok": true
+    },
+    {
+     "what": "there is still exactly one invoice, for 300",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 237
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "tax follows each part shipped, and the parts add up to the tax on the order to the cent",
+   "asserts": [
+    {
+     "what": "three invoices",
+     "ok": true
+    },
+    {
+     "what": "each of the first two carries tax in proportion to what it bills",
+     "ok": true
+    },
+    {
+     "what": "the tax on the three is the tax on the order exactly",
+     "ok": true
+    },
+    {
+     "what": "and every invoice total is its goods plus tax plus freight",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 338
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "payment terms on the order set the due date",
+   "asserts": [
+    {
+     "what": "NET 60 is due in 60 days and Net 15 in 15",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 375
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "a payment in full settles the invoice and is written down with who took it",
+   "asserts": [
+    {
+     "what": "the invoice is paid, with nothing owed",
+     "ok": true
+    },
+    {
+     "what": "one payment row holds the amount, the method and the check number",
+     "ok": true
+    },
+    {
+     "what": "one record names the person who took it and the amount",
+     "ok": true
+    },
+    {
+     "what": "the order no longer shows anything unpaid",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 230
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "part payments add up, and nobody can pay more than is owed",
+   "asserts": [
+    {
+     "what": "after 100 of 195 the invoice is part paid, 95 owed",
+     "ok": true
+    },
+    {
+     "what": "95.01 against 95 is refused",
+     "ok": true
+    },
+    {
+     "what": "the last 95 settles it",
+     "ok": true
+    },
+    {
+     "what": "and a paid invoice takes no more",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 230
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "what is typed for a payment is checked, including its date (N-007)",
+   "asserts": [
+    {
+     "what": "zero, negative, a fraction of a cent, not a number, an unknown method, \"credit\" as a method, a bad date and a date in 2031 are each refused",
+     "ok": true
+    },
+    {
+     "what": "and none of them left a payment or changed the invoice",
+     "ok": true
+    },
+    {
+     "what": "a payment dated five days ago (a check found in the drawer) is accepted with that date",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 277
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "only sales and managers of the invoice's branch take payments",
+   "asserts": [
+    {
+     "what": "the shipping clerk, the operator and the auditor are refused",
+     "ok": true
+    },
+    {
+     "what": "sales at another branch cannot find the invoice",
+     "ok": true
+    },
+    {
+     "what": "nothing was recorded",
+     "ok": true
+    },
+    {
+     "what": "sales at its own branch can",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 216
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "a credit memo is a manager's decision, needs a reason, and never exceeds the invoice",
+   "asserts": [
+    {
+     "what": "sales staff are refused; no reason, too much and a fraction of a cent are refused",
+     "ok": true
+    },
+    {
+     "what": "the credit memo is numbered in its own series and points at the invoice",
+     "ok": true
+    },
+    {
+     "what": "it pays down what is owed: 175 left on the invoice, nothing owed back",
+     "ok": true
+    },
+    {
+     "what": "the record names the manager and the reason",
+     "ok": true
+    },
+    {
+     "what": "a second credit cannot take the total over the invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 256
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "a credit by line cannot credit more of a line than was billed",
+   "asserts": [
+    {
+     "what": "a line that is not on the invoice, zero and 301 of 300 are refused",
+     "ok": true
+    },
+    {
+     "what": "20 of the line is credited at the line price",
+     "ok": true
+    },
+    {
+     "what": "then only 280 of it is left to credit",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 219
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "a credit memo cannot itself be credited, paid or cancelled",
+   "asserts": [
+    {
+     "what": "each is refused",
+     "ok": true
+    },
+    {
+     "what": "and the credit memo is unchanged",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 201
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "credit on an invoice already paid is owed back, and a refund settles it",
+   "asserts": [
+    {
+     "what": "40 is owed back to the customer and the order says so",
+     "ok": true
+    },
+    {
+     "what": "more than is owed, zero, a refund by sales staff, \"credit\" as the method, and a refund on an ordinary invoice are refused",
+     "ok": true
+    },
+    {
+     "what": "two refunds of 15 and 25 settle it",
+     "ok": true
+    },
+    {
+     "what": "and nothing more can be refunded",
+     "ok": true
+    },
+    {
+     "what": "each refund has its record",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 352
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "an invoice with nothing on it can be cancelled by a manager, and what it billed is billed again once",
+   "asserts": [
+    {
+     "what": "sales staff cannot cancel; a manager can, once",
+     "ok": true
+    },
+    {
+     "what": "the order now shows 300 shipped and not invoiced",
+     "ok": true
+    },
+    {
+     "what": "raising it again makes one new invoice for the same 300, with a new number; a third try finds nothing",
+     "ok": true
+    },
+    {
+     "what": "an invoice with a payment on it cannot be cancelled: a credit memo is the way",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 474
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "the invoice shows its own history: issued, paid and credited, each with who",
+   "asserts": [
+    {
+     "what": "issued, payment and credit are listed in order",
+     "ok": true
+    },
+    {
+     "what": "each names a person",
+     "ok": true
+    },
+    {
+     "what": "the balance is what is left: 195 less 50 paid less 10 credited",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 197
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "the invoice list finds by number, filters by state, and its totals are the sum of what it lists",
+   "asserts": [
+    {
+     "what": "two of the three are open",
+     "ok": true
+    },
+    {
+     "what": "owed on the list is 65 + 100",
+     "ok": true
+    },
+    {
+     "what": "an invoice is found by its number and by its order number",
+     "ok": true
+    },
+    {
+     "what": "an unknown state is refused and \"paid\" lists the one that is paid",
+     "ok": true
+    },
+    {
+     "what": "sales at another branch sees none of them",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 532
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "what a customer owes is aged by days past due, from the invoices themselves",
+   "asserts": [
+    {
+     "what": "one row for the customer, five invoices",
+     "ok": true
+    },
+    {
+     "what": "65 not due, 130 at 1 to 30, 195 at 31 to 60, 260 at 61 to 90, 325 over 90",
+     "ok": true
+    },
+    {
+     "what": "the columns add up to the total owed",
+     "ok": true
+    },
+    {
+     "what": "a part payment takes only what was paid out of its column",
+     "ok": true
+    },
+    {
+     "what": "and the total agrees with the invoices read straight from the database",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 875
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "paid and cancelled invoices are not aged, and credit owed back is shown beside, not netted",
+   "asserts": [
+    {
+     "what": "only the one open invoice is aged: 130",
+     "ok": true
+    },
+    {
+     "what": "the 25 owed back is in its own column and was not taken off the 130",
+     "ok": true
+    },
+    {
+     "what": "the report says so in words",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 561
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "the aging report is kept to the reader's branches",
+   "asserts": [
+    {
+     "what": "sales at branch 1 sees the 65 owed",
+     "ok": true
+    },
+    {
+     "what": "sales at branch 2 sees nothing for this customer",
+     "ok": true
+    },
+    {
+     "what": "the regional manager sees it",
+     "ok": true
+    },
+    {
+     "what": "the totals row is the sum of the customer rows for whoever reads it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 196
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "an overdue invoice is shown as overdue and counted in the overdue total",
+   "asserts": [
+    {
+     "what": "the invoice reads as overdue while its saved state stays \"sent\"",
+     "ok": true
+    },
+    {
+     "what": "the overdue filter lists it and the summary counts its 65",
+     "ok": true
+    },
+    {
+     "what": "once paid it is no longer overdue",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 207
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "the customer's own system is told of an invoice in the same save as the invoice",
+   "asserts": [
+    {
+     "what": "where the customer has a subscription, exactly one event is queued for the invoice; with none, none is",
+     "ok": true
+    },
+    {
+     "what": "nothing is sent to the customer by email: the code that raises invoices has no mail call",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 370
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "there is no accounting system connected: nothing is posted to a ledger",
+   "asserts": [
+    {
+     "what": "there is no journal, ledger, chart of accounts or accounting period table",
+     "ok": true
+    },
+    {
+     "what": "no accounting connector is installed",
+     "ok": true
+    },
+    {
+     "what": "the integrations report lists no accounting system",
+     "ok": true
+    },
+    {
+     "what": "GL posting, period close, and sync retries are therefore NOT APPLICABLE; no account mapping was invented",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 18,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "no card or bank payment is processed: a payment is a record a person types",
+   "asserts": [
+    {
+     "what": "no column holds a card number, security code, bank account or processor token",
+     "ok": true
+    },
+    {
+     "what": "no payment processor is installed",
+     "ok": true
+    },
+    {
+     "what": "\"card\" is a label on the record and nothing is charged",
+     "ok": true
+    },
+    {
+     "what": "authorisation, capture, settlement and chargebacks are therefore NOT APPLICABLE; no real payment was processed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 225,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "invoices are not sent by this product: there is no invoice email or PDF delivery to test",
+   "asserts": [
+    {
+     "what": "the billing code says so and holds no sender",
+     "ok": true
+    },
+    {
+     "what": "\"SENT\" is the name of the open state of an invoice; it does not record a sending",
+     "ok": true
+    },
+    {
+     "what": "invoice delivery is the owner's decision 5 (later); no real invoice or notice left this machine",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 0,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Invoicing, payments and accounting sync",
+   "name": "money figures hold to the cent on every invoice the product has issued",
+   "asserts": [
+    {
+     "what": "every invoice total is goods plus tax plus freight",
+     "ok": true
+    },
+    {
+     "what": "every paid amount is the sum of its payment rows",
+     "ok": true
+    },
+    {
+     "what": "no invoice is paid over its total or below zero",
+     "ok": true
+    },
+    {
+     "what": "every invoice subtotal is the sum of its lines",
+     "ok": true
+    },
+    {
+     "what": "every invoice marked paid is paid in full, and none marked sent has money on it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "the cost of what was sold is the cost fixed on the stock movement when it left",
+   "asserts": [
+    {
+     "what": "the movement carries 0.40 a pound, the item's cost at that moment",
+     "ok": true
+    },
+    {
+     "what": "material cost is 600 at 0.40: 240.00",
+     "ok": true
+    },
+    {
+     "what": "goods invoiced are 390.00, so the margin is 150.00, 38.46%",
+     "ok": true
+    },
+    {
+     "what": "the answer says how it was worked out and that nothing is posted to accounting",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 212
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "a later change to the stock item's cost does not change what a past sale cost",
+   "asserts": [
+    {
+     "what": "the sale cost 150.00 before and after",
+     "ok": true
+    },
+    {
+     "what": "the next sale from the same item is costed at the new 0.90",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 382
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "shipping does not change the value on the stock item",
+   "asserts": [
+    {
+     "what": "the item still costs 0.37 a pound after 400 of it shipped",
+     "ok": true
+    },
+    {
+     "what": "only the quantity on hand moved: 600 left",
+     "ok": true
+    },
+    {
+     "what": "no revaluation, write-up or cost-of-goods entry was made anywhere: there is no table for one",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 192
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "when a stock item has no cost on file, the margin is not shown and the gap is named",
+   "asserts": [
+    {
+     "what": "the movement has no cost: none was worked out",
+     "ok": true
+    },
+    {
+     "what": "the order's cost is marked incomplete and its margin is empty, not zero and not guessed",
+     "ok": true
+    },
+    {
+     "what": "it says 300 shipped has no cost on file",
+     "ok": true
+    },
+    {
+     "what": "revenue is still reported: 195.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 195
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "a line filled from two stock items is costed item by item",
+   "asserts": [
+    {
+     "what": "300 at 0.30 plus 200 at 0.50 is 190.00",
+     "ok": true
+    },
+    {
+     "what": "margin is 500.00 less 190.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 244
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "a partly shipped order counts only what has shipped and been invoiced",
+   "asserts": [
+    {
+     "what": "revenue 162.50, cost 100.00, margin 62.50 on the 250 that left",
+     "ok": true
+    },
+    {
+     "what": "the status shown is partly shipped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 206
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "tax and freight billed are not counted as revenue",
+   "asserts": [
+    {
+     "what": "the invoice is 500 goods, 35 tax and 60 freight",
+     "ok": true
+    },
+    {
+     "what": "revenue for margin is the 500.00 of goods only",
+     "ok": true
+    },
+    {
+     "what": "no freight cost is included, and the answer says so",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 209
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "material returned to stock takes its cost back, and the credit takes the revenue back",
+   "asserts": [
+    {
+     "what": "the return was received and credited",
+     "ok": true
+    },
+    {
+     "what": "cost: 200.00 shipped less 80.00 back to stock is 120.00",
+     "ok": true
+    },
+    {
+     "what": "revenue: 500.00 invoiced less 200.00 credited is 300.00; margin 180.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 299
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "material returned and scrapped stays a cost of the sale",
+   "asserts": [
+    {
+     "what": "nothing came back to stock, so the cost is still 200.00",
+     "ok": true
+    },
+    {
+     "what": "the 100.00 credited reduces revenue to 400.00 and margin to 200.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 285
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "cost and margin are shown only to the roles that manage cost",
+   "asserts": [
+    {
+     "what": "sales, shipping, the operator and the auditor are refused",
+     "ok": true
+    },
+    {
+     "what": "a manager, the inventory manager, the regional manager and the credit manager see it",
+     "ok": true
+    },
+    {
+     "what": "and nobody reads the cost of another branch's order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 283
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "stock cost does not leak through the order, the shipment or the stock item (N-020)",
+   "asserts": [
+    {
+     "what": "six screens read by sales, shipping and the operator carry no stock cost",
+     "ok": true
+    },
+    {
+     "what": "a manager still sees the cost of the reserved stock item",
+     "ok": true
+    },
+    {
+     "what": "the guard removes cost from stock items and movements only: a purchase order line keeps its price",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 536
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "overhead, freight cost, landed cost allocation and cost of goods posting are not built",
+   "asserts": [
+    {
+     "what": "the cost answer has no overhead, burden or freight-cost figure",
+     "ok": true
+    },
+    {
+     "what": "labor is charged only at rates the owner has entered per kind of work center; none is assumed",
+     "ok": true
+    },
+    {
+     "what": "standard cost, average cost and FIFO layers are not used: cost is actual, per item (owner decision 9)",
+     "ok": true
+    },
+    {
+     "what": "overhead and cost of goods recognition wait on the owner's decision; no rate and no policy was invented",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 188,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "a new order shows what stands between it and closed",
+   "asserts": [
+    {
+     "what": "not closed: 300 to ship, one shipment on the dock, 300 reserved",
+     "ok": true
+    },
+    {
+     "what": "each open item is said in words with its figure",
+     "ok": true
+    },
+    {
+     "what": "the line shows ordered 300, shipped 0, invoiced 0",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 112
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "an order closes only when it is shipped, delivered, invoiced and paid",
+   "asserts": [
+    {
+     "what": "on the road and unpaid: open",
+     "ok": true
+    },
+    {
+     "what": "delivered and unpaid: still open, for the 195.00",
+     "ok": true
+    },
+    {
+     "what": "part paid: still open, for the 95.00",
+     "ok": true
+    },
+    {
+     "what": "paid in full: closed, with nothing open",
+     "ok": true
+    },
+    {
+     "what": "and it is gone from the list of orders not closed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 298
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "a closed order opens again when something comes back",
+   "asserts": [
+    {
+     "what": "with a return opened it shows a return waiting",
+     "ok": true
+    },
+    {
+     "what": "once received, the 65.00 credited on a paid invoice is owed back",
+     "ok": true
+    },
+    {
+     "what": "and when it is refunded the order is closed again",
+     "ok": true
+    },
+    {
+     "what": "the line shows 100 returned",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 396
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "an open job, a hold and a cancelled order each show for what they are",
+   "asserts": [
+    {
+     "what": "an order with a job in hand shows the job",
+     "ok": true
+    },
+    {
+     "what": "an order on hold shows the hold",
+     "ok": true
+    },
+    {
+     "what": "a cancelled order has nothing to ship and no shipment on the dock",
+     "ok": true
+    },
+    {
+     "what": "if stock is still reserved for it, that is shown until it is released",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 341
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "a delivery recorded before proof was required is noted and does not hold the order open",
+   "asserts": [
+    {
+     "what": "the order is still closed",
+     "ok": true
+    },
+    {
+     "what": "a note says one delivered shipment has no name and no reason on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 220
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "the list of orders not closed is paged, oldest first, and agrees with each order's own closeout",
+   "asserts": [
+    {
+     "what": "the three orders are listed, in the order they were entered",
+     "ok": true
+    },
+    {
+     "what": "each row's figures equal that order's own closeout",
+     "ok": true
+    },
+    {
+     "what": "pages do not overlap and the total is the same on both",
+     "ok": true
+    },
+    {
+     "what": "the list is oldest first",
+     "ok": true
+    },
+    {
+     "what": "an unknown reason is refused with the list of reasons",
+     "ok": true
+    },
+    {
+     "what": "\"unpaid\" holds all three and \"shipment problem\" only the third",
+     "ok": true
+    },
+    {
+     "what": "a request for a hundred thousand rows is cut to 200",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 597
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "closeout is kept to the reader's branches",
+   "asserts": [
+    {
+     "what": "sales at another branch cannot read this order's closeout or find it on their list",
+     "ok": true
+    },
+    {
+     "what": "its own branch and the regional manager find it",
+     "ok": true
+    },
+    {
+     "what": "an order that is not on file is 404",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 228
+  },
+  {
+   "group": "Costing, reconciliation and closeout",
+   "name": "orders, shipments, stock and invoices reconcile across everything this run has done",
+   "asserts": [
+    {
+     "what": "no line has shipped more than was ordered",
+     "ok": true
+    },
+    {
+     "what": "every line's shipped quantity is the sum of its shipments that left",
+     "ok": true
+    },
+    {
+     "what": "and the sum of the stock movements that name the line",
+     "ok": true
+    },
+    {
+     "what": "no line is invoiced for more than has shipped",
+     "ok": true
+    },
+    {
+     "what": "every shipment that left has an invoice, or its order is listed as shipped and not invoiced",
+     "ok": true
+    },
+    {
+     "what": "no stock record is below zero or reserved beyond what is on hand",
+     "ok": true
+    },
+    {
+     "what": "no shipment was dispatched twice: one departure row in each history",
+     "ok": true
+    },
+    {
+     "what": "no shipment has two invoices",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 21
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "opening a return moves nothing: stock and money change when the material is back",
+   "asserts": [
+    {
+     "what": "the return is open, numbered, for 100",
+     "ok": true
+    },
+    {
+     "what": "stock is unchanged and no credit exists",
+     "ok": true
+    },
+    {
+     "what": "the original order shows a return waiting",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 200
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a return cannot be for more than shipped, and what is typed is checked",
+   "asserts": [
+    {
+     "what": "301 of 300 is refused with the figures",
+     "ok": true
+    },
+    {
+     "what": "zero, the same line twice, a line of another order, no lines, an unknown disposition and no reason are each refused",
+     "ok": true
+    },
+    {
+     "what": "nothing can be returned on an order that has not shipped",
+     "ok": true
+    },
+    {
+     "what": "no return was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 346
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "two returns cannot together bring back more than shipped",
+   "asserts": [
+    {
+     "what": "200 then 101 is refused; 200 then 100 is accepted",
+     "ok": true
+    },
+    {
+     "what": "the lookup now shows nothing left to return",
+     "ok": true
+    },
+    {
+     "what": "cancelling one return frees its quantity",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 251
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "receiving a return for restock puts the material back and credits the customer, once",
+   "asserts": [
+    {
+     "what": "the return is complete",
+     "ok": true
+    },
+    {
+     "what": "100 is back on hand on the stock item it left from",
+     "ok": true
+    },
+    {
+     "what": "it comes back at the cost it left at",
+     "ok": true
+    },
+    {
+     "what": "one credit memo for 100 at the invoice price: 65.00",
+     "ok": true
+    },
+    {
+     "what": "it pays the unpaid invoice down to 130.00",
+     "ok": true
+    },
+    {
+     "what": "receiving it again is refused and adds nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 297
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a return for scrap is credited and does not go back on hand",
+   "asserts": [
+    {
+     "what": "received and credited 32.50",
+     "ok": true
+    },
+    {
+     "what": "stock on hand is unchanged",
+     "ok": true
+    },
+    {
+     "what": "it is recorded coming back and going out as scrap, both at cost",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 269
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a return held for inspection is back on the books but cannot be sold until released",
+   "asserts": [
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "the 80 is on hand again",
+     "ok": true
+    },
+    {
+     "what": "and the item is on hold: it cannot be reserved for another order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 321
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "receiving less than was authorised credits only what came back",
+   "asserts": [
+    {
+     "what": "more than authorised is refused",
+     "ok": true
+    },
+    {
+     "what": "60 received: 60 back on hand and 39.00 credited",
+     "ok": true
+    },
+    {
+     "what": "the other 40 can be returned later",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 307
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a return on an invoice that carried tax credits the tax with it",
+   "asserts": [
+    {
+     "what": "100.00 of goods and 7.00 of tax are credited: 107.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 260
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a return on a paid invoice leaves the credit owed back until it is refunded",
+   "asserts": [
+    {
+     "what": "65.00 is owed back",
+     "ok": true
+    },
+    {
+     "what": "the invoice stays paid; the credit memo is open",
+     "ok": true
+    },
+    {
+     "what": "the refund settles it and is on record with its reference",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 313
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a return received when its credit cannot be issued is flagged until a manager settles it (N-016)",
+   "asserts": [
+    {
+     "what": "the material is received and the answer says the credit was not issued",
+     "ok": true
+    },
+    {
+     "what": "the material is back on hand",
+     "ok": true
+    },
+    {
+     "what": "one record of the missing credit exists",
+     "ok": true
+    },
+    {
+     "what": "the original order shows it",
+     "ok": true
+    },
+    {
+     "what": "the report lists it as needing action",
+     "ok": true
+    },
+    {
+     "what": "and the returns list marks it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 337
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "only a manager settles a missing credit, with the reason, once",
+   "asserts": [
+    {
+     "what": "sales staff are refused, and a manager must say how it was settled",
+     "ok": true
+    },
+    {
+     "what": "issuing it now is refused too: nothing is left on the invoice to credit",
+     "ok": true
+    },
+    {
+     "what": "settled once; a second time is refused",
+     "ok": true
+    },
+    {
+     "what": "one record names the manager and the reason",
+     "ok": true
+    },
+    {
+     "what": "the flag is gone from the order, the report and the list",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 368
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a return that was credited normally, or is not yet received, cannot be \"settled\"",
+   "asserts": [
+    {
+     "what": "before it is received: refused",
+     "ok": true
+    },
+    {
+     "what": "after a normal credit: refused, and no second credit memo is made",
+     "ok": true
+    },
+    {
+     "what": "a return that is not on file is 404",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 279
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "a cancelled return cannot be received, and a received one cannot be cancelled",
+   "asserts": [
+    {
+     "what": "cancelled, then refused at the dock",
+     "ok": true
+    },
+    {
+     "what": "a received return is not cancelled: the stock and the credit stand",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 331
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "returns are kept to the branch that sold the order, and to the roles that handle them",
+   "asserts": [
+    {
+     "what": "another branch cannot open, list or receive it",
+     "ok": true
+    },
+    {
+     "what": "the warehouse cannot open a return, and quality and the auditor cannot receive one",
+     "ok": true
+    },
+    {
+     "what": "the return is still waiting",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 253
+  },
+  {
+   "group": "Returns, credits, refunds and adjustments",
+   "name": "an invoice is never edited: the only adjustments are a credit memo, a refund or a cancel before payment",
+   "asserts": [
+    {
+     "what": "there is no way to change or delete an invoice: each attempt finds no such action",
+     "ok": true
+    },
+    {
+     "what": "the invoice is exactly as issued",
+     "ok": true
+    },
+    {
+     "what": "nor is there a way to change or delete a payment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 237
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "five people dispatch the same shipment at the same moment: it leaves once",
+   "asserts": [
+    {
+     "what": "in three rounds: one success, four refusals, one stock movement, one invoice, 300 shipped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 531
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "two shipments drawing on the same stock item at the same moment both leave, and the stock is exact",
+   "asserts": [
+    {
+     "what": "both are dispatched",
+     "ok": true
+    },
+    {
+     "what": "100 is left, nothing reserved, and the two movements are 400 and 500",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 279
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "two shipments opened at once for the same line cannot together exceed it",
+   "asserts": [
+    {
+     "what": "in three rounds of four at once: one shipment for 300 is saved, the others are refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 349
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "a delivery reported three times at once is recorded once",
+   "asserts": [
+    {
+     "what": "one is accepted and two are refused",
+     "ok": true
+    },
+    {
+     "what": "one name is on the shipment and one delivered row is in its history",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 226
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "payments arriving together never take an invoice over its total",
+   "asserts": [
+    {
+     "what": "three of six payments of 50 fit in 195; the rest are refused",
+     "ok": true
+    },
+    {
+     "what": "paid is 150.00, the sum of three payment rows",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 322
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "credits issued together never exceed the invoice",
+   "asserts": [
+    {
+     "what": "three credits of 60 fit in 195; the others are refused",
+     "ok": true
+    },
+    {
+     "what": "their numbers are different and the invoice shows 15.00 left",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 359
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "a return received by two people at once comes back once",
+   "asserts": [
+    {
+     "what": "one receipt is accepted",
+     "ok": true
+    },
+    {
+     "what": "100 is back on hand once, with one movement and one credit memo",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 298
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "two managers settling the same missing credit at once leave one record",
+   "asserts": [
+    {
+     "what": "one is accepted, the others are told it is already settled",
+     "ok": true
+    },
+    {
+     "what": "one settlement record exists",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 347
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "package steps taken twice at once happen once (N-013)",
+   "asserts": [
+    {
+     "what": "sent to quality once",
+     "ok": true
+    },
+    {
+     "what": "one tag is made, not four",
+     "ok": true
+    },
+    {
+     "what": "printed once, applied once, sealed once",
+     "ok": true
+    },
+    {
+     "what": "and each step has exactly one record",
+     "ok": true
+    },
+    {
+     "what": "no tag number was issued twice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 403
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "six shipments dispatched at once get six different invoice numbers with no gap",
+   "asserts": [
+    {
+     "what": "all six are dispatched and invoiced",
+     "ok": true
+    },
+    {
+     "what": "their numbers are the next six, each used once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1185
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "the same request sent twice with one key is carried out once",
+   "asserts": [
+    {
+     "what": "the second answer is the first one again",
+     "ok": true
+    },
+    {
+     "what": "one shipment exists",
+     "ok": true
+    },
+    {
+     "what": "and a payment sent twice with one key is one payment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 472
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "a dispatch whose connection drops is either done in full or not at all, and trying again is safe",
+   "asserts": [
+    {
+     "what": "the shipment, the stock and the invoice agree: all moved, or none",
+     "ok": true
+    },
+    {
+     "what": "pressing dispatch again leaves exactly one movement and one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1644
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "a shipment that left without its invoice is listed until it is billed, and billing it is done once",
+   "asserts": [
+    {
+     "what": "the report lists the order as shipped and not invoiced",
+     "ok": true
+    },
+    {
+     "what": "three people raise it at once: one invoice is made",
+     "ok": true
+    },
+    {
+     "what": "and the order leaves the list",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 314
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "nothing in shipping or billing answers without a sign-in",
+   "asserts": [
+    {
+     "what": "fifteen routes read or written with no sign-in all answer 401",
+     "ok": true
+    },
+    {
+     "what": "a made-up token is refused the same way",
+     "ok": true
+    },
+    {
+     "what": "and nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 196
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "a customer's portal login reaches none of the staff shipping and billing screens",
+   "asserts": [
+    {
+     "what": "eight staff routes refuse customer A",
+     "ok": true
+    },
+    {
+     "what": "and it cannot mark a delivery, record a payment or open a package",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 222
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "each role does its own part of shipping and no other",
+   "asserts": [
+    {
+     "what": "the auditor reads and changes nothing",
+     "ok": true
+    },
+    {
+     "what": "but can read the shipment and the list of orders not closed",
+     "ok": true
+    },
+    {
+     "what": "quality does not dispatch or take payments",
+     "ok": true
+    },
+    {
+     "what": "a machine operator does not dispatch or open returns",
+     "ok": true
+    },
+    {
+     "what": "the packaging lead opens a package and cannot release it for quality",
+     "ok": true
+    },
+    {
+     "what": "after all of that the shipment is still on the dock",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 316
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "odd and hostile input to the new lists is refused or ignored, never an error page",
+   "asserts": [
+    {
+     "what": "thirteen odd requests: none answers 500",
+     "ok": true
+    },
+    {
+     "what": "the injected search matched nothing rather than everything",
+     "ok": true
+    },
+    {
+     "what": "the Order table is still there",
+     "ok": true
+    },
+    {
+     "what": "five odd writes are refused cleanly",
+     "ok": true
+    },
+    {
+     "what": "a 200,000-letter reason is cut or refused, not stored whole",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 449
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "error answers say what to do and give away nothing about the inside",
+   "asserts": [
+    {
+     "what": "each is a plain sentence under \"error\"",
+     "ok": true
+    },
+    {
+     "what": "none mentions a table, a query, a file path or a stack",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "an order cancelled at the very moment its shipment is dispatched ends one way or the other, never half of each",
+   "asserts": [
+    {
+     "what": "in six rounds the order either shipped whole (stock out, one invoice) or was cancelled whole (stock in, no invoice)",
+     "ok": true
+    },
+    {
+     "what": "outcomes: 0 shipped, 6 cancelled",
+     "ok": true
+    },
+    {
+     "what": "and neither request was ever answered with a server error: the loser is told plainly (N-029)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 6982
+  },
+  {
+   "group": "Concurrency, security, exceptions and recovery",
+   "name": "after every simultaneous request in this run, nothing was duplicated or lost",
+   "asserts": [
+    {
+     "what": "no shipment has two invoices",
+     "ok": true
+    },
+    {
+     "what": "no invoice, credit memo, shipment, package, tag or listing number is used twice",
+     "ok": true
+    },
+    {
+     "what": "no shipment line moved more stock than the shipment carries",
+     "ok": true
+    },
+    {
+     "what": "no return was received twice",
+     "ok": true
+    },
+    {
+     "what": "no stock record is negative or over-reserved",
+     "ok": true
+    },
+    {
+     "what": "no request is left half-done under a request key older than a minute",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 10
+  }
+ ]
+}

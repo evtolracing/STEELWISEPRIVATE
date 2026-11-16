@@ -1,7 +1,7 @@
 {
- "at": "2026-11-13T18:55:09.041Z",
+ "at": "2026-11-16T02:29:19.881Z",
  "effects": [
-  "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:85",
+  "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:89",
   "src/frontend/src/apps/bom/BomRecipeListPage.jsx:39",
   "src/frontend/src/apps/inventory/InventoryDetailPage.jsx:80",
   "src/frontend/src/apps/orderhub/OrderDetailPage.jsx:82",
@@ -34,11 +34,11 @@
   "src/frontend/src/hooks/useDemandShaping.js:64",
   "src/frontend/src/hooks/useRealTimePricing.js:100",
   "src/frontend/src/hooks/useRealTimePricing.js:111",
-  "src/frontend/src/pages/Admin/UserManagementPage.jsx:99",
+  "src/frontend/src/pages/Admin/UserManagementPage.jsx:100",
   "src/frontend/src/pages/Ecommerce/OnlineSettingsPage.jsx:63",
   "src/frontend/src/pages/Executive/CompressionMetricsDashboard.jsx:150",
-  "src/frontend/src/pages/Orders/CSRIntakePage.jsx:285",
-  "src/frontend/src/pages/Orders/RetailPOSPage.jsx:153"
+  "src/frontend/src/pages/Orders/CSRIntakePage.jsx:289",
+  "src/frontend/src/pages/Orders/RetailPOSPage.jsx:158"
  ],
  "invented": []
 }

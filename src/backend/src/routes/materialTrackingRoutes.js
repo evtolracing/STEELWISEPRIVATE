@@ -6,12 +6,13 @@
 
 import express from 'express';
 import { shipForJob } from './shipments.js';
+import { createTraceEvent } from '../services/dropTagService.js';
 import prisma from '../lib/db.js';
-import { recordJobMove } from '../lib/jobHistory.js';
+import { changeJobStatusTx } from '../lib/jobGates.js';
 
 const router = express.Router();
 
-const getUserId = (req) => req.user?.id || req.headers['x-user-id'] || 'system';
+const getUserId = (req) => req.user.id;
 
 // ============================================================================
 // DASHBOARD / STATS
@@ -153,50 +154,44 @@ router.get('/custody-log', async (req, res) => {
 
 /**
  * POST /api/material-tracking/custody-log
- * Create a manual custody log entry (e.g., location transfer, note)
+ * A note written by hand on a job, package, tag or stock item (Phase 8, N-011).
+ *
+ * It is a note and is stored as one: its type always begins MANUAL_, so it can never be read as
+ * the system's own record of a shipment, a seal, a print or a hold. It names a record that exists
+ * and that this person can see, and it carries the role they really have. A hold is placed on the
+ * stock item or the job, where it actually stops something; it is not written here.
  */
+const MANUAL_TYPES = ['LOCATION_TRANSFER', 'CUSTODY_HANDOFF', 'DAMAGE_REPORT', 'NOTE'];
+const NOTE_ON = {
+  Job: (id) => prisma.job.findUnique({ where: { id }, select: { id: true, orderId: true } }),
+  Package: (id) => prisma.package.findUnique({ where: { id }, select: { id: true, orderId: true } }),
+  DropTag: (id) => prisma.dropTag.findUnique({ where: { id }, select: { id: true, orderId: true } }),
+  Coil: (id) => prisma.coil.findUnique({ where: { id }, select: { id: true } }),
+};
 router.post('/custody-log', async (req, res) => {
   try {
-    const {
-      eventType,
-      resourceType,
-      resourceId,
-      previousState,
-      newState,
-      metadata,
-      dropTagId,
-      orderId,
-    } = req.body;
-
-    const userId = getUserId(req);
-
-    if (!eventType || !resourceType || !resourceId) {
-      return res.status(400).json({
-        error: 'eventType, resourceType, and resourceId are required',
-      });
-    }
-
-    const event = await prisma.traceEvent.create({
-      data: {
-        eventType,
-        eventCategory: resourceType,
-        actorUserId: userId,
-        actorRole: 'operator',
-        resourceType,
-        resourceId,
-        previousState,
-        newState,
-        metadata: metadata || undefined,
-        dropTagId: dropTagId || undefined,
-        orderId: orderId || undefined,
-        occurredAt: new Date(),
-      },
+    const body = req.body || {};
+    const type = String(body.eventType || '').toUpperCase().replace(/^MANUAL_/, '');
+    const resourceType = String(body.resourceType || '');
+    const resourceId = String(body.resourceId || '');
+    if (!type || !resourceType || !resourceId) return res.status(400).json({ error: 'eventType, resourceType, and resourceId are required' });
+    if (/^HOLD_/.test(type)) return res.status(400).json({ error: 'A hold is placed or released on the stock item or the job itself, where it stops the material. This log takes notes only.' });
+    if (!MANUAL_TYPES.includes(type)) return res.status(400).json({ error: `eventType must be one of: ${MANUAL_TYPES.join(', ')}` });
+    if (!NOTE_ON[resourceType]) return res.status(400).json({ error: `resourceType must be one of: ${Object.keys(NOTE_ON).join(', ')}` });
+    const note = typeof body.metadata?.note === 'string' ? body.metadata.note.trim().slice(0, 1000) : typeof body.note === 'string' ? body.note.trim().slice(0, 1000) : '';
+    if (note.length < 3) return res.status(400).json({ error: 'Write the note: what happened, in a few words.' });
+    const record = await NOTE_ON[resourceType](resourceId);
+    if (!record) return res.status(404).json({ error: `${resourceType} not found` });
+    const event = await createTraceEvent(prisma, {
+      eventType: `MANUAL_${type}`, eventCategory: resourceType, actorUserId: req.user.id, actorRole: req.user.role,
+      actorName: [req.user.firstName, req.user.lastName].filter(Boolean).join(' ') || undefined,
+      resourceType, resourceId, metadata: { note, writtenByHand: true },
+      dropTagId: resourceType === 'DropTag' ? record.id : undefined, orderId: record.orderId || undefined,
     });
-
     res.status(201).json(event);
   } catch (error) {
     console.error('Error creating custody log entry:', error);
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to add the note' });
   }
 });
 
@@ -441,16 +436,13 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
 
     // The job, its history and the custody record are one step (B-010).
     const job = await prisma.$transaction(async (tx) => {
-    const job = await tx.job.update({
-      where: { id: jobId },
-      data: {
-        status: 'SHIPPED',
-        shippingCarrier: carrier || undefined,
-        trackingNumber: trackingNumber || undefined,
-        shippedAt: new Date(),
-      },
+    // Through the one place a job moves (lib/jobGates.js): locked, still ready to ship, and released by quality.
+    await changeJobStatusTx(tx, jobId, 'SHIPPED', {
+      from: ['READY_TO_SHIP', 'SHIPPED'], fromError: (j) => `Only a job that is ready to ship can be shipped. This one is ${j.status}.`,
+      data: { shippingCarrier: carrier || undefined, trackingNumber: trackingNumber || undefined, shippedAt: new Date() },
+      note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id,
     });
-    await recordJobMove(tx, { job: staged, from: staged.status, to: 'SHIPPED', note: carrier ? `Shipped via ${carrier}${trackingNumber ? ' - ' + trackingNumber : ''}` : null, via: 'staging', userId: req.user?.id });
+    const job = await tx.job.findUnique({ where: { id: jobId } });
 
     // Auto-log custody event
     await tx.traceEvent.create({
@@ -458,7 +450,7 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
         eventType: 'JOB_SHIPPED',
         eventCategory: 'JOB',
         actorUserId: getUserId(req),
-        actorRole: 'operator',
+        actorRole: req.user.role,
         resourceType: 'Job',
         resourceId: jobId,
         previousState: 'READY_TO_SHIP',
@@ -472,6 +464,7 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
 
     res.json(job);
   } catch (error) {
+    if (error?.refused) return res.status(error.status === 400 ? 409 : error.status).json({ error: error.message });
     console.error('Error shipping job:', error);
     res.status(400).json({ error: error.message });
   }
@@ -482,32 +475,12 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
 // ============================================================================
 
 /**
- * POST /api/material-tracking/log-status-change
- * Called internally when a job status changes to auto-create custody entries
+ * POST /api/material-tracking/log-status-change (closed in Phase 8, N-011)
+ * It wrote a status record for any job, with whatever actor the caller named. A job's history is
+ * written by the system in the same save as the change (lib/jobHistory.js); nothing writes it from outside.
  */
-router.post('/log-status-change', async (req, res) => {
-  try {
-    const { jobId, previousStatus, newStatus, actor } = req.body;
-
-    const event = await prisma.traceEvent.create({
-      data: {
-        eventType: `JOB_STATUS_${newStatus}`,
-        eventCategory: 'JOB',
-        actorUserId: actor || 'system',
-        actorRole: 'system',
-        resourceType: 'Job',
-        resourceId: jobId,
-        previousState: previousStatus,
-        newState: newStatus,
-        occurredAt: new Date(),
-      },
-    });
-
-    res.status(201).json(event);
-  } catch (error) {
-    console.error('Error logging status change:', error);
-    res.status(500).json({ error: error.message });
-  }
+router.post('/log-status-change', (req, res) => {
+  res.status(410).json({ error: 'Status changes are recorded by the system when they happen. This address no longer accepts them.' });
 });
 
 export default router;

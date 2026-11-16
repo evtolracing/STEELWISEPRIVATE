@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-13T18:50:12.021Z",
- "checks": 22,
+ "at": "2026-11-16T02:21:03.611Z",
+ "checks": 23,
  "failed": 0,
  "results": [
   {
@@ -101,6 +101,11 @@
   },
   {
    "name": "receiving: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "units: sending an item puts it in transit, still at its own branch",
    "ok": true,
    "detail": ""
   },

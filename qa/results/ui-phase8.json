@@ -1,0 +1,233 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-16T02:23:51.158Z",
+ "checks": 45,
+ "failed": 0,
+ "results": [
+  {
+   "name": "shipment on the dock: the stock to pick is listed with its tag and heat",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment on the dock: what is not on file is named, not filled in",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing list: opens as it will print, with the shipment, the order and the stock item",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing list: nothing reads \"undefined\", \"null\" or \"NaN\"",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing list: there is a Print button",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dispatch: the screen then shows the stock that left and the invoice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "delivery: it cannot be saved with no name and no reason",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "delivery: ticking \"Nobody signed for it\" asks why, and still cannot be saved empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "delivery: the reason is saved and shown, and no name was made up",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing list: where nobody signed, it prints the reason and no name",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "problem: it cannot be recorded without saying what happened",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "problem: what happened is in the history, and the shipment can go back on the road",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "problem: going back on the road raises no second invoice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "delivery: the name of the person who received it is saved and shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing list: after delivery it carries who received it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "bill of lading: drawn from the shipment, with \"(not entered)\" where no number was typed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment screen (problem and delivery): no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order: the closeout panel says what is still open (on the road, and money owed)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order: a manager sees cost and margin, from what left",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order: sales sees the closeout and no cost or margin",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "orders not closed: the order is found by number, with what it is waiting for",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "orders not closed: a filter that does not apply to the order leaves it out",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "orders not closed: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "invoices: \"Owed by age\" shows the five columns",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "invoices: the total on the screen is the total the records give",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "invoices screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "returns: a return received without its credit is flagged",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "returns: a manager settles it with the reason, and the flag goes",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "returns screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing: an order number that does not exist says so",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing: the package is opened for the order line and listed as empty",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing: an empty package cannot be sent to quality",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing: material is added from the stock reserved for the line, with its heat",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing: sent to quality, it waits for quality",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing: no tag can be made before quality releases it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing: once released, the tag is made and is ready to print",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "packing screen: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: the shipment screen fits a 390-pixel screen without sideways scrolling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: shipment: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: the orders not closed screen fits a 390-pixel screen without sideways scrolling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: orders not closed: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: the packing screen fits a 390-pixel screen without sideways scrolling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: packing: no script errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

@@ -1,0 +1,203 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-16T02:23:21.576Z",
+ "checks": 39,
+ "failed": 0,
+ "results": [
+  {
+   "name": "quality: the job waiting for inspection is in the queue",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "quality: the pass rate shown is the figure from the records, or a dash when nothing was decided today",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "quality: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: Pass is switched off while required checks are unanswered",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: a conditional pass with no conditions is refused and the screen says why",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: with the conditions written it is accepted and the job goes to packaging",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inspection: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: scheduling reports how many steps it placed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: and says what could not be placed, with the reason",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: the step that fits is on the work center; the one that does not is still waiting",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: a new work center starts with no thickness limit (it used to start at 12 in)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shop floor: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: the screen says shift calendars, operator availability, downtime and running jobs are not counted",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: overall utilisation is the figure from the records, or \"Not known\"",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: nothing reads NaN or undefined",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "planner: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time tracking: a clock running for 13 hours is listed for the supervisor, with the operator and the job",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time tracking: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: the work order cut for the job is listed with its weights and yield",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: cost shows material $500.00, labor at the rate on file, a total, and says no overhead is included",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: nothing reads NaN or undefined",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: \"Cut material for this job\" is offered while the job is open",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new work order: opened from a job, the screen says which job it is for",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new work order: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work order: the screen names the job it was raised for",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work order: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: \"Jobs on this routing must pass inspection\" is ticked on a new routing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: unticked, the screen warns that jobs will go straight to packaging",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: the choice is saved",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kinds of work center: the form shows the two rules, the labor rate on file and the checklist box",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kinds of work center: ticking \"two steps at once\" and typing two checks is saved, and the rate is kept",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kinds of work center: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: the shop floor screen fits a 390-pixel screen without sideways scrolling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: \"Run Dispatch\" is a named button that can be reached",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: shop floor: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: the quality screen fits a 390-pixel screen without sideways scrolling",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "phone: quality: no script errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

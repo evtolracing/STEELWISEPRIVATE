@@ -26,7 +26,12 @@ test('every read and change of a branch-owned record carries the branch', () => 
 
 test('records reached through a parent are held to the parent\'s branch', () => {
   assert.deepEqual(scopedArgs('Payment', 'findMany', {}, held).where.AND, [{ invoice: { order: { locationId: { in: [A] } } } }]);
-  assert.deepEqual(scopedArgs('ShipmentItem', 'findMany', {}, held).where.AND, [{ shipment: { fromLocationId: { in: [A] } } }]);
+  // Phase 8 (N-002): a shipment is seen by the dock it leaves from and by the branch that sold the order.
+  const seen = { OR: [{ fromLocationId: { in: [A] } }, { order: { locationId: { in: [A] } } }] };
+  assert.deepEqual(scopedArgs('ShipmentItem', 'findMany', {}, held).where.AND, [{ shipment: seen }]);
+  assert.deepEqual(scopedArgs('Shipment', 'findMany', {}, held).where.AND, [seen]);
+  // A print job with no branch on file is seen by every branch; one with a branch only by that branch (N-015).
+  assert.deepEqual(scopedArgs('PrintQueueJob', 'findMany', {}, held).where.AND, [{ OR: [{ locationId: { in: [A] } }, { locationId: null }] }]);
   assert.equal(scopedArgs('Job', 'findMany', {}, held).where.AND[0].OR.length, 3);
 });
 
@@ -70,4 +75,26 @@ test('the arguments passed in are never changed in place', () => {
   const args = { where: { id: 'x' } };
   scopedArgs('Order', 'findMany', args, held);
   assert.deepEqual(args, { where: { id: 'x' } });
+});
+
+test('quotes and requests for quotation are held to their branch; one with no branch is seen by all', () => {
+  for (const model of ['Quote', 'RFQ']) {
+    const out = scopedArgs(model, 'findMany', { where: { status: 'DRAFT' } }, held);
+    assert.deepEqual(out.where.AND, [{ OR: [{ locationId: { in: [A] } }, { locationId: null }] }], model);
+    assert.throws(() => scopedArgs(model, 'create', { data: { locationId: B } }, held), OutsideBranch, `${model} cannot be filed under another branch`);
+    assert.throws(() => scopedArgs(model, 'update', { where: { id: 'x' }, data: { locationId: B } }, held), OutsideBranch, `${model} cannot be handed to another branch`);
+    assert.equal(scopedArgs(model, 'findMany', { where: {} }, free).where.AND, undefined, `${model}: head office is not filtered`);
+  }
+  assert.deepEqual(scopedArgs('QuoteLine', 'findMany', {}, held).where.AND, [{ quote: { OR: [{ locationId: { in: [A] } }, { locationId: null }] } }]);
+  assert.deepEqual(scopedArgs('RFQLine', 'findMany', {}, held).where.AND, [{ rfq: { OR: [{ locationId: { in: [A] } }, { locationId: null }] } }]);
+});
+
+test('drop tags follow their order; packages follow their order or the branch they stand at', () => {
+  const tag = scopedArgs('DropTag', 'findMany', {}, held).where.AND[0];
+  assert.ok(tag.order, 'a drop tag is reached through its order');
+  const pkg = scopedArgs('Package', 'findMany', {}, held).where.AND[0];
+  assert.equal(pkg.OR.length, 3);
+  assert.deepEqual(pkg.OR[1], { currentLocationId: { in: [A] } });
+  assert.deepEqual(pkg.OR[2], { orderId: null, currentLocationId: null }, 'a package with neither is seen by every branch');
+  for (const model of ['DropTag', 'Package', 'Quote', 'RFQ', 'QuoteLine', 'RFQLine']) assert.ok(BRANCH_OWNED[model], `${model} is listed as branch-owned`);
 });

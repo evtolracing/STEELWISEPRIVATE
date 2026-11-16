@@ -13,13 +13,18 @@
  * 4. For Supabase secrets: Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env
  */
 
+import { guarded } from '../../lib/outbound.js';
 import { OpenAIProvider } from './providers/OpenAIProvider.js';
 import { DeepSeekProvider } from './providers/DeepSeekProvider.js';
 import { AnthropicProvider } from './providers/AnthropicProvider.js';
 import { AIConfig } from './AIConfig.js';
 import { getSupabaseSecret } from '../../config/supabaseClient.js';
 
-export class AIProviderService {
+export const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS) || 25_000;
+
+export
+
+class AIProviderService {
   constructor() {
     this.providers = new Map();
     this.config = new AIConfig();
@@ -135,7 +140,7 @@ export class AIProviderService {
 
       // Try fallback provider if available
       if (provider === 'auto') {
-        return this.tryFallback(options, selectedProvider);
+        return this.tryFallback(options, selectedProvider, error);
       }
 
       throw error;
@@ -284,12 +289,13 @@ export class AIProviderService {
    * Try fallback provider on failure
    * @private
    */
-  async tryFallback(options, failedProvider) {
+  async tryFallback(options, failedProvider, cause) {
     const availableProviders = Array.from(this.providers.keys())
       .filter(p => p !== failedProvider);
 
     if (availableProviders.length === 0) {
-      throw new Error('No fallback provider available');
+      // Nothing else to try: report the failure itself, not the absence of a second provider.
+      throw cause || new Error('No fallback provider available');
     }
 
     // Prefer DeepSeek as fallback if available and not the failed provider
@@ -307,29 +313,10 @@ export class AIProviderService {
    * Retry logic with exponential backoff
    * @private
    */
-  async withRetry(fn, providerName, maxRetries = 3) {
-    let lastError;
-
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        return await fn();
-      } catch (error) {
-        lastError = error;
-
-        // Don't retry on client errors (400-499)
-        if (error.status >= 400 && error.status < 500) {
-          throw error;
-        }
-
-        if (i < maxRetries - 1) {
-          const delay = Math.min(1000 * Math.pow(2, i), 10000);
-          console.log(`⚠️  Retry ${i + 1}/${maxRetries} for ${providerName} in ${delay}ms`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
-      }
-    }
-
-    throw lastError;
+  async withRetry(fn, providerName) {
+    // One repeat at most, only on a failure that can pass, with a time limit on each try and a
+    // breaker per provider (lib/outbound.js). A 4xx from the provider is never repeated.
+    return guarded(`ai:${providerName}`, () => fn(), { repeatable: true, tries: 2, timeoutMs: AI_TIMEOUT_MS + 2000, baseDelayMs: 500 });
   }
 
   /**

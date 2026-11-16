@@ -148,6 +148,50 @@ function InvoiceDialog({ id, onClose, onChanged }) {
   )
 }
 
+const AGING = [['notDue', 'Not yet due'], ['days1to30', '1 to 30 days'], ['days31to60', '31 to 60'], ['days61to90', '61 to 90'], ['over90', 'Over 90']]
+
+/** What each customer owes by how long it has been due, read from /api/invoices/aging. */
+function AgingTable() {
+  const [report, setReport] = useState(null)
+  const [error, setError] = useState(null)
+  useEffect(() => {
+    client.get('/invoices/aging').then((r) => setReport(r.data)).catch((e) => setError(errorText(e, 'Could not load what is owed by age')))
+  }, [])
+  if (error) return <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+  if (!report) return null
+  return (
+    <Paper sx={{ mb: 2 }} data-testid="aging">
+      <Table size="small" aria-label="Owed by age">
+        <TableHead>
+          <TableRow>
+            <TableCell>Customer</TableCell><TableCell align="right">Invoices</TableCell>
+            {AGING.map(([k, label]) => <TableCell key={k} align="right">{label}</TableCell>)}
+            <TableCell align="right">Owed</TableCell><TableCell align="right">Credit owed back</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {report.customers.map((c) => (
+            <TableRow key={c.customerId}>
+              <TableCell>{c.customerName}</TableCell><TableCell align="right">{c.invoices}</TableCell>
+              {AGING.map(([k]) => <TableCell key={k} align="right" sx={k !== 'notDue' && c[k] > 0 ? { color: 'error.main' } : undefined}>{c[k] ? usd(c[k]) : ''}</TableCell>)}
+              <TableCell align="right">{usd(c.total)}</TableCell><TableCell align="right">{c.creditOwedBack ? usd(c.creditOwedBack) : ''}</TableCell>
+            </TableRow>
+          ))}
+          {!report.customers.length && <TableRow><TableCell colSpan={9}><Typography align="center" color="text.secondary" sx={{ py: 3 }}>Nothing is owed.</Typography></TableCell></TableRow>}
+          {report.customers.length > 0 && (
+            <TableRow>
+              <TableCell sx={{ fontWeight: 700 }}>All customers{report.meta.shown < report.meta.customers ? ` (${report.meta.customers}, first ${report.meta.shown} shown)` : ''}</TableCell><TableCell />
+              {AGING.map(([k]) => <TableCell key={k} align="right" sx={{ fontWeight: 700 }}>{usd(report.totals[k])}</TableCell>)}
+              <TableCell align="right" sx={{ fontWeight: 700 }}>{usd(report.totals.total)}</TableCell><TableCell align="right" sx={{ fontWeight: 700 }}>{usd(report.totals.creditOwedBack)}</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <Typography variant="caption" color="text.secondary" sx={{ p: 1.5, display: 'block' }}>{report.note}</Typography>
+    </Paper>
+  )
+}
+
 export default function InvoicesPage() {
   const [rows, setRows] = useState([])
   const [summary, setSummary] = useState(null)
@@ -155,6 +199,7 @@ export default function InvoicesPage() {
   const [search, setSearch] = useState('')
   const [error, setError] = useState(null)
   const [openId, setOpenId] = useState(null)
+  const [aging, setAging] = useState(false)
 
   const load = useCallback(() => {
     client.get('/invoices', { params: { status: status || undefined, search: search || undefined, limit: 100 } })
@@ -181,7 +226,9 @@ export default function InvoicesPage() {
           <Chip key={label} label={label} color={status === value ? 'primary' : 'default'} onClick={() => setStatus(value)} />
         ))}
         <TextField size="small" label="Invoice or order number" value={search} onChange={(e) => setSearch(e.target.value)} sx={{ ml: 2, minWidth: 240 }} />
+        <Chip label="Owed by age" variant={aging ? 'filled' : 'outlined'} color={aging ? 'secondary' : 'default'} onClick={() => setAging((v) => !v)} />
       </Stack>
+      {aging && <AgingTable />}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       <Paper>
         <Table size="small">

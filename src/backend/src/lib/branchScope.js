@@ -23,7 +23,15 @@
  *   WorkCenter, DispatchJob, DispatchOperation   the branch of the work center
  *   WorkOrder        the branch its source stock item is at
  *   MaterialMovement the branch it left or the branch it arrived at
- * Shared across branches: customers, products, grades, heats, prices, tax rates, users.
+ *   StockTransfer    both branches see it; only the sending branch creates it, only the receiving branch receives it
+ *   StockTransferLine its transfer
+ *   RFQ, Quote       the branch of the person who entered it (locationId). One with no branch
+ *                    (a request that came from the web store or a partner) is seen by every branch
+ *   RFQLine, QuoteLine              its request or quote
+ *   DropTag          its order
+ *   Package          its order, or the branch it is standing at; one with neither is seen by every branch
+ * Shared across branches: customers, products, grades, heats, prices, tax rates, users, documents
+ * (a mill certificate follows the material from branch to branch).
  */
 import { requestContext } from './requestContext.js';
 import { EXTERNAL_ROLES } from './roleAccess.js';
@@ -45,6 +53,13 @@ export function branchesOf(user) {
 const direct = (field, moves = false) => ({ field, moves, where: (ids) => ({ [field]: { in: ids } }) });
 const through = (where) => ({ where });
 const orderIn = (ids) => ({ locationId: { in: ids } });
+// Owned by a branch once someone has taken it; until then every branch sees it.
+const jobIn = (ids) => ({ OR: [
+  { order: orderIn(ids) },
+  { workCenter: { locationId: { in: ids } } },
+  { orderId: null, workCenterId: null, createdBy: { homeLocationId: { in: ids } } },
+] });
+const ownOrUnassigned = (ids) => ({ OR: [{ locationId: { in: ids } }, { locationId: null }] });
 
 export const BRANCH_OWNED = {
   Order: direct('locationId'),
@@ -55,20 +70,39 @@ export const BRANCH_OWNED = {
   // Stock moves to another branch by transfer, so a change of branch is not refused here.
   Inventory: direct('locationId', true),
   Coil: direct('locationId', true),
-  Shipment: direct('fromLocationId'),
-  ShipmentItem: through((ids) => ({ shipment: { fromLocationId: { in: ids } } })),
-  Job: through((ids) => ({ OR: [
-    { order: orderIn(ids) },
-    { workCenter: { locationId: { in: ids } } },
-    { orderId: null, workCenterId: null, createdBy: { homeLocationId: { in: ids } } },
-  ] })),
+  // A shipment is seen by the branch it leaves from and by the branch that sold the order (Phase 8, N-002).
+  // Only the branch it leaves from changes it: that is checked where shipments are changed (routes/shipments.js).
+  Shipment: { field: 'fromLocationId', moves: false, where: (ids) => ({ OR: [{ fromLocationId: { in: ids } }, { order: { locationId: { in: ids } } }] }) },
+  ShipmentItem: through((ids) => ({ shipment: { OR: [{ fromLocationId: { in: ids } }, { order: { locationId: { in: ids } } }] } })),
+  // A print job is for one branch's printer; one with no branch on file is seen by every branch (Phase 8, N-015).
+  PrintQueueJob: { field: 'locationId', moves: false, where: ownOrUnassigned },
+  Job: through(jobIn),
+  // An inspection belongs to its job's branch; recorded shop-floor time to its plan's branch (Phase 7).
+  JobInspection: through((ids) => ({ job: jobIn(ids) })),
+  // Shop-floor staff belong to their home branch; one with no branch on file is seen by every branch.
+  Operator: through((ids) => ({ OR: [{ homeLocationId: { in: ids } }, { homeLocationId: null }] })),
+  DispatchTimeLog: through((ids) => ({ dispatchOperation: { dispatchJob: { locationId: { in: ids } } } })),
   WorkOrder: through((ids) => ({ sourceCoil: { locationId: { in: ids } } })),
   WorkCenter: direct('locationId'),
   DispatchJob: direct('locationId'),
   DispatchOperation: through((ids) => ({ dispatchJob: { locationId: { in: ids } } })),
+  RFQ: { field: 'locationId', moves: false, where: ownOrUnassigned },
+  RFQLine: through((ids) => ({ rfq: ownOrUnassigned(ids) })),
+  Quote: { field: 'locationId', moves: false, where: ownOrUnassigned },
+  QuoteLine: through((ids) => ({ quote: ownOrUnassigned(ids) })),
+  DropTag: through((ids) => ({ order: orderIn(ids) })),
+  Package: through((ids) => ({ OR: [
+    { order: orderIn(ids) },
+    { currentLocationId: { in: ids } },
+    { orderId: null, currentLocationId: null },
+  ] })),
   MaterialMovement: through((ids) => ({ OR: [{ fromLocationId: { in: ids } }, { toLocationId: { in: ids } }] })),
+  // A transfer is seen by both branches. Only the sending branch may create one (Phase 6, G-007).
+  StockTransfer: { field: 'fromLocationId', moves: false, where: (ids) => ({ OR: [{ fromLocationId: { in: ids } }, { toLocationId: { in: ids } }] }) },
+  StockTransferLine: through((ids) => ({ transfer: { OR: [{ fromLocationId: { in: ids } }, { toLocationId: { in: ids } }] } })),
 };
 
+const HOME_BRANCH_ON_CREATE = new Set(['Order', 'Quote', 'RFQ']);
 const FILTERED = new Set(['findMany', 'findFirst', 'findFirstOrThrow', 'findUnique', 'findUniqueOrThrow', 'count', 'aggregate', 'groupBy', 'update', 'updateMany', 'delete', 'deleteMany', 'upsert']);
 
 export class OutsideBranch extends Error {
@@ -82,8 +116,8 @@ export class OutsideBranch extends Error {
 export function scopedArgs(model, operation, args, scope) {
   const rule = BRANCH_OWNED[model];
   if (!rule || !scope) return args;
-  // A new order belongs to the branch of the person entering it unless the route named one.
-  if (model === 'Order' && operation === 'create' && scope.home && args?.data && args.data.locationId === undefined && args.data.location === undefined) {
+  // A new order, quote or request belongs to the branch of the person entering it unless the route named one.
+  if (HOME_BRANCH_ON_CREATE.has(model) && operation === 'create' && scope.home && args?.data && args.data.locationId === undefined && args.data.location === undefined) {
     args = { ...args, data: { ...args.data, locationId: scope.home } };
   }
   if (scope.branches === null || scope.bypass > 0) return args;

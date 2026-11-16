@@ -26,7 +26,8 @@ function measure(name, value, { required = false, max = 100000000 } = {}) {
  * { receipt, error }. receipt:
  *   coilNumber, form (null when it comes from the parent item), heatNumber, gradeCode, parentTag,
  *   thicknessIn, widthIn, lengthIn, odIn, idIn, weightLb, locationCode, locationId, binLocation,
- *   ownership, customerName, ownerId, productSku, poReference, notes
+ *   ownership, customerName, ownerId, productSku, poReference, notes,
+ *   unit ('LB', or 'EA' for shelf goods), quantity (the balance in that unit), pieces, poLineId
  */
 export function readReceipt(input, templateType = null) {
   const row = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
@@ -45,8 +46,10 @@ export function readReceipt(input, templateType = null) {
   // Plastics carry a lot number where metals carry a heat number: it is the same traceability key.
   const heatNumber = text(pick(row, 'heatNumber', 'heat_number', 'lot_number'), 60) || null;
   const gradeCode = text(pick(row, 'gradeCode', 'grade', 'material_type'), 40) || null;
-  if (!parentTag && !heatNumber) return fail('A heat or lot number is required');
-  if (!parentTag && !gradeCode) return fail('A grade is required');
+  // Shelf goods (gloves, discs, consumables) are counted by the piece and have no heat or grade (C-011).
+  const byPiece = form === 'SUPPLY';
+  if (!parentTag && !heatNumber && !byPiece) return fail('A heat or lot number is required');
+  if (!parentTag && !gradeCode && !byPiece) return fail('A grade is required');
 
   const sizes = {};
   for (const [field, label, ...names] of [
@@ -64,7 +67,7 @@ export function readReceipt(input, templateType = null) {
   }
   if (sizes.odIn !== null && sizes.idIn !== null && sizes.idIn >= sizes.odIn) return fail('The inside diameter must be smaller than the outside diameter');
 
-  const weight = measure('Weight', pick(row, 'weightLb', 'weight_lbs', 'netWeightLb'), { required: true });
+  const weight = measure('Weight', pick(row, 'weightLb', 'weight_lbs', 'netWeightLb'), { required: !byPiece });
   if (weight.error) return fail(weight.error);
 
   const locationId = text(row.locationId, 64) || null;
@@ -80,10 +83,14 @@ export function readReceipt(input, templateType = null) {
   if (ownership === 'CUSTOMER_OWNED' && !ownerId && !customerName) return fail('Customer-owned stock needs the customer');
 
   const pieces = text(pick(row, 'pieces', 'quantity_pcs'));
-  if (pieces && !(Number.isInteger(Number(pieces)) && Number(pieces) > 0)) return fail('The piece count must be a whole number more than zero');
+  if (pieces && !(Number.isInteger(Number(pieces)) && Number(pieces) > 0 && Number(pieces) <= 10000000)) return fail('The piece count must be a whole number more than zero');
+  if (byPiece && !pieces) return fail('Shelf goods are received by the piece: give the number of pieces');
+  const productSku = text(pick(row, 'productSku', 'material_code'), 60) || null;
+  if (byPiece && !productSku) return fail('Shelf goods need the product (catalog item) they are sold as');
+  const poLineId = text(pick(row, 'poLineId', 'po_line_id'), 64) || null;
   const noteParts = [
     text(pick(row, 'notes'), 500),
-    pieces ? `${Number(pieces)} pcs` : '', text(row.size_description, 80), text(row.bundle_number, 60) && `Bundle ${text(row.bundle_number, 60)}`,
+    pieces && !byPiece ? `${Number(pieces)} pcs` : '', text(row.size_description, 80), text(row.bundle_number, 60) && `Bundle ${text(row.bundle_number, 60)}`,
     text(row.color, 40) && `Color ${text(row.color, 40)}`, text(row.condition, 40) && `Condition ${text(row.condition, 40)}`,
     text(pick(row, 'millName', 'mill_name'), 80) && `Mill ${text(pick(row, 'millName', 'mill_name'), 80)}`,
   ].filter(Boolean);
@@ -91,10 +98,12 @@ export function readReceipt(input, templateType = null) {
   return {
     error: null,
     receipt: {
-      coilNumber, form, heatNumber, gradeCode, parentTag, ...sizes, weightLb: weight.value,
+      coilNumber, form, heatNumber, gradeCode, parentTag, ...sizes, weightLb: weight.value ?? 0,
+      // The stock balance: pounds for metal and plastic, pieces for shelf goods.
+      unit: byPiece ? 'EA' : 'LB', quantity: byPiece ? Number(pieces) : weight.value, pieces: pieces ? Number(pieces) : null, poLineId,
       locationId, locationCode, binLocation: text(pick(row, 'binLocation', 'bay_position'), 60) || null,
       ownership, ownerId, customerName,
-      productSku: text(pick(row, 'productSku', 'material_code'), 60) || null,
+      productSku,
       poReference: text(pick(row, 'poReference', 'po_number'), 60) || null,
       notes: noteParts.join('. ').slice(0, 900) || null,
     },

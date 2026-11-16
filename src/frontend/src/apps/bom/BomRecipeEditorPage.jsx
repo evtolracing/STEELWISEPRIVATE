@@ -17,6 +17,8 @@ import {
   CircularProgress,
   Collapse,
   Chip,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
@@ -45,6 +47,8 @@ export default function BomRecipeEditorPage() {
   const [thicknessMin, setThicknessMin] = useState('');
   const [thicknessMax, setThicknessMax] = useState('');
   const [division, setDivision] = useState('');
+  // Jobs on a routing are inspected unless the routing says they need none.
+  const [inspectionRequired, setInspectionRequired] = useState(true);
   const [status, setStatus] = useState('DRAFT');
   const [version, setVersion] = useState(1);
   const [operations, setOperations] = useState([]);
@@ -98,9 +102,11 @@ export default function BomRecipeEditorPage() {
       setThicknessMin(recipe.thicknessMin !== null ? recipe.thicknessMin : '');
       setThicknessMax(recipe.thicknessMax !== null ? recipe.thicknessMax : '');
       setDivision(recipe.division || '');
+      setInspectionRequired(recipe.inspectionRequired !== false);
       setStatus(recipe.status);
       setVersion(recipe.version);
-      setOperations(recipe.operations || []);
+      // A step saved without a list of parameters (for example by an import) is shown with none, not as a crash.
+      setOperations((recipe.operations || []).map((op) => ({ ...op, parameters: Array.isArray(op.parameters) ? op.parameters : [] })));
       
       setError(null);
     } catch (err) {
@@ -126,6 +132,7 @@ export default function BomRecipeEditorPage() {
         thicknessMin: thicknessMin !== '' ? parseFloat(thicknessMin) : null,
         thicknessMax: thicknessMax !== '' ? parseFloat(thicknessMax) : null,
         division: division || null,
+        inspectionRequired,
         operations,
       };
       
@@ -226,7 +233,7 @@ export default function BomRecipeEditorPage() {
       }
       
       // Replace operations with suggestions
-      setOperations(result.suggestedOperations);
+      setOperations((result.suggestedOperations || []).map((op) => ({ ...op, parameters: Array.isArray(op.parameters) ? op.parameters : [] })));
       setSuccess(`AI suggested ${result.suggestedOperations.length} operations`);
       setAiExpanded(false);
     } catch (err) {
@@ -560,6 +567,18 @@ export default function BomRecipeEditorPage() {
                   <MenuItem value="METALS">Metals</MenuItem>
                   <MenuItem value="PLASTICS">Plastics</MenuItem>
                 </TextField>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                  control={<Checkbox checked={inspectionRequired} onChange={(e) => setInspectionRequired(e.target.checked)} disabled={!isEditable} />}
+                  label="Jobs on this routing must pass inspection"
+                />
+                {!inspectionRequired && (
+                  <Typography variant="caption" color="warning.main" display="block">
+                    Jobs on this routing go straight to packaging when their last step is finished.
+                  </Typography>
+                )}
               </Grid>
             </Grid>
           </Paper>

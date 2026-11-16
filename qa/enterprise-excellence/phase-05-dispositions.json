@@ -1,0 +1,96 @@
+{
+ "note": "Dispositions decided in Phase 5. Applied over the findings source by qa/tools/findings-import.mjs. Never delete an entry.",
+ "dispositions": {
+  "S-008": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: order entry, Retail POS and the mobile rep screen take the branch list from the server (GET /api/orders/intake/branches): the person's own branches, home branch first, every branch for a manager. The fixed list of four Michigan branches is gone.",
+   "verification": "qa/sim/ui-phase5.cjs: \"order entry: the home branch is chosen to start\", \"order entry: only this login's branches are offered\"; qa/sim/phase5-sales.mjs: \"order entry sells from the person's own branch\"."
+  },
+  "U-011": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: see S-008.",
+   "verification": "qa/sim/ui-phase5.cjs, order entry checks."
+  },
+  "C-012": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: an intake order's seller is the company that owns the branch it is sold from; the fixed company code is used only when the branch has no owner on file.",
+   "verification": "qa/sim/phase5-sales.mjs: \"order entry sells from the person's own branch: taxed, filed and sold by that branch\" (seller equals the branch owner)."
+  },
+  "S-021": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5, owner decision 1 (connect or retire the Order Hub): retired. Every /orderhub address now opens RFQs & Quotes, the one console that saves requests, quotes and orders in the database. The help text was updated.",
+   "verification": "qa/sim/ui-phase5.cjs: \"old Order Hub address: goes to the request inbox\"."
+  },
+  "U-002": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: see S-021.",
+   "verification": "qa/sim/ui-phase5.cjs."
+  },
+  "S-026": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: the screen calls to routes that do not exist were removed (api/pricing.js keeps only the price check and contract lookup; api/index.js lost three order calls with no route). No screen used them.",
+   "verification": "Lint and production build pass; the screen audit and every-screen-opens check pass; qa/tools/frontend-checks.mjs ratchets unchanged or lower."
+  },
+  "S-022": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: the counter-session routes that created customers and orders by their own rules (no tax, no credit check) now answer 410 SESSION_FLOW_CLOSED and say which screen to use. The reading steps of the session still answer. The simulation's counter job now enters the counter order through Retail POS.",
+   "verification": "qa/sim/phase5-sales.mjs: \"the unused counter-session flow no longer creates customers or orders\"; qa/sim/run.mjs counter job."
+  },
+  "G-009": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: a void now sets the order to CANCELLED in the same conditional claim that adds the note, so every report that filters on status leaves it out; the day's counter figures leave it out. Earlier voided sales are set to CANCELLED by SQL Editor file 11 (20261115090000_voided_counter_sales_cancelled), which the owner applies.",
+   "verification": "qa/sim/phase5-sales.mjs: \"a voided sale is cancelled, credited, refunded and put back on the shelf, once\" and the final reconciliation (\"no voided counter sale is left COMPLETE\"); SQL Editor file 11 run twice on a copy of the 85-branch database: 903 voided sales left COMPLETE before, 0 after; second run skipped."
+  },
+  "H-011": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5, following the rule already checked by the database checks (\"orders with no lines, not draft or cancelled\"): an order may be kept as a draft with no lines, but cannot be created past draft or moved to any status except cancelled without a line (400 or 409 NO_LINES). The owner is asked to confirm.",
+   "verification": "qa/sim/phase5-sales.mjs: \"an order with no lines may be kept as a draft but cannot go further\"."
+  },
+  "S-020": {
+   "statusNote": "Phase 5: the field now says it is not applied (see J-008, which extends this to five more fields). Still the owner's decision how a discount combines with a contract tier."
+  },
+  "U-012": {
+   "statusNote": "Phase 5: see J-008."
+  },
+  "F-008": {
+   "statusNote": "Phase 5: reviewed. Acceptance taxes by the selling branch (rule 27) and now files the order under the same branch (J-005). The store's estimate uses the ship-to state, which is rule 27's fallback when no branch is chosen; the buyer sees an estimate and the CSR confirms. Unchanged pending the owner."
+  },
+  "G-018": {
+   "statusNote": "Phase 5: quotes, accepted quotes, web orders, order intake and counter sales now set the order's branch (J-001, J-005, S-008). The column stays optional for all-branch logins with no home branch; orders with no branch after the final gate run: 59 after the simulation and 62 after all scenarios (63 at the end of Phase 4); the rest are seed orders and orders entered by all-branch logins with no home branch."
+  },
+  "H-013": {
+   "statusNote": "Phase 5: checked again. Web checkout stores no card number and records no payment; no order is marked paid by the shop. Payment scenarios are NOT APPLICABLE until the owner answers."
+  },
+  "B-009": {
+   "statusNote": "Phase 5: the Order Hub screen is retired (S-021). The second stock list and its JSON store remain; they belong with inventory in Phase 6."
+  },
+  "G-014": {
+   "status": "VERIFIED FIXED",
+   "phase": "Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal",
+   "statusNote": "Phase 5: reviewed for the screens. No screen lists GET /api/orders: the All Orders screen reads the order intake list, which it shows master and detail (the selected order's lines), and the home page reads /api/dashboard. The summary view of /api/orders, built in Phase 4, is what a list without lines uses, and is checked again in Phase 5.",
+   "verification": "qa/sim/phase5-sales.mjs: \"the order list answers a page in summary form\" (smaller reply, line count, no lines)."
+  },
+  "G-020": {
+   "status": "DEFERRED TO SPECIFIC PHASE",
+   "phase": "Phase 9: user experience, visual design and accessibility",
+   "statusNote": "Phase 5: reviewed. No screen edits an order through PUT /api/orders/:id (the call in api/index.js has no user). Orders are edited on the order entry screen through PATCH /api/orders/intake/:id, which does not check the version. The API check from Phase 4 is tested again in Phase 5.",
+   "deferral": {
+    "reason": "Telling a person that someone else changed the order, and offering to reload, is screen behaviour, and the order entry screen is due for its redesign in Phase 9; doing it twice would waste the work.",
+    "targetPhase": "Phase 9: user experience, visual design and accessibility",
+    "correction": "PATCH /api/orders/intake/:id accepts expectedUpdatedAt and answers 409 STALE_EDIT when the order changed; the order entry screen sends the version it loaded and, on 409, says who changed it and offers to reload.",
+    "dependencies": "The Phase 9 order entry design.",
+    "acceptance": "Two people edit the same order: one is saved, the other is told and loses nothing silently.",
+    "verification": "An API scenario on the intake route and a browser check with two pages open on the same order."
+   }
+  }
+ }
+}

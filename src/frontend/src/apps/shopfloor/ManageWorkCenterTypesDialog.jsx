@@ -65,7 +65,13 @@ function TypeForm({ initialData, divisions, onSave, onCancel, saving }) {
     color: '#1976d2',
     description: '',
     divisions: [],
+    certificationRequired: false,
+    allowsConcurrentSteps: false,
+    hourlyRate: '',
+    checklistText: '',
   })
+  // The labor rate is cost: the server sends it only to the roles that manage cost.
+  const showRate = Boolean(initialData && Object.prototype.hasOwnProperty.call(initialData, 'hourlyRate'))
 
   useEffect(() => {
     if (initialData) {
@@ -76,6 +82,10 @@ function TypeForm({ initialData, divisions, onSave, onCancel, saving }) {
         color: initialData.color || '#1976d2',
         description: initialData.description || '',
         divisions: initialData.divisions || [],
+        certificationRequired: Boolean(initialData.certificationRequired),
+        allowsConcurrentSteps: Boolean(initialData.allowsConcurrentSteps),
+        hourlyRate: initialData.hourlyRate == null ? '' : String(initialData.hourlyRate),
+        checklistText: Array.isArray(initialData.inspectionChecklist) ? initialData.inspectionChecklist.map((c) => c.item).join('\n') : '',
       })
     }
   }, [initialData])
@@ -101,7 +111,7 @@ function TypeForm({ initialData, divisions, onSave, onCancel, saving }) {
       // Auto-generate ID from label
       form.id = form.label.toUpperCase().replace(/[^A-Z0-9]/g, '_')
     }
-    onSave(form, isEdit)
+    onSave({ ...form, _showRate: showRate }, isEdit)
   }
 
   const SelectedIcon = ICON_MAP[form.icon] || ICON_MAP.Settings
@@ -206,6 +216,50 @@ function TypeForm({ initialData, divisions, onSave, onCancel, saving }) {
           </Stack>
         </Grid>
 
+        {/* Rules for this kind of work */}
+        <Grid item xs={12}>
+          <Typography variant="caption" color="text.secondary">
+            Rules for this kind of work
+          </Typography>
+          <FormGroup>
+            <FormControlLabel
+              control={<Checkbox size="small" checked={form.certificationRequired} onChange={(e) => setForm((prev) => ({ ...prev, certificationRequired: e.target.checked }))} />}
+              label="An operator needs a current certification to run it"
+            />
+            <FormControlLabel
+              control={<Checkbox size="small" checked={form.allowsConcurrentSteps} onChange={(e) => setForm((prev) => ({ ...prev, allowsConcurrentSteps: e.target.checked }))} />}
+              label="One operator may run two steps at once"
+            />
+          </FormGroup>
+        </Grid>
+        {showRate && (
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Labor rate per hour ($)"
+              value={form.hourlyRate}
+              onChange={handleChange('hourlyRate')}
+              fullWidth
+              size="small"
+              type="number"
+              inputProps={{ min: 0, step: '0.01' }}
+              helperText="Used for job cost. Leave empty if not set."
+            />
+          </Grid>
+        )}
+        <Grid item xs={12} sm={showRate ? 8 : 12}>
+          <TextField
+            label="Inspection checklist"
+            value={form.checklistText}
+            onChange={handleChange('checklistText')}
+            fullWidth
+            size="small"
+            multiline
+            minRows={3}
+            placeholder={'One check per line, for example:\nNo burrs on cut edges\nLength within tolerance'}
+            helperText="One check per line. Leave empty to use the standard five checks."
+          />
+        </Grid>
+
         {/* Divisions */}
         <Grid item xs={12}>
           <Typography variant="caption" color="text.secondary">
@@ -275,6 +329,17 @@ function TypeForm({ initialData, divisions, onSave, onCancel, saving }) {
   )
 }
 
+// The rule fields as the server takes them. The rate is sent only when the form showed it.
+function rulesOf(form) {
+  const lines = String(form.checklistText || '').split('\n').map((l) => l.trim()).filter(Boolean)
+  return {
+    certificationRequired: Boolean(form.certificationRequired),
+    allowsConcurrentSteps: Boolean(form.allowsConcurrentSteps),
+    inspectionChecklist: lines.length ? lines.map((item) => ({ item, required: true })) : null,
+    ...(form._showRate && { hourlyRate: form.hourlyRate === '' ? null : Number(form.hourlyRate) }),
+  }
+}
+
 export default function ManageWorkCenterTypesDialog({
   open,
   onClose,
@@ -300,9 +365,11 @@ export default function ManageWorkCenterTypesDialog({
           color: formData.color,
           description: formData.description,
           divisions: formData.divisions,
+          ...rulesOf(formData),
         })
       } else {
-        await onCreateType(formData)
+        const { checklistText: _checklistText, hourlyRate: _hourlyRate, ...rest } = formData
+        await onCreateType({ ...rest, ...rulesOf(formData) })
       }
       setShowForm(false)
       setEditingType(null)

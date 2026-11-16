@@ -629,7 +629,9 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const customer = await prisma.organization.findUnique({ where: { code: 'QA-C06' } });
   const product = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'CWT', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
   const line = (over = {}) => ({ productId: product.id, description: 'QA intake line', qty: 200, uom: 'LB', unitPrice: 0.5, extPrice: 100, ...over });
-  const miBranch = await prisma.location.findFirst({ where: { state: 'MI' }, orderBy: { code: 'asc' } });
+  // One of the CSR's own branches: since Phase 5 an order is filed under, and sold by, the branch
+  // named, and staff may name only their own (owner decision 2; S-008, C-012).
+  const miBranch = await prisma.location.findFirst({ where: { state: 'MI', code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } });
   const create = (over = {}) => call('POST', '/api/orders/intake', { source: 'PHONE', division: 'METALS', location: miBranch.code, priority: 'STANDARD', customerId: customer.id, customerName: customer.name, lines: [line(), line({ qty: 100, extPrice: 50 })], status: 'DRAFT', ...over });
   const row = (id) => prisma.order.findUnique({ where: { id }, include: { lines: { orderBy: { lineNumber: 'asc' } } } });
 
@@ -650,7 +652,10 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     const shipped = await create({ shipToState: 'IN' });
     const shippedRow = await row(shipped.body?.data?.id);
     check('an order shipped to another state is still taxed at the selling branch state rate', wantTax > 0 && Math.abs(Number(shippedRow?.taxAmount) - wantTax) < 0.005, `tax ${shippedRow?.taxAmount}, want ${wantTax}`);
-    const ohBranch = await prisma.location.findFirst({ where: { state: 'OH' }, orderBy: { code: 'asc' } });
+    const ohBranch = await prisma.location.findFirst({ where: { state: 'OH', code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } });
+    check('the order is filed under the branch it was sold from', shippedRow?.locationId === miBranch.id, `branch ${shippedRow?.locationId}, want ${miBranch.id}`);
+    const notMine = await prisma.location.findFirst({ where: { code: { startsWith: 'DEMO-' } } });
+    if (notMine) { const refused = await create({ location: notMine.code }); check('a branch that is not the person\'s own is refused', refused.status === 403, `status ${refused.status}`); }
     const fromOhio = await create({ location: ohBranch.code });
     const ohioRow = await row(fromOhio.body?.data?.id);
     check('the same order sold from a branch in another state is taxed at that branch state rate', Math.abs(Number(ohioRow?.taxAmount) - cents(150 * await rateFor('OH'))) < 0.005, `tax ${ohioRow?.taxAmount}, want ${cents(150 * await rateFor('OH'))}`);
@@ -661,7 +666,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       const exRow = await row(ex.body?.data?.id);
       check('a tax-exempt customer is charged no tax', Number(exRow?.taxAmount) === 0 && Math.abs(Number(exRow?.totalAmount) - 150) < 0.005, `tax ${exRow?.taxAmount}, total ${exRow?.totalAmount}`);
     } finally { await prisma.organization.update({ where: { id: exemptCustomer.id }, data: { taxExempt: exemptCustomer.taxExempt } }); }
-    const branch = await prisma.location.findFirst({ where: { state: 'OH' }, orderBy: { code: 'asc' } });
+    const branch = await prisma.location.findFirst({ where: { state: 'OH', code: { startsWith: 'QA-L' } }, orderBy: { code: 'asc' } });
     const retail = await create({ source: 'RETAIL', customerId: undefined, customerName: 'Walk-In', location: branch.code, status: 'SUBMITTED' });
     const retailRow = await prisma.order.findUnique({ where: { id: retail.body?.data?.id || FAKE_ID }, include: { buyer: true } });
     check('a Retail POS sale with no account is sold to the walk-in account and taxed at the branch', retail.status === 201 && retailRow?.buyer?.code === 'WALK-IN' && retailRow?.status === 'PENDING' && Math.abs(Number(retailRow?.taxAmount) - cents(150 * await rateFor('OH'))) < 0.005, `status ${retail.status}, buyer ${retailRow?.buyer?.code}, tax ${retailRow?.taxAmount}, want ${cents(150 * await rateFor('OH'))}`);
@@ -785,7 +790,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
   const adminUser = await prisma.user.findUnique({ where: { email: QA_USERS.admin } });
   const csrUser = await prisma.user.findUnique({ where: { email: QA_USERS.csr } });
   // Two QA items with stock and nothing reserved: one for the hold checks, one to ship.
-  const free = await prisma.inventory.findMany({ where: { coil: { coilNumber: { startsWith: 'QA-' }, status: 'AVAILABLE' }, qtyAllocated: 0, qtyOnHold: 0, qtyAvailable: { gte: 500 } }, include: { coil: true }, orderBy: { coil: { coilNumber: 'desc' } }, take: 2 });
+  const free = await prisma.inventory.findMany({ where: { coil: { coilNumber: { startsWith: 'QA-' }, status: 'AVAILABLE' }, qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, qtyAvailable: { gte: 500 } }, include: { coil: true }, orderBy: { coil: { coilNumber: 'desc' } }, take: 2 });
   if (free.length < 2) findings.push('fewer than two free QA stock items: rebuild the QA database');
   else {
     const [a, b] = free;
@@ -1227,18 +1232,19 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     const m4 = await send('POST', `/api/jobs/${jobId}/complete`, operatorT, { note: 'Done, 2 skids' });
     moves = await movesOf(jobId);
     job = await prisma.job.findUnique({ where: { id: jobId } });
-    check('every way of moving a job leaves a record', m2.status === 200 && m3.status === 200 && m4.status === 200 && moves.length === 4 && moves.map((m) => m.details?.to).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>READY_TO_SHIP', `statuses ${m2.status}/${m3.status}/${m4.status}, records ${moves.map((m) => m.details?.to).join('>')}`);
+    check('every way of moving a job leaves a record', m2.status === 200 && m3.status === 200 && m4.status === 200 && moves.length === 4 && moves.map((m) => m.details?.to).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>WAITING_QC', `statuses ${m2.status}/${m3.status}/${m4.status}, records ${moves.map((m) => m.details?.to).join('>')}`);
     check('each record carries the right person', moves.length === 4 && moves[1].userId === csr.id && moves[2].userId === csr.id && moves[3].userId === operator.id, moves.map((m) => m.userId === operator.id ? 'operator' : m.userId === csr.id ? 'csr' : 'other').join(','));
     check('completing a job with a note still leaves its notes alone', job?.notes === 'Customer wants paper interleave', `notes are now ${JSON.stringify(job?.notes ?? null)}`);
-    const same = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'READY_TO_SHIP' });
+    // Since owner decision 9 a completed job goes to inspection, even with no planned steps (L-021).
+    const same = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'WAITING_QC' });
     check('setting the status a job already has adds no record', same.status === 200 && (await movesOf(jobId)).length === 4, `status ${same.status}, ${(await movesOf(jobId)).length} records`);
-    const refused = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'SCHEDULED' });
+    const refused = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'READY_TO_SHIP' });
     check('a refused move adds no record', refused.status === 409 && (await movesOf(jobId)).length === 4, `status ${refused.status}`);
 
     const hist = await send('GET', `/api/jobs/${jobId}/history`, csrT);
     const h = Array.isArray(hist.body) ? hist.body : [];
     const statusRows = h.filter((e) => e.type === 'STATUS');
-    check('the job history lists every move in order', hist.status === 200 && h[0]?.type === 'CREATED' && statusRows.map((e) => e.status).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>READY_TO_SHIP', JSON.stringify(h.map((e) => e.status ?? e.type ?? null)));
+    check('the job history lists every move in order', hist.status === 200 && h[0]?.type === 'CREATED' && statusRows.map((e) => e.status).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>WAITING_QC', JSON.stringify(h.map((e) => e.status ?? e.type ?? null)));
     check('the history names who made each move and carries the reason', statusRows.length === 4 && statusRows.every((e) => typeof e.by === 'string' && e.by.length > 1 && e.recorded === true) && statusRows[0]?.note === 'Saw is free' && statusRows[0]?.from === 'SCHEDULED', JSON.stringify(statusRows.map((e) => [e.by ?? null, e.note ?? null])));
     check('the history names who created the job', typeof h[0]?.by === 'string' && h[0].by.length > 1, JSON.stringify(h[0] ?? null));
     check('the history of a job that is not on file is a 404', (await send('GET', '/api/jobs/00000000-0000-0000-0000-000000000000/history', csrT)).status === 404, 'not 404');
@@ -1292,13 +1298,15 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     check('a schedule date that is not a date is refused', (await send('GET', '/api/jobs?scheduledFrom=tuesday', csrT)).status === 400, 'accepted');
 
     // --- Work orders: checked input, real moves ---
-    const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE', location: { code: { startsWith: 'QA-L' } } }, orderBy: { coilNumber: 'asc' } }); // at a branch the operator belongs to
-    const busy = await prisma.coil.findFirst({ where: { status: { not: 'AVAILABLE' } } });
+    const coil = await prisma.coil.findFirst({ where: { status: 'AVAILABLE', location: { code: { startsWith: 'QA-L' } }, inventory: { is: { status: { not: 'IN_TRANSIT' } } } }, orderBy: { coilNumber: 'asc' } }); // at a branch the operator belongs to
+    // Stock that is reserved may be cut for its order; stock that is on hold, shipped or used up may not.
+    const busy = await prisma.coil.findFirst({ where: { status: { in: ['HOLD', 'SHIPPED', 'CONSUMED'] } } });
     const forged = await send('POST', '/api/work-orders', operatorT, { woType: 'SLIT', sourceCoilId: coil.id, priority: 2, notes: tag, id: 'forged-id', woNumber: 'WO-FORGED', status: 'COMPLETE', completedAt: '2020-01-01', yieldPct: 150, outputWeightLb: 999999 });
     const woId = forged.body?.id; if (woId) woIds.push(woId);
     const wo = woId ? await prisma.workOrder.findUnique({ where: { id: woId } }) : null;
     check('a work order is created with only the fields the form has', forged.status === 201 && wo && wo.id !== 'forged-id' && wo.woNumber !== 'WO-FORGED' && wo.status === 'DRAFT' && wo.completedAt === null && wo.yieldPct === null && wo.outputWeightLb === null && wo.priority === 2, `status ${forged.status} ${JSON.stringify({ status: wo?.status ?? null, woNumber: wo?.woNumber ?? null, yield: wo?.yieldPct ?? null })}`);
-    check('the work order takes its weight in from the stock item', wo && Number(wo.inputWeightLb) === Number(coil.netWeightLb), `${wo?.inputWeightLb ?? null} against ${coil.netWeightLb}`);
+    const coilOnHand = Number((await prisma.inventory.findUnique({ where: { coilId: coil.id } }))?.qtyOnHand ?? coil.netWeightLb);
+    check('the work order takes its weight in from what the stock item holds now', wo && Number(wo.inputWeightLb) === coilOnHand, `${wo?.inputWeightLb ?? null} against ${coilOnHand}`);
     for (const [why, body] of [
       ['no type', { sourceCoilId: coil.id }], ['an unknown type', { woType: 'WELD', sourceCoilId: coil.id }], ['no stock item', { woType: 'SLIT' }],
       ['a stock item that is not on file', { woType: 'SLIT', sourceCoilId: '00000000-0000-0000-0000-000000000000' }], ['a priority of 9', { woType: 'SLIT', sourceCoilId: coil.id, priority: 9 }],
@@ -1319,7 +1327,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     const st = await send('PUT', `/api/work-orders/${woId}/start`, operatorT, {});
     check('a work order can be started', st.status === 200 && st.body?.status === 'IN_PROGRESS' && !!st.body?.startedAt, `status ${st.status}`);
     check('a started work order cannot be started again', (await send('PUT', `/api/work-orders/${woId}/start`, operatorT, {})).status === 409, 'started twice');
-    const input = Number(coil.netWeightLb);
+    const input = coilOnHand; // what the work order takes in: the balance now, which can be less than the weight first received
     check('completing needs the weight out', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, {})).status === 400, 'accepted with no weight');
     check('a negative weight is refused', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: -5 })).status === 400, 'accepted');
     check('more cannot come out than went in', (await send('PUT', `/api/work-orders/${woId}/complete`, operatorT, { outputWeightLb: input, scrapWeightLb: input })).status === 400 && (await prisma.workOrder.findUnique({ where: { id: woId } }))?.status === 'IN_PROGRESS', 'accepted');
@@ -1416,6 +1424,17 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
       const events = () => prisma.auditLog.findMany({ where: { resourceType: 'Shipment', resourceId: shipId, eventType: 'SHIPMENT_STATUS_CHANGED' }, orderBy: { timestamp: 'asc' } });
       let ev = await events();
       check('creating a shipment is recorded with who created it', ev.length === 1 && ev[0].userId === shipU.id && ev[0].details?.to === 'PENDING', JSON.stringify(ev.map((e) => [e.userId === shipU.id, e.details?.to])));
+      // Everything that ships comes off reserved stock: with nothing reserved the dispatch is refused.
+      const unreserved = await send('PUT', `/api/shipments/${shipId}/dispatch`, shipT, {});
+      check('a shipment with nothing reserved is refused, and says to reserve the stock', unreserved.status === 409 && /reserve/i.test(unreserved.body?.error || ''), `status ${unreserved.status} ${unreserved.body?.error || ''}`);
+      // Since Phase 6 a reservation must be in the line's unit: a web line for pieces is filled from
+      // stock counted by the piece, so the test receives a lot of pieces at the branch to ship from.
+      const pieceProduct = await prisma.product.findFirst({ where: { isActive: true }, orderBy: { sku: 'asc' }, select: { sku: true } });
+      const pieces = await send('POST', '/api/inventory/receipts', adminT, { coilNumber: `${tag}-PCS`, form: 'SUPPLY', pieces: 10, productSku: pieceProduct?.sku, locationCode: branch.code });
+      check('a lot of pieces can be received to ship from', pieces.status === 201, `status ${pieces.status} ${pieces.body?.error || ''}`);
+      const stock = await prisma.inventory.findFirst({ where: { locationId: branch.id, unit: 'EA', qtyAvailable: { gte: 2 }, coil: { coilNumber: `${tag}-PCS`, status: 'AVAILABLE' } }, select: { coilId: true } });
+      const held = await send('POST', `/api/orders/${order.id}/allocate`, adminT, { lineId: line.id, coilId: stock?.coilId, qty: 2 });
+      check('the stock going out is reserved for the line', held.status === 201, `status ${held.status} ${held.body?.error || ''}`);
       const out = await send('PUT', `/api/shipments/${shipId}/dispatch`, shipT, {});
       ev = await events();
       check('dispatch is recorded with who dispatched', out.status === 200 && ev.length === 2 && ev[1].userId === shipU.id && ev[1].details?.from === 'PENDING' && ev[1].details?.to === 'IN_TRANSIT', `status ${out.status} ${out.body?.error || ''}, ${ev.length} records`);
@@ -1465,6 +1484,7 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
 
       // Cancel: an invoice with nothing on it.
       const made3 = await send('POST', '/api/shipments', shipT, { orderId: order.id, fromLocationId: branch.id, items: [{ orderLineId: line.id, qtyShipped: 1, weightLb: 25 }] });
+      await send('POST', `/api/orders/${order.id}/allocate`, adminT, { lineId: line.id, coilId: stock?.coilId, qty: 1 }); // what ships must be reserved
       const out3 = await send('PUT', `/api/shipments/${made3.body?.id}/dispatch`, shipT, {});
       const inv3 = out3.body?.invoice?.id;
       const cancelled = inv3 ? await send('POST', `/api/invoices/${inv3}/cancel`, adminT, { reason: `${tag} billed in error` }) : { status: 0 };

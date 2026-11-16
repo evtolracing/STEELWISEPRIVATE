@@ -8,15 +8,13 @@
 import { Router } from 'express';
 import prisma from '../../lib/db.js';
 import crypto from 'crypto';
-import { partnerAuth } from '../../middleware/partnerAuth.js';
-import { partnerRateLimit, loadPartnerTier } from '../../middleware/partnerRateLimit.js';
+import { partnerStack } from './common.js';
+import { targetProblem, queueEvent, deliverDue, replayDelivery } from '../../services/webhookService.js';
 
 const router = Router();
 
 // Apply partner middleware stack
-router.use(partnerAuth());
-router.use(loadPartnerTier());
-router.use(partnerRateLimit());
+router.use(...partnerStack());
 
 // Allowed events per partner type
 const EVENTS_BY_TYPE = {
@@ -80,20 +78,13 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Validate URL format
-    try {
-      new URL(url);
-    } catch {
-      return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: 'url must be a valid URL' }
-      });
+    // The address must be one this server is allowed to call (https and public, in production).
+    const problem = targetProblem(url, req.partner.environment === 'production' ? { production: true } : {});
+    if (problem) {
+      return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: problem } });
     }
-
-    // Only allow HTTPS in production
-    if (req.partner.environment === 'production' && !url.startsWith('https://')) {
-      return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: 'Production webhooks must use HTTPS' }
-      });
+    if (secret !== undefined && (typeof secret !== 'string' || secret.length < 16 || secret.length > 200)) {
+      return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: 'secret must be 16 to 200 characters. Leave it out to have one made.' } });
     }
 
     // Validate events for partner type
@@ -162,11 +153,13 @@ router.put('/:id', async (req, res) => {
     const updateData = {};
 
     if (url) {
-      try { new URL(url); } catch { return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: 'Invalid URL' } }); }
+      const problem = targetProblem(url, req.partner.environment === 'production' ? { production: true } : {});
+      if (problem) return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: problem } });
       updateData.url = url;
     }
 
     if (events) {
+      if (!Array.isArray(events) || !events.length) return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: 'events must be a list with at least one event' } });
       const allowedEvents = EVENTS_BY_TYPE[req.partner.type] || [];
       const invalidEvents = events.filter(e => !allowedEvents.includes(e));
       if (invalidEvents.length > 0) {
@@ -227,7 +220,12 @@ router.delete('/:id', async (req, res) => {
 // GET /:id/deliveries — View delivery history for a webhook
 router.get('/:id/deliveries', async (req, res) => {
   try {
-    const { status, page = 1, limit = 25 } = req.query;
+    const { status } = req.query;
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 25));
+    if (status && !['PENDING', 'DELIVERED', 'FAILED', 'RETRYING'].includes(status)) {
+      return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: 'status must be one of: PENDING, DELIVERED, FAILED, RETRYING' } });
+    }
 
     const webhook = await prisma.partnerWebhook.findFirst({
       where: { id: req.params.id, partnerId: req.partner.id },
@@ -245,7 +243,7 @@ router.get('/:id/deliveries', async (req, res) => {
         where,
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
-        take: parseInt(limit),
+        take: limit,
       }),
       prisma.webhookDelivery.count({ where }),
     ]);
@@ -260,12 +258,13 @@ router.get('/:id/deliveries', async (req, res) => {
         httpStatus: d.httpStatus,
         responseTimeMs: d.responseTimeMs,
         errorMessage: d.errorMessage,
+        nextRetryAt: d.nextRetryAt,
         deliveredAt: d.deliveredAt,
         createdAt: d.createdAt,
       })),
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page,
+        limit,
         total,
         totalPages: Math.ceil(total / limit),
       },
@@ -287,21 +286,40 @@ router.post('/:id/test', async (req, res) => {
       return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Webhook not found' } });
     }
 
-    // Import webhook service dynamically to avoid circular deps
-    const { dispatchWebhookEvent } = await import('../../services/webhookService.js');
+    if (webhook.status !== 'ACTIVE') {
+      return res.status(409).json({ error: { code: 'CONFLICT', message: `This subscription is ${webhook.status.toLowerCase()}` } });
+    }
+    // A test goes to this one subscription, whatever events it subscribes to.
+    const queued = await queueEvent(prisma, 'test.ping', { message: 'This is a test webhook delivery', timestamp: new Date().toISOString() }, { subscriberIds: [webhook.id] });
+    const rows = await prisma.webhookDelivery.findMany({ where: { eventId: queued.eventId, webhookId: webhook.id }, select: { id: true } });
+    const tally = await deliverDue({ ids: rows.map((r) => r.id) });
+    const delivery = rows[0] ? await prisma.webhookDelivery.findUnique({ where: { id: rows[0].id }, select: { id: true, status: true, httpStatus: true, errorMessage: true, responseTimeMs: true } }) : null;
 
-    const result = await dispatchWebhookEvent('test.ping', {
-      message: 'This is a test webhook delivery',
-      timestamp: new Date().toISOString(),
-    }, [req.partner.id]);
-
-    res.json({
-      message: 'Test event dispatched',
-      ...result,
-    });
+    res.json({ message: tally.delivered ? 'Test event delivered' : 'Test event was not delivered', eventId: queued.eventId, delivered: tally.delivered === 1, delivery });
   } catch (error) {
     console.error('Webhook test error:', error);
     res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to send test' } });
+  }
+});
+
+// POST /:id/deliveries/:deliveryId/replay — Send a failed event again
+router.post('/:id/deliveries/:deliveryId/replay', async (req, res) => {
+  try {
+    const delivery = await prisma.webhookDelivery.findFirst({
+      where: { id: req.params.deliveryId, webhookId: req.params.id, webhook: { partnerId: req.partner.id } },
+      select: { id: true },
+    });
+    if (!delivery) {
+      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Delivery not found' } });
+    }
+    const result = await replayDelivery(delivery.id, null);
+    if (result.status !== 200) {
+      return res.status(result.status).json({ error: { code: 'CONFLICT', message: result.error } });
+    }
+    res.json({ message: 'Delivery sent again', delivery: result.delivery });
+  } catch (error) {
+    console.error('Webhook replay error:', error);
+    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to replay delivery' } });
   }
 });
 

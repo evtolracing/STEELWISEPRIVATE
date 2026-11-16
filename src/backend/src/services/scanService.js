@@ -4,6 +4,7 @@
  */
 
 import prisma from '../lib/db.js';
+import { createTraceEvent as recordTrace } from './dropTagService.js';
 import crypto from 'crypto';
 
 /**
@@ -505,24 +506,12 @@ async function handleDeliverScan(dropTag, { podSignature, stopNumber, stationId,
  * Create scan trace event
  */
 async function createScanEvent(eventType, dropTag, { stationId, actorUserId, previousState, newState, locationId, shipmentId, metadata }) {
-  return prisma.traceEvent.create({
-    data: {
-      eventType,
-      eventCategory: 'DROP_TAG',
-      actorUserId,
-      actorRole: 'OPERATOR',
-      resourceType: 'DropTag',
-      resourceId: dropTag.id,
-      previousState,
-      newState,
-      stationId,
-      locationId,
-      shipmentId: shipmentId || dropTag.shipmentId,
-      dropTagId: dropTag.id,
-      metadata,
-      occurredAt: new Date(),
-      eventHash: crypto.randomUUID(),
-    },
+  // The role is the one the person really has, and the hash is a hash (Phase 8, N-011).
+  const actor = actorUserId ? await prisma.user.findUnique({ where: { id: actorUserId }, select: { role: true } }) : null;
+  return recordTrace(prisma, {
+    eventType, eventCategory: 'DROP_TAG', actorUserId, actorRole: actor?.role || 'UNKNOWN',
+    resourceType: 'DropTag', resourceId: dropTag.id, previousState, newState, stationId, locationId,
+    shipmentId: shipmentId || dropTag.shipmentId, dropTagId: dropTag.id, metadata,
   });
 }
 

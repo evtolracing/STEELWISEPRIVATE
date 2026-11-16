@@ -110,7 +110,7 @@ const OUT = arg('out', 'qa/results/ui-inventory.json');
     const page = await open(bossContext, '/receiving');
     await page.getByText('Received in the last 30 days').first().waitFor({ timeout: 10000 }).catch(() => {});
     const first = await body(page);
-    check('receiving: no sample deliveries are shown', !/Outokumpu|TAG-10001|ABC Steel|INV-10001/.test(first) && /Expected deliveries are not listed here yet/.test(first), first.slice(0, 400));
+    check('receiving: no sample deliveries are shown', !/Outokumpu|TAG-10001|ABC Steel|INV-10001/.test(first) && /Expected: open purchase order lines/.test(first), first.slice(0, 400));
     await page.getByRole('button', { name: 'Receive item' }).click({ timeout: 8000 }).catch(() => {});
     await page.getByLabel(/Item number/).fill(number).catch(() => {});
     await page.getByLabel(/Weight \(lb\)/).fill('1234').catch(() => {});
@@ -139,10 +139,15 @@ const OUT = arg('out', 'qa/results/ui-inventory.json');
     if (stock) {
       const item = await open(bossContext, `/units/${stock.id}`);
       await item.getByRole('button', { name: 'Move' }).click({ timeout: 10000 }).catch(() => {});
-      await item.getByRole('combobox', { name: /Move to/ }).click().catch(() => {});
+      // Since Phase 6 (G-007) a move is a transfer: sent from here, in transit, then received at the other branch.
+      await item.getByRole('dialog').locator('[role="combobox"]').first().click().catch(() => {});
       await item.getByRole('option').first().click().catch(() => {});
-      await item.getByRole('button', { name: 'Move item' }).click({ timeout: 5000 }).catch(() => {});
-      await item.getByText('Item moved').waitFor({ timeout: 8000 }).catch(() => {});
+      await item.getByRole('button', { name: 'Send item' }).click({ timeout: 5000 }).catch(() => {});
+      await item.getByText('This item is on its way to another branch').first().waitFor({ timeout: 8000 }).catch(() => {});
+      const road = await api(`/api/coils/${stock.id}`, boss);
+      check('units: sending an item puts it in transit, still at its own branch', road.inventory?.status === 'IN_TRANSIT' && road.locationId === stock.locationId, `${road.inventory?.status} ${road.locationId}`);
+      const coming = (await api('/api/inventory/transfers?status=SHIPPED&limit=200', boss)).find((t) => (t.lines || []).some((l) => l.coilId === stock.id));
+      if (coming) await fetch(`${API}/api/inventory/transfers/${coming.id}/receive`, { method: 'POST', headers: { authorization: `Bearer ${boss.token}`, "content-type": "application/json" }, body: "{}" });
       const moved = await api(`/api/coils/${stock.id}`, boss);
       const history = await api(`/api/coils/${stock.id}/history`, boss);
       check('units: an item is moved to another location and the move is in its history', moved.locationId && moved.locationId !== stock.locationId && (history.events || []).some((e) => e.type === 'TRANSFER'), `${stock.locationId} -> ${moved.locationId}; ${(history.events || []).map((e) => e.type).join(',')}`);

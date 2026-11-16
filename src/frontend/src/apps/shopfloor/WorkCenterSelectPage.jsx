@@ -163,8 +163,9 @@ function WorkCenterSelectPage() {
       const result = await runDispatch(selectedLocation)
       setSnackbar({
         open: true,
-        message: `Dispatch complete! Assigned ${result.assignedCount} operations.`,
-        severity: 'success',
+        // Says what could not be placed and why, so the planner is not left guessing.
+        message: `Assigned ${result.assignedCount} step${result.assignedCount === 1 ? '' : 's'}.${result.unassignedCount ? ` ${result.unassignedCount} could not be placed: ${result.unassigned[0].reason}${result.unassignedCount > 1 ? ' (and others)' : ''}.` : ''}${result.notChecked?.length ? ` Note: ${result.notChecked[0]}.` : ''}`,
+        severity: result.unassignedCount ? 'warning' : 'success',
       })
       loadData()
     } catch (err) {

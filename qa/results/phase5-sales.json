@@ -1,0 +1,2202 @@
+{
+ "at": "2026-11-16T02:16:56.002Z",
+ "base": "http://localhost:3011",
+ "scenarios": 76,
+ "passed": 76,
+ "checks": 386,
+ "groups": {
+  "CRM, customers and requests for quote": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 65
+  },
+  "Product configuration and pricing": {
+   "scenarios": 15,
+   "passed": 15,
+   "checks": 71
+  },
+  "Quoting, approvals and conversion": {
+   "scenarios": 15,
+   "passed": 15,
+   "checks": 66
+  },
+  "Sales orders and fulfilment hand-off": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 48
+  },
+  "Counter sales (POS)": {
+   "scenarios": 11,
+   "passed": 11,
+   "checks": 54
+  },
+  "Web shop and customer portal": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 42
+  },
+  "Exceptions, security and recovery": {
+   "scenarios": 5,
+   "passed": 5,
+   "checks": 40
+  }
+ },
+ "results": [
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "a new customer account is created once, with its fields, and found by search",
+   "asserts": [
+    {
+     "what": "created: 201 with an id",
+     "ok": true
+    },
+    {
+     "what": "saved with every field given",
+     "ok": true
+    },
+    {
+     "what": "the same code a second time is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "a name is required",
+     "ok": true
+    },
+    {
+     "what": "an account type that does not exist is refused, not a server error",
+     "ok": true
+    },
+    {
+     "what": "one account with that code exists",
+     "ok": true
+    },
+    {
+     "what": "search by code finds it",
+     "ok": true
+    },
+    {
+     "what": "a customer login cannot create accounts",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 44
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "closing and reopening an account is on the record, like a tax status change (J-002)",
+   "asserts": [
+    {
+     "what": "closed",
+     "ok": true
+    },
+    {
+     "what": "reopened",
+     "ok": true
+    },
+    {
+     "what": "one record for the close and one for the reopen, with who did it",
+     "ok": true
+    },
+    {
+     "what": "a tax status change is recorded as before",
+     "ok": true
+    },
+    {
+     "what": "a save that changes neither writes no extra record",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 49
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "a closed account takes no new business in any channel, and its history stays (J-002)",
+   "asserts": [
+    {
+     "what": "staff order entry: refused with 409",
+     "ok": true
+    },
+    {
+     "what": "request for quote: refused with 409",
+     "ok": true
+    },
+    {
+     "what": "accepting an open quote: refused with 409",
+     "ok": true
+    },
+    {
+     "what": "the quote is still open after the refusal",
+     "ok": true
+    },
+    {
+     "what": "counter sale: refused",
+     "ok": true
+    },
+    {
+     "what": "order intake: refused",
+     "ok": true
+    },
+    {
+     "what": "web checkout: refused with 409",
+     "ok": true
+    },
+    {
+     "what": "no new order or web order was saved for it",
+     "ok": true
+    },
+    {
+     "what": "the earlier order is still there and readable",
+     "ok": true
+    },
+    {
+     "what": "reopened: the same quote is accepted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 511
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "an account cannot be placed under one of its own divisions (J-003)",
+   "asserts": [
+    {
+     "what": "a division is placed under the account",
+     "ok": true
+    },
+    {
+     "what": "a sub-division under the division",
+     "ok": true
+    },
+    {
+     "what": "the account under its own sub-division: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "the account under itself: refused",
+     "ok": true
+    },
+    {
+     "what": "the account still has no parent",
+     "ok": true
+    },
+    {
+     "what": "a sub-division buys at the top account's contract price",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 66
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "a request for quote keeps grade, size, tolerances, certificates and processing (J-001)",
+   "asserts": [
+    {
+     "what": "size kept",
+     "ok": true
+    },
+    {
+     "what": "grade kept",
+     "ok": true
+    },
+    {
+     "what": "finish and tolerances kept",
+     "ok": true
+    },
+    {
+     "what": "certificates kept",
+     "ok": true
+    },
+    {
+     "what": "processing and other requirements kept",
+     "ok": true
+    },
+    {
+     "what": "a plain line is not given requirements it did not have",
+     "ok": true
+    },
+    {
+     "what": "the requested date is kept",
+     "ok": true
+    },
+    {
+     "what": "a requirement that is not a real value is refused with the line and field named",
+     "ok": true
+    },
+    {
+     "what": "and nothing is saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 29
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "a request belongs to the branch that took it; another branch cannot see or quote it",
+   "asserts": [
+    {
+     "what": "it belongs to branch A",
+     "ok": true
+    },
+    {
+     "what": "branch B cannot open it",
+     "ok": true
+    },
+    {
+     "what": "branch B cannot quote it",
+     "ok": true
+    },
+    {
+     "what": "branch B's list does not hold it",
+     "ok": true
+    },
+    {
+     "what": "branch A and a manager see it",
+     "ok": true
+    },
+    {
+     "what": "no quote was made by the refused attempt",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 52
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "an incomplete request is refused and saves nothing",
+   "asserts": [
+    {
+     "what": "no lines: 400",
+     "ok": true
+    },
+    {
+     "what": "a line with no description and no product: 400",
+     "ok": true
+    },
+    {
+     "what": "a quantity of zero: 400",
+     "ok": true
+    },
+    {
+     "what": "a negative quantity: 400",
+     "ok": true
+    },
+    {
+     "what": "no customer: 400",
+     "ok": true
+    },
+    {
+     "what": "a customer that does not exist: 400",
+     "ok": true
+    },
+    {
+     "what": "a date that is not a date: 400",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 47
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "withdrawing a request closes its open quotes and it cannot be quoted again",
+   "asserts": [
+    {
+     "what": "withdrawn",
+     "ok": true
+    },
+    {
+     "what": "its open quote is closed as rejected",
+     "ok": true
+    },
+    {
+     "what": "a new quote on it: 409",
+     "ok": true
+    },
+    {
+     "what": "it cannot be reopened by hand",
+     "ok": true
+    },
+    {
+     "what": "accepting the closed quote: 409 and no order",
+     "ok": true
+    },
+    {
+     "what": "the status the screen may set is limited",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 94
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "customer preferences: staff fields stay with staff; a customer reads only its own account",
+   "asserts": [
+    {
+     "what": "staff save preferences",
+     "ok": true
+    },
+    {
+     "what": "staff read them back",
+     "ok": true
+    },
+    {
+     "what": "another customer's login cannot read them",
+     "ok": true
+    },
+    {
+     "what": "a customer login cannot list accounts",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 40
+  },
+  {
+   "group": "CRM, customers and requests for quote",
+   "name": "merging two accounts is not offered, so no history can be merged away",
+   "asserts": [
+    {
+     "what": "/api/customers/355cbbe9-1d26-4579-a555-42101c473845/merge: no such route (404)",
+     "ok": true
+    },
+    {
+     "what": "/api/customers/merge: no such route (404)",
+     "ok": true
+    },
+    {
+     "what": "both accounts are still there",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 14,
+   "status": "NOT APPLICABLE: no merge function exists; duplicates are refused by code at creation"
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "a weight-priced item is priced per pound from its price per hundredweight",
+   "asserts": [
+    {
+     "what": "200",
+     "ok": true
+    },
+    {
+     "what": "the unit price is the list price per pound",
+     "ok": true
+    },
+    {
+     "what": "the line is the weight times the price, not the piece count",
+     "ok": true
+    },
+    {
+     "what": "with no tier the source says list price",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 12
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "a contract tier gives its price; a tier that has ended or not begun gives list",
+   "asserts": [
+    {
+     "what": "tier A in force: the contract level price",
+     "ok": true
+    },
+    {
+     "what": "the contract lookup names the level",
+     "ok": true
+    },
+    {
+     "what": "ended yesterday: list price",
+     "ok": true
+    },
+    {
+     "what": "starts tomorrow: list price",
+     "ok": true
+    },
+    {
+     "what": "switched off: list price",
+     "ok": true
+    },
+    {
+     "what": "tier C: the volume level",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 68
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "a price level sent by the screen is ignored when the customer has its own",
+   "asserts": [
+    {
+     "what": "a customer with no tier pays list whatever level is sent",
+     "ok": true
+    },
+    {
+     "what": "a tier C customer pays volume, not the better level sent",
+     "ok": true
+    },
+    {
+     "what": "with no customer the level sent is used (the counter's price check)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 31
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "remnant discount and processing charges are added up on the server",
+   "asserts": [
+    {
+     "what": "the remnant price is the list less the discount",
+     "ok": true
+    },
+    {
+     "what": "processing is added once",
+     "ok": true
+    },
+    {
+     "what": "processing that is not a list adds nothing and does not fail",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 15
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "an item with no list price is not priced at zero",
+   "asserts": [
+    {
+     "what": "422 with a sentence",
+     "ok": true
+    },
+    {
+     "what": "a product that does not exist: 404",
+     "ok": true
+    },
+    {
+     "what": "no product: 400",
+     "ok": true
+    },
+    {
+     "what": "the web shop does not show it at zero either",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 30
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "tax: exempt pays none, others pay the selling branch's state, a state with no rate says so",
+   "asserts": [
+    {
+     "what": "selling branch in Ohio: Ohio rate, not the customer's state",
+     "ok": true
+    },
+    {
+     "what": "selling branch in Indiana: Indiana rate",
+     "ok": true
+    },
+    {
+     "what": "exempt: none",
+     "ok": true
+    },
+    {
+     "what": "a state with no rate on file charges none and says so",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 38
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "order entry refuses totals that do not add up and works the line total from the price unit",
+   "asserts": [
+    {
+     "what": "a line total that is not quantity × price: 400",
+     "ok": true
+    },
+    {
+     "what": "a subtotal that is not the lines: 400",
+     "ok": true
+    },
+    {
+     "what": "a total that is not subtotal + tax + freight: 400",
+     "ok": true
+    },
+    {
+     "what": "a negative price: 400",
+     "ok": true
+    },
+    {
+     "what": "nothing saved by the refusals",
+     "ok": true
+    },
+    {
+     "what": "per hundredweight: 1000 lb at 65 is 650",
+     "ok": true
+    },
+    {
+     "what": "per ton: 4000 lb at 900 is 1800",
+     "ok": true
+    },
+    {
+     "what": "each: 3 at 12.50 is 37.50",
+     "ok": true
+    },
+    {
+     "what": "the subtotal is the lines",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 63
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "quote lines are priced by their unit, and a weight price needs a weight",
+   "asserts": [
+    {
+     "what": "pieces at a price per hundredweight: refused",
+     "ok": true
+    },
+    {
+     "what": "per ton",
+     "ok": true
+    },
+    {
+     "what": "each",
+     "ok": true
+    },
+    {
+     "what": "per foot",
+     "ok": true
+    },
+    {
+     "what": "the subtotal is the lines",
+     "ok": true
+    },
+    {
+     "what": "a total sent by the screen is ignored",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 84
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "the price book and the price list agree with what is charged",
+   "asserts": [
+    {
+     "what": "the product is listed with its list price",
+     "ok": true
+    },
+    {
+     "what": "CONTRACT_A column is list × 0.92",
+     "ok": true
+    },
+    {
+     "what": "CONTRACT_B column is list × 0.85",
+     "ok": true
+    },
+    {
+     "what": "VOLUME column is list × 0.88",
+     "ok": true
+    },
+    {
+     "what": "a tier B customer is charged the CONTRACT_A column",
+     "ok": true
+    },
+    {
+     "what": "the overview lists the account with its tier in force",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 36
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "only a manager changes a list price; the change is recorded and used at once",
+   "asserts": [
+    {
+     "what": "a clerk: 403",
+     "ok": true
+    },
+    {
+     "what": "a clerk's attempt changed nothing",
+     "ok": true
+    },
+    {
+     "what": "zero or less: 400",
+     "ok": true
+    },
+    {
+     "what": "a manager: saved",
+     "ok": true
+    },
+    {
+     "what": "recorded with the old and new price and who",
+     "ok": true
+    },
+    {
+     "what": "the next price check uses it",
+     "ok": true
+    },
+    {
+     "what": "the web shop uses it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 48
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "an agreed quote price is kept when the contract changes before the customer says yes",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "the order line is at the quoted price, not today's list",
+     "ok": true
+    },
+    {
+     "what": "the order subtotal is the quote subtotal",
+     "ok": true
+    },
+    {
+     "what": "the product is carried to the order line",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 128
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "a product reads the same in the catalog, the price list and the web shop",
+   "asserts": [
+    {
+     "what": "the product screen has it",
+     "ok": true
+    },
+    {
+     "what": "the web shop has it under the same code and name",
+     "ok": true
+    },
+    {
+     "what": "the price list has the same name and unit",
+     "ok": true
+    },
+    {
+     "what": "the web shop's price for one equals the order-entry price for one",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 44
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "a division buys at the top account's contract, as the pricing rule says",
+   "asserts": [
+    {
+     "what": "the division pays the top account's contract price",
+     "ok": true
+    },
+    {
+     "what": "a tier stored on the division does not change it",
+     "ok": true
+    },
+    {
+     "what": "when the top account's contract ends, the division pays list",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 48
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "a price check with a negative or nonsense amount is refused, never priced below zero",
+   "asserts": [
+    {
+     "what": "{\"weight\":-500}: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "{\"qty\":-2}: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "{\"weight\":\"heavy\"}: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "{\"weight\":100,\"isRemnant\":true,\"remnantDiscount\":1.5}: refused with 400",
+     "ok": true
+    },
+    {
+     "what": "a negative subtotal is not taxed below zero",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 26
+  },
+  {
+   "group": "Product configuration and pricing",
+   "name": "a weight-priced item cannot be rung up as pieces at the counter",
+   "asserts": [
+    {
+     "what": "409 with where to sell it instead",
+     "ok": true
+    },
+    {
+     "what": "half a piece: 400",
+     "ok": true
+    },
+    {
+     "what": "a price sent by the screen is ignored",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 19
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "request to quote to order: every requirement, the branch, the tax and the links arrive (J-001)",
+   "asserts": [
+    {
+     "what": "the quote belongs to the request's branch",
+     "ok": true
+    },
+    {
+     "what": "the quote carries tax by rule 27 (selling branch Ohio, not the customer's Indiana)",
+     "ok": true
+    },
+    {
+     "what": "the quote line has the size, grade, finish, tolerances and certificates",
+     "ok": true
+    },
+    {
+     "what": "processing is kept in the spec notes",
+     "ok": true
+    },
+    {
+     "what": "accepted by a manager of another home branch",
+     "ok": true
+    },
+    {
+     "what": "the order belongs to the request's branch, not the person who pressed accept",
+     "ok": true
+    },
+    {
+     "what": "the order carries the quote's tax and total",
+     "ok": true
+    },
+    {
+     "what": "the order line has every requirement and the grade record",
+     "ok": true
+    },
+    {
+     "what": "PO, required date and quantity arrive",
+     "ok": true
+    },
+    {
+     "what": "the quote points at the order and the request is won",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 110
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a tax-exempt customer's quote and order carry no tax",
+   "asserts": [
+    {
+     "what": "quote tax is zero and the total is the subtotal",
+     "ok": true
+    },
+    {
+     "what": "order tax is zero",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 108
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a quote written before quotes carried tax gets its tax when it is accepted",
+   "asserts": [
+    {
+     "what": "the order is taxed at the branch's rate",
+     "ok": true
+    },
+    {
+     "what": "and its total adds up",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 128
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "an expired quote cannot be sent or accepted, and is listed as expired, not sent (J-004)",
+   "asserts": [
+    {
+     "what": "a valid-until in the past is refused",
+     "ok": true
+    },
+    {
+     "what": "sending the expired draft: 409",
+     "ok": true
+    },
+    {
+     "what": "accepting the expired quote: 409 and no order",
+     "ok": true
+    },
+    {
+     "what": "it reads as EXPIRED",
+     "ok": true
+    },
+    {
+     "what": "the EXPIRED filter finds both",
+     "ok": true
+    },
+    {
+     "what": "the SENT filter does not list the expired one",
+     "ok": true
+    },
+    {
+     "what": "the DRAFT filter does not list the expired draft",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 177
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "the sales dashboard counts open business before tax and leaves expired quotes out (J-004)",
+   "asserts": [
+    {
+     "what": "awaiting the customer rose by one (the live quote only)",
+     "ok": true
+    },
+    {
+     "what": "the open value rose by the live quote's subtotal, without tax",
+     "ok": true
+    },
+    {
+     "what": "the lapsed quote counts as lost",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 154
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "two people accept the same quote at once: one order",
+   "asserts": [
+    {
+     "what": "one 201, the rest 409",
+     "ok": true
+    },
+    {
+     "what": "one order for the customer",
+     "ok": true
+    },
+    {
+     "what": "the quote points at that order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a decided quote stays decided",
+   "asserts": [
+    {
+     "what": "rejected",
+     "ok": true
+    },
+    {
+     "what": "accepting a rejected quote: 409",
+     "ok": true
+    },
+    {
+     "what": "the reason is kept",
+     "ok": true
+    },
+    {
+     "what": "rejecting an accepted quote: 409",
+     "ok": true
+    },
+    {
+     "what": "sending an accepted quote: 409",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 257
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a second version of a quote: accepting it closes the first",
+   "asserts": [
+    {
+     "what": "numbered as versions 1 and 2",
+     "ok": true
+    },
+    {
+     "what": "version 2 accepted at its price",
+     "ok": true
+    },
+    {
+     "what": "version 1 is closed as rejected",
+     "ok": true
+    },
+    {
+     "what": "version 1 cannot be accepted after",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 132
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "over the credit limit: the quote is accepted and the order waits for a manager",
+   "asserts": [
+    {
+     "what": "accepted with a warning",
+     "ok": true
+    },
+    {
+     "what": "the order is on HOLD",
+     "ok": true
+    },
+    {
+     "what": "the hold is on record",
+     "ok": true
+    },
+    {
+     "what": "it is on the credit holds list",
+     "ok": true
+    },
+    {
+     "what": "a clerk cannot release it",
+     "ok": true
+    },
+    {
+     "what": "a clerk cannot confirm it around the hold",
+     "ok": true
+    },
+    {
+     "what": "a manager releases it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 225
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a quote of another branch cannot be accepted by id",
+   "asserts": [
+    {
+     "what": "branch B: 404",
+     "ok": true
+    },
+    {
+     "what": "branch B cannot reject it either",
+     "ok": true
+    },
+    {
+     "what": "it is still open",
+     "ok": true
+    },
+    {
+     "what": "a customer login cannot accept a staff quote",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 79
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a quote line must come from its own request",
+   "asserts": [
+    {
+     "what": "a line of another request: 400",
+     "ok": true
+    },
+    {
+     "what": "a quote with no lines: 400",
+     "ok": true
+    },
+    {
+     "what": "a whole number of lead days only",
+     "ok": true
+    },
+    {
+     "what": "a bad tolerance on the quote line: 400",
+     "ok": true
+    },
+    {
+     "what": "no quote was saved by any of these",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 61
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a quote line can change a requirement; the change, not the request, reaches the order",
+   "asserts": [
+    {
+     "what": "the quote has the new thickness and keeps the rest",
+     "ok": true
+    },
+    {
+     "what": "the order has the quoted thickness and certificates",
+     "ok": true
+    },
+    {
+     "what": "and the request's width and length",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 137
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "the accepted order goes to the shop floor with what the customer asked for (J-009)",
+   "asserts": [
+    {
+     "what": "work orders made",
+     "ok": true
+    },
+    {
+     "what": "the job is for the order line",
+     "ok": true
+    },
+    {
+     "what": "its instructions carry the size, grade, finish, tolerance and certificates",
+     "ok": true
+    },
+    {
+     "what": "and the processing and other requirements",
+     "ok": true
+    },
+    {
+     "what": "the requirements are also kept as data on the job",
+     "ok": true
+    },
+    {
+     "what": "asking twice makes no second job",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 161
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "a lost answer on acceptance: the retry with the same key gives the same order",
+   "asserts": [
+    {
+     "what": "the retry is answered (201 replayed, or 409 already accepted)",
+     "ok": true
+    },
+    {
+     "what": "one order exists",
+     "ok": true
+    },
+    {
+     "what": "when replayed, it names that order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 575
+  },
+  {
+   "group": "Quoting, approvals and conversion",
+   "name": "there is no approval step on quotes to go around: the only approval is the credit hold",
+   "asserts": [
+    {
+     "what": "a quote is never put in PENDING_APPROVAL by the system",
+     "ok": true
+    },
+    {
+     "what": "a draft can be accepted directly (the customer said yes on the phone)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 120,
+   "status": "NOT APPLICABLE beyond credit: no quote approval rule exists; none was invented"
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "an order with no lines may be kept as a draft but cannot go further (H-011)",
+   "asserts": [
+    {
+     "what": "a draft with a customer and no lines is kept",
+     "ok": true
+    },
+    {
+     "what": "moving it to CONFIRMED: 409 with the reason",
+     "ok": true
+    },
+    {
+     "what": "moving it to PENDING: 409 with the reason",
+     "ok": true
+    },
+    {
+     "what": "a new order straight to CONFIRMED with no lines: 400",
+     "ok": true
+    },
+    {
+     "what": "it is still a draft",
+     "ok": true
+    },
+    {
+     "what": "it can be cancelled",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 70
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "a quoted order is reserved, shipped and invoiced with the quote's tax",
+   "asserts": [
+    {
+     "what": "stock reserved against the order line",
+     "ok": true
+    },
+    {
+     "what": "a shipment is made",
+     "ok": true
+    },
+    {
+     "what": "dispatched",
+     "ok": true
+    },
+    {
+     "what": "one invoice",
+     "ok": true
+    },
+    {
+     "what": "the invoice bills the quote's subtotal and tax",
+     "ok": true
+    },
+    {
+     "what": "the invoice line carries the order line",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 257
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "a partial shipment bills its part; the second bills the rest and the tax adds up",
+   "asserts": [
+    {
+     "what": "two invoices",
+     "ok": true
+    },
+    {
+     "what": "the first bills 800 of 2000",
+     "ok": true
+    },
+    {
+     "what": "together they bill the order subtotal, tax and total exactly",
+     "ok": true
+    },
+    {
+     "what": "the line has shipped 2000",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 373
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "an edit made from an old copy is refused, not saved over the newer one (G-020)",
+   "asserts": [
+    {
+     "what": "the first edit saves",
+     "ok": true
+    },
+    {
+     "what": "the second, from the old copy: 409 STALE_EDIT",
+     "ok": true
+    },
+    {
+     "what": "the first edit is what is saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 62
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "cancelling an order gives its reserved stock back",
+   "asserts": [
+    {
+     "what": "700 reserved",
+     "ok": true
+    },
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "the reservation is gone and the stock is available again",
+     "ok": true
+    },
+    {
+     "what": "no reservation row is left",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 164
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "order entry sells from the person's own branch: taxed, filed and sold by that branch (S-008, C-012)",
+   "asserts": [
+    {
+     "what": "the order desk's branch list is its branches, with its home branch named",
+     "ok": true
+    },
+    {
+     "what": "a one-branch login is offered only its branch",
+     "ok": true
+    },
+    {
+     "what": "a manager's list holds every branch",
+     "ok": true
+    },
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "filed under the branch named",
+     "ok": true
+    },
+    {
+     "what": "taxed at that branch's state",
+     "ok": true
+    },
+    {
+     "what": "sold by the company that owns the branch",
+     "ok": true
+    },
+    {
+     "what": "naming a branch that is not theirs is refused (decision 2), not taxed there and filed here",
+     "ok": true
+    },
+    {
+     "what": "a name that is no branch falls back to the home branch for branch and tax alike",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "requirements typed at order entry reach the order line and the work order (J-001, J-009)",
+   "asserts": [
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "the line has the certificates, tolerance and notes",
+     "ok": true
+    },
+    {
+     "what": "the work order carries them",
+     "ok": true
+    },
+    {
+     "what": "and the processing chosen",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 86
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "a stock order ships without a work order",
+   "asserts": [
+    {
+     "what": "no job was needed",
+     "ok": true
+    },
+    {
+     "what": "dispatched",
+     "ok": true
+    },
+    {
+     "what": "invoiced",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 219
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "more than is in stock: what is there is reserved, the rest waits on the open line",
+   "asserts": [
+    {
+     "what": "reserving more than the stock item holds: refused",
+     "ok": true
+    },
+    {
+     "what": "reserving what is there: done",
+     "ok": true
+    },
+    {
+     "what": "the line is part shipped and still open for the rest",
+     "ok": true
+    },
+    {
+     "what": "sending more than is reserved is refused (decision of 2026-11-13: no shipping without a reservation)",
+     "ok": true
+    },
+    {
+     "what": "the refused load shipped nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 279
+  },
+  {
+   "group": "Sales orders and fulfilment hand-off",
+   "name": "the order list answers a page in summary form (G-014)",
+   "asserts": [
+    {
+     "what": "both 200",
+     "ok": true
+    },
+    {
+     "what": "the summary is smaller",
+     "ok": true
+    },
+    {
+     "what": "the summary has a line count and the customer, not the lines",
+     "ok": true
+    },
+    {
+     "what": "a total count is given",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 123
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "a cash sale: paid invoice, change, stock off the shelf, all at the cashier's branch",
+   "asserts": [
+    {
+     "what": "201",
+     "ok": true
+    },
+    {
+     "what": "the order is complete, at the cashier's branch, taxed there",
+     "ok": true
+    },
+    {
+     "what": "change is what was tendered less the total",
+     "ok": true
+    },
+    {
+     "what": "one paid invoice with one payment for the total",
+     "ok": true
+    },
+    {
+     "what": "3 pieces off the shelf",
+     "ok": true
+    },
+    {
+     "what": "the cashier is on record for the invoice and the money",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 117
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "several lines, the same item twice: one line, priced once",
+   "asserts": [
+    {
+     "what": "two lines",
+     "ok": true
+    },
+    {
+     "what": "the repeated item is one line of 3",
+     "ok": true
+    },
+    {
+     "what": "the subtotal is the lines",
+     "ok": true
+    },
+    {
+     "what": "the check number is kept",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 79
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "an account customer pays its contract price at the counter; an exempt one pays no tax",
+   "asserts": [
+    {
+     "what": "contract price",
+     "ok": true
+    },
+    {
+     "what": "exempt: no tax",
+     "ok": true
+    },
+    {
+     "what": "the card approval code is kept",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 185
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "a payment that does not go through leaves no sale, no invoice and no stock change",
+   "asserts": [
+    {
+     "what": "a card with no approval code: 400",
+     "ok": true
+    },
+    {
+     "what": "a check with no number: 400",
+     "ok": true
+    },
+    {
+     "what": "cash short of the total: 400",
+     "ok": true
+    },
+    {
+     "what": "a method that does not exist: 400",
+     "ok": true
+    },
+    {
+     "what": "no order and no invoice were written",
+     "ok": true
+    },
+    {
+     "what": "the shelf is unchanged",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 66
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "the same sale sent three times at once is one sale",
+   "asserts": [
+    {
+     "what": "every answer is a success naming one order",
+     "ok": true
+    },
+    {
+     "what": "one order",
+     "ok": true
+    },
+    {
+     "what": "one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 128
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "a voided sale is cancelled, credited, refunded and put back on the shelf, once (G-009)",
+   "asserts": [
+    {
+     "what": "a sales login cannot void (a manager does, as before)",
+     "ok": true
+    },
+    {
+     "what": "a reason is required",
+     "ok": true
+    },
+    {
+     "what": "voided",
+     "ok": true
+    },
+    {
+     "what": "the order is CANCELLED, so reports by status leave it out",
+     "ok": true
+    },
+    {
+     "what": "the reason is kept",
+     "ok": true
+    },
+    {
+     "what": "a credit memo for the whole sale",
+     "ok": true
+    },
+    {
+     "what": "the money is refunded",
+     "ok": true
+    },
+    {
+     "what": "the pieces are back on the shelf",
+     "ok": true
+    },
+    {
+     "what": "a second void: 409, nothing more",
+     "ok": true
+    },
+    {
+     "what": "the day's figures count it as voided, not sold",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 207
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "the connection drops after the sale is sent: the retry finds the sale, it is not rung up twice",
+   "asserts": [
+    {
+     "what": "the retry succeeds",
+     "ok": true
+    },
+    {
+     "what": "one order and one invoice",
+     "ok": true
+    },
+    {
+     "what": "the receipt can be fetched again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 535
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "more than is on the shelf is refused and nothing is taken",
+   "asserts": [
+    {
+     "what": "refused with how many there are",
+     "ok": true
+    },
+    {
+     "what": "no order",
+     "ok": true
+    },
+    {
+     "what": "the shelf still has 4",
+     "ok": true
+    },
+    {
+     "what": "4 can be sold",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 171
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "the counter sells from the cashier's branch; another branch is refused, a manager can choose (J-006)",
+   "asserts": [
+    {
+     "what": "a clerk naming another branch: 403",
+     "ok": true
+    },
+    {
+     "what": "a manager selling at branch 2: filed there and taxed at its state",
+     "ok": true
+    },
+    {
+     "what": "Retail POS sending the old fixed branch (Jackson, Michigan) for an Ohio clerk: refused, not taxed in Michigan",
+     "ok": true
+    },
+    {
+     "what": "Retail POS with the clerk's own branch: Ohio tax, Ohio branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 138
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "the unused counter-session flow no longer creates customers or orders (S-022)",
+   "asserts": [
+    {
+     "what": "creating a customer from a session: 410 with where to do it",
+     "ok": true
+    },
+    {
+     "what": "submitting a session order: 410 with where to do it",
+     "ok": true
+    },
+    {
+     "what": "the other address too",
+     "ok": true
+    },
+    {
+     "what": "nothing was created",
+     "ok": true
+    },
+    {
+     "what": "the session's reading steps still answer",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 36
+  },
+  {
+   "group": "Counter sales (POS)",
+   "name": "a partial return of a delivered order credits only that part, with its share of tax",
+   "asserts": [
+    {
+     "what": "return opened",
+     "ok": true
+    },
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "return received",
+     "ok": true
+    },
+    {
+     "what": "a credit memo for a quarter of the subtotal",
+     "ok": true
+    },
+    {
+     "what": "with a quarter of the tax",
+     "ok": true
+    },
+    {
+     "what": "more than shipped cannot be returned",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 346
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "a registered buyer's order uses the system price, and the buyer is told when it changed",
+   "asserts": [
+    {
+     "what": "accepted into the inbox",
+     "ok": true
+    },
+    {
+     "what": "saved for this customer only",
+     "ok": true
+    },
+    {
+     "what": "at the system price, not the browser's",
+     "ok": true
+    },
+    {
+     "what": "the buyer is told the price was updated",
+     "ok": true
+    },
+    {
+     "what": "the CSR sees it in the notes",
+     "ok": true
+    },
+    {
+     "what": "no notice when the price was right",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 226
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "a contract customer is charged its contract price on the web",
+   "asserts": [
+    {
+     "what": "the shop shows the contract price",
+     "ok": true
+    },
+    {
+     "what": "the web order is at the contract price",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 210
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "the same checkout sent twice with one key is one web order",
+   "asserts": [
+    {
+     "what": "answered",
+     "ok": true
+    },
+    {
+     "what": "one web order",
+     "ok": true
+    },
+    {
+     "what": "the later answers name the same order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 204
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "accepting a web order: taxed and filed at one branch, priced per piece (J-005)",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "taxed at the branch named (Indiana)",
+     "ok": true
+    },
+    {
+     "what": "and filed under that branch",
+     "ok": true
+    },
+    {
+     "what": "each line is priced each, not per hundredweight",
+     "ok": true
+    },
+    {
+     "what": "accepting it again: 409",
+     "ok": true
+    },
+    {
+     "what": "a one-branch clerk cannot accept it into another branch",
+     "ok": true
+    },
+    {
+     "what": "the refused attempt left it waiting",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 290
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "the web shop will not take an order with nothing to sell or a hidden item",
+   "asserts": [
+    {
+     "what": "an empty cart: 400",
+     "ok": true
+    },
+    {
+     "what": "the cart check names the retired item",
+     "ok": true
+    },
+    {
+     "what": "checkout with it: 422",
+     "ok": true
+    },
+    {
+     "what": "a quantity of zero: refused",
+     "ok": true
+    },
+    {
+     "what": "nothing saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 198
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "a price raised after the cart was filled: the order is at the new price and the buyer is told",
+   "asserts": [
+    {
+     "what": "the cart showed the old price",
+     "ok": true
+    },
+    {
+     "what": "the order is at the new price",
+     "ok": true
+    },
+    {
+     "what": "the buyer is told",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 218
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "a customer's portal shows only its own orders, shipments and documents",
+   "asserts": [
+    {
+     "what": "both answer",
+     "ok": true
+    },
+    {
+     "what": "no order appears in both",
+     "ok": true
+    },
+    {
+     "what": "customer A opening customer B's web order: 404",
+     "ok": true
+    },
+    {
+     "what": "nor its documents (refused, or an empty list)",
+     "ok": true
+    },
+    {
+     "what": "naming another account in the account portal still gives only its own",
+     "ok": true
+    },
+    {
+     "what": "shipments answer for its own account",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 128
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "a web order cannot be placed without signing in (guest checkout is off by setting)",
+   "asserts": [
+    {
+     "what": "401 without a sign-in",
+     "ok": true
+    },
+    {
+     "what": "the checkout setting says guests are not allowed",
+     "ok": true
+    },
+    {
+     "what": "a staff test order with no customer goes to the inbox for review, not to the shop floor",
+     "ok": true
+    },
+    {
+     "what": "it cannot become a sales order until a customer is named",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 30,
+   "status": "Guest checkout NOT APPLICABLE: off by the setting allowGuestCheckout"
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "web checkout takes no payment, so there is no payment to time out or doubly confirm (H-013)",
+   "asserts": [
+    {
+     "what": "the order is taken for review",
+     "ok": true
+    },
+    {
+     "what": "no card number is stored anywhere on it",
+     "ok": true
+    },
+    {
+     "what": "no payment row exists for it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 199,
+   "status": "Payment at checkout NOT APPLICABLE until the owner answers H-013"
+  },
+  {
+   "group": "Web shop and customer portal",
+   "name": "a quote request from the web shop reaches the inbox as a quote request",
+   "asserts": [
+    {
+     "what": "saved as a quote request",
+     "ok": true
+    },
+    {
+     "what": "the ship-to and PO are kept",
+     "ok": true
+    },
+    {
+     "what": "the answer says a review is needed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 186
+  },
+  {
+   "group": "Exceptions, security and recovery",
+   "name": "customer logins cannot reach staff sales actions",
+   "asserts": [
+    {
+     "what": "POST /api/rfqs: refused",
+     "ok": true
+    },
+    {
+     "what": "POST /api/quotes: refused",
+     "ok": true
+    },
+    {
+     "what": "GET /api/quotes: refused",
+     "ok": true
+    },
+    {
+     "what": "POST /api/orders: refused",
+     "ok": true
+    },
+    {
+     "what": "PUT /api/pricing/list-price/8affdecd-bd60-46fd-bb3f-991e4f96d24c: refused",
+     "ok": true
+    },
+    {
+     "what": "POST /api/pos/quick-sale/process-payment: refused",
+     "ok": true
+    },
+    {
+     "what": "GET /api/orders/credit-holds: refused",
+     "ok": true
+    },
+    {
+     "what": "PATCH /api/customers/d4fb00a9-0057-47e5-8e17-5f12f36ed2b0: refused",
+     "ok": true
+    },
+    {
+     "what": "GET /api/orders/intake/branches: refused",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 39
+  },
+  {
+   "group": "Exceptions, security and recovery",
+   "name": "a branch login cannot sell, quote or invoice for another branch",
+   "asserts": [
+    {
+     "what": "an order at another branch: 403",
+     "ok": true
+    },
+    {
+     "what": "accepting another branch's quote: 404",
+     "ok": true
+    },
+    {
+     "what": "editing another branch's order: refused",
+     "ok": true
+    },
+    {
+     "what": "moving an order to another branch: refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 153
+  },
+  {
+   "group": "Exceptions, security and recovery",
+   "name": "the database refuses the order mid-acceptance: no half order and the quote stays open",
+   "asserts": [
+    {
+     "what": "the answer is an error, not a success",
+     "ok": true
+    },
+    {
+     "what": "no order exists for the customer",
+     "ok": true
+    },
+    {
+     "what": "the quote is still SENT with no order",
+     "ok": true
+    },
+    {
+     "what": "once the fault is gone, the same quote is accepted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 267
+  },
+  {
+   "group": "Exceptions, security and recovery",
+   "name": "bad input to the sales routes is answered with a 4xx, never a server error",
+   "asserts": [
+    {
+     "what": "POST /api/rfqs {\"customerId\":\"e6bec937-3d49-4159-be4d-6: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/rfqs {\"customerId\":\"e6bec937-3d49-4159-be4d-6: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/quotes {\"rfqId\":\"nope\",\"lines\":[]}: 404",
+     "ok": true
+    },
+    {
+     "what": "GET /api/quotes?status=WHATEVER \"\": 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/quotes/nope/accept {}: 404",
+     "ok": true
+    },
+    {
+     "what": "POST /api/orders {\"orderType\":\"NOPE\"}: 400",
+     "ok": true
+    },
+    {
+     "what": "PUT /api/orders/nope {\"status\":\"CONFIRMED\"}: 404",
+     "ok": true
+    },
+    {
+     "what": "POST /api/pricing/calculate {\"productId\":42}: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/orders/intake {\"lines\":\"x\"}: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/pos/quick-sale/process-payment {\"sale\":{\"id\":\"x\",\"items\":\"y\"}}: 400",
+     "ok": true
+    },
+    {
+     "what": "POST /api/orders/online/nope/accept {}: 404",
+     "ok": true
+    },
+    {
+     "what": "PATCH /api/customers/e6bec937-3d49-4159-be4d-618b23ac10f4 {\"parentId\":\"nope\"}: 400",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 75
+  },
+  {
+   "group": "Exceptions, security and recovery",
+   "name": "after all of the above the sales records reconcile",
+   "asserts": [
+    {
+     "what": "every order from this run that left draft has a line",
+     "ok": true
+    },
+    {
+     "what": "every order from this run has a branch",
+     "ok": true
+    },
+    {
+     "what": "every order from a quote in this run is taxed like its quote",
+     "ok": true
+    },
+    {
+     "what": "every order subtotal equals its lines",
+     "ok": true
+    },
+    {
+     "what": "no voided counter sale is left COMPLETE",
+     "ok": true
+    },
+    {
+     "what": "no invoice bills more tax than its order",
+     "ok": true
+    },
+    {
+     "what": "no quote points at an order that does not exist",
+     "ok": true
+    },
+    {
+     "what": "no counter sale was rung up twice",
+     "ok": true
+    },
+    {
+     "what": "no invoice number is repeated",
+     "ok": true
+    },
+    {
+     "what": "no stock balance is negative",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 14
+  }
+ ]
+}

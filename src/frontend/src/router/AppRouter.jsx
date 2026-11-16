@@ -66,6 +66,7 @@ const PartsInventory = lazy(() => import('../pages/Maintenance/PartsInventory'))
 // Material Tracking (unified packaging + tags + staging + traceability)
 const MaterialTrackingDashboard = lazy(() => import('../pages/MaterialTracking/MaterialTrackingDashboard'))
 const MTPackagingQueue = lazy(() => import('../pages/MaterialTracking/PackagingQueue'))
+const MTPackagesPage = lazy(() => import('../pages/MaterialTracking/PackagesPage'))
 const MTTagManagement = lazy(() => import('../pages/MaterialTracking/TagManagement'))
 const MTStagingLoading = lazy(() => import('../pages/MaterialTracking/StagingLoading'))
 const MTTraceability = lazy(() => import('../pages/MaterialTracking/TraceabilityPage'))
@@ -81,6 +82,7 @@ const PODViewer = lazy(() => import('../pages/Freight/PODViewer'))
 // Sales & Pricing Pages
 const InvoicesPage = lazy(() => import('../pages/Orders/InvoicesPage'))
 const ReturnsPage = lazy(() => import('../pages/Orders/ReturnsPage'))
+const OrderCloseoutPage = lazy(() => import('../pages/Orders/OrderCloseoutPage'))
 const QuotesPage = lazy(() => import('../pages/Sales/QuotesPage'))
 const SalesDashboard = lazy(() => import('../pages/Sales/SalesDashboard'))
 
@@ -102,6 +104,8 @@ const OrderBoardPage = lazy(() => import('../pages/ModernOrderBoardPage'))
 const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
+const TransfersPage = lazy(() => import('../pages/Transfers/TransfersPage'))
+const PurchaseOrdersPage = lazy(() => import('../pages/Purchasing/PurchaseOrdersPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
 // QC Inspection Module
@@ -178,11 +182,10 @@ const DashboardApp = lazy(() => import('../apps/dashboard/DashboardApp.jsx'))
 const WorkCenterSelectPage = lazy(() => import('../apps/shopfloor/WorkCenterSelectPage'))
 const WorkCenterQueuePage = lazy(() => import('../apps/shopfloor/WorkCenterQueuePage'))
 
-// OrderHub App
-const OrderHubApp = lazy(() => import('../apps/orderhub/OrderHubApp'))
 
 // Admin Pages
 const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'))
+const IntegrationsPage = lazy(() => import('../pages/Admin/IntegrationsPage'))
 const AuditLogPage = lazy(() => import('../pages/Admin/AuditLogPage'))
 const TaxRatesPage = lazy(() => import('../pages/Admin/TaxRatesPage'))
 const RecipeEditorPage = lazy(() => import('../pages/Admin/RecipeEditorPage'))
@@ -325,15 +328,12 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // OrderHub - RFQ/Quote/Order Console
+      // The Order Hub console kept its own requests, quotes and orders beside the real ones. Under
+      // the owner's decision 1 (2026-11-13) there is one request-to-order console: RFQs & Quotes,
+      // whose orders are the real sales orders (S-021, U-002). Old links land there.
       {
         path: 'orderhub/*',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <OrderHubApp />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
+        element: <Navigate to="/sales/rfq-inbox" replace />,
       },
 
       // Heats
@@ -841,6 +841,17 @@ const router = createBrowserRouter([
         ),
         errorElement: <RouteErrorPage />,
       },
+      // Phase 6: transfers between branches, and purchase orders
+      {
+        path: 'transfers',
+        element: (<Suspense fallback={<PageLoader />}><TransfersPage /></Suspense>),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'purchase-orders',
+        element: (<Suspense fallback={<PageLoader />}><PurchaseOrdersPage /></Suspense>),
+        errorElement: <RouteErrorPage />,
+      },
 
       // Material Tracking Module (unified packaging + tags + staging + traceability)
       {
@@ -857,6 +868,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <MTPackagingQueue />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'material-tracking/packages',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTPackagesPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -1153,6 +1173,15 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
       {
+        path: 'orders/closeout',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderCloseoutPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
         path: 'orders/returns',
         element: (
           <Suspense fallback={<PageLoader />}>
@@ -1300,6 +1329,17 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <CustomerPreferencesPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+
+      // Admin - Integrations report
+      {
+        path: 'admin/integrations',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <IntegrationsPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

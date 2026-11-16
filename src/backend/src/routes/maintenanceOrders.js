@@ -196,11 +196,13 @@ router.patch('/:id', async (req, res) => {
 // PUT /api/maintenance-orders/:id/start — Start work
 router.put('/:id/start', async (req, res) => {
   try {
-    const mo = await prisma.maintenanceOrder.update({
-      where: { id: req.params.id },
-      data: { status: 'IN_PROGRESS', actualStart: new Date() },
-      include: { asset: true },
-    });
+    // Work starts once, from an order that is waiting. A missing order is a 404, not a server error.
+    const found = await prisma.maintenanceOrder.findUnique({ where: { id: req.params.id }, select: { status: true } });
+    if (!found) return res.status(404).json({ error: 'Maintenance order not found' });
+    const startable = ['DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'SCHEDULED', 'WAITING_PARTS'];
+    const moved = await prisma.maintenanceOrder.updateMany({ where: { id: req.params.id, status: { in: startable } }, data: { status: 'IN_PROGRESS', actualStart: new Date() } });
+    if (!moved.count) return res.status(409).json({ error: `A maintenance order that is ${found.status.toLowerCase().replace(/_/g, ' ')} cannot be started` });
+    const mo = await prisma.maintenanceOrder.findUnique({ where: { id: req.params.id }, include: { asset: true } });
     res.json(mo);
   } catch (error) {
     console.error('Failed to start maintenance order:', error);
@@ -212,17 +214,17 @@ router.put('/:id/start', async (req, res) => {
 router.put('/:id/complete', async (req, res) => {
   try {
     const { actualHours, completionNotes } = req.body || {};
-    const mo = await prisma.maintenanceOrder.update({
-      where: { id: req.params.id },
-      data: {
-        status: 'COMPLETED',
-        actualEnd: new Date(),
-        completedAt: new Date(),
-        actualHours: actualHours ? parseFloat(actualHours) : null,
-        completionNotes: completionNotes || null,
-      },
-      include: { asset: true },
+    const found = await prisma.maintenanceOrder.findUnique({ where: { id: req.params.id }, select: { status: true } });
+    if (!found) return res.status(404).json({ error: 'Maintenance order not found' });
+    const hours = actualHours == null || actualHours === '' ? null : Number(actualHours);
+    if (hours != null && !(Number.isFinite(hours) && hours >= 0 && hours <= 10000)) return res.status(400).json({ error: 'actualHours must be zero or more' });
+    // Only work that is under way can be completed, and only once.
+    const moved = await prisma.maintenanceOrder.updateMany({
+      where: { id: req.params.id, status: 'IN_PROGRESS' },
+      data: { status: 'COMPLETED', actualEnd: new Date(), completedAt: new Date(), actualHours: hours, completionNotes: completionNotes || null },
     });
+    if (!moved.count) return res.status(409).json({ error: `A maintenance order that is ${found.status.toLowerCase().replace(/_/g, ' ')} cannot be completed. Start it first.` });
+    const mo = await prisma.maintenanceOrder.findUnique({ where: { id: req.params.id }, include: { asset: true } });
     res.json(mo);
   } catch (error) {
     console.error('Failed to complete maintenance order:', error);

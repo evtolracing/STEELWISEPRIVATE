@@ -61,6 +61,7 @@ const resultIcons = {
 export default function QCDashboardPage() {
   const [tab, setTab] = useState(0)
   const [queue, setQueue] = useState([])
+  const [queueTotal, setQueueTotal] = useState(0)
   const [stats, setStats] = useState(null)
   const [inspections, setInspections] = useState([])
   const [inspectors, setInspectors] = useState([])
@@ -84,6 +85,7 @@ export default function QCDashboardPage() {
         getInspectors(),
       ])
       setQueue(queueRes.data || [])
+      setQueueTotal(queueRes.total ?? (queueRes.data || []).length)
       setStats(statsRes.data || null)
       setInspections(inspectionsRes.data || [])
       setInspectors(inspectorsRes.data || [])
@@ -194,9 +196,9 @@ export default function QCDashboardPage() {
           <Grid item xs={6} sm={3}>
             <Card elevation={2}>
               <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                <TrendIcon sx={{ fontSize: 32, color: stats.passRate >= 90 ? 'success.main' : 'warning.main', mb: 0.5 }} />
-                <Typography variant="h3" fontWeight={700} color={stats.passRate >= 90 ? 'success.main' : 'warning.main'}>
-                  {stats.passRate}%
+                <TrendIcon sx={{ fontSize: 32, color: stats.passRate == null ? 'text.disabled' : stats.passRate >= 90 ? 'success.main' : 'warning.main', mb: 0.5 }} />
+                <Typography variant="h3" fontWeight={700} color={stats.passRate == null ? 'text.disabled' : stats.passRate >= 90 ? 'success.main' : 'warning.main'}>
+                  {stats.passRate == null ? '—' : `${stats.passRate}%`}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   Pass Rate
@@ -227,6 +229,11 @@ export default function QCDashboardPage() {
       </Paper>
 
       {/* Tab Content */}
+      {tab === 0 && queueTotal > queue.length && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          Showing the {queue.length} most urgent of {queueTotal} jobs waiting for inspection.
+        </Alert>
+      )}
       {tab === 0 && <QueueTab queue={queue} onStart={(job) => setStartDialog({ open: true, job })} />}
       {tab === 1 && <InspectionListTab inspections={inspections.filter(i => i.status === 'IN_PROGRESS')} title="In Progress Inspections" />}
       {tab === 2 && <InspectionListTab inspections={inspections.filter(i => ['PASSED', 'FAILED'].includes(i.status))} title="Completed Inspections" />}

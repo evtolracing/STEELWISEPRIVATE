@@ -1,3 +1,4 @@
+import { listWindow, sendWindow } from '../lib/listing.js';
 import { acrossBranches, currentScope } from '../lib/branchScope.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
@@ -7,6 +8,9 @@ import { searchStock } from '../services/intakeCatalogService.js';
 import { COST_VIEWERS } from '../lib/roleAccess.js';
 import { receiveStock, recentReceipts } from '../lib/receiving.js';
 import { TEMPLATE_FORMS, MAX_UPLOAD_ROWS } from '../lib/receivingRules.js';
+import { adjustStock, ADJUST_REASONS, STOCK_ADJUSTERS } from '../lib/stockChanges.js';
+import { retryOverlap, createNumbered, padded } from '../lib/numbering.js';
+import { readShipment, shipTransfer, receiveTransfer, cancelTransfer, settleShortage, TRANSFER_INCLUDE } from '../lib/transfers.js';
 
 /** Cost goes only to the roles that manage it. */
 const withoutCost = (req, row) => {
@@ -21,19 +25,25 @@ const router = Router();
 router.get('/', async (req, res) => {
   try {
     const { locationId, status } = req.query;
-    const inventory = await prisma.inventory.findMany({
-      where: {
-        ...(locationId && { locationId }),
-        ...(status && { status })
-      },
-      include: {
-        coil: { include: { grade: true, product: true, heat: true } },
-        location: true
-      },
-      orderBy: { updatedAt: 'desc' },
-      take: 200
-    });
-    res.json(inventory.map((row) => withoutCost(req, row)));
+    const where = {
+      ...(locationId && { locationId }),
+      ...(status && { status })
+    };
+    const window = listWindow(req.query, { max: 200 });
+    const [inventory, total] = await Promise.all([
+      prisma.inventory.findMany({
+        where,
+        include: {
+          coil: { include: { grade: true, product: true, heat: true } },
+          location: true
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: window.take,
+        skip: window.skip,
+      }),
+      window.windowed ? prisma.inventory.count({ where }) : null,
+    ]);
+    sendWindow(res, inventory.map((row) => withoutCost(req, row)), { ...window, total });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch inventory' });
   }
@@ -109,8 +119,32 @@ router.post('/receive', async (req, res) => {
   }
 });
 
-// A tracked item (coil, plate, bundle) moves as one piece, so the whole
-// quantity transfers. Splitting an item is a processing job, not a transfer.
+// Transfers between branches (Phase 6, G-007). Shipping puts the material in transit: off the
+// sender's shelf, not yet on the receiver's. The receiving branch receives it, and says what was
+// short, missing or damaged (lib/transfers.js). A tracked item travels whole.
+const transferReply = (t) => t && ({
+  ...t,
+  lines: (t.lines || []).map((l) => ({ ...l, qtyShipped: Number(l.qtyShipped), qtyReceived: l.qtyReceived == null ? null : Number(l.qtyReceived) })),
+});
+const refused = (res, error, label) => {
+  if (error?.refuse) return res.status(error.status).json({ error: error.message, ...(error.code && { code: error.code }) });
+  if (error?.name === 'OutsideBranch') return res.status(403).json({ error: error.message });
+  console.error(`Inventory: ${label} failed:`, error);
+  return res.status(500).json({ error: `Failed to ${label}` });
+};
+
+async function ship(req, shipment) {
+  const dest = await prisma.location.findUnique({ where: { id: shipment.toLocationId }, select: { id: true, isActive: true } });
+  if (!dest) throw Object.assign(new Error('Destination branch not found'), { refuse: true, status: 400 });
+  if (!dest.isActive) throw Object.assign(new Error('That branch is not in use'), { refuse: true, status: 400 });
+  return createNumbered({
+    count: () => acrossBranches(() => prisma.stockTransfer.count()),
+    format: padded('TRF', 6),
+    create: (transferNumber) => retryOverlap(() => prisma.$transaction((tx) => shipTransfer(tx, { transferNumber, shipment, userId: req.user.id }))),
+  });
+}
+
+// POST /api/inventory/transfer { coilId, toLocationId, fromLocationId?, qty? }: ships one item.
 router.post('/transfer', async (req, res) => {
   try {
     const { coilId, fromLocationId, toLocationId } = req.body || {};
@@ -119,9 +153,7 @@ router.post('/transfer', async (req, res) => {
     if (!inv) return res.status(404).json({ error: 'Stock item not found' });
     if (fromLocationId && fromLocationId !== inv.locationId) return res.status(409).json({ error: 'This item is not at the location you are transferring from' });
     if (toLocationId === inv.locationId) return res.status(400).json({ error: 'The item is already at that location' });
-    if (!(await prisma.location.findUnique({ where: { id: toLocationId }, select: { id: true } }))) {
-      return res.status(400).json({ error: 'Destination location not found' });
-    }
+    if (inv.status === 'IN_TRANSIT') return res.status(409).json({ error: 'This item is already on its way to another branch' });
     const onHand = Number(inv.qtyOnHand);
     if (onHand <= 0) return res.status(409).json({ error: 'There is nothing on hand to transfer' });
     if (req.body.qty != null) {
@@ -131,21 +163,123 @@ router.post('/transfer', async (req, res) => {
         return res.status(409).json({ error: `A tracked item transfers whole: ${onHand} ${inv.unit} is on hand. To move part of it, cut it into a new item first.` });
       }
     }
-    const result = await prisma.$transaction(async (tx) => {
-      const moved = await tx.inventory.updateMany({ where: { coilId, locationId: inv.locationId }, data: { locationId: toLocationId, lastMovement: new Date() } });
-      if (!moved.count) return null;
-      await tx.coil.update({ where: { id: coilId }, data: { locationId: toLocationId } });
-      const movement = await tx.materialMovement.create({
-        data: { coilId, fromLocationId: inv.locationId, toLocationId, movementType: 'TRANSFER', qtyMoved: onHand, unit: inv.unit, createdById: req.user.id },
-      });
-      // The item is now at the other branch; the sender is shown the result of their own transfer once.
-      return { inventory: await acrossBranches(() => tx.inventory.findUnique({ where: { coilId } })), movement };
-    });
-    if (!result) return res.status(409).json({ error: 'This item was just moved by someone else. Reload and try again.' });
-    res.json(result);
+    const transfer = await ship(req, { ...readShipment({ ...req.body, coilIds: [coilId] }) });
+    res.status(201).json({ transfer: transferReply(transfer), inTransit: true, message: `Transfer ${transfer.transferNumber} is on its way. The receiving branch receives it when it arrives.` });
   } catch (error) {
-    console.error('Inventory: transfer failed:', error);
-    res.status(500).json({ error: 'Failed to transfer inventory' });
+    refused(res, error, 'transfer inventory');
+  }
+});
+
+// GET /api/inventory/transfers?status=&direction=in|out: transfers to or from the user's branches.
+router.get('/transfers', async (req, res) => {
+  try {
+    const { status, direction } = req.query;
+    const mine = currentScope()?.branches;
+    const where = {
+      ...(typeof status === 'string' && status && { status: status.toUpperCase() }),
+      ...(mine && direction === 'in' && { toLocationId: { in: mine } }),
+      ...(mine && direction === 'out' && { fromLocationId: { in: mine } }),
+    };
+    const window = listWindow(req.query, { max: 200 });
+    const [rows, total] = await Promise.all([
+      prisma.stockTransfer.findMany({ where, include: TRANSFER_INCLUDE, orderBy: { createdAt: 'desc' }, take: window.take, skip: window.skip }),
+      window.windowed ? prisma.stockTransfer.count({ where }) : null,
+    ]);
+    sendWindow(res, rows.map(transferReply), { ...window, total });
+  } catch (error) {
+    refused(res, error, 'load transfers');
+  }
+});
+
+router.get('/transfers/:id', async (req, res) => {
+  try {
+    const t = await prisma.stockTransfer.findUnique({ where: { id: req.params.id }, include: TRANSFER_INCLUDE });
+    if (!t) return res.status(404).json({ error: 'Transfer not found' });
+    res.json(transferReply(t));
+  } catch (error) {
+    refused(res, error, 'load the transfer');
+  }
+});
+
+// POST /api/inventory/transfers { toLocationId, coilIds: [], carrier?, reference?, notes? }
+router.post('/transfers', async (req, res) => {
+  try {
+    const transfer = await ship(req, readShipment(req.body));
+    res.status(201).json(transferReply(transfer));
+  } catch (error) {
+    refused(res, error, 'ship the transfer');
+  }
+});
+
+// POST /api/inventory/transfers/:id/receive { lines?: [{ coilId, qtyReceived?, condition?, notes? }] }
+router.post('/transfers/:id/receive', async (req, res) => {
+  try {
+    const out = await retryOverlap(() => prisma.$transaction((tx) => receiveTransfer(tx, { transferId: req.params.id, body: req.body || {}, userId: req.user.id })));
+    const t = await prisma.stockTransfer.findUnique({ where: { id: req.params.id }, include: TRANSFER_INCLUDE });
+    res.json({ ...transferReply(t), discrepancies: out.discrepancies, ...(out.discrepancies && { warning: `${out.discrepancies} item(s) arrived short, missing or damaged and are on hold until a manager or the inventory manager confirms the count.` }) });
+  } catch (error) {
+    refused(res, error, 'receive the transfer');
+  }
+});
+
+// POST /api/inventory/transfers/:id/settle { coilId, decision: CONFIRM_SHORT | FOUND, notes }: managers and the inventory manager.
+router.post('/transfers/:id/settle', async (req, res) => {
+  try {
+    if (!STOCK_ADJUSTERS.has(req.user?.role)) return res.status(403).json({ error: 'Settling a shortage is for a manager or the inventory manager' });
+    const { coilId, decision, notes } = req.body || {};
+    if (!coilId || typeof coilId !== 'string') return res.status(400).json({ error: 'coilId is required' });
+    const out = await retryOverlap(() => prisma.$transaction((tx) => settleShortage(tx, { transferId: req.params.id, coilId, decision: String(decision || '').toUpperCase(), notes, userId: req.user.id })));
+    res.json(out);
+  } catch (error) {
+    refused(res, error, 'settle the shortage');
+  }
+});
+
+// POST /api/inventory/transfers/:id/cancel { reason }
+router.post('/transfers/:id/cancel', async (req, res) => {
+  try {
+    await retryOverlap(() => prisma.$transaction((tx) => cancelTransfer(tx, { transferId: req.params.id, reason: req.body?.reason, userId: req.user.id })));
+    const t = await prisma.stockTransfer.findUnique({ where: { id: req.params.id }, include: TRANSFER_INCLUDE });
+    res.json(transferReply(t));
+  } catch (error) {
+    refused(res, error, 'cancel the transfer');
+  }
+});
+
+/**
+ * Corrects a stock balance after a count, or for damage, scrap, found stock or a keying error.
+ * Managers and the inventory manager only. A reason and a note are required, and the change is a
+ * movement in the item's history: the balance is never simply overwritten.
+ */
+router.post('/adjust', async (req, res) => {
+  try {
+    if (!STOCK_ADJUSTERS.has(req.user?.role)) return res.status(403).json({ error: 'Correcting a stock balance is for a manager or the inventory manager' });
+    const { coilId } = req.body || {};
+    if (!coilId || typeof coilId !== 'string') return res.status(400).json({ error: 'coilId is required' });
+    const reason = String(req.body.reason || req.body.reasonCode || '').toUpperCase();
+    if (!ADJUST_REASONS.includes(reason)) return res.status(400).json({ error: `reason must be one of: ${ADJUST_REASONS.join(', ')}` });
+    const notes = typeof req.body.notes === 'string' ? req.body.notes.trim().slice(0, 1000) : '';
+    if (notes.length < 5) return res.status(400).json({ error: 'A note saying what was found is required (at least 5 characters)' });
+    const hasCount = req.body.countedQty != null && req.body.countedQty !== '';
+    const hasChange = req.body.change != null && req.body.change !== '';
+    if (hasCount === hasChange) return res.status(400).json({ error: 'Give either countedQty (what is actually there) or change (the difference), not both' });
+    const value = Number(hasCount ? req.body.countedQty : req.body.change);
+    if (!Number.isFinite(value) || Math.abs(value) > 10000000) return res.status(400).json({ error: `${hasCount ? 'countedQty' : 'change'} must be a number` });
+    if (hasCount && value < 0) return res.status(400).json({ error: 'countedQty cannot be less than zero' });
+    if (hasChange && value === 0) return res.status(400).json({ error: 'change cannot be zero' });
+    if (Math.round(value * 10000) / 10000 !== value) return res.status(400).json({ error: 'Quantities are kept to four decimal places' });
+    if (reason === 'FOUND' && hasChange && value < 0) return res.status(400).json({ error: 'Found stock adds to the balance' });
+    if (['DAMAGE', 'SCRAP'].includes(reason) && hasChange && value > 0) return res.status(400).json({ error: 'Damage and scrap take away from the balance' });
+    // The branch boundary applies: an item at another branch is not found.
+    if (!(await prisma.inventory.findUnique({ where: { coilId }, select: { id: true } }))) return res.status(404).json({ error: 'Stock item not found' });
+    const result = await retryOverlap(() => prisma.$transaction((tx) => adjustStock(tx, {
+      coilId, reason, notes, userId: req.user.id, ...(hasCount ? { countedQty: value } : { change: value }),
+    })));
+    res.status(result.movement ? 201 : 200).json(result);
+  } catch (error) {
+    if (error?.refuse) return res.status(error.status).json({ error: error.message });
+    console.error('Inventory: adjustment failed:', error);
+    res.status(500).json({ error: 'Failed to adjust inventory' });
   }
 });
 
@@ -168,7 +302,12 @@ router.get('/locations', async (req, res) => {
 router.post('/receipts', async (req, res) => {
   try {
     const done = await receiveStock({ input: req.body, user: req.user });
-    res.status(201).json({ item: withoutCost(req, done.coil), inventory: withoutCost(req, done.inventory), movement: done.movement, ...(done.warning && { warning: done.warning }) });
+    res.status(201).json({
+      item: withoutCost(req, done.coil), inventory: withoutCost(req, done.inventory), movement: done.movement,
+      ...(done.purchaseOrder && { purchaseOrder: done.purchaseOrder }),
+      ...(done.hold && { hold: done.hold, onHold: true }),
+      ...((done.warning || done.hold) && { warning: [done.warning, done.hold && `Received on hold: ${done.hold.holdReason}`].filter(Boolean).join(' ') }),
+    });
   } catch (error) {
     if (error?.refuse) return res.status(error.status).json({ error: error.message });
     console.error('Inventory: receipt failed:', error);
@@ -201,7 +340,7 @@ router.post('/bulk-upload', async (req, res) => {
       try {
         const done = await receiveStock({ input: row, templateType, user: req.user, source: 'UPLOAD' });
         results.imported++;
-        if (done.warning) results.warnings.push({ row: index + 1, tag: done.coil.coilNumber, warning: done.warning });
+        if (done.warning || done.hold) results.warnings.push({ row: index + 1, tag: done.coil.coilNumber, warning: [done.warning, done.hold && `Received on hold: ${done.hold.holdReason}`].filter(Boolean).join(" ") });
       } catch (rowError) {
         if (!rowError?.refuse) console.error('Inventory: upload row failed:', rowError);
         results.skipped++;

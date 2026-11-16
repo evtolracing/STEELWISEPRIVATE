@@ -28,6 +28,20 @@ test('createNumbered: 25 simultaneous saves all get different numbers', async ()
   assert.equal(new Set(results).size, 25);
 });
 
+test('createNumbered: 80 simultaneous saves all get different numbers with the default number of attempts', async () => {
+  const taken = new Set();
+  const create = async (n) => { await new Promise((r) => setTimeout(r, Math.random() * 3)); if (taken.has(n)) throw dup(); taken.add(n); return n; };
+  const results = await Promise.all(Array.from({ length: 80 }, () => createNumbered({ count: async () => taken.size, format: padded('SO'), create })));
+  assert.equal(new Set(results).size, 80);
+});
+
+test('createNumbered: a series whose count lags its highest number (rows were deleted) still gets a number', async () => {
+  const taken = new Set(Array.from({ length: 400 }, (_, i) => padded('SO')(i + 1)));
+  // 400 numbers used, but only 100 rows are left to count.
+  const made = await createNumbered({ count: async () => 100, format: padded('SO'), create: async (n) => { if (taken.has(n)) throw dup(); taken.add(n); return n; } });
+  assert.ok(Number(made.slice(3)) > 400, made);
+});
+
 test('createNumbered retries the same number after a transaction overlap', async () => {
   let calls = 0;
   const made = await createNumbered({ count: async () => 0, format: padded('SHP'), create: async (n) => { if (++calls < 3) throw overlap(); return n; } });

@@ -19,11 +19,14 @@ const testStart = new Date();
 for (const who of ['admin', 'csr', 'operator', 'branchA', 'regional']) await A.login(who);
 const loc = Object.fromEntries((await prisma.location.findMany({ where: { code: { in: ['QA-L01', 'QA-L02', 'QA-L04'] } } })).map((l) => [l.code, l.id]));
 const L1 = loc['QA-L01'], L4 = loc['QA-L04'];
-const wc = await prisma.workCenter.findFirst({ where: { locationId: L1 } });
 
 // Test fixtures the product has no seed for: one work center type and two operators.
 const TYPE = 'QA-P2-SAW';
 await prisma.workCenterType.upsert({ where: { id: TYPE }, update: { isActive: true }, create: { id: TYPE, label: 'QA saw' } });
+// Phase 7: a step is worked only on a work center of the kind it needs, so the fixture is a work center of that kind
+// (it used to be whichever work center came first at the branch).
+const wc = await prisma.workCenter.findFirst({ where: { code: 'QA-P2-SAW-1' } })
+  || await prisma.workCenter.create({ data: { code: 'QA-P2-SAW-1', name: 'QA phase 2 saw', locationId: L1, type: TYPE } });
 const operators = [];
 for (const n of [1, 2]) {
   const code = `QA-P2-OP${n}`;
@@ -76,6 +79,10 @@ check('an operation can be started again and paused', restarted.status === 200 &
 // ── Completing ──
 const done1 = await complete(op1);
 check('completing one of two operations leaves the job in process', done1.status === 200 && (await jobOf(j1.id)).status === 'IN_PROCESS', `${done1.status}`);
+// Phase 7: a step is finished only after it was started (so its time is on record); it used to be accepted unstarted.
+const unstarted = await complete(op2);
+check('a step that was never started cannot be finished', unstarted.status === 409 && (await opsOf(j1.id))[1].status === 'PENDING', `${unstarted.status}`);
+await start(op2, 1);
 const done2 = await complete(op2);
 const toQc = async (id) => (await moves(id)).filter((m) => m.to === 'WAITING_QC').length;
 check('completing the last operation sends the job to inspection, once', done2.status === 200 && (await jobOf(j1.id)).status === 'WAITING_QC' && (await toQc(j1.id)) === 1, `${done2.status}`);
@@ -84,6 +91,14 @@ const again = await complete(op2);
 check('a repeated completion changes nothing', again.status === 200 && (await toQc(j1.id)) === 1 && String((await opsOf(j1.id))[1].actualEnd) === String(endBefore) && (await jobOf(j1.id)).status === 'WAITING_QC', `${again.status}`);
 
 // Two operators finish the last two operations at the same moment (the lost-update case).
+// The owner's rule (2026-11-15) is that steps run in their planned order, so two steps of one job are
+// not normally running together. The rule is a setting; this race is checked with it switched off,
+// because the completion code must stay safe if the rule is ever relaxed.
+const soon = await plannedJob('SCHEDULED');
+const tooSoon = await start(soon.ops[1], 1);
+check('the second step cannot start before the first is finished (the owner\'s planned-order rule)', tooSoon.status === 409 && (await opsOf(soon.id))[1].status === 'PENDING', `${tooSoon.status}`);
+const stepRule = (stepsInOrder) => prisma.appSetting.upsert({ where: { key: 'production.rules' }, update: { value: { stepsInOrder } }, create: { key: 'production.rules', value: { stepsInOrder } } });
+await stepRule(false);
 let stuck = 0, twice = 0;
 const ROUNDS = 8;
 for (let i = 0; i < ROUNDS; i++) {
@@ -95,6 +110,7 @@ for (let i = 0; i < ROUNDS; i++) {
 }
 check(`two operators finishing the last two operations together: the job reaches inspection every time (${ROUNDS} rounds)`, stuck === 0, `${stuck} jobs left in process`);
 check('and the history has exactly one move to inspection each time', twice === 0, `${twice} jobs`);
+await prisma.appSetting.deleteMany({ where: { key: 'production.rules' } });
 
 // ── A cancelled job ──
 const jc = await plannedJob('SCHEDULED');
@@ -176,7 +192,7 @@ check('and no record was created by them', afterEmpty.jobs === before.jobs && af
 
 // ── Field lists (B-007) ──
 const code = `QA-P2-${run}`;
-const wcNew = await A.post('/api/work-centers', { code, name: 'QA phase 2 saw', locationId: L1, type: 'SAW', id: '11111111-1111-1111-1111-111111111111', createdAt: '2000-01-01T00:00:00Z' }, 'admin');
+const wcNew = await A.post('/api/work-centers', { code, name: 'QA phase 2 saw', locationId: L1, type: TYPE, id: '11111111-1111-1111-1111-111111111111', createdAt: '2000-01-01T00:00:00Z' }, 'admin');
 const wcRow = await prisma.workCenter.findUnique({ where: { code } });
 check('a work center can be created, and fields the browser may not set are ignored', wcNew.status === 201 && wcRow && wcRow.id !== '11111111-1111-1111-1111-111111111111' && wcRow.createdAt.getUTCFullYear() > 2000, `${wcNew.status} ${JSON.stringify(wcNew.body).slice(0, 120)}`);
 const wcDup = await A.post('/api/work-centers', { code, name: 'again', locationId: L1 }, 'admin');
@@ -233,7 +249,7 @@ check('a sales login cannot void a counter sale', csrVoid.status === 403 && (awa
 await prisma.inventory.updateMany({ where: { locationId: csrHome, unit: 'EA', coil: { productId: gloves.id } }, data: { unit: 'EA-OLD' } });
 const loose = await sell(`P2-${run}-G`, gloves.id, 1);
 check('a product with no shelf stock on file still sells, and the answer says no stock was reduced', loose.status === 201 && /no stock was reduced/.test(loose.body.stockNote || ''), `${loose.status} ${JSON.stringify(loose.body).slice(0, 200)}`);
-const facts = await prisma.$queryRaw`SELECT count(*)::int AS n FROM "Inventory" WHERE abs("qtyOnHand" - ("qtyAvailable" + "qtyAllocated" + "qtyOnHold")) > 0.0001 OR "qtyOnHand" < 0`;
+const facts = await prisma.$queryRaw`SELECT count(*)::int AS n FROM "Inventory" WHERE abs("qtyOnHand" - ("qtyAvailable" + "qtyAllocated" + "qtyOnHold" + "qtyInTransit")) > 0.0001 OR "qtyOnHand" < 0`;
 check('stock still adds up everywhere', facts[0].n === 0, `${facts[0].n}`);
 
 // ── Work order: completed and cancelled at the same moment ──
@@ -251,18 +267,24 @@ for (let i = 0; i < 4; i++) {
 check('a work order completed and cancelled at the same moment: exactly one wins and the record matches the answer (4 rounds)', woBroken === 0, `${woBroken} rounds`);
 
 // ── Two transfers of the same stock item at once ──
-const mover = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyOnHand: { gt: 0 } } }, workOrderInputs: { none: {} } } });
+const mover = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, qtyOnHand: { gt: 0 } } }, workOrderInputs: { none: {} } } });
 const [toA, toB] = [L1, loc['QA-L02'], L4].filter((b) => b !== mover.locationId);
 const twoMoves = await Promise.all([A.post('/api/inventory/transfer', { coilId: mover.id, toLocationId: toA }), A.post('/api/inventory/transfer', { coilId: mover.id, toLocationId: toB })]);
+// Since Phase 6 a transfer ships the item and it is in transit until received, so only one of
+// two simultaneous transfers can be accepted; the other is told the item is already on its way.
+const accepted = twoMoves.filter((r) => r.status < 300);
+const openTransfers = await prisma.stockTransferLine.findMany({ where: { coilId: mover.id, transfer: { status: 'SHIPPED' } }, include: { transfer: true } });
+const winner = accepted[0]?.body?.transfer;
+if (winner) await A.post(`/api/inventory/transfers/${winner.id}/receive`, {});
 const trail = await prisma.materialMovement.findMany({ where: { coilId: mover.id, movementType: 'TRANSFER', createdAt: { gte: testStart } }, orderBy: { createdAt: 'asc' } });
 const moverNow = await prisma.coil.findUnique({ where: { id: mover.id }, include: { inventory: true } });
-check('two transfers of one stock item at once: each accepted transfer is recorded, in order, and the item is where the last one put it',
-  twoMoves.every((r) => [200, 201, 409].includes(r.status)) && trail.length === twoMoves.filter((r) => r.status < 300).length && trail.length >= 1
-  && trail.every((m, k) => m.fromLocationId === (k === 0 ? mover.locationId : trail[k - 1].toLocationId)) && moverNow.locationId === trail[trail.length - 1].toLocationId && moverNow.inventory.locationId === moverNow.locationId,
-  `${twoMoves.map((r) => r.status)} ${trail.length} movements`);
+check('two transfers of one stock item at once: exactly one is accepted, it is the only open transfer, and once received the item is where it sent it',
+  accepted.length === 1 && twoMoves.every((r) => [201, 409].includes(r.status)) && openTransfers.length === 1 && openTransfers[0].transfer.id === winner?.id
+  && trail.length === 1 && trail[0].fromLocationId === mover.locationId && trail[0].toLocationId === winner?.toLocationId && moverNow.locationId === winner?.toLocationId && moverNow.inventory.locationId === moverNow.locationId && Number(moverNow.inventory.qtyInTransit) === 0,
+  `${twoMoves.map((r) => r.status)} ${openTransfers.length} open ${trail.length} movements`);
 
 // ── Two holds on the same stock item at once ──
-const held = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', id: { not: mover.id }, inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyOnHand: { gt: 0 } } } }, include: { inventory: true } });
+const held = await prisma.coil.findFirst({ where: { location: { code: { startsWith: 'QA-L' } }, status: 'AVAILABLE', id: { not: mover.id }, inventory: { is: { unit: 'LB', qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, qtyOnHand: { gt: 0 } } } }, include: { inventory: true } });
 const holds = await Promise.all([1, 2, 3].map((n) => A.post(`/api/coils/${held.id}/hold`, { holdType: 'OTHER', holdReason: `QA phase 2 hold ${n}` })));
 const heldNow = await prisma.inventory.findUnique({ where: { coilId: held.id } });
 check('three holds on one stock item at once: the quantity is held once and the balance adds up',
@@ -276,7 +298,8 @@ const skipDone = await A.post(`/api/jobs/${early.body.id}/status`, { status: 'CO
 check('a job that has not started cannot be marked completed', skipDone.status === 409 && (await jobOf(early.body.id)).status === 'SCHEDULED', `${skipDone.status}`);
 const pendingShipment = await prisma.shipment.findFirst({ where: { status: 'PENDING' } });
 if (pendingShipment) {
-  const earlyDeliver = await A.put(`/api/shipments/${pendingShipment.id}/deliver`, { receivedBy: 'QA' });
+  // Phase 8 (N-004): a delivery needs the receiver's name, so one is sent; the refusal checked here is the state.
+  const earlyDeliver = await A.put(`/api/shipments/${pendingShipment.id}/deliver`, { podSignature: 'QA Receiver' });
   check('a shipment that has not left cannot be marked delivered', earlyDeliver.status === 409 && (await prisma.shipment.findUnique({ where: { id: pendingShipment.id } })).status === 'PENDING', `${earlyDeliver.status}`);
 }
 const openInvoice = await prisma.invoice.findFirst({ where: { kind: 'INVOICE', status: 'PAID' } });

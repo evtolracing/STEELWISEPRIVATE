@@ -92,6 +92,22 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
     await page.getByRole('button', { name: 'Dispatch', exact: true }).click();
     check('shipment: dispatch asks before it takes stock and bills', await has(page, /cannot be undone here/), await body(page));
     await page.getByRole('button', { name: 'Dispatch now' }).click();
+    // Everything that ships comes off reserved stock. Nothing is reserved yet, so the screen says so.
+    const refusedShown = await has(page, /Reserve the stock that is going out/);
+    const still = (await api('GET', `/api/shipments/${shipmentId}`, clerk)).body;
+    check('shipment: with nothing reserved the dispatch is refused and the screen says to reserve the stock', refusedShown && still?.status !== 'IN_TRANSIT', `shown ${refusedShown}, server ${still?.status}; ${(await body(page)).slice(-300)}`);
+    // Since Phase 6 a reservation is in the line's unit: this line is 4 pieces, so it ships from a lot
+    // counted by the piece, received here for the test (K-001, C-011).
+    const products = (await api('GET', '/api/products?limit=5', boss)).body;
+    const sku = (Array.isArray(products) ? products : products?.data || [])[0]?.sku;
+    const lot = await api('POST', '/api/inventory/receipts', boss, { coilNumber: `${tag}-PCS`, form: 'SUPPLY', pieces: 20, productSku: sku, locationId: order.locationId || branch.id });
+    const stock = { coilId: lot.body?.item?.id };
+    const onShipment = (still?.items || []).reduce((n, it) => n + Number(it.qtyShipped), 0);
+    const reserved = await api('POST', `/api/orders/${order.id}/allocate`, boss, { lineId: order.lines[0].id, coilId: stock?.coilId, qty: onShipment });
+    check('shipment: the stock going out is reserved on the order', reserved.status === 201, `status ${reserved.status} ${JSON.stringify(reserved.body).slice(0, 200)}`);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: 'Dispatch', exact: true }).click();
+    await page.getByRole('button', { name: 'Dispatch now' }).click();
     await has(page, /Not yet loaded to/);
     const sent = (await api('GET', `/api/shipments/${shipmentId}`, clerk)).body;
     text = await body(page);
@@ -102,7 +118,10 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
 
     // Delivered, with who signed.
     await page.getByRole('button', { name: 'Mark delivered' }).click();
-    await page.getByLabel('Signed for by').fill('R. Receiver');
+    // Phase 8 (N-004): the field is now "Received by", and the delivery cannot be saved while it is empty.
+    const deliverNow = page.getByRole('dialog').getByRole('button', { name: 'Mark delivered' });
+    check('shipment: a delivery cannot be saved with no name', await deliverNow.isDisabled());
+    await page.getByLabel('Received by').fill('R. Receiver');
     await page.getByRole('dialog').getByRole('button', { name: 'Mark delivered' }).click();
     await has(page, /On the road to/);
     const done = (await api('GET', `/api/shipments/${shipmentId}`, clerk)).body;

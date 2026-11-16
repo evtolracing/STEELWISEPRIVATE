@@ -2,11 +2,15 @@ import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { onJobStatusChange } from '../services/printAutomationService.js';
 import { createNumbered, padded } from '../lib/numbering.js';
-import { JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
+import { JOB_STATUSES, UNFINISHED_JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
 import { shipForJob } from './shipments.js';
-import { recordJobMove, recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
+import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
+import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates.js';
+import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
+import { COST_VIEWERS } from '../lib/roleAccess.js';
 
 const router = Router();
+const STALE = 'This job was changed by someone else a moment ago. Reload it and try again.';
 
 /** A job tied to an order is shipped by its shipment. null when marking it SHIPPED by hand is fine. */
 async function shippedByHandError(job, to) {
@@ -54,13 +58,6 @@ const JOB_INCLUDE = {
   assignedTo: { select: { id: true, firstName: true, lastName: true } },
 };
 
-/** Timestamps that go with a status change. */
-function stampsFor(job, status) {
-  if (status === 'IN_PROCESS' && !job.actualStart) return { actualStart: new Date() };
-  if (['COMPLETED', 'READY_TO_SHIP', 'SHIPPED'].includes(status) && !job.actualEnd) return { actualEnd: new Date() };
-  return {};
-}
-
 /** Shared by PATCH and PUT /jobs/:id. */
 async function editJob(req, res) {
   try {
@@ -79,6 +76,22 @@ async function editJob(req, res) {
     for (const f of JOB_WEIGHTS) {
       if (data[f] != null && !(Number(data[f]) >= 0)) return res.status(400).json({ error: `${f} must be zero or more` });
     }
+    // A job runs a routing that is in use, on a work center that is on file and online.
+    if (data.recipeId && data.recipeId !== job.recipeId) {
+      const recipe = typeof data.recipeId === 'string' ? await prisma.bomRecipe.findUnique({ where: { id: data.recipeId }, select: { status: true, version: true, code: true } }).catch(() => null) : null;
+      if (!recipe) return res.status(400).json({ error: 'That routing is not on file' });
+      if (recipe.status !== 'ACTIVE') return res.status(409).json({ error: `Routing ${recipe.code} is ${recipe.status.toLowerCase()}. Only a routing that is in use can be put on a job.` });
+      if (body.recipeVersion === undefined) data.recipeVersion = recipe.version;
+    }
+    if (data.workCenterId && data.workCenterId !== job.workCenterId) {
+      const place = typeof data.workCenterId === 'string' ? await prisma.workCenter.findUnique({ where: { id: data.workCenterId }, select: { isActive: true, name: true } }).catch(() => null) : null;
+      if (!place) return res.status(400).json({ error: 'That work center is not on file' });
+      if (!place.isActive) return res.status(409).json({ error: `${place.name} is offline, so work cannot be put on it` });
+      // A job with steps planned at one branch is not moved to a work center at another.
+      const plan = await prisma.dispatchJob.findUnique({ where: { jobId: job.id }, select: { locationId: true } });
+      const at = await prisma.workCenter.findUnique({ where: { id: data.workCenterId }, select: { locationId: true } });
+      if (plan && at && plan.locationId !== at.locationId) return res.status(409).json({ error: 'This job has steps planned at another branch. Re-plan it there before moving it.' });
+    }
     // Once work has started, the job stays tied to the order it was cut for.
     const relinking = ['orderId', 'orderLineId'].some((f) => data[f] !== undefined && data[f] !== job[f]);
     if (relinking && !['ORDERED', 'SCHEDULED', 'ON_HOLD'].includes(job.status)) {
@@ -88,20 +101,25 @@ async function editJob(req, res) {
     if (moving) {
       const why = jobMoveError(job.status, body.status) || await shippedByHandError(job, body.status);
       if (why) return res.status(JOB_STATUSES.includes(body.status) ? 409 : 400).json({ error: why });
-      Object.assign(data, { status: body.status }, stampsFor(job, body.status));
     } else if (['COMPLETED', 'CANCELLED'].includes(job.status) && Object.keys(data).length) {
       return res.status(409).json({ error: `A ${job.status.toLowerCase()} job cannot be changed` });
     }
-    if (!Object.keys(data).length) return res.status(400).json({ error: 'Nothing to update' });
+    if (!moving && !Object.keys(data).length) return res.status(400).json({ error: 'Nothing to update' });
 
-    const updated = await prisma.job.update({ where: { id: job.id }, data, include: JOB_INCLUDE });
-    if (data.assignedToId !== undefined) await recordJobAssignment(prisma, { job, fromUserId: job.assignedToId, toUserId: data.assignedToId, userId: req.user?.id });
-    if (moving) {
-      await recordJobMove(prisma, { job, from: job.status, to: body.status, via: 'edit', userId: req.user?.id });
-      onJobStatusChange(updated, body.status, job.status).catch((e) => console.error('[PrintAutomation] status hook error:', e.message));
-    }
+    // One step, with the job locked: the edit applies to the job as it is now, not as it was read above.
+    // A status change goes through the same gates as every other route (lib/jobGates.js).
+    const updated = await prisma.$transaction(async (tx) => {
+      const { before } = await changeJobStatusTx(tx, job.id, moving ? body.status : job.status, {
+        from: [job.status], fromError: () => 'This job was changed by someone else a moment ago. Reload it and try again.',
+        data, via: 'edit', userId: req.user?.id,
+      });
+      if (data.assignedToId !== undefined) await recordJobAssignment(tx, { job: before, fromUserId: before.assignedToId, toUserId: data.assignedToId, userId: req.user?.id });
+      return tx.job.findUnique({ where: { id: job.id }, include: JOB_INCLUDE });
+    });
+    if (moving) onJobStatusChange(updated, body.status, job.status).catch((e) => console.error('[PrintAutomation] status hook error:', e.message));
     res.json(mapJobForFrontend(updated));
   } catch (error) {
+    if (error?.refused) return res.status(error.status === 400 ? 409 : error.status).json({ error: error.message });
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'Job has a field that is not valid' });
     console.error('Error updating job:', error);
     res.status(500).json({ error: 'Failed to update job' });
@@ -201,12 +219,16 @@ router.get('/', async (req, res) => {
 });
 
 // GET /jobs/sla-risk - Get jobs at risk of missing SLA
+const SLA_LIST_MAX = 500;
 router.get('/sla-risk', async (req, res) => {
   try {
     const { locationId, hoursAhead = 24 } = req.query;
 
+    const hours = Number(hoursAhead);
+    if (!Number.isFinite(hours) || hours < 0 || hours > 24 * 90) return res.status(400).json({ error: 'hoursAhead must be a number of hours from 0 to 2160' });
+    // Every job that is not finished can be late: one waiting for inspection, in packaging or on hold as much as one on the floor.
     const where = {
-      status: { in: ['SCHEDULED', 'IN_PROCESS'] },
+      status: { in: UNFINISHED_JOB_STATUSES },
       scheduledEnd: { not: null },
     };
     // Filter by work center location
@@ -214,26 +236,22 @@ router.get('/sla-risk', async (req, res) => {
       where.workCenter = { locationId };
     }
 
+    // Only jobs due inside the window are read, and only the columns the list shows:
+    // a branch with thousands of open jobs is not loaded whole to find the late ones.
+    const now = new Date();
+    const riskThreshold = new Date(now.getTime() + hours * 60 * 60 * 1000);
+    where.scheduledEnd = { not: null, lte: riskThreshold };
     const jobs = await prisma.job.findMany({
       where,
       orderBy: { scheduledEnd: 'asc' },
-      include: {
-        order: {
-          include: { buyer: { select: { name: true } } },
-        },
-        workCenter: true,
+      select: {
+        id: true, jobNumber: true, operationType: true, status: true, priority: true, scheduledEnd: true,
+        order: { select: { orderNumber: true, buyer: { select: { name: true } } } },
+        workCenter: { select: { name: true } },
       },
     });
 
-    // Calculate SLA risk based on scheduledEnd
-    const now = new Date();
-    const riskThreshold = new Date(now.getTime() + parseInt(hoursAhead) * 60 * 60 * 1000);
-
-    const atRiskJobs = jobs.filter(job => {
-      if (!job.scheduledEnd) return false;
-      const due = new Date(job.scheduledEnd);
-      return due <= riskThreshold;
-    }).map(job => {
+    const atRiskJobs = jobs.map(job => {
       const due = new Date(job.scheduledEnd);
       const hoursRemaining = Math.round((due - now) / (1000 * 60 * 60));
       
@@ -261,7 +279,8 @@ router.get('/sla-risk', async (req, res) => {
     // Sort by risk (overdue first, then by hours remaining)
     atRiskJobs.sort((a, b) => {
       const riskOrder = { OVERDUE: 0, CRITICAL: 1, HIGH: 2, MEDIUM: 3, LOW: 4 };
-      return (riskOrder[a.riskLevel] || 5) - (riskOrder[b.riskLevel] || 5);
+      // ?? not ||: OVERDUE is 0, and || sent every overdue job to the bottom of the list.
+      return (riskOrder[a.riskLevel] ?? 5) - (riskOrder[b.riskLevel] ?? 5) || a.hoursRemaining - b.hoursRemaining;
     });
 
     res.json({
@@ -270,7 +289,9 @@ router.get('/sla-risk', async (req, res) => {
       critical: atRiskJobs.filter(j => j.riskLevel === 'CRITICAL').length,
       high: atRiskJobs.filter(j => j.riskLevel === 'HIGH').length,
       medium: atRiskJobs.filter(j => j.riskLevel === 'MEDIUM').length,
-      jobs: atRiskJobs,
+      // The counts above are of every job in the window. The list is the most urgent ones.
+      jobs: atRiskJobs.slice(0, SLA_LIST_MAX),
+      listLimited: atRiskJobs.length > SLA_LIST_MAX,
     });
   } catch (error) {
     console.error('Error fetching SLA risk jobs:', error);
@@ -359,6 +380,25 @@ router.post('/', async (req, res) => {
       data.orderLineId = orderLineId;
       data.orderId = line.orderId;
     }
+    // Work is not opened for an order that is cancelled or finished, on a cancelled line, or at a work center that is offline.
+    let order = null;
+    if (data.orderId) {
+      order = typeof data.orderId === 'string' ? await prisma.order.findUnique({ where: { id: data.orderId }, select: { status: true, orderNumber: true, locationId: true } }).catch(() => null) : null;
+      if (!order) return res.status(400).json({ error: 'That order is not on file' });
+      if (['CANCELLED', 'COMPLETE'].includes(order.status)) return res.status(409).json({ error: `Order ${order.orderNumber} is ${order.status.toLowerCase()}, so no new work can be opened for it` });
+    }
+    if (data.orderLineId) {
+      const line = await prisma.orderLine.findUnique({ where: { id: data.orderLineId }, select: { lineStatus: true } });
+      if (line?.lineStatus === 'CANCELLED') return res.status(409).json({ error: 'That order line is cancelled' });
+    }
+    if (workCenterId) {
+      const place = typeof workCenterId === 'string' ? await prisma.workCenter.findUnique({ where: { id: workCenterId }, select: { isActive: true, name: true, locationId: true } }).catch(() => null) : null;
+      if (!place) return res.status(400).json({ error: 'That work center is not on file' });
+      if (!place.isActive) return res.status(409).json({ error: `${place.name} is offline, so work cannot be put on it` });
+      // The job follows its work center: an order sold at one branch may be worked at another (the plan and its
+      // steps are saved at the work center's branch). A branch login cannot reach another branch's work center at
+      // all, because the look-up above is held to its own branches.
+    }
     if (workCenterId) data.workCenterId = workCenterId;
     if (operationType) data.operationType = operationType;
     if (instructions) data.instructions = instructions;
@@ -400,9 +440,37 @@ router.post('/', async (req, res) => {
 });
 
 // GET /jobs/:id/plan - Retrieve existing dispatch plan for a job
+// GET /api/jobs/:id/material: the coil work orders raised for this job, with what they used, made and scrapped (L-024).
+router.get('/:id/material', async (req, res) => {
+  try {
+    const job = await prisma.job.findUnique({ where: { id: req.params.id }, select: { id: true, workOrderId: true } }).catch(() => null);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    res.json(publicMaterial(await jobMaterial(prisma, job)));
+  } catch (error) {
+    console.error('Error reading job material:', error);
+    res.status(500).json({ error: 'The material for this job could not be loaded' });
+  }
+});
+
+// GET /api/jobs/:id/cost: material at actual cost plus labor at the rate on file (L-026). Cost goes only to the roles that manage it.
+router.get('/:id/cost', async (req, res) => {
+  try {
+    if (!COST_VIEWERS.has(req.user?.role)) return res.status(403).json({ error: 'Job cost is shown to managers, the inventory manager and buyers.' });
+    const job = await prisma.job.findUnique({ where: { id: req.params.id }, select: { id: true, workOrderId: true } }).catch(() => null);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const material = await jobMaterial(prisma, job);
+    res.json({ jobId: job.id, ...(await jobCost(prisma, job, material)), material: publicMaterial(material).totals });
+  } catch (error) {
+    console.error('Error reading job cost:', error);
+    res.status(500).json({ error: 'The cost of this job could not be worked out' });
+  }
+});
+
 router.get('/:id/plan', async (req, res) => {
   try {
     const { id } = req.params;
+    // A job that is not on file, or belongs to a branch this person does not work at, has no plan to show.
+    if (!(await prisma.job.findUnique({ where: { id }, select: { id: true } }))) return res.status(404).json({ error: 'Job not found' });
     const dispatchJob = await prisma.dispatchJob.findUnique({
       where: { jobId: id },
       include: {
@@ -518,12 +586,28 @@ router.post('/:id/plan', async (req, res) => {
     // A dispatch job belongs to the branch the work is done at: the job's work center, else the order's
     // branch, else the planner's home branch. (It used to default to the text 'FWA', which is not a branch.)
     const planned = await prisma.job.findUnique({ where: { id }, select: { workCenter: { select: { locationId: true } }, order: { select: { locationId: true } } } });
+    // What the material is comes from the request, else the job's own specification, else its order line.
+    // Nothing is assumed: a grade that is not known is left empty (it used to be written as A36), and a
+    // thickness that is not known is saved as 0, which the schedule reads as "not stated" (it used to be 0.5).
+    const line = job.orderLineId ? await prisma.orderLine.findUnique({ where: { id: job.orderLineId }, select: { thicknessIn: true, gradeOverride: true, grade: { select: { code: true } } } }) : null;
+    const known = {
+      grade: grade || job.gradeOverride || line?.gradeOverride || line?.grade?.code || null,
+      thickness: Number(thickness) > 0 ? Number(thickness) : Number(job.thicknessIn) > 0 ? Number(job.thicknessIn) : Number(line?.thicknessIn) > 0 ? Number(line.thicknessIn) : 0,
+    };
+    if (thickness != null && thickness !== '' && !(Number(thickness) > 0)) return res.status(400).json({ error: 'thickness must be more than zero' });
+    if (planned?.workCenter?.locationId && locationId && locationId !== planned.workCenter.locationId) {
+      return res.status(400).json({ error: "This job is assigned to a work center at another branch. Plan it at that branch, or change the job's work center first." });
+    }
+    // A plan is replaced only while none of its steps has been worked: recorded time is never deleted.
+    const worked = await prisma.dispatchOperation.count({ where: { dispatchJob: { jobId: id }, OR: [{ status: { in: ['IN_PROCESS', 'COMPLETE'] } }, { timeLogs: { some: {} } }] } });
+    if (worked) return res.status(409).json({ error: 'Work has been recorded against this plan, so it cannot be replaced. Finish the open steps instead.' });
     const branchId = locationId || planned?.workCenter?.locationId || planned?.order?.locationId || req.user?.homeLocationId;
     if (!branchId) return res.status(400).json({ error: 'Choose the branch this job will be worked at' });
 
     // One step (B-010): the job, the old plan and the new plan change together or not at all.
     const { updatedJob, newDispatchJob } = await prisma.$transaction(async (tx) => {
-    if (job.status !== 'SCHEDULED') await recordJobMove(tx, { job, from: job.status, to: 'SCHEDULED', note: 'Planned', via: 'plan', userId: req.user?.id });
+    // The job is locked and must still be waiting to start: a plan cannot land on a job that started or was cancelled a moment ago.
+    await changeJobStatusTx(tx, id, 'SCHEDULED', { from: ['ORDERED', 'SCHEDULED'], fromError: (j) => `Job must be in ORDERED or SCHEDULED status to plan. Current status: ${j.status}`, note: 'Planned', via: 'plan', userId: req.user?.id });
     const updatedJob = await tx.job.update({
       where: { id },
       data: updateData,
@@ -553,8 +637,8 @@ router.post('/:id/plan', async (req, res) => {
         materialCode: materialCode || job.instructions || 'N/A',
         commodity: commodity || 'METALS',
         form: form || 'PLATE',
-        grade: grade || 'A36',
-        thickness: thickness || 0.5,
+        grade: known.grade,
+        thickness: known.thickness,
         division: division || 'METALS',
         locationId: branchId,
         dueDate: dueDate ? new Date(dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -568,7 +652,7 @@ router.post('/:id/plan', async (req, res) => {
             requiredDivision: division || 'METALS',
             requiredSkillLevel: op.skillLevel || 'STANDARD',
             specialization: op.specialization || null,
-            thickness: thickness || 0.5,
+            thickness: known.thickness,
             materialCode: materialCode || job.instructions || 'N/A',
             status: 'PENDING',
           })),
@@ -606,6 +690,7 @@ router.post('/:id/plan', async (req, res) => {
       })),
     });
   } catch (error) {
+    if (sendRefusal(res, error)) return;
     console.error('Error planning job:', error);
     res.status(500).json({ error: 'Failed to plan job', details: error.message });
   }
@@ -623,7 +708,7 @@ router.post('/:id/status', async (req, res) => {
     const why = jobMoveError(job.status, status) || await shippedByHandError(job, status);
     if (why) return res.status(JOB_STATUSES.includes(status) ? 409 : 400).json({ error: why });
 
-    const updateData = { status, ...stampsFor(job, status) };
+    const updateData = {};
     if (scrapWeight != null) {
       if (typeof scrapWeight !== 'number' || !Number.isFinite(scrapWeight) || scrapWeight < 0) {
         return res.status(400).json({ error: 'scrapWeight must be zero or more' });
@@ -634,10 +719,10 @@ router.post('/:id/status', async (req, res) => {
     // job's history; the job's own notes are left as they were.
     // The move applies only if the job is still in the status it was checked in, and it is saved
     // together with its history line. Two people moving the same job cannot both succeed (C-005).
+    // Quality and planned-step gates are checked on the locked job (lib/jobGates.js).
+    delete updateData.status;
     const updatedJob = await prisma.$transaction(async (tx) => {
-      const moved = await tx.job.updateMany({ where: { id, status: job.status }, data: updateData });
-      if (!moved.count) return null;
-      await recordJobMove(tx, { job, from: job.status, to: status, note, userId: req.user?.id });
+      await changeJobStatusTx(tx, id, status, { from: [job.status], fromError: () => STALE, data: updateData, note, userId: req.user?.id });
       return tx.job.findUnique({
         where: { id },
         include: {
@@ -650,6 +735,7 @@ router.post('/:id/status', async (req, res) => {
     if (!updatedJob) return res.status(409).json({ error: 'This job was changed by someone else a moment ago. Reload it and try again.' });
     res.json(mapJobForFrontend(updatedJob));
   } catch (error) {
+    if (error?.refused) return res.status(error.status === 400 ? 409 : error.status).json({ error: error.message });
     console.error('Error updating job status:', error);
     res.status(500).json({ error: 'Failed to update job status' });
   }
@@ -671,11 +757,9 @@ router.patch('/:id/status', async (req, res) => {
     if (why) return res.status(JOB_STATUSES.includes(status) ? 409 : 400).json({ error: why });
     const oldStatus = prevJob.status;
 
-    // Same rule as POST /:id/status: only if the job is still where it was checked, with its history line.
+    // Same rule as POST /:id/status: only if the job is still where it was checked, with its history line and gates.
     const job = await prisma.$transaction(async (tx) => {
-      const moved = await tx.job.updateMany({ where: { id, status: oldStatus }, data: { status, ...stampsFor(prevJob, status) } });
-      if (!moved.count) return null;
-      await recordJobMove(tx, { job: prevJob, from: oldStatus, to: status, note: req.body?.note, userId: req.user?.id });
+      await changeJobStatusTx(tx, id, status, { from: [oldStatus], fromError: () => STALE, note: req.body?.note, userId: req.user?.id });
       return tx.job.findUnique({
         where: { id },
         include: {
@@ -685,7 +769,6 @@ router.patch('/:id/status', async (req, res) => {
         },
       });
     });
-    if (!job) return res.status(409).json({ error: 'This job was changed by someone else a moment ago. Reload it and try again.' });
 
     // Auto-queue print jobs based on status transition
     if (oldStatus !== status) {
@@ -696,6 +779,7 @@ router.patch('/:id/status', async (req, res) => {
 
     res.json(mapJobForFrontend(job));
   } catch (error) {
+    if (error?.refused) return res.status(error.status === 400 ? 409 : error.status).json({ error: error.message });
     console.error('Error updating job status:', error);
     res.status(500).json({ error: 'Failed to update job status' });
   }
@@ -722,22 +806,21 @@ router.post('/:id/assign', async (req, res) => {
       if (!person.isActive) return res.status(400).json({ error: 'That user is not active, so work cannot be assigned to them' });
     }
 
-    const job = await prisma.job.update({
-      where: { id },
-      data: { assignedToId: userId },
-      include: {
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true, email: true },
-        },
-      },
+    // Applies only while the job is still open: an assignment cannot land on a job that closed a moment ago.
+    const job = await prisma.$transaction(async (tx) => {
+      const { before: locked } = await changeJobStatusTx(tx, id, before.status, {
+        from: [before.status], fromError: () => STALE, data: { assignedToId: userId },
+      });
+      await recordJobAssignment(tx, { job: locked, fromUserId: locked.assignedToId, toUserId: userId, userId: req.user?.id });
+      return tx.job.findUnique({ where: { id }, include: { assignedTo: { select: { id: true, firstName: true, lastName: true, email: true } } } });
     });
-    await recordJobAssignment(prisma, { job: before, fromUserId: before.assignedToId, toUserId: userId, userId: req.user?.id });
 
     res.json({
       message: userId ? 'Job assigned successfully' : 'Assignment removed',
       job,
     });
   } catch (error) {
+    if (error?.refused) return res.status(error.status === 400 ? 409 : error.status).json({ error: error.message });
     console.error('Error assigning job:', error);
     res.status(500).json({ error: 'Failed to assign job' });
   }
@@ -749,39 +832,24 @@ router.post('/:id/start', async (req, res) => {
     const { id } = req.params;
     const { note } = req.body;
     
-    const job = await prisma.job.findUnique({ where: { id } });
-    if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
-    }
-    
-    if (job.status !== 'SCHEDULED' && job.status !== 'ORDERED') {
-      return res.status(400).json({ error: `Cannot start job with status ${job.status}` });
-    }
-    
-    const updateData = {
-      status: 'IN_PROCESS',
-      actualStart: job.actualStart || new Date(),
-    };
-    
-    const updatedJob = await prisma.job.update({
-      where: { id },
-      data: updateData,
-      include: {
-        order: {
-          select: { id: true, orderNumber: true, buyerId: true },
+    // Decided on the locked job: two people pressing Start get one start, and a job that was cancelled a moment ago stays cancelled.
+    const updatedJob = await prisma.$transaction(async (tx) => {
+      await changeJobStatusTx(tx, id, 'IN_PROCESS', {
+        from: ['SCHEDULED', 'ORDERED'], fromError: (j) => `Cannot start job with status ${j.status}`, note, via: 'start', userId: req.user?.id,
+      });
+      return tx.job.findUnique({
+        where: { id },
+        include: {
+          order: { select: { id: true, orderNumber: true, buyerId: true } },
+          workCenter: { select: { id: true, code: true, name: true, locationId: true } },
+          assignedTo: { select: { id: true, firstName: true, lastName: true } },
         },
-        workCenter: {
-          select: { id: true, code: true, name: true, locationId: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
-      },
+      });
     });
-    await recordJobMove(prisma, { job, from: job.status, to: 'IN_PROCESS', note, via: 'start', userId: req.user?.id });
 
     res.json(updatedJob);
   } catch (error) {
+    if (sendRefusal(res, error)) return;
     console.error('Error starting job:', error);
     res.status(500).json({ error: 'Failed to start job' });
   }
@@ -793,39 +861,35 @@ router.post('/:id/complete', async (req, res) => {
     const { id } = req.params;
     const { note } = req.body;
     
-    const job = await prisma.job.findUnique({ where: { id } });
-    if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
-    }
-    
-    if (job.status !== 'IN_PROCESS' && job.status !== 'PACKAGING') {
-      return res.status(400).json({ error: `Cannot complete job with status ${job.status}` });
-    }
-    
-    const updateData = {
-      status: 'READY_TO_SHIP',
-      actualEnd: new Date(),
-    };
-    
-    const updatedJob = await prisma.job.update({
-      where: { id },
-      data: updateData,
-      include: {
-        order: { include: { buyer: true } },
-        workCenter: { select: { id: true, code: true, name: true, locationId: true } },
-        assignedTo: { select: { id: true, firstName: true, lastName: true } },
-      },
+    // Decided on the locked job. Work that owes an inspection (its last inspection failed and it was
+    // sent back for rework) goes to the inspection queue, not to the dock. A job with planned steps
+    // still open is refused (lib/jobGates.js).
+    let from = null; let to = null;
+    const updatedJob = await prisma.$transaction(async (tx) => {
+      const moved = await changeJobStatusTx(tx, id, 'READY_TO_SHIP', {
+        from: ['IN_PROCESS', 'PACKAGING'], fromError: (j) => `Cannot complete job with status ${j.status}`, note, via: 'complete', userId: req.user?.id,
+        decide: async (j, db) => (j.status === 'IN_PROCESS' ? afterProduction(db, j, 'READY_TO_SHIP') : 'READY_TO_SHIP'),
+      });
+      from = moved.from; to = moved.to;
+      return tx.job.findUnique({
+        where: { id },
+        include: {
+          order: { include: { buyer: true } },
+          workCenter: { select: { id: true, code: true, name: true, locationId: true } },
+          assignedTo: { select: { id: true, firstName: true, lastName: true } },
+        },
+      });
     });
 
-    await recordJobMove(prisma, { job, from: job.status, to: 'READY_TO_SHIP', note, via: 'complete', userId: req.user?.id });
-
     // Auto-queue shipping label
-    onJobStatusChange(updatedJob, 'READY_TO_SHIP', job.status).catch((e) =>
+    if (to === 'READY_TO_SHIP') onJobStatusChange(updatedJob, 'READY_TO_SHIP', from).catch((e) =>
       console.error('[PrintAutomation] complete hook error:', e.message)
     );
-    
+    if (to === 'WAITING_QC') return res.json({ ...updatedJob, message: 'This job has gone to inspection. It moves on when an inspection is passed.' });
+
     res.json(updatedJob);
   } catch (error) {
+    if (sendRefusal(res, error)) return;
     console.error('Error completing job:', error);
     res.status(500).json({ error: 'Failed to complete job' });
   }
@@ -863,33 +927,27 @@ router.post('/:id/ship', async (req, res) => {
       if (why) return res.status(409).json({ error: why });
     }
 
-    const updateData = {
-      status: 'SHIPPED',
-      shippedAt: new Date(),
-      shippingCarrier: carrier,
-      trackingNumber: trackingNumber,
-    };
-    
-    const updatedJob = await prisma.job.update({
-      where: { id },
-      data: updateData,
-      include: {
-        order: {
-          select: { id: true, orderNumber: true, buyerId: true },
+    // The shipment (above) may already have marked the job shipped; either way the carrier details are saved once,
+    // on the locked job, and only a job that is ready or was just shipped by that shipment is accepted.
+    const updatedJob = await prisma.$transaction(async (tx) => {
+      await changeJobStatusTx(tx, id, 'SHIPPED', {
+        from: ['READY_TO_SHIP', 'SHIPPED'], fromError: (j) => `Cannot ship job with status ${j.status}`,
+        data: { shippedAt: new Date(), shippingCarrier: carrier, trackingNumber },
+        note: note || `Shipped via ${carrier} - ${trackingNumber}`, via: 'ship', userId: req.user?.id,
+      });
+      return tx.job.findUnique({
+        where: { id },
+        include: {
+          order: { select: { id: true, orderNumber: true, buyerId: true } },
+          workCenter: { select: { id: true, code: true, name: true, locationId: true } },
+          assignedTo: { select: { id: true, firstName: true, lastName: true } },
         },
-        workCenter: {
-          select: { id: true, code: true, name: true, locationId: true },
-        },
-        assignedTo: {
-          select: { id: true, firstName: true, lastName: true },
-        },
-      },
+      });
     });
-    
-    await recordJobMove(prisma, { job, from: job.status, to: 'SHIPPED', note: note || `Shipped via ${carrier} - ${trackingNumber}`, via: 'ship', userId: req.user?.id });
 
     res.json({ ...updatedJob, shipment: shipment && { id: shipment.id, shipmentNumber: shipment.shipmentNumber, invoice: shipment.invoice } });
   } catch (error) {
+    if (sendRefusal(res, error)) return;
     console.error('Error shipping job:', error);
     res.status(500).json({ error: 'Failed to ship job' });
   }
@@ -916,7 +974,8 @@ router.get('/stats/summary', async (req, res) => {
     const { locationId, workCenterId, divisionId } = req.query;
     
     const where = {};
-    if (locationId) where.locationId = locationId;
+    // A job has no branch of its own: it is at its work center's branch, or its order's.
+    if (locationId) where.OR = [{ workCenter: { locationId } }, { workCenterId: null, order: { locationId } }];
     if (workCenterId) where.workCenterId = workCenterId;
     // Note: divisionId would need to be joined through workCenter if needed
     

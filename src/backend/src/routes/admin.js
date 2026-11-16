@@ -32,4 +32,19 @@ router.post('/seed-demo', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER
   }
 });
 
+/**
+ * GET /api/admin/retention
+ * How much history is older than the period it must stay online (five years unless changed),
+ * with a warning when records are ready to archive. Read-only: it never removes anything.
+ */
+router.get('/retention', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER', 'OPS_MANAGER', 'EXECUTIVE', 'CFO', 'COO', 'CIO'), async (req, res) => {
+  try {
+    const { retentionReport } = await import('../lib/retention.js');
+    res.json(await retentionReport());
+  } catch (error) {
+    console.error('Retention report failed:', error);
+    res.status(500).json({ error: 'Could not read the retention report' });
+  }
+});
+
 export default router;

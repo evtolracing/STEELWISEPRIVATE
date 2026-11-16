@@ -185,6 +185,34 @@
    "file": "src/backend/src/routes/inventory.js"
   },
   {
+   "ep": "GET /api/inventory/transfers",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "GET /api/inventory/transfers/:id",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/transfers",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/transfers/:id/receive",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/transfers/:id/settle",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/transfers/:id/cancel",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
+   "ep": "POST /api/inventory/adjust",
+   "file": "src/backend/src/routes/inventory.js"
+  },
+  {
    "ep": "GET /api/inventory/locations",
    "file": "src/backend/src/routes/inventory.js"
   },
@@ -210,6 +238,10 @@
   },
   {
    "ep": "GET /api/orders/intake",
+   "file": "src/backend/src/routes/intakeOrders.js"
+  },
+  {
+   "ep": "GET /api/orders/intake/branches",
    "file": "src/backend/src/routes/intakeOrders.js"
   },
   {
@@ -461,6 +493,18 @@
    "file": "src/backend/src/routes/orders.js"
   },
   {
+   "ep": "GET /api/orders/closeout",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/orders/:id/closeout",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/orders/:id/cost",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
    "ep": "GET /api/orders/:id",
    "file": "src/backend/src/routes/orders.js"
   },
@@ -475,6 +519,22 @@
   {
    "ep": "POST /api/orders/:id/allocate",
    "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/purchase-orders/suppliers",
+   "file": "src/backend/src/routes/purchaseOrders.js"
+  },
+  {
+   "ep": "GET /api/purchase-orders/supply-position",
+   "file": "src/backend/src/routes/purchaseOrders.js"
+  },
+  {
+   "ep": "GET /api/purchase-orders/:id",
+   "file": "src/backend/src/routes/purchaseOrders.js"
+  },
+  {
+   "ep": "PUT /api/purchase-orders/:id",
+   "file": "src/backend/src/routes/purchaseOrders.js"
   },
   {
    "ep": "GET /api/work-orders",
@@ -498,6 +558,14 @@
   },
   {
    "ep": "PUT /api/work-orders/:id/complete",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "PUT /api/work-orders/:id/hold",
+   "file": "src/backend/src/routes/workOrders.js"
+  },
+  {
+   "ep": "PUT /api/work-orders/:id/release-hold",
    "file": "src/backend/src/routes/workOrders.js"
   },
   {
@@ -549,7 +617,15 @@
    "file": "src/backend/src/routes/shipments.js"
   },
   {
+   "ep": "GET /api/shipments/:id/documents",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
    "ep": "GET /api/invoices",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "GET /api/invoices/aging",
    "file": "src/backend/src/routes/invoices.js"
   },
   {
@@ -594,6 +670,10 @@
   },
   {
    "ep": "POST /api/returns/:id/receive",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "POST /api/returns/:id/credit",
    "file": "src/backend/src/routes/returns.js"
   },
   {
@@ -758,6 +838,14 @@
   },
   {
    "ep": "POST /api/jobs",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/:id/material",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/:id/cost",
    "file": "src/backend/src/routes/jobs.js"
   },
   {
@@ -1161,6 +1249,22 @@
    "file": "src/backend/src/routes/aiAssistant.js"
   },
   {
+   "ep": "POST /api/v1/inventory/adjust",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/rfid-scan",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/transfers",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
+   "ep": "POST /api/v1/inventory/transfers/:id/status",
+   "file": "src/backend/src/routes/inventoryV1.js"
+  },
+  {
    "ep": "GET /api/v1/inventory",
    "file": "src/backend/src/routes/inventoryV1.js"
   },
@@ -1185,27 +1289,11 @@
    "file": "src/backend/src/routes/inventoryV1.js"
   },
   {
-   "ep": "POST /api/v1/inventory/adjust",
-   "file": "src/backend/src/routes/inventoryV1.js"
-  },
-  {
-   "ep": "POST /api/v1/inventory/rfid-scan",
-   "file": "src/backend/src/routes/inventoryV1.js"
-  },
-  {
    "ep": "GET /api/v1/inventory/rfid/:rfidTagId",
    "file": "src/backend/src/routes/inventoryV1.js"
   },
   {
    "ep": "GET /api/v1/inventory/etched/:etchedId",
-   "file": "src/backend/src/routes/inventoryV1.js"
-  },
-  {
-   "ep": "POST /api/v1/inventory/transfers",
-   "file": "src/backend/src/routes/inventoryV1.js"
-  },
-  {
-   "ep": "POST /api/v1/inventory/transfers/:id/status",
    "file": "src/backend/src/routes/inventoryV1.js"
   },
   {
@@ -1330,6 +1418,14 @@
   },
   {
    "ep": "POST /api/v1/jobs",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/:id/material",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/:id/cost",
    "file": "src/backend/src/routes/jobs.js"
   },
   {
@@ -1470,6 +1566,10 @@
   },
   {
    "ep": "GET /api/v1/operations",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/operations/long-running",
    "file": "src/backend/src/routes/operationsRoutes.js"
   },
   {
@@ -1805,8 +1905,8 @@
    "file": "src/backend/src/routes/admin.js"
   },
   {
-   "ep": "POST /api/drop-tags",
-   "file": "src/backend/src/routes/dropTagRoutes.js"
+   "ep": "GET /api/admin/retention",
+   "file": "src/backend/src/routes/admin.js"
   },
   {
    "ep": "GET /api/drop-tags",
@@ -1849,6 +1949,10 @@
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
+   "ep": "POST /api/drop-tags",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
    "ep": "POST /api/drop-tags/:id/validate",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
@@ -1873,11 +1977,11 @@
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
-   "ep": "GET /api/drop-tags/packages/ready",
+   "ep": "POST /api/drop-tags/packages/:id/items",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
-   "ep": "POST /api/drop-tags/packages/:id/items",
+   "ep": "POST /api/drop-tags/packages/:id/ready",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
@@ -1886,6 +1990,14 @@
   },
   {
    "ep": "POST /api/drop-tags/packages/:id/qc-release",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/packages/:id/qc-hold",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/packages/ready",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
@@ -2241,14 +2353,6 @@
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
   {
-   "ep": "GET /api/v1/partner/customer/documents",
-   "file": "src/backend/src/routes/partner/customerRoutes.js"
-  },
-  {
-   "ep": "GET /api/v1/partner/customer/documents/:id/download",
-   "file": "src/backend/src/routes/partner/customerRoutes.js"
-  },
-  {
    "ep": "GET /api/v1/partner/customer/shipments",
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
@@ -2258,6 +2362,14 @@
   },
   {
    "ep": "GET /api/v1/partner/customer/invoices",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents",
+   "file": "src/backend/src/routes/partner/customerRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/partner/customer/documents/:id/download",
    "file": "src/backend/src/routes/partner/customerRoutes.js"
   },
   {
@@ -2349,6 +2461,10 @@
    "file": "src/backend/src/routes/partner/webhookRoutes.js"
   },
   {
+   "ep": "POST /api/v1/partner/webhooks/:id/deliveries/:deliveryId/replay",
+   "file": "src/backend/src/routes/partner/webhookRoutes.js"
+  },
+  {
    "ep": "GET /api/v1/admin/partners",
    "file": "src/backend/src/routes/partner/adminRoutes.js"
   },
@@ -2388,7 +2504,7 @@
  "models": [
   {
    "name": "Organization",
-   "fields": 34,
+   "fields": 35,
    "fks": 1,
    "status": null
   },
@@ -2400,7 +2516,7 @@
   },
   {
    "name": "User",
-   "fields": 37,
+   "fields": 39,
    "fks": 3,
    "status": null
   },
@@ -2460,7 +2576,7 @@
   },
   {
    "name": "Product",
-   "fields": 24,
+   "fields": 25,
    "fks": 1,
    "status": null
   },
@@ -2472,26 +2588,26 @@
   },
   {
    "name": "Coil",
-   "fields": 48,
+   "fields": 49,
    "fks": 8,
    "status": "CoilStatus"
   },
   {
    "name": "Location",
-   "fields": 35,
+   "fields": 40,
    "fks": 2,
    "status": null
   },
   {
    "name": "Inventory",
-   "fields": 18,
+   "fields": 19,
    "fks": 2,
    "status": "String"
   },
   {
    "name": "MaterialMovement",
-   "fields": 21,
-   "fks": 7,
+   "fields": 24,
+   "fks": 8,
    "status": null
   },
   {
@@ -2508,8 +2624,8 @@
   },
   {
    "name": "RFQ",
-   "fields": 16,
-   "fks": 1,
+   "fields": 18,
+   "fks": 2,
    "status": "RFQStatus"
   },
   {
@@ -2520,14 +2636,14 @@
   },
   {
    "name": "Quote",
-   "fields": 25,
-   "fks": 2,
+   "fields": 28,
+   "fks": 4,
    "status": "QuoteStatus"
   },
   {
    "name": "QuoteLine",
-   "fields": 30,
-   "fks": 2,
+   "fields": 31,
+   "fks": 3,
    "status": null
   },
   {
@@ -2550,14 +2666,14 @@
   },
   {
    "name": "DispatchJob",
-   "fields": 18,
-   "fks": 1,
+   "fields": 20,
+   "fks": 3,
    "status": null
   },
   {
    "name": "DispatchOperation",
-   "fields": 21,
-   "fks": 1,
+   "fields": 24,
+   "fks": 3,
    "status": "String"
   },
   {
@@ -2568,38 +2684,38 @@
   },
   {
    "name": "JobInspection",
-   "fields": 20,
+   "fields": 21,
    "fks": 2,
    "status": "String"
   },
   {
    "name": "WorkCenterType",
-   "fields": 9,
+   "fields": 13,
    "fks": 0,
    "status": null
   },
   {
    "name": "WorkCenter",
-   "fields": 14,
+   "fields": 15,
    "fks": 1,
    "status": null
   },
   {
    "name": "Job",
-   "fields": 53,
-   "fks": 5,
+   "fields": 56,
+   "fks": 7,
    "status": "JobStatus"
   },
   {
    "name": "Order",
-   "fields": 41,
-   "fks": 4,
+   "fields": 45,
+   "fks": 5,
    "status": "OrderStatus"
   },
   {
    "name": "OrderLine",
-   "fields": 43,
-   "fks": 3,
+   "fields": 49,
+   "fks": 4,
    "status": null
   },
   {
@@ -2610,8 +2726,8 @@
   },
   {
    "name": "WorkOrder",
-   "fields": 22,
-   "fks": 1,
+   "fields": 27,
+   "fks": 4,
    "status": "WOStatus"
   },
   {
@@ -2622,8 +2738,8 @@
   },
   {
    "name": "Shipment",
-   "fields": 28,
-   "fks": 2,
+   "fields": 31,
+   "fks": 3,
    "status": "ShipmentStatus"
   },
   {
@@ -2640,14 +2756,14 @@
   },
   {
    "name": "Invoice",
-   "fields": 20,
-   "fks": 1,
+   "fields": 23,
+   "fks": 3,
    "status": "InvoiceStatus"
   },
   {
    "name": "InvoiceLine",
-   "fields": 12,
-   "fks": 1,
+   "fields": 13,
+   "fks": 2,
    "status": null
   },
   {
@@ -2682,7 +2798,7 @@
   },
   {
    "name": "BomRecipe",
-   "fields": 16,
+   "fields": 17,
    "fks": 0,
    "status": "BomRecipeStatus"
   },
@@ -3258,7 +3374,7 @@
   },
   {
    "name": "PrintQueueJob",
-   "fields": 11,
+   "fields": 12,
    "fks": 0,
    "status": "String"
   },
@@ -3326,6 +3442,30 @@
    "name": "DemandSuggestionEvent",
    "fields": 10,
    "fks": 0,
+   "status": null
+  },
+  {
+   "name": "DocumentCounter",
+   "fields": 3,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "RequestKey",
+   "fields": 8,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "StockTransfer",
+   "fields": 22,
+   "fks": 3,
+   "status": "String"
+  },
+  {
+   "name": "StockTransferLine",
+   "fields": 11,
+   "fks": 2,
    "status": null
   }
  ],
@@ -4186,8 +4326,11 @@
   "schedule",
   "jobs/:id",
   "receiving",
+  "transfers",
+  "purchase-orders",
   "material-tracking",
   "material-tracking/packaging",
+  "material-tracking/packages",
   "material-tracking/tags",
   "material-tracking/staging",
   "material-tracking/traceability",
@@ -4219,6 +4362,7 @@
   "logistics/tracking",
   "logistics/dispatch",
   "orders/invoices",
+  "orders/closeout",
   "orders/returns",
   "orders",
   "boms",
@@ -4234,6 +4378,7 @@
   "pos/retail",
   "customers",
   "customers/preferences",
+  "admin/integrations",
   "admin/users",
   "admin/partners",
   "admin/tax-rates",

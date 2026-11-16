@@ -2,6 +2,8 @@
  * Express App - Separated from server startup for Vercel serverless compatibility
  * This file creates and configures the Express app WITHOUT calling app.listen()
  */
+import { stockCostGuard } from './lib/costView.js';
+import integrationRoutes, { scheduledRun } from './routes/integrations.js';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -19,6 +21,7 @@ import heatRoutes from './routes/heats.js';
 import coilRoutes from './routes/coils.js';
 import inventoryRoutes from './routes/inventory.js';
 import orderRoutes from './routes/orders.js';
+import purchaseOrderRoutes from './routes/purchaseOrders.js';
 import workOrderRoutes from './routes/workOrders.js';
 import shipmentRoutes from './routes/shipments.js';
 import invoiceRoutes from './routes/invoices.js';
@@ -50,6 +53,7 @@ import ecomRoutes, { adminCatalogRouter } from './routes/ecom.js';
 import { enterpriseRouter, myOrdersRouter } from './routes/portal.js';
 import processingRecipeRoutes from './routes/processingRecipes.js';
 import { apiGate } from './middleware/apiGate.js';
+import { requestKeys } from './middleware/requestKeys.js';
 import { safeErrors, pagingGuard } from './middleware/safeErrors.js';
 import { requestLog } from './middleware/requestLog.js';
 import onlineSettingsRoutes from './routes/onlineSettings.js';
@@ -169,11 +173,18 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// The scheduler's address. It carries no user and proves itself with a shared secret.
+app.all('/api/internal/tasks/run', (req, res, next) => (['GET', 'POST'].includes(req.method) ? scheduledRun(req, res) : next()));
+
 // Database and server internals never go out in an error reply.
 app.use('/api', safeErrors, pagingGuard);
 
 // Every API route below needs a signed-in user unless apiGate lists it as public.
 app.use('/api', apiGate);
+// Duplicate-request protection for requests that carry an Idempotency-Key (C-006).
+app.use('/api', requestKeys);
+// Stock cost leaves only to the roles that manage it, whatever route carries the stock item (N-020).
+app.use('/api', stockCostGuard);
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -195,6 +206,7 @@ app.use('/api/metrics/compression', compressionMetricsRoutes);
 app.use('/api/pricing', intakePricingRoutes);
 app.use('/api/processing', intakeProcessingRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/purchase-orders', purchaseOrderRoutes);
 app.use('/api/work-orders', workOrderRoutes);
 app.use('/api/shipments', shipmentRoutes);
 app.use('/api/invoices', invoiceRoutes);
@@ -244,6 +256,7 @@ app.use('/api/sales', salesRoutes);
 app.use('/api/executive', executiveRoutes);
 app.use('/api/admin/catalog', adminCatalogRouter);
 app.use('/api/admin/online-settings', onlineSettingsRoutes);
+app.use('/api/admin/integrations', integrationRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Drop Tag Engine

@@ -47,6 +47,8 @@ model Organization {
   partners        Partner[]                @relation("PartnerOrganization")
   preferences     CustomerPreference?      @relation("CustomerPreferences")
 
+  shipmentsCarried Shipment[] @relation("ShipmentCarrier")
+
   @@index([parentId])
 }
 
@@ -121,8 +123,6 @@ model CustomerPreference {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([customerId])
 }
 
 model User {
@@ -164,6 +164,9 @@ model User {
   approvalRequests ApprovalRequest[]    @relation("ApprovalRequester")
   approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
   operator         Operator?
+
+  quotesCreated         Quote[]         @relation("QuoteCreatedBy")
+  stockTransfersCreated StockTransfer[] @relation("StockTransferCreator")
 
   @@index([customerId])
   @@index([homeLocationId])
@@ -373,6 +376,8 @@ model Product {
   grade        Grade?        @relation(fields: [gradeId], references: [id])
   storeListing StoreListing?
 
+  quoteLines QuoteLine[] @relation("QuoteLineProduct")
+
   @@index([gradeId])
 }
 
@@ -408,10 +413,11 @@ model Heat {
 model Coil {
   id               String                @id @default(uuid())
   coilNumber       String                @unique
-  heatId           String
+  /// Required for every form except SUPPLY (shelf goods counted by the piece): database check Coil_heat_and_grade_unless_supply.
+  heatId           String?
   parentCoilId     String?
   productId        String?
-  gradeId          String
+  gradeId          String?
   ownerId          String
   form             ProductForm
   thicknessIn      Decimal?
@@ -439,8 +445,8 @@ model Coil {
   createdById      String
   updatedAt        DateTime              @updatedAt
   createdBy        User                  @relation("CoilCreator", fields: [createdById], references: [id])
-  grade            Grade                 @relation(fields: [gradeId], references: [id])
-  heat             Heat                  @relation(fields: [heatId], references: [id])
+  grade            Grade?                @relation(fields: [gradeId], references: [id], onDelete: Restrict)
+  heat             Heat?                 @relation(fields: [heatId], references: [id], onDelete: Restrict)
   location         Location?             @relation(fields: [locationId], references: [id])
   originOrder      Order?                @relation("OriginOrder", fields: [originOrderId], references: [id])
   owner            Organization          @relation(fields: [ownerId], references: [id])
@@ -454,6 +460,7 @@ model Coil {
   testResults      TestResult[]
   workOrderInputs  WorkOrder[]           @relation("WorkOrderInput")
   workOrderOutputs WorkOrderOutput[]
+  transferLines    StockTransferLine[]
 
   @@index([createdById])
   @@index([gradeId])
@@ -502,6 +509,14 @@ model Location {
   dropTagListings DropTagListing[]   @relation("ListingOrigin")
   operatorsHome   Operator[]         @relation("OperatorHomeLocation")
 
+  dispatchJobs DispatchJob[] @relation("DispatchJobLocation")
+
+  rfqsOwned   RFQ[]   @relation("RFQBranch")
+  quotesOwned Quote[] @relation("QuoteBranch")
+
+  transfersOut StockTransfer[] @relation("TransferFrom")
+  transfersIn  StockTransfer[] @relation("TransferTo")
+
   @@index([ownerId])
   @@index([parentId])
 }
@@ -514,6 +529,8 @@ model Inventory {
   qtyAvailable  Decimal
   qtyAllocated  Decimal   @default(0)
   qtyOnHold     Decimal   @default(0)
+  /// Shipped to another branch and not yet received (Phase 6, G-007). On hand = available + allocated + on hold + in transit.
+  qtyInTransit  Decimal   @default(0)
   unit          String    @default("LB")
   unitCost      Decimal?
   landedCost    Decimal?
@@ -540,10 +557,15 @@ model MaterialMovement {
   orderId        String?
   workOrderId    String?
   shipmentId     String?
+  /// A receipt against a purchase order: the line it fills (Phase 6, I-007).
+  orderLineId    String?
   reasonCode     String?
   notes          String?
+  /// What one unit of the item cost when it moved (Phase 8). Written when material ships or comes back; empty when the item had no cost on file.
+  unitCost       Decimal?     @db.Decimal(18, 6)
   createdAt      DateTime     @default(now())
   createdById    String
+  orderLine      OrderLine?   @relation("MovementOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
   coil           Coil         @relation(fields: [coilId], references: [id])
   createdBy      User         @relation(fields: [createdById], references: [id])
   fromLocation   Location?    @relation("MovementFrom", fields: [fromLocationId], references: [id])
@@ -556,6 +578,7 @@ model MaterialMovement {
   @@index([createdById])
   @@index([fromLocationId])
   @@index([orderId])
+  @@index([orderLineId])
   @@index([shipmentId])
   @@index([toLocationId])
   @@index([workOrderId])
@@ -631,6 +654,11 @@ model RFQ {
   customer      Organization @relation("CustomerRFQs", fields: [customerId], references: [id])
   lines         RFQLine[]
 
+  /// The branch that works this request. Empty means not yet assigned: every branch sees it.
+  locationId String?
+  location   Location? @relation("RFQBranch", fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@index([locationId])
   @@index([customerId])
 }
 
@@ -680,7 +708,15 @@ model Quote {
   rfq              RFQ         @relation(fields: [rfqId], references: [id])
   lines            QuoteLine[]
 
+  createdBy User? @relation("QuoteCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  /// The branch that wrote this quote. Empty means not assigned: every branch sees it.
+  locationId String?
+  location   Location? @relation("QuoteBranch", fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@index([locationId])
   @@index([rfqId])
+  @@index([createdById])
 }
 
 model QuoteLine {
@@ -718,8 +754,11 @@ model QuoteLine {
   quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   rfqLine   RFQLine? @relation(fields: [rfqLineId], references: [id])
 
+  product Product? @relation("QuoteLineProduct", fields: [productId], references: [id], onDelete: Restrict)
+
   @@index([quoteId])
   @@index([rfqLineId])
+  @@index([productId])
 }
 
 // ============================================================================
@@ -846,7 +885,7 @@ model DispatchJob {
   grade        String?
   thickness    Decimal   @default(0.5)
   division     String    @default("METALS")
-  locationId   String    @default("FWA")
+  locationId   String
   dueDate      DateTime?
   priority     String    @default("NORMAL")
   customerName String?
@@ -856,8 +895,12 @@ model DispatchJob {
   job        Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
   operations DispatchOperation[]
 
+  order    Order?   @relation("DispatchJobOrder", fields: [orderId], references: [id], onDelete: SetNull)
+  location Location @relation("DispatchJobLocation", fields: [locationId], references: [id], onDelete: Restrict)
+
   @@index([locationId])
   @@index([jobNumber])
+  @@index([orderId])
 }
 
 model DispatchOperation {
@@ -878,13 +921,18 @@ model DispatchOperation {
   scheduledEnd           DateTime?
   actualStart            DateTime?
   actualEnd              DateTime?
+  reworkOfInspectionId   String? // set on a rework step: the failed inspection it answers (L-020)
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
   dispatchJob DispatchJob       @relation(fields: [dispatchJobId], references: [id], onDelete: Cascade)
+  reworkOfInspection JobInspection? @relation("ReworkStep", fields: [reworkOfInspectionId], references: [id], onDelete: SetNull)
   timeLogs    DispatchTimeLog[]
 
+  assignedWorkCenter WorkCenter? @relation("DispatchOperationWorkCenter", fields: [assignedWorkCenterId], references: [id], onDelete: SetNull)
+
   @@unique([dispatchJobId, sequence])
+  @@index([reworkOfInspectionId])
   @@index([dispatchJobId])
   @@index([assignedWorkCenterId])
   @@index([status])
@@ -933,6 +981,7 @@ model JobInspection {
 
   job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
   inspector Operator? @relation("InspectorInspections", fields: [inspectorId], references: [id])
+  reworkSteps DispatchOperation[] @relation("ReworkStep")
 
   @@index([jobId])
   @@index([inspectorId])
@@ -947,6 +996,10 @@ model WorkCenterType {
   description String?
   divisions   Json     @default("[]")
   isActive    Boolean  @default(true)
+  certificationRequired Boolean @default(false) // an operator needs a current certification for this kind (L-022)
+  allowsConcurrentSteps Boolean @default(false) // an operator may be clocked on to more than one step of this kind (L-022)
+  hourlyRate            Decimal? @db.Decimal(12, 2) // labor rate for costing; empty until set (L-026)
+  inspectionChecklist   Json? // the checks an inspection of this kind of work starts with (L-028)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -966,6 +1019,8 @@ model WorkCenter {
   location      Location   @relation(fields: [locationId], references: [id])
   assets        Asset[]    @relation("AssetWorkCenter")
   operatorsHome Operator[] @relation("OperatorHomeWorkCenter")
+
+  dispatchOperations DispatchOperation[] @relation("DispatchOperationWorkCenter")
 
   @@index([locationId])
 }
@@ -1028,11 +1083,18 @@ model Job {
   dispatchJob DispatchJob?
   inspections JobInspection[]
 
+  orderLine OrderLine? @relation("JobOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
+  workOrder WorkOrder? @relation("JobWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
+  // Coil work orders raised for this job (finding L-024): its material, scrap and yield.
+  coilWorkOrders WorkOrder[] @relation("WorkOrderForJob")
+
   @@index([recipeId])
   @@index([assignedToId])
   @@index([createdById])
   @@index([orderId])
   @@index([workCenterId])
+  @@index([orderLineId])
+  @@index([workOrderId])
 }
 
 model Order {
@@ -1079,6 +1141,11 @@ model Order {
   shipments       Shipment[]
   dropTags        DropTag[]
   packages        Package[]
+
+  returnOf     Order?        @relation("OrderReturns", fields: [returnOfOrderId], references: [id], onDelete: Restrict)
+  returnOrders Order[]       @relation("OrderReturns")
+  workOrders   WorkOrder[]   @relation("WorkOrderSalesOrder")
+  dispatchJobs DispatchJob[] @relation("DispatchJobOrder")
 
   @@index([returnOfOrderId])
   @@index([buyerId])
@@ -1136,6 +1203,13 @@ model OrderLine {
   dropTags      DropTag[]
   packages      Package[]
 
+  invoiceLines InvoiceLine[]      @relation("InvoiceLineOrderLine")
+  jobs         Job[]              @relation("JobOrderLine")
+  returnOfLine OrderLine?         @relation("OrderLineReturns", fields: [returnOfLineId], references: [id], onDelete: Restrict)
+  returnLines  OrderLine[]        @relation("OrderLineReturns")
+  workOrders   WorkOrder[]        @relation("WorkOrderLine")
+  receipts     MaterialMovement[] @relation("MovementOrderLine")
+
   @@index([returnOfLineId])
   @@index([gradeId])
   @@index([orderId])
@@ -1179,7 +1253,16 @@ model WorkOrder {
   sourceCoil     Coil               @relation("WorkOrderInput", fields: [sourceCoilId], references: [id])
   outputs        WorkOrderOutput[]
 
+  jobs       Job[]      @relation("JobWorkOrder")
+  jobId      String?
+  job        Job?       @relation("WorkOrderForJob", fields: [jobId], references: [id], onDelete: SetNull)
+  salesOrder Order?     @relation("WorkOrderSalesOrder", fields: [salesOrderId], references: [id], onDelete: SetNull)
+  line       OrderLine? @relation("WorkOrderLine", fields: [lineId], references: [id], onDelete: SetNull)
+
   @@index([sourceCoilId])
+  @@index([salesOrderId])
+  @@index([lineId])
+  @@index([jobId])
 }
 
 model WorkOrderOutput {
@@ -1218,6 +1301,8 @@ model Shipment {
   podCaptured     Boolean            @default(false)
   podImageUrl     String?
   podSignature    String?
+  /// Why a delivery was recorded with no name and no image (Phase 8).
+  noPodReason     String?
   notes           String?
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
@@ -1229,8 +1314,12 @@ model Shipment {
   dropTags        DropTag[]
   dropTagListings DropTagListing[]
 
+  invoices Invoice[]     @relation("InvoiceShipment")
+  carrier  Organization? @relation("ShipmentCarrier", fields: [carrierId], references: [id], onDelete: SetNull)
+
   @@index([fromLocationId])
   @@index([orderId])
+  @@index([carrierId])
 }
 
 model ShipmentItem {
@@ -1290,6 +1379,10 @@ model Invoice {
   payments          Payment[]
   lines             InvoiceLine[]
 
+  shipment Shipment? @relation("InvoiceShipment", fields: [shipmentId], references: [id], onDelete: Restrict)
+  creditOf Invoice?  @relation("InvoiceCredits", fields: [creditOfInvoiceId], references: [id], onDelete: Restrict)
+  credits  Invoice[] @relation("InvoiceCredits")
+
   @@index([orderId])
   @@index([shipmentId])
   @@index([creditOfInvoiceId])
@@ -1308,6 +1401,8 @@ model InvoiceLine {
   extendedPrice Decimal
   createdAt     DateTime @default(now())
   invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  orderLine OrderLine? @relation("InvoiceLineOrderLine", fields: [orderLineId], references: [id], onDelete: Restrict)
 
   @@index([invoiceId])
   @@index([orderLineId])
@@ -1404,6 +1499,7 @@ model BomRecipe {
   division     String?
   version      Int             @default(1)
   status       BomRecipeStatus @default(DRAFT)
+  inspectionRequired Boolean   @default(true) // false: jobs on this routing skip inspection (L-021)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   operations   BomOperation[]
@@ -1842,7 +1938,6 @@ model Asset {
   downtimeRecords   DowntimeRecord[]
   spareParts        SparePart[]
 
-  @@index([assetNumber])
   @@index([siteId])
   @@index([status])
   @@index([criticality])
@@ -1871,7 +1966,6 @@ model AssetType {
   assets      Asset[]
   pmTemplates PMTemplate[]
 
-  @@index([code])
   @@index([category])
 }
 
@@ -1999,7 +2093,6 @@ model MaintenanceOrder {
   labor       MaintenanceOrderLabor[]
   attachments MaintenanceAttachment[]
 
-  @@index([woNumber])
   @@index([assetId])
   @@index([status])
   @@index([type])
@@ -2126,7 +2219,6 @@ model PMTemplate {
   pmSchedules       PMSchedule[]
   maintenanceOrders MaintenanceOrder[]
 
-  @@index([code])
   @@index([assetTypeId])
 }
 
@@ -2244,7 +2336,6 @@ model SparePart {
   orderParts   MaintenanceOrderPart[]
   transactions SparePartTransaction[]
 
-  @@index([partNumber])
   @@index([category])
   @@index([assetId])
 }
@@ -2693,7 +2784,6 @@ model DropTag {
   @@index([customerId])
   @@index([heatNumber])
   @@index([status])
-  @@index([dropTagId])
   @@index([jobId])
   @@index([listingId])
   @@index([orderLineId])
@@ -2836,7 +2926,6 @@ model Package {
   @@index([status])
   @@index([orderId])
   @@index([currentLocationId])
-  @@index([packageId])
   @@index([jobId])
   @@index([orderLineId])
 }
@@ -2953,7 +3042,6 @@ model LabelTemplate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([code])
   @@index([customerId])
   @@index([templateType])
 }
@@ -3046,7 +3134,6 @@ model CustomerTagRequirement {
   updatedAt DateTime @updatedAt
 
   @@unique([customerId])
-  @@index([customerId])
 }
 
 // ============================================================================
@@ -3232,10 +3319,12 @@ model WebhookDelivery {
 
   createdAt DateTime @default(now())
 
+  @@unique([webhookId, eventId])
   @@index([webhookId])
   @@index([eventId])
   @@index([status])
   @@index([nextRetryAt])
+  @@index([status, nextRetryAt])
 }
 
 // PartnerApiLog - Audit log for every partner API call
@@ -5020,6 +5109,8 @@ model PrintQueueJob {
   priority   String    @default("NORMAL")
   status     String    @default("PENDING")
   jobId      String?
+  /// The branch whose printer this is for (Phase 8). Empty on rows written before, which every branch still sees.
+  locationId String?
   payload    Json
   skipReason String?
   createdAt  DateTime  @default(now())
@@ -5028,6 +5119,7 @@ model PrintQueueJob {
 
   @@index([status, createdAt])
   @@index([jobId, type, status])
+  @@index([locationId, status])
 }
 
 // ---------------------------------------------------------------------------
@@ -5220,4 +5312,78 @@ model DemandSuggestionEvent {
 
   @@index([createdAt])
   @@index([suggestionId])
+}
+
+/// One row per request that carried an Idempotency-Key header. A repeat of the same request
+/// (a double click, a retry after a timeout) is answered from this row instead of running again.
+/// Rows are removed a day after they are written.
+// The last number used in a document series that may have no gaps (invoices, credit memos).
+// Advanced inside the transaction that saves the document. See services/billing.js.
+model DocumentCounter {
+  series     String   @id
+  lastNumber Int
+  updatedAt  DateTime @default(now())
+}
+
+model RequestKey {
+  id             String   @id @default(uuid())
+  scope          String
+  key            String
+  bodyHash       String
+  status         String   @default("IN_PROGRESS") // IN_PROGRESS, DONE
+  responseStatus Int?
+  responseBody   Json?
+  createdAt      DateTime @default(now())
+
+  @@unique([scope, key])
+  @@index([createdAt])
+}
+
+/// Material sent from one branch to another (Phase 6, G-007). SHIPPED: on the road, off the sender's shelf and not
+/// yet on the receiver's. RECEIVED: on the receiver's books, with what arrived per line. CANCELLED: called back.
+model StockTransfer {
+  id             String              @id @default(uuid())
+  transferNumber String              @unique
+  fromLocationId String
+  toLocationId   String
+  status         String              @default("SHIPPED")
+  carrier        String?
+  reference      String?
+  notes          String?
+  createdAt      DateTime            @default(now())
+  createdById    String
+  shippedAt      DateTime?
+  shippedById    String?
+  receivedAt     DateTime?
+  receivedById   String?
+  cancelledAt    DateTime?
+  cancelledById  String?
+  cancelReason   String?
+  updatedAt      DateTime            @default(now()) @updatedAt
+  fromLocation   Location            @relation("TransferFrom", fields: [fromLocationId], references: [id])
+  toLocation     Location            @relation("TransferTo", fields: [toLocationId], references: [id])
+  createdBy      User                @relation("StockTransferCreator", fields: [createdById], references: [id])
+  lines          StockTransferLine[]
+
+  @@index([fromLocationId, status])
+  @@index([toLocationId, status])
+  @@index([createdById])
+}
+
+model StockTransferLine {
+  id          String        @id @default(uuid())
+  transferId  String
+  coilId      String
+  qtyShipped  Decimal
+  qtyReceived Decimal?
+  unit        String        @default("LB")
+  /// At receipt: GOOD, SHORT, DAMAGED or NOT_RECEIVED.
+  condition   String?
+  notes       String?
+  createdAt   DateTime      @default(now())
+  transfer    StockTransfer @relation(fields: [transferId], references: [id])
+  coil        Coil          @relation(fields: [coilId], references: [id])
+
+  @@unique([transferId, coilId])
+  @@index([coilId])
 }

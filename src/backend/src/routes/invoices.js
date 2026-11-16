@@ -2,6 +2,7 @@
  * Invoices, payments and credit memos.
  *
  *   GET  /api/invoices                 list (orderId, customerId, status=OPEN|OVERDUE|PAID…, kind, search)
+ *   GET  /api/invoices/aging           what customers owe, by days past due (?customerId=)
  *   GET  /api/invoices/:id             one invoice with lines and payments
  *   POST /api/invoices                 { orderId } or { shipmentId }: bill what has shipped and is not invoiced
  *   POST /api/invoices/:id/payments    { amount, paymentMethod, referenceNumber?, paymentDate?, notes? }
@@ -11,7 +12,7 @@
  */
 import { Router } from 'express';
 import {
-  BillingError, listInvoices, getInvoice, invoiceOrder, invoiceShipment, recordPayment, creditInvoice, recordRefund, cancelInvoice,
+  BillingError, listInvoices, getInvoice, invoiceOrder, invoiceShipment, recordPayment, creditInvoice, recordRefund, cancelInvoice, agingReport,
 } from '../services/billing.js';
 
 const router = Router();
@@ -29,6 +30,10 @@ const handle = (label, fn) => async (req, res) => {
 
 router.get('/', handle('fetch invoices', async (req, res) => {
   res.json(await listInvoices(req.query));
+}));
+
+router.get('/aging', handle('read the aging report', async (req, res) => {
+  res.json(await agingReport({ customerId: req.query.customerId, limit: req.query.limit }));
 }));
 
 router.get('/:id', handle('fetch invoice', async (req, res) => {

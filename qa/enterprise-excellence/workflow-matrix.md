@@ -17,16 +17,84 @@ Written by hand in Phase 1 from the code (`src/backend/src/lib/workflowRules.js`
 | Exception management | A record and an acknowledge | No | No shortage, re-sourcing, reschedule or customer notice flow |
 | Counter sale | Yes | Yes | Card approval typed in by hand; no receipt sent |
 | Web store order | Yes | Yes | Promise date and cut-off shown from mock rules (X-007) |
-| Quote to order | Yes | Yes | No revisions, no approval step |
+| Quote to order | Yes | Yes | No approval step beyond credit (none exists); versions verified in Phase 5 |
 | Credit hold and release | Yes | Yes | |
 | Stock hold and release | Yes | Yes | Whether held or uninspected stock may ship is partly decided |
 | Coil work order | Yes | Yes | Does not consume or produce stock (M-016) |
-| Quality inspection of a job | Yes | Pass path only | Fail, hold and rework paths mapped only |
+| Quality inspection of a job | Yes | Yes (Phase 7: pass, conditional, fail, hold, rework, re-inspection) | Nonconformance records are not built (L-023); the inspection checklists are the owner's to enter (L-028) |
 | Shipment documents and tags | Routes exist | No | Not examined (F-011) |
 | Partner API (customer, supplier, carrier) | Routes exist | Refusal only | No success-path test; failed webhooks are not retried (B-018) |
 | User life cycle | Yes | Refusal only | No success-path test |
 
 17 workflows mapped. 9 verified end to end, 3 verified in part, 5 mapped only.
+
+### Phase 5 update (2026-11-15)
+
+| Workflow | Change | Verified by |
+|---|---|---|
+| Customer to cash | Requirements (grade, size, tolerances, finish, certificates, processing) carried from request to quote, order and work order; quotes carry tax by rule 27; the order belongs to the request's branch; closed accounts refused in every channel | `qa/sim/phase5-sales.mjs` (76 scenarios, 386 checks) |
+| Quote to order | Versions verified (accepting one closes the others); lapsed quotes read, filter and count as expired; still no approval step beyond credit (none exists; none invented) | same, group 3 |
+| Counter sale | A void sets the order CANCELLED (G-009) | same, group 5 |
+| Counter order (Retail POS) | At the clerk's branch, not Jackson (J-006); the old session flow's submit is closed (S-022) | same, group 5; `qa/sim/ui-phase5.cjs` |
+| Web store order | Acceptance taxes and files at one branch, per-piece lines, a customer required (J-005, J-010) | same, group 6 |
+| Order entry | Branch, seller and tax from the branch named, which must be the person's own; an order cannot leave draft with no lines (H-011) | same, group 4 |
+
+Sales channels that create a sales order after Phase 5: order entry (including Retail POS and the mobile rep), quote acceptance, web store acceptance, counter quick sale, partner API. The counter session flow no longer creates orders. The Order Hub screen is retired; its address opens RFQs & Quotes.
+
+### Phase 6 update (2026-11-15)
+
+| Workflow | Change | Verified by |
+|---|---|---|
+| Procure to stock | Purchase orders exist: a buyer writes and places one, a receipt names the line it fills, part and full receipt, close and cancel. A mismatch, an over-receipt or a missing certificate is held. No requisition or approval step (no rule on file, K-011); supplier invoices are not matched (K-012) | `qa/sim/phase6-inventory.mjs`, groups 1 and 2; `qa/sim/ui-phase6.cjs` |
+| Branch transfer | Now send, in transit, receive, with short, missing and damaged held and settled by a manager, and call back by the sender (G-007). Still no request and approval step | same, group 5 and the concurrency group; seven reconciliation checks at 0 |
+| Reserve to ship | A reservation must fit the line: unit, grade, size, thickness tolerance, owner, and not in transit (K-001) | same, group 3 |
+| Remnant life cycle | A remnant that is stock is created from a parent or a work order, reserved, moved between branches and scrapped, keeping heat and parent. The Steel Outlet list is still separate (K-006) | same, group 4 (the ten remnant tests) |
+| Return and credit | The unit follows the stock item; an inspected return is held; a scrapped return is recorded in and out (K-003, K-004) | same, group 6 |
+| Shelf goods | Received by the piece against a product, with no heat (C-011) | same, group 2; security sweep section 20 |
+| Count and correct | Corrections with reason, note and person verified. No cycle count program exists (K-008) | same, group 6 |
+| Replenishment | A supply position per branch and grade (stock, inbound, demand). Nothing is calculated or ordered (K-010) | same, group 1 |
+
+Inventory valuation is not a workflow in the code. Since owner decision 9 (2026-11-15) a receipt against a purchase order line records the item's cost; nothing values movements or stock (K-007).
+
+### Phase 7 update (2026-11-15)
+
+| Workflow | Change | Verified by |
+|---|---|---|
+| Make to order: open and plan a job | Opened only for a live order and line; planned once, steps in order at the work center's branch; grade and thickness from the order line, nothing assumed; a plan with recorded work is never replaced (L-010, L-012) | `qa/sim/phase7-manufacturing.mjs`, group 1 |
+| Make to order: routing | Draft, review, in use, retired; only a routing in use goes on a job, and the job records the version (L-011) | same, groups 1 and 2 |
+| Make to order: schedule | The scheduling run places waiting steps of open jobs on like work centers at the branch with certified operators, once, under a branch lock; machines off or locked out get no work (L-007, L-016). The planner assumes no times or hours (L-008) | same, group 3 |
+| Make to order: run a step | Start, pause, finish in planned order (owner decision 8), on the right kind of work center, by an operator of that branch whose certification has not lapsed (L-004, L-005) | same, group 4; `qa/sim/phase2-integrity.mjs` |
+| Make to order: leave production | Not with a planned step unfinished (L-006). Cancelling stops the clocks (L-018) | same, groups 4 and 7 |
+| Quality inspection of a job | Now verified on every path: pass, conditional pass, fail and hold, rework and re-inspection. A job leaves inspection only by a passed inspection (L-001, L-002, L-003) | same, group 5; `qa/sim/ui-phase7.cjs` |
+| Coil work order | Quality hold cannot be completed; substitution needs a reason; failed, held or in-transit material is refused (L-013) | same, groups 2, 5 and 6 |
+| Rework | Sent back with instructions and inspected again. Since owner decision 9 a rework step is added to the plan and clocked like any step (L-020) | same, group 6 |
+| Which jobs are inspected | Every job, unless its routing is marked "no inspection" (L-021, owner decision 9) | same, group 5 |
+| Material for a job | A coil work order can be raised for a job; the job shows what was used, made and scrapped (L-024, owner decision 9) | same, group 6; `qa/sim/ui-phase7.cjs` |
+| Cost of a job | Material at actual cost from the purchase order at receipt, plus labor at the owner's rate per kind of work center; no overhead; shown to cost roles only (L-026, K-007, owner decision 9) | same, group 6; `qa/sim/phase6-inventory.mjs` |
+| Labor rules | Certification required and two steps at once, each by a mark on the kind of work center; long-running clocks listed for the supervisor (L-022, owner decision 9) | same, group 4 |
+| Sold at one branch, worked at another | Unchanged and confirmed: the job follows its work center | same, group 7; the multi-branch jobs of the order-to-cash simulation |
+
+Not workflows in the code, recorded as such: bill of material and material requirements (L-024), calendar capacity (L-025), stock valuation and cost of goods (K-007), nonconformance and corrective action (L-023), outside processing and nesting (L-027), machine connection (L-030).
+
+### Phase 8 update (2026-11-16)
+
+Workflow 1 (customer to cash) and workflow 5 (return and credit) were walked from "ready to ship" to "closed" with 150 scenarios (`qa/sim/phase8-fulfillment.mjs`) and 45 browser checks (`qa/sim/ui-phase8.cjs`).
+
+| Step | Before Phase 8 | Now |
+|---|---|---|
+| Pick | No pick list | The shipment shows the reserved stock to pick, with heat and bin, and flags stock at another branch (N-001) |
+| Pack | Could not be completed through the product (N-008) | Open, pack, quality release, tag, seal, each checked, on a new Packing screen |
+| Papers | Invented content; no button (N-014, N-019) | Packing list and bill of lading drawn from the records, blanks for what is missing, opened from the shipment |
+| Ship across branches | The branch with the stock could not ship another branch's order (N-002) | It can; the selling branch sees it; only the dock changes it |
+| Dispatch | Sound, except under simultaneous load (N-022) and for closed accounts (N-005) | One step; overlap retried; closed account refused |
+| Deliver | No proof needed (N-004) | Receiver's name, or a reason |
+| Problem on the road | No reason (N-003) | Reason required. A lost load still has no rule (N-027) |
+| Invoice, payment, credit | Sound | Future payment date refused (N-007); typed credit exact to the cent (N-021); receivables by age |
+| Return | A missing credit was invisible (N-016) | Flagged until a manager settles it |
+| Cost of the sale | None (N-017) | Fixed at dispatch; order cost and margin for cost viewers |
+| Close | No such idea (N-018) | Closeout position per order; Orders Not Closed list |
+
+Not part of any workflow, because they do not exist: an accounting ledger (N-025), carrier rating and tracking (N-026), customer notices and invoice delivery (N-028).
 
 ## Job types found
 

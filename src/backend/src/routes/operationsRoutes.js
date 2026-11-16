@@ -6,7 +6,10 @@
 
 import express from 'express'
 import prisma from '../lib/db.js'
-import { moveJob, moveJobsWhere } from '../lib/jobHistory.js'
+import { changeJobStatusTx, afterProduction } from '../lib/jobGates.js'
+import { getSetting } from '../lib/settings.js'
+import { lockedOut } from '../lib/workCenterGuard.js'
+import { operationStartError, operationCompleteError, operationPauseError, workCenterEligibility, operatorEligibility, concurrentStepError } from '../lib/productionRules.js'
 
 const router = express.Router()
 
@@ -53,23 +56,36 @@ function calculateTimeFromLogs(logs) {
  * GET /v1/operations
  * List all operations with optional filters
  */
+const LIST_DEFAULT = 500
+const LIST_MAX = 2000
 router.get('/', async (req, res) => {
   try {
-    const { jobId, status, workCenterId } = req.query
+    const { jobId, status, workCenterId, locationId } = req.query
     
     const where = {}
     if (jobId) where.dispatchJobId = jobId
     if (status) where.status = status
     if (workCenterId) where.assignedWorkCenterId = workCenterId
+    if (locationId) where.dispatchJob = { locationId: String(locationId) }
     
-    const ops = await prisma.dispatchOperation.findMany({
-      where,
-      include: {
-        dispatchJob: true,
-        timeLogs: { orderBy: { startAt: 'asc' } },
-      },
-      orderBy: { sequence: 'asc' },
-    })
+    // The list is capped: a branch with thousands of steps is not sent whole. The total is sent with it.
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || LIST_DEFAULT, 1), LIST_MAX)
+    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0)
+    const [ops, total] = await Promise.all([
+      prisma.dispatchOperation.findMany({
+        where,
+        include: {
+          dispatchJob: true,
+          timeLogs: { orderBy: { startAt: 'asc' } },
+        },
+        orderBy: [{ sequence: 'asc' }, { id: 'asc' }],
+        take: limit,
+        skip: offset,
+      }),
+      prisma.dispatchOperation.count({ where }),
+    ])
+    res.setHeader('X-Total-Count', String(total))
+    if (ops.length < total) res.setHeader('X-Result-Limited', 'true')
     
     const enriched = ops.map((op) => ({
       id: op.id,
@@ -104,7 +120,7 @@ router.get('/', async (req, res) => {
       timeSpent: calculateTimeFromLogs(op.timeLogs),
     }))
     
-    res.json({ success: true, data: enriched })
+    res.json({ success: true, data: enriched, total, limited: enriched.length < total })
   } catch (error) {
     console.error('Error fetching operations:', error)
     res.status(500).json({ success: false, error: 'Failed to fetch operations' })
@@ -115,6 +131,45 @@ router.get('/', async (req, res) => {
  * GET /v1/operations/:id
  * Get single operation with full details
  */
+/**
+ * GET /v1/operations/long-running?hours=
+ * Clocks that have been running longer than the hours given (default: the setting production.rules.longEntryHours).
+ * A list for the supervisor to check, oldest first. Nothing is stopped or changed. (L-022)
+ */
+router.get('/long-running', async (req, res) => {
+  try {
+    const fallback = Number((await getSetting('production.rules'))?.longEntryHours) || 12
+    const asked = req.query.hours === undefined ? fallback : Number(req.query.hours)
+    if (!Number.isFinite(asked) || asked <= 0 || asked > 720) return res.status(400).json({ success: false, error: 'hours must be a number between 0 and 720' })
+    const before = new Date(Date.now() - asked * 3600000)
+    const rows = await prisma.dispatchTimeLog.findMany({
+      where: { status: 'RUNNING', endAt: null, startAt: { lt: before } },
+      orderBy: { startAt: 'asc' },
+      take: 200,
+      select: { id: true, startAt: true, operatorId: true, workCenterId: true, dispatchOperation: { select: { id: true, name: true, sequence: true, requiredWorkCenterType: true, dispatchJob: { select: { jobId: true, jobNumber: true, locationId: true } } } } },
+    })
+    const people = rows.length ? await prisma.operator.findMany({ where: { id: { in: [...new Set(rows.map((r) => r.operatorId).filter(Boolean))] } }, select: { id: true, firstName: true, lastName: true } }) : []
+    const places = rows.length ? await prisma.workCenter.findMany({ where: { id: { in: [...new Set(rows.map((r) => r.workCenterId).filter(Boolean))] } }, select: { id: true, name: true } }) : []
+    const now = Date.now()
+    res.json({
+      success: true, hours: asked,
+      data: rows.map((r) => {
+        const who = people.find((p) => p.id === r.operatorId)
+        return {
+          id: r.id, startAt: r.startAt, hoursRunning: Math.round(((now - new Date(r.startAt).getTime()) / 3600000) * 100) / 100,
+          operator: who ? { id: who.id, name: [who.firstName, who.lastName].filter(Boolean).join(' ') } : null,
+          workCenter: places.find((p) => p.id === r.workCenterId) || null,
+          step: { id: r.dispatchOperation?.id, name: r.dispatchOperation?.name, sequence: r.dispatchOperation?.sequence },
+          job: { id: r.dispatchOperation?.dispatchJob?.jobId, jobNumber: r.dispatchOperation?.dispatchJob?.jobNumber },
+        }
+      }),
+    })
+  } catch (error) {
+    console.error('Error listing long-running time entries:', error)
+    res.status(500).json({ success: false, error: 'The list could not be loaded' })
+  }
+})
+
 router.get('/:id', async (req, res) => {
   try {
     const operation = await prisma.dispatchOperation.findUnique({
@@ -160,6 +215,55 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+// Whether steps must be worked in their planned order is the owner's rule (setting production.rules, stepsInOrder).
+// The owner chose planned order on 2026-11-15; that is the default when the setting is not on file.
+const stepsInOrder = async () => Boolean((await getSetting('production.rules'))?.stepsInOrder)
+const refuse = (status, message) => { const e = new Error(message); e.status = status; e.refused = true; throw e }
+const refused = (res, error) => (error?.refused ? (res.status(error.status).json({ success: false, error: error.message }), true) : false)
+
+/** Lock the plan and its job, then read the operation as it is now, with what the rules need. */
+async function lockedOperation(tx, operation) {
+  await tx.$queryRaw`SELECT id FROM "DispatchJob" WHERE id = ${operation.dispatchJobId} FOR UPDATE`
+  if (operation.dispatchJob?.jobId) await tx.$queryRaw`SELECT id FROM "Job" WHERE id = ${operation.dispatchJob.jobId} FOR UPDATE`
+  const [now, siblings, job] = await Promise.all([
+    tx.dispatchOperation.findUnique({ where: { id: operation.id } }),
+    tx.dispatchOperation.findMany({ where: { dispatchJobId: operation.dispatchJobId }, select: { id: true, sequence: true, name: true, status: true } }),
+    operation.dispatchJob?.jobId ? tx.job.findUnique({ where: { id: operation.dispatchJob.jobId }, select: { status: true } }) : null,
+  ])
+  return { now, siblings, jobStatus: job?.status || null }
+}
+
+/** The work center and operator named for a step must be able to do it at the job's branch. */
+async function checkWho(tx, operation, { workCenterId, operatorId }) {
+  const branchId = operation.dispatchJob?.locationId || null
+  if (workCenterId) {
+    const wc = await tx.workCenter.findUnique({ where: { id: workCenterId }, select: { id: true, name: true, type: true, isActive: true, locationId: true } })
+    const why = workCenterEligibility(wc, operation, branchId)
+    if (why) refuse(wc ? 409 : 400, why)
+    // A machine locked out for maintenance, or on a safety or quality hold, is not run.
+    const locked = (await lockedOut(tx, [workCenterId]))[workCenterId]
+    if (locked) refuse(409, `${locked}. Work cannot be started there.`)
+  }
+  if (operatorId) {
+    const person = await tx.operator.findUnique({ where: { id: operatorId }, select: { id: true, firstName: true, lastName: true, isActive: true, status: true, homeLocationId: true, skills: { select: { workCenterTypeId: true, isActive: true, expiresAt: true } } } })
+    const kind = operation.requiredWorkCenterType ? await tx.workCenterType.findUnique({ where: { id: operation.requiredWorkCenterType }, select: { id: true, label: true, certificationRequired: true, allowsConcurrentSteps: true } }) : null
+    const why = operatorEligibility(person, operation, branchId, new Date(), kind)
+    if (why) refuse(person ? 409 : 400, person ? why : 'Invalid operator')
+    // One step at a time, unless every kind of work involved is marked for running two at once (L-022).
+    const others = await tx.dispatchTimeLog.findMany({
+      where: { operatorId, status: 'RUNNING', dispatchOperationId: { not: operation.id } },
+      select: { dispatchOperation: { select: { name: true, requiredWorkCenterType: true, dispatchJob: { select: { jobNumber: true } } } } },
+      take: 5,
+    })
+    if (others.length) {
+      const ids = [...new Set([operation.requiredWorkCenterType, ...others.map((o) => o.dispatchOperation?.requiredWorkCenterType)].filter(Boolean))]
+      const kinds = new Map((await tx.workCenterType.findMany({ where: { id: { in: ids } }, select: { id: true, label: true, allowsConcurrentSteps: true } })).map((k) => [k.id, k]))
+      const clash = concurrentStepError([person.firstName, person.lastName].filter(Boolean).join(' '), others.map((o) => ({ stepName: o.dispatchOperation?.name, jobNumber: o.dispatchOperation?.dispatchJob?.jobNumber, kindId: o.dispatchOperation?.requiredWorkCenterType })), operation.requiredWorkCenterType, kinds)
+      if (clash) refuse(409, clash)
+    }
+  }
+}
+
 // An operation cannot be worked once its job is finished or cancelled (finding C-005).
 const CLOSED_JOB = ['SHIPPED', 'COMPLETED', 'CANCELLED']
 async function closedJobOf(db, dispatchJob) {
@@ -204,7 +308,13 @@ router.post('/:id/start', async (req, res) => {
     }
     
     // One step: the time log, the operation and the job move together or not at all (B-010).
+    // Decided on the locked plan: a finished step is not started again, steps run in order, and the
+    // work center and operator must be able to do this step at the job's branch.
     const { updated, newLog } = await prisma.$transaction(async (tx) => {
+    const { now, siblings, jobStatus } = await lockedOperation(tx, operation)
+    const why = operationStartError({ operation: now, siblings, jobStatus, inOrder: await stepsInOrder() })
+    if (why) refuse(409, why)
+    await checkWho(tx, operation, { workCenterId: wcId, operatorId })
     // Close any existing active (RUNNING) time log
     await tx.dispatchTimeLog.updateMany({
       where: { dispatchOperationId: operation.id, status: 'RUNNING' },
@@ -218,7 +328,7 @@ router.post('/:id/start', async (req, res) => {
         status: 'IN_PROCESS',
         assignedOperatorId: operatorId,
         assignedWorkCenterId: wcId,
-        actualStart: operation.actualStart || new Date(),
+        actualStart: now.actualStart || new Date(),
       },
     })
     
@@ -234,9 +344,9 @@ router.post('/:id/start', async (req, res) => {
       },
     })
     
-    // Also update the parent Job status to IN_PROCESS if it's still SCHEDULED
-    if (operation.dispatchJob?.jobId) {
-      await moveJobsWhere(tx, { id: operation.dispatchJob.jobId, status: 'SCHEDULED' }, 'IN_PROCESS', { note: 'First operation started', via: 'operation', userId: req.user?.id })
+    // Also update the parent Job status to IN_PROCESS if it has not started
+    if (operation.dispatchJob?.jobId && ['SCHEDULED', 'ORDERED'].includes(jobStatus)) {
+      await changeJobStatusTx(tx, operation.dispatchJob.jobId, 'IN_PROCESS', { note: 'First operation started', via: 'operation', userId: req.user?.id })
     }
     return { updated, newLog }
     })
@@ -263,6 +373,7 @@ router.post('/:id/start', async (req, res) => {
       },
     })
   } catch (error) {
+    if (refused(res, error)) return
     console.error('Error starting operation:', error)
     res.status(500).json({ success: false, error: 'Failed to start operation' })
   }
@@ -285,17 +396,17 @@ router.post('/:id/pause', async (req, res) => {
       return res.status(404).json({ success: false, error: 'Operation not found' })
     }
     
-    // Find and close active time log
-    const activeLog = await prisma.dispatchTimeLog.findFirst({
-      where: { dispatchOperationId: operation.id, status: 'RUNNING' },
-    })
-    
-    if (activeLog) {
-      await prisma.dispatchTimeLog.update({
-        where: { id: activeLog.id },
-        data: { status: 'PAUSED', endAt: new Date(), downtimeReason: downtimeReason || null },
+    // Find and close the running time log, with the plan locked. Nothing running means nothing to pause.
+    const activeLog = await prisma.$transaction(async (tx) => {
+      const { now } = await lockedOperation(tx, operation)
+      const running = await tx.dispatchTimeLog.findFirst({ where: { dispatchOperationId: operation.id, status: 'RUNNING' } })
+      const why = operationPauseError(now, Boolean(running))
+      if (why) refuse(409, why)
+      return tx.dispatchTimeLog.update({
+        where: { id: running.id },
+        data: { status: 'PAUSED', endAt: new Date(), downtimeReason: typeof downtimeReason === 'string' && downtimeReason.trim() ? downtimeReason.trim().slice(0, 200) : null },
       })
-    }
+    })
     
     console.log(`[OPERATIONS] Paused operation ${operation.id}${downtimeReason ? ` - Reason: ${downtimeReason}` : ''}`)
     
@@ -318,6 +429,7 @@ router.post('/:id/pause', async (req, res) => {
       },
     })
   } catch (error) {
+    if (refused(res, error)) return
     console.error('Error pausing operation:', error)
     res.status(500).json({ success: false, error: 'Failed to pause operation' })
   }
@@ -349,6 +461,9 @@ router.post('/:id/complete', async (req, res) => {
     // A repeated request for an operation that is already complete changes nothing.
     const now = await tx.dispatchOperation.findUnique({ where: { id: operation.id } })
     if (now.status === 'COMPLETE') return now
+    // A step that was never started has no time against it: it is started first.
+    const notStarted = operationCompleteError(now)
+    if (notStarted) refuse(409, notStarted)
     // Close any active time log
     await tx.dispatchTimeLog.updateMany({
       where: { dispatchOperationId: operation.id, status: 'RUNNING' },
@@ -369,9 +484,12 @@ router.post('/:id/complete', async (req, res) => {
           status: { not: 'COMPLETE' },
         },
       })
-      if (remaining === 0) {
+      const job = await tx.job.findUnique({ where: { id: operation.dispatchJob.jobId }, select: { status: true } })
+      // A job on hold stays on hold: finishing its last step records the work but does not release it.
+      if (remaining === 0 && ['ORDERED', 'SCHEDULED', 'IN_PROCESS'].includes(job?.status)) {
         // All operations done → job goes to QC inspection queue (not directly to COMPLETE)
-        await moveJob(tx, operation.dispatchJob.jobId, { status: 'WAITING_QC' }, { note: 'All operations finished', via: 'operation', userId: req.user?.id })
+        // To inspection, unless the job's routing says it needs none and it owes none: then straight to packaging (L-021).
+        await changeJobStatusTx(tx, operation.dispatchJob.jobId, 'WAITING_QC', { note: 'All operations finished', via: 'operation', userId: req.user?.id, decide: (j, db) => (j.status === 'IN_PROCESS' ? afterProduction(db, j, 'PACKAGING') : 'WAITING_QC') })
         console.log(`[OPERATIONS] All ops complete for job ${operation.dispatchJob.jobId} — moved to WAITING_QC`)
       }
     }
@@ -498,36 +616,23 @@ router.post('/:id/reassign', async (req, res) => {
     }
     
     const updateData = {}
-    
-    if (workCenterId) {
-      const wc = await prisma.workCenter.findUnique({ where: { id: workCenterId } })
-      if (!wc) {
-        return res.status(400).json({ success: false, error: 'Invalid work center' })
-      }
-      updateData.assignedWorkCenterId = workCenterId
-    }
-    
-    if (operatorId) {
-      const op = await prisma.operator.findUnique({ where: { id: operatorId } })
-      if (!op) {
-        return res.status(400).json({ success: false, error: 'Invalid operator' })
-      }
-      updateData.assignedOperatorId = operatorId
-    }
-    
-    // The input is checked above before anything is saved. Pausing the running time log and
-    // moving the operation are one step (B-010).
-    const [, updated] = await prisma.$transaction([
-      prisma.dispatchTimeLog.updateMany({
+    if (workCenterId) updateData.assignedWorkCenterId = workCenterId
+    if (operatorId) updateData.assignedOperatorId = operatorId
+    if (!Object.keys(updateData).length) return res.status(400).json({ success: false, error: 'Name the work center or operator to move this step to' })
+
+    // Decided on the locked plan. The new work center and operator must be able to do this step at the
+    // job's branch. Pausing the running time log and moving the operation are one step (B-010).
+    const updated = await prisma.$transaction(async (tx) => {
+      const { now, jobStatus } = await lockedOperation(tx, operation)
+      if (now.status === 'COMPLETE') refuse(400, 'Cannot reassign completed operation')
+      if (jobStatus && ['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(jobStatus)) refuse(409, `This job is ${jobStatus.toLowerCase()}; its operations cannot be reassigned`)
+      await checkWho(tx, operation, { workCenterId, operatorId })
+      await tx.dispatchTimeLog.updateMany({
         where: { dispatchOperationId: operation.id, status: 'RUNNING' },
         data: { status: 'PAUSED', endAt: new Date() },
-      }),
-      prisma.dispatchOperation.update({
-        where: { id: operation.id },
-        data: updateData,
-        include: { dispatchJob: true },
-      }),
-    ])
+      })
+      return tx.dispatchOperation.update({ where: { id: operation.id }, data: updateData, include: { dispatchJob: true } })
+    })
     
     // Look up operator and work center
     let operatorData = null
@@ -557,6 +662,7 @@ router.post('/:id/reassign', async (req, res) => {
       },
     })
   } catch (error) {
+    if (refused(res, error)) return
     console.error('Error reassigning operation:', error)
     res.status(500).json({ success: false, error: 'Failed to reassign operation' })
   }

@@ -3,6 +3,7 @@
  * Endpoints for testing and using AI providers (OpenAI, DeepSeek, Anthropic)
  */
 
+import { outsideFailure } from '../lib/outbound.js';
 import express from 'express';
 import { aiProvider } from '../services/ai/AIProviderService.js';
 
@@ -85,8 +86,10 @@ router.post('/chat', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('AI chat error:', error);
-    res.status(500).json({ error: error.message });
+    const failure = outsideFailure(error, 'The assistant');
+    console.error(JSON.stringify({ level: 'error', msg: 'ai_chat_failed', id: req.id, kind: error?.kind || error?.name || 'Error', providerStatus: error?.status || null }));
+    if (failure) return res.status(failure.status).json({ error: failure.error, requestId: req.id });
+    res.status(500).json({ error: 'The assistant could not answer.', requestId: req.id });
   }
 });
 

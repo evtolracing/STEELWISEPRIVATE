@@ -5,8 +5,10 @@
  * makes a real stock item with its balance and a movement record
  * (POST /api/inventory/receipts). The list below is what was really received.
  *
- * Expected deliveries are not shown: the system has no purchase orders yet,
- * so there is nothing true to list (finding I-007).
+ * Open purchase order lines are listed above the receipts (Phase 6, I-007): receiving one fills
+ * that line. Material that does not match its line (grade, size, more than ordered, a mill
+ * certificate the line needs and the heat does not have) is received on hold, with the reasons.
+ * Shelf goods (form Supply) are received by the piece against their product (C-011).
  */
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -21,8 +23,12 @@ import { bulkUploadInventory } from '../api/inventory'
 import { StatusChip } from '../components/common'
 import { unitSize } from './Units/UnitListPage'
 
+// A list answer is the rows themselves, or { data } when a page of them was asked for.
+const listOf = (b) => (Array.isArray(b) ? b : b?.data || [])
+
 const FORMS = [['COIL', 'Coil'], ['SHEET', 'Sheet'], ['PLATE', 'Plate'], ['BAR', 'Bar'], ['TUBE', 'Tube'], ['BEAM', 'Beam'], ['REBAR', 'Rebar'], ['WIRE', 'Wire'], ['ROD', 'Rod'], ['SUPPLY', 'Supply']]
-const BLANK = { coilNumber: '', form: 'COIL', heatNumber: '', gradeCode: '', thicknessIn: '', widthIn: '', lengthIn: '', weightLb: '', locationId: '', binLocation: '', ownership: 'HOUSE_OWNED', customerName: '', productSku: '', poReference: '', notes: '' }
+const BLANK = { coilNumber: '', form: 'COIL', heatNumber: '', gradeCode: '', thicknessIn: '', widthIn: '', lengthIn: '', weightLb: '', pieces: '', locationId: '', binLocation: '', ownership: 'HOUSE_OWNED', customerName: '', productSku: '', poReference: '', poLineId: '', notes: '' }
+const OPEN_PO = ['PENDING', 'CONFIRMED', 'PARTIAL']
 const when = (d) => (d ? new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '')
 const sameDay = (a, b) => new Date(a).toDateString() === new Date(b).toDateString()
 
@@ -33,7 +39,7 @@ async function getJson(url) {
   return body
 }
 
-function ReceiveDialog({ open, onClose, onReceived }) {
+function ReceiveDialog({ open, onClose, onReceived, poLine }) {
   const [form, setForm] = useState(BLANK)
   const [locations, setLocations] = useState([])
   const [grades, setGrades] = useState([])
@@ -43,11 +49,18 @@ function ReceiveDialog({ open, onClose, onReceived }) {
 
   useEffect(() => {
     if (!open) return
-    setForm(BLANK); setHeat(null); setError('')
+    setForm(poLine ? {
+      ...BLANK, poLineId: poLine.id, poReference: poLine.orderNumber, gradeCode: poLine.grade?.code || '', locationId: poLine.locationId || '',
+      thicknessIn: poLine.thicknessIn ?? '', widthIn: poLine.widthIn ?? '', lengthIn: poLine.lengthIn ?? '', form: poLine.unit === 'EA' ? 'SUPPLY' : 'COIL',
+    } : BLANK); setHeat(null); setError('')
     Promise.all([getJson('/api/inventory/locations'), getJson('/api/grades?isActive=true')])
-      .then(([l, g]) => { setLocations(l || []); setGrades(g || []) })
+      .then(([l, g]) => {
+        setLocations(l || []); setGrades(g || [])
+        const ordered = poLine?.gradeId && (g || []).find((x) => x.id === poLine.gradeId)
+        if (ordered) setForm((f) => ({ ...f, gradeCode: f.gradeCode || ordered.code }))
+      })
       .catch(() => setError('The locations and grades could not be loaded. Close this box and try again.'))
-  }, [open])
+  }, [open, poLine])
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
   // The heat fixes the grade: look it up when the number is typed.
@@ -60,12 +73,16 @@ function ReceiveDialog({ open, onClose, onReceived }) {
       if (found) setForm((f) => ({ ...f, heatNumber: found.heatNumber, gradeCode: found.grade?.code || f.gradeCode }))
     } catch { setHeat(null) }
   }
-  const ready = form.coilNumber.trim() && form.heatNumber.trim() && form.gradeCode && Number(form.weightLb) > 0 && form.locationId && (form.ownership === 'HOUSE_OWNED' || form.customerName.trim())
+  const byPiece = form.form === 'SUPPLY'
+  const ready = form.coilNumber.trim() && form.locationId && (form.ownership === 'HOUSE_OWNED' || form.customerName.trim())
+    && (byPiece ? Number.isInteger(Number(form.pieces)) && Number(form.pieces) > 0 && form.productSku.trim() : form.heatNumber.trim() && form.gradeCode && Number(form.weightLb) > 0)
 
   const save = async () => {
     setBusy(true); setError('')
     try {
-      const res = await fetch('/api/inventory/receipts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+      const { poLineId, pieces, ...rest } = form
+      const sent = { ...rest, ...(poLineId && { poLineId }), ...(pieces !== '' && { pieces: Number(pieces) }), ...(byPiece && rest.weightLb === '' && { weightLb: undefined }) }
+      const res = await fetch('/api/inventory/receipts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sent) })
       const body = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(body.error || 'The item could not be received')
       onReceived(body)
@@ -75,9 +92,10 @@ function ReceiveDialog({ open, onClose, onReceived }) {
 
   return (
     <Dialog open={open} onClose={busy ? undefined : onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Receive a stock item</DialogTitle>
+      <DialogTitle>{poLine ? `Receive against ${poLine.orderNumber} line ${poLine.lineNumber}` : 'Receive a stock item'}</DialogTitle>
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {poLine && <Alert severity="info" sx={{ mb: 2 }}>Ordered: {[poLine.grade?.code, poLine.description, [poLine.thicknessIn, poLine.widthIn, poLine.lengthIn].filter(Boolean).map(Number).join(' x ')].filter(Boolean).join(', ')}. {Number(poLine.qtyReceived).toLocaleString()} of {Number(poLine.qtyOrdered).toLocaleString()} {poLine.unit} received so far. Anything that does not match the line is received on hold.</Alert>}
         <Grid container spacing={2} sx={{ mt: 0 }}>
           <Grid item xs={12} sm={4}><TextField label="Item number (tag)" value={form.coilNumber} onChange={set('coilNumber')} fullWidth required autoFocus inputProps={{ maxLength: 60 }} /></Grid>
           <Grid item xs={12} sm={4}>
@@ -85,14 +103,16 @@ function ReceiveDialog({ open, onClose, onReceived }) {
               {FORMS.map(([v, l]) => <MenuItem key={v} value={v}>{l}</MenuItem>)}
             </TextField>
           </Grid>
-          <Grid item xs={12} sm={4}><TextField label="Weight (lb)" type="number" value={form.weightLb} onChange={set('weightLb')} fullWidth required inputProps={{ min: 0, step: 'any' }} /></Grid>
+          {byPiece
+            ? <Grid item xs={12} sm={4}><TextField label="Pieces" type="number" value={form.pieces} onChange={set('pieces')} fullWidth required inputProps={{ min: 1, step: 1 }} helperText="Shelf goods are counted by the piece" /></Grid>
+            : <Grid item xs={12} sm={4}><TextField label="Weight (lb)" type="number" value={form.weightLb} onChange={set('weightLb')} fullWidth required inputProps={{ min: 0, step: 'any' }} /></Grid>}
           <Grid item xs={12} sm={6}>
-            <TextField label="Heat or lot number" value={form.heatNumber} onChange={(e) => { setHeat(null); set('heatNumber')(e) }} onBlur={lookUpHeat} fullWidth required
-              error={heat === false}
-              helperText={heat === false ? 'This heat is not on file. Add it under Heats first, so the item can be traced to its mill certificate.' : heat ? `On file: ${heat.mill?.name || 'mill not recorded'}, grade ${heat.grade?.code}` : 'As printed on the mill certificate'} />
+            <TextField label={byPiece ? 'Supplier lot (optional)' : 'Heat or lot number'} value={form.heatNumber} onChange={(e) => { setHeat(null); set('heatNumber')(e) }} onBlur={byPiece ? undefined : lookUpHeat} fullWidth required={!byPiece}
+              error={!byPiece && heat === false}
+              helperText={byPiece ? 'Kept with the item' : heat === false ? 'This heat is not on file. Add it under Heats first, so the item can be traced to its mill certificate.' : heat ? `On file: ${heat.mill?.name || 'mill not recorded'}, grade ${heat.grade?.code}${heat.mtrDocumentId ? '' : '. No mill certificate on file.'}` : 'As printed on the mill certificate'} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField select label="Grade" value={form.gradeCode} onChange={set('gradeCode')} fullWidth required disabled={Boolean(heat)} helperText={heat ? 'Set by the heat' : ''}>
+            <TextField select label="Grade" value={form.gradeCode} onChange={set('gradeCode')} fullWidth required={!byPiece} disabled={Boolean(heat) || byPiece} helperText={heat ? 'Set by the heat' : byPiece ? 'Shelf goods have no grade' : ''}>
               {grades.map((g) => <MenuItem key={g.id} value={g.code}>{g.code}: {g.name}</MenuItem>)}
             </TextField>
           </Grid>
@@ -114,14 +134,14 @@ function ReceiveDialog({ open, onClose, onReceived }) {
           <Grid item xs={12} sm={6}>
             {form.ownership === 'CUSTOMER_OWNED' && <TextField label="Customer name or code" value={form.customerName} onChange={set('customerName')} fullWidth required helperText="Exactly as it is on the customer record" />}
           </Grid>
-          <Grid item xs={12} sm={6}><TextField label="Product SKU (optional)" value={form.productSku} onChange={set('productSku')} fullWidth helperText="Links the item to the catalog and its list price" inputProps={{ maxLength: 60 }} /></Grid>
-          <Grid item xs={12} sm={6}><TextField label="Purchase order reference (optional)" value={form.poReference} onChange={set('poReference')} fullWidth inputProps={{ maxLength: 60 }} /></Grid>
+          <Grid item xs={12} sm={6}><TextField label={byPiece ? 'Product SKU' : 'Product SKU (optional)'} required={byPiece} value={form.productSku} onChange={set('productSku')} fullWidth helperText={byPiece ? 'The catalog item the counter sells' : 'Links the item to the catalog and its list price'} inputProps={{ maxLength: 60 }} /></Grid>
+          <Grid item xs={12} sm={6}><TextField label="Purchase order reference (optional)" value={form.poReference} onChange={set('poReference')} fullWidth disabled={Boolean(form.poLineId)} helperText={form.poLineId ? 'Filled from the purchase order line' : 'Or receive from the open purchase order list'} inputProps={{ maxLength: 60 }} /></Grid>
           <Grid item xs={12}><TextField label="Notes (optional)" value={form.notes} onChange={set('notes')} fullWidth multiline minRows={2} inputProps={{ maxLength: 500 }} /></Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={busy}>Cancel</Button>
-        <Button variant="contained" onClick={save} disabled={busy || !ready || heat === false}>{busy ? 'Receiving…' : 'Receive item'}</Button>
+        <Button variant="contained" onClick={save} disabled={busy || !ready || (!byPiece && heat === false)}>{busy ? 'Receiving…' : 'Receive item'}</Button>
       </DialogActions>
     </Dialog>
   )
@@ -134,13 +154,19 @@ export default function ReceivingPage() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [receiving, setReceiving] = useState(false)
+  const [poLines, setPoLines] = useState([])
+  const [poLine, setPoLine] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' })
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      setRows((await getJson('/api/inventory/receipts?limit=200&days=30')).data || [])
+      const [receipts, pos] = await Promise.all([getJson('/api/inventory/receipts?limit=200&days=30'), getJson('/api/purchase-orders?limit=100').catch(() => ({ data: [] }))])
+      setRows(receipts.data || [])
+      setPoLines(listOf(pos).filter((po) => OPEN_PO.includes(po.status)).flatMap((po) => (po.lines || [])
+        .filter((l) => !['COMPLETE', 'CANCELLED'].includes(l.lineStatus))
+        .map((l) => ({ ...l, orderNumber: po.orderNumber, supplier: po.seller?.name, locationId: po.locationId }))))
       setError('')
     } catch (e) {
       setError(e.message === 'The request failed' ? 'The receipts could not be loaded' : e.message)
@@ -173,7 +199,7 @@ export default function ReceivingPage() {
           </Box>
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" startIcon={<UploadIcon />} onClick={() => setUploading(true)} sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}>Upload file</Button>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setReceiving(true)} sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}>Receive item</Button>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setPoLine(null); setReceiving(true) }} sx={{ bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}>Receive item</Button>
           </Stack>
         </Box>
       </Box>
@@ -182,13 +208,31 @@ export default function ReceivingPage() {
         {error && <Alert severity="error" sx={{ mb: 2 }} action={<Button color="inherit" size="small" onClick={load}>Try again</Button>}>{error}</Alert>}
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={6} md={3}><Paper sx={{ p: 2 }}><Typography variant="caption" color="text.secondary">Received today</Typography><Typography variant="h4" fontWeight={700}>{today.length}</Typography></Paper></Grid>
-          <Grid item xs={6} md={3}><Paper sx={{ p: 2 }}><Typography variant="caption" color="text.secondary">Weight today</Typography><Typography variant="h4" fontWeight={700}>{today.reduce((n, r) => n + (r.qty || 0), 0).toLocaleString()} lb</Typography></Paper></Grid>
+          <Grid item xs={6} md={3}><Paper sx={{ p: 2 }}><Typography variant="caption" color="text.secondary">Weight today</Typography><Typography variant="h4" fontWeight={700}>{today.filter((r) => String(r.unit || 'LB').toUpperCase() === 'LB').reduce((n, r) => n + (r.qty || 0), 0).toLocaleString()} lb</Typography></Paper></Grid>
           <Grid item xs={6} md={3}><Paper sx={{ p: 2 }}><Typography variant="caption" color="text.secondary">Received in the last 30 days</Typography><Typography variant="h4" fontWeight={700}>{rows.length}{rows.length === 200 ? '+' : ''}</Typography></Paper></Grid>
           <Grid item xs={6} md={3}><Paper sx={{ p: 2 }}><Typography variant="caption" color="text.secondary">Waiting for inspection</Typography><Typography variant="h4" fontWeight={700}>{rows.filter((r) => r.item?.qcStatus === 'PENDING').length}</Typography></Paper></Grid>
         </Grid>
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Expected deliveries are not listed here yet. The system does not hold purchase orders, so it cannot know what is on its way. Receive each delivery when it arrives, and put the purchase order number in the reference box.
-        </Alert>
+        <Paper sx={{ mb: 2 }}>
+          <Box sx={{ p: 2 }}><Typography variant="h6">Expected: open purchase order lines</Typography></Box>
+          <TableContainer>
+            <Table size="small" aria-label="Open purchase order lines">
+              <TableHead><TableRow><TableCell>Purchase order</TableCell><TableCell>Supplier</TableCell><TableCell>Material</TableCell><TableCell align="right">Ordered</TableCell><TableCell align="right">Received</TableCell><TableCell /></TableRow></TableHead>
+              <TableBody>
+                {poLines.map((l) => (
+                  <TableRow key={l.id} hover>
+                    <TableCell>{l.orderNumber} line {l.lineNumber}</TableCell>
+                    <TableCell>{l.supplier}</TableCell>
+                    <TableCell>{[l.description, [l.thicknessIn, l.widthIn, l.lengthIn].filter(Boolean).map(Number).join(' x ')].filter(Boolean).join(', ')}{Array.isArray(l.certRequirements) && l.certRequirements.length ? ` (needs ${l.certRequirements.join(', ')})` : ''}</TableCell>
+                    <TableCell align="right">{Number(l.qtyOrdered).toLocaleString()} {l.unit}</TableCell>
+                    <TableCell align="right">{Number(l.qtyReceived).toLocaleString()} {l.unit}</TableCell>
+                    <TableCell align="right"><Button size="small" variant="outlined" onClick={() => { setPoLine(l); setReceiving(true) }}>Receive</Button></TableCell>
+                  </TableRow>
+                ))}
+                {!loading && poLines.length === 0 && <TableRow><TableCell colSpan={6} align="center" sx={{ py: 3 }}>No open purchase orders for your branch. Receive a delivery with Receive item, and put its reference in the reference box.</TableCell></TableRow>}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
 
         <Paper>
           <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
@@ -232,8 +276,8 @@ export default function ReceivingPage() {
         </Paper>
       </Box>
 
-      <ReceiveDialog open={receiving} onClose={() => setReceiving(false)}
-        onReceived={(done) => { setReceiving(false); setSnack({ open: true, msg: done.warning ? `${done.item.coilNumber} received. ${done.warning}` : `${done.item.coilNumber} received`, severity: done.warning ? 'warning' : 'success' }); load() }} />
+      <ReceiveDialog open={receiving} poLine={poLine} onClose={() => setReceiving(false)}
+        onReceived={(done) => { setReceiving(false); setSnack({ open: true, msg: done.warning ? `${done.item.coilNumber} received. ${done.warning}` : `${done.item.coilNumber} received`, severity: done.warning ? 'warning' : 'success' }); setPoLine(null); load() }} />
       <InventoryUpload open={uploading} onClose={() => setUploading(false)} onUpload={handleBulkUpload} />
       <Snackbar open={snack.open} autoHideDuration={snack.severity === 'warning' ? 9000 : 4000} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert severity={snack.severity} variant="filled" onClose={() => setSnack((s) => ({ ...s, open: false }))}>{snack.msg}</Alert>

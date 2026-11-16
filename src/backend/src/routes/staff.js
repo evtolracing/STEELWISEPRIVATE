@@ -2,8 +2,46 @@ import { Router } from 'express'
 import prisma from '../lib/db.js'
 import { createNumbered, padded } from '../lib/numbering.js';
 import { ci } from '../lib/dbText.js'
+import { STAFF_GROUPS } from '../lib/roleAccess.js'
 
 const router = Router()
+
+// Pay rates and emergency contacts are personal. They are sent to managers, leadership and the
+// production manager; everyone else who may look up an operator gets the record without them.
+const PAY_VIEWERS = new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, 'PRODUCTION_MANAGER'])
+const PRIVATE_FIELDS = ['hourlyRate', 'overtimeMultiplier', 'emergencyContactName', 'emergencyContactPhone']
+function forViewer(req, operator) {
+  if (!operator || PAY_VIEWERS.has(req.user?.role)) return operator
+  const copy = { ...operator }
+  for (const f of PRIVATE_FIELDS) delete copy[f]
+  return copy
+}
+const OPERATOR_STATUSES = ['ACTIVE', 'ON_LEAVE', 'SUSPENDED', 'TERMINATED', 'TRAINING']
+const SKILL_LEVELS = ['NOVICE', 'STANDARD', 'ADVANCED', 'EXPERT']
+
+/** Checks the numbers, dates and choices on an operator. Returns the first problem, or null. */
+function operatorInputError(body) {
+  const amount = (v) => v == null || v === '' || (Number.isFinite(Number(v)) && Number(v) >= 0)
+  if (!amount(body.hourlyRate) || Number(body.hourlyRate) > 1000) return 'hourlyRate must be zero or more'
+  if (body.overtimeMultiplier != null && body.overtimeMultiplier !== '' && !(Number(body.overtimeMultiplier) >= 1 && Number(body.overtimeMultiplier) <= 5)) return 'overtimeMultiplier must be between 1 and 5'
+  if (body.maxThicknessInches != null && body.maxThicknessInches !== '' && !(Number(body.maxThicknessInches) > 0 && Number(body.maxThicknessInches) < 1000)) return 'maxThicknessInches must be more than zero, or left empty'
+  if (body.status !== undefined && !OPERATOR_STATUSES.includes(body.status)) return `status must be one of: ${OPERATOR_STATUSES.join(', ')}`
+  if (body.hireDate && Number.isNaN(new Date(body.hireDate).getTime())) return 'hireDate is not a valid date'
+  for (const f of ['firstName', 'lastName']) if (body[f] !== undefined && !(typeof body[f] === 'string' && body[f].trim())) return `${f} is required`
+  if (body.skills !== undefined && !Array.isArray(body.skills)) return 'skills must be a list'
+  for (const sk of body.skills || []) {
+    const why = skillInputError(sk)
+    if (why) return why
+  }
+  return null
+}
+function skillInputError(sk) {
+  if (!sk || typeof sk.workCenterTypeId !== 'string' || !sk.workCenterTypeId) return 'Each skill needs a work center type'
+  if (sk.skillLevel != null && !SKILL_LEVELS.includes(sk.skillLevel)) return `skillLevel must be one of: ${SKILL_LEVELS.join(', ')}`
+  for (const f of ['certifiedDate', 'expiresAt']) if (sk[f] && Number.isNaN(new Date(sk[f]).getTime())) return `${f} is not a valid date`
+  if (sk.certifiedDate && sk.expiresAt && new Date(sk.expiresAt) <= new Date(sk.certifiedDate)) return 'A certification cannot expire before it was given'
+  return null
+}
 
 // ============================================================================
 // OPERATORS CRUD
@@ -74,7 +112,7 @@ router.get('/operators', async (req, res) => {
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
     })
 
-    res.json({ success: true, data: operators, total: operators.length })
+    res.json({ success: true, data: operators.map((o) => forViewer(req, o)), total: operators.length })
   } catch (error) {
     console.error('Error fetching operators:', error)
     res.status(500).json({ success: false, error: 'Failed to fetch operators' })
@@ -114,7 +152,7 @@ router.get('/operators/:id', async (req, res) => {
       return res.status(404).json({ success: false, error: 'Operator not found' })
     }
 
-    res.json({ success: true, data: operator })
+    res.json({ success: true, data: forViewer(req, operator) })
   } catch (error) {
     console.error('Error fetching operator:', error)
     res.status(500).json({ success: false, error: 'Failed to fetch operator' })
@@ -137,6 +175,14 @@ router.post('/operators', async (req, res) => {
 
     if (!firstName || !lastName) {
       return res.status(400).json({ success: false, error: 'firstName and lastName are required' })
+    }
+    const problem = operatorInputError(req.body)
+    if (problem) return res.status(400).json({ success: false, error: problem })
+    if (skills?.length) {
+      const types = new Set((await prisma.workCenterType.findMany({ select: { id: true } })).map((t) => t.id))
+      const unknown = skills.find((sk) => !types.has(sk.workCenterTypeId))
+      if (unknown) return res.status(400).json({ success: false, error: `"${unknown.workCenterTypeId}" is not a work center type on file` })
+      if (new Set(skills.map((sk) => sk.workCenterTypeId)).size !== skills.length) return res.status(400).json({ success: false, error: 'A work center type is listed twice in the skills' })
     }
 
     // Generate employee code (OP-XXXX)
@@ -215,7 +261,7 @@ router.post('/operators', async (req, res) => {
       },
     }) })
 
-    res.status(201).json({ success: true, data: operator })
+    res.status(201).json({ success: true, data: forViewer(req, operator) })
   } catch (error) {
     console.error('Error creating operator:', error)
     if (error.code === 'P2002') {
@@ -243,6 +289,23 @@ router.patch('/operators/:id', async (req, res) => {
       notes, emergencyContactName, emergencyContactPhone,
       userId, isActive,
     } = req.body
+
+    const problem = operatorInputError(req.body)
+    if (problem) return res.status(400).json({ success: false, error: problem })
+    if (homeLocationId) {
+      const loc = await prisma.location.findUnique({ where: { id: homeLocationId }, select: { id: true } }).catch(() => null)
+      if (!loc) return res.status(400).json({ success: false, error: 'Invalid homeLocationId' })
+    }
+    if (homeWorkCenterId) {
+      const wc = await prisma.workCenter.findUnique({ where: { id: homeWorkCenterId }, select: { id: true } }).catch(() => null)
+      if (!wc) return res.status(400).json({ success: false, error: 'Invalid homeWorkCenterId' })
+    }
+    // Someone who is clocked on to a step is not made inactive or moved to another branch until the step is paused or finished.
+    const leaving = (status !== undefined && status !== 'ACTIVE') || isActive === false || (homeLocationId !== undefined && (homeLocationId || null) !== existing.homeLocationId)
+    if (leaving) {
+      const running = await prisma.dispatchTimeLog.count({ where: { operatorId: existing.id, status: 'RUNNING' } })
+      if (running) return res.status(409).json({ success: false, error: `${existing.firstName} ${existing.lastName} is clocked on to a step. Pause or finish it first.` })
+    }
 
     const data = {}
     if (firstName !== undefined) data.firstName = firstName.trim()
@@ -272,7 +335,7 @@ router.patch('/operators/:id', async (req, res) => {
       },
     })
 
-    res.json({ success: true, data: updated })
+    res.json({ success: true, data: forViewer(req, updated) })
   } catch (error) {
     console.error('Error updating operator:', error)
     res.status(500).json({ success: false, error: 'Failed to update operator' })
@@ -290,12 +353,14 @@ router.delete('/operators/:id', async (req, res) => {
       return res.status(404).json({ success: false, error: 'Operator not found' })
     }
 
+    const running = await prisma.dispatchTimeLog.count({ where: { operatorId: existing.id, status: 'RUNNING' } })
+    if (running) return res.status(409).json({ success: false, error: `${existing.firstName} ${existing.lastName} is clocked on to a step. Pause or finish it first.` })
     const deactivated = await prisma.operator.update({
       where: { id: req.params.id },
       data: { isActive: false, status: 'TERMINATED' },
     })
 
-    res.json({ success: true, data: deactivated })
+    res.json({ success: true, data: forViewer(req, deactivated) })
   } catch (error) {
     console.error('Error deactivating operator:', error)
     res.status(500).json({ success: false, error: 'Failed to deactivate operator' })
@@ -346,6 +411,9 @@ router.post('/operators/:id/skills', async (req, res) => {
     if (!wct || !wct.isActive) {
       return res.status(400).json({ success: false, error: 'Invalid or inactive work center type' })
     }
+
+    const problem = skillInputError(req.body)
+    if (problem) return res.status(400).json({ success: false, error: problem })
 
     // Upsert: if skill exists, reactivate & update; else create
     const skill = await prisma.operatorSkill.upsert({

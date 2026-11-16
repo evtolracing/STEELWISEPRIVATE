@@ -57,6 +57,8 @@ const EVERY_DEPARTMENT = ['sales', 'production', 'warehouse', 'quality', 'mainte
 
 const MANAGER_ONLY = [
   /^\/api\/invoices\/[^/]+\/(credit|refund|cancel)$/,
+  // Issuing or settling the credit of a return that was received without one (Phase 8, N-016).
+  /^\/api\/returns\/[^/]+\/credit$/,
   /^\/api\/pos\/quick-sale\/[^/]+\/void$/,
   /^\/api\/tax-rates(\/|$)/,
 ];
@@ -65,6 +67,8 @@ const WRITE_RULES = [
   [(p) => /^\/api\/orders\/[^/]+\/allocate$/.test(p), ['sales', 'warehouse', 'production'], 'Reserving stock for an order'],
   [(p) => /^\/api\/returns\/[^/]+\/receive$/.test(p), ['sales', 'warehouse', 'production'], 'Receiving a return'],
   [(p) => under(p, '/api/pos'), ['sales', 'warehouse'], 'Counter sales'],
+  // Phase 6 (K-002): purchase orders belong to purchasing. Managers and leadership may always change them.
+  [(p) => under(p, '/api/purchase-orders'), ['BUYER', 'INVENTORY_MANAGER'], 'Purchase orders', 'a buyer or the inventory manager'],
   [(p) => ['/api/orders', '/api/rfqs', '/api/quotes', '/api/returns', '/api/customers', '/api/invoices', '/api/sales'].some((x) => under(p, x)), ['sales'], 'Orders, quotes, customers and invoices'],
   [(p) => ['/api/inventory', '/api/coils', '/api/heats'].some((x) => under(p, x)), ['warehouse', 'production', 'quality'], 'Stock records'],
   [(p) => under(p, '/api/shipments'), ['warehouse', 'sales'], 'Shipments'],
@@ -81,6 +85,8 @@ const WRITE_RULES = [
   [(p, m) => under(p, '/api/maintenance-orders') && m === 'DELETE', ['MAINTENANCE_MANAGER', 'PRODUCTION_MANAGER'], 'Deleting a maintenance order', 'the maintenance or production manager'],
   [(p) => under(p, '/api/maintenance-orders'), ['maintenance', 'production'], 'Maintenance orders', 'maintenance or production staff'],
   [(p) => under(p, '/api/drop-tags/templates'), ['PRODUCTION_MANAGER', 'INVENTORY_MANAGER', 'PACKAGING_LEAD'], 'Tag templates', 'the production manager, the inventory manager or the packaging lead'],
+  // Releasing or holding a package is an inspection decision: the same people as inspections (Phase 8, N-008).
+  [(p) => /^\/api\/drop-tags\/packages\/[^/]+\/qc-(release|hold)$/.test(p), ['quality', 'PRODUCTION_MANAGER'], 'Releasing or holding a package', 'quality staff or the production manager'],
   [(p) => under(p, '/api/drop-tags'), ['production', 'warehouse'], 'Drop tags and packages', 'production or warehouse staff'],
   [(p) => under(p, '/api/print-queue'), ['production', 'warehouse', 'sales', 'quality'], 'The print queue', 'production, warehouse, sales or quality staff'],
   // Anyone may stop work for safety. Moving it on and clearing it is for a supervisor.

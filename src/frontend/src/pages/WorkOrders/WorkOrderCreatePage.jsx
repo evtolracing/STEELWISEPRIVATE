@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import client from '../../api/client'
 import {
   Box,
   Typography,
@@ -46,6 +47,14 @@ const PRIORITIES = [
 
 export default function WorkOrderCreatePage() {
   const navigate = useNavigate()
+  // Opened from a job: the work order is raised for that job, so the job shows what it used and made.
+  const [params] = useSearchParams()
+  const jobId = params.get('jobId') || ''
+  const [forJob, setForJob] = useState(null)
+  useEffect(() => {
+    if (!jobId) return
+    client.get(`/jobs/${jobId}`).then((r) => setForJob(r.data)).catch(() => setForJob(null))
+  }, [jobId])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
@@ -116,6 +125,7 @@ export default function WorkOrderCreatePage() {
         scheduledDate: formData.scheduledDate ? new Date(formData.scheduledDate).toISOString() : null,
         notes: formData.notes || null,
         slitPattern: formData.slitPattern.length > 0 ? formData.slitPattern : null,
+        ...(jobId && { jobId }),
       }
       
       const created = await createWorkOrder(payload)
@@ -159,6 +169,11 @@ export default function WorkOrderCreatePage() {
         </Box>
       </Box>
 
+      {jobId && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          This work order is for job {forJob?.jobNumber || ''}. What it uses, makes and scraps will show on the job.
+        </Alert>
+      )}
       {error && (
         <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}

@@ -1,0 +1,3657 @@
+{
+ "at": "2026-11-16T02:17:46.400Z",
+ "base": "http://localhost:3011",
+ "scenarios": 141,
+ "passed": 141,
+ "checks": 618,
+ "groups": {
+  "Work order creation and routing": {
+   "scenarios": 15,
+   "passed": 15,
+   "checks": 51
+  },
+  "BOMs, material requirements and allocation": {
+   "scenarios": 17,
+   "passed": 17,
+   "checks": 76
+  },
+  "Capacity planning and scheduling": {
+   "scenarios": 22,
+   "passed": 22,
+   "checks": 74
+  },
+  "Shop-floor execution and labor and machine tracking": {
+   "scenarios": 23,
+   "passed": 23,
+   "checks": 97
+  },
+  "Quality control and nonconformance": {
+   "scenarios": 25,
+   "passed": 25,
+   "checks": 111
+  },
+  "Scrap, remnants, rework and costing": {
+   "scenarios": 17,
+   "passed": 17,
+   "checks": 114
+  },
+  "Cross-location production, concurrency and recovery": {
+   "scenarios": 22,
+   "passed": 22,
+   "checks": 95
+  }
+ },
+ "results": [
+  {
+   "group": "Work order creation and routing",
+   "name": "a job opened for an order line is saved with its order, its line, who opened it and where it stands",
+   "asserts": [
+    {
+     "what": "tied to the order and the line",
+     "ok": true
+    },
+    {
+     "what": "opened by the signed-in person, not an id sent in",
+     "ok": true
+    },
+    {
+     "what": "waiting, with a job number",
+     "ok": true
+    },
+    {
+     "what": "a job number or creator sent in the request is ignored",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 88
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a job cannot be opened for nothing, for a line of another order, or with a status it cannot start in",
+   "asserts": [
+    {
+     "what": "each refused with a 4xx",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 97
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "no work is opened for a cancelled order, a cancelled line or a work center that is offline",
+   "asserts": [
+    {
+     "what": "the order is cancelled and the job is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "an offline work center is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "no job exists for either order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 124
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "planning a job saves its steps in order at the order's branch and moves the job to scheduled",
+   "asserts": [
+    {
+     "what": "one plan at the order's branch",
+     "ok": true
+    },
+    {
+     "what": "two steps, numbered 1 and 2, of the kinds asked for, all waiting",
+     "ok": true
+    },
+    {
+     "what": "the job is scheduled",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at SCHEDULED",
+     "ok": true
+    },
+    {
+     "what": "the move is on record with who planned it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 97
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a plan takes the grade and thickness from the order line and assumes neither",
+   "asserts": [
+    {
+     "what": "grade is the line's grade",
+     "ok": true
+    },
+    {
+     "what": "thickness is the line's thickness",
+     "ok": true
+    },
+    {
+     "what": "a job with no order line gets no grade (it used to be written as A36)",
+     "ok": true
+    },
+    {
+     "what": "and a thickness of 0, meaning not stated (it used to be 0.5)",
+     "ok": true
+    },
+    {
+     "what": "what the planner enters wins",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 210
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a plan with no steps, an unknown kind of work center or a thickness of zero is refused and saves nothing",
+   "asserts": [
+    {
+     "what": "all four refused with 400",
+     "ok": true
+    },
+    {
+     "what": "no plan was saved and the job is still waiting",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 78
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a job that has started, finished or been cancelled cannot be planned",
+   "asserts": [
+    {
+     "what": "both refused with 400",
+     "ok": true
+    },
+    {
+     "what": "neither has a plan, and each keeps its status",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 167
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "re-planning before any work replaces the steps and leaves exactly one plan",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "one plan with the one new step",
+     "ok": true
+    },
+    {
+     "what": "the three old steps are gone, none left without a plan",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at SCHEDULED",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 121
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a plan with recorded work cannot be replaced, and the recorded time is kept",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "the two steps and the time log are untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 158
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "two people planning the same job at the same moment leave one plan whose steps belong together",
+   "asserts": [
+    {
+     "what": "5 rounds: one plan each, from one request, never a mix",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 497
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a routing goes draft, review, in use; only a routing in use can be put on a job",
+   "asserts": [
+    {
+     "what": "created as a draft at version 1 with its two steps in order",
+     "ok": true
+    },
+    {
+     "what": "a draft cannot jump straight into use",
+     "ok": true
+    },
+    {
+     "what": "a draft routing cannot be put on a job",
+     "ok": true
+    },
+    {
+     "what": "review, then in use",
+     "ok": true
+    },
+    {
+     "what": "now it goes on the job, with the version it was at",
+     "ok": true
+    },
+    {
+     "what": "a routing in use cannot be edited in place",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 123
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a routing step must have a name, a kind of work center on file, its own place in the order and times that are not negative",
+   "asserts": [
+    {
+     "what": "all six refused with 400 (the first used to fail with a server error)",
+     "ok": true
+    },
+    {
+     "what": "no routing was saved",
+     "ok": true
+    },
+    {
+     "what": "a bad edit is refused and the old steps are still there",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 50
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a routing with no steps cannot go into use, and a new version is a separate draft",
+   "asserts": [
+    {
+     "what": "refused both ways with 409",
+     "ok": true
+    },
+    {
+     "what": "the copy is a draft at version 2 with the same steps, and the one in use is unchanged",
+     "ok": true
+    },
+    {
+     "what": "two people retiring it at once: one wins, the other is told",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 90
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a coil work order follows its steps: draft, released, started; nothing skips or goes back",
+   "asserts": [
+    {
+     "what": "created as a draft for the weight on hand",
+     "ok": true
+    },
+    {
+     "what": "a draft cannot be completed",
+     "ok": true
+    },
+    {
+     "what": "released, started, and not released again",
+     "ok": true
+    },
+    {
+     "what": "each step is on record with who did it",
+     "ok": true
+    },
+    {
+     "what": "a cancelled work order cannot be started again, and the stock was never touched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 105
+  },
+  {
+   "group": "Work order creation and routing",
+   "name": "a coil work order cut for an order line in another grade is refused unless it is recorded as a substitution",
+   "asserts": [
+    {
+     "what": "refused with 409, naming both grades",
+     "ok": true
+    },
+    {
+     "what": "no work order saved",
+     "ok": true
+    },
+    {
+     "what": "accepted with a reason, and the substitution is on record",
+     "ok": true
+    },
+    {
+     "what": "the same grade needs no reason",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 140
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "a work order for an order line cuts the stock reserved for that line, and the books still balance",
+   "asserts": [
+    {
+     "what": "reserved, then completed",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "source: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "1,000 lb left the source: 2,000 on hand",
+     "ok": true
+    },
+    {
+     "what": "one piece of 950 lb",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "what is reserved for the line is on stock that exists (never more than the line ordered)",
+     "ok": true
+    },
+    {
+     "what": "50 lb of scrap on record",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 166
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "a work order cannot cut stock that is reserved for another order",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "nothing consumed: 1,000 on hand, 800 still reserved",
+     "ok": true
+    },
+    {
+     "what": "the work order is still in progress",
+     "ok": true
+    },
+    {
+     "what": "within the free 200 lb it completes",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 156
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "stock reserved for one order line cannot be cut for a different line",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "the first order still has its 1,000 lb reserved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 154
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "two work orders on one item cannot together use more than it holds",
+   "asserts": [
+    {
+     "what": "the first completes, the second is refused",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "400 lb left, used once",
+     "ok": true
+    },
+    {
+     "what": "the second completes for what is left, and the item is used up",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 157
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "two work orders on one item completed at the same moment: stock is used once",
+   "asserts": [
+    {
+     "what": "4 rounds: one wins, 300 lb left, 700 consumed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 430
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "more cannot come off the line than went on",
+   "asserts": [
+    {
+     "what": "all three refused with 400",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 63
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "what a work order makes carries the heat, grade and owner of what it was cut from",
+   "asserts": [
+    {
+     "what": "two pieces, each with the source heat, grade and owner",
+     "ok": true
+    },
+    {
+     "what": "each piece is tied to the work order that made it",
+     "ok": true
+    },
+    {
+     "what": "yield is 97.5% of what went in",
+     "ok": true
+    },
+    {
+     "what": "WO-00040-01: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "WO-00040-01: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "WO-00040-01: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "WO-00040-02: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "WO-00040-02: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "WO-00040-02: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "source: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 88
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "material on quality hold is not put on a work order, and a hold placed mid-run stops the completion",
+   "asserts": [
+    {
+     "what": "held material is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "completion refused with 409 while the hold stands",
+     "ok": true
+    },
+    {
+     "what": "nothing consumed and no pieces made",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 102
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "a work order cannot ask for more than the item holds, or be opened on an item that is used up or unknown",
+   "asserts": [
+    {
+     "what": "too much: 400; used up: 409; unknown item: 400; unknown kind of work: 400",
+     "ok": true
+    },
+    {
+     "what": "only the one real work order was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 106
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "using part of an item leaves the rest available",
+   "asserts": [
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "2,000 lb left and available, the item still in stock",
+     "ok": true
+    },
+    {
+     "what": "1,000 lb consumed in all: 960 made, 40 scrap",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 104
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "a work order cannot be completed twice",
+   "asserts": [
+    {
+     "what": "the second is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "500 lb left: used once, one piece",
+     "ok": true
+    },
+    {
+     "what": "two people at once: one wins, 500 lb left",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 189
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "a production manager cannot open a work order on another branch's stock, or see that branch's work orders",
+   "asserts": [
+    {
+     "what": "refused: the item is not on file for that branch",
+     "ok": true
+    },
+    {
+     "what": "the other branch gets 404 on it and cannot move it",
+     "ok": true
+    },
+    {
+     "what": "and it is not in their list",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 56
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "the routing offered for a material is one that is in use; a retired one is offered only when asked for",
+   "asserts": [
+    {
+     "what": "the routing in use is found by its material",
+     "ok": true
+    },
+    {
+     "what": "a draft is never offered",
+     "ok": true
+    },
+    {
+     "what": "once retired it is not offered, unless retired routings are asked for",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 84
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "a suggested routing names steps only: no times or tolerances are made up",
+   "asserts": [
+    {
+     "what": "steps are suggested",
+     "ok": true
+    },
+    {
+     "what": "every time is zero and every tolerance is empty, for the planner to fill in",
+     "ok": true
+    },
+    {
+     "what": "and the note says so",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved by asking",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 7
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "sales staff can read routings but cannot create, change or put one into use",
+   "asserts": [
+    {
+     "what": "create, edit and retire are refused with 403 for sales, and create for an operator",
+     "ok": true
+    },
+    {
+     "what": "only the fixture routing was added and it is unchanged",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 53
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "bills of material (a list of materials and quantities for a product) are not part of this product",
+   "asserts": [
+    {
+     "what": "the tables named Bom hold routings: no component, material quantity or unit-of-measure column",
+     "ok": true
+    },
+    {
+     "what": "no other table holds a bill of materials",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 14,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "BOMs, material requirements and allocation",
+   "name": "material requirements planning for a job (what it needs, what is short, when) is not part of this product",
+   "asserts": [
+    {
+     "what": "a job records weights in and out but no required material, required quantity or shortage",
+     "ok": true
+    },
+    {
+     "what": "material for a line is reserved on the order (Phase 6), and that is what a work order cuts",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 6,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "scheduling places a waiting step on a work center of the right kind with a certified operator, and states a start time only for the step at the front",
+   "asserts": [
+    {
+     "what": "the run answers",
+     "ok": true
+    },
+    {
+     "what": "both steps are on the cell's work center with its operator",
+     "ok": true
+    },
+    {
+     "what": "only the step at the front of the queue has a start time: no duration is on file, so none is stated for the one behind it",
+     "ok": true
+    },
+    {
+     "what": "no end time is stated for either",
+     "ok": true
+    },
+    {
+     "what": "the answer counts what it placed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 237
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a step that needs a kind of work center the branch does not have is reported, not placed",
+   "asserts": [
+    {
+     "what": "it stays waiting, with no work center",
+     "ok": true
+    },
+    {
+     "what": "the answer names it and says why",
+     "ok": true
+    },
+    {
+     "what": "and the count of unplaced steps includes it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 119
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "work is shared between work centers of the same kind",
+   "asserts": [
+    {
+     "what": "four steps over two work centers: two each",
+     "ok": true
+    },
+    {
+     "what": "and two each for the two operators",
+     "ok": true
+    },
+    {
+     "what": "one start time per work center",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 388
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a work center that is switched off is given no work",
+   "asserts": [
+    {
+     "what": "switched off",
+     "ok": true
+    },
+    {
+     "what": "all three steps went to the one that is on",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 309
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a machine locked out for maintenance is given no work until the maintenance is finished",
+   "asserts": [
+    {
+     "what": "maintenance is under way with lockout",
+     "ok": true
+    },
+    {
+     "what": "the step was not placed",
+     "ok": true
+    },
+    {
+     "what": "the answer says the machine is locked out",
+     "ok": true
+    },
+    {
+     "what": "and an operator cannot start the step there by hand",
+     "ok": true
+    },
+    {
+     "what": "once maintenance is finished the step is placed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 199
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a machine recorded as out of service or on a safety hold is given no work",
+   "asserts": [
+    {
+     "what": "the step went to the other work center",
+     "ok": true
+    },
+    {
+     "what": "with the only machine on a safety hold the step waits and the answer says why",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 272
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "an operator whose certification has lapsed is not put on a step; the step is placed and the gap is reported",
+   "asserts": [
+    {
+     "what": "the step has a work center and no operator",
+     "ok": true
+    },
+    {
+     "what": "the answer says steps were left without an operator",
+     "ok": true
+    },
+    {
+     "what": "the lapsed operator is not offered as certified for this kind",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 118
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "an operator from another branch is never put on this branch's work",
+   "asserts": [
+    {
+     "what": "placed on the work center, with no operator rather than one from the other branch",
+     "ok": true
+    },
+    {
+     "what": "and that operator cannot start it either",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 148
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a work center's recorded thickness limit is respected, and where none is recorded the answer says thickness was not checked",
+   "asserts": [
+    {
+     "what": "1 in plate is not placed on a 0.5 in machine, and the reason is given",
+     "ok": true
+    },
+    {
+     "what": "0.25 in plate is placed",
+     "ok": true
+    },
+    {
+     "what": "where no limit is on file the run says thickness was not checked, instead of assuming a limit",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 340
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "two planners scheduling the same branch at the same moment place each step once",
+   "asserts": [
+    {
+     "what": "all three runs answer",
+     "ok": true
+    },
+    {
+     "what": "each of the six steps is reported placed exactly once across the runs",
+     "ok": true
+    },
+    {
+     "what": "three on each work center, and one start time on each",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 591
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "scheduling again changes nothing, and steps of cancelled or held jobs are left alone",
+   "asserts": [
+    {
+     "what": "the open job's step is placed once and a second run leaves it as it was",
+     "ok": true
+    },
+    {
+     "what": "the cancelled and held jobs' steps were not scheduled",
+     "ok": true
+    },
+    {
+     "what": "the work center's queue lists the one open step",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 347
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a branch planner cannot schedule another branch, and people outside planning cannot schedule at all",
+   "asserts": [
+    {
+     "what": "another branch's manager, sales and an operator are refused",
+     "ok": true
+    },
+    {
+     "what": "nothing was placed",
+     "ok": true
+    },
+    {
+     "what": "an unknown branch or no branch is refused with 400",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 141
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "the planner takes a job's time from its routing; a job with no time on file is queued without a start or end time",
+   "asserts": [
+    {
+     "what": "both jobs are placed on the cell's work center",
+     "ok": true
+    },
+    {
+     "what": "the routed job takes 120 minutes: set-up plus machine time (labor minutes are not machine time)",
+     "ok": true
+    },
+    {
+     "what": "the job with no time on file has no start or end (it used to be given 60 minutes)",
+     "ok": true
+    },
+    {
+     "what": "utilisation is 120 of 480 minutes: 25%, counting only the timed job",
+     "ok": true
+    },
+    {
+     "what": "and the plan says one job has no estimate",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 227
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a work center with no working hours on file has no utilisation figure: none is made up",
+   "asserts": [
+    {
+     "what": "utilisation is not stated (it used to assume 480 minutes a day)",
+     "ok": true
+    },
+    {
+     "what": "the plan says which figure is missing",
+     "ok": true
+    },
+    {
+     "what": "the analysis screen gets the same: no figure, not zero",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 181
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "an overloaded work center is reported as a bottleneck from the figures on file, and a job that would finish after its promised date is flagged",
+   "asserts": [
+    {
+     "what": "600 minutes of work against 480 in the day: 125%",
+     "ok": true
+    },
+    {
+     "what": "reported as a critical bottleneck",
+     "ok": true
+    },
+    {
+     "what": "the job promised in two hours is counted at risk, and no promise is changed",
+     "ok": true
+    },
+    {
+     "what": "the second job starts after the first ends, running into the next day once the 8 hours are used",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 229
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a preview and a what-if save nothing",
+   "asserts": [
+    {
+     "what": "both answer",
+     "ok": true
+    },
+    {
+     "what": "the job is exactly as it was",
+     "ok": true
+    },
+    {
+     "what": "no work center was added",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 118
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "applying a schedule saves the work center and times, and counts only what it saved",
+   "asserts": [
+    {
+     "what": "one of four lines is saved and the answer says one",
+     "ok": true
+    },
+    {
+     "what": "the job has the work center and the times",
+     "ok": true
+    },
+    {
+     "what": "the started job was left alone and the reason given",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 209
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a schedule line is refused when the work center is at another branch, the wrong kind, switched off, or the times run backwards",
+   "asserts": [
+    {
+     "what": "all six are refused, each with its reason",
+     "ok": true
+    },
+    {
+     "what": "the job has no work center and no times",
+     "ok": true
+    },
+    {
+     "what": "a request that is not a list is refused with 400",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 204
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "the planner places a job only at its own branch",
+   "asserts": [
+    {
+     "what": "the QA-L02 job is not put on the QA-L01 work center",
+     "ok": true
+    },
+    {
+     "what": "it is listed as unplaced with the reason",
+     "ok": true
+    },
+    {
+     "what": "a QA-L02 manager's plan shows no QA-L01 work center",
+     "ok": true
+    },
+    {
+     "what": "and asking for QA-L01 by name gets them nothing of QA-L01's",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 161
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "the late-jobs list puts overdue first, includes jobs waiting for inspection, and refuses a nonsense time window",
+   "asserts": [
+    {
+     "what": "the job waiting for inspection, five hours late, is on the list as overdue",
+     "ok": true
+    },
+    {
+     "what": "the job due in two hours is critical and comes after it",
+     "ok": true
+    },
+    {
+     "what": "the job due in eight days is not on a 24-hour list",
+     "ok": true
+    },
+    {
+     "what": "no overdue job is listed after one that is not overdue",
+     "ok": true
+    },
+    {
+     "what": "a window that is not a sensible number of hours is refused with 400",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 380
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "a work center's working hours must be a real figure, and its kind cannot be changed under open work",
+   "asserts": [
+    {
+     "what": "minus one hour, 25 hours, a word, and a negative thickness are refused with 400",
+     "ok": true
+    },
+    {
+     "what": "the shop-floor address refuses a negative thickness too",
+     "ok": true
+    },
+    {
+     "what": "ten hours is saved as entered, and what was already on the record is kept",
+     "ok": true
+    },
+    {
+     "what": "with a step queued on it, changing its kind and deleting it are refused with 409",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 202
+  },
+  {
+   "group": "Capacity planning and scheduling",
+   "name": "shift calendars, operator availability and running work are not part of the plan, and the plan says so",
+   "asserts": [
+    {
+     "what": "every plan carries the note that these are not counted",
+     "ok": true
+    },
+    {
+     "what": "shifts are on file as a table, but nothing in the planner reads them",
+     "ok": true
+    },
+    {
+     "what": "finite-capacity scheduling against a calendar is therefore recorded as not built, not as passing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 23,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "starting a step records who, where and when, and moves the job into production once",
+   "asserts": [
+    {
+     "what": "started by the operator's own login",
+     "ok": true
+    },
+    {
+     "what": "the step is in process with its start time, operator and work center",
+     "ok": true
+    },
+    {
+     "what": "one clock is running, for that operator at that work center",
+     "ok": true
+    },
+    {
+     "what": "the job is in process and its history has that move once, by the operator",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at IN_PROCESS",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a step cannot be started without an operator on file, and a step that does not exist is a 404",
+   "asserts": [
+    {
+     "what": "no operator: 400; unknown operator: 400; unknown step: 404",
+     "ok": true
+    },
+    {
+     "what": "nothing was started: the step is waiting, no clock, the job still scheduled",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 112
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "steps run in their planned order: the second cannot start until the first is finished",
+   "asserts": [
+    {
+     "what": "steps two and three are refused with 409 and the reason names the step in the way",
+     "ok": true
+    },
+    {
+     "what": "the job has not moved and no clock was started",
+     "ok": true
+    },
+    {
+     "what": "while step one is running, step two is still refused",
+     "ok": true
+    },
+    {
+     "what": "once step one is finished, step two starts",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 225
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "the planned-order rule is one setting: with it switched off, steps may run in any order, and switching it on again applies at once",
+   "asserts": [
+    {
+     "what": "with the rule off, step two starts first",
+     "ok": true
+    },
+    {
+     "what": "with the rule back on, the next job is held to its order",
+     "ok": true
+    },
+    {
+     "what": "with no setting on file the rule is on: planned order is the default",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 242
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a step is run only on a work center of its own kind, at the job's branch, that is switched on",
+   "asserts": [
+    {
+     "what": "a deburr station, another branch's saw and a saw that is off are refused with 409; an unknown one with 400",
+     "ok": true
+    },
+    {
+     "what": "the step is still waiting with no clock",
+     "ok": true
+    },
+    {
+     "what": "each refusal says what is wrong",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 152
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "an operator whose certification has lapsed, who is inactive, or who works at another branch cannot start a step",
+   "asserts": [
+    {
+     "what": "all three are refused with 409",
+     "ok": true
+    },
+    {
+     "what": "the reasons name the certification and its date, the inactive operator, and the other branch",
+     "ok": true
+    },
+    {
+     "what": "nothing was started",
+     "ok": true
+    },
+    {
+     "what": "an operator with a current certification starts it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 216
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "pausing closes the clock with the reason given; resuming opens a new one; the time is the sum of the two",
+   "asserts": [
+    {
+     "what": "paused: the clock is closed with its end time and the reason",
+     "ok": true
+    },
+    {
+     "what": "pausing a step that is not running is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "resumed by a second operator: a new clock, and the first is untouched",
+     "ok": true
+    },
+    {
+     "what": "the step's first start time did not move",
+     "ok": true
+    },
+    {
+     "what": "both clocks are closed, neither ends before it starts",
+     "ok": true
+    },
+    {
+     "what": "the time-log screen lists both entries",
+     "ok": true
+    },
+    {
+     "what": "recorded time is the sum of the two entries and not the gap between first start and last end",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 212
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a step that was never started cannot be finished",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "the step is still waiting, with no start, no end and no time",
+     "ok": true
+    },
+    {
+     "what": "the job did not move",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 89
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "finishing the last step sends the job to inspection once; finishing it again changes nothing",
+   "asserts": [
+    {
+     "what": "after the first step the job is still in process",
+     "ok": true
+    },
+    {
+     "what": "after the last step the job is waiting for inspection",
+     "ok": true
+    },
+    {
+     "what": "a repeat is answered and changes nothing",
+     "ok": true
+    },
+    {
+     "what": "a finished step cannot be started again",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at WAITING_QC",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 249
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "two operators starting the same step at the same moment leave one clock running",
+   "asserts": [
+    {
+     "what": "5 rounds: one running clock each time and one move into production",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 714
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a step being finished and paused at the same moment ends in one consistent state",
+   "asserts": [
+    {
+     "what": "5 rounds: the step is finished, every clock is closed, the job is at inspection",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 840
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "no step is started on a job that is on hold, cancelled, or past production",
+   "asserts": [
+    {
+     "what": "all refused with 409",
+     "ok": true
+    },
+    {
+     "what": "each says which state the job is in",
+     "ok": true
+    },
+    {
+     "what": "no clock was started on any of them",
+     "ok": true
+    },
+    {
+     "what": "the job at inspection is still there",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 506
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a job put on hold while its last step is running stays on hold when the step is finished",
+   "asserts": [
+    {
+     "what": "the hold is taken and the step can still be closed out",
+     "ok": true
+    },
+    {
+     "what": "the step is finished with its clock closed",
+     "ok": true
+    },
+    {
+     "what": "the job is still on hold: finishing the step did not release it to inspection",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at ON_HOLD",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 169
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a job cannot leave production while a planned step is unfinished",
+   "asserts": [
+    {
+     "what": "to inspection, \"complete\" and to the dock are all refused with 409",
+     "ok": true
+    },
+    {
+     "what": "the refusal names the open step",
+     "ok": true
+    },
+    {
+     "what": "the job is still in process",
+     "ok": true
+    },
+    {
+     "what": "it can still be cancelled or held: only moving forward is stopped",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 213
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a step is moved to another work center or operator only where it can be run, and its clock is paused by the move",
+   "asserts": [
+    {
+     "what": "another kind of work center: 409; another branch's operator: 409; nothing named: 400",
+     "ok": true
+    },
+    {
+     "what": "the clock is still running where it was",
+     "ok": true
+    },
+    {
+     "what": "moved to the second work center and operator",
+     "ok": true
+    },
+    {
+     "what": "the first clock is closed and still says where and who the time was",
+     "ok": true
+    },
+    {
+     "what": "a finished step cannot be moved",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 317
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "shop-floor work at one branch cannot be seen or touched from another branch, or by people outside production",
+   "asserts": [
+    {
+     "what": "the other branch's operator and manager get 404; sales gets 403",
+     "ok": true
+    },
+    {
+     "what": "the step is untouched",
+     "ok": true
+    },
+    {
+     "what": "its own branch lists the job's step, with the total",
+     "ok": true
+    },
+    {
+     "what": "a long list is cut to what was asked for and says how many there are in all",
+     "ok": true
+    },
+    {
+     "what": "and it is not in the other branch's list of steps even when they ask for this branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "an operator who is clocked on cannot be made inactive or moved to another branch until the step is paused or finished",
+   "asserts": [
+    {
+     "what": "all three are refused with 409",
+     "ok": true
+    },
+    {
+     "what": "the operator is still active at this branch, and still on the clock",
+     "ok": true
+    },
+    {
+     "what": "once the step is finished the change is accepted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 214
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "an operator's pay rate and emergency contact are shown to managers only",
+   "asserts": [
+    {
+     "what": "the production manager sees the rate and the contact",
+     "ok": true
+    },
+    {
+     "what": "an operator and a sales login do not",
+     "ok": true
+    },
+    {
+     "what": "nor does the list an operator sees",
+     "ok": true
+    },
+    {
+     "what": "the rate on file is what was entered",
+     "ok": true
+    },
+    {
+     "what": "a manager at another branch cannot open the record",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 58
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a certification must be for a kind of work center on file, and cannot expire before it was issued",
+   "asserts": [
+    {
+     "what": "an unknown kind, an expiry before the issue date and an unknown level are refused with 400",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true
+    },
+    {
+     "what": "a valid certification is saved as entered",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 48
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "one operator on two steps at once is refused, unless the kind of work center is marked for it (owner decision 9)",
+   "asserts": [
+    {
+     "what": "the first start is accepted; the second is refused with a sentence naming the step already running",
+     "ok": true
+    },
+    {
+     "what": "the mark must be yes or no",
+     "ok": true
+    },
+    {
+     "what": "once the kind is marked, the same operator runs both, and both clocks are on record",
+     "ok": true
+    },
+    {
+     "what": "a third step of a kind that is not marked is still refused",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 456
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "where a kind of work center is marked \"certification required\", an operator with none on file cannot be clocked on (owner decision 9)",
+   "asserts": [
+    {
+     "what": "not marked: an operator with no certification on file may work, as before",
+     "ok": true
+    },
+    {
+     "what": "marked: the same operator is refused, and the sentence says what to do",
+     "ok": true
+    },
+    {
+     "what": "nothing was started",
+     "ok": true
+    },
+    {
+     "what": "a certified operator is accepted",
+     "ok": true
+    },
+    {
+     "what": "the mark is on the kind's record",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 336
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a clock left running is listed for the supervisor after the hours on file; nothing is stopped (owner decision 9)",
+   "asserts": [
+    {
+     "what": "a clock started just now is not listed",
+     "ok": true
+    },
+    {
+     "what": "after 13 hours it is listed with operator, step, job and hours (the setting is 12 hours)",
+     "ok": true
+    },
+    {
+     "what": "asked for 20 hours, it is not listed",
+     "ok": true
+    },
+    {
+     "what": "a nonsense number of hours is refused",
+     "ok": true
+    },
+    {
+     "what": "another branch's production manager does not see it",
+     "ok": true
+    },
+    {
+     "what": "the clock is still running: the list changes nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 220
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "machine time, downtime and telemetry: no machine is connected, and the downtime table is not written by any screen",
+   "asserts": [
+    {
+     "what": "the downtime table exists",
+     "ok": true
+    },
+    {
+     "what": "no address creates a downtime record",
+     "ok": true
+    },
+    {
+     "what": "the only downtime on record is the reason an operator gives when pausing a step",
+     "ok": true
+    },
+    {
+     "what": "a time entry records one span for operator and work center together: machine time is not recorded apart from labor time",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "opening an inspection for a job that is waiting gives it a numbered record with a checklist, and names the inspector when one is given",
+   "asserts": [
+    {
+     "what": "created by the branch's inspector",
+     "ok": true
+    },
+    {
+     "what": "it is pending, with no result and no completion time",
+     "ok": true
+    },
+    {
+     "what": "its checklist has required checks, none of them answered",
+     "ok": true
+    },
+    {
+     "what": "the job is still waiting for inspection: opening an inspection decides nothing",
+     "ok": true
+    },
+    {
+     "what": "with an inspector named it is in progress from that moment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 338
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "an inspection is opened only for a job that is waiting for inspection, with an inspector who is on file and active",
+   "asserts": [
+    {
+     "what": "not at inspection: 400; unknown job: 404; unknown inspector: 400; inactive inspector: 400; no job: 400",
+     "ok": true
+    },
+    {
+     "what": "no inspection was saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 282
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a job has one open inspection at a time, even when two inspectors open one at the same moment",
+   "asserts": [
+    {
+     "what": "the second is refused with 409 and names the open one",
+     "ok": true
+    },
+    {
+     "what": "4 rounds at the same moment: one inspection each time",
+     "ok": true
+    },
+    {
+     "what": "no two inspections share a number",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 851
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "passing an inspection moves the job to packaging in the same step, and records who decided",
+   "asserts": [
+    {
+     "what": "passed",
+     "ok": true
+    },
+    {
+     "what": "the answers given are what is on file",
+     "ok": true
+    },
+    {
+     "what": "the job is in packaging, moved once, by the inspector, through the inspection",
+     "ok": true
+    },
+    {
+     "what": "the decision is in the audit log with the signed-in inspector, the result and where the job went",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at PACKAGING",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 209
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "an inspection cannot be passed with a required check unanswered or failed, or a measurement out of tolerance",
+   "asserts": [
+    {
+     "what": "all four are refused with 409",
+     "ok": true
+    },
+    {
+     "what": "each refusal names what is wrong",
+     "ok": true
+    },
+    {
+     "what": "the inspection is still open and the job still waiting",
+     "ok": true
+    },
+    {
+     "what": "with every check passed and the measurement in tolerance it passes, and the measurement is kept",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 210
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a job waiting for inspection cannot be released by hand: only a passed inspection moves it on",
+   "asserts": [
+    {
+     "what": "packaging, ready to ship, shipped and completed are all refused, for an administrator and a production manager, at every address",
+     "ok": true
+    },
+    {
+     "what": "the job has not moved",
+     "ok": true
+    },
+    {
+     "what": "with an inspection open it is still refused, and the refusal names the inspection",
+     "ok": true
+    },
+    {
+     "what": "after the pass it is in packaging and moves on to ready to ship",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at READY_TO_SHIP",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 294
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "failing an inspection puts the job on hold with the defects and disposition on record",
+   "asserts": [
+    {
+     "what": "an unknown disposition is refused with 400",
+     "ok": true
+    },
+    {
+     "what": "failed with what the inspector entered",
+     "ok": true
+    },
+    {
+     "what": "the job is on hold, moved once",
+     "ok": true
+    },
+    {
+     "what": "the audit row says failed, scrap, by the inspector",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at ON_HOLD",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 224
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a job that failed inspection cannot be packed, shipped or completed by any route until a new inspection passes",
+   "asserts": [
+    {
+     "what": "every forward move is refused",
+     "ok": true
+    },
+    {
+     "what": "the refusal says a passed inspection is needed",
+     "ok": true
+    },
+    {
+     "what": "the job is still on hold",
+     "ok": true
+    },
+    {
+     "what": "sent back to inspection and passed, it goes to packaging",
+     "ok": true
+    },
+    {
+     "what": "both inspections stay on record: the failure is not erased by the pass",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at PACKAGING",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 288
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a conditional pass must state its conditions, keeps the inspector's earlier notes, and cannot carry a disposition that says the material is not going on",
+   "asserts": [
+    {
+     "what": "no conditions, blank conditions, and a scrap or rework disposition are refused with 400",
+     "ok": true
+    },
+    {
+     "what": "nothing was decided",
+     "ok": true
+    },
+    {
+     "what": "accepted: recorded as a conditional result, not a clean pass",
+     "ok": true
+    },
+    {
+     "what": "the conditions, the new note and the earlier note are all on file",
+     "ok": true
+    },
+    {
+     "what": "the job is in packaging and the audit row says conditional",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 225
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "an inspection passed and failed at the same moment has one result, and the job matches it",
+   "asserts": [
+    {
+     "what": "6 rounds: exactly one decision each time, and inspection, job, history and audit agree",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1178
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a decided inspection cannot be decided again or edited",
+   "asserts": [
+    {
+     "what": "pass, fail, conditional, rework and an edit are all refused with 400",
+     "ok": true
+    },
+    {
+     "what": "the record is exactly as it was decided",
+     "ok": true
+    },
+    {
+     "what": "one decision in the audit log, and the job still in packaging",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 234
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "an inspection cannot decide a job that has been cancelled in the meantime",
+   "asserts": [
+    {
+     "what": "pass and fail are refused with 409 and say the job is cancelled",
+     "ok": true
+    },
+    {
+     "what": "the job stays cancelled and the inspection is left open, undecided",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 183
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "an open inspection can be filled in as the inspector goes, with a real inspector and well-formed answers only",
+   "asserts": [
+    {
+     "what": "an unknown inspector, an inactive one, and a checklist or measurements that are not lists are refused with 400",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    },
+    {
+     "what": "a part-filled checklist is saved, in progress, with the inspector",
+     "ok": true
+    },
+    {
+     "what": "saving progress decides nothing",
+     "ok": true
+    },
+    {
+     "what": "and the part-filled inspection still cannot be passed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 229
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "inspections at one branch cannot be seen or decided from another branch",
+   "asserts": [
+    {
+     "what": "view, pass, fail, edit and open are all 404 for the other branch's inspector",
+     "ok": true
+    },
+    {
+     "what": "the inspection and the job are untouched",
+     "ok": true
+    },
+    {
+     "what": "the job is not in their queue and the inspection not in their list",
+     "ok": true
+    },
+    {
+     "what": "it is in its own branch's queue",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 249
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "only quality staff and production management decide an inspection",
+   "asserts": [
+    {
+     "what": "an operator and a sales login cannot pass it, and sales cannot open one",
+     "ok": true
+    },
+    {
+     "what": "the inspection is undecided",
+     "ok": true
+    },
+    {
+     "what": "the production manager can",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 213
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "the quality figures are counted from the records: queue, in progress, passed and failed today, and the pass rate",
+   "asserts": [
+    {
+     "what": "each count equals the records",
+     "ok": true
+    },
+    {
+     "what": "the pass rate is passed over decided, as a whole percentage",
+     "ok": true
+    },
+    {
+     "what": "another branch's inspector gets their own branch's figures, not these",
+     "ok": true
+    },
+    {
+     "what": "with nothing decided there is no pass rate: the rule reads null, not 100%",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 556
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a coil work order put on quality hold cannot be completed, and is released only by quality or production management",
+   "asserts": [
+    {
+     "what": "a hold needs a reason; with one it is held",
+     "ok": true
+    },
+    {
+     "what": "it cannot be completed while held, and no stock moved",
+     "ok": true
+    },
+    {
+     "what": "an operator cannot release it",
+     "ok": true
+    },
+    {
+     "what": "the inspector releases it back to in progress",
+     "ok": true
+    },
+    {
+     "what": "a work order that is not on hold cannot be \"released\"",
+     "ok": true
+    },
+    {
+     "what": "the hold, with its reason, and the release, with who did it, are in the audit log",
+     "ok": true
+    },
+    {
+     "what": "once released it completes",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 141
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "material that failed quality or is on a quality hold is not put on a work order",
+   "asserts": [
+    {
+     "what": "both are refused with 409",
+     "ok": true
+    },
+    {
+     "what": "no work order was saved",
+     "ok": true
+    },
+    {
+     "what": "material failed after the run started: the run is not completed into sellable pieces",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 131
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "the queue for inspectors lists what is waiting with its latest inspection, and a job leaves it when decided",
+   "asserts": [
+    {
+     "what": "the job is in the queue with its finished steps and no inspection yet",
+     "ok": true
+    },
+    {
+     "what": "once opened, the queue shows that inspection against it",
+     "ok": true
+    },
+    {
+     "what": "once passed it is no longer in the queue",
+     "ok": true
+    },
+    {
+     "what": "a hot job is listed ahead of a low-priority one that arrived at the same time (the queue used to put the lowest priority first)",
+     "ok": true
+    },
+    {
+     "what": "the queue says how many are waiting in all, and never sends more than it was asked for",
+     "ok": true
+    },
+    {
+     "what": "every job in the queue is waiting for inspection",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 668
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "nonconformance reports and corrective actions are not part of this product: a failed inspection is the only nonconformance record",
+   "asserts": [
+    {
+     "what": "there is no nonconformance or root-cause table; the one corrective-action table belongs to safety incidents, not to quality",
+     "ok": true
+    },
+    {
+     "what": "what is recorded for a failure is the defects, a disposition and rework instructions on the inspection itself",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 11,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a job with no planned steps goes to inspection when it is completed; it cannot skip to the dock (owner decision 9)",
+   "asserts": [
+    {
+     "what": "from in process it cannot be moved by hand to packaging or the dock",
+     "ok": true
+    },
+    {
+     "what": "\"complete\" sends it to inspection and says so",
+     "ok": true
+    },
+    {
+     "what": "waiting for inspection, it still cannot be released by hand",
+     "ok": true
+    },
+    {
+     "what": "a passed inspection moves it to packaging",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at PACKAGING",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 173
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a routing marked \"no inspection\" lets its jobs go straight to packaging; every other job is inspected (owner decision 9)",
+   "asserts": [
+    {
+     "what": "the mark must be yes or no",
+     "ok": true
+    },
+    {
+     "what": "a routing asks for inspection unless it says otherwise",
+     "ok": true
+    },
+    {
+     "what": "a step whose parameters are not a list is refused; a step with none is saved with an empty list, which the routing screen can open",
+     "ok": true
+    },
+    {
+     "what": "the mark is saved on the routing",
+     "ok": true
+    },
+    {
+     "what": "the routings go on the jobs",
+     "ok": true
+    },
+    {
+     "what": "the last step of the \"no inspection\" job sends it to packaging",
+     "ok": true
+    },
+    {
+     "what": "the last step of the other job sends it to inspection",
+     "ok": true
+    },
+    {
+     "what": "no inspection was made up for the first job",
+     "ok": true
+    },
+    {
+     "what": "a job with no steps on the \"no inspection\" routing completes to the dock",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at PACKAGING",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at WAITING_QC",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 584
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "an inspection starts with the checklist the owner entered for that kind of work; with none entered, the standard list (owner decision 9)",
+   "asserts": [
+    {
+     "what": "no list entered: the standard list",
+     "ok": true
+    },
+    {
+     "what": "a list with the same check twice, an empty check, more than 40 checks, or not a list is refused",
+     "ok": true
+    },
+    {
+     "what": "a proper list is saved",
+     "ok": true
+    },
+    {
+     "what": "a new inspection of that kind of work starts with exactly those checks, unanswered",
+     "ok": true
+    },
+    {
+     "what": "the inspection already open keeps the list it started with",
+     "ok": true
+    },
+    {
+     "what": "a required check that failed blocks the pass",
+     "ok": true
+    },
+    {
+     "what": "with the required checks passed it passes; the check that is not required may be left",
+     "ok": true
+    },
+    {
+     "what": "emptied, the standard list is used again",
+     "ok": true
+    },
+    {
+     "what": "the wording of the checks is the owner's to supply; none was written for him here (L-028)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 606
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "inspection standards, sampling plans and gauge calibration are not on file; the built-in checklist is a fixed list",
+   "asserts": [
+    {
+     "what": "there is no inspection plan, sampling or gauge table",
+     "ok": true
+    },
+    {
+     "what": "the checklist comes from a list written in the program, by kind of work, not from a standard the owner entered",
+     "ok": true
+    },
+    {
+     "what": "this run verified that the product enforces the checklist it has; it did not and cannot verify the checklist against a customer or industry standard",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 7,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a scrap or return disposition on a failed inspection is a record only: nothing follows it through to stock",
+   "asserts": [
+    {
+     "what": "the disposition is on the inspection and the job is on hold",
+     "ok": true
+    },
+    {
+     "what": "no stock movement was written: a job is not tied to the stock it was made from",
+     "ok": true
+    },
+    {
+     "what": "the job record has no column naming its material",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 184,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "scrap reported on a work order is written to the stock history with who reported it, and the yield is worked out from the weights",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "one scrap entry of 100.5 lb, by the production manager",
+     "ok": true
+    },
+    {
+     "what": "yield is 2,899.5 of 3,000: 96.65%",
+     "ok": true
+    },
+    {
+     "what": "what left the source equals what was made plus what was scrapped",
+     "ok": true
+    },
+    {
+     "what": "the pieces on the shelf weigh what was reported",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "source: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 110
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a run that is all scrap makes no pieces and still balances",
+   "asserts": [
+    {
+     "what": "accepted",
+     "ok": true
+    },
+    {
+     "what": "no piece was made, 800 lb is on record as scrap, and the source is used up",
+     "ok": true
+    },
+    {
+     "what": "yield is 0%",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 80
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "weight that is neither made nor scrapped stays on the source: nothing disappears without a record",
+   "asserts": [
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "1,300 lb left the source and 700 lb is still on it",
+     "ok": true
+    },
+    {
+     "what": "the yield is against what went on the line: 60%",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 89
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a drop cut from what a work order left behind keeps the heat and its parent, and the weights still add up",
+   "asserts": [
+    {
+     "what": "the drop is saved with the parent's heat and grade, pointing at its parent",
+     "ok": true
+    },
+    {
+     "what": "the parent went from 500 to 379.75 lb",
+     "ok": true
+    },
+    {
+     "what": "parent, piece and drop together plus scrap come to the 2,000 lb received",
+     "ok": true
+    },
+    {
+     "what": "parent: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "parent: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "parent: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "drop: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "drop: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "drop: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 126
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a drop cannot weigh more than what is free on its parent",
+   "asserts": [
+    {
+     "what": "150 lb against 100 lb free is refused",
+     "ok": true
+    },
+    {
+     "what": "nothing saved; the parent and its reservation are untouched",
+     "ok": true
+    },
+    {
+     "what": "100 lb is accepted and leaves exactly the reserved 900",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 144
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a piece made by one work order can be cut again by another, and the trail leads back to the original item and heat",
+   "asserts": [
+    {
+     "what": "two grandchildren",
+     "ok": true
+    },
+    {
+     "what": "each leads back through its parent to the original item",
+     "ok": true
+    },
+    {
+     "what": "and carries the original heat and grade",
+     "ok": true
+    },
+    {
+     "what": "every piece names the work order that made it",
+     "ok": true
+    },
+    {
+     "what": "the original 4,000 lb is 3,960 lb on the shelf and 40 lb of scrap",
+     "ok": true
+    },
+    {
+     "what": "middle piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "middle piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "middle piece: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 152
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "scrapping a made piece needs a reason and is done by inventory staff, not from the shop floor",
+   "asserts": [
+    {
+     "what": "no reason: 400; an operator: 403",
+     "ok": true
+    },
+    {
+     "what": "the piece is untouched",
+     "ok": true
+    },
+    {
+     "what": "inventory staff scrap it: one entry of 1,000 lb with the reason and who",
+     "ok": true
+    },
+    {
+     "what": "the piece is used up and still on file with its parent",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 117
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a cancelled work order leaves the stock exactly as it was, with no scrap and no pieces",
+   "asserts": [
+    {
+     "what": "cancelled, and a late completion is refused with 409",
+     "ok": true
+    },
+    {
+     "what": "on hand, available and reserved are unchanged",
+     "ok": true
+    },
+    {
+     "what": "no consume or scrap entry, no pieces",
+     "ok": true
+    },
+    {
+     "what": "the item is available again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 75
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a work order completed while the same item is being scrapped by hand: the balance still adds up",
+   "asserts": [
+    {
+     "what": "4 rounds: one of the two wins, nothing goes below zero, and the history equals the balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 306
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "sent for rework, a job gets a rework step that is started and clocked like any step, and must pass a new inspection (owner decision 9)",
+   "asserts": [
+    {
+     "what": "the job is scheduled again with the instructions at the top of its notes",
+     "ok": true
+    },
+    {
+     "what": "the inspection is on record as failed, disposition rework, with the instructions",
+     "ok": true
+    },
+    {
+     "what": "one rework step was added after the last step, named for the inspection, of the same kind of work",
+     "ok": true
+    },
+    {
+     "what": "the finished step cannot be run again",
+     "ok": true
+    },
+    {
+     "what": "the rework step starts, and the job is in process",
+     "ok": true
+    },
+    {
+     "what": "the job cannot be completed or packed while the rework step is open",
+     "ok": true
+    },
+    {
+     "what": "finished, its time is on record against the operator and work center",
+     "ok": true
+    },
+    {
+     "what": "the job is back at inspection, not at the dock",
+     "ok": true
+    },
+    {
+     "what": "the second inspection passes and the job is in packaging",
+     "ok": true
+    },
+    {
+     "what": "both inspections are on file, the failed one first",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at PACKAGING",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 379
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "the rework step can be sent to another kind of work center; an unknown kind is refused; a job with no plan gets the instructions only (owner decision 9)",
+   "asserts": [
+    {
+     "what": "a kind of work center that is not on file is refused, and nothing changed",
+     "ok": true
+    },
+    {
+     "what": "the rework step is of the kind the inspector named",
+     "ok": true
+    },
+    {
+     "what": "it runs only on a work center of that kind",
+     "ok": true
+    },
+    {
+     "what": "the same inspection cannot send it for rework twice, and there is still one rework step",
+     "ok": true
+    },
+    {
+     "what": "on the right work center it runs and finishes, and the job returns to inspection",
+     "ok": true
+    },
+    {
+     "what": "a second failed inspection adds a second rework step, after the first",
+     "ok": true
+    },
+    {
+     "what": "a job with no planned steps goes back with the instructions and a note that no step was added",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 498
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "an item's cost is taken from its purchase order line when it is received, and the pieces cut from it carry the same cost per pound (owner decision 9)",
+   "asserts": [
+    {
+     "what": "$42.00 per hundredweight on the purchase order is $0.42 a pound on the item and its stock record",
+     "ok": true
+    },
+    {
+     "what": "an item received with no purchase order has no cost: none is assumed",
+     "ok": true
+    },
+    {
+     "what": "both pieces carry $0.42 a pound",
+     "ok": true
+    },
+    {
+     "what": "the source's cost per pound is unchanged",
+     "ok": true
+    },
+    {
+     "what": "a piece cut from an item with no cost has no cost either",
+     "ok": true
+    },
+    {
+     "what": "scrap is not given a value, and landed cost (freight, duty) is not worked out: neither is on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 212
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a job's cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead (owner decision 9)",
+   "asserts": [
+    {
+     "what": "the work order for the job is completed",
+     "ok": true
+    },
+    {
+     "what": "with no labor rate on file the material is costed, labor is not, and the answer says what is missing",
+     "ok": true
+    },
+    {
+     "what": "a production manager cannot set a labor rate",
+     "ok": true
+    },
+    {
+     "what": "a negative rate or a word is refused",
+     "ok": true
+    },
+    {
+     "what": "the owner sets $60.00 an hour; the floor does not see the rate",
+     "ok": true
+    },
+    {
+     "what": "nor in the list of kinds",
+     "ok": true
+    },
+    {
+     "what": "material: 1,000 lb used (960 out, 40 scrap) at $0.50 is $500.00",
+     "ok": true
+    },
+    {
+     "what": "labor: 2 hours at $60.00 is $120.00 (to the minute)",
+     "ok": true
+    },
+    {
+     "what": "the total is the two added together, complete, with nothing missing",
+     "ok": true
+    },
+    {
+     "what": "the answer states its basis and that no overhead is included",
+     "ok": true
+    },
+    {
+     "what": "job cost is refused to the floor, the operator and quality",
+     "ok": true
+    },
+    {
+     "what": "the floor sees the material and yield of the job, with no cost in the answer",
+     "ok": true
+    },
+    {
+     "what": "material with no cost on file is named as missing; it is not costed at zero as if known",
+     "ok": true
+    },
+    {
+     "what": "no rate, cost or overhead figure was made up for this run: every figure above was entered by the test as the owner would enter it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 666
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a job names the coil work orders raised for it, and shows what they used, made and scrapped (owner decision 9)",
+   "asserts": [
+    {
+     "what": "a work order raised for a job is linked to it and takes the job's order line",
+     "ok": true
+    },
+    {
+     "what": "a work order cannot name a job and a different order line",
+     "ok": true
+    },
+    {
+     "what": "a job that is not on file is refused",
+     "ok": true
+    },
+    {
+     "what": "a job at a branch this person does not work at is \"not on file\" to them",
+     "ok": true
+    },
+    {
+     "what": "no work order for a cancelled job",
+     "ok": true
+    },
+    {
+     "what": "before it is completed the job shows the work order and no weight used",
+     "ok": true
+    },
+    {
+     "what": "two completed work orders: 1,000 lb used, 960 lb made, 40 lb scrap, 96% yield",
+     "ok": true
+    },
+    {
+     "what": "each line names the source, its heat and the pieces made",
+     "ok": true
+    },
+    {
+     "what": "the work order shows the job it was raised for",
+     "ok": true
+    },
+    {
+     "what": "another branch cannot read the job's material",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "source: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 563
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a failed job on hold can be sent for rework from the failed inspection; a passed one cannot",
+   "asserts": [
+    {
+     "what": "from on hold it goes back to scheduled, and the inspector's first note is kept",
+     "ok": true
+    },
+    {
+     "what": "the same inspection cannot send it for rework a second time",
+     "ok": true
+    },
+    {
+     "what": "a passed inspection cannot be turned into rework",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at SCHEDULED",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 428
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "nesting and cut optimisation are not part of this product",
+   "asserts": [
+    {
+     "what": "there is no nesting, cut-plan or cut-list table",
+     "ok": true
+    },
+    {
+     "what": "a work order records the weights in and out and the yield that results; it plans no layout and predicts no yield",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 12,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "outsourced processing (sending material to an outside processor and receiving it back) is not part of this product",
+   "asserts": [
+    {
+     "what": "there is no outside-processing or subcontract table",
+     "ok": true
+    },
+    {
+     "what": "no work order, job or step names an outside vendor",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "a job belongs to its order's branch: another branch's production manager cannot see it, plan it, move it or open its history",
+   "asserts": [
+    {
+     "what": "all seven are 404",
+     "ok": true
+    },
+    {
+     "what": "the job is exactly as it was, with no plan",
+     "ok": true
+    },
+    {
+     "what": "and it is not in their job list",
+     "ok": true
+    },
+    {
+     "what": "its own branch's manager sees it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 145
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "leadership sees production at every branch; a regional manager sees the branches they manage",
+   "asserts": [
+    {
+     "what": "the administrator opens both",
+     "ok": true
+    },
+    {
+     "what": "the regional manager of both branches opens both",
+     "ok": true
+    },
+    {
+     "what": "a branch manager opens their own and gets 404 on the other",
+     "ok": true
+    },
+    {
+     "what": "the job count for each branch equals the records (this address used to fail when a branch was named)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 181
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "an order sold at one branch can be worked at another: the plan and steps sit at the work center's branch, and a branch planner cannot reach across",
+   "asserts": [
+    {
+     "what": "leadership can open a job for a QA-L02 order on a QA-L01 work center",
+     "ok": true
+    },
+    {
+     "what": "its plan is at QA-L01, where the work center is",
+     "ok": true
+    },
+    {
+     "what": "a QA-L01 production manager cannot put a job on a QA-L02 work center",
+     "ok": true
+    },
+    {
+     "what": "a job planned at QA-L02 has its plan at QA-L02",
+     "ok": true
+    },
+    {
+     "what": "its step cannot be run at QA-L01 by a QA-L01 operator",
+     "ok": true
+    },
+    {
+     "what": "nor can the job be moved onto a QA-L01 work center while its steps are planned at QA-L02",
+     "ok": true
+    },
+    {
+     "what": "at QA-L02, with a QA-L02 operator, it starts",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 287
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "scheduling one branch leaves the other branch's work alone",
+   "asserts": [
+    {
+     "what": "QA-L02's manager schedules QA-L02",
+     "ok": true
+    },
+    {
+     "what": "the QA-L01 step is still waiting",
+     "ok": true
+    },
+    {
+     "what": "nothing the run placed belongs to another branch",
+     "ok": true
+    },
+    {
+     "what": "and QA-L02 cannot read a QA-L01 work center's queue",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 266
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "material on its way to another branch cannot be cut; once received there, that branch cuts it and the pieces are at that branch",
+   "asserts": [
+    {
+     "what": "an item on a started work order is not put on a truck, or if it is, it cannot then be cut",
+     "ok": true
+    },
+    {
+     "what": "an item in transit is refused for a new work order",
+     "ok": true
+    },
+    {
+     "what": "received at QA-L02, that branch's manager opens a work order on it",
+     "ok": true
+    },
+    {
+     "what": "the piece is at QA-L02 with the original heat",
+     "ok": true
+    },
+    {
+     "what": "QA-L01's manager can no longer open a work order on it",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "source: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: its history adds up to its balance",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 225
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "a piece made at one branch and trucked to another keeps its parent, its heat and the work order that made it",
+   "asserts": [
+    {
+     "what": "received at QA-L02",
+     "ok": true
+    },
+    {
+     "what": "parent, heat and grade unchanged",
+     "ok": true
+    },
+    {
+     "what": "still tied to its work order",
+     "ok": true
+    },
+    {
+     "what": "piece: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "piece: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "piece: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 116
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "lending an operator to another branch is not provided for: an operator works at their home branch",
+   "asserts": [
+    {
+     "what": "an operator has one home branch and no list of other branches",
+     "ok": true
+    },
+    {
+     "what": "so a QA-L02 operator cannot clock on at QA-L01",
+     "ok": true
+    },
+    {
+     "what": "whether operators may be lent between branches is the owner's labor policy; none is invented here",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 110,
+   "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "one inspection sent for rework by two people at the same moment: one rework step, one move (owner decision 9)",
+   "asserts": [
+    {
+     "what": "5 rounds: one of the two is accepted, the job has one rework step and went back once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 953
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "one job moved by two people at the same moment: one move is saved and the history is one chain",
+   "asserts": [
+    {
+     "what": "6 rounds: the job is where its history says it is, every time",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1246
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "the last step finished by two people at the same moment sends the job to inspection once",
+   "asserts": [
+    {
+     "what": "6 rounds of three at once: one move to inspection, every clock closed once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1035
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "a job cancelled while a step is running: the step cannot be finished, and the clock is stopped with the reason",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "the running clock was closed at that moment and says why",
+     "ok": true
+    },
+    {
+     "what": "the time worked before the cancellation is kept",
+     "ok": true
+    },
+    {
+     "what": "the step cannot be finished or restarted",
+     "ok": true
+    },
+    {
+     "what": "the operator is no longer clocked on to anything and can be given other work",
+     "ok": true
+    },
+    {
+     "what": "so the cancelled job does not block changes to the operator's record",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at CANCELLED",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 220
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "cancelling a job while its last step is being finished: whichever lands first, the job, the history and the clocks agree",
+   "asserts": [
+    {
+     "what": "6 rounds: one consistent outcome each time, and no clock left running",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 879
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "a refused request leaves nothing half-done: a work order completion with one bad piece saves no piece and moves no stock",
+   "asserts": [
+    {
+     "what": "a negative piece, a piece with no number, pieces heavier than the input, and an empty list are all refused",
+     "ok": true
+    },
+    {
+     "what": "no piece was created, no stock moved, and the work order is still in progress",
+     "ok": true
+    },
+    {
+     "what": "the corrected request then goes through once",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "a step left running since yesterday is still running after the gap, can be paused, and its time is what the clock says",
+   "asserts": [
+    {
+     "what": "the open clock is listed",
+     "ok": true
+    },
+    {
+     "what": "paused, and the entry is twenty hours long: the system does not shorten or cap it",
+     "ok": true
+    },
+    {
+     "what": "the reason given is on the entry for whoever reviews the time",
+     "ok": true
+    },
+    {
+     "what": "no rule on file caps a shift or flags a long entry: reviewing such time is left to the supervisor",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 145
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "a job stuck in production with every step finished can be sent on to inspection by hand",
+   "asserts": [
+    {
+     "what": "the production manager moves it to inspection",
+     "ok": true
+    },
+    {
+     "what": "the repair is in the history with who did it and the note",
+     "ok": true
+    },
+    {
+     "what": "and it then follows the normal path through inspection",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 226
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "an operator or work center with history is switched off, never deleted: past time entries keep their names",
+   "asserts": [
+    {
+     "what": "\"deleting\" the operator switches the record off and keeps it",
+     "ok": true
+    },
+    {
+     "what": "the work center with finished work is kept on file too",
+     "ok": true
+    },
+    {
+     "what": "the time entry still names the operator and work center, and both records still open",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 210
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "the shop-floor figures count work still to do on open jobs only, and agree with the queue",
+   "asserts": [
+    {
+     "what": "at this work center: one running, one queued, one finished; the cancelled job's step is not counted as work",
+     "ok": true
+    },
+    {
+     "what": "the queue shows the same two steps, the running one first",
+     "ok": true
+    },
+    {
+     "what": "the branch totals equal the records",
+     "ok": true
+    },
+    {
+     "what": "another branch's manager asking for this branch gets none of its figures",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 559
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "expediting a job raises its priority; moving work between work centers only happens between like machines at one branch",
+   "asserts": [
+    {
+     "what": "priority went up by one (it used to go down)",
+     "ok": true
+    },
+    {
+     "what": "a move to another kind of machine or another branch is not made, and the answer says why",
+     "ok": true
+    },
+    {
+     "what": "a move to a like machine at the same branch is made",
+     "ok": true
+    },
+    {
+     "what": "each accepted recommendation is in the audit log",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 148
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "one job followed end to end: order line, job, steps, time, inspection and shipment all point at each other",
+   "asserts": [
+    {
+     "what": "the job names its order and line, and the line belongs to that order",
+     "ok": true
+    },
+    {
+     "what": "the plan names the job; both steps are finished in order with start and end",
+     "ok": true
+    },
+    {
+     "what": "each step has its time entry naming operator and work center",
+     "ok": true
+    },
+    {
+     "what": "the inspection names the job and was decided after the last step ended",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at READY_TO_SHIP",
+     "ok": true
+    },
+    {
+     "what": "the history reads scheduled, in process, waiting for inspection, packaging, ready to ship, each with who did it",
+     "ok": true
+    },
+    {
+     "what": "the history screen returns the same story",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 330
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "across everything this run did: every job is where its history says, no finished step has a clock running, and no closed job has one either",
+   "asserts": [
+    {
+     "what": "181 jobs: each history is one chain ending at the job's status",
+     "ok": true
+    },
+    {
+     "what": "no finished step has a running clock",
+     "ok": true
+    },
+    {
+     "what": "no cancelled, shipped or completed job has a running clock",
+     "ok": true
+    },
+    {
+     "what": "no time entry ends before it starts",
+     "ok": true
+    },
+    {
+     "what": "22 jobs were released past inspection, and every one has a passed inspection on file or a routing marked \"no inspection\"",
+     "ok": true
+    },
+    {
+     "what": "and none has an unfinished step",
+     "ok": true
+    },
+    {
+     "what": "no job anywhere has two open inspections",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 218
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "production screens answer for one branch among many without reading the others",
+   "asserts": [
+    {
+     "what": "with 85 branches on file, six production screens answer together",
+     "ok": true
+    },
+    {
+     "what": "in under five seconds on this machine (timings at 85 branches are measured separately)",
+     "ok": true
+    },
+    {
+     "what": "and the job list holds no other branch's job",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 47
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "no equipment is driven by this product: there is no machine connection to test, and none was simulated",
+   "asserts": [
+    {
+     "what": "there is no machine-connection, PLC, OPC or telemetry table",
+     "ok": true
+    },
+    {
+     "what": "starting and finishing a step are entries made by a person at a screen; no signal is sent to a machine",
+     "ok": true
+    },
+    {
+     "what": "hardware certification is therefore NOT VERIFIED and is not claimed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 9,
+   "status": "NOT APPLICABLE"
+  }
+ ]
+}

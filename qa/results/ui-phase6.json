@@ -1,0 +1,78 @@
+{
+ "app": "http://localhost:5199",
+ "at": "2026-11-16T02:22:46.985Z",
+ "checks": 14,
+ "failed": 0,
+ "results": [
+  {
+   "name": "transfers: what is on its way to my branch is under Coming in",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "transfers: the receive window lists the item with what was sent",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "transfers: receiving on the screen books it in at my branch",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "transfers: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "stock item: sending it from its page puts it in transit",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "stock item: the page says it is in transit and Move is switched off",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "stock item: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "purchase orders: the new order is listed with its supplier",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "purchase orders: it opens with its line and nothing received",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "supply position: rows for my branch only, and it says nothing is suggested",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "purchase orders: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: the open purchase order line is listed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: choosing it fills the receipt from the line",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "receiving: no script errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

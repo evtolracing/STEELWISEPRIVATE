@@ -55,7 +55,7 @@ export default function CreateWorkCenterDialog({
     division: '',
     workCenterType: '',
     capabilities: [],
-    maxThicknessInches: 12,
+    maxThicknessInches: '',
     isOnline: true,
   })
   const [capInput, setCapInput] = useState('')
@@ -72,7 +72,7 @@ export default function CreateWorkCenterDialog({
         division: editData.division || '',
         workCenterType: editData.workCenterType || '',
         capabilities: editData.capabilities || [],
-        maxThicknessInches: editData.maxThicknessInches ?? 12,
+        maxThicknessInches: editData.maxThicknessInches ?? '',
         isOnline: editData.isOnline ?? true,
       })
     } else {
@@ -83,7 +83,7 @@ export default function CreateWorkCenterDialog({
         division: '',
         workCenterType: '',
         capabilities: [],
-        maxThicknessInches: 12,
+        maxThicknessInches: '',
         isOnline: true,
       })
     }
@@ -146,7 +146,8 @@ export default function CreateWorkCenterDialog({
         division: form.division || undefined,
         workCenterType: form.workCenterType,
         capabilities: form.capabilities,
-        maxThicknessInches: parseFloat(form.maxThicknessInches) || 12,
+        // Left empty means no limit is on file; nothing is assumed.
+        maxThicknessInches: parseFloat(form.maxThicknessInches) > 0 ? parseFloat(form.maxThicknessInches) : null,
         isOnline: form.isOnline,
       }
 
@@ -317,6 +318,7 @@ export default function CreateWorkCenterDialog({
               InputProps={{
                 endAdornment: <InputAdornment position="end">in</InputAdornment>,
               }}
+              helperText="Leave empty if there is no stated limit"
               inputProps={{ min: 0, step: 0.25 }}
             />
           </Grid>

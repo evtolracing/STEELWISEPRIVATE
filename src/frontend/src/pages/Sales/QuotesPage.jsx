@@ -22,6 +22,27 @@ const QUOTE_STATUS = { DRAFT: ['Draft', 'default'], SENT: ['Sent', 'primary'], A
 const UNITS = ['LB', 'EA', 'FT']
 const PRICE_UNITS = [['CWT', 'per 100 lb'], ['LB', 'per lb'], ['TON', 'per ton'], ['EACH', 'each'], ['LF', 'per foot']]
 const DIVISOR = { CWT: 100, TON: 2000, LB: 1, EACH: 1, LF: 1 }
+// Optional requirements of a line (J-001): what the customer asked for is kept on the request and
+// carried to the quote and the order. None is required; a line that is plain text stays plain text.
+const SPEC_FIELDS = [
+  ['grade', 'Grade', 'A36'], ['thicknessIn', 'Thickness (in)', '0.5'], ['widthIn', 'Width (in)', '48'], ['lengthIn', 'Length (in)', '96'],
+  ['finish', 'Finish', 'Pickled and oiled'], ['certRequirements', 'Certificates', 'MTR, COC'], ['processing', 'Processing', 'Shear to size'], ['specNotes', 'Other requirements', 'Flatness 1/8 in'],
+]
+const NUMERIC = ['thicknessIn', 'widthIn', 'lengthIn']
+const specsFrom = (l) => {
+  const out = {}
+  for (const [k] of SPEC_FIELDS) {
+    const v = String(l[k] ?? '').trim()
+    if (!v) continue
+    out[k] = k === 'certRequirements' ? v.split(/[,;]/).map((c) => c.trim()).filter(Boolean) : NUMERIC.includes(k) ? Number(v) : v
+  }
+  return out
+}
+const specText = (s) => {
+  if (!s) return ''
+  const size = ['thicknessIn', 'widthIn', 'lengthIn'].map((k) => s[k]).filter((v) => v != null && v !== '').map(Number).join(' x ')
+  return [s.grade || s.gradeOverride, size && `${size} in`, s.finish || s.surfaceFinish, (s.certRequirements || []).length ? `Certs: ${s.certRequirements.join(', ')}` : '', s.processing && `Processing: ${s.processing}`, s.specNotes].filter(Boolean).join(' · ')
+}
 const chip = (map, status) => <Chip size="small" label={(map[status] || [status])[0]} color={(map[status] || [])[1] || 'default'} />
 
 function NewRfqDialog({ onClose, onSaved }) {
@@ -29,7 +50,9 @@ function NewRfqDialog({ onClose, onSaved }) {
   const [customer, setCustomer] = useState(null)
   const [contactName, setContactName] = useState('')
   const [notes, setNotes] = useState('')
+  const [neededBy, setNeededBy] = useState('')
   const [lines, setLines] = useState([{ description: '', requestedQty: '', unit: 'LB' }])
+  const [open, setOpen] = useState({})
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
 
@@ -45,7 +68,10 @@ function NewRfqDialog({ onClose, onSaved }) {
   const save = async () => {
     setBusy(true); setError(null)
     try {
-      await client.post('/rfqs', { customerId: customer.id, contactName: contactName || undefined, notes: notes || undefined, lines: good.map((l) => ({ ...l, requestedQty: Number(l.requestedQty) })) })
+      await client.post('/rfqs', {
+        customerId: customer.id, contactName: contactName || undefined, notes: notes || undefined, requestedDate: neededBy || undefined,
+        lines: good.map((l) => ({ description: l.description, unit: l.unit, requestedQty: Number(l.requestedQty), ...specsFrom(l) })),
+      })
       onSaved()
     } catch (e) { setError(errorText(e, 'The RFQ did not save')) } finally { setBusy(false) }
   }
@@ -62,16 +88,28 @@ function NewRfqDialog({ onClose, onSaved }) {
             renderInput={(params) => <TextField {...params} size="small" label="Customer" autoFocus />}
           />
           <TextField sx={{ flex: 1 }} size="small" label="Who asked (optional)" value={contactName} onChange={(e) => setContactName(e.target.value)} />
+          <TextField sx={{ flex: 1 }} size="small" type="date" label="Needed by (optional)" InputLabelProps={{ shrink: true }} value={neededBy} onChange={(e) => setNeededBy(e.target.value)} />
         </Stack>
         {lines.map((l, i) => (
-          <Stack key={i} direction="row" spacing={1} sx={{ mb: 1 }}>
+          <Box key={i}>
+          <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
             <TextField size="small" fullWidth label={`Line ${i + 1}: what they need`} placeholder='A36 plate 1/2" x 48 x 96' value={l.description} onChange={(e) => setLine(i, { description: e.target.value })} />
             <TextField size="small" sx={{ width: 130 }} label="Quantity" type="number" value={l.requestedQty} onChange={(e) => setLine(i, { requestedQty: e.target.value })} />
             <TextField size="small" select sx={{ width: 90 }} label="Unit" value={l.unit} onChange={(e) => setLine(i, { unit: e.target.value })}>
               {UNITS.map((u) => <MenuItem key={u} value={u}>{u}</MenuItem>)}
             </TextField>
+            <Button size="small" onClick={() => setOpen({ ...open, [i]: !open[i] })}>{open[i] ? 'Hide details' : 'Details'}</Button>
             <IconButton disabled={lines.length === 1} onClick={() => setLines(lines.filter((x, k) => k !== i))} aria-label="Remove line"><DeleteIcon /></IconButton>
           </Stack>
+          {open[i] && (
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 1, mb: 1.5, pl: 1 }}>
+              {SPEC_FIELDS.map(([k, label, hint]) => (
+                <TextField key={k} size="small" label={label} placeholder={hint} type={NUMERIC.includes(k) ? 'number' : 'text'} inputProps={NUMERIC.includes(k) ? { min: 0, step: 'any' } : {}}
+                  value={l[k] || ''} onChange={(e) => setLine(i, { [k]: e.target.value })} />
+              ))}
+            </Box>
+          )}
+          </Box>
         ))}
         <Button size="small" startIcon={<AddIcon />} onClick={() => setLines([...lines, { description: '', requestedQty: '', unit: 'LB' }])}>Add line</Button>
         <TextField fullWidth size="small" multiline minRows={2} sx={{ mt: 2 }} label="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
@@ -130,7 +168,7 @@ function RfqDialog({ id, onClose, onChanged }) {
               <TableBody>
                 {rfq.lines.map((l, i) => (
                   <TableRow key={l.id}>
-                    <TableCell>{l.lineNumber}. {l.description}</TableCell>
+                    <TableCell>{l.lineNumber}. {l.description}{specText(l.specifications) && <Typography variant="caption" color="text.secondary" display="block">{specText(l.specifications)}</Typography>}</TableCell>
                     <TableCell align="right">{Number(l.requestedQty)} {l.unit}</TableCell>
                     {pricing && (
                       <>
@@ -168,7 +206,7 @@ function RfqDialog({ id, onClose, onChanged }) {
                   <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                     <Typography fontWeight={600}>{q.quoteNumber}</Typography>
                     {chip(QUOTE_STATUS, expired ? 'EXPIRED' : q.status)}
-                    <Typography variant="body2" sx={{ flexGrow: 1 }}>{usd(q.totalAmount)} · valid until {day(q.validUntil)}</Typography>
+                    <Typography variant="body2" sx={{ flexGrow: 1 }}>{q.taxAmount != null ? `${usd(q.subtotal)} + tax ${usd(q.taxAmount)} = ` : ''}{usd(q.totalAmount)} · valid until {day(q.validUntil)}</Typography>
                     {q.status === 'DRAFT' && !expired && <Button size="small" disabled={busy} onClick={() => run(() => client.post(`/quotes/${q.id}/send`, {}), 'Marked as sent. Nothing is emailed from here: send the customer the quote yourself.')}>Mark as sent</Button>}
                     {['DRAFT', 'SENT'].includes(q.status) && !expired && (
                       <Button size="small" variant="contained" disabled={busy} onClick={() => run(() => client.post(`/quotes/${q.id}/accept`, {}), (r) => `Order ${r.data?.order?.orderNumber} created from this quote.`)}>Customer accepted: create order</Button>
@@ -178,7 +216,7 @@ function RfqDialog({ id, onClose, onChanged }) {
                   </Stack>
                   {(q.lines || []).map((ql) => (
                     <Typography key={ql.id} variant="body2" color="text.secondary">
-                      {ql.lineNumber}. {ql.description} · {Number(ql.quantity)} {ql.unit} at {usd(ql.unitPrice)} {(PRICE_UNITS.find(([v]) => v === ql.priceUnit) || [])[1] || ql.priceUnit} = {usd(ql.extendedPrice)}
+                      {ql.lineNumber}. {ql.description} · {Number(ql.quantity)} {ql.unit} at {usd(ql.unitPrice)} {(PRICE_UNITS.find(([v]) => v === ql.priceUnit) || [])[1] || ql.priceUnit} = {usd(ql.extendedPrice)}{specText(ql) ? ` · ${specText(ql)}` : ''}
                     </Typography>
                   ))}
                 </Paper>

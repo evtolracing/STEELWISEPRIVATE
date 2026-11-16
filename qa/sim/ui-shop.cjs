@@ -67,6 +67,14 @@ const OUT = arg('out', 'qa/results/ui-shop.json');
     check('job: the change is still there after reloading', (await has(page, 'Blade change')) && /On Hold/.test(await body(page)), await body(page));
 
     // A move the rules do not allow is refused and the reason is shown.
+    // The job gets to the dock the way the rules now require: back in process, completed, inspected and
+    // passed, packed (owner decision 9: every job is inspected, even one with no planned steps).
+    const skip = await api('POST', `/api/jobs/${job.id}/status`, operator, { status: 'READY_TO_SHIP' });
+    check('job: a job on hold cannot be sent straight to the dock without an inspection', skip.status === 409, `status ${skip.status}`);
+    await api('POST', `/api/jobs/${job.id}/status`, operator, { status: 'IN_PROCESS' });
+    await api('POST', `/api/jobs/${job.id}/complete`, operator, {});
+    const inspection = (await api('POST', '/api/qc/inspections', boss, { jobId: job.id })).body?.data;
+    await api('POST', `/api/qc/inspections/${inspection?.id}/pass`, boss, { checklist: (inspection?.checklist || []).map((c) => ({ ...c, result: 'PASS' })) });
     await api('POST', `/api/jobs/${job.id}/status`, operator, { status: 'READY_TO_SHIP' });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await seen(page, job.jobNumber);
@@ -144,8 +152,9 @@ const OUT = arg('out', 'qa/results/ui-shop.json');
       await list.getByLabel('Good weight out (lb)').fill(String(input * 3));
       await list.getByRole('button', { name: 'Complete work order' }).click();
       check('work orders: more weight out than went in is refused with the reason', await has(list, /is more than the/), await body(list));
-      await list.getByLabel('Good weight out (lb)').fill(String(Math.round(input * 0.95)));
-      await list.getByLabel('Scrap (lb)').fill(String(Math.round(input * 0.03)));
+      // To two decimals, not rounded to a whole pound: the first item offered can be a small remnant.
+      await list.getByLabel('Good weight out (lb)').fill((input * 0.95).toFixed(2));
+      await list.getByLabel('Scrap (lb)').fill((input * 0.03).toFixed(2));
       await list.getByRole('button', { name: 'Complete work order' }).click();
       await has(list, /Work order completed|Complete$/);
       await list.waitForTimeout(800);

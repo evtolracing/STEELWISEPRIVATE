@@ -161,6 +161,7 @@ const navSections = [
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },
       { path: '/orders/invoices', label: 'Invoices', icon: InvoicesIcon },
       { path: '/orders/returns', label: 'Returns', icon: RMAIcon },
+      { path: '/orders/closeout', label: 'Orders Not Closed', icon: OrdersIcon },
     ],
   },
 
@@ -199,6 +200,7 @@ const navSections = [
     items: [
       { path: '/material-tracking', label: 'Dashboard', icon: QualityDashIcon },
       { path: '/material-tracking/packaging', label: 'Packaging Queue', icon: PackagingQueueIcon },
+      { path: '/material-tracking/packages', label: 'Packing', icon: PackagingQueueIcon },
       { path: '/material-tracking/tags', label: 'Tag Management', icon: LabelIcon },
       { path: '/material-tracking/staging', label: 'Staging & Loading', icon: StagingIcon },
       { path: '/material-tracking/traceability', label: 'Traceability', icon: CustodyIcon },
@@ -207,7 +209,9 @@ const navSections = [
   {
     title: 'Shipping & Logistics',
     items: [
+      { path: '/purchase-orders', label: 'Purchase Orders', icon: ReceivingIcon },
       { path: '/receiving', label: 'Receiving', icon: ReceivingIcon },
+      { path: '/transfers', label: 'Transfers', icon: ShippingIcon },
       { path: '/shipping', label: 'Shipping', icon: ShippingIcon },
       { path: '/freight/planner', label: 'Shipment Planner', icon: LogisticsIcon },
       { path: '/freight/comparison', label: 'Freight Comparison', icon: FreightCompareIcon },
@@ -315,6 +319,7 @@ const navSections = [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
       { path: '/admin/staff', label: 'Staff & Operators', icon: StaffIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
+      { path: '/admin/integrations', label: 'Integrations', icon: PartnerApiIcon },
       { path: '/admin/audit-log', label: 'Audit Log', icon: AuditLogIcon },
       { path: '/admin/tax-rates', label: 'Sales Tax Rates', icon: InvoicesIcon },
       { path: '/admin/processing-recipes', label: 'Processing Recipes', icon: RecipesIcon },

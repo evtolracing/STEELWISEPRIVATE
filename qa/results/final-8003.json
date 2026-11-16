@@ -1,7 +1,7 @@
 {
  "seed": 8003,
  "base": "http://localhost:3011",
- "at": "2026-11-13T18:47:38.348Z",
+ "at": "2026-11-16T02:15:22.340Z",
  "scenarios": [
   {
    "id": "S8003-01",
@@ -32,25 +32,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00182 → IN_PROCESS",
+     "name": "job JOB-00183 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00182 → WAITING_QC",
+     "name": "job JOB-00183 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00182 → PACKAGING",
+     "name": "job JOB-00183 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00183",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00104",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00182 → READY_TO_SHIP",
+     "name": "job JOB-00183 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -80,19 +92,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000079 is refused",
+     "name": "overpay INV-000077 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 81.25 on INV-000079",
+     "name": "pay 81.25 on INV-000077",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000079",
+     "name": "pay the rest of INV-000077",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -158,11 +170,11 @@
      "ok": true
     },
     {
-     "name": "INV-000079: status after payment",
+     "name": "INV-000077: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000079: paid in full",
+     "name": "INV-000077: paid in full",
      "ok": true
     },
     {
@@ -170,19 +182,19 @@
      "ok": true
     },
     {
-     "name": "INV-000079: total = subtotal + tax + freight",
+     "name": "INV-000077: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000079: subtotal = its lines",
+     "name": "INV-000077: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000079: paid = its payments",
+     "name": "INV-000077: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000079: never paid more than billed",
+     "name": "INV-000077: never paid more than billed",
      "ok": true
     },
     {
@@ -200,7 +212,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 346
+   "ms": 457
   },
   {
    "id": "S8003-02",
@@ -231,25 +243,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00183 → IN_PROCESS",
+     "name": "job JOB-00184 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00183 → WAITING_QC",
+     "name": "job JOB-00184 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00183 → PACKAGING",
+     "name": "job JOB-00184 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00184",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00105",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00183 → READY_TO_SHIP",
+     "name": "job JOB-00184 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -279,13 +303,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000080 is refused",
+     "name": "overpay INV-000078 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 788.63 on INV-000080",
+     "name": "pay 788.63 on INV-000078",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -345,7 +369,7 @@
      "ok": true
     },
     {
-     "name": "INV-000080: status after payment",
+     "name": "INV-000078: status after payment",
      "ok": true
     },
     {
@@ -353,19 +377,19 @@
      "ok": true
     },
     {
-     "name": "INV-000080: total = subtotal + tax + freight",
+     "name": "INV-000078: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000080: subtotal = its lines",
+     "name": "INV-000078: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000080: paid = its payments",
+     "name": "INV-000078: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000080: never paid more than billed",
+     "name": "INV-000078: never paid more than billed",
      "ok": true
     },
     {
@@ -383,7 +407,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 285
+   "ms": 378
   },
   {
    "id": "S8003-03",
@@ -414,25 +438,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00184 → IN_PROCESS",
+     "name": "job JOB-00185 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → WAITING_QC",
+     "name": "job JOB-00185 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → PACKAGING",
+     "name": "job JOB-00185 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00185",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00106",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00184 → READY_TO_SHIP",
+     "name": "job JOB-00185 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -462,7 +498,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000081 is refused",
+     "name": "overpay INV-000079 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -526,19 +562,19 @@
      "ok": true
     },
     {
-     "name": "INV-000081: total = subtotal + tax + freight",
+     "name": "INV-000079: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000081: subtotal = its lines",
+     "name": "INV-000079: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000081: paid = its payments",
+     "name": "INV-000079: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000081: never paid more than billed",
+     "name": "INV-000079: never paid more than billed",
      "ok": true
     },
     {
@@ -556,7 +592,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 284
+   "ms": 378
   },
   {
    "id": "S8003-04",
@@ -599,7 +635,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00186 → PACKAGING",
+     "name": "job JOB-00186 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00186",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00107",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -635,13 +683,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000082 is refused",
+     "name": "overpay INV-000080 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 1196.16 on INV-000082",
+     "name": "pay 1196.16 on INV-000080",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -701,7 +749,7 @@
      "ok": true
     },
     {
-     "name": "INV-000082: status after payment",
+     "name": "INV-000080: status after payment",
      "ok": true
     },
     {
@@ -709,19 +757,19 @@
      "ok": true
     },
     {
-     "name": "INV-000082: total = subtotal + tax + freight",
+     "name": "INV-000080: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000082: subtotal = its lines",
+     "name": "INV-000080: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000082: paid = its payments",
+     "name": "INV-000080: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000082: never paid more than billed",
+     "name": "INV-000080: never paid more than billed",
      "ok": true
     },
     {
@@ -739,7 +787,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 305
+   "ms": 383
   },
   {
    "id": "S8003-05",
@@ -782,7 +830,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00187 → PACKAGING",
+     "name": "job JOB-00187 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00187",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00108",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -818,13 +878,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000083 is refused",
+     "name": "overpay INV-000081 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 914.71 on INV-000083",
+     "name": "pay 914.71 on INV-000081",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -884,7 +944,7 @@
      "ok": true
     },
     {
-     "name": "INV-000083: status after payment",
+     "name": "INV-000081: status after payment",
      "ok": true
     },
     {
@@ -892,19 +952,19 @@
      "ok": true
     },
     {
-     "name": "INV-000083: total = subtotal + tax + freight",
+     "name": "INV-000081: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000083: subtotal = its lines",
+     "name": "INV-000081: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000083: paid = its payments",
+     "name": "INV-000081: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000083: never paid more than billed",
+     "name": "INV-000081: never paid more than billed",
      "ok": true
     },
     {
@@ -922,7 +982,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 300
+   "ms": 381
   },
   {
    "id": "S8003-06",
@@ -977,31 +1037,43 @@
      "ok": true
     },
     {
-     "name": "assign JOB-00189 to QA-L19-LASER",
+     "name": "assign JOB-00188 to QA-L19-LASER",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → IN_PROCESS",
+     "name": "job JOB-00188 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → WAITING_QC",
+     "name": "job JOB-00188 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → PACKAGING",
+     "name": "job JOB-00188 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00188",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00109",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00189 → READY_TO_SHIP",
+     "name": "job JOB-00188 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1031,13 +1103,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000084 is refused",
+     "name": "overpay INV-000082 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 467.5 on INV-000084",
+     "name": "pay 467.5 on INV-000082",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1101,7 +1173,7 @@
      "ok": true
     },
     {
-     "name": "INV-000084: status after payment",
+     "name": "INV-000082: status after payment",
      "ok": true
     },
     {
@@ -1109,19 +1181,19 @@
      "ok": true
     },
     {
-     "name": "INV-000084: total = subtotal + tax + freight",
+     "name": "INV-000082: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000084: subtotal = its lines",
+     "name": "INV-000082: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000084: paid = its payments",
+     "name": "INV-000082: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000084: never paid more than billed",
+     "name": "INV-000082: never paid more than billed",
      "ok": true
     },
     {
@@ -1139,7 +1211,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 368
+   "ms": 451
   },
   {
    "id": "S8003-07",
@@ -1194,31 +1266,43 @@
      "ok": true
     },
     {
-     "name": "assign JOB-00190 to QA-L72-SAW",
+     "name": "assign JOB-00189 to QA-L72-SAW",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → IN_PROCESS",
+     "name": "job JOB-00189 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → WAITING_QC",
+     "name": "job JOB-00189 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → PACKAGING",
+     "name": "job JOB-00189 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00189",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00110",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00190 → READY_TO_SHIP",
+     "name": "job JOB-00189 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1248,19 +1332,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000085 is refused",
+     "name": "overpay INV-000083 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 82.5 on INV-000085",
+     "name": "pay 82.5 on INV-000083",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000085",
+     "name": "pay the rest of INV-000083",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1330,11 +1414,11 @@
      "ok": true
     },
     {
-     "name": "INV-000085: status after payment",
+     "name": "INV-000083: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000085: paid in full",
+     "name": "INV-000083: paid in full",
      "ok": true
     },
     {
@@ -1342,19 +1426,19 @@
      "ok": true
     },
     {
-     "name": "INV-000085: total = subtotal + tax + freight",
+     "name": "INV-000083: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000085: subtotal = its lines",
+     "name": "INV-000083: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000085: paid = its payments",
+     "name": "INV-000083: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000085: never paid more than billed",
+     "name": "INV-000083: never paid more than billed",
      "ok": true
     },
     {
@@ -1372,7 +1456,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 383
+   "ms": 465
   },
   {
    "id": "S8003-08",
@@ -1391,13 +1475,55 @@
      "ok": true
     },
     {
-     "name": "allocate 1200 lb from QA-L30-S4",
+     "name": "allocate 1200 lb from QA-L30-S5",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
      "name": "create job at QA-L30-SAW",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00190 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00190 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00190 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00190",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00111",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00190 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L30-SHEAR",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1415,7 +1541,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00191 → PACKAGING",
+     "name": "job JOB-00191 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00191",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00112",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1427,7 +1565,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L30-SHEAR",
+     "name": "create job at QA-L30-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1445,43 +1583,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00192 → PACKAGING",
+     "name": "job JOB-00192 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00192",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00113",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00192 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L30-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00193 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1511,13 +1631,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000086 is refused",
+     "name": "overpay INV-000084 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 780 on INV-000086",
+     "name": "pay 780 on INV-000084",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1561,23 +1681,23 @@
      "ok": true
     },
     {
-     "name": "QA-L30-S4: no negative quantities",
+     "name": "QA-L30-S5: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L30-S4: on hand = available + allocated + on hold",
+     "name": "QA-L30-S5: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L30-S4: inventory allocated = open allocations",
+     "name": "QA-L30-S5: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L30-S4: inventory branch = coil branch",
+     "name": "QA-L30-S5: inventory branch = coil branch",
      "ok": true
     },
     {
-     "name": "INV-000086: status after payment",
+     "name": "INV-000084: status after payment",
      "ok": true
     },
     {
@@ -1585,19 +1705,19 @@
      "ok": true
     },
     {
-     "name": "INV-000086: total = subtotal + tax + freight",
+     "name": "INV-000084: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000086: subtotal = its lines",
+     "name": "INV-000084: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000086: paid = its payments",
+     "name": "INV-000084: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000086: never paid more than billed",
+     "name": "INV-000084: never paid more than billed",
      "ok": true
     },
     {
@@ -1615,7 +1735,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 517
+   "ms": 659
   },
   {
    "id": "S8003-09",
@@ -1646,6 +1766,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00193 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00193 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00193 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00193",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00114",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00193 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L22-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00194 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -1658,7 +1820,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00194 → PACKAGING",
+     "name": "job JOB-00194 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00194",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00115",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1670,7 +1844,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L22-SHEAR",
+     "name": "create job at QA-L22-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1688,43 +1862,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00195 → PACKAGING",
+     "name": "job JOB-00195 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00195",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00116",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00195 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L22-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00196 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00196 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00196 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00196 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1754,19 +1910,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000087 is refused",
+     "name": "overpay INV-000085 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 65 on INV-000087",
+     "name": "pay 65 on INV-000085",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000087",
+     "name": "pay the rest of INV-000085",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1832,11 +1988,11 @@
      "ok": true
     },
     {
-     "name": "INV-000087: status after payment",
+     "name": "INV-000085: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000087: paid in full",
+     "name": "INV-000085: paid in full",
      "ok": true
     },
     {
@@ -1844,19 +2000,19 @@
      "ok": true
     },
     {
-     "name": "INV-000087: total = subtotal + tax + freight",
+     "name": "INV-000085: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000087: subtotal = its lines",
+     "name": "INV-000085: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000087: paid = its payments",
+     "name": "INV-000085: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000087: never paid more than billed",
+     "name": "INV-000085: never paid more than billed",
      "ok": true
     },
     {
@@ -1874,7 +2030,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 491
+   "ms": 699
   },
   {
    "id": "S8003-10",
@@ -1905,6 +2061,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00196 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00196 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00196 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00196",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00117",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00196 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L12-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00197 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -1917,7 +2115,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00197 → PACKAGING",
+     "name": "job JOB-00197 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00197",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00118",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1929,7 +2139,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L12-SHEAR",
+     "name": "create job at QA-L12-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1947,43 +2157,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00198 → PACKAGING",
+     "name": "job JOB-00198 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00198",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00119",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00198 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L12-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00199 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00199 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00199 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00199 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2013,19 +2205,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000088 is refused",
+     "name": "overpay INV-000086 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 457.36 on INV-000088",
+     "name": "pay 457.36 on INV-000086",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000088",
+     "name": "pay the rest of INV-000086",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2091,11 +2283,11 @@
      "ok": true
     },
     {
-     "name": "INV-000088: status after payment",
+     "name": "INV-000086: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000088: paid in full",
+     "name": "INV-000086: paid in full",
      "ok": true
     },
     {
@@ -2103,19 +2295,19 @@
      "ok": true
     },
     {
-     "name": "INV-000088: total = subtotal + tax + freight",
+     "name": "INV-000086: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000088: subtotal = its lines",
+     "name": "INV-000086: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000088: paid = its payments",
+     "name": "INV-000086: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000088: never paid more than billed",
+     "name": "INV-000086: never paid more than billed",
      "ok": true
     },
     {
@@ -2133,7 +2325,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 513
+   "ms": 658
   },
   {
    "id": "S8003-11",
@@ -2164,6 +2356,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00199 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00199 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00199 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00199",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00120",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00199 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L16-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00200 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -2176,43 +2410,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00200 → PACKAGING",
+     "name": "job JOB-00200 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00200",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00121",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00200 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L16-SHEAR",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00201 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00201 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00201 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00201 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2242,19 +2458,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000089 is refused",
+     "name": "overpay INV-000087 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 597.63 on INV-000089",
+     "name": "pay 597.63 on INV-000087",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000089",
+     "name": "pay the rest of INV-000087",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2320,11 +2536,11 @@
      "ok": true
     },
     {
-     "name": "INV-000089: status after payment",
+     "name": "INV-000087: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000089: paid in full",
+     "name": "INV-000087: paid in full",
      "ok": true
     },
     {
@@ -2332,19 +2548,19 @@
      "ok": true
     },
     {
-     "name": "INV-000089: total = subtotal + tax + freight",
+     "name": "INV-000087: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000089: subtotal = its lines",
+     "name": "INV-000087: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000089: paid = its payments",
+     "name": "INV-000087: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000089: never paid more than billed",
+     "name": "INV-000087: never paid more than billed",
      "ok": true
     },
     {
@@ -2362,7 +2578,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 421
+   "ms": 528
   },
   {
    "id": "S8003-12",
@@ -2393,6 +2609,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00201 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00201 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00201 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00201",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00122",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00201 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L75-SHEAR",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00202 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -2405,7 +2663,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00202 → PACKAGING",
+     "name": "job JOB-00202 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00202",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00123",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2417,7 +2687,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L75-SHEAR",
+     "name": "create job at QA-L75-LASER",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2435,43 +2705,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00203 → PACKAGING",
+     "name": "job JOB-00203 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00203",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00124",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00203 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L75-LASER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00204 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00204 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00204 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00204 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2501,13 +2753,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000090 is refused",
+     "name": "overpay INV-000088 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 703.63 on INV-000090",
+     "name": "pay 703.63 on INV-000088",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2567,7 +2819,7 @@
      "ok": true
     },
     {
-     "name": "INV-000090: status after payment",
+     "name": "INV-000088: status after payment",
      "ok": true
     },
     {
@@ -2575,19 +2827,19 @@
      "ok": true
     },
     {
-     "name": "INV-000090: total = subtotal + tax + freight",
+     "name": "INV-000088: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000090: subtotal = its lines",
+     "name": "INV-000088: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000090: paid = its payments",
+     "name": "INV-000088: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000090: never paid more than billed",
+     "name": "INV-000088: never paid more than billed",
      "ok": true
     },
     {
@@ -2605,7 +2857,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 465
+   "ms": 712
   },
   {
    "id": "S8003-13",
@@ -2636,25 +2888,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00205 → IN_PROCESS",
+     "name": "job JOB-00204 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → WAITING_QC",
+     "name": "job JOB-00204 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → PACKAGING",
+     "name": "job JOB-00204 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00204",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00125",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00205 → READY_TO_SHIP",
+     "name": "job JOB-00204 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2684,7 +2948,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000091 is refused",
+     "name": "overpay INV-000089 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -2748,19 +3012,19 @@
      "ok": true
     },
     {
-     "name": "INV-000091: total = subtotal + tax + freight",
+     "name": "INV-000089: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000091: subtotal = its lines",
+     "name": "INV-000089: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000091: paid = its payments",
+     "name": "INV-000089: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000091: never paid more than billed",
+     "name": "INV-000089: never paid more than billed",
      "ok": true
     },
     {
@@ -2778,7 +3042,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 256
+   "ms": 341
   },
   {
    "id": "S8003-14",
@@ -2809,6 +3073,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00205 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00205 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00205 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00205",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00126",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00205 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L18-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00206 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -2821,7 +3127,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00206 → PACKAGING",
+     "name": "job JOB-00206 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00206",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00127",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2833,7 +3151,7 @@
      "ok": true
     },
     {
-     "name": "create job at QA-L18-CNC",
+     "name": "create job at QA-L18-PLASTIC_SAW",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2851,43 +3169,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00207 → PACKAGING",
+     "name": "job JOB-00207 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00207",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00128",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00207 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L18-PLASTIC_SAW",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00208 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00208 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00208 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00208 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -2917,19 +3217,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000092 is refused",
+     "name": "overpay INV-000090 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 325 on INV-000092",
+     "name": "pay 325 on INV-000090",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000092",
+     "name": "pay the rest of INV-000090",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -2995,11 +3295,11 @@
      "ok": true
     },
     {
-     "name": "INV-000092: status after payment",
+     "name": "INV-000090: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000092: paid in full",
+     "name": "INV-000090: paid in full",
      "ok": true
     },
     {
@@ -3007,19 +3307,19 @@
      "ok": true
     },
     {
-     "name": "INV-000092: total = subtotal + tax + freight",
+     "name": "INV-000090: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000092: subtotal = its lines",
+     "name": "INV-000090: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000092: paid = its payments",
+     "name": "INV-000090: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000092: never paid more than billed",
+     "name": "INV-000090: never paid more than billed",
      "ok": true
     },
     {
@@ -3037,7 +3337,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 494
+   "ms": 733
   },
   {
    "id": "S8003-15",
@@ -3068,25 +3368,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00209 → IN_PROCESS",
+     "name": "job JOB-00208 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00209 → WAITING_QC",
+     "name": "job JOB-00208 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00209 → PACKAGING",
+     "name": "job JOB-00208 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00208",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00129",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00209 → READY_TO_SHIP",
+     "name": "job JOB-00208 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3116,13 +3428,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000093 is refused",
+     "name": "overpay INV-000091 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 536.99 on INV-000093",
+     "name": "pay 536.99 on INV-000091",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3182,7 +3494,7 @@
      "ok": true
     },
     {
-     "name": "INV-000093: status after payment",
+     "name": "INV-000091: status after payment",
      "ok": true
     },
     {
@@ -3190,19 +3502,19 @@
      "ok": true
     },
     {
-     "name": "INV-000093: total = subtotal + tax + freight",
+     "name": "INV-000091: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000093: subtotal = its lines",
+     "name": "INV-000091: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000093: paid = its payments",
+     "name": "INV-000091: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000093: never paid more than billed",
+     "name": "INV-000091: never paid more than billed",
      "ok": true
     },
     {
@@ -3220,7 +3532,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 294
+   "ms": 404
   },
   {
    "id": "S8003-16",
@@ -3251,6 +3563,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00209 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00209 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00209 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00209",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00130",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00209 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L76-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00210 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -3263,43 +3617,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00210 → PACKAGING",
+     "name": "job JOB-00210 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00210",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00131",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00210 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L76-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00211 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00211 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00211 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00211 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3329,7 +3665,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000094 is refused",
+     "name": "overpay INV-000092 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -3393,19 +3729,19 @@
      "ok": true
     },
     {
-     "name": "INV-000094: total = subtotal + tax + freight",
+     "name": "INV-000092: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000094: subtotal = its lines",
+     "name": "INV-000092: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000094: paid = its payments",
+     "name": "INV-000092: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000094: never paid more than billed",
+     "name": "INV-000092: never paid more than billed",
      "ok": true
     },
     {
@@ -3423,7 +3759,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 375
+   "ms": 491
   },
   {
    "id": "S8003-17",
@@ -3454,25 +3790,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00212 → IN_PROCESS",
+     "name": "job JOB-00211 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00212 → WAITING_QC",
+     "name": "job JOB-00211 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00212 → PACKAGING",
+     "name": "job JOB-00211 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00211",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00132",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00212 → READY_TO_SHIP",
+     "name": "job JOB-00211 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3502,13 +3850,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000095 is refused",
+     "name": "overpay INV-000093 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 246.27 on INV-000095",
+     "name": "pay 246.27 on INV-000093",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3568,7 +3916,7 @@
      "ok": true
     },
     {
-     "name": "INV-000095: status after payment",
+     "name": "INV-000093: status after payment",
      "ok": true
     },
     {
@@ -3576,19 +3924,19 @@
      "ok": true
     },
     {
-     "name": "INV-000095: total = subtotal + tax + freight",
+     "name": "INV-000093: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000095: subtotal = its lines",
+     "name": "INV-000093: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000095: paid = its payments",
+     "name": "INV-000093: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000095: never paid more than billed",
+     "name": "INV-000093: never paid more than billed",
      "ok": true
     },
     {
@@ -3606,7 +3954,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 289
+   "ms": 417
   },
   {
    "id": "S8003-18",
@@ -3637,6 +3985,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00212 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00212 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00212 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00212",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00133",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00212 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L61-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00213 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -3649,43 +4039,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00213 → PACKAGING",
+     "name": "job JOB-00213 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00213",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00134",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00213 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L61-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00214 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00214 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00214 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00214 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -3715,19 +4087,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000096 is refused",
+     "name": "overpay INV-000094 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 208.31 on INV-000096",
+     "name": "pay 208.31 on INV-000094",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000096",
+     "name": "pay the rest of INV-000094",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -3793,11 +4165,11 @@
      "ok": true
     },
     {
-     "name": "INV-000096: status after payment",
+     "name": "INV-000094: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000096: paid in full",
+     "name": "INV-000094: paid in full",
      "ok": true
     },
     {
@@ -3805,19 +4177,19 @@
      "ok": true
     },
     {
-     "name": "INV-000096: total = subtotal + tax + freight",
+     "name": "INV-000094: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000096: subtotal = its lines",
+     "name": "INV-000094: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000096: paid = its payments",
+     "name": "INV-000094: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000096: never paid more than billed",
+     "name": "INV-000094: never paid more than billed",
      "ok": true
     },
     {
@@ -3835,7 +4207,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 388
+   "ms": 591
   },
   {
    "id": "S8003-19",
@@ -3892,7 +4264,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 96
+   "ms": 98
   },
   {
    "id": "S8003-20",
@@ -3949,7 +4321,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 80
+   "ms": 78
   },
   {
    "id": "S8003-21",
@@ -4006,7 +4378,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 70
+   "ms": 76
   },
   {
    "id": "S8003-22",
@@ -4039,7 +4411,7 @@
     {
      "name": "POS: refuse to submit an empty sale",
      "expect": "4xx",
-     "status": 400,
+     "status": 410,
      "ok": true
     },
     {
@@ -4067,15 +4439,21 @@
      "ok": true
     },
     {
-     "name": "POS: submit the sale",
-     "expect": "2xx",
+     "name": "POS: the old session submit is closed and says where to go",
+     "expect": 410,
+     "status": 410,
+     "ok": true
+    },
+    {
+     "name": "Retail POS: enter the counter order",
+     "expect": 201,
      "status": 201,
      "ok": true
     },
     {
-     "name": "POS: refuse to submit the same sale twice",
-     "expect": "4xx",
-     "status": 400,
+     "name": "Retail POS: submit the counter order",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     }
    ],
@@ -4097,7 +4475,7 @@
      "ok": true
     },
     {
-     "name": "POS order belongs to the chosen customer",
+     "name": "POS order belongs to the chosen customer and the clerk's branch",
      "ok": true
     },
     {
@@ -4123,7 +4501,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 133
+   "ms": 143
   },
   {
    "id": "S8003-23",
@@ -4156,7 +4534,7 @@
     {
      "name": "POS: refuse to submit an empty sale",
      "expect": "4xx",
-     "status": 400,
+     "status": 410,
      "ok": true
     },
     {
@@ -4184,15 +4562,21 @@
      "ok": true
     },
     {
-     "name": "POS: submit the sale",
-     "expect": "2xx",
+     "name": "POS: the old session submit is closed and says where to go",
+     "expect": 410,
+     "status": 410,
+     "ok": true
+    },
+    {
+     "name": "Retail POS: enter the counter order",
+     "expect": 201,
      "status": 201,
      "ok": true
     },
     {
-     "name": "POS: refuse to submit the same sale twice",
-     "expect": "4xx",
-     "status": 400,
+     "name": "Retail POS: submit the counter order",
+     "expect": "2xx",
+     "status": 200,
      "ok": true
     }
    ],
@@ -4214,7 +4598,7 @@
      "ok": true
     },
     {
-     "name": "POS order belongs to the chosen customer",
+     "name": "POS order belongs to the chosen customer and the clerk's branch",
      "ok": true
     },
     {
@@ -4240,7 +4624,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 131
+   "ms": 136
   },
   {
    "id": "S8003-24",
@@ -4271,25 +4655,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00215 → IN_PROCESS",
+     "name": "job JOB-00214 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00215 → WAITING_QC",
+     "name": "job JOB-00214 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00215 → PACKAGING",
+     "name": "job JOB-00214 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00214",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00135",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00215 → READY_TO_SHIP",
+     "name": "job JOB-00214 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4357,7 +4753,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 247
+   "ms": 347
   },
   {
    "id": "S8003-25",
@@ -4388,25 +4784,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00216 → IN_PROCESS",
+     "name": "job JOB-00215 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → WAITING_QC",
+     "name": "job JOB-00215 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → PACKAGING",
+     "name": "job JOB-00215 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00215",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00136",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00216 → READY_TO_SHIP",
+     "name": "job JOB-00215 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4474,7 +4882,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 239
+   "ms": 333
   },
   {
    "id": "S8003-26",
@@ -4501,6 +4909,12 @@
     {
      "name": "transfer QA-L65-S5 QA-L65 → QA-L31",
      "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L65-S5 QA-L65 → QA-L31: received at the other branch",
+     "expect": "2xx",
      "status": 200,
      "ok": true
     },
@@ -4511,25 +4925,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00217 → IN_PROCESS",
+     "name": "job JOB-00216 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → WAITING_QC",
+     "name": "job JOB-00216 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → PACKAGING",
+     "name": "job JOB-00216 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00216",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00137",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00217 → READY_TO_SHIP",
+     "name": "job JOB-00216 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4554,6 +4980,10 @@
     }
    ],
    "invariants": [
+    {
+     "name": "transfer QA-L65-S5 QA-L65 → QA-L31: the item is in transit until it is received",
+     "ok": true
+    },
     {
      "name": "transfer did not create or lose stock",
      "ok": true
@@ -4601,7 +5031,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 250
+   "ms": 378
   },
   {
    "id": "S8003-27",
@@ -4632,25 +5062,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00218 → IN_PROCESS",
+     "name": "job JOB-00217 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → WAITING_QC",
+     "name": "job JOB-00217 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → PACKAGING",
+     "name": "job JOB-00217 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00217",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00138",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00218 → READY_TO_SHIP",
+     "name": "job JOB-00217 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4718,7 +5160,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 248
+   "ms": 324
   },
   {
    "id": "S8003-28",
@@ -4745,6 +5187,12 @@
     {
      "name": "transfer QA-L06-S1 QA-L06 → QA-L27",
      "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer QA-L06-S1 QA-L06 → QA-L27: received at the other branch",
+     "expect": "2xx",
      "status": 200,
      "ok": true
     },
@@ -4755,25 +5203,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00219 → IN_PROCESS",
+     "name": "job JOB-00218 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → WAITING_QC",
+     "name": "job JOB-00218 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → PACKAGING",
+     "name": "job JOB-00218 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00218",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00139",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00219 → READY_TO_SHIP",
+     "name": "job JOB-00218 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4798,6 +5258,10 @@
     }
    ],
    "invariants": [
+    {
+     "name": "transfer QA-L06-S1 QA-L06 → QA-L27: the item is in transit until it is received",
+     "ok": true
+    },
     {
      "name": "transfer did not create or lose stock",
      "ok": true
@@ -4845,7 +5309,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 272
+   "ms": 349
   },
   {
    "id": "S8003-29",
@@ -4876,25 +5340,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00220 → IN_PROCESS",
+     "name": "job JOB-00219 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00220 → WAITING_QC",
+     "name": "job JOB-00219 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00220 → PACKAGING",
+     "name": "job JOB-00219 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00219",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00140",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00220 → READY_TO_SHIP",
+     "name": "job JOB-00219 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4962,7 +5438,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 240
+   "ms": 302
   },
   {
    "id": "S8003-30",
@@ -5003,7 +5479,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 20
+   "ms": 19
   },
   {
    "id": "S8003-31",
@@ -5036,7 +5512,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 9
+   "ms": 10
   },
   {
    "id": "S8003-32",
@@ -5045,11 +5521,25 @@
     {
      "name": "transfer whole item between branches",
      "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "transfer whole item between branches: received at the other branch",
+     "expect": "2xx",
      "status": 200,
      "ok": true
     }
    ],
    "invariants": [
+    {
+     "name": "transfer whole item between branches: the item is in transit until it is received",
+     "ok": true
+    },
+    {
+     "name": "after receipt the whole item is at the other branch and on sale there",
+     "ok": true
+    },
     {
      "name": "QA-L73-S4: no negative quantities",
      "ok": true
@@ -5069,7 +5559,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 18
+   "ms": 48
   },
   {
    "id": "S8003-33",
@@ -5084,25 +5574,25 @@
    ],
    "invariants": [
     {
-     "name": "QA-L76-S2: no negative quantities",
+     "name": "QA-L76-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: on hand = available + allocated + on hold",
+     "name": "QA-L76-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory allocated = open allocations",
+     "name": "QA-L76-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory branch = coil branch",
+     "name": "QA-L76-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 10
+   "ms": 12
   },
   {
    "id": "S8003-34",
@@ -5135,7 +5625,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 11
+   "ms": 10
   },
   {
    "id": "S8003-35",
@@ -5166,25 +5656,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00221 → IN_PROCESS",
+     "name": "job JOB-00220 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → WAITING_QC",
+     "name": "job JOB-00220 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → PACKAGING",
+     "name": "job JOB-00220 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00220",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00141",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00221 → READY_TO_SHIP",
+     "name": "job JOB-00220 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5214,19 +5716,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000103 is refused",
+     "name": "overpay INV-000101 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 536.25 on INV-000103",
+     "name": "pay 536.25 on INV-000101",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "pay the rest of INV-000103",
+     "name": "pay the rest of INV-000101",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5292,11 +5794,11 @@
      "ok": true
     },
     {
-     "name": "INV-000103: status after payment",
+     "name": "INV-000101: status after payment",
      "ok": true
     },
     {
-     "name": "INV-000103: paid in full",
+     "name": "INV-000101: paid in full",
      "ok": true
     },
     {
@@ -5304,19 +5806,19 @@
      "ok": true
     },
     {
-     "name": "INV-000103: total = subtotal + tax + freight",
+     "name": "INV-000101: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000103: subtotal = its lines",
+     "name": "INV-000101: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000103: paid = its payments",
+     "name": "INV-000101: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000103: never paid more than billed",
+     "name": "INV-000101: never paid more than billed",
      "ok": true
     },
     {
@@ -5334,7 +5836,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 305
+   "ms": 444
   },
   {
    "id": "S8003-36",
@@ -5399,7 +5901,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 46
+   "ms": 66
   },
   {
    "id": "S8003-37",
@@ -5480,7 +5982,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 74
+   "ms": 106
   },
   {
    "id": "S8003-38",
@@ -5523,25 +6025,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00222 → IN_PROCESS",
+     "name": "job JOB-00221 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → WAITING_QC",
+     "name": "job JOB-00221 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → PACKAGING",
+     "name": "job JOB-00221 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00221",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00142",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00222 → READY_TO_SHIP",
+     "name": "job JOB-00221 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5599,7 +6113,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 171
+   "ms": 242
   },
   {
    "id": "S8003-39",
@@ -5632,7 +6146,7 @@
     {
      "name": "reject delivering a shipment that never left",
      "expect": "4xx",
-     "status": 409,
+     "status": 400,
      "ok": true
     }
    ],
@@ -5676,7 +6190,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 85
+   "ms": 121
   },
   {
    "id": "S8003-40",
@@ -5707,25 +6221,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00223 → IN_PROCESS",
+     "name": "job JOB-00222 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → WAITING_QC",
+     "name": "job JOB-00222 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → PACKAGING",
+     "name": "job JOB-00222 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00222",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00143",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00223 → READY_TO_SHIP",
+     "name": "job JOB-00222 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -5773,19 +6299,19 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000105 is refused",
+     "name": "overpay INV-000103 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 292.5 on INV-000105",
+     "name": "pay 292.5 on INV-000103",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "overpay INV-000104 is refused",
+     "name": "overpay INV-000102 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -5869,7 +6395,7 @@
      "ok": true
     },
     {
-     "name": "INV-000105: status after payment",
+     "name": "INV-000103: status after payment",
      "ok": true
     },
     {
@@ -5877,35 +6403,35 @@
      "ok": true
     },
     {
-     "name": "INV-000104: total = subtotal + tax + freight",
+     "name": "INV-000102: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000104: subtotal = its lines",
+     "name": "INV-000102: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000104: paid = its payments",
+     "name": "INV-000102: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000104: never paid more than billed",
+     "name": "INV-000102: never paid more than billed",
      "ok": true
     },
     {
-     "name": "INV-000105: total = subtotal + tax + freight",
+     "name": "INV-000103: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000105: subtotal = its lines",
+     "name": "INV-000103: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000105: paid = its payments",
+     "name": "INV-000103: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000105: never paid more than billed",
+     "name": "INV-000103: never paid more than billed",
      "ok": true
     },
     {
@@ -5923,7 +6449,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 422
+   "ms": 514
   },
   {
    "id": "S8003-41",
@@ -5954,25 +6480,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00224 → IN_PROCESS",
+     "name": "job JOB-00223 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → WAITING_QC",
+     "name": "job JOB-00223 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → PACKAGING",
+     "name": "job JOB-00223 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00223",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00144",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00224 → READY_TO_SHIP",
+     "name": "job JOB-00223 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6020,13 +6558,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000107 is refused",
+     "name": "overpay INV-000105 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "overpay INV-000106 is refused",
+     "name": "overpay INV-000104 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -6114,35 +6652,35 @@
      "ok": true
     },
     {
-     "name": "INV-000106: total = subtotal + tax + freight",
+     "name": "INV-000104: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000106: subtotal = its lines",
+     "name": "INV-000104: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000106: paid = its payments",
+     "name": "INV-000104: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000106: never paid more than billed",
+     "name": "INV-000104: never paid more than billed",
      "ok": true
     },
     {
-     "name": "INV-000107: total = subtotal + tax + freight",
+     "name": "INV-000105: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000107: subtotal = its lines",
+     "name": "INV-000105: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000107: paid = its payments",
+     "name": "INV-000105: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000107: never paid more than billed",
+     "name": "INV-000105: never paid more than billed",
      "ok": true
     },
     {
@@ -6160,7 +6698,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 409
+   "ms": 508
   },
   {
    "id": "S8003-42",
@@ -6191,19 +6729,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00225 → IN_PROCESS",
+     "name": "job JOB-00224 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → WAITING_QC",
+     "name": "job JOB-00224 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → ON_HOLD",
+     "name": "job JOB-00224 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6227,25 +6765,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00225 → IN_PROCESS",
+     "name": "job JOB-00224 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → WAITING_QC",
+     "name": "job JOB-00224 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → PACKAGING",
+     "name": "job JOB-00224 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00224",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00145",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00225 → READY_TO_SHIP",
+     "name": "job JOB-00224 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6273,19 +6823,19 @@
      "ok": true
     },
     {
-     "name": "INV-000108: total = subtotal + tax + freight",
+     "name": "INV-000106: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000108: subtotal = its lines",
+     "name": "INV-000106: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000108: paid = its payments",
+     "name": "INV-000106: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000108: never paid more than billed",
+     "name": "INV-000106: never paid more than billed",
      "ok": true
     },
     {
@@ -6343,7 +6893,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 300
+   "ms": 436
   },
   {
    "id": "S8003-43",
@@ -6374,19 +6924,19 @@
      "ok": true
     },
     {
-     "name": "job JOB-00226 → IN_PROCESS",
+     "name": "job JOB-00225 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → WAITING_QC",
+     "name": "job JOB-00225 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → ON_HOLD",
+     "name": "job JOB-00225 → ON_HOLD",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6410,25 +6960,37 @@
      "ok": true
     },
     {
-     "name": "job JOB-00226 → IN_PROCESS",
+     "name": "job JOB-00225 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → WAITING_QC",
+     "name": "job JOB-00225 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → PACKAGING",
+     "name": "job JOB-00225 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00225",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00146",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00226 → READY_TO_SHIP",
+     "name": "job JOB-00225 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6446,7 +7008,7 @@
      "ok": true
     },
     {
-     "name": "ship JOB-00226 from the shop floor",
+     "name": "ship JOB-00225 from the shop floor",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6472,19 +7034,19 @@
      "ok": true
     },
     {
-     "name": "INV-000109: total = subtotal + tax + freight",
+     "name": "INV-000107: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000109: subtotal = its lines",
+     "name": "INV-000107: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000109: paid = its payments",
+     "name": "INV-000107: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000109: never paid more than billed",
+     "name": "INV-000107: never paid more than billed",
      "ok": true
     },
     {
@@ -6542,7 +7104,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 358
+   "ms": 483
   },
   {
    "id": "S8003-44",
@@ -6727,19 +7289,19 @@
      "ok": true
     },
     {
-     "name": "INV-000110: total = subtotal + tax + freight",
+     "name": "INV-000108: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000110: subtotal = its lines",
+     "name": "INV-000108: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000110: paid = its payments",
+     "name": "INV-000108: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000110: never paid more than billed",
+     "name": "INV-000108: never paid more than billed",
      "ok": true
     },
     {
@@ -6773,7 +7335,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 322
+   "ms": 357
   },
   {
    "id": "S8003-45",
@@ -6810,6 +7372,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00226 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00226 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00226 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00226",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00147",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00226 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L48-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00227 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -6822,43 +7426,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00227 → PACKAGING",
+     "name": "job JOB-00227 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00227",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00148",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00227 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L48-ROUTER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00228 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00228 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00228 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00228 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -6888,7 +7474,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000111 is refused",
+     "name": "overpay INV-000109 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -6916,18 +7502,6 @@
      "ok": true
     },
     {
-     "name": "line 2: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 2: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 2: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 1: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -6937,6 +7511,18 @@
     },
     {
      "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -6976,27 +7562,27 @@
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
      "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "INV-000111: total = subtotal + tax + freight",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "INV-000111: subtotal = its lines",
+     "name": "INV-000109: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000111: paid = its payments",
+     "name": "INV-000109: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000111: never paid more than billed",
+     "name": "INV-000109: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000109: never paid more than billed",
      "ok": true
     },
     {
@@ -7014,7 +7600,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 419
+   "ms": 652
   },
   {
    "id": "S8003-46",
@@ -7051,6 +7637,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00228 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00228 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00228 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00228",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00149",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00228 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L26-CNC",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00229 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -7063,43 +7691,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00229 → PACKAGING",
+     "name": "job JOB-00229 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00229",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00150",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00229 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L26-CNC",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00230 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00230 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00230 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00230 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7129,7 +7739,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000112 is refused",
+     "name": "overpay INV-000110 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -7157,18 +7767,6 @@
      "ok": true
     },
     {
-     "name": "line 2: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 2: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 2: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 1: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -7178,6 +7776,18 @@
     },
     {
      "name": "line 1: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 2: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 2: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -7217,27 +7827,27 @@
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
-     "ok": true
-    },
-    {
      "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "INV-000112: total = subtotal + tax + freight",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "INV-000112: subtotal = its lines",
+     "name": "INV-000110: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000112: paid = its payments",
+     "name": "INV-000110: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000112: never paid more than billed",
+     "name": "INV-000110: paid = its payments",
+     "ok": true
+    },
+    {
+     "name": "INV-000110: never paid more than billed",
      "ok": true
     },
     {
@@ -7255,7 +7865,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 415
+   "ms": 610
   },
   {
    "id": "S8003-47",
@@ -7292,6 +7902,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00230 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00230 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00230 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00230",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00151",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00230 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L12-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00231 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -7304,43 +7956,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00231 → PACKAGING",
+     "name": "job JOB-00231 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00231",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00152",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00231 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L12-ROUTER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00232 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00232 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00232 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00232 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7370,7 +8004,7 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000113 is refused",
+     "name": "overpay INV-000111 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -7466,19 +8100,19 @@
      "ok": true
     },
     {
-     "name": "INV-000113: total = subtotal + tax + freight",
+     "name": "INV-000111: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000113: subtotal = its lines",
+     "name": "INV-000111: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000113: paid = its payments",
+     "name": "INV-000111: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000113: never paid more than billed",
+     "name": "INV-000111: never paid more than billed",
      "ok": true
     },
     {
@@ -7496,7 +8130,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 416
+   "ms": 633
   },
   {
    "id": "S8003-48",
@@ -7533,6 +8167,48 @@
      "ok": true
     },
     {
+     "name": "job JOB-00232 → IN_PROCESS",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00232 → WAITING_QC",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00232 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00232",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00153",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "job JOB-00232 → READY_TO_SHIP",
+     "expect": "2xx",
+     "status": 200,
+     "ok": true
+    },
+    {
+     "name": "create job at QA-L55-ROUTER",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
      "name": "job JOB-00233 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
@@ -7545,43 +8221,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00233 → PACKAGING",
+     "name": "job JOB-00233 cannot be released from inspection by hand",
+     "expect": 409,
+     "status": 409,
+     "ok": true
+    },
+    {
+     "name": "open an inspection for JOB-00233",
+     "expect": "2xx",
+     "status": 201,
+     "ok": true
+    },
+    {
+     "name": "pass inspection INS-00154",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
      "name": "job JOB-00233 → READY_TO_SHIP",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "create job at QA-L55-ROUTER",
-     "expect": "2xx",
-     "status": 201,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00234 → IN_PROCESS",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00234 → WAITING_QC",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00234 → PACKAGING",
-     "expect": "2xx",
-     "status": 200,
-     "ok": true
-    },
-    {
-     "name": "job JOB-00234 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -7611,13 +8269,13 @@
      "ok": true
     },
     {
-     "name": "overpay INV-000114 is refused",
+     "name": "overpay INV-000112 is refused",
      "expect": "4xx",
      "status": 409,
      "ok": true
     },
     {
-     "name": "pay 1592.25 on INV-000114",
+     "name": "pay 1592.25 on INV-000112",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7705,7 +8363,7 @@
      "ok": true
     },
     {
-     "name": "INV-000114: status after payment",
+     "name": "INV-000112: status after payment",
      "ok": true
     },
     {
@@ -7717,19 +8375,19 @@
      "ok": true
     },
     {
-     "name": "INV-000114: total = subtotal + tax + freight",
+     "name": "INV-000112: total = subtotal + tax + freight",
      "ok": true
     },
     {
-     "name": "INV-000114: subtotal = its lines",
+     "name": "INV-000112: subtotal = its lines",
      "ok": true
     },
     {
-     "name": "INV-000114: paid = its payments",
+     "name": "INV-000112: paid = its payments",
      "ok": true
     },
     {
-     "name": "INV-000114: never paid more than billed",
+     "name": "INV-000112: never paid more than billed",
      "ok": true
     },
     {
@@ -7747,7 +8405,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 431
+   "ms": 633
   },
   {
    "id": "S8003-49",
@@ -7866,7 +8524,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 163
+   "ms": 203
   },
   {
    "id": "S8003-50",
@@ -7923,7 +8581,7 @@
    ],
    "invariants": [
     {
-     "name": "quote total = quantity x price",
+     "name": "quote subtotal = quantity x price, total = subtotal + tax",
      "ok": true
     },
     {
@@ -7969,7 +8627,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 111
+   "ms": 153
   }
  ],
  "concurrency": {
@@ -7983,17 +8641,17 @@
    {
     "name": "two reservations racing for the same stock: exactly one wins",
     "pass": true,
-    "detail": "statuses 409,201; available 2640"
+    "detail": "statuses 201,409; available 2640"
    },
    {
     "name": "two shipments racing for the same order line: exactly one is created",
     "pass": true,
-    "detail": "statuses 409,201"
+    "detail": "statuses 201,409"
    },
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640"
+    "detail": "statuses 409,200,409; line shipped 3960 of 3960; on hand 6600 → 2640"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8049,8 +8707,8 @@
   "tally": {
    "PASS": 50
   },
-  "steps": 711,
-  "checks": 788,
+  "steps": 818,
+  "checks": 792,
   "failedSteps": {},
   "failedChecks": {}
  }

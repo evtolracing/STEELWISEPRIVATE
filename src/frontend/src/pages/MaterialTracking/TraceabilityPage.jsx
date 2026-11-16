@@ -334,14 +334,13 @@ const TraceabilityPage = () => {
                   <MenuItem value="LOCATION_TRANSFER">Location Transfer</MenuItem>
                   <MenuItem value="CUSTODY_HANDOFF">Custody Handoff</MenuItem>
                   <MenuItem value="DAMAGE_REPORT">Damage Report</MenuItem>
-                  <MenuItem value="HOLD_PLACED">Hold Placed</MenuItem>
-                  <MenuItem value="HOLD_RELEASED">Hold Released</MenuItem>
                   <MenuItem value="NOTE">General Note</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <TextField fullWidth size="small" label="Notes / Details" multiline rows={3}
+              <TextField fullWidth size="small" label="What happened" multiline rows={3} required
+                helperText="This is a note in the custody log. It does not move stock, ship anything or place a hold."
                 value={newEntry.metadata}
                 onChange={(e) => setNewEntry({ ...newEntry, metadata: e.target.value })}
               />
@@ -351,7 +350,7 @@ const TraceabilityPage = () => {
         <DialogActions>
           <Button onClick={() => setAddEntryOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleAddEntry}
-            disabled={!newEntry.eventType || !selectedJobId}>
+            disabled={!newEntry.eventType || !selectedJobId || newEntry.metadata.trim().length < 3}>
             Add Entry
           </Button>
         </DialogActions>

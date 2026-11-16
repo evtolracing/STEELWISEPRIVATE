@@ -9,6 +9,9 @@ export class OpenAIProvider {
   constructor(apiKey) {
     this.client = new OpenAI({
       apiKey: apiKey,
+      // A time limit on every call, and no hidden repeats: repeats are decided in one place (AIProviderService.withRetry).
+      timeout: Number(process.env.AI_TIMEOUT_MS) || 25_000,
+      maxRetries: 0,
     });
     this.name = 'openai';
   }

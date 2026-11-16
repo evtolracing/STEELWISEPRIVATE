@@ -6,6 +6,15 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 /**
+ * Clocks that have been running longer than the hours on file (a list for the supervisor).
+ */
+export async function getLongRunningEntries(hours) {
+  const response = await fetch(`${API_BASE}/v1/operations/long-running${hours ? `?hours=${hours}` : ''}`)
+  if (!response.ok) throw new Error('The list of long-running clocks could not be loaded')
+  return response.json()
+}
+
+/**
  * Get all operations with optional filters
  */
 export async function getOperations(filters = {}) {

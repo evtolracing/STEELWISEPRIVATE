@@ -28,10 +28,8 @@ export const getOrders = (params) => client.get('/orders', { params }).then(r =>
 export const getOrder = (id) => client.get(`/orders/${id}`).then(r => r.data)
 export const createOrder = (data) => client.post('/orders', data).then(r => r.data)
 export const updateOrder = (id, data) => client.put(`/orders/${id}`, data).then(r => r.data)
-export const updateOrderStatus = (id, status) => client.patch(`/orders/${id}/status`, { status }).then(r => r.data)
 export const allocateOrder = (id, data) => client.post(`/orders/${id}/allocate`, data).then(r => r.data)
-export const fulfillOrder = (id, data) => client.patch(`/orders/${id}/status`, { status: 'FULFILLED', ...data }).then(r => r.data)
-export const cancelOrder = (id, reason) => client.patch(`/orders/${id}/status`, { status: 'CANCELLED', reason }).then(r => r.data)
+// A status change is a PUT with { status } (routes/orders.js); the PATCH /status helpers that were here had no route (S-026).
 
 // Grades API
 export const getGrades = () => client.get('/grades').then(r => r.data)

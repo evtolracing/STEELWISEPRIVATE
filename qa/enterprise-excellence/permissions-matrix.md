@@ -1,6 +1,6 @@
 # Permissions matrix
 
-Generated 2026-11-13 by `qa/tools/excellence-docs.mjs` at commit bcba5a1. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
 
 How access is decided today, read from `src/backend/src/middleware/apiGate.js`, `lib/roleAccess.js`, `lib/customerScope.js` and the route guards, and checked by the sweep and the baseline probe.
 
@@ -71,10 +71,10 @@ Any staff login that is not read-only can change these. Measured with a saw-oper
 | Assets | 4 | /api/assets |
 | Maintenance orders | 5 | /api/maintenance-orders |
 | Documents (upload, delete) | 3 | /api/documents |
-| Drop tags and packages | 23 | /api/drop-tags |
+| Drop tags and packages | 25 | /api/drop-tags |
 | Print queue | 5 | /api/print-queue |
 | Stop work | 7 | /api/safety/stop-work |
-| Second stock list | 5 | /api/v1/inventory |
+| Second stock list | 9 | /api/v1/inventory |
 | Order hub | 9 | /api/v1 |
 | Demand shaping | 4 | /api/demand-shaping |
 | Exception events | 2 | /api/v1/events |
@@ -86,9 +86,9 @@ Any staff login that is not read-only can change these. Measured with a saw-oper
 
 | Check | Result |
 |---|---|
-| Read-only roles cannot change anything | 540 write calls as auditor and data analyst, 0 not refused |
+| Read-only roles cannot change anything | 574 write calls as auditor and data analyst, 0 not refused |
 | A second address follows the same department rules | 4 checks, 0 problems |
-| Write routes sent an empty body do not crash | 275 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing |
+| Write routes sent an empty body do not crash | 292 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing |
 | Branch to branch access (reported, not judged) | a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0 |
 
 ## Decisions needed from the owner

@@ -76,8 +76,10 @@ export default function WorkOrderOptimizationPage() {
     
     try {
       setApplying(true);
-      await applyOptimization(preview.optimizedJobs);
-      alert(`Successfully applied schedule to ${preview.optimizedJobs.length} jobs`);
+      // Says what the server saved, not what was sent: a job that started in the meantime is not rescheduled.
+      const result = await applyOptimization(preview.optimizedJobs);
+      const skipped = result?.skipped || [];
+      alert(`Schedule saved for ${result?.appliedCount ?? 0} of ${preview.optimizedJobs.length} jobs.${skipped.length ? ` ${skipped.length} not saved: ${skipped[0].reason}${skipped.length > 1 ? ' (and others)' : ''}.` : ''}`);
       setPreview(null);
       loadAnalysis();
     } catch (error) {
@@ -166,10 +168,10 @@ export default function WorkOrderOptimizationPage() {
                   Overall Utilization
                 </Typography>
                 <Typography variant="h3" color={getUtilizationColor(analysis.metrics.overallUtilization)}>
-                  {analysis.metrics.overallUtilization}%
+                  {analysis.metrics.overallUtilization == null ? 'Not known' : `${analysis.metrics.overallUtilization}%`}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Across all work centers
+                  {analysis.metrics.overallUtilization == null ? 'No work center has working minutes per day on file' : `Over ${analysis.metrics.horizonDays || 3} days, work centers with minutes on file`}
                 </Typography>
               </CardContent>
             </Card>
@@ -205,6 +207,15 @@ export default function WorkOrderOptimizationPage() {
             </Card>
           </Grid>
         </Grid>
+      )}
+
+      {/* What this plan does and does not take into account */}
+      {analysis?.notes?.length > 0 && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          {analysis.notes.map((note, idx) => (
+            <Typography key={idx} variant="body2">{note}</Typography>
+          ))}
+        </Alert>
       )}
 
       {/* Recommendations */}
@@ -308,12 +319,12 @@ export default function WorkOrderOptimizationPage() {
                     </Typography>
                     <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
                       <Typography variant="h4" color={getUtilizationColor(wc.utilizationPercent)}>
-                        {wc.utilizationPercent}%
+                        {wc.utilizationPercent == null ? 'Not known' : `${wc.utilizationPercent}%`}
                       </Typography>
                       <Chip label={wc.workCenterType} size="small" />
                     </Box>
                     <Typography variant="body2" color="text.secondary" mt={1}>
-                      {wc.jobCount} jobs • {wc.totalMinutes} min
+                      {wc.jobCount} jobs • {wc.totalMinutes} min{wc.untimedJobs ? ` • ${wc.untimedJobs} with no estimate` : ''}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -391,22 +402,22 @@ export default function WorkOrderOptimizationPage() {
                         />
                       </TableCell>
                       <TableCell>
-                        {new Date(job.scheduledStart).toLocaleString('en-US', {
+                        {job.scheduledStart ? new Date(job.scheduledStart).toLocaleString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit',
-                        })}
+                        }) : `Not timed (queue place ${job.queuePosition})`}
                       </TableCell>
                       <TableCell>
-                        {new Date(job.scheduledEnd).toLocaleString('en-US', {
+                        {job.scheduledEnd ? new Date(job.scheduledEnd).toLocaleString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit',
-                        })}
+                        }) : `Not timed (queue place ${job.queuePosition})`}
                       </TableCell>
-                      <TableCell>{job.estimatedMinutes} min</TableCell>
+                      <TableCell>{job.estimatedMinutes ? `${job.estimatedMinutes} min` : 'No estimate on file'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

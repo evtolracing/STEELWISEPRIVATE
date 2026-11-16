@@ -1,10 +1,10 @@
 # Screen-to-server API contract
 
-Generated 2026-11-13 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
+Generated 2026-11-16 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
 
-- Distinct API calls found in the screens: **283**
-- Matched to a server route: **203**
-- No matching server route (the call would get a 404): **80**
+- Distinct API calls found in the screens: **282**
+- Matched to a server route: **216**
+- No matching server route (the call would get a 404): **66**
 
 Calls built from variables (a base URL constant plus a suffix) are not seen by this scan, so the real number of calls is higher.
 
@@ -29,23 +29,6 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `POST /api/qaqc/standards` | api/qaqc.js |
 | `GET /api/qaqc/test-types` | api/qaqc.js |
 | `POST /api/qaqc/test-types` | api/qaqc.js |
-
-### /api/pricing (12)
-
-| Call | Used in |
-|---|---|
-| `GET /api/pricing` | api/pricing.js |
-| `GET /api/pricing/market` | api/pricing.js |
-| `GET /api/pricing/prices` | api/pricing.js |
-| `POST /api/pricing/prices` | api/pricing.js |
-| `GET /api/pricing/prices/:x` | api/pricing.js |
-| `PUT /api/pricing/prices/:x` | api/pricing.js |
-| `GET /api/pricing/quotes` | api/pricing.js |
-| `POST /api/pricing/quotes` | api/pricing.js |
-| `GET /api/pricing/quotes/:x` | api/pricing.js |
-| `PUT /api/pricing/quotes/:x` | api/pricing.js |
-| `GET /api/pricing/surcharges` | api/pricing.js |
-| `PUT /api/pricing/surcharges/:x` | api/pricing.js |
 
 ### /api/provenance (11)
 
@@ -100,23 +83,13 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `GET /api/shipments/:x/tracking` | api/logistics.js |
 | `PUT /api/shipments/splits/:x/status` | services/splitShipmentApi.js |
 
-### /api/orders (4)
+### /api/admin (3)
 
 | Call | Used in |
 |---|---|
-| `GET /api/orders/:x/fulfillment` | services/splitShipmentApi.js |
-| `GET /api/orders/:x/fulfillment/timeline` | services/splitShipmentApi.js |
-| `POST /api/orders/:x/splits` | services/splitShipmentApi.js |
-| `PATCH /api/orders/:x/status` | api/index.js |
-
-### /api/pricing-records (4)
-
-| Call | Used in |
-|---|---|
-| `GET /api/pricing-records` | api/pricing.js |
-| `POST /api/pricing-records` | api/pricing.js |
-| `PUT /api/pricing-records/:x` | api/pricing.js |
-| `DELETE /api/pricing-records/:x` | api/pricing.js |
+| `GET /api/admin/integrations` | pages/Admin/IntegrationsPage.jsx |
+| `POST /api/admin/integrations/deliveries/:x/replay` | pages/Admin/IntegrationsPage.jsx |
+| `POST /api/admin/integrations/run` | pages/Admin/IntegrationsPage.jsx |
 
 ### /api/logistics (3)
 
@@ -125,6 +98,14 @@ Calls built from variables (a base URL constant plus a suffix) are not seen by t
 | `GET /api/logistics/carriers` | api/logistics.js |
 | `GET /api/logistics/routes` | api/logistics.js |
 | `POST /api/logistics/routes/calculate` | api/logistics.js |
+
+### /api/orders (3)
+
+| Call | Used in |
+|---|---|
+| `GET /api/orders/:x/fulfillment` | services/splitShipmentApi.js |
+| `GET /api/orders/:x/fulfillment/timeline` | services/splitShipmentApi.js |
+| `POST /api/orders/:x/splits` | services/splitShipmentApi.js |
 
 ### /api/pos (3)
 

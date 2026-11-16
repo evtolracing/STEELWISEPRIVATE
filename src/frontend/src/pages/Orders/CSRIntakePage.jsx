@@ -18,6 +18,7 @@ import {
   Warehouse as HouseIcon, PersonPin as CustMatIcon,
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import useSellingBranches, { branchCodeFor } from '../../hooks/useSellingBranches'
 
 import OrderSourceChip from '../../components/orders/OrderSourceChip'
 import CustomerLookupDialog from '../../components/orders/CustomerLookupDialog'
@@ -44,7 +45,6 @@ import useDemandShaping from '../../hooks/useDemandShaping'
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
 const PRIORITY_COLOR = { STANDARD: 'default', RUSH: 'info', HOT: 'warning', EMERGENCY: 'error' }
-const LOCATIONS = ['JACKSON', 'KALAMAZOO', 'GRAND_RAPIDS', 'DETROIT']
 const SOURCES = ['PHONE', 'EMAIL', 'REP']
 
 const STEPS = ['Header', 'Customer', 'Lines', 'Review']
@@ -62,7 +62,12 @@ export default function CSRIntakePage() {
   // ── header state ──
   const [source, setSource] = useState('PHONE')
   const [division, setDivision] = useState('METALS')
-  const [location, setLocation] = useState('JACKSON')
+  // The branch is one the person may sell from, listed by the server, starting at their home branch (S-008).
+  const { branches, homeCode } = useSellingBranches()
+  const [location, setLocation] = useState('')
+  useEffect(() => { if (!location && homeCode) setLocation(homeCode) }, [homeCode, location])
+  // A branch suggested by a preference or a suggestion is used only when it is one of the person's branches.
+  const chooseBranch = useCallback((value) => { const code = branchCodeFor(branches, value); if (code) setLocation(code) }, [branches])
   const [priority, setPriority] = useState('STANDARD')
   const [ownership, setOwnership] = useState('HOUSE')
   const [poNumber, setPoNumber] = useState('')
@@ -106,7 +111,7 @@ export default function CSRIntakePage() {
   const { suggestions: shapingSuggestions, loading: shapingLoading, handleAccept: handleShapingAccept, handleDismiss: handleShapingDismiss } = useDemandShaping(demandCtx, {
     onApply: ({ field, value }) => {
       if (field === 'requestedDate') setRequestedDate(value)
-      if (field === 'location') setLocation(value)
+      if (field === 'location') chooseBranch(value)
       if (field === 'priority') setPriority(value)
     },
   })
@@ -139,9 +144,8 @@ export default function CSRIntakePage() {
       selectedScore: fulfillmentSuggestions.find(s => s.locationId === locId)?.score,
       meta: { division, orderId },
     })
-    const csrKey = locationIdToCsrKey(locId)
-    if (csrKey) setLocation(csrKey)
-  }, [fulfillmentSuggestions, logOverride, division, orderId])
+    chooseBranch(locationIdToCsrKey(locId) || locId)
+  }, [fulfillmentSuggestions, logOverride, division, orderId, chooseBranch])
 
   // Tax rate for this customer and branch, as the order will be saved.
   useEffect(() => {
@@ -177,14 +181,14 @@ export default function CSRIntakePage() {
       const defs = await loadCustomerDefaults(cust.id)
       if (defs && Object.keys(defs).length > 0) {
         // Auto-apply as soft defaults — CSR can always override
-        if (defs.location)  setLocation(defs.location)
+        if (defs.location)  chooseBranch(defs.location)
         if (defs.division)  setDivision(defs.division)
         if (defs.priority)  setPriority(defs.priority)
         if (defs.ownership) setOwnership(defs.ownership)
         if (defs.notes)     setNotes(prev => prev || defs.notes)
       }
     } catch { /* preferences are optional — never block intake */ }
-  }, [loadCustomerDefaults])
+  }, [loadCustomerDefaults, chooseBranch])
 
   const handleOpenMaterialPicker = useCallback((idx) => {
     setMaterialPickerIdx(idx)
@@ -406,7 +410,7 @@ export default function CSRIntakePage() {
                 <FormControl fullWidth size="small">
                   <InputLabel>Location</InputLabel>
                   <Select value={location} label="Location" onChange={e => setLocation(e.target.value)}>
-                    {LOCATIONS.map(l => <MenuItem key={l} value={l}>{l.replace(/_/g, ' ')}</MenuItem>)}
+                    {branches.map(b => <MenuItem key={b.id} value={b.code}>{b.name || b.code}{b.state ? ` (${b.state})` : ''}</MenuItem>)}
                   </Select>
                 </FormControl>
               </Grid>

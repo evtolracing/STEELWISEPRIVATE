@@ -88,7 +88,7 @@ export default function AccountDashboardPage() {
           <BranchIcon />
         </Avatar>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h5" fontWeight={700}>{account?.companyName}</Typography>
+          <Typography component="h1" variant="h5" fontWeight={700}>{account?.companyName}</Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
             <Chip label={account?.accountNumber} size="small" variant="outlined" />
             <Chip label={account?.priceLevel} size="small" color="primary" />
@@ -213,8 +213,8 @@ export default function AccountDashboardPage() {
                 Document Center
               </Button>
               {canExport && (
-                <Button fullWidth variant="outlined" startIcon={<ExportIcon />} color="secondary" sx={{ justifyContent: 'flex-start' }}>
-                  Export All Data
+                <Button fullWidth variant="outlined" startIcon={<ExportIcon />} onClick={() => navigate('/account/orders')} sx={{ justifyContent: 'flex-start' }}>
+                  Export orders (CSV)
                 </Button>
               )}
             </Box>

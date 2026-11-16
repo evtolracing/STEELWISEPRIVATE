@@ -292,7 +292,7 @@ export default function StaffManagementPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Staff & Operators
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -445,7 +445,7 @@ function OperatorsTab({
     <>
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search operators" }}
           size="small" placeholder="Search operators..."
           value={searchTerm} onChange={(e) => onSearchChange(e.target.value)}
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> }}
@@ -565,7 +565,7 @@ function OperatorsTab({
                         <Typography variant="body2">{op.phone || '—'}</Typography>
                       </TableCell>
                       <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                        <IconButton
+                        <IconButton aria-label="More actions"
                           size="small"
                           onClick={(e) => { setMenuAnchor(e.currentTarget); setMenuOperator(op) }}
                         >
@@ -672,10 +672,10 @@ function ShiftsTab({ shifts, operators, onAddShift, onEditShift, onCancelShift }
                   <TableCell align="right">
                     {s.status !== 'CANCELLED' && s.status !== 'COMPLETED' && (
                       <>
-                        <IconButton size="small" onClick={() => onEditShift(s)}>
+                        <IconButton aria-label="Edit" size="small" onClick={() => onEditShift(s)}>
                           <EditIcon fontSize="small" />
                         </IconButton>
-                        <IconButton size="small" onClick={() => onCancelShift(s)} color="error">
+                        <IconButton aria-label="Delete" size="small" onClick={() => onCancelShift(s)} color="error">
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </>
@@ -906,7 +906,7 @@ function OperatorDialog({ open, onClose, onSave, operator, locations, workCenter
                   </FormControl>
                 </Grid>
                 <Grid item xs={2}>
-                  <IconButton color="error" onClick={() => removeSkillRow(idx)} sx={{ mt: 0.5 }}>
+                  <IconButton aria-label="Delete" color="error" onClick={() => removeSkillRow(idx)} sx={{ mt: 0.5 }}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Grid>
@@ -1009,7 +1009,7 @@ function SkillDialog({ open, onClose, operator, wcTypes, onSave, onRemove }) {
                       {new Date(s.certifiedDate).toLocaleDateString()}
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" color="error" onClick={() => handleRemove(s.id)}>
+                      <IconButton aria-label="Delete" size="small" color="error" onClick={() => handleRemove(s.id)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </TableCell>

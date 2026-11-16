@@ -71,7 +71,7 @@ export default function CreditHoldsPage() {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1300, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700}>Credit holds</Typography>
+      <Typography component="h1" variant="h5" fontWeight={700}>Credit holds</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Orders that would take a customer over their credit limit wait here. {canRelease ? 'Release an order to let it go ahead.' : 'A manager releases them.'}
       </Typography>

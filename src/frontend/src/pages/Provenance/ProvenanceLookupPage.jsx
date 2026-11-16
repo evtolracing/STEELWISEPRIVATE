@@ -38,6 +38,7 @@ import {
 import { TraceTimeline, UnitCard } from '../../components/traceability'
 import { StatusChip } from '../../components/common'
 import { lookupProvenance } from '../../api'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Demo mode flag - set to false when backend is ready
 const DEMO_MODE = true
@@ -141,7 +142,7 @@ export default function ProvenanceLookupPage() {
             <VerifiedIcon sx={{ fontSize: 30 }} />
           </Avatar>
           <Box>
-            <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+            <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
               Provenance Lookup
             </Typography>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -160,7 +161,7 @@ export default function ProvenanceLookupPage() {
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>Search for Unit</Typography>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Enter unit number, heat number, or scan QR code" }}
             fullWidth
             placeholder="Enter unit number, heat number, or scan QR code..."
             value={searchQuery}
@@ -277,7 +278,7 @@ export default function ProvenanceLookupPage() {
             <Paper sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Complete Trace History</Typography>
-                <Button variant="outlined" size="small" startIcon={<CertIcon />}>
+                <Button onClick={notBuilt} variant="outlined" size="small" startIcon={<CertIcon />}>
                   Export Report
                 </Button>
               </Box>

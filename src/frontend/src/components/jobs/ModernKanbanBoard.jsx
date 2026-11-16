@@ -343,7 +343,7 @@ const ModernKanbanBoard = ({
         }}
       >
         {/* Search */}
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search jobs, customers, materials" }}
           size="small"
           placeholder="Search jobs, customers, materials..."
           value={searchQuery}
@@ -454,7 +454,7 @@ const ModernKanbanBoard = ({
         {onRefresh && (
           <Tooltip title="Refresh jobs">
             <span>
-              <IconButton 
+              <IconButton aria-label="Refresh" 
                 onClick={onRefresh} 
                 disabled={loading}
                 sx={{

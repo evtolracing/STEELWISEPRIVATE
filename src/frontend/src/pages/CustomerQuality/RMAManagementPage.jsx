@@ -51,6 +51,7 @@ import {
   Email as EmailIcon,
   QrCode as QrCodeIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock RMA Data
 const mockRMAs = [
@@ -207,14 +208,14 @@ export default function RMAManagementPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             RMA Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Return Material Authorizations
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />}>
+        <Button onClick={notBuilt} variant="contained" startIcon={<AddIcon />}>
           New RMA
         </Button>
       </Box>
@@ -286,7 +287,7 @@ export default function RMAManagementPage() {
             <Tab label={`Awaiting Action (${awaitingInspectionCount})`} />
             <Tab label={`Closed (${closedCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search RMAs" }}
             size="small"
             placeholder="Search RMAs..."
             value={searchQuery}
@@ -369,7 +370,7 @@ export default function RMAManagementPage() {
                     </TableCell>
                     <TableCell>{rma.owner}</TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedRMA(rma)}
@@ -377,7 +378,7 @@ export default function RMAManagementPage() {
                         <ViewIcon fontSize="small" />
                       </IconButton>
                       {rma.status === 'AUTHORIZED' && (
-                        <IconButton size="small">
+                        <IconButton onClick={notBuilt} aria-label="Print" size="small">
                           <PrintIcon fontSize="small" />
                         </IconButton>
                       )}
@@ -428,19 +429,19 @@ function RMADetailView({ rma, onBack }) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<PrintIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<PrintIcon />}>
             Print Label
           </Button>
-          <Button variant="outlined" startIcon={<EmailIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<EmailIcon />}>
             Send to Customer
           </Button>
           {rma.status === 'RECEIVED' && (
-            <Button variant="contained" color="primary">
+            <Button onClick={notBuilt} variant="contained" color="primary">
               Start Inspection
             </Button>
           )}
           {rma.status === 'INSPECTED' && (
-            <Button variant="contained" color="success">
+            <Button onClick={notBuilt} variant="contained" color="success">
               Set Disposition
             </Button>
           )}

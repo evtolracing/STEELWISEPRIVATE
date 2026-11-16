@@ -125,7 +125,7 @@ export default function WorkOrderDetailPage() {
         <IconButton onClick={() => navigate('/work-orders')} aria-label="Back to work orders"><BackIcon /></IconButton>
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Typography variant="h5" fontWeight={700}>{wo.woNumber}</Typography>
+            <Typography component="h1" variant="h5" fontWeight={700}>{wo.woNumber}</Typography>
             <WorkOrderStatusChip status={wo.status} />
             <Chip size="small" variant="outlined" label={`${WO_PRIORITY_LABELS[wo.priority] || 'Normal'} priority`} />
           </Box>

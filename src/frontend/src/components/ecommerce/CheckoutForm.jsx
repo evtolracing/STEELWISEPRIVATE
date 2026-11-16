@@ -168,7 +168,7 @@ export default function CheckoutForm({ onSubmit, submitting = false, hasReviewRe
           <StickyNote2 color="primary" fontSize="small" />
           <Typography variant="subtitle2" fontWeight={600}>Order Notes</Typography>
         </Box>
-        <TextField size="small" fullWidth multiline minRows={2} maxRows={4} placeholder="Special instructions, delivery notes…"
+        <TextField inputProps={{ 'aria-label': "Special instructions, delivery notes" }} size="small" fullWidth multiline minRows={2} maxRows={4} placeholder="Special instructions, delivery notes…"
           value={form.orderNotes} onChange={set('orderNotes')} />
       </Box>
 

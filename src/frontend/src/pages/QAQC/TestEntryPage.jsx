@@ -151,7 +151,7 @@ export default function TestEntryPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={600}>
+          <Typography component="h1" variant="h4" fontWeight={600}>
             Test Entry
           </Typography>
           <Typography variant="body2" color="text.secondary">

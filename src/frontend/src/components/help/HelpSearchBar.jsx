@@ -74,7 +74,7 @@ export default function HelpSearchBar({
   return (
     <Box sx={{ mb: 3 }}>
       {/* Search input */}
-      <TextField
+      <TextField inputProps={{ 'aria-label': "Search the manual… (e.g., 'how to create a shipment')" }}
         fullWidth
         placeholder="Search the manual… (e.g., 'how to create a shipment')"
         value={query}

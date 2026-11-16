@@ -72,7 +72,7 @@ export default function ProcessingConfigurator({ steps = [], onChange, division,
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Chip icon={<Icon />} label={step.name} size="small" color={TYPE_COLOR[step.type] || 'default'} variant="outlined" />
                   <Typography variant="caption" color="text.secondary">${step.estimatedCost?.toFixed(2)}/{step.priceUnit}</Typography>
-                  {!disabled && <IconButton size="small" color="error" onClick={() => removeStep(idx)} sx={{ ml: 'auto' }}><DeleteIcon fontSize="small" /></IconButton>}
+                  {!disabled && <IconButton aria-label="Delete" size="small" color="error" onClick={() => removeStep(idx)} sx={{ ml: 'auto' }}><DeleteIcon fontSize="small" /></IconButton>}
                 </Box>
                 {proc?.params?.length > 0 && (
                   <Grid container spacing={1} sx={{ mt: 0.5 }}>

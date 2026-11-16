@@ -279,7 +279,7 @@ function WorkCenterSelectPage() {
             <FactoryIcon />
           </Avatar>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Shop Floor Control
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -438,7 +438,7 @@ function WorkCenterSelectPage() {
                   >
                     {/* Edit/Menu button */}
                     <Box sx={{ position: 'absolute', top: 4, right: 4, zIndex: 1 }}>
-                      <IconButton
+                      <IconButton aria-label="More actions"
                         size="small"
                         onClick={(e) => {
                           e.stopPropagation()

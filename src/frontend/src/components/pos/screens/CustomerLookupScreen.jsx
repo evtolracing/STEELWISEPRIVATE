@@ -217,7 +217,7 @@ export function CustomerLookupScreen({ screen, onNext, onBack }) {
       
       {/* Search Box */}
       <Paper sx={{ p: 3, mb: 3 }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search by name, account number, phone, or email" }}
           fullWidth
           placeholder="Search by name, account number, phone, or email..."
           value={query}
@@ -234,7 +234,7 @@ export function CustomerLookupScreen({ screen, onNext, onBack }) {
                 {searching ? (
                   <CircularProgress size={20} />
                 ) : (
-                  <IconButton size="small" onClick={() => setQuery('')}>
+                  <IconButton aria-label="Clear" size="small" onClick={() => setQuery('')}>
                     <ClearIcon fontSize="small" />
                   </IconButton>
                 )}

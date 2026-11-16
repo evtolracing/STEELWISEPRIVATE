@@ -441,7 +441,7 @@ export function ShippingScreen({ screen, onNext, onBack }) {
             onChange={(e, value) => handleSelectSearchResult(value)}
             loading={searching}
             renderInput={(params) => (
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Search for a new address" }}
                 {...params}
                 placeholder="Search for a new address..."
                 size="small"
@@ -552,7 +552,7 @@ export function ShippingScreen({ screen, onNext, onBack }) {
           Special Instructions
         </Typography>
         
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Enter any special delivery or handling instructions" }}
           fullWidth
           multiline
           rows={3}

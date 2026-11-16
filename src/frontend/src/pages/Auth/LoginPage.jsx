@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Box,
   Typography,
@@ -15,12 +15,17 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material'
-import { useNavigate, Link as RouterLink } from 'react-router-dom'
+import { useNavigate, useSearchParams, Link as RouterLink } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
   const { login, loading, error } = useAuth()
+  const expired = params.get('expired') === '1'
+  // Only a page of this application: never a link to somewhere else.
+  const next = (() => { const n = params.get('next') || ''; return /^\/(?!\/)/.test(n) && !n.startsWith('/login') ? n : '/' })()
+  useEffect(() => { document.title = 'Sign in · SteelWise' }, [])
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -35,12 +40,13 @@ export default function LoginPage() {
     e.preventDefault()
     const result = await login(formData.email, formData.password)
     if (result.success) {
-      navigate('/')
+      navigate(next, { replace: true })
     }
   }
 
   return (
     <Box
+      component="main"
       sx={{
         minHeight: '100vh',
         display: 'flex',
@@ -52,7 +58,7 @@ export default function LoginPage() {
     >
       <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="h4" fontWeight={700} color="primary">
+          <Typography variant="h4" component="h1" fontWeight={700} color="primary">
             STEELWISE
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -60,8 +66,14 @@ export default function LoginPage() {
           </Typography>
         </Box>
 
+        {expired && !error && (
+          <Alert severity="info" sx={{ mb: 3 }} data-testid="session-expired">
+            Your session ended. Sign in again and you will return to the page you were on.
+          </Alert>
+        )}
+
         {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
+          <Alert severity="error" sx={{ mb: 3 }} role="alert">
             {error}
           </Alert>
         )}
@@ -90,6 +102,8 @@ export default function LoginPage() {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
+                      aria-label={showPassword ? 'Hide the password' : 'Show the password'}
+                      aria-pressed={showPassword}
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
                     >

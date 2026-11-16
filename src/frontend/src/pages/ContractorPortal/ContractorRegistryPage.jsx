@@ -47,6 +47,7 @@ import {
   Schedule as ScheduleIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Contractors Registry Data
 const mockContractors = [
@@ -208,7 +209,7 @@ export default function ContractorRegistryPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Contractor Registry
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -299,7 +300,7 @@ export default function ContractorRegistryPage() {
             <Tab label={`Expiring (${expiringCount})`} />
             <Tab label={`Issues (${issuesCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search contractors" }}
             size="small"
             placeholder="Search contractors..."
             value={searchQuery}
@@ -399,14 +400,14 @@ export default function ContractorRegistryPage() {
                       </Box>
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedContractor(contractor)}
                       >
                         <ViewIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton onClick={notBuilt} aria-label="Edit" size="small">
                         <EditIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -519,10 +520,10 @@ function ContractorDetailView({ contractor, onBack }) {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<EditIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<EditIcon />}>
             Edit
           </Button>
-          <Button variant="contained" startIcon={<AddIcon />}>
+          <Button onClick={notBuilt} variant="contained" startIcon={<AddIcon />}>
             Create Invitation
           </Button>
         </Box>

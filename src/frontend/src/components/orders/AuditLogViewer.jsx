@@ -130,7 +130,7 @@ export default function AuditLogViewer({ orderId, canRevoke = false, maxHeight =
       {/* Filters bar */}
       <Grid container spacing={1.5} sx={{ mb: 2 }} alignItems="center">
         <Grid item xs={12} sm={4}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search user, reason, notes, order" }}
             size="small"
             fullWidth
             placeholder="Search user, reason, notes, order…"
@@ -209,7 +209,7 @@ export default function AuditLogViewer({ orderId, canRevoke = false, maxHeight =
                     onClick={() => setExpandedId(expandedId === row.id ? null : row.id)}
                   >
                     <TableCell>
-                      <IconButton size="small">
+                      <IconButton aria-label="Hide details" size="small">
                         {expandedId === row.id ? <CollapseIcon fontSize="small" /> : <ExpandIcon fontSize="small" />}
                       </IconButton>
                     </TableCell>

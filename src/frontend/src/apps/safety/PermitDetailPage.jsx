@@ -53,6 +53,7 @@ import {
   Check as ApproveIcon,
   Close as RejectIcon,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock permit detail
 const mockPermitDetail = {
@@ -195,10 +196,10 @@ export default function PermitDetailPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-            <IconButton onClick={() => navigate('/safety/permits')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety/permits')} size="small">
               <BackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               {permit.id}
             </Typography>
             <Chip 
@@ -213,7 +214,7 @@ export default function PermitDetailPage() {
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
-          <Button variant="outlined" startIcon={<PrintIcon />}>Print</Button>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<PrintIcon />}>Print</Button>
           {permit.status === 'ACTIVE' && (
             <Button 
               variant="contained" 
@@ -226,10 +227,10 @@ export default function PermitDetailPage() {
           )}
           {permit.status === 'PENDING' && (
             <>
-              <Button variant="contained" color="success" startIcon={<ApproveIcon />}>
+              <Button onClick={notBuilt} variant="contained" color="success" startIcon={<ApproveIcon />}>
                 Approve
               </Button>
-              <Button variant="outlined" color="error" startIcon={<RejectIcon />}>
+              <Button onClick={notBuilt} variant="outlined" color="error" startIcon={<RejectIcon />}>
                 Reject
               </Button>
             </>

@@ -367,7 +367,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
             {job.customerName} — {job.material || job.processingType || 'No material specified'}
           </Typography>
         </Box>
-        <IconButton onClick={onClose} size="small">
+        <IconButton aria-label="Close" onClick={onClose} size="small">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -638,7 +638,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                 <ListItemSecondaryAction>
                   <Tooltip title="Move up">
                     <span>
-                      <IconButton
+                      <IconButton aria-label="Move up"
                         size="small"
                         onClick={() => moveOperation(idx, -1)}
                         disabled={idx === 0}
@@ -649,7 +649,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                   </Tooltip>
                   <Tooltip title="Move down">
                     <span>
-                      <IconButton
+                      <IconButton aria-label="Move down"
                         size="small"
                         onClick={() => moveOperation(idx, 1)}
                         disabled={idx === operations.length - 1}

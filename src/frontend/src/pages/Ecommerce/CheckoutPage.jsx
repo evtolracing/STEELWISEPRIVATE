@@ -168,7 +168,7 @@ export default function CheckoutPage() {
         Back to Cart
       </Button>
 
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
+      <Typography component="h1" variant="h5" fontWeight={700} sx={{ mb: 2 }}>
         <ShoppingCart sx={{ mr: 1, verticalAlign: 'text-bottom' }} />
         {hasReviewRequired ? 'Request Quote' : 'Checkout'}
       </Typography>

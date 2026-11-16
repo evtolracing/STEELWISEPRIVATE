@@ -268,7 +268,7 @@ export default function ShipmentPage() {
         <IconButton onClick={() => navigate('/shipping')} aria-label="Back to shipping"><BackIcon /></IconButton>
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Typography variant="h5" fontWeight={700}>{shipment.shipmentNumber}</Typography>
+            <Typography component="h1" variant="h5" fontWeight={700}>{shipment.shipmentNumber}</Typography>
             <ShipmentStatusChip status={shipment.status} />
           </Box>
           <Typography variant="body2" color="text.secondary">

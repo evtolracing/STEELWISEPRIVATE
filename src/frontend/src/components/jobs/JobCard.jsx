@@ -146,7 +146,7 @@ const JobCard = ({
           )}
           <Box sx={{ flex: 1, minWidth: 0 }}>
             {editing ? (
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Job instructions" }}
                 size="small"
                 value={editedJob.instructions || ''}
                 onChange={(e) => setEditedJob({ ...editedJob, instructions: e.target.value })}
@@ -173,7 +173,7 @@ const JobCard = ({
             )}
           </Box>
           {onUpdate && !editing && (
-            <IconButton
+            <IconButton aria-label="Edit"
               size="small"
               onClick={(e) => { e.stopPropagation(); setEditing(true); }}
               sx={{ p: 0.5 }}

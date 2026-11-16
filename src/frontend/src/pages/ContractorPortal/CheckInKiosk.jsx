@@ -38,6 +38,7 @@ import {
   ArrowForward as NextIcon,
   ArrowBack as BackIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Check-In Data (simulates a visitor going through check-in)
 const mockVisitorData = {
@@ -143,7 +144,7 @@ export default function CheckInKiosk() {
           <Avatar sx={{ width: 80, height: 80, bgcolor: 'success.main', mx: 'auto', mb: 3 }}>
             <CheckIcon sx={{ fontSize: 48 }} />
           </Avatar>
-          <Typography variant="h3" sx={{ fontWeight: 700, color: 'success.main', mb: 2 }}>
+          <Typography component="h1" variant="h3" sx={{ fontWeight: 700, color: 'success.main', mb: 2 }}>
             Check-In Complete
           </Typography>
           <Typography variant="body1" sx={{ mb: 4 }}>
@@ -191,7 +192,7 @@ export default function CheckInKiosk() {
           </Alert>
 
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-            <Button variant="outlined" startIcon={<PrintIcon />}>
+            <Button onClick={notBuilt} variant="outlined" startIcon={<PrintIcon />}>
               Reprint Badge
             </Button>
             <Button variant="contained" onClick={handleReset}>
@@ -208,7 +209,7 @@ export default function CheckInKiosk() {
       <Box sx={{ maxWidth: 800, mx: 'auto', px: 2 }}>
         {/* Header */}
         <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
             Contractor Check-In
           </Typography>
           <Typography variant="body2" color="text.secondary">

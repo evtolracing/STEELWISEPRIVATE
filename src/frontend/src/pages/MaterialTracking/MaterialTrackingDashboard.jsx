@@ -87,7 +87,7 @@ const MaterialTrackingDashboard = () => {
     <Box sx={{ p: 3, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography component="h1" variant="h4" fontWeight={700}>
           Material Tracking
         </Typography>
         <Typography variant="body2" color="text.secondary">

@@ -88,7 +88,7 @@ export default function ShopHomePage() {
         <Container maxWidth="md">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
             <Storefront fontSize="large" />
-            <Typography variant="h4" fontWeight={700}>SteelWise Online Store</Typography>
+            <Typography component="h1" variant="h4" fontWeight={700}>SteelWise Online Store</Typography>
           </Box>
           <Typography variant="body1" sx={{ opacity: 0.85, mb: 3 }}>
             Browse our full catalog of metals, plastics, and industrial supplies.

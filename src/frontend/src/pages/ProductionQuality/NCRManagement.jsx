@@ -55,6 +55,7 @@ import {
   AttachFile,
   Comment,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const ncrs = [
@@ -236,7 +237,7 @@ const NCRManagement = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Nonconformance Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -316,7 +317,7 @@ const NCRManagement = () => {
 
       {/* Search */}
       <Paper sx={{ p: 2, mb: 3 }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search by NCR number, job, defect type" }}
           fullWidth
           placeholder="Search by NCR number, job, defect type..."
           value={searchQuery}
@@ -668,7 +669,7 @@ const NCRManagement = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="outlined" startIcon={<AttachFile />}>
+              <Button onClick={notBuilt} variant="outlined" startIcon={<AttachFile />}>
                 Attach Photos/Documents
               </Button>
             </Grid>

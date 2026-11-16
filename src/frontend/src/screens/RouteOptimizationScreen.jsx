@@ -262,7 +262,7 @@ const RouteOptimizationScreen = () => {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" gutterBottom>
+          <Typography component="h1" variant="h4" gutterBottom>
             Route Optimization
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -272,14 +272,14 @@ const RouteOptimizationScreen = () => {
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Export Route">
             <span>
-              <IconButton onClick={handleExportRoute} disabled={!routeStats}>
+              <IconButton aria-label="Download" onClick={handleExportRoute} disabled={!routeStats}>
                 <DownloadIcon />
               </IconButton>
             </span>
           </Tooltip>
           <Tooltip title="Print">
             <span>
-              <IconButton onClick={() => window.print()} disabled={!routeStats}>
+              <IconButton aria-label="Print" onClick={() => window.print()} disabled={!routeStats}>
                 <Print />
               </IconButton>
             </span>
@@ -405,13 +405,13 @@ const RouteOptimizationScreen = () => {
                     }
                   />
                   <ListItemSecondaryAction>
-                    <IconButton size="small" onClick={() => moveStop(index, -1)} disabled={index === 0}>
+                    <IconButton aria-label="Hide details" size="small" onClick={() => moveStop(index, -1)} disabled={index === 0}>
                       <ExpandLess fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" onClick={() => moveStop(index, 1)} disabled={index === stops.length - 1}>
+                    <IconButton aria-label="Show details" size="small" onClick={() => moveStop(index, 1)} disabled={index === stops.length - 1}>
                       <ExpandMore fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" onClick={() => handleRemoveStop(stop.id)}>
+                    <IconButton aria-label="Delete" size="small" onClick={() => handleRemoveStop(stop.id)}>
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </ListItemSecondaryAction>

@@ -244,7 +244,7 @@ export default function RecipeEditorPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <TimerIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-        <Typography variant="h4" fontWeight={700}>Processing Recipes & Time Standards</Typography>
+        <Typography component="h1" variant="h4" fontWeight={700}>Processing Recipes & Time Standards</Typography>
         <Box sx={{ flex: 1 }} />
         <Button startIcon={<RefreshIcon />} onClick={fetchData} variant="outlined" size="small">Refresh</Button>
         <Button startIcon={<AddIcon />} onClick={openNewRecipe} variant="contained">New Recipe</Button>
@@ -282,7 +282,7 @@ export default function RecipeEditorPage() {
           <Paper sx={{ p: 2, mb: 2, borderRadius: 2 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={3}>
-                <TextField
+                <TextField inputProps={{ 'aria-label': "Search recipes" }}
                   fullWidth size="small" placeholder="Search recipes…"
                   value={search} onChange={e => setSearch(e.target.value)}
                   InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
@@ -490,7 +490,7 @@ export default function RecipeEditorPage() {
             {editingRecipe ? `Edit Recipe: ${editingRecipe.code}` : 'New Processing Recipe'}
           </Typography>
           <Box sx={{ flex: 1 }} />
-          <IconButton onClick={() => setEditorOpen(false)}><CloseIcon /></IconButton>
+          <IconButton aria-label="Close" onClick={() => setEditorOpen(false)}><CloseIcon /></IconButton>
         </DialogTitle>
         <DialogContent dividers>
           <Grid container spacing={3}>
@@ -654,7 +654,7 @@ export default function RecipeEditorPage() {
 
                   <Box>
                     <Typography variant="caption" color="text.secondary">Thickness: {previewThickness}"</Typography>
-                    <Slider
+                    <Slider aria-label="Thickness for the preview"
                       value={previewThickness} onChange={(_, v) => setPreviewThickness(v)}
                       min={0.0625} max={8} step={0.0625} valueLabelDisplay="auto"
                       marks={THICKNESS_BANDS.map(b => ({ value: b.min || 0.0625, label: b.label.split('(')[0].trim() }))}
@@ -664,7 +664,7 @@ export default function RecipeEditorPage() {
 
                   <Box>
                     <Typography variant="caption" color="text.secondary">Units: {previewUnits}</Typography>
-                    <Slider
+                    <Slider aria-label="Units for the preview"
                       value={previewUnits} onChange={(_, v) => setPreviewUnits(v)}
                       min={1} max={50} step={1} valueLabelDisplay="auto"
                     />

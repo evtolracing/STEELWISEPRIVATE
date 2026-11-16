@@ -40,6 +40,7 @@ import {
   Share,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock route data
 const routeData = {
@@ -165,7 +166,7 @@ const RouteView = () => {
             Back
           </Button>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Route View
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -174,10 +175,10 @@ const RouteView = () => {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<Print />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Print />}>
             Print Route
           </Button>
-          <Button variant="outlined" startIcon={<Share />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Share />}>
             Share Tracking
           </Button>
         </Box>
@@ -377,7 +378,7 @@ const RouteView = () => {
               </Grid>
             </Grid>
 
-            <Button 
+            <Button onClick={notBuilt} 
               variant="outlined" 
               fullWidth 
               startIcon={<Phone />}

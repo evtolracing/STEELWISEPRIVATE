@@ -70,6 +70,7 @@ import {
 } from '@mui/icons-material';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Severity colors
 const severityColors = {
@@ -333,7 +334,7 @@ export default function StopWorkClearance() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography component="h1" variant="h4" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {isCleared ? (
               <CheckCircleIcon fontSize="large" color="success" />
             ) : (
@@ -569,7 +570,7 @@ export default function StopWorkClearance() {
                         </Box>
                       ) : isCurrent ? (
                         <Box sx={{ mb: 2 }}>
-                          <TextField
+                          <TextField inputProps={{ 'aria-label': "Add notes about this step" }}
                             fullWidth
                             multiline
                             rows={2}
@@ -588,7 +589,7 @@ export default function StopWorkClearance() {
                             >
                               Mark Complete
                             </Button>
-                            <Button variant="outlined" startIcon={<UploadIcon />}>
+                            <Button onClick={notBuilt} variant="outlined" startIcon={<UploadIcon />}>
                               Add Evidence
                             </Button>
                           </Box>

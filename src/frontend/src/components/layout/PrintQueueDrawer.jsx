@@ -440,7 +440,7 @@ export default function PrintQueueDrawer() {
                 {polling ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <RefreshIcon />}
               </IconButton>
             </Tooltip>
-            <IconButton size="small" onClick={() => setOpen(false)} sx={{ color: 'white' }}>
+            <IconButton aria-label="Close" size="small" onClick={() => setOpen(false)} sx={{ color: 'white' }}>
               <CloseIcon />
             </IconButton>
           </Box>

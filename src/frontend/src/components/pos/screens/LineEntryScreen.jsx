@@ -104,7 +104,7 @@ function ProductSearchDialog({ open, onClose, onSelect }) {
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Search Products</DialogTitle>
       <DialogContent>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search by SKU, description, or barcode" }}
           fullWidth
           placeholder="Search by SKU, description, or barcode..."
           value={query}
@@ -374,7 +374,7 @@ function OrderLineRow({ line, onUpdate, onRemove, onEdit, onRecalculate, marginW
     <>
       <TableRow hover sx={{ '& > *': { borderBottom: showDetails ? 'none' : undefined } }}>
         <TableCell sx={{ width: 50 }}>
-          <IconButton size="small" onClick={() => onRemove(line.id)} color="error">
+          <IconButton aria-label="Delete" size="small" onClick={() => onRemove(line.id)} color="error">
             <DeleteIcon fontSize="small" />
           </IconButton>
         </TableCell>
@@ -412,13 +412,13 @@ function OrderLineRow({ line, onUpdate, onRemove, onEdit, onRecalculate, marginW
         </TableCell>
         <TableCell align="right">
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-            <IconButton size="small" onClick={() => handleQuantityChange(-1)}>
+            <IconButton aria-label="Remove" size="small" onClick={() => handleQuantityChange(-1)}>
               <RemoveIcon fontSize="small" />
             </IconButton>
             <Typography sx={{ mx: 1, minWidth: 40, textAlign: 'center' }}>
               {line.quantity}
             </Typography>
-            <IconButton size="small" onClick={() => handleQuantityChange(1)}>
+            <IconButton aria-label="Add" size="small" onClick={() => handleQuantityChange(1)}>
               <AddIcon fontSize="small" />
             </IconButton>
           </Box>
@@ -442,10 +442,10 @@ function OrderLineRow({ line, onUpdate, onRemove, onEdit, onRecalculate, marginW
           </Typography>
         </TableCell>
         <TableCell sx={{ width: 80 }}>
-          <IconButton size="small" onClick={() => setShowDetails(!showDetails)}>
+          <IconButton aria-label="Hide details" size="small" onClick={() => setShowDetails(!showDetails)}>
             {showDetails ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
           </IconButton>
-          <IconButton size="small" onClick={() => onEdit(line)}>
+          <IconButton aria-label="Edit" size="small" onClick={() => onEdit(line)}>
             <EditIcon fontSize="small" />
           </IconButton>
         </TableCell>
@@ -642,7 +642,7 @@ export function LineEntryScreen({ screen, onNext, onBack }) {
       <Paper sx={{ p: 2, mb: 2 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={6}>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search products or scan barcode" }}
               fullWidth
               placeholder="Search products or scan barcode..."
               value={searchQuery}
@@ -656,8 +656,8 @@ export function LineEntryScreen({ screen, onNext, onBack }) {
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Tooltip title="Scan Barcode">
-                      <IconButton size="small">
+                    <Tooltip title="Scan a barcode: the reader types the code into this box">
+                      <IconButton size="small" aria-label="Scan a barcode into the search box" onClick={(e) => e.currentTarget.closest('.MuiInputBase-root')?.querySelector('input')?.focus()}>
                         <ScanIcon />
                       </IconButton>
                     </Tooltip>

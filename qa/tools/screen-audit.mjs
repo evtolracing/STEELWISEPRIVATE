@@ -31,7 +31,7 @@ for (const m of router.matchAll(/const (\w+) = lazy\(\(\) => import\('([^']+)'\)
 for (const m of router.matchAll(/^import (\w+) from '(\.[^']+)'/gm)) lazy.set(m[1], m[2]);
 for (const m of router.matchAll(/^import \{([^}]+)\} from '(\.[^']+)'/gm)) for (const n of m[1].split(',')) lazy.set(n.trim().split(' as ').pop(), m[2]);
 
-const menu = new Set([...read(path.join(SRC, 'components/layout/Sidebar.jsx')).matchAll(/path: '([^']+)'/g)].map((m) => m[1].replace(/^\//, '')));
+const menu = new Set([...read(path.join(SRC, 'config/navigation.jsx')).matchAll(/path: '([^']+)'/g)].map((m) => m[1].replace(/^\//, '')));
 
 const SKIP = new Set(['Suspense', 'PageLoader', 'Navigate', 'SampleScreen', 'RouteErrorPage', 'ProtectedRoute', 'Outlet', 'AppLayout', 'OldShipmentAddress']);
 const MOCK = /generateMock|\bmock[A-Z]\w*\s*=|\bMOCK_[A-Z]|\bsample[A-Z]\w*\s*=\s*\[|Math\.random\(\)(?!\.toString)|from '[^']*\/mocks?\/|\bDEMO_[A-Z]+\s*=|\bdemo[A-Z]\w*\s*=\s*\[/;

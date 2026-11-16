@@ -171,8 +171,8 @@ export default function RetailPOSPage() {
       {/* Top bar */}
       <AppBar position="static" color="primary" elevation={1}>
         <Toolbar variant="dense" sx={{ gap: 2 }}>
-          <IconButton color="inherit" onClick={() => navigate('/')}><HomeIcon /></IconButton>
-          <Typography variant="h6" fontWeight={700} sx={{ mr: 2 }}>Retail POS</Typography>
+          <IconButton aria-label="Home" color="inherit" onClick={() => navigate('/')}><HomeIcon /></IconButton>
+          <Typography component="h1" variant="h6" fontWeight={700} sx={{ mr: 2 }}>Retail POS</Typography>
           <Chip label="OUTLET" size="small" sx={{ bgcolor: 'rgba(255,255,255,.2)', color: '#fff', fontWeight: 600 }} />
           <Box sx={{ flex: 1 }} />
           <Badge badgeContent={cart.length} color="error">
@@ -189,12 +189,12 @@ export default function RetailPOSPage() {
           {/* Search bar */}
           <Paper sx={{ p: 1.5, mb: 2, display: 'flex', gap: 1, alignItems: 'center', borderRadius: 2 }}>
             <FormControl size="small" sx={{ minWidth: 120 }}>
-              <Select value={searchMode} onChange={e => setSearchMode(e.target.value)}>
+              <Select inputProps={{ 'aria-label': 'Search in' }} value={searchMode} onChange={e => setSearchMode(e.target.value)}>
                 <MenuItem value="catalog">Catalog</MenuItem>
                 <MenuItem value="inventory">Inventory</MenuItem>
               </Select>
             </FormControl>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search products, SKU, barcode" }}
               size="small" fullWidth placeholder="Search products, SKU, barcode…"
               value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
@@ -236,7 +236,7 @@ export default function RetailPOSPage() {
                           <Chip label={item.qtyOnHand ?? item.stock ?? '—'} size="small" variant="outlined" color={(item.qtyOnHand ?? item.stock ?? 0) > 0 ? 'success' : 'error'} />
                         </TableCell>
                         <TableCell>
-                          <IconButton color="primary" size="small" onClick={() => addToCart(item)}>
+                          <IconButton aria-label="Add to the cart" color="primary" size="small" onClick={() => addToCart(item)}>
                             <AddToCartIcon />
                           </IconButton>
                         </TableCell>
@@ -283,12 +283,12 @@ export default function RetailPOSPage() {
                       <Typography variant="body2" fontWeight={600}>{fmt(item.extPrice)}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <IconButton size="small" onClick={() => updateQty(idx, -1)}><RemoveIcon fontSize="small" /></IconButton>
+                      <IconButton aria-label="Remove" size="small" onClick={() => updateQty(idx, -1)}><RemoveIcon fontSize="small" /></IconButton>
                       <Chip label={item.qty} size="small" />
-                      <IconButton size="small" onClick={() => updateQty(idx, 1)}><AddIcon fontSize="small" /></IconButton>
+                      <IconButton aria-label="Add" size="small" onClick={() => updateQty(idx, 1)}><AddIcon fontSize="small" /></IconButton>
                       <Typography variant="caption" color="text.secondary">× {fmt(item.unitPrice)}</Typography>
                       {item.isRemnant && <Chip label="REM" size="small" color="warning" sx={{ ml: 'auto' }} />}
-                      <IconButton size="small" color="error" onClick={() => removeFromCart(idx)} sx={{ ml: 'auto' }}><DeleteIcon fontSize="small" /></IconButton>
+                      <IconButton aria-label="Delete" size="small" color="error" onClick={() => removeFromCart(idx)} sx={{ ml: 'auto' }}><DeleteIcon fontSize="small" /></IconButton>
                     </Box>
                   </Paper>
                 ))}
@@ -343,7 +343,7 @@ export default function RetailPOSPage() {
           )}
         </DialogContent>
         <DialogActions>
-          <Button startIcon={<PrintIcon />} disabled>Print Receipt</Button>
+          <Button startIcon={<PrintIcon />} onClick={() => window.print()}>Print Receipt</Button>
           <Button variant="contained" onClick={handleNewSale}>New Sale</Button>
         </DialogActions>
       </Dialog>

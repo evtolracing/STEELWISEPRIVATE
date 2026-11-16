@@ -52,6 +52,7 @@ import {
   LocationOn,
   QrCode2,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const spareParts = [
@@ -264,7 +265,7 @@ const PartsInventory = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Parts Inventory
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -359,7 +360,7 @@ const PartsInventory = () => {
         <Paper sx={{ p: 2, mb: 3 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Search parts" }}
                 fullWidth
                 size="small"
                 placeholder="Search parts..."
@@ -640,8 +641,8 @@ const PartsInventory = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelectedPart(null)}>Close</Button>
-          <Button variant="outlined" startIcon={<Edit />}>Edit Part</Button>
-          <Button variant="contained" startIcon={<ShoppingCart />}>Create Order</Button>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Edit />}>Edit Part</Button>
+          <Button onClick={notBuilt} variant="contained" startIcon={<ShoppingCart />}>Create Order</Button>
         </DialogActions>
       </Dialog>
 

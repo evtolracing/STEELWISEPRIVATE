@@ -452,7 +452,7 @@ export default function InventoryUpload({
             <UploadIcon color="primary" />
             <Typography variant="h6">{title}</Typography>
           </Stack>
-          <IconButton onClick={handleClose} size="small">
+          <IconButton aria-label="Close" onClick={handleClose} size="small">
             <CloseIcon />
           </IconButton>
         </Box>

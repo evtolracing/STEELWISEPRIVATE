@@ -47,6 +47,7 @@ import {
   TrendingUp as TrendUpIcon,
   TrendingDown as TrendDownIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Claims Data
 const mockClaims = [
@@ -265,7 +266,7 @@ export default function ClaimsInboxPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Claims Inbox
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -366,7 +367,7 @@ export default function ClaimsInboxPage() {
         </Box>
         
         <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search claims" }}
             size="small"
             placeholder="Search claims..."
             value={searchQuery}
@@ -471,7 +472,7 @@ export default function ClaimsInboxPage() {
                       </Tooltip>
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton size="small" color="primary" onClick={(e) => { e.stopPropagation(); setSelectedClaim(claim); }}>
+                      <IconButton aria-label="View" size="small" color="primary" onClick={(e) => { e.stopPropagation(); setSelectedClaim(claim); }}>
                         <ViewIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -598,9 +599,9 @@ function ClaimDetailView({ claim, onBack }) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined">Acknowledge</Button>
-          <Button variant="outlined" color="warning">Set Disposition</Button>
-          <Button variant="contained" color="success">Resolve</Button>
+          <Button onClick={notBuilt} variant="outlined">Acknowledge</Button>
+          <Button onClick={notBuilt} variant="outlined" color="warning">Set Disposition</Button>
+          <Button onClick={notBuilt} variant="contained" color="success">Resolve</Button>
         </Box>
       </Box>
 
@@ -673,15 +674,15 @@ function ClaimDetailView({ claim, onBack }) {
                 Claim created by {claim.owner} on {new Date(claim.createdAt).toLocaleString()}
               </Typography>
             </Box>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Add a note or message" }}
               fullWidth
               placeholder="Add a note or message..."
               multiline
               rows={2}
             />
             <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-              <Button variant="contained" size="small">Send to Customer</Button>
-              <Button variant="outlined" size="small">Internal Note</Button>
+              <Button onClick={notBuilt} variant="contained" size="small">Send to Customer</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small">Internal Note</Button>
             </Box>
           </Paper>
         </Grid>
@@ -710,9 +711,9 @@ function ClaimDetailView({ claim, onBack }) {
           <Paper sx={{ p: 2, mb: 2 }}>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>Quick Actions</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Button variant="outlined" size="small" fullWidth>Create RMA</Button>
-              <Button variant="outlined" size="small" fullWidth>Issue Credit</Button>
-              <Button variant="outlined" size="small" fullWidth>Create CAR</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>Create RMA</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>Issue Credit</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>Create CAR</Button>
             </Box>
           </Paper>
         </Grid>

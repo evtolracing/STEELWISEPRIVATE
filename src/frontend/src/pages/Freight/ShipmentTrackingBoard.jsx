@@ -41,6 +41,7 @@ import {
   Assignment,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock shipments by status
 const mockShipments = {
@@ -263,7 +264,7 @@ const ShipmentTrackingBoard = () => {
               {shipment.customer}
             </Typography>
           </Box>
-          <IconButton 
+          <IconButton aria-label="More actions" 
             size="small" 
             onClick={(e) => { e.stopPropagation(); handleMenuOpen(e, shipment); }}
           >
@@ -378,7 +379,7 @@ const ShipmentTrackingBoard = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Shipment Tracking Board
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -386,7 +387,7 @@ const ShipmentTrackingBoard = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="outlined" startIcon={<Refresh />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Refresh />}>
             Refresh
           </Button>
           <Button 
@@ -438,7 +439,7 @@ const ShipmentTrackingBoard = () => {
       {/* Search & Filter Bar */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search shipments, carriers, customers" }}
             placeholder="Search shipments, carriers, customers..."
             size="small"
             value={searchQuery}
@@ -452,7 +453,7 @@ const ShipmentTrackingBoard = () => {
               ),
             }}
           />
-          <Button variant="outlined" startIcon={<FilterList />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<FilterList />}>
             Filter
           </Button>
         </Box>

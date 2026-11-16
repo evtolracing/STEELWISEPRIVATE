@@ -155,7 +155,7 @@ export default function TimeEstimatePreview({
         )}
         <Box sx={{ flex: 1 }} />
         {!showBreakdown && (
-          <IconButton size="small" onClick={() => setExpanded(!expanded)}>
+          <IconButton aria-label="Hide details" size="small" onClick={() => setExpanded(!expanded)}>
             {expanded ? <CollapseIcon fontSize="small" /> : <ExpandIcon fontSize="small" />}
           </IconButton>
         )}

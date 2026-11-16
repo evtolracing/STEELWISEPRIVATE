@@ -230,7 +230,7 @@ const FreightComparison = () => {
             Back
           </Button>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Freight Comparison
             </Typography>
             <Typography variant="body2" color="text.secondary">

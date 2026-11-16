@@ -29,6 +29,7 @@ import {
   AutoAwesome as AIIcon,
 } from '@mui/icons-material'
 import { DataTable, StatusChip } from '../../components/common'
+import { notBuilt } from '../../utils/notBuilt'
 
 function QCMetricCard({ title, value, total, color = 'primary' }) {
   const percentage = total > 0 ? (value / total) * 100 : 0
@@ -89,7 +90,7 @@ export default function QualityDashboardPage() {
     { id: 'priority', label: 'Priority', minWidth: 80, render: (row) => <StatusChip status={row.priority} /> },
     { id: 'dueDate', label: 'Due', minWidth: 100, render: (row) => new Date(row.dueDate).toLocaleDateString() },
     { id: 'actions', label: '', minWidth: 80, render: () => (
-      <Button size="small" variant="outlined">Start Test</Button>
+      <Button onClick={notBuilt} size="small" variant="outlined">Start Test</Button>
     )},
   ]
 
@@ -130,7 +131,7 @@ export default function QualityDashboardPage() {
               <TestIcon sx={{ fontSize: 30 }} />
             </Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 Quality Dashboard
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
@@ -142,7 +143,7 @@ export default function QualityDashboardPage() {
             </Box>
           </Box>
           <Stack direction="row" spacing={1}>
-            <Button 
+            <Button onClick={notBuilt} 
               variant="outlined" 
               startIcon={<ReportIcon />}
               sx={{
@@ -153,7 +154,7 @@ export default function QualityDashboardPage() {
             >
               QC Reports
             </Button>
-            <Button 
+            <Button onClick={notBuilt} 
               variant="contained" 
               startIcon={<TestIcon />}
               sx={{
@@ -209,7 +210,7 @@ export default function QualityDashboardPage() {
           <Paper sx={{ p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6">Pending Tests</Typography>
-              <IconButton size="small"><RefreshIcon /></IconButton>
+              <IconButton onClick={notBuilt} aria-label="Refresh" size="small"><RefreshIcon /></IconButton>
             </Box>
             <DataTable
               columns={pendingColumns}
@@ -255,7 +256,7 @@ export default function QualityDashboardPage() {
           <Paper sx={{ p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6">Recent Test Results</Typography>
-              <Button size="small">View All</Button>
+              <Button onClick={notBuilt} size="small">View All</Button>
             </Box>
             <DataTable
               columns={resultColumns}

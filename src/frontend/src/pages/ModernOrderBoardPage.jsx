@@ -228,7 +228,7 @@ const ModernOrderBoardPage = () => {
               <AnalyticsIcon />
             </Avatar>
             <Box>
-              <Typography variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography component="h1" variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 Order Board
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>
@@ -369,7 +369,7 @@ const ModernOrderBoardPage = () => {
               <Typography variant="caption" sx={{ opacity: 0.8 }}>Add a new job to the order board</Typography>
             </Box>
           </Box>
-          <IconButton onClick={() => setCreateDialogOpen(false)} sx={{ color: 'white' }}>
+          <IconButton aria-label="Close" onClick={() => setCreateDialogOpen(false)} sx={{ color: 'white' }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>

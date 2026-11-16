@@ -585,7 +585,7 @@ export default function HeaderAIAssistant() {
                           <SettingsIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <IconButton size="small" onClick={handleClose} sx={{ color: 'white', ml: 0.5 }}>
+                      <IconButton aria-label="Close" size="small" onClick={handleClose} sx={{ color: 'white', ml: 0.5 }}>
                         <CloseIcon fontSize="small" />
                       </IconButton>
                     </Box>
@@ -805,7 +805,7 @@ export default function HeaderAIAssistant() {
                         {listening ? <GraphicEqIcon /> : <MicIcon />}
                       </IconButton>
                     </Tooltip>
-                    <InputBase
+                    <InputBase inputProps={{ 'aria-label': listening ? 'Listening...' : 'Ask about jobs, orders, inventory...' }}
                       inputRef={inputRef}
                       value={query + (transcript ? ' ' + transcript : '')}
                       onChange={(e) => setQuery(e.target.value)}
@@ -825,7 +825,7 @@ export default function HeaderAIAssistant() {
                       }}
                       disabled={loading}
                     />
-                    <IconButton
+                    <IconButton aria-label="Send"
                       type="submit"
                       color="primary"
                       disabled={!query.trim() || loading}

@@ -41,6 +41,7 @@ import {
   Upload as UploadIcon,
   CameraAlt as CameraIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock inspection data
 const mockInspections = [
@@ -207,7 +208,7 @@ export default function IQCInspectionsPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             IQC Inspections
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -277,7 +278,7 @@ export default function IQCInspectionsPage() {
             <Tab label="In Progress" />
             <Tab label="Completed" />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search inspections" }}
             size="small"
             placeholder="Search inspections..."
             value={searchQuery}
@@ -382,7 +383,7 @@ export default function IQCInspectionsPage() {
                         </Button>
                       )}
                       {insp.status === 'COMPLETED' && (
-                        <IconButton size="small" onClick={() => setSelectedInspection(insp)}>
+                        <IconButton aria-label="View" size="small" onClick={() => setSelectedInspection(insp)}>
                           <ViewIcon fontSize="small" />
                         </IconButton>
                       )}
@@ -415,10 +416,10 @@ function InspectionEntryView({ inspection, expandedItem, setExpandedItem, onBack
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<SaveIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<SaveIcon />}>
             Save
           </Button>
-          <Button variant="contained" color="success" startIcon={<CompleteIcon />}>
+          <Button onClick={notBuilt} variant="contained" color="success" startIcon={<CompleteIcon />}>
             Complete
           </Button>
         </Box>
@@ -538,7 +539,7 @@ function InspectionEntryView({ inspection, expandedItem, setExpandedItem, onBack
                 <Box key={cp.id} sx={{ mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Checkbox checked={cp.result !== null} />
+                      <Checkbox inputProps={{ 'aria-label': `${cp.name}: result recorded` }} checked={cp.result !== null} />
                       <Typography variant="subtitle2">{cp.name}</Typography>
                     </Box>
                     {cp.result && (
@@ -550,10 +551,10 @@ function InspectionEntryView({ inspection, expandedItem, setExpandedItem, onBack
                     )}
                     {!cp.result && (
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button size="small" color="success" variant="outlined">
+                        <Button onClick={notBuilt} size="small" color="success" variant="outlined">
                           Pass
                         </Button>
-                        <Button size="small" color="error" variant="outlined">
+                        <Button onClick={notBuilt} size="small" color="error" variant="outlined">
                           Fail
                         </Button>
                       </Box>
@@ -575,9 +576,9 @@ function InspectionEntryView({ inspection, expandedItem, setExpandedItem, onBack
                             ))
                           ) : (
                             <>
-                              <TextField size="small" placeholder="Measured" sx={{ width: 100 }} />
-                              <TextField size="small" placeholder="Measured" sx={{ width: 100 }} />
-                              <TextField size="small" placeholder="Measured" sx={{ width: 100 }} />
+                              <TextField inputProps={{ 'aria-label': "Measured" }} size="small" placeholder="Measured" sx={{ width: 100 }} />
+                              <TextField inputProps={{ 'aria-label': "Measured" }} size="small" placeholder="Measured" sx={{ width: 100 }} />
+                              <TextField inputProps={{ 'aria-label': "Measured" }} size="small" placeholder="Measured" sx={{ width: 100 }} />
                             </>
                           )}
                         </Box>
@@ -606,7 +607,7 @@ function InspectionEntryView({ inspection, expandedItem, setExpandedItem, onBack
                   )}
 
                   {!cp.notes && cp.type !== 'DOCUMENT' && (
-                    <TextField
+                    <TextField inputProps={{ 'aria-label': "Add notes" }}
                       size="small"
                       placeholder="Add notes..."
                       fullWidth

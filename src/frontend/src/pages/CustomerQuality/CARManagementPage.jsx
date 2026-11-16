@@ -46,6 +46,7 @@ import {
   AttachFile as AttachIcon,
   Comment as CommentIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock CAR Data (Customer Corrective Action Reports)
 const mockCARs = [
@@ -188,14 +189,14 @@ export default function CARManagementPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Corrective Action Reports
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Customer quality corrective actions (8D format)
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />}>
+        <Button onClick={notBuilt} variant="contained" startIcon={<AddIcon />}>
           New CAR
         </Button>
       </Box>
@@ -260,7 +261,7 @@ export default function CARManagementPage() {
             <Tab label={`Active (${activeCount})`} />
             <Tab label={`Closed (${mockCARs.length - activeCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search CARs" }}
             size="small"
             placeholder="Search CARs..."
             value={searchQuery}
@@ -355,7 +356,7 @@ export default function CARManagementPage() {
                     </TableCell>
                     <TableCell>{car.owner}</TableCell>
                     <TableCell align="center">
-                      <IconButton size="small" color="primary" onClick={() => setSelectedCAR(car)}>
+                      <IconButton aria-label="View" size="small" color="primary" onClick={() => setSelectedCAR(car)}>
                         <ViewIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -433,9 +434,9 @@ function CARDetailView({ car, onBack }) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined">Request Update</Button>
+          <Button onClick={notBuilt} variant="outlined">Request Update</Button>
           {car.status !== 'CLOSED' && (
-            <Button variant="contained" color="success">Close CAR</Button>
+            <Button onClick={notBuilt} variant="contained" color="success">Close CAR</Button>
           )}
         </Box>
       </Box>
@@ -597,7 +598,7 @@ function CARDetailView({ car, onBack }) {
           <Paper sx={{ p: 2 }}>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>Quick Actions</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Button variant="outlined" size="small" fullWidth startIcon={<CommentIcon />}>Add Comment</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth startIcon={<CommentIcon />}>Add Comment</Button>
               <FileUploadZone
                 compact
                 entityType="CAR"
@@ -605,7 +606,7 @@ function CARDetailView({ car, onBack }) {
                 buttonLabel="Add Attachment"
                 multiple
               />
-              <Button variant="outlined" size="small" fullWidth startIcon={<TaskIcon />}>Add Action Item</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth startIcon={<TaskIcon />}>Add Action Item</Button>
             </Box>
           </Paper>
         </Grid>

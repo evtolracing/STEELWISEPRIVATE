@@ -287,7 +287,7 @@ export default function FileUploadZone({
                   secondary={formatBytes(f.size)}
                 />
                 <ListItemSecondaryAction>
-                  <IconButton edge="end" size="small" onClick={() => removeFile(idx)} disabled={uploading}>
+                  <IconButton aria-label="Delete" edge="end" size="small" onClick={() => removeFile(idx)} disabled={uploading}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </ListItemSecondaryAction>

@@ -60,6 +60,7 @@ import {
   Inventory as InventoryIcon,
   CloudUpload as UploadIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Supplier Data
 const mockSuppliers = [
@@ -247,7 +248,7 @@ export default function SupplierListPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Supplier Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -345,7 +346,7 @@ export default function SupplierListPage() {
             <Tab label={`Approved (${approvedCount})`} />
             <Tab label={`Pending/Conditional (${conditionalCount + newCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search suppliers" }}
             size="small"
             placeholder="Search suppliers..."
             value={searchQuery}
@@ -461,14 +462,14 @@ export default function SupplierListPage() {
                       />
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedSupplier(sup)}
                       >
                         <ViewIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton onClick={notBuilt} aria-label="Edit" size="small">
                         <EditIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -523,7 +524,7 @@ export default function SupplierListPage() {
               <Typography variant="subtitle2" gutterBottom>
                 Products/Materials Supplied
               </Typography>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "For example Hot Rolled Coil, Cold Rolled, Galvanized" }}
                 fullWidth
                 placeholder="e.g., Hot Rolled Coil, Cold Rolled, Galvanized"
               />
@@ -639,10 +640,10 @@ function SupplierDetailView({ supplier, onBack }) {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<EditIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<EditIcon />}>
             Edit
           </Button>
-          <Button variant="contained">View Scorecard</Button>
+          <Button onClick={notBuilt} variant="contained">View Scorecard</Button>
         </Box>
       </Box>
 

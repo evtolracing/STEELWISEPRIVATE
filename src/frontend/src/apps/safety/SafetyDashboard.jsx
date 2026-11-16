@@ -251,7 +251,7 @@ export default function SafetyDashboard() {
       {/* Header */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Safety Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">

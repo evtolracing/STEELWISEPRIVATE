@@ -171,7 +171,7 @@ export default function SearchResultsPage() {
               {total} result{total !== 1 ? 's' : ''}
             </Typography>
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <Select value={sortBy} onChange={e => setSortBy(e.target.value)} displayEmpty>
+              <Select inputProps={{ 'aria-label': 'Sort results by' }} value={sortBy} onChange={e => setSortBy(e.target.value)} displayEmpty>
                 {SORT_OPTIONS.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
               </Select>
             </FormControl>

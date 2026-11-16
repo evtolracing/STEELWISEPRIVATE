@@ -112,7 +112,7 @@ export default function CartPage() {
         </Breadcrumbs>
         <Paper variant="outlined" sx={{ p: 4, textAlign: 'center', borderRadius: 2 }}>
           <ShoppingCart sx={{ fontSize: 64, color: 'action.disabled', mb: 2 }} />
-          <Typography variant="h6" gutterBottom>Your cart is empty</Typography>
+          <Typography component="h1" variant="h6" gutterBottom>Your cart is empty</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Browse our catalog and add items to get started.
           </Typography>
@@ -134,7 +134,7 @@ export default function CartPage() {
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <ShoppingCart color="primary" />
-        <Typography variant="h5" fontWeight={700}>Shopping Cart</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>Shopping Cart</Typography>
         <Chip label={`${itemCount} item(s)`} size="small" color="primary" />
         <Button size="small" color="error" startIcon={<DeleteSweep />} onClick={clearCart} sx={{ ml: 'auto' }}>
           Clear All
@@ -205,9 +205,9 @@ export default function CartPage() {
                       </TableCell>
                       <TableCell align="center">
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-                          <IconButton size="small" onClick={() => handleQtyChange(item._cartId, -1)}><Remove fontSize="small" /></IconButton>
+                          <IconButton aria-label="Remove" size="small" onClick={() => handleQtyChange(item._cartId, -1)}><Remove fontSize="small" /></IconButton>
                           <Typography variant="body2" fontWeight={600} sx={{ minWidth: 24, textAlign: 'center' }}>{item.quantity || 1}</Typography>
-                          <IconButton size="small" onClick={() => handleQtyChange(item._cartId, 1)}><Add fontSize="small" /></IconButton>
+                          <IconButton aria-label="Add" size="small" onClick={() => handleQtyChange(item._cartId, 1)}><Add fontSize="small" /></IconButton>
                         </Box>
                       </TableCell>
                       <TableCell align="right">
@@ -218,7 +218,7 @@ export default function CartPage() {
                         <Typography variant="body2" fontWeight={600}>${itemTotal.toFixed(2)}</Typography>
                       </TableCell>
                       <TableCell>
-                        <IconButton size="small" color="error" onClick={() => removeItem(item._cartId)}>
+                        <IconButton aria-label="Delete" size="small" color="error" onClick={() => removeItem(item._cartId)}>
                           <Delete fontSize="small" />
                         </IconButton>
                       </TableCell>

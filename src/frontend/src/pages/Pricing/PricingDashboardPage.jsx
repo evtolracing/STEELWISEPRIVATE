@@ -101,7 +101,7 @@ export default function PricingDashboardPage() {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Pricing</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Pricing</Typography>
           <Typography variant="body2" color="text.secondary">
             What each customer pays is the product&apos;s list price times the price level of their account
           </Typography>

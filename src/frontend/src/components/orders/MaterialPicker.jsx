@@ -217,7 +217,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
             Browse live inventory to add to order
           </Typography>
         </Box>
-        <IconButton size="small" onClick={onClose}><CloseIcon /></IconButton>
+        <IconButton aria-label="Close" size="small" onClick={onClose}><CloseIcon /></IconButton>
       </DialogTitle>
 
       <Box sx={{ px: 3, pt: 1 }}>
@@ -232,7 +232,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
       {tab === 0 && (
         <Box sx={{ px: 3, pt: 1.5 }}>
           <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search by unit #, grade, heat, finish" }}
               size="small" placeholder="Search by unit #, grade, heat, finish…"
               value={query} onChange={e => setQuery(e.target.value)} sx={{ flex: 1, minWidth: 200 }}
               InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>, endAdornment: liveLoading ? <CircularProgress size={18} /> : null }}
@@ -266,7 +266,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
       {/* ─── CATALOG / STOCK SEARCH TABS ─── */}
       {tab > 0 && (
         <Box sx={{ px: 3, pt: 1.5, display: 'flex', gap: 2, alignItems: 'center' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': tab === 1 ? 'Product name, SKU, grade…' : 'Lot #, description, SKU…' }}
             autoFocus size="small" placeholder={tab === 1 ? 'Product name, SKU, grade…' : 'Lot #, description, SKU…'}
             value={query} onChange={e => setQuery(e.target.value)} sx={{ flex: 1 }}
             InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>, endAdornment: loading ? <CircularProgress size={18} /> : null }}

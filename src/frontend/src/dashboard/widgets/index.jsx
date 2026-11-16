@@ -97,7 +97,7 @@ function WidgetWrapper({ title, loading, error, onRetry, children, minHeight = 1
             sx={{ fontSize: '0.75rem' }}
             action={
               onRetry && (
-                <IconButton size="small" onClick={onRetry}>
+                <IconButton aria-label="Refresh" size="small" onClick={onRetry}>
                   <RefreshIcon fontSize="small" />
                 </IconButton>
               )
@@ -855,7 +855,7 @@ export function AiAssistantPanel({ title = 'Ops Assistant', role, context, onAsk
           )}
         </Box>
         <Stack direction="row" spacing={1}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Ask a question" }}
             fullWidth
             size="small"
             placeholder="Ask a question..."
@@ -869,6 +869,7 @@ export function AiAssistantPanel({ title = 'Ops Assistant', role, context, onAsk
             onClick={handleAsk}
             disabled={isLoading || !query.trim()}
             sx={{ minWidth: 48 }}
+            aria-label="Ask"
           >
             <SendIcon />
           </Button>

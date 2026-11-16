@@ -52,6 +52,7 @@ import {
   AttachFile,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock exception data
 const mockExceptions = [
@@ -242,7 +243,7 @@ const ExceptionInbox = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Exception Inbox
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -315,7 +316,7 @@ const ExceptionInbox = () => {
           </Tabs>
         </Box>
         <Box sx={{ p: 2, display: 'flex', gap: 2 }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search exceptions" }}
             placeholder="Search exceptions..."
             size="small"
             value={searchQuery}
@@ -329,7 +330,7 @@ const ExceptionInbox = () => {
               ),
             }}
           />
-          <Button variant="outlined" startIcon={<FilterList />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<FilterList />}>
             Filter
           </Button>
         </Box>
@@ -536,10 +537,10 @@ const ExceptionInbox = () => {
               <Button onClick={() => setDetailsDialogOpen(false)}>Close</Button>
               {selectedExc.status !== 'RESOLVED' && (
                 <>
-                  <Button variant="outlined" startIcon={<Chat />}>
+                  <Button onClick={notBuilt} variant="outlined" startIcon={<Chat />}>
                     Add Note
                   </Button>
-                  <Button variant="contained" color="success" startIcon={<CheckCircle />}>
+                  <Button onClick={notBuilt} variant="contained" color="success" startIcon={<CheckCircle />}>
                     Mark Resolved
                   </Button>
                 </>

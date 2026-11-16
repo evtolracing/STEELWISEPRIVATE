@@ -216,7 +216,7 @@ const KanbanBoard = ({
         }}
       >
         {/* Search */}
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search jobs" }}
           size="small"
           placeholder="Search jobs..."
           value={searchQuery}
@@ -283,7 +283,7 @@ const KanbanBoard = ({
         {onRefresh && (
           <Tooltip title="Refresh">
             <span>
-              <IconButton onClick={onRefresh} disabled={loading}>
+              <IconButton aria-label="Refresh" onClick={onRefresh} disabled={loading}>
                 <RefreshIcon />
               </IconButton>
             </span>

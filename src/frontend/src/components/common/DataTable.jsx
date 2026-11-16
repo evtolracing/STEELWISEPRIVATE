@@ -80,7 +80,7 @@ export default function DataTable({
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       {searchable && (
         <Box sx={{ p: 2 }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': searchPlaceholder }}
             size="small"
             placeholder={searchPlaceholder}
             value={searchTerm}

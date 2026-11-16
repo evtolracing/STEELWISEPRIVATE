@@ -180,7 +180,7 @@ export default function PurchaseOrdersPage() {
       <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
         <PoIcon color="primary" sx={{ fontSize: 36 }} />
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" fontWeight={700}>Purchase orders</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Purchase orders</Typography>
           <Typography variant="body2" color="text.secondary">What has been ordered from suppliers, and how much of it has arrived.</Typography>
         </Box>
         <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>

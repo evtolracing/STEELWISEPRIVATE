@@ -49,7 +49,7 @@ export default function WorkOrderListPage() {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h5" fontWeight={700}>Work Orders</Typography>
+          <Typography component="h1" variant="h5" fontWeight={700}>Work Orders</Typography>
           <Typography variant="body2" color="text.secondary">Slitting, cut-to-length and other processing planned against a stock item</Typography>
         </Box>
         <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>

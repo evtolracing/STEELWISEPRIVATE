@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import { FileUploadZone } from '../../components/common'
 import {
   Box,
@@ -88,7 +89,10 @@ export default function CustomersPage() {
   const [total, setTotal] = useState(0)
 
   // filters
-  const [search, setSearch] = useState('')
+  // A link from the search in the top bar opens the list already filtered.
+  const { search: query } = useLocation()
+  const fromLink = new URLSearchParams(query).get('search') || ''
+  const [search, setSearch] = useState(fromLink)
   const [typeFilter, setTypeFilter] = useState('')
 
   // pagination
@@ -139,7 +143,8 @@ export default function CustomersPage() {
   }, [fetchCustomers])
 
   /* debounced search */
-  const [searchInput, setSearchInput] = useState('')
+  const [searchInput, setSearchInput] = useState(fromLink)
+  useEffect(() => { if (fromLink) { setSearchInput(fromLink); setSearch(fromLink) } }, [fromLink])
   useEffect(() => {
     const t = setTimeout(() => setSearch(searchInput), 350)
     return () => clearTimeout(t)
@@ -217,7 +222,7 @@ export default function CustomersPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Customers
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -252,7 +257,7 @@ export default function CustomersPage() {
 
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search by name or code" }}
           size="small"
           placeholder="Search by name or code…"
           value={searchInput}
@@ -359,7 +364,7 @@ export default function CustomersPage() {
                       />
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" onClick={(e) => handleMenuOpen(e, c)}>
+                      <IconButton aria-label="More actions" size="small" onClick={(e) => handleMenuOpen(e, c)}>
                         <MoreVertIcon fontSize="small" />
                       </IconButton>
                     </TableCell>

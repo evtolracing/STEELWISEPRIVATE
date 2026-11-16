@@ -98,7 +98,7 @@ export default function SpecOverridePanel({
           )}
         </Box>
         {compact && (
-          <IconButton size="small" onClick={() => setExpanded(!expanded)}>
+          <IconButton aria-label="Hide details" size="small" onClick={() => setExpanded(!expanded)}>
             {expanded ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         )}
@@ -136,14 +136,14 @@ export default function SpecOverridePanel({
                   value={specs.thkTolerancePlus ?? ''} placeholder="Inherit"
                   onChange={e => { update('thkTolerancePlus', parseFloat(e.target.value) || 0); update('tolerancePreset', 'CUSTOM') }}
                   InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
-                  inputProps={{ step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
+                  inputProps={{ 'aria-label': "Inherit", step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
               </Grid>
               <Grid item xs={4.5}>
                 <TextField size="small" type="number" fullWidth disabled={readOnly}
                   value={specs.thkToleranceMinus ?? ''} placeholder="Inherit"
                   onChange={e => { update('thkToleranceMinus', parseFloat(e.target.value) || 0); update('tolerancePreset', 'CUSTOM') }}
                   InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
-                  inputProps={{ step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
+                  inputProps={{ 'aria-label': "Inherit", step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
               </Grid>
             </Grid>
             <Divider />
@@ -155,14 +155,14 @@ export default function SpecOverridePanel({
                   value={specs.lenTolerancePlus ?? ''} placeholder="Inherit"
                   onChange={e => { update('lenTolerancePlus', parseFloat(e.target.value) || 0); update('tolerancePreset', 'CUSTOM') }}
                   InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
-                  inputProps={{ step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
+                  inputProps={{ 'aria-label': "Inherit", step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
               </Grid>
               <Grid item xs={4.5}>
                 <TextField size="small" type="number" fullWidth disabled={readOnly}
                   value={specs.lenToleranceMinus ?? ''} placeholder="Inherit"
                   onChange={e => { update('lenToleranceMinus', parseFloat(e.target.value) || 0); update('tolerancePreset', 'CUSTOM') }}
                   InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
-                  inputProps={{ step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
+                  inputProps={{ 'aria-label': "Inherit", step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
               </Grid>
             </Grid>
             <Divider />
@@ -174,14 +174,14 @@ export default function SpecOverridePanel({
                   value={specs.widTolerancePlus ?? ''} placeholder="Inherit"
                   onChange={e => { update('widTolerancePlus', parseFloat(e.target.value) || 0); update('tolerancePreset', 'CUSTOM') }}
                   InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
-                  inputProps={{ step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
+                  inputProps={{ 'aria-label': "Inherit", step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
               </Grid>
               <Grid item xs={4.5}>
                 <TextField size="small" type="number" fullWidth disabled={readOnly}
                   value={specs.widToleranceMinus ?? ''} placeholder="Inherit"
                   onChange={e => { update('widToleranceMinus', parseFloat(e.target.value) || 0); update('tolerancePreset', 'CUSTOM') }}
                   InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
-                  inputProps={{ step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
+                  inputProps={{ 'aria-label': "Inherit", step: 0.001, min: 0, style: { fontSize: '0.8rem' } }} />
               </Grid>
             </Grid>
           </Box>

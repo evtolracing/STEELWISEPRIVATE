@@ -77,6 +77,7 @@ import {
   calculateDeliveryCost,
   estimateDeliveryTime,
 } from '../services/mapService';
+import { notBuilt } from '../utils/notBuilt'
 
 // Mock data
 const MOCK_DRIVERS = [
@@ -324,7 +325,7 @@ export default function DispatchPlanningScreen() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" gutterBottom>
+          <Typography component="h1" variant="h4" gutterBottom>
             Dispatch Planning
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -367,7 +368,7 @@ export default function DispatchPlanningScreen() {
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox">
-                      <Checkbox
+                      <Checkbox inputProps={{ 'aria-label': 'Select all shipments' }}
                         checked={selectedShipments.length === shipments.length}
                         indeterminate={selectedShipments.length > 0 && selectedShipments.length < shipments.length}
                         onChange={handleSelectAll}
@@ -388,7 +389,7 @@ export default function DispatchPlanningScreen() {
                       hover
                     >
                       <TableCell padding="checkbox">
-                        <Checkbox
+                        <Checkbox inputProps={{ 'aria-label': `Select shipment ${shipment.shipmentNumber || shipment.id}` }}
                           checked={selectedShipments.includes(shipment.id)}
                           onChange={() => handleToggleShipment(shipment.id)}
                         />
@@ -487,10 +488,10 @@ export default function DispatchPlanningScreen() {
                   Optimized Route Plan
                 </Typography>
                 <Stack direction="row" spacing={1}>
-                  <Button size="small" startIcon={<Print />}>
+                  <Button onClick={notBuilt} size="small" startIcon={<Print />}>
                     Print
                   </Button>
-                  <Button size="small" variant="contained" startIcon={<Send />}>
+                  <Button onClick={notBuilt} size="small" variant="contained" startIcon={<Send />}>
                     Dispatch
                   </Button>
                 </Stack>

@@ -231,7 +231,7 @@ const CompressionMetricsDashboard = () => {
                 <Speed />
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>
+                <Typography component="h1" variant="h5" fontWeight={700}>
                   Quote-to-Order Speed Metrics
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -628,7 +628,7 @@ const CompressionMetricsDashboard = () => {
                 sx={{ fontWeight: 600, height: 22 }}
               />
             </Box>
-            <IconButton size="small">
+            <IconButton aria-label="Hide details" size="small">
               {showSlaDetails ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Box>

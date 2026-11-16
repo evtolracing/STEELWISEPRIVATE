@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
             <Box sx={{ height: 6, bgcolor: DIV_COLOR[product.division] || '#666' }} />
             <Box sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1 }}>
-                <Typography variant="h5" fontWeight={700}>{product.name}</Typography>
+                <Typography component="h1" variant="h5" fontWeight={700}>{product.name}</Typography>
                 {product.isRemnant && <Chip label="REMNANT" size="small" color="warning" />}
               </Box>
 

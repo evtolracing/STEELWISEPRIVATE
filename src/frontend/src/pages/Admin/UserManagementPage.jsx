@@ -218,7 +218,7 @@ export default function UserManagementPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography component="h1" variant="h4" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <GroupIcon fontSize="large" color="primary" />
             User Management
           </Typography>
@@ -268,7 +268,7 @@ export default function UserManagementPage() {
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search by name or email" }}
             size="small"
             placeholder="Search by name or email..."
             value={searchTerm}
@@ -431,7 +431,7 @@ export default function UserManagementPage() {
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        <IconButton size="small" onClick={(e) => handleMenuOpen(e, user)}>
+                        <IconButton aria-label="More actions" size="small" onClick={(e) => handleMenuOpen(e, user)}>
                           <MoreVertIcon />
                         </IconButton>
                       </TableCell>

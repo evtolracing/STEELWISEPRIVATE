@@ -160,7 +160,7 @@ function RequestPermitDialog({ open, onClose, onSubmit }) {
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6">Request Permit</Typography>
-            <IconButton onClick={onClose} size="small">
+            <IconButton aria-label="Close" onClick={onClose} size="small">
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -447,10 +447,10 @@ export default function PermitsPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton onClick={() => navigate('/safety')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety')} size="small">
               <BackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Permits
             </Typography>
           </Stack>
@@ -576,7 +576,7 @@ export default function PermitsPage() {
         <Box sx={{ p: 2 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Search permits" }}
                 fullWidth
                 size="small"
                 placeholder="Search permits..."
@@ -711,7 +711,7 @@ export default function PermitsPage() {
                       />
                     </TableCell>
                     <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                      <IconButton
+                      <IconButton aria-label="More actions"
                         size="small"
                         onClick={(e) => handleMenuClick(e, permit)}
                       >

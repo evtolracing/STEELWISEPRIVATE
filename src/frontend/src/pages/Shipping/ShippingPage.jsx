@@ -174,7 +174,7 @@ export default function ShippingPage() {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h5" fontWeight={700}>Shipping</Typography>
+          <Typography component="h1" variant="h5" fontWeight={700}>Shipping</Typography>
           <Typography variant="body2" color="text.secondary">Every shipment against a customer order. Dispatching one takes the stock out, updates the order and raises the invoice.</Typography>
         </Box>
         <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>

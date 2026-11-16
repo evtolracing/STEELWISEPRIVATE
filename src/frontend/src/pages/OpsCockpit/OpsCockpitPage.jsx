@@ -139,7 +139,7 @@ function PromiseRiskPanel({ hotJobs = [], atRiskJobs = [], safeCount = 0 }) {
         <Typography variant="h6" fontWeight={600}>
           Promise Risk
         </Typography>
-        <IconButton size="small" onClick={() => setExpanded(!expanded)}>
+        <IconButton aria-label="Hide details" size="small" onClick={() => setExpanded(!expanded)}>
           {expanded ? <CollapseIcon /> : <ExpandIcon />}
         </IconButton>
       </Box>
@@ -998,7 +998,7 @@ export default function OpsCockpitPage() {
               <SpeedIcon sx={{ fontSize: 30 }} />
             </Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>Ops Cockpit</Typography>
+              <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>Ops Cockpit</Typography>
               <Stack direction="row" spacing={1} alignItems="center">
                 <AutoIcon sx={{ fontSize: 16, opacity: 0.8 }} />
                 <Typography variant="body2" sx={{ opacity: 0.85 }}>
@@ -1030,7 +1030,7 @@ export default function OpsCockpitPage() {
               <ToggleButton value="auto">Auto</ToggleButton>
               <ToggleButton value="manual">Manual</ToggleButton>
             </ToggleButtonGroup>
-            <IconButton onClick={handleRefresh} sx={{ color: 'white' }} disabled={refreshing}>
+            <IconButton aria-label="Refresh" onClick={handleRefresh} sx={{ color: 'white' }} disabled={refreshing}>
               {refreshing ? <CircularProgress size={24} sx={{ color: 'white' }} /> : <RefreshIcon />}
             </IconButton>
           </Box>

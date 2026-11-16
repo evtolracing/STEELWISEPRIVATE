@@ -58,6 +58,7 @@ import {
   Check as CheckIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock inspection detail with checklist
 const mockInspectionDetail = {
@@ -217,7 +218,7 @@ function ChecklistItem({ item, readonly, onUpdate }) {
             readonly ? (
               <Typography fontWeight={600}>{response}</Typography>
             ) : (
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Enter value" }}
                 size="small"
                 value={response}
                 onChange={(e) => handleResponseChange(e.target.value)}
@@ -230,7 +231,7 @@ function ChecklistItem({ item, readonly, onUpdate }) {
             readonly ? (
               <Typography>{response || '-'}</Typography>
             ) : (
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Enter response" }}
                 size="small"
                 fullWidth
                 multiline
@@ -254,7 +255,7 @@ function ChecklistItem({ item, readonly, onUpdate }) {
               </Typography>
             )
           ) : (
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Add notes (optional)" }}
               size="small"
               fullWidth
               value={notes}
@@ -361,10 +362,10 @@ export default function InspectionDetailPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-            <IconButton onClick={() => navigate('/safety/inspections')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety/inspections')} size="small">
               <BackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               {inspection.id}
             </Typography>
             <Chip label={inspection.status.replace('_', ' ')} color={getStatusColor(inspection.status)} />
@@ -383,8 +384,8 @@ export default function InspectionDetailPage() {
         <Stack direction="row" spacing={1}>
           {inspection.status === 'COMPLETED' && (
             <>
-              <Button variant="outlined" startIcon={<PrintIcon />}>Print</Button>
-              <Button variant="outlined" startIcon={<DownloadIcon />}>Download PDF</Button>
+              <Button onClick={notBuilt} variant="outlined" startIcon={<PrintIcon />}>Print</Button>
+              <Button onClick={notBuilt} variant="outlined" startIcon={<DownloadIcon />}>Download PDF</Button>
             </>
           )}
           {inspection.status !== 'COMPLETED' && !isEditing && (
@@ -560,7 +561,7 @@ export default function InspectionDetailPage() {
               <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                 Add Photos
               </Typography>
-              <Button
+              <Button onClick={notBuilt}
                 fullWidth
                 variant="outlined"
                 startIcon={<CameraIcon />}

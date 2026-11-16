@@ -74,7 +74,7 @@ export default function DemandShapingDashboard() {
             <TrendingDown />
           </Avatar>
           <Box>
-            <Typography variant="h5" fontWeight={700}>
+            <Typography component="h1" variant="h5" fontWeight={700}>
               Demand Shaping Analytics
             </Typography>
             <Typography variant="body2" color="text.secondary">

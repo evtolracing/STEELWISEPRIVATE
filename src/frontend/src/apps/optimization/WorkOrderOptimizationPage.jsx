@@ -119,7 +119,7 @@ export default function WorkOrderOptimizationPage() {
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
         <Box display="flex" alignItems="center" gap={1}>
           <AutoAwesome color="primary" />
-          <Typography variant="h5" fontWeight="bold">
+          <Typography component="h1" variant="h5" fontWeight="bold">
             Work Order Optimization AI
           </Typography>
         </Box>
@@ -256,7 +256,7 @@ export default function WorkOrderOptimizationPage() {
             <Typography variant="h6" fontWeight="bold">
               Bottlenecks Detected
             </Typography>
-            <IconButton onClick={() => setShowBottlenecks(!showBottlenecks)} size="small">
+            <IconButton aria-label="Hide details" onClick={() => setShowBottlenecks(!showBottlenecks)} size="small">
               {showBottlenecks ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Box>
@@ -371,7 +371,7 @@ export default function WorkOrderOptimizationPage() {
             <Typography variant="subtitle1" fontWeight="bold">
               Optimized Jobs ({preview.optimizedJobs.length})
             </Typography>
-            <IconButton onClick={() => setShowJobs(!showJobs)} sx={{ color: 'white' }}>
+            <IconButton aria-label="Hide details" onClick={() => setShowJobs(!showJobs)} sx={{ color: 'white' }}>
               {showJobs ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Box>

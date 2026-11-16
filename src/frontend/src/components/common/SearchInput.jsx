@@ -37,7 +37,7 @@ export default function SearchInput({
   }
 
   return (
-    <TextField
+    <TextField inputProps={{ 'aria-label': placeholder }}
       value={localValue}
       onChange={handleChange}
       placeholder={placeholder}
@@ -51,7 +51,7 @@ export default function SearchInput({
         ),
         endAdornment: localValue ? (
           <InputAdornment position="end">
-            <IconButton size="small" onClick={handleClear}>
+            <IconButton aria-label="Clear" size="small" onClick={handleClear}>
               <ClearIcon fontSize="small" />
             </IconButton>
           </InputAdornment>

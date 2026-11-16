@@ -157,7 +157,7 @@ export default function PackagesPage() {
   return (
     <Box sx={{ p: 3 }}>
       <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="h5" fontWeight={700} sx={{ flexGrow: 1 }}>Packing</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ flexGrow: 1 }}>Packing</Typography>
         <Button variant="contained" onClick={() => setCreating(true)}>Open a package</Button>
       </Stack>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

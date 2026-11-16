@@ -542,22 +542,22 @@ const MapComponent = ({
             onChange={handleStyleChange}
             size="small"
           >
-            <ToggleButton value="streets">
+            <ToggleButton aria-label="Streets map" value="streets">
               <Tooltip title="Streets">
                 <MapIcon fontSize="small" />
               </Tooltip>
             </ToggleButton>
-            <ToggleButton value="satellite">
+            <ToggleButton aria-label="Satellite map" value="satellite">
               <Tooltip title="Satellite">
                 <Satellite fontSize="small" />
               </Tooltip>
             </ToggleButton>
-            <ToggleButton value="outdoors">
+            <ToggleButton aria-label="Outdoors map" value="outdoors">
               <Tooltip title="Outdoors">
                 <Terrain fontSize="small" />
               </Tooltip>
             </ToggleButton>
-            <ToggleButton value="dark">
+            <ToggleButton aria-label="Dark map" value="dark">
               <Tooltip title="Dark Mode">
                 <Layers fontSize="small" />
               </Tooltip>

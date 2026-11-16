@@ -41,6 +41,7 @@ import {
   ShowChart,
   Refresh,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Stat Card Component
 const MetricCard = ({ title, value, subtitle, trend, trendValue, color, icon: Icon, progress }) => (
@@ -156,7 +157,7 @@ const QualityDashboard = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Quality Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -167,7 +168,7 @@ const QualityDashboard = () => {
           <Typography variant="caption" color="text.secondary">
             Last updated: {lastRefresh}
           </Typography>
-          <IconButton size="small">
+          <IconButton onClick={notBuilt} aria-label="Refresh" size="small">
             <Refresh />
           </IconButton>
         </Box>
@@ -319,7 +320,7 @@ const QualityDashboard = () => {
               </Table>
             </TableContainer>
             <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <Button variant="outlined" size="small" fullWidth>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>
                 View All Inspections
               </Button>
             </Box>
@@ -344,7 +345,7 @@ const QualityDashboard = () => {
                   <ListItem
                     secondaryAction={
                       <Tooltip title="View Chart">
-                        <IconButton size="small">
+                        <IconButton onClick={notBuilt} size="small">
                           <Visibility />
                         </IconButton>
                       </Tooltip>
@@ -371,7 +372,7 @@ const QualityDashboard = () => {
               ))}
             </List>
             <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <Button variant="outlined" size="small" fullWidth>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>
                 View All SPC Charts
               </Button>
             </Box>
@@ -412,7 +413,7 @@ const QualityDashboard = () => {
               <Typography variant="h6" fontWeight={600}>
                 Recent NCRs
               </Typography>
-              <Button size="small" startIcon={<Warning />}>
+              <Button onClick={notBuilt} size="small" startIcon={<Warning />}>
                 Create NCR
               </Button>
             </Box>
@@ -453,7 +454,7 @@ const QualityDashboard = () => {
               <Typography variant="h6" fontWeight={600}>
                 Active Quality Holds
               </Typography>
-              <Button size="small" color="error" startIcon={<Block />}>
+              <Button onClick={notBuilt} size="small" color="error" startIcon={<Block />}>
                 Create Hold
               </Button>
             </Box>
@@ -485,7 +486,7 @@ const QualityDashboard = () => {
                           <Chip label={hold.status} size="small" color="error" variant="outlined" />
                         </TableCell>
                         <TableCell align="right">
-                          <Button size="small" variant="outlined" color="success">
+                          <Button onClick={notBuilt} size="small" variant="outlined" color="success">
                             Clear Hold
                           </Button>
                         </TableCell>

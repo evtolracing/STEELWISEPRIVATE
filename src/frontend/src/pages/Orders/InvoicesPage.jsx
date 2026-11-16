@@ -210,7 +210,7 @@ export default function InvoicesPage() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" fontWeight={700}>Invoices</Typography>
+      <Typography component="h1" variant="h5" fontWeight={700}>Invoices</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         An invoice is raised automatically when a shipment leaves the dock. Record payments and credits here.
       </Typography>

@@ -279,7 +279,7 @@ export default function StopWorkDashboard() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography component="h1" variant="h4" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <SecurityIcon fontSize="large" color="error" />
             Stop-Work Authority
           </Typography>
@@ -578,7 +578,7 @@ export default function StopWorkDashboard() {
                       primary={wc.name}
                       secondary={wc.reason.replace(/_/g, ' ')}
                     />
-                    <IconButton size="small" onClick={() => openEventDetails(events.find(e => e.id === wc.swaId))}>
+                    <IconButton aria-label="View" size="small" onClick={() => openEventDetails(events.find(e => e.id === wc.swaId))}>
                       <ViewIcon fontSize="small" />
                     </IconButton>
                   </ListItem>
@@ -610,7 +610,7 @@ export default function StopWorkDashboard() {
                       primary={asset.name}
                       secondary={asset.reason.replace(/_/g, ' ')}
                     />
-                    <IconButton size="small" onClick={() => openEventDetails(events.find(e => e.id === asset.swaId))}>
+                    <IconButton aria-label="View" size="small" onClick={() => openEventDetails(events.find(e => e.id === asset.swaId))}>
                       <ViewIcon fontSize="small" />
                     </IconButton>
                   </ListItem>
@@ -642,7 +642,7 @@ export default function StopWorkDashboard() {
                       primary={job.name}
                       secondary={job.reason.replace(/_/g, ' ')}
                     />
-                    <IconButton size="small" onClick={() => openEventDetails(events.find(e => e.id === job.swaId))}>
+                    <IconButton aria-label="View" size="small" onClick={() => openEventDetails(events.find(e => e.id === job.swaId))}>
                       <ViewIcon fontSize="small" />
                     </IconButton>
                   </ListItem>

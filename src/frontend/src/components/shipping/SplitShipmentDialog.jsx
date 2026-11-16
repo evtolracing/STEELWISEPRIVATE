@@ -167,7 +167,7 @@ export default function SplitShipmentDialog({ open, onClose, order, onConfirm, c
           <Chip label={order.orderNumber} size="small" variant="outlined" sx={{ ml: 1 }} />
         )}
         <Box sx={{ flex: 1 }} />
-        <IconButton onClick={onClose} size="small">
+        <IconButton aria-label="Close" onClick={onClose} size="small">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -218,7 +218,7 @@ export default function SplitShipmentDialog({ open, onClose, order, onConfirm, c
                         }}
                       >
                         <TableCell padding="checkbox">
-                          <Checkbox
+                          <Checkbox inputProps={{ 'aria-label': 'Include this line in the shipment' }}
                             checked={sel.checked && !disabled}
                             onChange={() => handleToggle(line.id)}
                             disabled={disabled}
@@ -267,7 +267,7 @@ export default function SplitShipmentDialog({ open, onClose, order, onConfirm, c
                         <TableCell align="center">
                           {!disabled && sel.checked ? (
                             <Stack direction="row" spacing={1} alignItems="center">
-                              <Slider
+                              <Slider aria-label="Quantity in this shipment"
                                 value={sel.qty}
                                 onChange={(_, v) => handleSlider(line.id, v)}
                                 min={0}
@@ -281,7 +281,7 @@ export default function SplitShipmentDialog({ open, onClose, order, onConfirm, c
                                 onChange={(e) => handleQtyChange(line.id, e.target.value)}
                                 type="number"
                                 size="small"
-                                inputProps={{ min: 0, max: line.qtyRemaining, style: { textAlign: 'center' } }}
+                                inputProps={{ 'aria-label': 'Quantity in this shipment', min: 0, max: line.qtyRemaining, style: { textAlign: 'center' } }}
                                 sx={{ width: 70 }}
                               />
                             </Stack>

@@ -86,7 +86,7 @@ export default function MobileRepHomePage() {
     <Box>
       {/* ── Greeting ────────────────────────────────────────── */}
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h5" fontWeight={700}>
+        <Typography component="h1" variant="h5" fontWeight={700}>
           Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'}
         </Typography>
         <Typography variant="body2" color="text.secondary">

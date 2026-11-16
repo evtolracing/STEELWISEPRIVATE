@@ -62,6 +62,7 @@ import {
   calculateDistance,
   estimateDeliveryTime,
 } from '../services/mapService';
+import { notBuilt } from '../utils/notBuilt'
 
 const ShipmentTrackingScreen = () => {
   const [shipments, setShipments] = useState([]);
@@ -373,7 +374,7 @@ const ShipmentTrackingScreen = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" gutterBottom>
+          <Typography component="h1" variant="h4" gutterBottom>
             Shipment Tracking
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -381,7 +382,7 @@ const ShipmentTrackingScreen = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search shipments" }}
             size="small"
             placeholder="Search shipments..."
             value={searchQuery}
@@ -397,9 +398,9 @@ const ShipmentTrackingScreen = () => {
             onChange={(e, v) => v && setViewMode(v)}
             size="small"
           >
-            <ToggleButton value="grid"><ViewModule /></ToggleButton>
-            <ToggleButton value="list"><ViewList /></ToggleButton>
-            <ToggleButton value="map"><MapIcon /></ToggleButton>
+            <ToggleButton aria-label="Show as cards" value="grid"><ViewModule /></ToggleButton>
+            <ToggleButton aria-label="Show as a list" value="list"><ViewList /></ToggleButton>
+            <ToggleButton aria-label="Show on a map" value="map"><MapIcon /></ToggleButton>
           </ToggleButtonGroup>
           <Button
             variant="outlined"
@@ -552,7 +553,7 @@ const ShipmentTrackingScreen = () => {
                       <Typography variant="caption" color="text.secondary">{shipment.vehicle.number} • {shipment.vehicle.type}</Typography>
                     </Box>
                     <Tooltip title="Call Driver">
-                      <IconButton size="small" href={`tel:${shipment.driver.phone}`}>
+                      <IconButton aria-label="Call the driver" size="small" href={`tel:${shipment.driver.phone}`}>
                         <Phone fontSize="small" />
                       </IconButton>
                     </Tooltip>
@@ -756,7 +757,7 @@ const ShipmentTrackingScreen = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setMapDialogOpen(false)}>Close</Button>
-          <Button variant="contained" startIcon={<Navigation />}>
+          <Button onClick={notBuilt} variant="contained" startIcon={<Navigation />}>
             Get Directions
           </Button>
         </DialogActions>

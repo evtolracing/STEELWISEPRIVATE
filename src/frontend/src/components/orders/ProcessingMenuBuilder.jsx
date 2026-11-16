@@ -75,7 +75,7 @@ export default function ProcessingMenuBuilder({ open, onClose, onSave, division,
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         Processing Steps
-        <IconButton size="small" onClick={onClose}><CloseIcon /></IconButton>
+        <IconButton aria-label="Close" size="small" onClick={onClose}><CloseIcon /></IconButton>
       </DialogTitle>
       <DialogContent dividers sx={{ display: 'flex', gap: 2, minHeight: 400 }}>
         {/* Left: available operations + templates */}
@@ -123,7 +123,7 @@ export default function ProcessingMenuBuilder({ open, onClose, onSave, division,
                   <DragIcon fontSize="small" color="disabled" />
                   <Chip icon={<Icon />} label={step.name} size="small" color={TYPE_COLOR[step.type] || 'default'} variant="outlined" />
                   <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>~{step.estimatedMinutes} min</Typography>
-                  <IconButton size="small" color="error" onClick={() => removeStep(idx)}><DeleteIcon fontSize="small" /></IconButton>
+                  <IconButton aria-label="Delete" size="small" color="error" onClick={() => removeStep(idx)}><DeleteIcon fontSize="small" /></IconButton>
                 </Box>
                 {proc?.params?.length > 0 && (
                   <Grid container spacing={1}>

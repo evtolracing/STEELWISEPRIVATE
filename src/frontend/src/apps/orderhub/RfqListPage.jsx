@@ -194,7 +194,7 @@ export default function RfqListPage() {
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Stack direction="row" spacing={2} alignItems="center">
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search RFQs" }}
             size="small"
             placeholder="Search RFQs..."
             value={search}

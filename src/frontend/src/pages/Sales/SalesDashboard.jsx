@@ -75,7 +75,7 @@ const SalesDashboard = () => {
     <Box sx={{ p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Sales Dashboard</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Sales Dashboard</Typography>
           <Typography variant="body2" color="text.secondary">RFQs and quotes, counted from the live system</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>

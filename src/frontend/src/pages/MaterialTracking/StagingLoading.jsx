@@ -72,7 +72,7 @@ const StagingLoading = () => {
     <Box sx={{ p: 3, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Staging & Loading</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Staging & Loading</Typography>
           <Typography variant="body2" color="text.secondary">
             Stage packages at docks, assign carriers, and load onto trucks
           </Typography>
@@ -116,7 +116,7 @@ const StagingLoading = () => {
 
       {/* Search */}
       <Paper sx={{ p: 2, mb: 3 }}>
-        <TextField fullWidth size="small"
+        <TextField inputProps={{ 'aria-label': "Search by job number, customer, order" }} fullWidth size="small"
           placeholder="Search by job number, customer, order..."
           value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{ startAdornment: <InputAdornment position="start"><Search /></InputAdornment> }}

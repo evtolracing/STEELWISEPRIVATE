@@ -116,7 +116,7 @@ const TagManagement = () => {
     <Box sx={{ p: 3, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Tag Management</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Tag Management</Typography>
           <Typography variant="body2" color="text.secondary">
             Generate, print, apply, and track material identity tags
           </Typography>
@@ -155,7 +155,7 @@ const TagManagement = () => {
       </Paper>
 
       <Paper sx={{ p: 2, mb: 2 }}>
-        <TextField fullWidth size="small"
+        <TextField inputProps={{ 'aria-label': "Search by tag ID, grade, heat number, customer" }} fullWidth size="small"
           placeholder="Search by tag ID, grade, heat number, customer..."
           value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{ startAdornment: <InputAdornment position="start"><Search /></InputAdornment> }}

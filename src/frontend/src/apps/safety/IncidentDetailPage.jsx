@@ -73,6 +73,7 @@ import {
   Build as CAPAIcon,
   VerifiedUser as VerifiedIcon,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock incident data
 const mockIncidentDetail = {
@@ -274,10 +275,10 @@ export default function IncidentDetailPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-            <IconButton onClick={() => navigate('/safety/incidents')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety/incidents')} size="small">
               <BackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               {incident.id}
             </Typography>
             <Chip label={incident.type.replace('_', ' ')} color={getTypeColor(incident.type)} />
@@ -288,9 +289,9 @@ export default function IncidentDetailPage() {
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
-          <Button variant="outlined" startIcon={<PrintIcon />}>Print</Button>
-          <Button variant="outlined" startIcon={<ShareIcon />}>Share</Button>
-          <Button variant="contained" startIcon={<EditIcon />}>Edit</Button>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<PrintIcon />}>Print</Button>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<ShareIcon />}>Share</Button>
+          <Button onClick={notBuilt} variant="contained" startIcon={<EditIcon />}>Edit</Button>
         </Stack>
       </Stack>
 
@@ -562,7 +563,7 @@ export default function IncidentDetailPage() {
                       <ListItem
                         key={attachment.id}
                         secondaryAction={
-                          <Button size="small">Download</Button>
+                          <Button onClick={notBuilt} size="small">Download</Button>
                         }
                       >
                         <ListItemIcon>
@@ -636,7 +637,7 @@ export default function IncidentDetailPage() {
             <Divider sx={{ my: 2 }} />
 
             <Stack direction="row" spacing={1}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Add a comment" }}
                 fullWidth
                 size="small"
                 placeholder="Add a comment..."
@@ -666,7 +667,7 @@ export default function IncidentDetailPage() {
                 <Typography variant="body2" color="text.secondary">{incident.assignee.role}</Typography>
               </Box>
             </Stack>
-            <Button fullWidth variant="outlined" sx={{ mt: 2 }}>
+            <Button onClick={notBuilt} fullWidth variant="outlined" sx={{ mt: 2 }}>
               Reassign
             </Button>
           </Paper>
@@ -679,13 +680,13 @@ export default function IncidentDetailPage() {
             <Stack spacing={1}>
               {incident.status !== 'CLOSED' && (
                 <>
-                  <Button fullWidth variant="outlined" startIcon={<InvestigateIcon />}>
+                  <Button onClick={notBuilt} fullWidth variant="outlined" startIcon={<InvestigateIcon />}>
                     Update Investigation
                   </Button>
-                  <Button fullWidth variant="outlined" startIcon={<CAPAIcon />}>
+                  <Button onClick={notBuilt} fullWidth variant="outlined" startIcon={<CAPAIcon />}>
                     Add CAPA
                   </Button>
-                  <Button fullWidth variant="contained" color="success" startIcon={<VerifiedIcon />}>
+                  <Button onClick={notBuilt} fullWidth variant="contained" color="success" startIcon={<VerifiedIcon />}>
                     Close Incident
                   </Button>
                 </>

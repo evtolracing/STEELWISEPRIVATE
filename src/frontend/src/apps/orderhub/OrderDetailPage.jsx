@@ -167,7 +167,7 @@ export default function OrderDetailPage() {
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton onClick={() => navigate('/orderhub')}>
+          <IconButton aria-label="Back" onClick={() => navigate('/orderhub')}>
             <BackIcon />
           </IconButton>
           <Box>

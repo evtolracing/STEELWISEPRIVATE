@@ -62,6 +62,7 @@ import {
   TrendingDown,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock decision log data
 const mockDecisions = [
@@ -293,7 +294,7 @@ const DecisionLog = () => {
       {/* Header */}
       <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Decision Audit Log
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -304,7 +305,7 @@ const DecisionLog = () => {
           <Button variant="outlined" onClick={() => navigate('/executive/cockpit')}>
             Back to Cockpit
           </Button>
-          <Button variant="outlined" startIcon={<Download />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Download />}>
             Export
           </Button>
         </Box>
@@ -358,7 +359,7 @@ const DecisionLog = () => {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search decisions" }}
               fullWidth
               size="small"
               placeholder="Search decisions..."
@@ -385,10 +386,10 @@ const DecisionLog = () => {
           </Grid>
           <Grid item xs={12} md={4}>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button variant="outlined" size="small" startIcon={<CalendarToday />}>
+              <Button onClick={notBuilt} variant="outlined" size="small" startIcon={<CalendarToday />}>
                 Date Range
               </Button>
-              <Button variant="outlined" size="small" startIcon={<Person />}>
+              <Button onClick={notBuilt} variant="outlined" size="small" startIcon={<Person />}>
                 Decision Maker
               </Button>
             </Box>
@@ -425,7 +426,7 @@ const DecisionLog = () => {
                     onClick={() => setExpandedId(expandedId === decision.id ? null : decision.id)}
                   >
                     <TableCell>
-                      <IconButton size="small">
+                      <IconButton aria-label="Hide details" size="small">
                         {expandedId === decision.id ? <ExpandLess /> : <ExpandMore />}
                       </IconButton>
                     </TableCell>
@@ -500,7 +501,7 @@ const DecisionLog = () => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <IconButton 
+                      <IconButton aria-label="View" 
                         size="small"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -738,10 +739,10 @@ const DecisionLog = () => {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setDetailDialogOpen(false)}>Close</Button>
-              <Button variant="outlined" startIcon={<Compare />}>
+              <Button onClick={notBuilt} variant="outlined" startIcon={<Compare />}>
                 Compare to Similar
               </Button>
-              <Button variant="contained" startIcon={<Assessment />}>
+              <Button onClick={notBuilt} variant="contained" startIcon={<Assessment />}>
                 Generate Report
               </Button>
             </DialogActions>

@@ -249,7 +249,7 @@ const AssetRegistry = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Asset Registry</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Asset Registry</Typography>
           <Typography variant="body2" color="text.secondary">Equipment inventory and status management</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -335,7 +335,7 @@ const AssetRegistry = () => {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={3}>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search assets" }}
               fullWidth size="small" placeholder="Search assets..."
               value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position="start"><Search /></InputAdornment> }}

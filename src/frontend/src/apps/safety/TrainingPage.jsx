@@ -67,6 +67,7 @@ import {
   PlayCircle as StartIcon,
   WorkspacePremium as CertificateIcon,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock data
 const mockTrainingRecords = [
@@ -198,10 +199,10 @@ export default function TrainingPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton onClick={() => navigate('/safety')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety')} size="small">
               <BackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Safety Training
             </Typography>
           </Stack>
@@ -210,7 +211,7 @@ export default function TrainingPage() {
           </Typography>
         </Box>
         <Stack direction="row" spacing={1}>
-          <Button
+          <Button onClick={notBuilt}
             variant="outlined"
             startIcon={<DownloadIcon />}
           >
@@ -314,7 +315,7 @@ export default function TrainingPage() {
           <Box sx={{ p: 2 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={4}>
-                <TextField
+                <TextField inputProps={{ 'aria-label': "Search by employee, course" }}
                   fullWidth
                   size="small"
                   placeholder="Search by employee, course..."
@@ -560,7 +561,7 @@ export default function TrainingPage() {
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6">Assign Training</Typography>
-            <IconButton onClick={() => setAssignDialogOpen(false)} size="small">
+            <IconButton aria-label="Close" onClick={() => setAssignDialogOpen(false)} size="small">
               <CloseIcon />
             </IconButton>
           </Stack>

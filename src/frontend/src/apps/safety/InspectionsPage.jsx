@@ -158,7 +158,7 @@ function ScheduleInspectionDialog({ open, onClose, onSubmit }) {
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6">Schedule Inspection</Typography>
-            <IconButton onClick={onClose} size="small">
+            <IconButton aria-label="Close" onClick={onClose} size="small">
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -373,10 +373,10 @@ export default function InspectionsPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton onClick={() => navigate('/safety')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety')} size="small">
               <BackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Inspections
             </Typography>
           </Stack>
@@ -515,7 +515,7 @@ export default function InspectionsPage() {
         <Box sx={{ p: 2 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Search inspections" }}
                 fullWidth
                 size="small"
                 placeholder="Search inspections..."
@@ -653,7 +653,7 @@ export default function InspectionsPage() {
                       )}
                     </TableCell>
                     <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                      <IconButton
+                      <IconButton aria-label="More actions"
                         size="small"
                         onClick={(e) => handleMenuClick(e, inspection)}
                       >

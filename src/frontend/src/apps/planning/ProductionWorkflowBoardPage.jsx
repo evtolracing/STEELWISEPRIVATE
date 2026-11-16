@@ -79,10 +79,10 @@ function ProductionWorkflowBoardPage() {
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" mb={2}>
-        <Typography variant="h5">Production Workflow</Typography>
+        <Typography component="h1" variant="h5">Production Workflow</Typography>
         <Stack direction="row" spacing={2}>
           {/* Location filter */}
-          <Select
+          <Select inputProps={{ 'aria-label': 'Branch' }}
             size="small"
             value={locationFilter}
             displayEmpty

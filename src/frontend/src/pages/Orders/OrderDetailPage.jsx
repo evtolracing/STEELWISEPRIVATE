@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import {
   ArrowBack as BackIcon, Edit as EditIcon, Save as SaveIcon,
-  Send as SubmitIcon, Print as PrintIcon, ContentCopy as DuplicateIcon,
+  Send as SubmitIcon, Print as PrintIcon,
   Build as WOIcon, Inventory as AllocIcon, Receipt as InvoiceIcon,
   LocalShipping as ShipIcon, History as HistoryIcon, Delete as DeleteIcon,
   CheckCircle as CompleteIcon,
@@ -222,8 +222,8 @@ export default function OrderDetailPage() {
 
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <IconButton onClick={() => navigate(-1)}><BackIcon /></IconButton>
-        <Typography variant="h5" fontWeight={700}>{order.orderNumber}</Typography>
+        <IconButton aria-label="Back" onClick={() => navigate(-1)}><BackIcon /></IconButton>
+        <Typography component="h1" variant="h5" fontWeight={700}>{order.orderNumber}</Typography>
         <OrderSourceChip source={order.source} />
         <Chip label={order.status?.replace(/_/g, ' ')} color={STATUS_COLOR[order.status] || 'default'} />
         {order.priority && order.priority !== 'STANDARD' && (
@@ -298,7 +298,7 @@ export default function OrderDetailPage() {
                   <Grid item xs={12}>
                     <Typography variant="caption" color="text.secondary">Notes</Typography>
                     {editing ? (
-                      <TextField fullWidth multiline rows={3} value={notes} onChange={e => setNotes(e.target.value)} sx={{ mt: 0.5 }} />
+                      <TextField inputProps={{ 'aria-label': 'Notes' }} fullWidth multiline rows={3} value={notes} onChange={e => setNotes(e.target.value)} sx={{ mt: 0.5 }} />
                     ) : (
                       <Typography variant="body2">{order.notes || '—'}</Typography>
                     )}
@@ -346,8 +346,7 @@ export default function OrderDetailPage() {
               {['SUBMITTED', 'PENDING', 'CONFIRMED'].includes(order.status) && (
                 <Button fullWidth size="small" variant="contained" color="secondary" startIcon={<WOIcon />} onClick={handleCreateWOs} disabled={saving}>Create Work Orders</Button>
               )}
-              <Button fullWidth size="small" variant="outlined" startIcon={<PrintIcon />} disabled>Print</Button>
-              <Button fullWidth size="small" variant="outlined" startIcon={<DuplicateIcon />} disabled>Duplicate</Button>
+              <Button fullWidth size="small" variant="outlined" startIcon={<PrintIcon />} onClick={() => window.print()} className="no-print">Print</Button>
             </Box>
           </Paper>
         </Grid>

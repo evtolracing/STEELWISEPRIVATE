@@ -151,7 +151,7 @@ export default function CompetencyMatrixPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Competency Matrix
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -164,7 +164,7 @@ export default function CompetencyMatrixPage() {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search competencies" }}
               fullWidth
               placeholder="Search competencies..."
               value={searchQuery}

@@ -87,7 +87,7 @@ export default function ShipDatePickerWithPromise({
         fullWidth
         value={value || ''}
         onChange={handleDateChange}
-        inputProps={{ min: today }}
+        inputProps={{ 'aria-label': 'Requested ship date', min: today }}
         disabled={disabled}
         helperText={!value ? 'Leave blank for earliest available' : undefined}
         sx={{ mb: 1 }}

@@ -72,6 +72,7 @@ import {
   Lightbulb,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Simulation change types
 const changeTypes = [
@@ -250,7 +251,7 @@ const SimulationWorkspace = () => {
       {/* Header */}
       <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Simulation Workspace
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -377,8 +378,8 @@ const SimulationWorkspace = () => {
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <IconButton size="small"><ContentCopy fontSize="small" /></IconButton>
-                    <IconButton size="small" color="error"><Delete fontSize="small" /></IconButton>
+                    <IconButton onClick={notBuilt} aria-label="Copy" size="small"><ContentCopy fontSize="small" /></IconButton>
+                    <IconButton onClick={notBuilt} aria-label="Delete" size="small" color="error"><Delete fontSize="small" /></IconButton>
                   </Box>
                 </Box>
 
@@ -409,7 +410,7 @@ const SimulationWorkspace = () => {
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <IconButton size="small"><Delete fontSize="small" /></IconButton>
+                            <IconButton onClick={notBuilt} aria-label="Delete" size="small"><Delete fontSize="small" /></IconButton>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -418,7 +419,7 @@ const SimulationWorkspace = () => {
                 </TableContainer>
 
                 <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                  <Button variant="outlined" startIcon={<Add />} size="small">
+                  <Button onClick={notBuilt} variant="outlined" startIcon={<Add />} size="small">
                     Add Change
                   </Button>
                   <Box sx={{ flexGrow: 1 }} />
@@ -608,7 +609,7 @@ const SimulationWorkspace = () => {
 
                   {/* Action Buttons */}
                   <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                    <Button variant="outlined" startIcon={<Save />}>
+                    <Button onClick={notBuilt} variant="outlined" startIcon={<Save />}>
                       Save to Decision Log
                     </Button>
                     <Button 

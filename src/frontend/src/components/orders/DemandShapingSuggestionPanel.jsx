@@ -74,7 +74,7 @@ function SuggestionCard({ suggestion, onAccept, onDismiss, compact }) {
       }}
     >
       {/* Dismiss X */}
-      <IconButton
+      <IconButton aria-label="Close"
         size="small"
         onClick={() => {
           setDismissed(true)
@@ -200,7 +200,7 @@ export default function DemandShapingSuggestionPanel({
             />
           )}
         </Box>
-        <IconButton size="small">
+        <IconButton aria-label="Hide details" size="small">
           {expanded ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
         </IconButton>
       </Box>

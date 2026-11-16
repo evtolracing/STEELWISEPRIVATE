@@ -213,11 +213,11 @@ export default function RfqDetailPage() {
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton onClick={() => navigate('/orderhub')}>
+          <IconButton aria-label="Back" onClick={() => navigate('/orderhub')}>
             <BackIcon />
           </IconButton>
           <Box>
-            <Typography variant="h5" fontWeight={700}>
+            <Typography component="h1" variant="h5" fontWeight={700}>
               RFQ Detail
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -406,7 +406,7 @@ export default function RfqDetailPage() {
                         </TableCell>
                         {showQuoteForm && (
                           <TableCell>
-                            <TextField
+                            <TextField inputProps={{ 'aria-label': "0.00" }}
                               size="small"
                               type="number"
                               value={quotePrices[line.id]?.unitPrice || ''}
@@ -486,7 +486,7 @@ export default function RfqDetailPage() {
               title="AI Quote Assistant"
               subheader="Get pricing suggestions"
               action={
-                <IconButton onClick={() => setAiPanelOpen(!aiPanelOpen)}>
+                <IconButton aria-label="Hide details" onClick={() => setAiPanelOpen(!aiPanelOpen)}>
                   {aiPanelOpen ? <CollapseIcon /> : <ExpandIcon />}
                 </IconButton>
               }

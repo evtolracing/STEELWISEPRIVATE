@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './hooks/useAuth'
 import { AppRouter } from './router'
 import { ErrorBoundary } from './components/common'
+import NotBuiltNotice from './components/common/NotBuiltNotice'
 import { CartProvider } from './contexts/CartContext'
 import { CustomerSessionProvider } from './contexts/CustomerSessionContext'
 import theme from './theme'
@@ -25,6 +26,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
+          <NotBuiltNotice />
           <AuthProvider>
             <CartProvider>
               <CustomerSessionProvider>

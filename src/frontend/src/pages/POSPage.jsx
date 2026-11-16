@@ -172,7 +172,7 @@ export function POSPage() {
               <POSIcon sx={{ fontSize: 26 }} />
             </Avatar>
             <Box>
-              <Typography variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography component="h1" variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 Point of Sale
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">

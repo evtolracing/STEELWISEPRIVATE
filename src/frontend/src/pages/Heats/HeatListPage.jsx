@@ -138,7 +138,7 @@ export default function HeatListPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar sx={{ width: 56, height: 56, background: 'rgba(255,255,255,0.15)' }}><HeatIcon sx={{ fontSize: 30 }} /></Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>Heats</Typography>
+              <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>Heats</Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>Mill heats and the stock that came from each one</Typography>
             </Box>
           </Box>

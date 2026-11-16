@@ -122,7 +122,7 @@ export default function RemnantQuickAdd({ onAddToCart, location = '' }) {
             One-click add · Oldest first · {location.replace(/_/g, ' ')}
           </Typography>
         </Box>
-        <IconButton size="small" onClick={e => { e.stopPropagation(); loadRemnants() }}>
+        <IconButton aria-label="Refresh" size="small" onClick={e => { e.stopPropagation(); loadRemnants() }}>
           <RefreshIcon fontSize="small" />
         </IconButton>
         {expanded ? <CollapseIcon fontSize="small" /> : <ExpandIcon fontSize="small" />}

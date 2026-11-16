@@ -153,7 +153,7 @@ export default function HeatDetailPage() {
         <IconButton onClick={() => navigate('/heats')} aria-label="Back to heats"><BackIcon /></IconButton>
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" fontWeight={600}>Heat {heat.heatNumber}</Typography>
+            <Typography component="h1" variant="h4" fontWeight={600}>Heat {heat.heatNumber}</Typography>
             <StatusChip status={heat.status} />
           </Box>
           <Typography variant="body2" color="text.secondary">{[heat.mill?.name, heat.grade?.code, heat.grade?.specStandard].filter(Boolean).join(' · ')}</Typography>

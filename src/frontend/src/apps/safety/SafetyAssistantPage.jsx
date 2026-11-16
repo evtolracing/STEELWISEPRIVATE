@@ -62,6 +62,7 @@ import {
   Gavel as RuleIcon,
   Shield as ShieldIcon,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Quick action categories
 const quickActions = [
@@ -520,17 +521,17 @@ function ChatMessage({ message, isUser, onActionClick }) {
         </Paper>
         <Stack direction="row" spacing={0.5} sx={{ mt: 0.5 }}>
           <Tooltip title="Helpful">
-            <IconButton size="small">
+            <IconButton onClick={notBuilt} size="small">
               <ThumbUpIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Not helpful">
-            <IconButton size="small">
+            <IconButton onClick={notBuilt} size="small">
               <ThumbDownIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Copy">
-            <IconButton size="small">
+            <IconButton onClick={notBuilt} size="small">
               <CopyIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -669,14 +670,14 @@ What can I help you with today?`,
       <Paper sx={{ p: 2, mb: 2 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <IconButton onClick={() => navigate('/safety')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety')} size="small">
               <BackIcon />
             </IconButton>
             <Avatar sx={{ bgcolor: 'success.main', width: 48, height: 48 }}>
               <ShieldIcon />
             </Avatar>
             <Box>
-              <Typography variant="h5" fontWeight={700}>
+              <Typography component="h1" variant="h5" fontWeight={700}>
                 Safety AI Assistant
               </Typography>
               <Stack direction="row" alignItems="center" spacing={1}>
@@ -740,7 +741,7 @@ What can I help you with today?`,
           {/* Input Area */}
           <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
             <Stack direction="row" spacing={1}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Ask about safety procedures, report hazards, or request permits" }}
                 fullWidth
                 multiline
                 maxRows={4}
@@ -751,7 +752,7 @@ What can I help you with today?`,
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
+                      <IconButton aria-label="Send"
                         color="primary"
                         onClick={handleSendMessage}
                         disabled={!inputValue.trim() || isTyping}

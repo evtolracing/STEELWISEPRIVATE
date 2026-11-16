@@ -40,7 +40,7 @@ export default function OrderCloseoutPage() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" fontWeight={700}>Orders not closed</Typography>
+      <Typography component="h1" variant="h5" fontWeight={700}>Orders not closed</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         An order is closed when everything on it has shipped, been delivered, invoiced and paid, with no return, credit, job or reserved stock left open. Oldest first.
       </Typography>

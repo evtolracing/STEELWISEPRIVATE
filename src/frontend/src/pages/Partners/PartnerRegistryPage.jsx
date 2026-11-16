@@ -206,7 +206,7 @@ export default function PartnerRegistryPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold">
+          <Typography component="h1" variant="h4" fontWeight="bold">
             <ShieldIcon sx={{ mr: 1, verticalAlign: 'bottom', fontSize: 32 }} />
             Partner API Registry
           </Typography>
@@ -251,7 +251,7 @@ export default function PartnerRegistryPage() {
 
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search partners" }}
           size="small"
           placeholder="Search partners..."
           value={searchTerm}
@@ -423,10 +423,10 @@ export default function PartnerRegistryPage() {
               <Typography variant="subtitle2" gutterBottom>New API Key Created</Typography>
               <Box sx={{ fontFamily: 'monospace', fontSize: 12, mb: 1 }}>
                 <Box>Client ID: <strong>{newKeyResult.clientId}</strong>
-                  <IconButton size="small" onClick={() => copyToClipboard(newKeyResult.clientId)}><CopyIcon fontSize="small" /></IconButton>
+                  <IconButton aria-label="Copy" size="small" onClick={() => copyToClipboard(newKeyResult.clientId)}><CopyIcon fontSize="small" /></IconButton>
                 </Box>
                 <Box>Client Secret: <strong>{newKeyResult.clientSecret}</strong>
-                  <IconButton size="small" onClick={() => copyToClipboard(newKeyResult.clientSecret)}><CopyIcon fontSize="small" /></IconButton>
+                  <IconButton aria-label="Copy" size="small" onClick={() => copyToClipboard(newKeyResult.clientSecret)}><CopyIcon fontSize="small" /></IconButton>
                 </Box>
               </Box>
               <Typography variant="caption" color="error">⚠️ Save the secret now — it will NOT be shown again.</Typography>

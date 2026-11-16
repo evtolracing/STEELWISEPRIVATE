@@ -41,6 +41,7 @@ import {
   Download as DownloadIcon,
   FilterList as FilterIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Supplier Scorecard Data
 const mockScorecards = [
@@ -192,7 +193,7 @@ export default function SupplierScorecardsPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Supplier Scorecards
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -213,7 +214,7 @@ export default function SupplierScorecardsPage() {
               <MenuItem value="12M">12 Months</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="outlined" startIcon={<DownloadIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<DownloadIcon />}>
             Export Report
           </Button>
         </Box>
@@ -294,7 +295,7 @@ export default function SupplierScorecardsPage() {
             <Tab label={`Approved (${mockScorecards.filter((s) => s.tier === 'APPROVED').length})`} />
             <Tab label={`At Risk (${atRiskCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search suppliers" }}
             size="small"
             placeholder="Search suppliers..."
             value={searchQuery}
@@ -380,7 +381,7 @@ export default function SupplierScorecardsPage() {
                       <Chip label={tier.label} color={tier.color} size="small" />
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedSupplier(sc)}
@@ -483,7 +484,7 @@ function ScorecardDetailView({ supplier, onBack, timePeriod }) {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<DownloadIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<DownloadIcon />}>
             Export PDF
           </Button>
         </Box>

@@ -218,7 +218,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
                   <Typography variant="subtitle2" color="text.secondary">
                     Details
                   </Typography>
-                  <IconButton size="small">
+                  <IconButton aria-label="Hide details" size="small">
                     {showData ? <CollapseIcon /> : <ExpandIcon />}
                   </IconButton>
                 </Box>
@@ -391,7 +391,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
       {/* Input Area */}
       <Box sx={{ p: 2, bgcolor: 'white', borderTop: '1px solid', borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Ask about inventory" }}
             fullWidth
             size="small"
             placeholder="Ask about inventory..."

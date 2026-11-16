@@ -145,7 +145,7 @@ function SplitCard({ split, index }) {
           }}
         />
 
-        <IconButton size="small">
+        <IconButton aria-label="Hide details" size="small">
           {expanded ? <CollapseIcon /> : <ExpandIcon />}
         </IconButton>
       </Box>

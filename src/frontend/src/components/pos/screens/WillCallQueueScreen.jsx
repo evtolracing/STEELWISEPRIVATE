@@ -185,7 +185,7 @@ function OrderRow({ order, onSelect }) {
         )}
       </TableCell>
       <TableCell align="right">
-        <IconButton color="primary" onClick={() => onSelect(order)}>
+        <IconButton aria-label="Next" color="primary" onClick={() => onSelect(order)}>
           <SelectIcon />
         </IconButton>
       </TableCell>
@@ -324,7 +324,7 @@ export function WillCallQueueScreen({ screen, onNext, onBack }) {
       <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={6}>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search by order #, customer, or PO" }}
               fullWidth
               size="small"
               placeholder="Search by order #, customer, or PO..."

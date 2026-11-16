@@ -235,7 +235,7 @@ export default function InventoryDashboardPage() {
             >
               Transfers
             </Button>
-            <IconButton onClick={loadData} disabled={loading} sx={{ color: 'white' }}>
+            <IconButton aria-label="Refresh" onClick={loadData} disabled={loading} sx={{ color: 'white' }}>
               <RefreshIcon />
             </IconButton>
           </Stack>
@@ -289,7 +289,7 @@ export default function InventoryDashboardPage() {
         <Paper sx={{ p: 2, mb: 2 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={3}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': 'Search material' }}
                 fullWidth
                 size="small"
                 placeholder="Search material..."

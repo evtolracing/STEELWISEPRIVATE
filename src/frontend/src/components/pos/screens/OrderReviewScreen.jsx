@@ -71,7 +71,7 @@ function CustomerSummaryCard({ customer, division, onEdit }) {
               Customer
             </Typography>
           </Box>
-          <IconButton size="small" onClick={onEdit}>
+          <IconButton aria-label="Edit" size="small" onClick={onEdit}>
             <EditIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -186,7 +186,7 @@ function PricingSummaryCard({ pricing, pendingApprovals, onApplyDiscount, onRemo
                     -${discount.amount?.toFixed(2)}
                   </Typography>
                   {!isLocked && onRemoveDiscount && (
-                    <IconButton size="small" onClick={() => onRemoveDiscount(discount.id)} color="error">
+                    <IconButton aria-label="Delete" size="small" onClick={() => onRemoveDiscount(discount.id)} color="error">
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   )}
@@ -326,7 +326,7 @@ function OrderLinesTable({ lines, pricingWarnings, onEditLine }) {
             />
           )}
         </Box>
-        <IconButton size="small">
+        <IconButton aria-label="Hide details" size="small">
           {expanded ? <CollapseIcon /> : <ExpandIcon />}
         </IconButton>
       </Box>

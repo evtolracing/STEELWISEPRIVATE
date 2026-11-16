@@ -91,7 +91,7 @@ export default function MobilePromisePreview() {
 
   return (
     <Box>
-      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+      <Typography component="h1" variant="h6" fontWeight={700} sx={{ mb: 2 }}>
         <ShipIcon sx={{ verticalAlign: 'bottom', mr: 0.5 }} /> Promise Preview
       </Typography>
       <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>

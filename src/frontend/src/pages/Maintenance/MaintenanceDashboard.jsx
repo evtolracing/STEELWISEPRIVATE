@@ -45,6 +45,7 @@ import {
   Engineering,
   Construction,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Stat Card Component
 const MetricCard = ({ title, value, subtitle, trend, trendValue, color, icon: Icon, onClick }) => (
@@ -200,7 +201,7 @@ const MaintenanceDashboard = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Maintenance Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -211,10 +212,10 @@ const MaintenanceDashboard = () => {
           <Typography variant="caption" color="text.secondary">
             Last updated: {lastRefresh}
           </Typography>
-          <IconButton size="small">
+          <IconButton onClick={notBuilt} aria-label="Refresh" size="small">
             <Refresh />
           </IconButton>
-          <Button variant="contained" startIcon={<Add />}>
+          <Button onClick={notBuilt} variant="contained" startIcon={<Add />}>
             New Work Order
           </Button>
         </Box>
@@ -325,7 +326,7 @@ const MaintenanceDashboard = () => {
               <Typography variant="h6" fontWeight={600}>
                 Today's Work Orders
               </Typography>
-              <Button size="small">View All</Button>
+              <Button onClick={notBuilt} size="small">View All</Button>
             </Box>
             <TableContainer>
               <Table size="small">
@@ -413,7 +414,7 @@ const MaintenanceDashboard = () => {
                       secondary={`Due: ${pm.dueDate} (${pm.daysOverdue} days overdue)`}
                     />
                     <ListItemSecondaryAction>
-                      <Button size="small" variant="contained" color="warning">
+                      <Button onClick={notBuilt} size="small" variant="contained" color="warning">
                         Create WO
                       </Button>
                     </ListItemSecondaryAction>
@@ -460,7 +461,7 @@ const MaintenanceDashboard = () => {
                         <TableCell>{asset.downSince}</TableCell>
                         <TableCell>{asset.estimatedRepair}</TableCell>
                         <TableCell align="right">
-                          <Button size="small" variant="outlined">
+                          <Button onClick={notBuilt} size="small" variant="outlined">
                             View WO
                           </Button>
                         </TableCell>
@@ -511,7 +512,7 @@ const MaintenanceDashboard = () => {
                   Parts Below Reorder Point
                 </Typography>
               </Box>
-              <Button size="small">View Inventory</Button>
+              <Button onClick={notBuilt} size="small">View Inventory</Button>
             </Box>
             <TableContainer>
               <Table size="small">
@@ -553,7 +554,7 @@ const MaintenanceDashboard = () => {
                       </TableCell>
                       <TableCell align="right">
                         {part.onOrder === 0 && (
-                          <Button size="small" variant="outlined" color="primary">
+                          <Button onClick={notBuilt} size="small" variant="outlined" color="primary">
                             Order
                           </Button>
                         )}

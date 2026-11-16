@@ -37,7 +37,7 @@ export default function TaxRatesPage() {
 
   return (
     <Box sx={{ p: 3, maxWidth: 720 }}>
-      <Typography variant="h5" fontWeight={700}>Sales tax rates</Typography>
+      <Typography component="h1" variant="h5" fontWeight={700}>Sales tax rates</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         A sale is taxed at the rate for the state of the branch that makes it. A state with no rate here is charged no tax. Tax-exempt customers are never charged.
       </Typography>
@@ -64,7 +64,7 @@ export default function TaxRatesPage() {
               <TableRow key={r.state}>
                 <TableCell>{r.state}</TableCell>
                 <TableCell>
-                  <TextField size="small" type="number" inputProps={{ min: 0, max: 20, step: 'any' }} sx={{ width: 110 }} value={edit[r.state] ?? r.percent} onChange={(e) => setEdit({ ...edit, [r.state]: e.target.value })} />
+                  <TextField size="small" type="number" inputProps={{ 'aria-label': `Tax percent for ${r.state}`, min: 0, max: 20, step: 'any' }} sx={{ width: 110 }} value={edit[r.state] ?? r.percent} onChange={(e) => setEdit({ ...edit, [r.state]: e.target.value })} />
                 </TableCell>
                 <TableCell>{r.updatedAt ? new Date(r.updatedAt).toLocaleDateString() : ''}</TableCell>
                 <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>

@@ -58,6 +58,7 @@ import {
   Schedule as ScheduleIcon,
   TrendingUp as TrendIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock SCAR data
 const mockSCARs = [
@@ -183,14 +184,14 @@ export default function SCARManagementPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             SCAR Management
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Supplier Corrective Action Requests (8D Format)
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />}>
+        <Button onClick={notBuilt} variant="contained" startIcon={<AddIcon />}>
           New SCAR
         </Button>
       </Box>
@@ -267,7 +268,7 @@ export default function SCARManagementPage() {
             <Tab label={`Active (${activeCount})`} />
             <Tab label={`Closed (${closedCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search SCARs" }}
             size="small"
             placeholder="Search SCARs..."
             value={searchQuery}
@@ -360,7 +361,7 @@ export default function SCARManagementPage() {
                     </TableCell>
                     <TableCell>{scar.owner}</TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedSCAR(scar)}
@@ -448,9 +449,9 @@ function SCARDetailView({ scar, onBack }) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined">Request Update</Button>
+          <Button onClick={notBuilt} variant="outlined">Request Update</Button>
           {scar.status !== 'CLOSED' && (
-            <Button variant="contained" color="success">
+            <Button onClick={notBuilt} variant="contained" color="success">
               Close SCAR
             </Button>
           )}
@@ -649,7 +650,7 @@ function SCARDetailView({ scar, onBack }) {
               Quick Actions
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Button variant="outlined" size="small" fullWidth startIcon={<CommentIcon />}>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth startIcon={<CommentIcon />}>
                 Add Comment
               </Button>
               <FileUploadZone
@@ -659,7 +660,7 @@ function SCARDetailView({ scar, onBack }) {
                 buttonLabel="Add Attachment"
                 multiple
               />
-              <Button variant="outlined" size="small" fullWidth startIcon={<ScheduleIcon />}>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth startIcon={<ScheduleIcon />}>
                 Set Reminder
               </Button>
             </Box>

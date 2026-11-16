@@ -156,7 +156,7 @@ export default function ProductionWorkflowBoard() {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Production Workflow</Typography>
+        <Typography component="h1" variant="h4">Production Workflow</Typography>
         
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <FormControl size="small" sx={{ minWidth: 150 }}>

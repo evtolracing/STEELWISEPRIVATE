@@ -47,6 +47,7 @@ import {
   Thermostat,
   FactCheck,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock trace result
 const mockTraceResult = {
@@ -174,7 +175,7 @@ const TraceabilitySearch = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Traceability Search
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -506,13 +507,13 @@ const TraceabilitySearch = () => {
                   Export & Reports
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Button variant="outlined" startIcon={<Download />} fullWidth>
+                  <Button onClick={notBuilt} variant="outlined" startIcon={<Download />} fullWidth>
                     Export Trace Report
                   </Button>
-                  <Button variant="outlined" startIcon={<Assignment />} fullWidth>
+                  <Button onClick={notBuilt} variant="outlined" startIcon={<Assignment />} fullWidth>
                     Generate CoC
                   </Button>
-                  <Button variant="outlined" startIcon={<Print />} fullWidth>
+                  <Button onClick={notBuilt} variant="outlined" startIcon={<Print />} fullWidth>
                     Print Audit Package
                   </Button>
                 </Box>

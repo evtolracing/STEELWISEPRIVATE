@@ -210,8 +210,10 @@ function PageLoader() {
         justifyContent: 'center',
         minHeight: '50vh',
       }}
+      role="status"
+      aria-label="Loading the page"
     >
-      <CircularProgress />
+      <CircularProgress aria-hidden />
     </Box>
   )
 }
@@ -228,7 +230,9 @@ function ProtectedRoute({ children, checkRole = false }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    // A deep link survives the sign-in: the person lands on the page they asked for.
+    const here = `${location.pathname}${location.search}`
+    return <Navigate to={here && here !== '/' ? `/login?next=${encodeURIComponent(here)}` : '/login'} replace />
   }
 
   if (checkRole && !canAccessPath(user?.role, location.pathname)) {

@@ -102,7 +102,7 @@ export default function VoiceSettingsDialog({ open, onClose }) {
           <VoiceIcon color="primary" />
           <Typography variant="h6" fontWeight={600}>Voice Settings</Typography>
         </Box>
-        <IconButton onClick={handleClose} size="small">
+        <IconButton aria-label="Close" onClick={handleClose} size="small">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -194,7 +194,7 @@ export default function VoiceSettingsDialog({ open, onClose }) {
                   }
                   secondary={voice.description}
                 />
-                <IconButton
+                <IconButton aria-label="Stop"
                   size="small"
                   onClick={(e) => { e.stopPropagation(); handlePreview(voice); }}
                   sx={{ 

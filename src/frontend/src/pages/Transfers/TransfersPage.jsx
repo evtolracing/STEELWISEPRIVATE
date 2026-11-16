@@ -136,7 +136,7 @@ export default function TransfersPage() {
       <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
         <TransferIcon color="primary" sx={{ fontSize: 36 }} />
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" fontWeight={700}>Transfers</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Transfers</Typography>
           <Typography variant="body2" color="text.secondary">Material on its way between branches. Send an item from its page; receive it here when it arrives.</Typography>
         </Box>
         <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>

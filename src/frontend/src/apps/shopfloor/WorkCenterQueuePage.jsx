@@ -273,14 +273,14 @@ function WorkCenterQueuePage() {
       {/* Page Header */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton onClick={() => navigate('/shopfloor')} sx={{ bgcolor: 'grey.100' }}>
+          <IconButton aria-label="Back" onClick={() => navigate('/shopfloor')} sx={{ bgcolor: 'grey.100' }}>
             <BackIcon />
           </IconButton>
           <Avatar sx={{ width: 48, height: 48, bgcolor: 'primary.main' }}>
             <FactoryIcon />
           </Avatar>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               {queueData?.workCenterName || workCenterId}
             </Typography>
             <Typography variant="body2" color="text.secondary">

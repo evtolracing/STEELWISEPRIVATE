@@ -86,7 +86,7 @@ function PlanningBoardPage() {
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" fontWeight={600}>
+        <Typography component="h1" variant="h5" fontWeight={600}>
           Planning & Scheduling
         </Typography>
         <Stack direction="row" spacing={1}>

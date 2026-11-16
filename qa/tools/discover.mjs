@@ -173,7 +173,7 @@ const feStat = feFiles.map((f) => { const t = read(f); const c = strip(t); retur
   consoleLog: (c.match(/console\.log\(/g) || []).length, todo: (t.match(/\b(TODO|FIXME|HACK)\b/g) || []).length,
   alerts: (c.match(/\b(window\.)?(alert|confirm)\(/g) || []).length, timers: (c.match(/\bset(Interval|Timeout)\(/g) || []).length, clears: (c.match(/\bclear(Interval|Timeout)\(/g) || []).length,
 }; });
-const menuText = read(path.join(FE, 'components/layout/Sidebar.jsx')) || '';
+const menuText = read(path.join(FE, 'config/navigation.jsx')) || '';
 const menu = [...menuText.matchAll(/path: '([^']+)'/g)].map((m) => m[1]);
 const feRoleAccess = read(path.join(FE, 'config/roleAccess.js')) || '';
 const pkg = (p) => JSON.parse(read(p));

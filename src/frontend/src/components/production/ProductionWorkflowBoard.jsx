@@ -31,14 +31,14 @@ import {
 import { fetchJobs, updateJobStatus } from '../../services/jobsService';
 
 const STATUS_COLUMNS = [
-  { key: 'ORDERED', label: 'Ordered', color: '#9e9e9e' },
-  { key: 'SCHEDULED', label: 'Scheduled', color: '#2196f3' },
-  { key: 'IN_PROCESS', label: 'In Process', color: '#ff9800' },
-  { key: 'WAITING_QC', label: 'Waiting QC', color: '#f44336' },
+  { key: 'ORDERED', label: 'Ordered', color: '#616161' },
+  { key: 'SCHEDULED', label: 'Scheduled', color: '#1565C0' },
+  { key: 'IN_PROCESS', label: 'In Process', color: '#B45309' },
+  { key: 'WAITING_QC', label: 'Waiting QC', color: '#C62828' },
   { key: 'PACKAGING', label: 'Packaging', color: '#9c27b0' },
-  { key: 'READY_TO_SHIP', label: 'Ready to Ship', color: '#4caf50' },
-  { key: 'SHIPPED', label: 'Shipped', color: '#00bcd4' },
-  { key: 'COMPLETED', label: 'Completed', color: '#8bc34a' }
+  { key: 'READY_TO_SHIP', label: 'Ready to Ship', color: '#2E7D32' },
+  { key: 'SHIPPED', label: 'Shipped', color: '#00738A' },
+  { key: 'COMPLETED', label: 'Completed', color: '#3B7A1E' }
 ];
 
 export default function ProductionWorkflowBoard() {
@@ -156,7 +156,7 @@ export default function ProductionWorkflowBoard() {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Production Workflow</Typography>
+        <Typography component="h1" variant="h4">Production Workflow</Typography>
         
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <FormControl size="small" sx={{ minWidth: 150 }}>

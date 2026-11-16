@@ -132,7 +132,7 @@ export default function QCDashboardPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             <QCIcon sx={{ mr: 1, verticalAlign: 'bottom', fontSize: 36 }} />
             QC Inspection Station
           </Typography>

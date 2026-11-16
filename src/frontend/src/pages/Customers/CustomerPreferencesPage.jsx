@@ -26,6 +26,7 @@ import {
   PRICING_TIERS, PACKAGING_TYPES, SURFACE_FINISHES, STEEL_GRADES,
   summarizePreferences,
 } from '../../services/customerPreferencesApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function CustomerPreferencesPage() {
   // Customer list
@@ -366,14 +367,14 @@ export default function CustomerPreferencesPage() {
               value={prefs.thkTolerancePlus}
               onChange={e => { updateField('thkTolerancePlus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
               InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
-              inputProps={{ step: 0.001, min: 0 }} />
+              inputProps={{ 'aria-label': 'Thickness tolerance, plus', step: 0.001, min: 0 }} />
           </Grid>
           <Grid item xs={4.5}>
             <TextField size="small" type="number" fullWidth
               value={prefs.thkToleranceMinus}
               onChange={e => { updateField('thkToleranceMinus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
               InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
-              inputProps={{ step: 0.001, min: 0 }} />
+              inputProps={{ 'aria-label': 'Thickness tolerance, minus', step: 0.001, min: 0 }} />
           </Grid>
         </Grid>
         <Divider />
@@ -387,14 +388,14 @@ export default function CustomerPreferencesPage() {
               value={prefs.lenTolerancePlus}
               onChange={e => { updateField('lenTolerancePlus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
               InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
-              inputProps={{ step: 0.001, min: 0 }} />
+              inputProps={{ 'aria-label': 'Length tolerance, plus', step: 0.001, min: 0 }} />
           </Grid>
           <Grid item xs={4.5}>
             <TextField size="small" type="number" fullWidth
               value={prefs.lenToleranceMinus}
               onChange={e => { updateField('lenToleranceMinus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
               InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
-              inputProps={{ step: 0.001, min: 0 }} />
+              inputProps={{ 'aria-label': 'Length tolerance, minus', step: 0.001, min: 0 }} />
           </Grid>
         </Grid>
         <Divider />
@@ -408,14 +409,14 @@ export default function CustomerPreferencesPage() {
               value={prefs.widTolerancePlus}
               onChange={e => { updateField('widTolerancePlus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
               InputProps={{ startAdornment: <InputAdornment position="start">+</InputAdornment> }}
-              inputProps={{ step: 0.001, min: 0 }} />
+              inputProps={{ 'aria-label': 'Width tolerance, plus', step: 0.001, min: 0 }} />
           </Grid>
           <Grid item xs={4.5}>
             <TextField size="small" type="number" fullWidth
               value={prefs.widToleranceMinus}
               onChange={e => { updateField('widToleranceMinus', parseFloat(e.target.value) || 0); updateField('tolerancePreset', 'CUSTOM') }}
               InputProps={{ startAdornment: <InputAdornment position="start">−</InputAdornment> }}
-              inputProps={{ step: 0.001, min: 0 }} />
+              inputProps={{ 'aria-label': 'Width tolerance, minus', step: 0.001, min: 0 }} />
           </Grid>
         </Grid>
       </Box>
@@ -628,7 +629,7 @@ export default function CustomerPreferencesPage() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}><Tune /></Avatar>
           <Box>
-            <Typography variant="h5" fontWeight={700}>Customer Preferences</Typography>
+            <Typography component="h1" variant="h5" fontWeight={700}>Customer Preferences</Typography>
             <Typography variant="body2" color="text.secondary">
               Set customer-specific pricing, specs, shipping, packaging, order rules & notification preferences
             </Typography>
@@ -640,7 +641,7 @@ export default function CustomerPreferencesPage() {
         {/* LEFT: Customer List */}
         <Grid item xs={12} md={3}>
           <Paper sx={{ p: 2, height: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column' }}>
-            <TextField placeholder="Search customers\u2026" size="small" fullWidth
+            <TextField inputProps={{ 'aria-label': "Search customers\\u2026" }} placeholder="Search customers\u2026" size="small" fullWidth
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment> }}
               sx={{ mb: 2 }} />
@@ -664,7 +665,7 @@ export default function CustomerPreferencesPage() {
                   }) : []
 
                   return (
-                    <ListItem key={cust.id} button selected={selectedId === cust.id}
+                    <ListItem tabIndex={0} onKeyDown={activateOnKey} key={cust.id} button selected={selectedId === cust.id}
                       onClick={() => handleSelectCustomer(cust.id)}
                       sx={{ borderRadius: 1, mb: 0.5, border: selectedId === cust.id ? 2 : 1,
                         borderColor: selectedId === cust.id ? 'primary.main' : 'grey.200' }}>

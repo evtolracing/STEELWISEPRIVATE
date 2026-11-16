@@ -142,7 +142,7 @@ export default function RemnantFilterPanel({ filters = {}, facets = {}, onChange
         </AccordionSummary>
         <AccordionDetails sx={{ pt: 0 }}>
           <FormControl fullWidth size="small">
-            <Select value={filters.grade || ''} displayEmpty onChange={e => update('grade', e.target.value)}>
+            <Select inputProps={{ 'aria-label': 'Grade' }} value={filters.grade || ''} displayEmpty onChange={e => update('grade', e.target.value)}>
               <MenuItem value="">All Grades</MenuItem>
               {(facets.grades || []).map(g => <MenuItem key={g} value={g}>{g}</MenuItem>)}
             </Select>
@@ -157,7 +157,7 @@ export default function RemnantFilterPanel({ filters = {}, facets = {}, onChange
         </AccordionSummary>
         <AccordionDetails sx={{ pt: 0 }}>
           <FormControl fullWidth size="small">
-            <Select value={filters.form || ''} displayEmpty onChange={e => update('form', e.target.value)}>
+            <Select inputProps={{ 'aria-label': 'Form' }} value={filters.form || ''} displayEmpty onChange={e => update('form', e.target.value)}>
               <MenuItem value="">All Forms</MenuItem>
               {(facets.forms || []).map(f => <MenuItem key={f} value={f}>{f}</MenuItem>)}
             </Select>
@@ -172,7 +172,7 @@ export default function RemnantFilterPanel({ filters = {}, facets = {}, onChange
         </AccordionSummary>
         <AccordionDetails sx={{ pt: 0 }}>
           <FormControl fullWidth size="small">
-            <Select value={filters.location || ''} displayEmpty onChange={e => update('location', e.target.value)}>
+            <Select inputProps={{ 'aria-label': 'Location' }} value={filters.location || ''} displayEmpty onChange={e => update('location', e.target.value)}>
               <MenuItem value="">All Locations</MenuItem>
               {(facets.locations || []).map(l => <MenuItem key={l} value={l}>{l.replace(/_/g, ' ')}</MenuItem>)}
             </Select>

@@ -60,6 +60,8 @@ import {
   VisibilityOff,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock digital twin data
 const mockTwinData = {
@@ -196,19 +198,19 @@ const DigitalTwinViewer = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'CRITICAL': return '#f44336';
-      case 'WARNING': return '#ff9800';
-      case 'OPTIMAL': return '#4caf50';
-      case 'IDLE': return '#9e9e9e';
-      default: return '#2196f3';
+      case 'CRITICAL': return '#C62828';
+      case 'WARNING': return '#B45309';
+      case 'OPTIMAL': return '#2E7D32';
+      case 'IDLE': return '#616161';
+      default: return '#1565C0';
     }
   };
 
   const getUtilizationColor = (util) => {
-    if (util >= 90) return '#f44336';
-    if (util >= 80) return '#ff9800';
-    if (util >= 60) return '#4caf50';
-    return '#2196f3';
+    if (util >= 90) return '#C62828';
+    if (util >= 80) return '#B45309';
+    if (util >= 60) return '#2E7D32';
+    return '#1565C0';
   };
 
   const handleLocationClick = (location) => {
@@ -280,7 +282,7 @@ const DigitalTwinViewer = () => {
           key={location.id} 
           title={`${location.name} - ${location.utilization || location.capacity}% ${location.type === 'PRODUCTION' ? 'Utilization' : 'Capacity'}`}
         >
-          <Box
+          <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
             onClick={() => handleLocationClick(location)}
             sx={{
               position: 'absolute',
@@ -358,15 +360,15 @@ const DigitalTwinViewer = () => {
         <Typography variant="caption" fontWeight={600}>Status</Typography>
         <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#4caf50' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#2E7D32' }} />
             <Typography variant="caption">Optimal</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#ff9800' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#B45309' }} />
             <Typography variant="caption">Warning</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#f44336' }} />
+            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#C62828' }} />
             <Typography variant="caption">Critical</Typography>
           </Box>
         </Box>
@@ -379,7 +381,7 @@ const DigitalTwinViewer = () => {
       {/* Header */}
       <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Digital Twin Viewer
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -390,11 +392,11 @@ const DigitalTwinViewer = () => {
           <Button variant="outlined" onClick={() => navigate('/executive/cockpit')}>
             Back to Cockpit
           </Button>
-          <IconButton onClick={() => setZoom(Math.min(zoom + 0.1, 1.5))}><ZoomIn /></IconButton>
-          <IconButton onClick={() => setZoom(Math.max(zoom - 0.1, 0.5))}><ZoomOut /></IconButton>
-          <IconButton><CenterFocusStrong /></IconButton>
-          <IconButton><Fullscreen /></IconButton>
-          <Button variant="contained" startIcon={<Refresh />}>
+          <IconButton aria-label="Zoom in" onClick={() => setZoom(Math.min(zoom + 0.1, 1.5))}><ZoomIn /></IconButton>
+          <IconButton aria-label="Zoom out" onClick={() => setZoom(Math.max(zoom - 0.1, 0.5))}><ZoomOut /></IconButton>
+          <IconButton onClick={notBuilt} aria-label="Centre the view"><CenterFocusStrong /></IconButton>
+          <IconButton onClick={notBuilt} aria-label="Full screen"><Fullscreen /></IconButton>
+          <Button onClick={notBuilt} variant="contained" startIcon={<Refresh />}>
             Refresh
           </Button>
         </Box>
@@ -437,24 +439,24 @@ const DigitalTwinViewer = () => {
               Time Travel
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 2 }}>
-              <IconButton size="small">
+              <IconButton onClick={notBuilt} aria-label="Next step" size="small">
                 <SkipNext sx={{ transform: 'rotate(180deg)' }} />
               </IconButton>
-              <IconButton 
+              <IconButton aria-label="Pause" 
                 size="small" 
                 onClick={() => setIsPlaying(!isPlaying)}
                 color={isPlaying ? 'primary' : 'default'}
               >
                 {isPlaying ? <Pause /> : <PlayArrow />}
               </IconButton>
-              <IconButton size="small">
+              <IconButton onClick={notBuilt} aria-label="Next step" size="small">
                 <SkipNext />
               </IconButton>
             </Box>
             <Typography variant="caption" color="text.secondary" display="block" textAlign="center" sx={{ mt: 1 }}>
               {timeOffset === 0 ? 'Live' : `${Math.abs(timeOffset)} hours ${timeOffset < 0 ? 'ago' : 'ahead'}`}
             </Typography>
-            <Slider
+            <Slider aria-label="Time offset"
               value={timeOffset}
               onChange={(e, val) => setTimeOffset(val)}
               min={-24}
@@ -737,7 +739,7 @@ const DigitalTwinViewer = () => {
               <Button variant="outlined" onClick={() => navigate('/executive/simulation')}>
                 Run Simulation
               </Button>
-              <Button variant="contained">
+              <Button onClick={notBuilt} variant="contained">
                 View Details
               </Button>
             </DialogActions>

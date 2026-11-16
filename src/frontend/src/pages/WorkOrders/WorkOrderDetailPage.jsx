@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import { ArrowBack as BackIcon, PlayArrow as StartIcon, CheckCircle as CompleteIcon, Cancel as CancelIcon, Send as ReleaseIcon } from '@mui/icons-material'
 import client from '../../api/client'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export const WO_TYPE_LABELS = { SLIT: 'Slitting', CTL: 'Cut to length', BLANK: 'Blanking', LEVELCUT: 'Level cut', MULTIBLANKING: 'Multi-blanking', SHEAR: 'Shearing' }
 export const WO_STATUS_LABELS = { DRAFT: 'Draft', READY: 'Ready', IN_PROGRESS: 'In progress', QC_HOLD: 'Quality hold', COMPLETE: 'Complete', CANCELLED: 'Cancelled' }
@@ -125,7 +126,7 @@ export default function WorkOrderDetailPage() {
         <IconButton onClick={() => navigate('/work-orders')} aria-label="Back to work orders"><BackIcon /></IconButton>
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Typography variant="h5" fontWeight={700}>{wo.woNumber}</Typography>
+            <Typography component="h1" variant="h5" fontWeight={700}>{wo.woNumber}</Typography>
             <WorkOrderStatusChip status={wo.status} />
             <Chip size="small" variant="outlined" label={`${WO_PRIORITY_LABELS[wo.priority] || 'Normal'} priority`} />
           </Box>
@@ -178,7 +179,7 @@ export default function WorkOrderDetailPage() {
                   <TableHead><TableRow><TableCell>Piece</TableCell><TableCell>Stock item</TableCell><TableCell align="right">Weight</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
                   <TableBody>
                     {wo.outputs.map((o) => (
-                      <TableRow key={o.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${o.outputCoil?.id}`)}>
+                      <TableRow tabIndex={0} onKeyDown={activateOnKey} key={o.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${o.outputCoil?.id}`)}>
                         <TableCell>{o.sequence}</TableCell>
                         <TableCell>{o.outputCoil?.coilNumber}</TableCell>
                         <TableCell align="right">{pounds(o.outputCoil?.netWeightLb ?? o.actualWeight)}</TableCell>

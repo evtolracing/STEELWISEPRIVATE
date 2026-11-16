@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import { FileUploadZone } from '../../components/common'
 import {
   Box,
@@ -88,7 +89,10 @@ export default function CustomersPage() {
   const [total, setTotal] = useState(0)
 
   // filters
-  const [search, setSearch] = useState('')
+  // A link from the search in the top bar opens the list already filtered.
+  const { search: query } = useLocation()
+  const fromLink = new URLSearchParams(query).get('search') || ''
+  const [search, setSearch] = useState(fromLink)
   const [typeFilter, setTypeFilter] = useState('')
 
   // pagination
@@ -125,8 +129,11 @@ export default function CustomersPage() {
       const res = await fetch(`${API_BASE}?${params}`)
       if (!res.ok) throw new Error('Failed to load customers')
       const json = await res.json()
-      setCustomers(json.data)
-      setTotal(json.meta?.total ?? json.data.length)
+      // An answer in a form this screen cannot read is a failure to say, not a list to draw.
+      const list = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : null
+      if (!list) throw new Error('Failed to load customers')
+      setCustomers(list)
+      setTotal(json?.meta?.total ?? list.length)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -139,7 +146,8 @@ export default function CustomersPage() {
   }, [fetchCustomers])
 
   /* debounced search */
-  const [searchInput, setSearchInput] = useState('')
+  const [searchInput, setSearchInput] = useState(fromLink)
+  useEffect(() => { if (fromLink) { setSearchInput(fromLink); setSearch(fromLink) } }, [fromLink])
   useEffect(() => {
     const t = setTimeout(() => setSearch(searchInput), 350)
     return () => clearTimeout(t)
@@ -217,7 +225,7 @@ export default function CustomersPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Customers
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -252,7 +260,7 @@ export default function CustomersPage() {
 
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search by name or code" }}
           size="small"
           placeholder="Search by name or code…"
           value={searchInput}
@@ -359,7 +367,7 @@ export default function CustomersPage() {
                       />
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" onClick={(e) => handleMenuOpen(e, c)}>
+                      <IconButton aria-label="More actions" size="small" onClick={(e) => handleMenuOpen(e, c)}>
                         <MoreVertIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -409,7 +417,7 @@ export default function CustomersPage() {
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
             <Grid item xs={4}>
               <TextField
-                label="Code *"
+                label="Code" required
                 size="small"
                 fullWidth
                 value={form.code}
@@ -419,7 +427,7 @@ export default function CustomersPage() {
               />
             </Grid>
             <Grid item xs={8}>
-              <TextField label="Name *" size="small" fullWidth value={form.name} onChange={handleChange('name')} />
+              <TextField label="Name" required size="small" fullWidth value={form.name} onChange={handleChange('name')} />
             </Grid>
             <Grid item xs={6}>
               <FormControl size="small" fullWidth>

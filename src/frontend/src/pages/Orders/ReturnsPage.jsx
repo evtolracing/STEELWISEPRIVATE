@@ -65,7 +65,7 @@ function NewReturnDialog({ onClose, onSaved }) {
                     <TableCell>
                       <TextField
                         size="small" type="number" sx={{ width: 110 }} disabled={l.returnable <= 0} value={qty[l.orderLineId] || ''}
-                        error={Number(qty[l.orderLineId]) > l.returnable} inputProps={{ min: 0, max: l.returnable }}
+                        error={Number(qty[l.orderLineId]) > l.returnable} inputProps={{ 'aria-label': `Quantity to return for line ${l.lineNumber}`, min: 0, max: l.returnable }}
                         onChange={(e) => setQty({ ...qty, [l.orderLineId]: e.target.value })}
                       />
                     </TableCell>
@@ -131,7 +131,7 @@ export default function ReturnsPage() {
   return (
     <Box sx={{ p: 3 }}>
       <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="h5" fontWeight={700} sx={{ flexGrow: 1 }}>Returns</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ flexGrow: 1 }}>Returns</Typography>
         <Button variant="contained" onClick={() => setCreating(true)}>New return</Button>
       </Stack>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

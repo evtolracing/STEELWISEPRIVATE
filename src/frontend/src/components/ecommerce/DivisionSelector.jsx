@@ -9,11 +9,12 @@ import {
   Build as SuppliesIcon,
   LocalOffer as OutletIcon,
 } from '@mui/icons-material'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const DIVISION_META = {
   METALS: { label: 'Metals', desc: 'Steel, stainless, aluminum, brass & copper', icon: MetalsIcon, color: '#1565c0', bg: '#e3f2fd' },
   PLASTICS: { label: 'Plastics', desc: 'HDPE, UHMW, acetal, nylon & more', icon: PlasticsIcon, color: '#2e7d32', bg: '#e8f5e9' },
-  SUPPLIES: { label: 'Industrial Supplies', desc: 'Abrasives, safety, welding & tooling', icon: SuppliesIcon, color: '#e65100', bg: '#fff3e0' },
+  SUPPLIES: { label: 'Industrial Supplies', desc: 'Abrasives, safety, welding & tooling', icon: SuppliesIcon, color: '#A63A00', bg: '#fff3e0' },
   OUTLET: { label: 'Outlet / Remnants', desc: 'Discounted drops & remnant pieces', icon: OutletIcon, color: '#c62828', bg: '#fce4ec' },
 }
 
@@ -25,7 +26,7 @@ export default function DivisionSelector({ onSelect, selected, counts = {} }) {
         const isSelected = selected === key
         return (
           <Grid item xs={6} md={3} key={key}>
-            <Paper
+            <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
               elevation={isSelected ? 4 : 1}
               onClick={() => onSelect(key)}
               sx={{

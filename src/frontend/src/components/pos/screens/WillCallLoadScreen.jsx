@@ -106,12 +106,12 @@ function ItemChecklist({ items, onToggle, onScan }) {
             <TableRow 
               key={item.lineId}
               sx={{ 
-                bgcolor: item.loaded ? 'success.light' : 'inherit',
+                bgcolor: item.loaded ? 'success.tint' : 'inherit',
                 opacity: item.loaded ? 0.8 : 1
               }}
             >
               <TableCell padding="checkbox">
-                <Checkbox
+                <Checkbox inputProps={{ 'aria-label': 'Loaded' }}
                   checked={item.loaded}
                   onChange={() => onToggle(item.lineId)}
                   color="success"
@@ -152,7 +152,7 @@ function ItemChecklist({ items, onToggle, onScan }) {
                 ))}
               </TableCell>
               <TableCell align="center">
-                <IconButton 
+                <IconButton aria-label="Scan a code" 
                   size="small" 
                   color="primary"
                   onClick={() => onScan(item)}

@@ -49,6 +49,7 @@ import { searchProducts } from '../../services/intakeProductsApi'
 import { getContractPricing } from '../../services/intakePricingApi'
 import useMobileMode from '../../hooks/useMobileMode'
 import useSellingBranches from '../../hooks/useSellingBranches'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT']
@@ -229,7 +230,7 @@ export default function MobileRepIntakePage() {
     return (
       <Box sx={{ textAlign: 'center', py: 6 }}>
         <CheckIcon sx={{ fontSize: 72, color: holdWarning ? 'warning.main' : 'success.main', mb: 2 }} />
-        <Typography variant="h5" fontWeight={700} gutterBottom>{holdWarning ? 'Order saved on credit hold' : 'Order Submitted!'}</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700} gutterBottom>{holdWarning ? 'Order saved on credit hold' : 'Order Submitted!'}</Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
           Order <strong>{orderNumber}</strong> has been {holdWarning ? 'saved' : 'placed'}.
         </Typography>
@@ -258,7 +259,7 @@ export default function MobileRepIntakePage() {
       {/* ── Step content ──────────────────────────────────── */}
       {activeStep === 0 && (
         <Box>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+          <Typography component="h1" variant="h6" fontWeight={700} sx={{ mb: 2 }}>
             <PersonIcon sx={{ verticalAlign: 'bottom', mr: 0.5 }} /> Customer & Header
           </Typography>
 
@@ -279,7 +280,7 @@ export default function MobileRepIntakePage() {
             <Paper elevation={3} sx={{ mb: 2, maxHeight: 200, overflow: 'auto', borderRadius: 2 }}>
               <List dense disablePadding>
                 {customerResults.map(c => (
-                  <ListItem
+                  <ListItem tabIndex={0} onKeyDown={activateOnKey}
                     key={c.id}
                     button
                     onClick={() => selectCustomer(c)}
@@ -403,12 +404,12 @@ export default function MobileRepIntakePage() {
                         {l.form} · {l.grade} · ${l.unitPrice}/{l.unit}
                       </Typography>
                     </Box>
-                    <IconButton size="small" color="error" onClick={() => removeLine(l.id)}>
+                    <IconButton aria-label="Delete" size="small" color="error" onClick={() => removeLine(l.id)}>
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <TextField
+                    <TextField inputProps={{ 'aria-label': 'Quantity' }}
                       type="number"
                       size="small"
                       value={l.qty}

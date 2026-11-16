@@ -100,7 +100,7 @@ router.get('/', handle('list stock items', async (req, res) => {
   const [coils, total] = await Promise.all([
     prisma.coil.findMany({
       where,
-      include: { heat: true, grade: true, location: true, product: true, inventory: { select: { qtyOnHand: true, qtyAvailable: true, qtyAllocated: true, qtyOnHold: true, unit: true } } },
+      include: { heat: true, grade: true, location: true, product: true, inventory: { select: { qtyOnHand: true, qtyAvailable: true, qtyAllocated: true, qtyOnHold: true, unit: true, status: true } } },
       orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
       take: limit,
       skip: offset,

@@ -35,7 +35,7 @@ import {
 const FULFILLMENT_CONFIG = {
   [ORDER_FULFILLMENT_STATUS.UNFULFILLED]: {
     label: 'Unfulfilled',
-    color: '#9e9e9e',
+    color: '#616161',
     chipColor: 'default',
     icon: PendingIcon,
   },

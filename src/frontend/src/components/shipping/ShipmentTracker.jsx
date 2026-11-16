@@ -36,6 +36,7 @@ import {
   Warning as ExceptionIcon,
 } from '@mui/icons-material'
 import { SPLIT_SHIPMENT_STATUS } from '../../services/splitShipmentApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const STATUS_CONFIG = {
   [SPLIT_SHIPMENT_STATUS.DRAFT]:      { label: 'Draft',       color: 'default',  icon: PendingIcon },
@@ -81,7 +82,7 @@ function SplitCard({ split, index }) {
       }}
     >
       {/* Header */}
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -97,7 +98,7 @@ function SplitCard({ split, index }) {
             width: 36,
             height: 36,
             borderRadius: '50%',
-            bgcolor: alpha(cfg.color === 'default' ? '#9e9e9e' : cfg.color === 'warning' ? '#ed6c02' : cfg.color === 'info' ? '#0288d1' : cfg.color === 'primary' ? '#1976d2' : cfg.color === 'success' ? '#2e7d32' : '#d32f2f', 0.12),
+            bgcolor: alpha(cfg.color === 'default' ? '#616161' : cfg.color === 'warning' ? '#ed6c02' : cfg.color === 'info' ? '#0288d1' : cfg.color === 'primary' ? '#1976d2' : cfg.color === 'success' ? '#2e7d32' : '#d32f2f', 0.12),
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -145,7 +146,7 @@ function SplitCard({ split, index }) {
           }}
         />
 
-        <IconButton size="small">
+        <IconButton aria-label="Hide details" size="small">
           {expanded ? <CollapseIcon /> : <ExpandIcon />}
         </IconButton>
       </Box>

@@ -49,6 +49,7 @@ import {
   Send as SendIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Invitations Data
 const mockInvitations = [
@@ -230,7 +231,7 @@ export default function PreRegistrationPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Pre-Registration & Invitations
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -319,7 +320,7 @@ export default function PreRegistrationPage() {
             <Tab label={`Approved (${approvedCount})`} />
             <Tab label={`Expired`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search invitations" }}
             size="small"
             placeholder="Search invitations..."
             value={searchQuery}
@@ -402,21 +403,21 @@ export default function PreRegistrationPage() {
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedInvitation(invitation)}
                       >
                         <ViewIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small" title="Copy invite link">
+                      <IconButton onClick={notBuilt} size="small" title="Copy invite link">
                         <CopyIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small" title="Resend email">
+                      <IconButton onClick={notBuilt} size="small" title="Resend email">
                         <EmailIcon fontSize="small" />
                       </IconButton>
                       {invitation.status !== 'EXPIRED' && (
-                        <IconButton size="small" color="error">
+                        <IconButton onClick={notBuilt} aria-label="Delete" size="small" color="error">
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       )}
@@ -532,11 +533,11 @@ export default function PreRegistrationPage() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setSelectedInvitation(null)}>Close</Button>
-              <Button startIcon={<EmailIcon />} variant="outlined">
+              <Button onClick={notBuilt} startIcon={<EmailIcon />} variant="outlined">
                 Resend Invitation
               </Button>
               {selectedInvitation.status === 'APPROVED' && (
-                <Button variant="contained" color="success">
+                <Button onClick={notBuilt} variant="contained" color="success">
                   Manual Check-In
                 </Button>
               )}

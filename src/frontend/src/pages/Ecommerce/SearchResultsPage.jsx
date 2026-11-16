@@ -149,6 +149,8 @@ export default function SearchResultsPage() {
           <Typography color="text.primary">Search</Typography>
         </Breadcrumbs>
 
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ mb: 1.5 }}>Product search</Typography>
+
         {/* Search bar */}
         <CatalogSearchBar onSearch={handleSearch} initialValue={query} />
 
@@ -171,7 +173,7 @@ export default function SearchResultsPage() {
               {total} result{total !== 1 ? 's' : ''}
             </Typography>
             <FormControl size="small" sx={{ minWidth: 150 }}>
-              <Select value={sortBy} onChange={e => setSortBy(e.target.value)} displayEmpty>
+              <Select inputProps={{ 'aria-label': 'Sort results by' }} value={sortBy} onChange={e => setSortBy(e.target.value)} displayEmpty>
                 {SORT_OPTIONS.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
               </Select>
             </FormControl>

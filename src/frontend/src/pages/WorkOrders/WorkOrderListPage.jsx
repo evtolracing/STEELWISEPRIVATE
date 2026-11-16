@@ -11,6 +11,7 @@ import {
 import { Add as AddIcon, Refresh as RefreshIcon } from '@mui/icons-material'
 import client from '../../api/client'
 import { WO_TYPE_LABELS, WO_STATUS_LABELS, WO_PRIORITY_LABELS, WorkOrderStatusChip } from './WorkOrderDetailPage'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const LIMIT = 100
 
@@ -49,7 +50,7 @@ export default function WorkOrderListPage() {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h5" fontWeight={700}>Work Orders</Typography>
+          <Typography component="h1" variant="h5" fontWeight={700}>Work Orders</Typography>
           <Typography variant="body2" color="text.secondary">Slitting, cut-to-length and other processing planned against a stock item</Typography>
         </Box>
         <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>
@@ -81,7 +82,7 @@ export default function WorkOrderListPage() {
             </TableHead>
             <TableBody>
               {rows.map((wo) => (
-                <TableRow key={wo.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/work-orders/${wo.id}`)}>
+                <TableRow tabIndex={0} onKeyDown={activateOnKey} key={wo.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/work-orders/${wo.id}`)}>
                   <TableCell><Typography variant="body2" fontWeight={600} color="primary">{wo.woNumber}</Typography></TableCell>
                   <TableCell>{WO_TYPE_LABELS[wo.woType] || wo.woType}</TableCell>
                   <TableCell>{wo.sourceCoil?.coilNumber || ''}</TableCell>

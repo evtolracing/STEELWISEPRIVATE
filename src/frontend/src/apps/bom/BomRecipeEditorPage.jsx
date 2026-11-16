@@ -31,6 +31,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import SearchIcon from '@mui/icons-material/Search';
 import { bomApi } from '../../services/bomApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function BomRecipeEditorPage() {
   const { recipeId } = useParams();
@@ -321,7 +322,7 @@ export default function BomRecipeEditorPage() {
     <Box sx={{ height: '100%', overflow: 'auto', p: 3, maxWidth: 1400, mx: 'auto' }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <IconButton onClick={() => navigate('/bom')}>
+        <IconButton aria-label="Back" onClick={() => navigate('/bom')}>
           <ArrowBackIcon />
         </IconButton>
         <Box sx={{ flex: 1 }}>
@@ -622,7 +623,7 @@ export default function BomRecipeEditorPage() {
                           size="small"
                           placeholder="SAW CUT, DEBURR, PACK, etc."
                         />
-                        <IconButton
+                        <IconButton aria-label="Delete"
                           color="error"
                           size="small"
                           onClick={() => handleDeleteOperation(opIndex)}
@@ -708,28 +709,28 @@ export default function BomRecipeEditorPage() {
                           <Stack spacing={1}>
                             {op.parameters.map((param, paramIndex) => (
                               <Box key={paramIndex} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                                <TextField
+                                <TextField inputProps={{ 'aria-label': 'Key' }}
                                   size="small"
                                   placeholder="Key"
                                   value={param.key}
                                   onChange={(e) => handleUpdateParameter(opIndex, paramIndex, 'key', e.target.value)}
                                   sx={{ flex: 1 }}
                                 />
-                                <TextField
+                                <TextField inputProps={{ 'aria-label': 'Label' }}
                                   size="small"
                                   placeholder="Label"
                                   value={param.label}
                                   onChange={(e) => handleUpdateParameter(opIndex, paramIndex, 'label', e.target.value)}
                                   sx={{ flex: 1 }}
                                 />
-                                <TextField
+                                <TextField inputProps={{ 'aria-label': 'Value' }}
                                   size="small"
                                   placeholder="Value"
                                   value={param.value}
                                   onChange={(e) => handleUpdateParameter(opIndex, paramIndex, 'value', e.target.value)}
                                   sx={{ flex: 1 }}
                                 />
-                                <IconButton
+                                <IconButton aria-label="Delete"
                                   size="small"
                                   onClick={() => handleDeleteParameter(opIndex, paramIndex)}
                                 >
@@ -751,7 +752,7 @@ export default function BomRecipeEditorPage() {
         {/* Right Column: AI Assistant */}
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 2, position: 'sticky', top: 16 }}>
-            <Box
+            <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
               sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
               onClick={() => setAiExpanded(!aiExpanded)}
             >
@@ -759,7 +760,7 @@ export default function BomRecipeEditorPage() {
                 <SmartToyIcon color="primary" />
                 <Typography variant="h6">AI Assistant</Typography>
               </Box>
-              <IconButton size="small">
+              <IconButton aria-label="Hide details" size="small">
                 {aiExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </IconButton>
             </Box>
@@ -808,7 +809,7 @@ export default function BomRecipeEditorPage() {
           
           {/* Match Tester */}
           <Paper sx={{ p: 2, mt: 2 }}>
-            <Box
+            <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
               sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
               onClick={() => setMatchTesterExpanded(!matchTesterExpanded)}
             >
@@ -816,7 +817,7 @@ export default function BomRecipeEditorPage() {
                 <SearchIcon color="primary" />
                 <Typography variant="h6">Match Tester</Typography>
               </Box>
-              <IconButton size="small">
+              <IconButton aria-label="Hide details" size="small">
                 {matchTesterExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </IconButton>
             </Box>

@@ -123,7 +123,7 @@ const TraceabilityPage = () => {
     <Box sx={{ p: 3, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>Traceability</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Traceability</Typography>
           <Typography variant="body2" color="text.secondary">
             Chain of custody, audit trail, and material lifecycle tracking
           </Typography>
@@ -228,7 +228,7 @@ const TraceabilityPage = () => {
       <Paper sx={{ p: 2, mb: 2 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={6}>
-            <TextField fullWidth size="small"
+            <TextField inputProps={{ 'aria-label': "Search events" }} fullWidth size="small"
               placeholder="Search events..."
               value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position="start"><Search /></InputAdornment> }}

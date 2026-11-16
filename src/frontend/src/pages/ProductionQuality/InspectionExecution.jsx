@@ -48,6 +48,8 @@ import {
   Build,
   Add,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const pendingInspections = [
@@ -184,7 +186,7 @@ const InspectionExecution = () => {
       setShowNCRDialog(true);
     } else {
       // Submit as passed
-      alert('Inspection submitted successfully!');
+      sayNotBuilt('Submit inspection');
       setSelectedInspection(null);
       setMeasurements({});
     }
@@ -205,7 +207,7 @@ const InspectionExecution = () => {
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               {getStageLabel(selectedInspection.stage)} Inspection
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -341,12 +343,12 @@ const InspectionExecution = () => {
                         />
                       )}
                       <Tooltip title="Attach Photo">
-                        <IconButton size="small">
+                        <IconButton onClick={notBuilt} size="small">
                           <CameraAlt />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="View History">
-                        <IconButton size="small">
+                        <IconButton onClick={notBuilt} size="small">
                           <History />
                         </IconButton>
                       </Tooltip>
@@ -373,7 +375,7 @@ const InspectionExecution = () => {
 
         {/* Action Buttons */}
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="outlined" startIcon={<Save />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Save />}>
             Save Draft
           </Button>
           <Button
@@ -438,7 +440,7 @@ const InspectionExecution = () => {
             <Button onClick={() => setShowNCRDialog(false)}>Cancel</Button>
             <Button variant="contained" color="error" onClick={() => {
               setShowNCRDialog(false);
-              alert('NCR created and inspection submitted');
+              sayNotBuilt('Create NCR');
               setSelectedInspection(null);
               setMeasurements({});
             }}>
@@ -456,14 +458,14 @@ const InspectionExecution = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Inspection Execution
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Execute and record quality inspections
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<Add />}>
+        <Button onClick={notBuilt} variant="contained" startIcon={<Add />}>
           Create Ad-Hoc Inspection
         </Button>
       </Box>
@@ -535,7 +537,7 @@ const InspectionExecution = () => {
 
       {/* Search */}
       <Paper sx={{ p: 2, mb: 3 }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search by inspection ID, job, work center" }}
           fullWidth
           placeholder="Search by inspection ID, job, work center..."
           value={searchQuery}
@@ -647,7 +649,7 @@ const InspectionExecution = () => {
                     <TableCell>{insp.completedAt}</TableCell>
                     <TableCell>{insp.inspector}</TableCell>
                     <TableCell align="right">
-                      <IconButton size="small">
+                      <IconButton onClick={notBuilt} aria-label="View" size="small">
                         <Visibility />
                       </IconButton>
                     </TableCell>

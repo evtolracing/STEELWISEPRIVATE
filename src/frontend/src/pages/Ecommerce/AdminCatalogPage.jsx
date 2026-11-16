@@ -109,12 +109,12 @@ export default function AdminCatalogPage() {
       </Breadcrumbs>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Typography variant="h5" fontWeight={700}>Catalog Management</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>Catalog Management</Typography>
         <Chip label={`${items.length} products`} size="small" />
         <Chip label={`${visibleCount} visible`} size="small" color="success" />
 
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-          <TextField size="small" placeholder="Search…" value={search}
+          <TextField inputProps={{ 'aria-label': "Search" }} size="small" placeholder="Search…" value={search}
             onChange={e => setSearch(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment> }}
             sx={{ width: 200 }}
@@ -123,7 +123,7 @@ export default function AdminCatalogPage() {
             <MenuItem value="">All Divisions</MenuItem>
             {['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'].map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}
           </TextField>
-          <IconButton onClick={loadItems} size="small"><Refresh /></IconButton>
+          <IconButton aria-label="Refresh" onClick={loadItems} size="small"><Refresh /></IconButton>
         </Box>
       </Box>
 
@@ -161,11 +161,11 @@ export default function AdminCatalogPage() {
                     <Typography variant="body2">${item.basePrice?.toFixed(2)}/{item.unit || 'ea'}</Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Switch size="small" checked={item.visible !== false}
+                    <Switch inputProps={{ 'aria-label': `Shown in the shop: ${item.name || item.sku || 'this product'}` }} size="small" checked={item.visible !== false}
                       onChange={() => handleVisibilityToggle(item.id, item.visible !== false)} />
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton size="small" onClick={() => handleFeaturedToggle(item.id, !!item.featured)}
+                    <IconButton aria-label="Remove from favourites" size="small" onClick={() => handleFeaturedToggle(item.id, !!item.featured)}
                       color={item.featured ? 'warning' : 'default'}>
                       {item.featured ? <Star fontSize="small" /> : <StarBorder fontSize="small" />}
                     </IconButton>

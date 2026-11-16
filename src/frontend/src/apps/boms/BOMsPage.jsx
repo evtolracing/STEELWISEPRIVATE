@@ -81,7 +81,7 @@ function BOMsPage() {
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3} sx={{ flexShrink: 0 }}>
         <Box>
-          <Typography variant="h5">BOMs / Recipes</Typography>
+          <Typography component="h1" variant="h5">BOMs / Recipes</Typography>
           <Typography variant="body2" color="text.secondary">
             Bill of Materials and Process Routing
           </Typography>

@@ -57,6 +57,9 @@ import {
   Settings,
   PlayArrow,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
+import { sayNotBuilt } from '../../utils/notBuilt'
 
 // Mock Data
 const pmSchedules = [
@@ -244,7 +247,7 @@ const PMSchedules = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             PM Schedules
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -252,7 +255,7 @@ const PMSchedules = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="outlined" startIcon={<CalendarMonth />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<CalendarMonth />}>
             Calendar View
           </Button>
           <Button variant="contained" startIcon={<Add />} onClick={() => setShowCreateDialog(true)}>
@@ -339,7 +342,7 @@ const PMSchedules = () => {
         <Paper sx={{ p: 2, mb: 3 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Search schedules" }}
                 fullWidth
                 size="small"
                 placeholder="Search schedules..."
@@ -400,7 +403,7 @@ const PMSchedules = () => {
               </TableHead>
               <TableBody>
                 {filteredSchedules.map((pm) => (
-                  <TableRow 
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} 
                     key={pm.id} 
                     hover 
                     sx={{ cursor: 'pointer' }}
@@ -495,7 +498,7 @@ const PMSchedules = () => {
                       <Typography variant="h6" fontWeight={600}>{template.name}</Typography>
                       <Chip label={template.category} size="small" sx={{ mt: 0.5 }} />
                     </Box>
-                    <IconButton size="small" onClick={() => setSelectedTemplate(template)}>
+                    <IconButton aria-label="View" size="small" onClick={() => setSelectedTemplate(template)}>
                       <Visibility />
                     </IconButton>
                   </Box>
@@ -526,8 +529,8 @@ const PMSchedules = () => {
                   <Divider sx={{ my: 2 }} />
 
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button size="small" startIcon={<ContentCopy />}>Duplicate</Button>
-                    <Button size="small" startIcon={<Edit />}>Edit</Button>
+                    <Button onClick={notBuilt} size="small" startIcon={<ContentCopy />}>Duplicate</Button>
+                    <Button onClick={notBuilt} size="small" startIcon={<Edit />}>Edit</Button>
                   </Box>
                 </CardContent>
               </Card>
@@ -606,7 +609,7 @@ const PMSchedules = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelectedPM(null)}>Close</Button>
-          <Button variant="contained" startIcon={<PlayArrow />}>
+          <Button onClick={notBuilt} variant="contained" startIcon={<PlayArrow />}>
             Generate Work Order
           </Button>
         </DialogActions>
@@ -626,7 +629,7 @@ const PMSchedules = () => {
                   {selectedTemplate.tasks.map((task, index) => (
                     <ListItem key={index}>
                       <ListItemIcon>
-                        <Checkbox disabled />
+                        <Checkbox inputProps={{ 'aria-label': task }} disabled />
                       </ListItemIcon>
                       <ListItemText primary={task} />
                     </ListItem>
@@ -666,8 +669,8 @@ const PMSchedules = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelectedTemplate(null)}>Close</Button>
-          <Button variant="outlined" startIcon={<ContentCopy />}>Duplicate</Button>
-          <Button variant="contained" startIcon={<Edit />}>Edit Template</Button>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<ContentCopy />}>Duplicate</Button>
+          <Button onClick={notBuilt} variant="contained" startIcon={<Edit />}>Edit Template</Button>
         </DialogActions>
       </Dialog>
 
@@ -739,7 +742,7 @@ const PMSchedules = () => {
           <Button onClick={() => setShowCreateDialog(false)}>Cancel</Button>
           <Button 
             variant="contained" 
-            onClick={() => { setShowCreateDialog(false); alert('PM Schedule created!'); }}
+            onClick={() => { setShowCreateDialog(false); sayNotBuilt('Create PM schedule'); }}
           >
             Create Schedule
           </Button>

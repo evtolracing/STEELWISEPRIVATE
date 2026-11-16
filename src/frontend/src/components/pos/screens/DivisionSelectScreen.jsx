@@ -559,7 +559,7 @@ export function DivisionSelectScreen({ screen, onNext, onBack }) {
       
       {/* Selected Summary */}
       {localDivision && (localShipTo || shipTos.length <= 1) && (
-        <Paper variant="outlined" sx={{ p: 2, mb: 3, bgcolor: 'success.light' }}>
+        <Paper variant="outlined" sx={{ p: 2, mb: 3, bgcolor: 'success.tint' }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
             Selection Summary
           </Typography>

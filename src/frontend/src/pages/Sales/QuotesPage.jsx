@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import client from '../../api/client'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const usd = (n) => `$${(Number(n) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const day = (d) => (d ? new Date(d).toLocaleDateString() : '')
@@ -172,7 +173,7 @@ function RfqDialog({ id, onClose, onChanged }) {
                     <TableCell align="right">{Number(l.requestedQty)} {l.unit}</TableCell>
                     {pricing && (
                       <>
-                        <TableCell><TextField size="small" type="number" sx={{ width: 110 }} value={pricing[i].unitPrice} inputProps={{ min: 0, step: '0.01' }} onChange={(e) => setPricing(pricing.map((p, k) => (k === i ? { ...p, unitPrice: e.target.value } : p)))} /></TableCell>
+                        <TableCell><TextField size="small" type="number" sx={{ width: 110 }} value={pricing[i].unitPrice} inputProps={{ 'aria-label': `Unit price for line ${l.lineNumber}`, min: 0, step: '0.01' }} onChange={(e) => setPricing(pricing.map((p, k) => (k === i ? { ...p, unitPrice: e.target.value } : p)))} /></TableCell>
                         <TableCell>
                           <TextField size="small" select sx={{ width: 130 }} value={pricing[i].priceUnit} onChange={(e) => setPricing(pricing.map((p, k) => (k === i ? { ...p, priceUnit: e.target.value } : p)))}>
                             {PRICE_UNITS.map(([v, label]) => <MenuItem key={v} value={v}>{label}</MenuItem>)}
@@ -251,7 +252,7 @@ export default function QuotesPage() {
   return (
     <Box sx={{ p: 3 }}>
       <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="h5" fontWeight={700} sx={{ flexGrow: 1 }}>RFQs and quotes</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ flexGrow: 1 }}>RFQs and quotes</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>New RFQ</Button>
       </Stack>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -270,7 +271,7 @@ export default function QuotesPage() {
           </TableHead>
           <TableBody>
             {rows.map((r) => (
-              <TableRow key={r.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpenId(r.id)}>
+              <TableRow tabIndex={0} onKeyDown={activateOnKey} key={r.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpenId(r.id)}>
                 <TableCell>{r.rfqNumber}</TableCell>
                 <TableCell>{r.customer?.name || ''}</TableCell>
                 <TableCell>{day(r.createdAt)}</TableCell>

@@ -110,3 +110,19 @@ export function homeFor(role) {
   if (group === 'partner') return '/help/manual'
   return '/'
 }
+
+// Where a person starts work after signing in. Each is a screen of real records that the role can
+// open; a role with no entry starts at the dashboard. The dashboard stays on the menu for everyone.
+const ROLE_START = {
+  SALES_DIRECTOR: '/orders', SALES_REP: '/orders', CSR: '/orders', ESTIMATOR: '/orders', CREDIT_MANAGER: '/orders', SUPPORT_AGENT: '/orders',
+  PRODUCTION_MANAGER: '/schedule', SCHEDULER: '/schedule',
+  WORKCENTER_LEAD: '/shopfloor', OPERATOR_SAW: '/shopfloor', OPERATOR_ROUTER: '/shopfloor', OPERATOR_SHEAR: '/shopfloor', OPERATOR_PLASMA: '/shopfloor', OPERATOR_GENERAL: '/shopfloor', MILL_OPERATOR: '/shopfloor', PACKAGING_LEAD: '/shopfloor', MATERIAL_HANDLER: '/shopfloor',
+  INVENTORY_MANAGER: '/units', BUYER: '/units', RECEIVING_CLERK: '/receiving', SHIPPING_COORDINATOR: '/shipping',
+  QC_MANAGER: '/qc', QC_INSPECTOR: '/qc',
+}
+
+/** The first screen after sign-in for a role. Never a screen the role cannot open. */
+export function workspaceFor(role) {
+  const start = ROLE_START[role]
+  return start && canAccessPath(role, start) ? start : homeFor(role)
+}

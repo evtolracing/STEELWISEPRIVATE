@@ -13,6 +13,7 @@ import { Search as SearchIcon, Inventory as UnitIcon, Upload as UploadIcon, Refr
 import { StatusChip } from '../../components/common'
 import { InventoryUpload } from '../../components/inventory'
 import { bulkUploadInventory } from '../../api/inventory'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const PAGE = 25
 const STATUSES = [
@@ -79,7 +80,7 @@ export default function UnitListPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar sx={{ width: 56, height: 56, background: 'rgba(255,255,255,0.15)' }}><UnitIcon sx={{ fontSize: 30 }} /></Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700}>Inventory</Typography>
+              <Typography component="h1" variant="h4" fontWeight={700}>Inventory</Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>Every tracked stock item, with its heat, size, location and status</Typography>
             </Box>
           </Box>
@@ -132,7 +133,7 @@ export default function UnitListPage() {
               </TableHead>
               <TableBody>
                 {rows.map((u) => (
-                  <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${u.id}`)}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/units/${u.id}`)}>
                     <TableCell><Typography variant="body2" fontWeight={600} color="primary">{u.coilNumber}</Typography></TableCell>
                     <TableCell>{u.heat?.heatNumber || ''}</TableCell>
                     <TableCell>{u.grade?.code || ''}</TableCell>
@@ -141,7 +142,8 @@ export default function UnitListPage() {
                     <TableCell align="right">{u.inventory ? qty(u.inventory.qtyOnHand, u.inventory.unit) : 'Not received'}</TableCell>
                     <TableCell align="right">{u.inventory ? qty(u.inventory.qtyAvailable, u.inventory.unit) : ''}</TableCell>
                     <TableCell>{[u.location?.name || u.location?.code, u.binLocation].filter(Boolean).join(', ')}</TableCell>
-                    <TableCell><StatusChip status={u.status} /></TableCell>
+                    {/* An item sent to another branch says so on its row (K-014): it cannot be sold or cut until it is received. */}
+                    <TableCell>{u.inventory?.status === 'IN_TRANSIT' ? <StatusChip status="IN_TRANSIT" /> : <StatusChip status={u.status} />}</TableCell>
                   </TableRow>
                 ))}
                 {!loading && rows.length === 0 && (

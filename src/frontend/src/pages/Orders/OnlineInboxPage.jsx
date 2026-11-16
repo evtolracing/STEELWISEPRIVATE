@@ -106,7 +106,7 @@ export default function OnlineInboxPage() {
       {/* Title */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <InboxIcon color="primary" />
-        <Typography variant="h5" fontWeight={700}>Online Order Inbox</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>Online Order Inbox</Typography>
         <Badge badgeContent={needsReviewCount} color="warning"><Chip label="Needs Review" size="small" variant="outlined" /></Badge>
         <Badge badgeContent={holdCount} color="info"><Chip label="On Hold" size="small" variant="outlined" /></Badge>
         <Box sx={{ flex: 1 }} />
@@ -115,7 +115,7 @@ export default function OnlineInboxPage() {
 
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3, display: 'flex', gap: 2, alignItems: 'center', borderRadius: 2 }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search by order #, customer" }}
           size="small" placeholder="Search by order #, customer…"
           value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}

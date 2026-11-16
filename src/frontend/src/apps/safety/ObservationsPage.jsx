@@ -141,7 +141,7 @@ function NewObservationDialog({ open, onClose, onSubmit }) {
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6">Log Safety Observation</Typography>
-            <IconButton onClick={onClose} size="small">
+            <IconButton aria-label="Close" onClick={onClose} size="small">
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -375,10 +375,10 @@ export default function ObservationsPage() {
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton onClick={() => navigate('/safety')} size="small">
+            <IconButton aria-label="Back" onClick={() => navigate('/safety')} size="small">
               <BackIcon />
             </IconButton>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Safety Observations
             </Typography>
           </Stack>
@@ -460,7 +460,7 @@ export default function ObservationsPage() {
         <Box sx={{ p: 2 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={4}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Search observations" }}
                 fullWidth
                 size="small"
                 placeholder="Search observations..."

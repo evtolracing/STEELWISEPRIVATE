@@ -553,7 +553,7 @@ export default function InventoryDetailPage() {
           />
 
           {adjustmentAmount && !isNaN(parseFloat(adjustmentAmount)) && (
-            <Box sx={{ mt: 2, p: 2, bgcolor: 'primary.light', borderRadius: 1 }}>
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'primary.tint', borderRadius: 1 }}>
               <Typography variant="body2" color="primary.dark">New Quantity</Typography>
               <Typography variant="h5" fontWeight={700} color="primary.dark">
                 {(adjustmentType === 'add' 

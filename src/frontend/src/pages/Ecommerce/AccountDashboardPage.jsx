@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material'
 import { useNavigate, Link } from 'react-router-dom'
 import useEnterpriseAccount from '../../hooks/useEnterpriseAccount'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 function fmtCurrency(n) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
@@ -88,7 +89,7 @@ export default function AccountDashboardPage() {
           <BranchIcon />
         </Avatar>
         <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h5" fontWeight={700}>{account?.companyName}</Typography>
+          <Typography component="h1" variant="h5" fontWeight={700}>{account?.companyName}</Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
             <Chip label={account?.accountNumber} size="small" variant="outlined" />
             <Chip label={account?.priceLevel} size="small" color="primary" />
@@ -113,7 +114,7 @@ export default function AccountDashboardPage() {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {KPI_CARDS.map(kpi => (
           <Grid item xs={6} sm={3} key={kpi.label}>
-            <Paper
+            <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
               elevation={0}
               onClick={() => kpi.path && navigate(kpi.path)}
               sx={{
@@ -213,8 +214,8 @@ export default function AccountDashboardPage() {
                 Document Center
               </Button>
               {canExport && (
-                <Button fullWidth variant="outlined" startIcon={<ExportIcon />} color="secondary" sx={{ justifyContent: 'flex-start' }}>
-                  Export All Data
+                <Button fullWidth variant="outlined" startIcon={<ExportIcon />} onClick={() => navigate('/account/orders')} sx={{ justifyContent: 'flex-start' }}>
+                  Export orders (CSV)
                 </Button>
               )}
             </Box>

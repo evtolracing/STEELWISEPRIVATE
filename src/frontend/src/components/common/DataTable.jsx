@@ -16,6 +16,7 @@ import {
   InputAdornment,
 } from '@mui/material'
 import { Search as SearchIcon } from '@mui/icons-material'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function DataTable({
   columns,
@@ -80,7 +81,7 @@ export default function DataTable({
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       {searchable && (
         <Box sx={{ p: 2 }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': searchPlaceholder }}
             size="small"
             placeholder={searchPlaceholder}
             value={searchTerm}
@@ -108,7 +109,7 @@ export default function DataTable({
                   sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}
                   sortDirection={orderBy === column.id ? order : false}
                 >
-                  {column.sortable !== false ? (
+                  {column.sortable !== false && column.label ? (
                     <TableSortLabel
                       active={orderBy === column.id}
                       direction={orderBy === column.id ? order : 'asc'}
@@ -138,7 +139,7 @@ export default function DataTable({
               </TableRow>
             ) : (
               paginatedData.map((row, index) => (
-                <TableRow
+                <TableRow tabIndex={0} onKeyDown={activateOnKey}
                   key={row.id || index}
                   hover
                   onClick={() => onRowClick?.(row)}

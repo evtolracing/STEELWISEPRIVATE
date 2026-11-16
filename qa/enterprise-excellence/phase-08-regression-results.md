@@ -190,3 +190,13 @@ No packages or drop tags exist in the scale data, so the packing screens were no
 | Email and text notices | NOT APPLICABLE. Not built (N-028, owner decision 5) |
 | More than one server at once | NOT EXECUTED. Races were run against one server and one database |
 | Real users timed on the screens | NOT EXECUTED. No minutes-saved figure is claimed |
+
+## Owner decision 10: third full run (2026-11-16 UTC)
+
+After pull request 31 was merged, the owner's answers were built (lost loads N-027, who reads invoices F-009, web checkout on account H-013) and every check was run again on a rebuilt local database. The full table, the proof that the new checks fail without the rules, and the older checks that were updated are in `phase-08-owner-decision-10.md`. In short:
+
+- Scenarios: Phase 8 155 of 155; Phase 7 141 of 141; Phase 6 106 of 106; Phase 5 76 of 76; Phase 4 66 of 66; Phase 3 74 of 74. Unit tests 209 of 209.
+- Browser checks: 285 of 286 in the run. The one that failed was an older dock check that expected an invoice amount on the shipment screen, which F-009 removes. It was updated to verify the new rule and its suite rerun alone: 30 of 30.
+- All 75 database checks equal the second full run. Server errors: the same four planted ones.
+- Regression found in older behaviour: none. Checks updated because the decided behaviour changed: five, each listed with its reason.
+

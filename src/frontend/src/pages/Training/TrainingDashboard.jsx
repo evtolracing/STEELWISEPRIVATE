@@ -41,6 +41,7 @@ import {
   Group as GroupIcon,
   TrendingUp as TrendingIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Training Dashboard Data
 const mockStats = {
@@ -166,7 +167,7 @@ export default function TrainingDashboard() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Safety Training Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -174,7 +175,7 @@ export default function TrainingDashboard() {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<GroupIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<GroupIcon />}>
             View All Operators
           </Button>
           <Button
@@ -268,7 +269,7 @@ export default function TrainingDashboard() {
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <ExpiringIcon color="warning" /> Expiring Soon
               </Typography>
-              <Button size="small">View All</Button>
+              <Button onClick={notBuilt} size="small">View All</Button>
             </Box>
             <TableContainer>
               <Table size="small">
@@ -300,7 +301,7 @@ export default function TrainingDashboard() {
                         />
                       </TableCell>
                       <TableCell align="center">
-                        <Button size="small" variant="outlined" startIcon={<AssignmentIcon />}>
+                        <Button onClick={notBuilt} size="small" variant="outlined" startIcon={<AssignmentIcon />}>
                           Assign
                         </Button>
                       </TableCell>
@@ -319,7 +320,7 @@ export default function TrainingDashboard() {
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <ExpiredIcon color="error" /> Overdue / Work Blocked
               </Typography>
-              <Button size="small">View All</Button>
+              <Button onClick={notBuilt} size="small">View All</Button>
             </Box>
             {mockOverdueTraining.length > 0 ? (
               <TableContainer>

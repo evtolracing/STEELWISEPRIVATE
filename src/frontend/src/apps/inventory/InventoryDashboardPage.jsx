@@ -57,6 +57,7 @@ import { getInventory, getInventorySummary, getLocations } from '../../services/
 import InventoryAiAssistantPanel from '../../components/InventoryAiAssistantPanel';
 import { InventoryUpload } from '../../components/inventory';
 import { bulkUploadInventory } from '../../api/inventory';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 export default function InventoryDashboardPage() {
   const navigate = useNavigate();
@@ -235,7 +236,7 @@ export default function InventoryDashboardPage() {
             >
               Transfers
             </Button>
-            <IconButton onClick={loadData} disabled={loading} sx={{ color: 'white' }}>
+            <IconButton aria-label="Refresh" onClick={loadData} disabled={loading} sx={{ color: 'white' }}>
               <RefreshIcon />
             </IconButton>
           </Stack>
@@ -289,7 +290,7 @@ export default function InventoryDashboardPage() {
         <Paper sx={{ p: 2, mb: 2 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={3}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': 'Search material' }}
                 fullWidth
                 size="small"
                 placeholder="Search material..."
@@ -417,7 +418,7 @@ export default function InventoryDashboardPage() {
                       </TableRow>
                     ) : (
                       paginatedInventory.map((inv) => (
-                        <TableRow
+                        <TableRow tabIndex={0} onKeyDown={activateOnKey}
                           key={inv.id}
                           hover
                           sx={{ cursor: 'pointer' }}

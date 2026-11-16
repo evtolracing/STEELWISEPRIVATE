@@ -79,10 +79,10 @@ export default function AccountShipmentsPage() {
       </Breadcrumbs>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Typography variant="h5" fontWeight={700}>Shipment Tracking</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>Shipment Tracking</Typography>
         <Chip label={`${summary.total} shipments`} size="small" color="primary" />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          <TextField size="small" placeholder="Search tracking #, order…" value={search}
+          <TextField inputProps={{ 'aria-label': "Search tracking #, order" }} size="small" placeholder="Search tracking #, order…" value={search}
             onChange={e => setSearch(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment> }}
             sx={{ width: 200 }} />
@@ -100,7 +100,7 @@ export default function AccountShipmentsPage() {
               {branches.map(b => <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>)}
             </Select>
           </FormControl>
-          <IconButton onClick={load} size="small"><Refresh /></IconButton>
+          <IconButton aria-label="Refresh" onClick={load} size="small"><Refresh /></IconButton>
         </Box>
       </Box>
 
@@ -142,11 +142,16 @@ export default function AccountShipmentsPage() {
                       <Chip icon={<BranchIcon sx={{ fontSize: 14 }} />} label={s.branchName} size="small" variant="outlined" sx={{ fontSize: 11 }} />
                       <Box sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}>
                         <Typography variant="body2" fontWeight={600}>{s.carrier}</Typography>
-                        <Chip label={s.trackingNumber} size="small" variant="outlined"
-                          onClick={() => copyTracking(s.trackingNumber)}
-                          onDelete={() => copyTracking(s.trackingNumber)}
-                          deleteIcon={<ContentCopy sx={{ fontSize: 14 }} />}
-                          sx={{ fontFamily: 'monospace', fontSize: 11 }} />
+                        {s.trackingNumber ? (
+                          <Chip label={s.trackingNumber} size="small" variant="outlined"
+                            aria-label={`Copy tracking number ${s.trackingNumber}`}
+                            onClick={() => copyTracking(s.trackingNumber)}
+                            onDelete={() => copyTracking(s.trackingNumber)}
+                            deleteIcon={<ContentCopy sx={{ fontSize: 14 }} />}
+                            sx={{ fontFamily: 'monospace', fontSize: 11 }} />
+                        ) : (
+                          <Typography variant="caption" color="text.secondary">No tracking number yet</Typography>
+                        )}
                       </Box>
                     </Box>
 

@@ -30,7 +30,7 @@ export default function ProductFiltersDrawer({
           <Typography variant="h6" fontWeight={600}>Filters</Typography>
           {activeCount > 0 && <Chip label={activeCount} size="small" color="primary" />}
         </Box>
-        <IconButton onClick={onClose}><CloseIcon /></IconButton>
+        <IconButton aria-label="Close" onClick={onClose}><CloseIcon /></IconButton>
       </Box>
 
       {/* Division */}

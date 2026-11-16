@@ -29,6 +29,7 @@ import { getJobs } from '../api/jobs'
 import { WORK_CENTER_STATUS } from '../constants/processingTypes'
 import { JOB_STATUSES } from '../constants/jobStatuses'
 import { PRIORITY_LEVELS } from '../constants/materials'
+import { activateOnKey } from '../utils/activateOnKey'
 
 const DAY_START_HOUR = 6
 const DAY_HOURS = 10 // the grid shows 6 AM to 4 PM
@@ -134,7 +135,7 @@ const SchedulePage = () => {
               <ScheduleIcon sx={{ fontSize: 30 }} />
             </Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 Work Center Schedule
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
@@ -291,7 +292,7 @@ const SchedulePage = () => {
                       .filter((j) => j.workCenterId === wc.id)
                       .slice(0, 5)
                       .map((job) => (
-                        <Box
+                        <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                           key={job.id}
                           sx={{
                             display: 'inline-block',

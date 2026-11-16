@@ -1,301 +1,412 @@
 {
-  "phaseStatus": "PARTIALLY COMPLETE",
-  "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
-  "workflowsMapped": 17,
-  "jobTypesIdentified": {
-    "orderTypesInSchema": 5,
-    "salesChannels": 6,
-    "simulatedScenarioFamilies": 9,
-    "kindsOfShopWork": 2
+ "phaseStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
+ "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
+ "workflowsMapped": 17,
+ "jobTypesIdentified": {
+  "orderTypesInSchema": 5,
+  "salesChannels": 6,
+  "simulatedScenarioFamilies": 9,
+  "kindsOfShopWork": 2
+ },
+ "testsExecuted": [
+  {
+   "test": "Phase 9: every screen opened in a browser at desktop, tablet and phone size and measured (qa/sim/ui-audit.cjs)",
+   "result": "154 screens at three sizes: 0 controls with no name, 0 fields with no label, 17 hard-to-read texts on 4 screens, 0 screens with no main heading, 0 wider than the window, 3 touch targets too small, 0 page errors. Each count is a ceiling in the gate run",
+   "before": "Baseline on 130 screens: 613 controls with no name, 280 fields with no label, 1,751 hard-to-read texts, 129 screens with no main heading, 458 touch targets too small, 0 screens wider than the window"
   },
-  "testsExecuted": [
-    {
-      "test": "Phase 8 fulfilment scenarios (qa/sim/phase8-fulfillment.mjs, new in Phase 8)",
-      "result": "150 of 150 scenarios pass, 496 checks, in the second full run on the final code. 142 verify built behaviour and 8 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: release, picking and packaging 20 and 0; shipment creation, partial shipments and back orders 25 and 0; dispatch, carriers, freight and delivery 21 and 4; invoicing, payments and accounting 22 and 3; costing, reconciliation and closeout 19 and 1; returns and credits 15 and 0; concurrency, security and recovery 20 and 0",
-      "before": "Did not exist. A probe on the starting code (qa/sim/p8-probe.mjs) reproduced the defects before any fix"
-    },
-    {
-      "test": "Proof the Phase 8 checks fail without the fixes",
-      "result": "31 rules removed one at a time; each made 1 or more scenarios fail; source restored. Two further removals failed nothing because a second check covers the same request; recorded, not counted. The retry around the order save (second half of N-029) fails only about one round in twelve without it and is not counted"
-    },
-    {
-      "test": "First full run of every check on the Phase 8 code",
-      "result": "Every suite passed. Reading the server log of the run then showed six dispatch requests answered 500 (a deadlock between an order cancel and a dispatch, N-029), one database check that counted the wrong series, and one scenario fixture that left an order subtotal wrong. All three corrected"
-    },
-    {
-      "test": "Phase 8 browser checks (qa/sim/ui-phase8.cjs, new)",
-      "result": "45 of 45: shipment papers and print buttons, delivery with a name or a reason, the Packing screen through the whole chain, Orders Not Closed, the closeout and cost panel, phone width",
-      "before": "Did not exist"
-    },
-    {
-      "test": "Unit tests (src/backend, npm test)",
-      "result": "201 of 201 (23 new: phase8Rules)",
-      "before": "178 of 178"
-    },
-    {
-      "test": "Shipping, invoicing and closeout calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices, 20,000 print jobs)",
-      "result": "Median of 7: eighteen calls, 6 to 206 ms; the slowest is the first page of orders not closed (133 ms all branches, 206 ms one branch); every other call under 40 ms. Measured before the N-029 correction, which changes no query. No packages in the scale data, so packing was not timed at scale",
-      "before": "Shipment and invoice lists only (Phase 3)"
-    },
-    {
-      "test": "Order-to-cash simulation, seeds 8001 to 8003 (second full run, final code)",
-      "result": "150 of 150 jobs, 0 reconciliation problems; payment and return races taken once in each seed",
-      "before": "150 of 150, 0 problems"
-    },
-    {
-      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, 4, 5, 6 and 7 scenarios (second full run)",
-      "result": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 76 of 76 (386); 106 of 106 (494); 141 of 141 (618)",
-      "before": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 75 of 76 (386), the one failure being a test that depended on the time of day (N-024); 106 of 106 (494); 141 of 141 (618)"
-    },
-    {
-      "test": "Browser suites, every screen opens, baseline probe, department coverage, screen audit, lint, build (second full run)",
-      "result": "Browser suites 22, 30, 31, 24, 23, 33, 14, 14, 39 and 45 (275 checks, 0 failed); 130 of 130 screens open; 574 write calls as read-only roles, 0 not refused; 292 write routes with an empty body, 0 server errors; 337 changing routes, 0 with no rule; 0 screens with unlabelled made-up data; lint 0 errors, 1,522 warnings; build passes",
-      "before": "Browser suites 22, 29, 31, 24, 23, 33, 14, 14, 39; 334 changing routes, 0 with no rule; 1,526 warnings, 0 errors"
-    },
-    {
-      "test": "Database checks after the full run",
-      "result": "75 checks read; 64 at 0; the rest are counts of demo seed data and of records made on purpose, each explained in phase-08-regression-results.md section 2. The 8 Phase 8 checks: 6 at 0, and two counts to be read (9 shipments with no invoice, each listed for billing; 48 deliveries with neither name nor reason, 47 of the demo seed and 1 stripped on purpose by a scenario)"
-    },
-    {
-      "test": "Server errors in the full run",
-      "result": "Four answers of 500, the same four as the baseline, each planted by a scenario. No dispatch or order save answered a server error (six in the first run, N-029)"
-    },
-    {
-      "test": "Database change",
-      "result": "SQL Editor file 14 (20261116200000_fulfilment_costing): adds three columns. Run twice on a copy without them; the first run added the columns, the second changed nothing; row counts unchanged"
-    },
-    {
-      "test": "Printers, label printers, scales, scanners",
-      "result": "NOT EXECUTED: no hardware. Papers were read in a browser"
-    },
-    {
-      "test": "Carriers, freight rating, tracking, accounting system, card payments, customer notices",
-      "result": "NOT APPLICABLE: not built (N-025, N-026, N-028, H-013). Recorded with evidence; nothing was invented"
-    },
-    {
-      "test": "The host and live data",
-      "result": "NOT VERIFIED. No access from this environment"
-    }
-  ],
-  "unverifiedAreas": [
-    "The live database and the host: nothing in Phase 8 was run against either. Live shipments reserved against another branch's stock, branches with no street address and waiting print jobs are unknown until the owner runs check-before-phase-8.sql (R-50, R-52, R-54)",
-    "SQL Editor files 6 to 14 on the live database: the owner has not sent the result of the read-only check (verify-6-to-14.sql)",
-    "Printers, label printers, scales and scanners (K-013). The bill of lading and packing list were never printed on paper",
-    "Accounting, ledger, cost of goods and stock valuation: not built (N-025, K-007). Carriers, freight rating and tracking: not built (N-026). Lost loads: no rule (N-027). Notices: not built (N-028)",
-    "Order margin beyond material, labor and scrap: overhead, freight paid and packaging are not in it; orders shipped before file 14 carry no cost",
-    "Accessibility of the shipping, packing and closeout screens: not assessed (Phase 9)",
-    "Time per task with real users: no minutes-saved figure is claimed. More than one server at once: not run",
-    "Earlier unverified areas unchanged: machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), backup and restore (E-015), host pool (G-015)"
-  ],
-  "currentBlockers": [
-    "Owner: SQL Editor files 6 to 14 must be applied in order and confirmed before pull request 31 is merged. The Phase 8 code fails at dispatch, delivery and the print queue on a database without file 14 (R-49)",
-    "Owner: N-025 (accounting system and when cost of goods is recognised), N-026 (carriers, rating, tracking), N-027 (a load that never arrives)",
-    "Owner: F-009 (who may read invoices), S-010 (delivery promise from invented data), H-013 (payment method at web checkout)",
-    "Owner: labor rates per kind of work center, without which order margin shows material and scrap only",
-    "L-026 with K-007 (P1): IN PROGRESS. Cost now reaches the sale (N-017); stock valuation, overhead and cost of goods are not built",
-    "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-015, B-019, E-015, K-013, L-023 to L-027, L-030"
-  ],
-  "nextActions": [
-    "Owner: apply SQL Editor files 6 to 14 in order, send the result of verify-6-to-14.sql, and run the read-only check-before-phase-8.sql on the live database",
-    "Owner: tell dispatch, drivers and packing staff about the sixteen behaviour changes in phase-08-report.md before go-live (R-50, R-51)",
-    "Owner: answer the six questions in phase-08-report.md under \"Decisions that are the owner's\"",
-    "Owner: say when to merge pull request 31",
-    "Owner: issue the Phase 9 prompt (enterprise UI and UX). Phase 9 has not been started"
-  ],
-  "lastCompletedCheckpoint": "Phase 8: second full gate run on the final code; 150 of 150 Phase 8 scenarios (142 verified, 8 not built); 45 browser checks; 31 rules proven by mutation; eighteen calls timed at 85 branches; 29 findings recorded (N-001 to N-029: 24 fixed and verified, 1 fixed not verified, 3 for the owner, 1 deferred); SQL Editor file 14. Continuation point: nothing of Phase 8 remains that does not need the owner",
-  "currentPhase": 8,
-  "findingPrefix": "N-",
-  "phase2BaselineCommit": "0ad7857",
-  "scoreAdjustments": [
-    {
-      "group": "Manufacturing and processing",
-      "category": "Data integrity",
-      "score": 91,
-      "evidence": "Phase 7: 13 new database checks at 0 after the full run (clocks, steps, inspections, plan branch); a plan with recorded work is never replaced (L-012); cancelling a job closes its clocks (L-018); nothing assumed for grade, thickness, time or hours (L-008, L-010). Phase 3: a coil work order consumes and creates stock in one transaction. Owner decision 9: a job names its coil work orders and shows material used, made and scrap (L-024); 3 more database checks at 0. Held at 91: no bill of material; stock on hand before the update has no cost (K-007); thickness not stated is stored as 0 (L-029)"
-    },
-    {
-      "group": "Manufacturing and processing",
-      "category": "Reliability",
-      "score": 88,
-      "evidence": "Phase 7: races on planning, scheduling, step start, finish against pause, inspection decisions, status moves and cancel against the last finish each end in one consistent state; a step left running across a gap recovers; a refused request saves nothing. Held at 88: local machine only; no machine connection to fail (L-030)"
-    },
-    {
-      "group": "Platform infrastructure",
-      "category": "Maintainability",
-      "score": 65,
-      "evidence": "Phase 2: the branch boundary, the department table and the login rules each live in one tested file; a coverage check fails the gates when a changing route has no rule. Held at 65: most rules still live in route handlers (B-014) and 1,524 lint warnings remain"
-    },
-    {
-      "group": "Sales and customer operations",
-      "category": "Data integrity",
-      "score": 92,
-      "evidence": "Phase 5: requirements, tax and branch carried from request to quote to order to work order (J-001, J-009); closed accounts refused in every channel (J-002); a void is CANCELLED (G-009); web orders need a customer (J-010); final reconciliation of the 76 scenarios 0 problems. Held at 92: six preference fields not applied (J-008); live data unverified"
-    },
-    {
-      "group": "Enterprise experience",
-      "category": "Data integrity",
-      "score": 72,
-      "evidence": "Phase 2: two real screens no longer invent records when the server fails (C-007); an executive decision records the signed-in person. Held at 72: dashboard figures are not checked against the records"
-    },
-    {
-      "group": "Platform infrastructure",
-      "category": "Data integrity",
-      "score": 86,
-      "evidence": "Phase 3: 188 foreign keys (15 added on money, stock and work references), 24 value checks (15 added), every decimal written exactly (G-001), all proven by refused writes and a residue check of 0. Held at 86: 217 reference columns still have no key (G-003), the two JSON stores remain (B-009)"
-    },
-    {
-      "group": "Platform infrastructure",
-      "category": "Performance",
-      "score": 82,
-      "evidence": "Phase 3: measured on an 85-branch copy (72,240 orders, 100,233 stock items): every branch list within 500 ms; 400 requests at once with 0 failures. Held at 82: local machine only; stock search and job count grow with the company (G-013); 244 KB order list reply (G-014)"
-    },
-    {
-      "group": "Sales and customer operations",
-      "category": "Performance",
-      "score": 84,
-      "evidence": "Phase 5: every sales screen within 67 ms at the 95th percentile at 85 branches with 18,000 quotes; 40 at once 0 failed. Held at 84: local machine only"
-    },
-    {
-      "group": "Sales and customer operations",
-      "category": "Observability",
-      "score": 72,
-      "evidence": "Phase 3: confirming, cancelling and reserving now leave a history line with the person, in the same transaction (G-010). Held at 72: edits to other order fields are not itemised (G-011)"
-    },
-    {
-      "group": "Manufacturing and processing",
-      "category": "Performance",
-      "score": 84,
-      "evidence": "Phase 7: at 85 branches with about 18,600 steps the production screens answer in 6 to 139 ms; the scheduling run at a branch with 7,090 waiting jobs fell from 45.3 s to 1.9 s; the late list from 653 to 74 ms; lists are capped with totals. Held at 84: local machine; the scheduling and planner answers are 8.3 MB and 1.2 MB at the largest branch"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Data integrity",
-      "score": 93,
-      "evidence": "Phase 8: 7 new database checks; cost fixed on the stock movement at dispatch and unchanged by later edits (N-017); packing inputs read from the stock item (N-009); fixed tag states (N-010); custody records cannot be forged (N-011); a cancelled order keeps no live shipment (N-006); reconciliation of shipped, moved and invoiced quantities across every record of the run. Held at 93: no ledger to reconcile against; a package is not tied to one shipment; movements before file 14 carry no cost. Earlier: Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken "
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Performance",
-      "score": 84,
-      "evidence": "Phase 8: eighteen shipping, invoicing, closeout, returns and print calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices): 6 to 206 ms, all but one under 40 ms. Held at 84: local machine, the host NOT VERIFIED; the first page of orders not closed works out every open order before paging; packing not timed at scale. Was 80"
-    },
-    {
-      "group": "Platform infrastructure",
-      "category": "Integration quality",
-      "score": 76,
-      "evidence": "Phase 4: every call to an outside service has a time limit, bounded tries, a breaker and a plain failure answer (H-005); events to partners are saved with the change, retried, stopped after five tries and replayable (H-002); reply shapes are pinned by contract tests; a database refusal is a 409, not a 500 (H-017). Held at 76: list shapes still differ (E-021); the host schedule is not set (B-019); email, cards, carriers, tax and accounting are not connected (H-015); the breaker and limits count per instance (H-012)"
-    },
-    {
-      "group": "Platform infrastructure",
-      "category": "Reliability",
-      "score": 80,
-      "evidence": "Phase 4: a retry after a lost answer or a dropped connection gets the first result (H-004); one partner can no longer receive another's answer (H-003); a burst of 80 events is sent within a second (H-019). Held at 80: no restore has been tested (E-015), the host pool is unverified (G-015), the schedule that carries out retries is not set on the host (B-019)"
-    },
-    {
-      "group": "Platform infrastructure",
-      "category": "Observability",
-      "score": 70,
-      "evidence": "Phase 4: an Integrations screen and report show failed and waiting events, outside-service failures, orders shipped but not invoiced and when scheduled work last ran; failures are structured log lines with a request id and no secret (tested). Held at 70: nothing alerts anyone (E-017)"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Integration quality",
-      "score": 78,
-      "evidence": "Phase 4: a carrier reports through the partner API under the same rules as the shipping desk (H-001); dispatch, delivery, exception and invoice raise durable events (H-002); an order shipped but not invoiced is reported (H-006). Held at 78: no carrier rating, label or tracking service and no card processor (H-015); web checkout takes no payment (H-013)"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Reliability",
-      "score": 89,
-      "evidence": "Phase 8: 20 concurrency and recovery scenarios; every once-only rule raced; overlaps met by raw statements and deadlocks reported by the database client are run again (N-022, N-029); a packing step pressed twice happens once (N-013); a return whose credit fails is flagged until settled, once (N-016). Held at 89: one server and one database only; N-029 was found in a log, not by a failing check; nothing retries a failed invoice on its own. Earlier: Phase 4: a billing failure at dispatch is said, recorded and listed until closed (H-006); a carrier's repeated or late report changes nothing; dispatch and delivery carry request keys from the screen (H-009). Held at 84: nothing retries a failed invoice on its own"
-    },
-    {
-      "group": "Sales and customer operations",
-      "category": "Integration quality",
-      "score": 68,
-      "evidence": "Phase 4: a customer system can raise a request for quote, read and answer quotes, and read its orders, shipments and invoices, isolated from other customers (H-001); what a partner reads equals what staff see. Held at 68: no email or text (D-034, H-015); web checkout payment is a note (H-013); 18 sales calls have no route (S-026)"
-    },
-    {
-      "group": "Sales and customer operations",
-      "category": "Reliability",
-      "score": 84,
-      "evidence": "Phase 5: races, retries, lost answers and a database failure mid-acceptance tested on quotes, counter sales and web checkout, each leaving one record or none. Held at 84: the order entry screen does not warn on a stale edit (G-020)"
-    },
-    {
-      "group": "Sales and customer operations",
-      "category": "Functional correctness",
-      "score": 88,
-      "evidence": "Phase 5: tax by rule 27 on every sales path (J-001, J-005, J-006); expired quotes and pipeline values corrected (J-004); 15 pricing scenarios and the 47-check price sweep. Held at 88: discount, minimums and quote-line catalog pricing are the owner's decisions (J-008, S-027)"
-    },
-    {
-      "group": "Inventory and purchasing",
-      "category": "Data integrity",
-      "score": 93,
-      "evidence": "Phase 6: transfers have an in-transit stage and a receipt, with shortages held and settled (G-007); a reservation must fit the line by unit, grade, size, tolerance and owner (K-001); receipts tie to purchase order lines (I-007); a scrapped return is recorded in and out (K-003); 25 stock checks at 0 after 105 scenarios. Held at 93: no cost on stock (K-007); no cycle count program (K-008); the Steel Outlet remnant list is separate (K-006); live data unverified"
-    },
-    {
-      "group": "Inventory and purchasing",
-      "category": "Reliability",
-      "score": 86,
-      "evidence": "Phase 6: transfer send, receive, settle and call-back each raced and each safe; a save that fails part way leaves stock as it was; a hold no longer deadlocks with another stock change (K-015, found by the gate run). Held at 86: scanners not tested (K-013); local machine only"
-    },
-    {
-      "group": "Inventory and purchasing",
-      "category": "Performance",
-      "score": 82,
-      "evidence": "Phase 6: at 85 branches and 100,233 items the stock list answers in 48 ms, a search by part of a number in 116 ms, the supply position in 271 ms. Held at 82: local machine; the one-branch benchmark login has no stock; no index added without evidence (G-013)"
-    },
-    {
-      "group": "Manufacturing and processing",
-      "category": "Functional correctness",
-      "score": 89,
-      "evidence": "Phase 7: 130 verified scenarios across work orders, routing, scheduling, shop floor, quality, material, rework, job cost and cross-branch production; every job move through one gate (L-001, L-006); steps in planned order (owner decision 8); the six rules of owner decision 9 built and each proven by mutation. Held at 89: bill of material, calendar capacity, nonconformance, stock valuation and cost of goods are not built (L-023 to L-026, K-007); labor rates and checklists not yet entered"
-    },
-    {
-      "group": "Manufacturing and processing",
-      "category": "Security",
-      "score": 90,
-      "evidence": "Phase 7: inspections, time entries and operators are branch-owned (L-019); a planner schedules only their own branch (L-007); pay and emergency contacts go to managers only (L-014); quality decisions are for quality staff and production management and are audited against the signed-in user (L-003). Held at 90: live roles NOT VERIFIED"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Functional correctness",
-      "score": 87,
-      "evidence": "Phase 8: 142 verified scenarios across release, packing, shipments, dispatch, delivery, invoices, payments, credits, returns, costing and closeout; the packaging chain completes for the first time (N-008); stock leaves only the dock it stands at and the holding branch ships (N-001, N-002); papers are built from records with nothing invented (N-014); an order's open items are answered in one place (N-018). Held at 87: no carriers, freight rating or tracking (N-026); no accounting or cost of goods (N-025); no rule for a lost load (N-027); freight planning screens are samples (U-035). Was 75"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Security",
-      "score": 88,
-      "evidence": "Phase 8: stock cost removed from every answer for roles outside cost viewers (N-020); print jobs per branch (N-015); shipment changes held to the dock they leave from (N-002); text on printed papers escaped (N-019); custody notes only in the writer's own name (N-011); 337 changing routes, 0 with no rule. Held at 88: who may read invoices is undecided (F-009); live roles NOT VERIFIED. Was 78"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Maintainability",
-      "score": 80,
-      "evidence": "Phase 8: three small libraries with pure rules (shipping papers, order closeout, order cost) and 23 unit tests; one reader for three papers; one guard for cost on every answer; one retry for every overlap form. Held at 80: the drop tag route file is large (33 addresses). Was 70"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "Operational efficiency",
-      "score": 78,
-      "evidence": "Phase 8: the bill of lading and packing list print from the shipment in one button (F-011, U-036); one panel answers what is still open on an order, and one list shows every order not closed by reason (N-018); the Packing screen offers only the next valid step. Held at 78: a pick is a list, not a confirmed scan; no carrier booking; no real user timed. Was 68"
-    },
-    {
-      "group": "Logistics and financial operations",
-      "category": "User experience",
-      "score": 77,
-      "evidence": "Phase 8: 45 browser checks on six screens including phone width; refusals in plain words naming the item and the branch (N-001), the missing name (N-004), the missing reason (N-003); blanks on papers are named so they can be written in by hand. Held at 77: two new screens have had no real user; accessibility beyond labels is Phase 9. Was 72"
-    }
-  ],
-  "pullRequest": 31,
-  "previousPullRequests": [
-    30
-  ],
-  "phase3BaselineCommit": "181a874",
-  "phase4BaselineCommit": "dffa7d2",
-  "phase5BaselineCommit": "fce9593",
-  "phase6BaselineCommit": "c43ee25",
-  "phase7BaselineCommit": "6cbedc5",
-  "phase8BaselineCommit": "b2e8c5d"
+  {
+   "test": "Phase 9 UI scenarios in a browser (qa/sim/phase9-ui.cjs), eight groups, 200 required",
+   "result": "Second run on the final code, one pass: 232 of 232 passed, 0 failed, 0 not applicable, 1,093 checks (navigation 43, forms 41, sales 26, inventory 27, manufacturing 26, shipping 25, responsive and accessibility 20, failure and recovery 24). The full run on a rebuilt database before the last fixes read 230 of 231",
+   "before": "None existed"
+  },
+  {
+   "test": "Phase 9: proof the scenarios fail without the fix (qa/tools/phase9-mutations.cjs)",
+   "result": "27 fixes removed one at a time; each made at least one scenario fail; the source was restored after each"
+  },
+  {
+   "test": "Phase 9: full run of every check on a rebuilt database (qa/results/phase9-gate-run-1.txt)",
+   "result": "Phase 8 scenarios 155 of 155; Phase 7 141 of 141; Phase 6 106 of 106; Phase 5 76 of 76; Phase 4 66 of 66; Phase 3 74 of 74; Phase 2 integrity 82 checks, 0 problems; branch boundary 39, 0 problems; unit tests 209 of 209; ten earlier browser suites 286 checks, 0 failed; Phase 9 scenarios 230 of 231, the one failure a real fault (Work Orders missing from the menu, V-038), fixed; all 75 database checks equal the owner decision 10 run; the same four planted server errors",
+   "before": "Owner decision 10 run"
+  },
+  {
+   "test": "Phase 9: second browser run on the final code (qa/results/phase9-final-browser-run.txt)",
+   "result": "Lint 0 errors; build made; ten earlier browser suites 286 checks, 0 failed; Phase 9 scenarios 232 of 232; every screen opens with no call to a missing route except made-up record ids; every screen measured, 0 counts over a ceiling. Server-side suites were not run again: no server code changed after the full run began"
+  },
+  {
+   "test": "Phase 9: front-end performance on the production build, 20 main screens, median of three loads",
+   "result": "Heading on screen in 654 ms (median), network quiet in 1,154 ms, 76 API calls; order board block 1,175 ms before paging its columns, 488 to 512 ms after. Local machine"
+  },
+  {
+   "test": "Phase 9: five high-frequency tasks counted in keys and clicks (qa/tools/productivity.cjs)",
+   "result": "All five completed; for example an order found by number and opened from any screen with 2 keys and 8 typed characters. No real user was timed"
+  },
+  {
+   "test": "Owner decision 10 (lost loads N-027, who reads invoices F-009, web checkout on account H-013): full run of every check on a rebuilt database",
+   "result": "Phase 8 scenarios 155 of 155 (518 checks); Phase 7 141 of 141; Phase 6 106 of 106; Phase 5 76 of 76; Phase 4 66 of 66; Phase 3 74 of 74; unit tests 209 of 209; browser checks 285 of 286 in the run, the one failure being an older dock check that expected an invoice amount the dock no longer receives (F-009), updated and its suite rerun alone 30 of 30; all 75 database checks equal the previous run; the same four planted server errors",
+   "before": "Second full run of Phase 8: 150 of 150 Phase 8 scenarios, 201 unit tests, 45 Phase 8 browser checks"
+  },
+  {
+   "test": "Proof the decision 10 checks fail without the rules",
+   "result": "8 rules or pairs of rules removed; each made 1 or more scenarios fail. Two single removals failed nothing because a second check refuses the same request; recorded, not counted"
+  },
+  {
+   "test": "Database change for decision 10",
+   "result": "SQL Editor file 15 (20261116230000_shipment_lost): adds one shipment state. Run twice on a copy of the 85-branch database; the second run changed nothing; 50,869 shipments before and after"
+  },
+  {
+   "test": "Phase 8 fulfilment scenarios (qa/sim/phase8-fulfillment.mjs, new in Phase 8)",
+   "result": "150 of 150 scenarios pass, 496 checks, in the second full run on the final code. 142 verify built behaviour and 8 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: release, picking and packaging 20 and 0; shipment creation, partial shipments and back orders 25 and 0; dispatch, carriers, freight and delivery 21 and 4; invoicing, payments and accounting 22 and 3; costing, reconciliation and closeout 19 and 1; returns and credits 15 and 0; concurrency, security and recovery 20 and 0",
+   "before": "Did not exist. A probe on the starting code (qa/sim/p8-probe.mjs) reproduced the defects before any fix"
+  },
+  {
+   "test": "Proof the Phase 8 checks fail without the fixes",
+   "result": "31 rules removed one at a time; each made 1 or more scenarios fail; source restored. Two further removals failed nothing because a second check covers the same request; recorded, not counted. The retry around the order save (second half of N-029) fails only about one round in twelve without it and is not counted"
+  },
+  {
+   "test": "First full run of every check on the Phase 8 code",
+   "result": "Every suite passed. Reading the server log of the run then showed six dispatch requests answered 500 (a deadlock between an order cancel and a dispatch, N-029), one database check that counted the wrong series, and one scenario fixture that left an order subtotal wrong. All three corrected"
+  },
+  {
+   "test": "Phase 8 browser checks (qa/sim/ui-phase8.cjs, new)",
+   "result": "45 of 45: shipment papers and print buttons, delivery with a name or a reason, the Packing screen through the whole chain, Orders Not Closed, the closeout and cost panel, phone width",
+   "before": "Did not exist"
+  },
+  {
+   "test": "Unit tests (src/backend, npm test)",
+   "result": "201 of 201 (23 new: phase8Rules)",
+   "before": "178 of 178"
+  },
+  {
+   "test": "Shipping, invoicing and closeout calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices, 20,000 print jobs)",
+   "result": "Median of 7: eighteen calls, 6 to 206 ms; the slowest is the first page of orders not closed (133 ms all branches, 206 ms one branch); every other call under 40 ms. Measured before the N-029 correction, which changes no query. No packages in the scale data, so packing was not timed at scale",
+   "before": "Shipment and invoice lists only (Phase 3)"
+  },
+  {
+   "test": "Order-to-cash simulation, seeds 8001 to 8003 (second full run, final code)",
+   "result": "150 of 150 jobs, 0 reconciliation problems; payment and return races taken once in each seed",
+   "before": "150 of 150, 0 problems"
+  },
+  {
+   "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, 4, 5, 6 and 7 scenarios (second full run)",
+   "result": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 76 of 76 (386); 106 of 106 (494); 141 of 141 (618)",
+   "before": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 75 of 76 (386), the one failure being a test that depended on the time of day (N-024); 106 of 106 (494); 141 of 141 (618)"
+  },
+  {
+   "test": "Browser suites, every screen opens, baseline probe, department coverage, screen audit, lint, build (second full run)",
+   "result": "Browser suites 22, 30, 31, 24, 23, 33, 14, 14, 39 and 45 (275 checks, 0 failed); 130 of 130 screens open; 574 write calls as read-only roles, 0 not refused; 292 write routes with an empty body, 0 server errors; 337 changing routes, 0 with no rule; 0 screens with unlabelled made-up data; lint 0 errors, 1,522 warnings; build passes",
+   "before": "Browser suites 22, 29, 31, 24, 23, 33, 14, 14, 39; 334 changing routes, 0 with no rule; 1,526 warnings, 0 errors"
+  },
+  {
+   "test": "Database checks after the full run",
+   "result": "75 checks read; 64 at 0; the rest are counts of demo seed data and of records made on purpose, each explained in phase-08-regression-results.md section 2. The 8 Phase 8 checks: 6 at 0, and two counts to be read (9 shipments with no invoice, each listed for billing; 48 deliveries with neither name nor reason, 47 of the demo seed and 1 stripped on purpose by a scenario)"
+  },
+  {
+   "test": "Server errors in the full run",
+   "result": "Four answers of 500, the same four as the baseline, each planted by a scenario. No dispatch or order save answered a server error (six in the first run, N-029)"
+  },
+  {
+   "test": "Database change",
+   "result": "SQL Editor file 14 (20261116200000_fulfilment_costing): adds three columns. Run twice on a copy without them; the first run added the columns, the second changed nothing; row counts unchanged"
+  },
+  {
+   "test": "Printers, label printers, scales, scanners",
+   "result": "NOT EXECUTED: no hardware. Papers were read in a browser"
+  },
+  {
+   "test": "Carriers, freight rating, tracking, accounting system, card payments, customer notices",
+   "result": "NOT APPLICABLE: not built (N-025, N-026, N-028, H-013). Recorded with evidence; nothing was invented"
+  },
+  {
+   "test": "The host and live data",
+   "result": "NOT VERIFIED. No access from this environment"
+  }
+ ],
+ "unverifiedAreas": [
+  "Real devices: every size was a browser window on a local machine. No phone, tablet, shop terminal, glove, scanner or printer was used",
+  "Assistive technology: no screen reader user, no switch or voice control. Phase 9 does not certify WCAG 2.2 AA; it measured names, labels, contrast, headings, focus and keyboard reach by tool",
+  "Real users: no member of staff has used the new search, the role start pages or the dialogs; no time per task is claimed",
+  "Not every control was pressed: 24,586 controls were measured for a name, reach and an action; the scenarios press and verify the controls of the main workflows (phase-09-interaction-audit.md)",
+  "Five dashboards are not reconciled tile by tile to the records (V-037, Phase 11). 58 sample screens remain samples under a notice (owner decision 4)",
+  "Front-end speed on the host, on a real network and at 85-branch data: NOT VERIFIED (V-027)",
+  "The live database and the host: nothing in Phase 9 was run against either. Phase 9 changes no database structure. File 15 (owner decision 10) is still to be applied (verify-6-to-15.sql)",
+  "Earlier unverified areas unchanged: printers, scales and scanners (K-013), machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), card payment (H-015), backup and restore (E-015), host pool (G-015), more than one server at once"
+ ],
+ "currentBlockers": [
+  "Owner: SQL Editor file 15 must be applied before pull request 32 is merged, or the \"Lost for good\" step fails (R-57). Pull request 32 now carries owner decision 10 and Phase 9",
+  "Owner: V-030. \"Duplicate order\" was a dead button on two real screens and is removed; whether it should be built is his decision",
+  "Owner: N-025 (accounting), parked by him until the remaining phases are done",
+  "Deferred from Phase 9 with a named phase: V-028 (Phase 10), V-027 and V-037 (Phase 11), V-011, V-018, V-029, V-035, V-036 (Phase 12)",
+  "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-015, B-019, E-015, K-013, L-023 to L-027, L-030"
+ ],
+ "nextActions": [
+  "Owner: apply SQL Editor file 15, run verify-6-to-15.sql, then say when to merge pull request 32 (owner decision 10 and Phase 9; Phase 9 has no database file)",
+  "Owner: tell the branches what changes on the screens: each role starts on its own page, Work Orders is in the menu, the notifications bell is gone until notices are built, sample buttons say \"not built\" (R-60 to R-66)",
+  "Owner: look at the start page chosen for each role (phase-09-role-workspaces.md) and say if any should differ",
+  "Owner: decide V-030 (duplicate an order)",
+  "Owner: issue the Phase 10 prompt (security, reliability, recovery). Phase 10 has not been started"
+ ],
+ "lastCompletedCheckpoint": "Phase 9 implemented and verified by tool on a local machine: 38 findings (29 VERIFIED FIXED, 7 deferred to a named phase, 1 for the owner, 1 accepted under owner decision 10), 232 of 232 UI scenarios on the final code, 27 fixes proven by removal, full regression of Phases 2 to 8 unchanged. Not verified: real devices, assistive technology, real users, the host. Rides on pull request 32 with owner decision 10; no database file. Phase 10 not started",
+ "currentPhase": 9,
+ "findingPrefix": "V-",
+ "phase2BaselineCommit": "0ad7857",
+ "scoreAdjustments": [
+  {
+   "group": "Manufacturing and processing",
+   "category": "Data integrity",
+   "score": 91,
+   "evidence": "Phase 7: 13 new database checks at 0 after the full run (clocks, steps, inspections, plan branch); a plan with recorded work is never replaced (L-012); cancelling a job closes its clocks (L-018); nothing assumed for grade, thickness, time or hours (L-008, L-010). Phase 3: a coil work order consumes and creates stock in one transaction. Owner decision 9: a job names its coil work orders and shows material used, made and scrap (L-024); 3 more database checks at 0. Held at 91: no bill of material; stock on hand before the update has no cost (K-007); thickness not stated is stored as 0 (L-029)"
+  },
+  {
+   "group": "Manufacturing and processing",
+   "category": "Reliability",
+   "score": 88,
+   "evidence": "Phase 7: races on planning, scheduling, step start, finish against pause, inspection decisions, status moves and cancel against the last finish each end in one consistent state; a step left running across a gap recovers; a refused request saves nothing. Held at 88: local machine only; no machine connection to fail (L-030)"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "Maintainability",
+   "score": 65,
+   "evidence": "Phase 2: the branch boundary, the department table and the login rules each live in one tested file; a coverage check fails the gates when a changing route has no rule. Held at 65: most rules still live in route handlers (B-014) and 1,524 lint warnings remain"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "Data integrity",
+   "score": 92,
+   "evidence": "Phase 5: requirements, tax and branch carried from request to quote to order to work order (J-001, J-009); closed accounts refused in every channel (J-002); a void is CANCELLED (G-009); web orders need a customer (J-010); final reconciliation of the 76 scenarios 0 problems. Held at 92: six preference fields not applied (J-008); live data unverified"
+  },
+  {
+   "group": "Enterprise experience",
+   "category": "Data integrity",
+   "score": 72,
+   "evidence": "Phase 2: two real screens no longer invent records when the server fails (C-007); an executive decision records the signed-in person. Held at 72: dashboard figures are not checked against the records"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "Data integrity",
+   "score": 86,
+   "evidence": "Phase 3: 188 foreign keys (15 added on money, stock and work references), 24 value checks (15 added), every decimal written exactly (G-001), all proven by refused writes and a residue check of 0. Held at 86: 217 reference columns still have no key (G-003), the two JSON stores remain (B-009)"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "Performance",
+   "score": 82,
+   "evidence": "Phase 3: measured on an 85-branch copy (72,240 orders, 100,233 stock items): every branch list within 500 ms; 400 requests at once with 0 failures. Held at 82: local machine only; stock search and job count grow with the company (G-013); 244 KB order list reply (G-014)"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "Performance",
+   "score": 84,
+   "evidence": "Phase 5: every sales screen within 67 ms at the 95th percentile at 85 branches with 18,000 quotes; 40 at once 0 failed. Held at 84: local machine only"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "Observability",
+   "score": 72,
+   "evidence": "Phase 3: confirming, cancelling and reserving now leave a history line with the person, in the same transaction (G-010). Held at 72: edits to other order fields are not itemised (G-011)"
+  },
+  {
+   "group": "Manufacturing and processing",
+   "category": "Performance",
+   "score": 84,
+   "evidence": "Phase 7: at 85 branches with about 18,600 steps the production screens answer in 6 to 139 ms; the scheduling run at a branch with 7,090 waiting jobs fell from 45.3 s to 1.9 s; the late list from 653 to 74 ms; lists are capped with totals. Held at 84: local machine; the scheduling and planner answers are 8.3 MB and 1.2 MB at the largest branch"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Data integrity",
+   "score": 93,
+   "evidence": "Phase 8: 7 new database checks; cost fixed on the stock movement at dispatch and unchanged by later edits (N-017); packing inputs read from the stock item (N-009); fixed tag states (N-010); custody records cannot be forged (N-011); a cancelled order keeps no live shipment (N-006); reconciliation of shipped, moved and invoiced quantities across every record of the run. Held at 93: no ledger to reconcile against; a package is not tied to one shipment; movements before file 14 carry no cost. Earlier: Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken "
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Performance",
+   "score": 84,
+   "evidence": "Phase 8: eighteen shipping, invoicing, closeout, returns and print calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices): 6 to 206 ms, all but one under 40 ms. Held at 84: local machine, the host NOT VERIFIED; the first page of orders not closed works out every open order before paging; packing not timed at scale. Was 80"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "Integration quality",
+   "score": 76,
+   "evidence": "Phase 4: every call to an outside service has a time limit, bounded tries, a breaker and a plain failure answer (H-005); events to partners are saved with the change, retried, stopped after five tries and replayable (H-002); reply shapes are pinned by contract tests; a database refusal is a 409, not a 500 (H-017). Held at 76: list shapes still differ (E-021); the host schedule is not set (B-019); email, cards, carriers, tax and accounting are not connected (H-015); the breaker and limits count per instance (H-012)"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "Reliability",
+   "score": 80,
+   "evidence": "Phase 4: a retry after a lost answer or a dropped connection gets the first result (H-004); one partner can no longer receive another's answer (H-003); a burst of 80 events is sent within a second (H-019). Held at 80: no restore has been tested (E-015), the host pool is unverified (G-015), the schedule that carries out retries is not set on the host (B-019)"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "Observability",
+   "score": 70,
+   "evidence": "Phase 4: an Integrations screen and report show failed and waiting events, outside-service failures, orders shipped but not invoiced and when scheduled work last ran; failures are structured log lines with a request id and no secret (tested). Held at 70: nothing alerts anyone (E-017)"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Integration quality",
+   "score": 78,
+   "evidence": "Phase 4: a carrier reports through the partner API under the same rules as the shipping desk (H-001); dispatch, delivery, exception and invoice raise durable events (H-002); an order shipped but not invoiced is reported (H-006). Held at 78: no carrier rating, label or tracking service and no card processor (H-015); web checkout takes no payment (H-013)"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Reliability",
+   "score": 89,
+   "evidence": "Phase 8: 20 concurrency and recovery scenarios; every once-only rule raced; overlaps met by raw statements and deadlocks reported by the database client are run again (N-022, N-029); a packing step pressed twice happens once (N-013); a return whose credit fails is flagged until settled, once (N-016). Held at 89: one server and one database only; N-029 was found in a log, not by a failing check; nothing retries a failed invoice on its own. Earlier: Phase 4: a billing failure at dispatch is said, recorded and listed until closed (H-006); a carrier's repeated or late report changes nothing; dispatch and delivery carry request keys from the screen (H-009). Held at 84: nothing retries a failed invoice on its own"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "Integration quality",
+   "score": 68,
+   "evidence": "Phase 4: a customer system can raise a request for quote, read and answer quotes, and read its orders, shipments and invoices, isolated from other customers (H-001); what a partner reads equals what staff see. Held at 68: no email or text (D-034, H-015); web checkout payment is a note (H-013); 18 sales calls have no route (S-026)"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "Reliability",
+   "score": 84,
+   "evidence": "Phase 5: races, retries, lost answers and a database failure mid-acceptance tested on quotes, counter sales and web checkout, each leaving one record or none. Held at 84: the order entry screen does not warn on a stale edit (G-020)"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "Functional correctness",
+   "score": 88,
+   "evidence": "Phase 5: tax by rule 27 on every sales path (J-001, J-005, J-006); expired quotes and pipeline values corrected (J-004); 15 pricing scenarios and the 47-check price sweep. Held at 88: discount, minimums and quote-line catalog pricing are the owner's decisions (J-008, S-027)"
+  },
+  {
+   "group": "Inventory and purchasing",
+   "category": "Data integrity",
+   "score": 93,
+   "evidence": "Phase 6: transfers have an in-transit stage and a receipt, with shortages held and settled (G-007); a reservation must fit the line by unit, grade, size, tolerance and owner (K-001); receipts tie to purchase order lines (I-007); a scrapped return is recorded in and out (K-003); 25 stock checks at 0 after 105 scenarios. Held at 93: no cost on stock (K-007); no cycle count program (K-008); the Steel Outlet remnant list is separate (K-006); live data unverified"
+  },
+  {
+   "group": "Inventory and purchasing",
+   "category": "Reliability",
+   "score": 86,
+   "evidence": "Phase 6: transfer send, receive, settle and call-back each raced and each safe; a save that fails part way leaves stock as it was; a hold no longer deadlocks with another stock change (K-015, found by the gate run). Held at 86: scanners not tested (K-013); local machine only"
+  },
+  {
+   "group": "Inventory and purchasing",
+   "category": "Performance",
+   "score": 82,
+   "evidence": "Phase 6: at 85 branches and 100,233 items the stock list answers in 48 ms, a search by part of a number in 116 ms, the supply position in 271 ms. Held at 82: local machine; the one-branch benchmark login has no stock; no index added without evidence (G-013)"
+  },
+  {
+   "group": "Manufacturing and processing",
+   "category": "Functional correctness",
+   "score": 89,
+   "evidence": "Phase 7: 130 verified scenarios across work orders, routing, scheduling, shop floor, quality, material, rework, job cost and cross-branch production; every job move through one gate (L-001, L-006); steps in planned order (owner decision 8); the six rules of owner decision 9 built and each proven by mutation. Held at 89: bill of material, calendar capacity, nonconformance, stock valuation and cost of goods are not built (L-023 to L-026, K-007); labor rates and checklists not yet entered"
+  },
+  {
+   "group": "Manufacturing and processing",
+   "category": "Security",
+   "score": 90,
+   "evidence": "Phase 7: inspections, time entries and operators are branch-owned (L-019); a planner schedules only their own branch (L-007); pay and emergency contacts go to managers only (L-014); quality decisions are for quality staff and production management and are audited against the signed-in user (L-003). Held at 90: live roles NOT VERIFIED"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Functional correctness",
+   "score": 89,
+   "evidence": "Owner decision 10: a load that never arrives is ended as lost by a manager, with its invoice credited in the same save (N-027); web checkout says it is on account (H-013). Held at 89: no carriers (N-026, deferred by the owner), no accounting (N-025), freight planning screens are samples. Before decision 10 (87): Phase 8: 142 verified scenarios across release, packing, shipments, dispatch, delivery, invoices, payments, credits, returns, costing and closeout; the packaging chain completes for the first time (N-008); stock leaves only the dock it stands at and the holding branch ships (N-001, N-002); papers are built from records with nothing invented (N-014); an order's open items are answered in one place (N-018). Held at 87: no carriers, freight rating or tracking (N-026); no accounting or cost of goods (N-025); no rule for a lost load (N-027); freight planning screens are samples (U-035). Was 75"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Security",
+   "score": 90,
+   "evidence": "Owner decision 10: invoices and payments are read by sales, managers, leadership and view-only roles; other staff receive an invoice's number and status only, on every answer (F-009); 2 rule removals each failed a scenario. Held at 90: live roles NOT VERIFIED. Before decision 10 (88): Phase 8: stock cost removed from every answer for roles outside cost viewers (N-020); print jobs per branch (N-015); shipment changes held to the dock they leave from (N-002); text on printed papers escaped (N-019); custody notes only in the writer's own name (N-011); 337 changing routes, 0 with no rule. Held at 88: who may read invoices is undecided (F-009); live roles NOT VERIFIED. Was 78"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Maintainability",
+   "score": 80,
+   "evidence": "Phase 8: three small libraries with pure rules (shipping papers, order closeout, order cost) and 23 unit tests; one reader for three papers; one guard for cost on every answer; one retry for every overlap form. Held at 80: the drop tag route file is large (33 addresses). Was 70"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Operational efficiency",
+   "score": 78,
+   "evidence": "Phase 8: the bill of lading and packing list print from the shipment in one button (F-011, U-036); one panel answers what is still open on an order, and one list shows every order not closed by reason (N-018); the Packing screen offers only the next valid step. Held at 78: a pick is a list, not a confirmed scan; no carrier booking; no real user timed. Was 68"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "User experience",
+   "score": 82,
+   "evidence": "Phase 9: every screen of the group opened at three sizes with 0 page errors and 0 sideways scroll; one search, page titles, a skip link, role start pages, the application's own dialogs, session expiry returning to the same page; 25 shipping scenarios in a browser on top of the 56 Phase 8 browser checks; dispatch cannot be pressed twice (V-022); refusals in plain words. Held at 82: no real user, device or host took part; seven freight screens are samples (U-035). Before Phase 9: 77 (Phase 8: 45 browser checks on six screens including phone width; refusals in plain words naming the item and the branch (N-001), the missing name (N-004), the missing reason (N-003); blanks on papers are named so they can be written in by hand. Held at 77: two new screens have had no real user; accessibility beyond labels is Phase 9. Was 72)"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "User experience",
+   "score": 80,
+   "evidence": "Phase 9: every screen of the group opened at three sizes with 0 page errors and 0 sideways scroll; one search, page titles, a skip link, role start pages, the application's own dialogs, session expiry returning to the same page; 43 navigation scenarios, one for each role among them. Held at 80: no real user, device or host took part; 94 files set colours of their own (V-035)"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "User experience",
+   "score": 80,
+   "evidence": "Phase 9: every screen of the group opened at three sizes with 0 page errors and 0 sideways scroll; one search, page titles, a skip link, role start pages, the application's own dialogs, session expiry returning to the same page; 26 sales scenarios in a browser; an order's money on screen equals the record (V-020); a changed order asks before it is left (V-017). Held at 80: no real user, device or host took part; other long forms do not ask (V-018); duplicate order not built (V-030)"
+  },
+  {
+   "group": "Inventory and purchasing",
+   "category": "User experience",
+   "score": 80,
+   "evidence": "Phase 9: every screen of the group opened at three sizes with 0 page errors and 0 sideways scroll; one search, page titles, a skip link, role start pages, the application's own dialogs, session expiry returning to the same page; 27 stock scenarios in a browser; a stock item on a transfer shows In Transit in the list (K-014); rows open from the keyboard. Held at 80: no real user, device or host took part; tables are built per screen (V-036)"
+  },
+  {
+   "group": "Manufacturing and processing",
+   "category": "User experience",
+   "score": 78,
+   "evidence": "Phase 9: every screen of the group opened at three sizes with 0 page errors and 0 sideways scroll; one search, page titles, a skip link, role start pages, the application's own dialogs, session expiry returning to the same page; 26 shop scenarios in a browser; the shop floor opens on the operator's own branch (V-021); the order board draws 30 cards a column and offers the rest (V-026). Held at 78: no real user, device or host took part; no shop terminal or glove; three boards still fetch everything (V-027)"
+  },
+  {
+   "group": "Enterprise experience",
+   "category": "User experience",
+   "score": 62,
+   "evidence": "Phase 9: no dashboard shows a figure the server did not send, with the server up or failing; 172 dead buttons on sample screens say \"not built\" and 10 false \"saved\" messages are gone (V-007, V-008). Held at 62: 58 screens are still samples (owner decision 4); five dashboards are not reconciled to the records (V-037)"
+  },
+  {
+   "group": "Platform infrastructure",
+   "category": "Accessibility",
+   "score": 72,
+   "evidence": "Phase 9, measured by tool on every screen: controls with no name 613 to 0, fields with no label 280 to 0, one main heading, a visible focus ring, a skip link, announcements, reduced motion; 87 rows and cards open from the keyboard. Held at 72: not a WCAG certificate; no screen reader, switch or voice user; focus return after a dialog verified on the main dialogs only (V-029)"
+  },
+  {
+   "group": "Sales and customer operations",
+   "category": "Accessibility",
+   "score": 68,
+   "evidence": "Phase 9, measured by tool on every screen of the group: 0 controls with no name, 0 fields with no label, one main heading, text contrast corrected in the theme, rows open from the keyboard, forms say what is required and what is wrong. Held at 68: not a WCAG certificate; no screen reader, switch or voice user; no real device"
+  },
+  {
+   "group": "Inventory and purchasing",
+   "category": "Accessibility",
+   "score": 68,
+   "evidence": "Phase 9, measured by tool on every screen of the group: 0 controls with no name, 0 fields with no label, one main heading, text contrast corrected in the theme, rows open from the keyboard, forms say what is required and what is wrong. Held at 68: not a WCAG certificate; no screen reader, switch or voice user; no real device"
+  },
+  {
+   "group": "Manufacturing and processing",
+   "category": "Accessibility",
+   "score": 68,
+   "evidence": "Phase 9, measured by tool on every screen of the group: 0 controls with no name, 0 fields with no label, one main heading, text contrast corrected in the theme, rows open from the keyboard, forms say what is required and what is wrong. Held at 68: not a WCAG certificate; no screen reader, switch or voice user; no real device"
+  },
+  {
+   "group": "Logistics and financial operations",
+   "category": "Accessibility",
+   "score": 68,
+   "evidence": "Phase 9, measured by tool on every screen of the group: 0 controls with no name, 0 fields with no label, one main heading, text contrast corrected in the theme, rows open from the keyboard, forms say what is required and what is wrong. Held at 68: not a WCAG certificate; no screen reader, switch or voice user; no real device"
+  },
+  {
+   "group": "Enterprise experience",
+   "category": "Accessibility",
+   "score": 60,
+   "evidence": "Phase 9, measured by tool: 0 controls with no name and 0 fields with no label on the sample screens too. Held at 60: the hard-to-read texts that remain are on these screens (V-011); they are to be rebuilt (owner decision 4); no assistive technology user"
+  }
+ ],
+ "pullRequest": 32,
+ "previousPullRequests": [
+  30,
+  31
+ ],
+ "phase3BaselineCommit": "181a874",
+ "phase4BaselineCommit": "dffa7d2",
+ "phase5BaselineCommit": "fce9593",
+ "phase6BaselineCommit": "c43ee25",
+ "phase7BaselineCommit": "6cbedc5",
+ "phase8BaselineCommit": "b2e8c5d",
+ "phase9BaselineCommit": "da3e6d0"
 }

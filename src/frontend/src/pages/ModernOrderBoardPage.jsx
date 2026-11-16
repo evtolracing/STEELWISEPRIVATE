@@ -228,7 +228,7 @@ const ModernOrderBoardPage = () => {
               <AnalyticsIcon />
             </Avatar>
             <Box>
-              <Typography variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography component="h1" variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 Order Board
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>
@@ -254,10 +254,10 @@ const ModernOrderBoardPage = () => {
               <Paper sx={{ 
                 px: 2, 
                 py: 1, 
-                bgcolor: alpha('#f44336', 0.2), 
+                bgcolor: alpha('#C62828', 0.2), 
                 backdropFilter: 'blur(10px)',
                 border: '1px solid',
-                borderColor: alpha('#f44336', 0.4),
+                borderColor: alpha('#C62828', 0.4),
                 borderRadius: 2,
               }}>
                 <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -270,10 +270,10 @@ const ModernOrderBoardPage = () => {
               <Paper sx={{ 
                 px: 2, 
                 py: 1, 
-                bgcolor: alpha('#ff9800', 0.2), 
+                bgcolor: alpha('#B45309', 0.2), 
                 backdropFilter: 'blur(10px)',
                 border: '1px solid',
-                borderColor: alpha('#ff9800', 0.4),
+                borderColor: alpha('#B45309', 0.4),
                 borderRadius: 2,
               }}>
                 <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -285,10 +285,10 @@ const ModernOrderBoardPage = () => {
             <Paper sx={{ 
               px: 2, 
               py: 1, 
-              bgcolor: alpha('#4caf50', 0.2), 
+              bgcolor: alpha('#2E7D32', 0.2), 
               backdropFilter: 'blur(10px)',
               border: '1px solid',
-              borderColor: alpha('#4caf50', 0.4),
+              borderColor: alpha('#2E7D32', 0.4),
               borderRadius: 2,
             }}>
               <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -369,7 +369,7 @@ const ModernOrderBoardPage = () => {
               <Typography variant="caption" sx={{ opacity: 0.8 }}>Add a new job to the order board</Typography>
             </Box>
           </Box>
-          <IconButton onClick={() => setCreateDialogOpen(false)} sx={{ color: 'white' }}>
+          <IconButton aria-label="Close" onClick={() => setCreateDialogOpen(false)} sx={{ color: 'white' }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>

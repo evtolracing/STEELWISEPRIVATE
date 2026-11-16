@@ -15,6 +15,8 @@ function publicUser(user) {
     organization: user.organization,
     customerId: user.customerId || null,
     customer: user.customer || null,
+    // The person's own branch, so a screen can start there instead of at the first branch of a list.
+    homeLocationId: user.homeLocationId || null,
   };
 }
 

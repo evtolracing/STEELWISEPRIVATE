@@ -179,7 +179,7 @@ export default function ShopFloorScreen() {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Shop Floor</Typography>
+        <Typography component="h1" variant="h4">Shop Floor</Typography>
         
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>Work Center</InputLabel>

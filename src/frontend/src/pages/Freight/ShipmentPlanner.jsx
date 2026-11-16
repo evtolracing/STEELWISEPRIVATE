@@ -51,6 +51,8 @@ import {
   RequestQuote,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock packages ready to ship
 const readyPackages = [
@@ -195,7 +197,7 @@ const ShipmentPlanner = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Shipment Planner
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -203,7 +205,7 @@ const ShipmentPlanner = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="outlined" startIcon={<Refresh />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Refresh />}>
             Refresh
           </Button>
           <Button 
@@ -304,7 +306,7 @@ const ShipmentPlanner = () => {
 
             {/* Filters */}
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Search" }}
                 size="small"
                 placeholder="Search..."
                 value={searchText}
@@ -319,7 +321,7 @@ const ShipmentPlanner = () => {
                 sx={{ flexGrow: 1 }}
               />
               <FormControl size="small" sx={{ minWidth: 100 }}>
-                <Select
+                <Select inputProps={{ 'aria-label': 'Branch' }}
                   value={filterBranch}
                   onChange={(e) => setFilterBranch(e.target.value)}
                   displayEmpty
@@ -331,7 +333,7 @@ const ShipmentPlanner = () => {
                 </Select>
               </FormControl>
               <FormControl size="small" sx={{ minWidth: 100 }}>
-                <Select
+                <Select inputProps={{ 'aria-label': 'Priority' }}
                   value={filterPriority}
                   onChange={(e) => setFilterPriority(e.target.value)}
                   displayEmpty
@@ -347,7 +349,7 @@ const ShipmentPlanner = () => {
             {/* Package List */}
             <List sx={{ maxHeight: 450, overflow: 'auto' }}>
               {filteredPackages.map((pkg) => (
-                <Card 
+                <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
                   key={pkg.id} 
                   variant="outlined" 
                   sx={{ 
@@ -363,7 +365,7 @@ const ShipmentPlanner = () => {
                 >
                   <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                      <Checkbox 
+                      <Checkbox inputProps={{ 'aria-label': `Select package ${pkg.id}` }} 
                         checked={selectedPackages.includes(pkg.id)}
                         onClick={(e) => e.stopPropagation()}
                         onChange={() => togglePackageSelection(pkg.id)}
@@ -474,7 +476,7 @@ const ShipmentPlanner = () => {
                         <Typography variant="body2">
                           {pkg.weight.toLocaleString()} lbs
                         </Typography>
-                        <IconButton 
+                        <IconButton aria-label="Close" 
                           size="small" 
                           onClick={() => togglePackageSelection(pkg.id)}
                         >
@@ -559,7 +561,7 @@ const ShipmentPlanner = () => {
                       >
                         Apply
                       </Button>
-                      <Button size="small" color="inherit">
+                      <Button onClick={notBuilt} size="small" color="inherit">
                         Dismiss
                       </Button>
                     </Box>

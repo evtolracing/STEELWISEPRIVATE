@@ -116,7 +116,7 @@ export default function UnitDetailPage() {
           <Avatar sx={{ width: 56, height: 56, background: 'rgba(255,255,255,0.15)' }}><InventoryIcon sx={{ fontSize: 30 }} /></Avatar>
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h4" fontWeight={700}>{unit?.coilNumber || 'Stock item'}</Typography>
+              <Typography component="h1" variant="h4" fontWeight={700}>{unit?.coilNumber || 'Stock item'}</Typography>
               {unit && <StatusChip status={unit.status} />}
             </Box>
             {unit && (

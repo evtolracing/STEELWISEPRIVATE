@@ -17,6 +17,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import OrderStatusTimeline from '../../components/ecommerce/OrderStatusTimeline'
 import { getMyOrderById, getMyOrderDocuments } from '../../services/customerOrdersApi'
+import { downloadDocument } from '../../services/customerAccountApi'
 
 const SOURCE_COLOR = { CONTRACT: 'success', RETAIL: 'primary', REMNANT: 'warning', REVIEW_REQUIRED: 'error' }
 const DOC_ICON = { PACKING_LIST: Receipt, MTR: Description, INVOICE: Receipt, BOL: LocalShipping }
@@ -45,6 +46,21 @@ export default function MyOrderDetailPage() {
     }).catch(() => {}).finally(() => setLoading(false))
   }, [id])
 
+  // The same download the Documents page uses. A failure is said, not swallowed.
+  const [downloadError, setDownloadError] = useState('')
+  const handleDownload = async (doc) => {
+    setDownloadError('')
+    try {
+      const res = await downloadDocument(doc.id)
+      const url = URL.createObjectURL(res.data)
+      const a = document.createElement('a')
+      a.href = url; a.download = res.filename || doc.name; a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      setDownloadError(`${doc.name} could not be downloaded. Try again, or open Documents in your account.`)
+    }
+  }
+
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{ py: 3 }}>
@@ -60,7 +76,8 @@ export default function MyOrderDetailPage() {
   if (!order) {
     return (
       <Container maxWidth="lg" sx={{ py: 3 }}>
-        <Alert severity="error">Order not found</Alert>
+        <Typography component="h1" variant="h5" fontWeight={700} sx={{ mb: 2 }}>Order not found</Typography>
+        <Alert severity="error">This order is not on your account, or the address is wrong.</Alert>
         <Button startIcon={<ArrowBack />} onClick={() => navigate('/shop/orders')} sx={{ mt: 2 }}>Back to Orders</Button>
       </Container>
     )
@@ -84,7 +101,7 @@ export default function MyOrderDetailPage() {
       <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
           <Box>
-            <Typography variant="h5" fontWeight={700}>{order.orderNumber}</Typography>
+            <Typography component="h1" variant="h5" fontWeight={700}>{order.orderNumber}</Typography>
             <Typography variant="body2" color="text.secondary">Placed {fmtDate(order.createdAt)}</Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
@@ -93,7 +110,7 @@ export default function MyOrderDetailPage() {
             {order.quoteRequested && <Chip label="Quote Request" color="warning" size="small" />}
           </Box>
           <Box sx={{ ml: 'auto', display: 'flex', gap: 0.5 }}>
-            <Tooltip title="Print"><IconButton size="small"><Print /></IconButton></Tooltip>
+            <Tooltip title="Print"><IconButton size="small" onClick={() => window.print()} className="no-print"><Print /></IconButton></Tooltip>
             <Tooltip title="Copy Order #"><IconButton size="small" onClick={() => navigator.clipboard?.writeText(order.orderNumber)}><ContentCopy /></IconButton></Tooltip>
           </Box>
         </Box>
@@ -115,7 +132,7 @@ export default function MyOrderDetailPage() {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Typography variant="caption" color="text.secondary">Payment</Typography>
-            <Typography variant="body2" fontWeight={500}>{order.paymentMethod || 'ACCOUNT_TERMS'}</Typography>
+            <Typography variant="body2" fontWeight={500}>On account</Typography>
           </Grid>
         </Grid>
 
@@ -198,6 +215,7 @@ export default function MyOrderDetailPage() {
           </Paper>
 
           {/* Documents */}
+          {downloadError && <Alert severity="error" role="alert" sx={{ mb: 2 }} onClose={() => setDownloadError('')}>{downloadError}</Alert>}
           {documents.length > 0 && (
             <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
               <Box sx={{ p: 2, bgcolor: 'grey.50', display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -214,7 +232,7 @@ export default function MyOrderDetailPage() {
                         <TableCell><Chip label={doc.type} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} /></TableCell>
                         <TableCell align="right">
                           <Tooltip title="Download">
-                            <IconButton size="small" color="primary"><Download fontSize="small" /></IconButton>
+                            <IconButton size="small" color="primary" aria-label={`Download ${doc.name}`} onClick={() => handleDownload(doc)}><Download fontSize="small" /></IconButton>
                           </Tooltip>
                         </TableCell>
                       </TableRow>

@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material'
 import { searchProducts } from '../../services/intakeProductsApi'
 import { searchInventory } from '../../services/intakeInventoryApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -217,7 +218,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
             Browse live inventory to add to order
           </Typography>
         </Box>
-        <IconButton size="small" onClick={onClose}><CloseIcon /></IconButton>
+        <IconButton aria-label="Close" size="small" onClick={onClose}><CloseIcon /></IconButton>
       </DialogTitle>
 
       <Box sx={{ px: 3, pt: 1 }}>
@@ -232,7 +233,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
       {tab === 0 && (
         <Box sx={{ px: 3, pt: 1.5 }}>
           <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search by unit #, grade, heat, finish" }}
               size="small" placeholder="Search by unit #, grade, heat, finish…"
               value={query} onChange={e => setQuery(e.target.value)} sx={{ flex: 1, minWidth: 200 }}
               InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>, endAdornment: liveLoading ? <CircularProgress size={18} /> : null }}
@@ -266,7 +267,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
       {/* ─── CATALOG / STOCK SEARCH TABS ─── */}
       {tab > 0 && (
         <Box sx={{ px: 3, pt: 1.5, display: 'flex', gap: 2, alignItems: 'center' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': tab === 1 ? 'Product name, SKU, grade…' : 'Lot #, description, SKU…' }}
             autoFocus size="small" placeholder={tab === 1 ? 'Product name, SKU, grade…' : 'Lot #, description, SKU…'}
             value={query} onChange={e => setQuery(e.target.value)} sx={{ flex: 1 }}
             InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>, endAdornment: loading ? <CircularProgress size={18} /> : null }}
@@ -319,7 +320,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
               </TableHead>
               <TableBody>
                 {liveResults.map(coil => (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={coil.id} hover
                     sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
                     onClick={() => handleSelectCoil(coil)}
@@ -411,7 +412,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
               </TableHead>
               <TableBody>
                 {results.map(p => (
-                  <TableRow key={p.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'product', ...p }); onClose() }}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={p.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'product', ...p }); onClose() }}>
                     <TableCell><Typography variant="body2" fontFamily="monospace">{p.sku}</Typography></TableCell>
                     <TableCell><Typography variant="body2" fontWeight={500}>{p.name}</Typography></TableCell>
                     <TableCell>{p.grade}</TableCell>
@@ -447,7 +448,7 @@ export default function MaterialPicker({ open, onClose, onSelect, division: init
               </TableHead>
               <TableBody>
                 {results.map(inv => (
-                  <TableRow key={inv.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'inventory', ...inv }); onClose() }}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={inv.id} hover sx={{ cursor: 'pointer' }} onClick={() => { onSelect({ type: 'inventory', ...inv }); onClose() }}>
                     <TableCell><Typography variant="body2" fontFamily="monospace">{inv.lotNumber}</Typography></TableCell>
                     <TableCell><Typography variant="body2">{inv.description}</Typography></TableCell>
                     <TableCell>{inv.locationName}</TableCell>

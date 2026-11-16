@@ -102,7 +102,7 @@ export default function LineItemsEditor({
                       </Box>
                     ) : (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <TextField size="small" fullWidth variant="standard" value={line.description} onChange={e => update(idx, 'description', e.target.value)} placeholder="Enter description or pick material…" />
+                        <TextField inputProps={{ 'aria-label': "Enter description or pick material" }} size="small" fullWidth variant="standard" value={line.description} onChange={e => update(idx, 'description', e.target.value)} placeholder="Enter description or pick material…" />
                         {line.lineType === 'MATERIAL' && onOpenMaterialPicker && (
                           <Tooltip title="Browse inventory"><IconButton size="small" color="primary" onClick={() => onOpenMaterialPicker(idx)}><InvIcon fontSize="small" /></IconButton></Tooltip>
                         )}
@@ -121,13 +121,13 @@ export default function LineItemsEditor({
                   </TableCell>
                   <TableCell align="right">
                     {readOnly ? line.qty : (
-                      <TextField size="small" variant="standard" type="number" sx={{ width: 56 }} inputProps={{ min: 0, step: 1 }} value={line.qty} onChange={e => update(idx, 'qty', e.target.value)} />
+                      <TextField size="small" variant="standard" type="number" sx={{ width: 56 }} inputProps={{ 'aria-label': `Quantity for line ${idx + 1}`, min: 0, step: 1 }} value={line.qty} onChange={e => update(idx, 'qty', e.target.value)} />
                     )}
                   </TableCell>
                   <TableCell>
                     {readOnly ? line.uom : (
                       <FormControl size="small" variant="standard" sx={{ width: 64 }}>
-                        <Select value={line.uom} onChange={e => update(idx, 'uom', e.target.value)}>
+                        <Select inputProps={{ 'aria-label': `Unit for line ${idx + 1}` }} value={line.uom} onChange={e => update(idx, 'uom', e.target.value)}>
                           {UOM_OPTIONS.map(u => <MenuItem key={u} value={u}>{u}</MenuItem>)}
                         </Select>
                       </FormControl>
@@ -135,7 +135,7 @@ export default function LineItemsEditor({
                   </TableCell>
                   <TableCell align="right">
                     {readOnly ? fmt(line.unitPrice) : (
-                      <TextField size="small" variant="standard" type="number" sx={{ width: 80 }} inputProps={{ min: 0, step: 0.01 }} value={line.unitPrice} onChange={e => update(idx, 'unitPrice', e.target.value)} />
+                      <TextField size="small" variant="standard" type="number" sx={{ width: 80 }} inputProps={{ 'aria-label': `Unit price for line ${idx + 1}`, min: 0, step: 0.01 }} value={line.unitPrice} onChange={e => update(idx, 'unitPrice', e.target.value)} />
                     )}
                   </TableCell>
                   <TableCell align="right"><Typography variant="body2" fontWeight={500}>{fmt(line.extPrice)}</Typography></TableCell>
@@ -145,7 +145,7 @@ export default function LineItemsEditor({
                   </TableCell>
                   {!readOnly && (
                     <TableCell align="center">
-                      <IconButton size="small" color="error" onClick={() => removeLine(idx)}>
+                      <IconButton aria-label="Delete" size="small" color="error" onClick={() => removeLine(idx)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </TableCell>

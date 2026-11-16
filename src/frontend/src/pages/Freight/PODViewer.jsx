@@ -43,6 +43,8 @@ import {
   Close,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock POD data
 const podData = {
@@ -172,7 +174,7 @@ const PODViewer = () => {
             Back
           </Button>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Proof of Delivery
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -181,13 +183,13 @@ const PODViewer = () => {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<Print />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Print />}>
             Print POD
           </Button>
-          <Button variant="outlined" startIcon={<Download />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Download />}>
             Download PDF
           </Button>
-          <Button variant="outlined" startIcon={<Share />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Share />}>
             Share
           </Button>
         </Box>
@@ -279,7 +281,7 @@ const PODViewer = () => {
                   <Grid container spacing={2}>
                     {podData.photos.map((photo) => (
                       <Grid item xs={12} sm={4} key={photo.id}>
-                        <Card 
+                        <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
                           sx={{ cursor: 'pointer', '&:hover': { boxShadow: 3 } }}
                           onClick={() => { setSelectedPhoto(photo); setPhotoDialogOpen(true); }}
                         >
@@ -402,7 +404,7 @@ const PODViewer = () => {
                                 icon={<CheckCircle />}
                               />
                             )}
-                            <Button size="small" startIcon={<Download />}>
+                            <Button onClick={notBuilt} size="small" startIcon={<Download />}>
                               Download
                             </Button>
                           </Box>
@@ -537,7 +539,7 @@ const PODViewer = () => {
             <Typography variant="h6">
               {selectedPhoto?.description}
             </Typography>
-            <IconButton onClick={() => setPhotoDialogOpen(false)}>
+            <IconButton aria-label="Close" onClick={() => setPhotoDialogOpen(false)}>
               <Close />
             </IconButton>
           </Box>

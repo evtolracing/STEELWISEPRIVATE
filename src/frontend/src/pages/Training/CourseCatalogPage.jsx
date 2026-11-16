@@ -40,6 +40,7 @@ import {
   TouchApp as InteractiveIcon,
   CalendarMonth as RecertIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Course Catalog Data
 const mockCourses = [
@@ -220,7 +221,7 @@ export default function CourseCatalogPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Training Course Catalog
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -233,7 +234,7 @@ export default function CourseCatalogPage() {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={6}>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search courses by name, code, or description" }}
               fullWidth
               placeholder="Search courses by name, code, or description..."
               value={searchQuery}
@@ -338,7 +339,7 @@ export default function CourseCatalogPage() {
                   <Button size="small" onClick={() => setSelectedCourse(course)}>
                     View Details
                   </Button>
-                  <Button size="small" variant="contained" startIcon={<StartIcon />}>
+                  <Button onClick={notBuilt} size="small" variant="contained" startIcon={<StartIcon />}>
                     Enroll
                   </Button>
                 </CardActions>
@@ -446,7 +447,7 @@ export default function CourseCatalogPage() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setSelectedCourse(null)}>Close</Button>
-              <Button variant="contained" startIcon={<StartIcon />}>
+              <Button onClick={notBuilt} variant="contained" startIcon={<StartIcon />}>
                 Enroll Now
               </Button>
             </DialogActions>

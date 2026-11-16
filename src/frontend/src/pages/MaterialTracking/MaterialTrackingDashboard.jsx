@@ -10,9 +10,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { getTrackingStats } from '../../api/materialTracking';
 import { getJobs } from '../../api/jobs';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const StatCard = ({ title, value, icon, color, subtitle, onClick }) => (
-  <Card
+  <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
     sx={{
       cursor: onClick ? 'pointer' : 'default',
       transition: 'box-shadow 0.2s',
@@ -35,7 +36,7 @@ const StatCard = ({ title, value, icon, color, subtitle, onClick }) => (
             </Typography>
           )}
         </Box>
-        <Box sx={{ p: 1, borderRadius: 2, bgcolor: `${color}.light`, color: `${color}.main` }}>
+        <Box sx={{ p: 1, borderRadius: 2, bgcolor: `${color}.tint`, color: `${color}.main` }}>
           {icon}
         </Box>
       </Box>
@@ -87,7 +88,7 @@ const MaterialTrackingDashboard = () => {
     <Box sx={{ p: 3, bgcolor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography component="h1" variant="h4" fontWeight={700}>
           Material Tracking
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -147,7 +148,7 @@ const MaterialTrackingDashboard = () => {
       </Typography>
       <Grid container spacing={2} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card
+          <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
             sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}
             onClick={() => navigate('/material-tracking/packaging')}
           >
@@ -161,7 +162,7 @@ const MaterialTrackingDashboard = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card
+          <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
             sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}
             onClick={() => navigate('/material-tracking/tags')}
           >
@@ -175,7 +176,7 @@ const MaterialTrackingDashboard = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card
+          <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
             sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}
             onClick={() => navigate('/material-tracking/staging')}
           >
@@ -189,7 +190,7 @@ const MaterialTrackingDashboard = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card
+          <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
             sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}
             onClick={() => navigate('/material-tracking/traceability')}
           >

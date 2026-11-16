@@ -64,7 +64,7 @@ export default function CustomerLookupDialog({ open, onClose, onSelect }) {
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
         Customer Lookup
-        <IconButton size="small" onClick={onClose}><CloseIcon /></IconButton>
+        <IconButton aria-label="Close" size="small" onClick={onClose}><CloseIcon /></IconButton>
       </DialogTitle>
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 3 }}>
         <Tab label="Search Account" icon={<SearchIcon />} iconPosition="start" sx={{ textTransform: 'none' }} />
@@ -74,7 +74,7 @@ export default function CustomerLookupDialog({ open, onClose, onSelect }) {
       <DialogContent dividers sx={{ minHeight: 340, pt: 2 }}>
         {tab === 0 && (
           <>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Name, code, or phone" }}
               autoFocus fullWidth size="small" placeholder="Name, code, or phone…"
               value={query} onChange={e => setQuery(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>, endAdornment: loading ? <CircularProgress size={18} /> : null }}
@@ -107,8 +107,8 @@ export default function CustomerLookupDialog({ open, onClose, onSelect }) {
             {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Quick walk-in entry — name + phone minimum.</Typography>
             <Grid container spacing={2}>
-              <Grid item xs={6}><TextField fullWidth size="small" label="Name *" value={wiName} onChange={e => setWiName(e.target.value)} /></Grid>
-              <Grid item xs={6}><TextField fullWidth size="small" label="Phone *" value={wiPhone} onChange={e => setWiPhone(e.target.value)} /></Grid>
+              <Grid item xs={6}><TextField fullWidth size="small" label="Name" required value={wiName} onChange={e => setWiName(e.target.value)} /></Grid>
+              <Grid item xs={6}><TextField fullWidth size="small" label="Phone" required value={wiPhone} onChange={e => setWiPhone(e.target.value)} /></Grid>
               <Grid item xs={6}><TextField fullWidth size="small" label="Company" value={wiCompany} onChange={e => setWiCompany(e.target.value)} /></Grid>
               <Grid item xs={6}><TextField fullWidth size="small" label="Email" value={wiEmail} onChange={e => setWiEmail(e.target.value)} /></Grid>
             </Grid>

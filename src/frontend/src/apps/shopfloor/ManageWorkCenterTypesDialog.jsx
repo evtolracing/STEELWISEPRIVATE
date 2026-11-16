@@ -48,11 +48,13 @@ import {
   Save as SaveIcon,
 } from '@mui/icons-material'
 import { ICON_MAP, AVAILABLE_ICONS } from './iconMap'
+import { activateOnKey } from '../../utils/activateOnKey'
+import { ask } from '../../utils/ask'
 
 // Curated color palette for work center types
 const COLOR_PALETTE = [
-  '#1976d2', '#0288d1', '#7b1fa2', '#00838f', '#558b2f', '#e65100',
-  '#E91E63', '#9C27B0', '#3F51B5', '#00BCD4', '#FF5722', '#d32f2f',
+  '#1976d2', '#0288d1', '#7b1fa2', '#00838f', '#558b2f', '#A63A00',
+  '#E91E63', '#9C27B0', '#3F51B5', '#00738A', '#BF360C', '#d32f2f',
   '#c62828', '#795548', '#607D8B', '#455A64', '#2E7D32', '#F57F17',
   '#1565c0', '#AD1457', '#4A148C', '#006064', '#33691E', '#BF360C',
 ]
@@ -197,7 +199,7 @@ function TypeForm({ initialData, divisions, onSave, onCancel, saving }) {
           </Typography>
           <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
             {COLOR_PALETTE.map((c) => (
-              <Box
+              <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                 key={c}
                 onClick={() => setForm((prev) => ({ ...prev, color: c }))}
                 sx={{
@@ -381,7 +383,7 @@ export default function ManageWorkCenterTypesDialog({
   }
 
   const handleDelete = async (typeId) => {
-    if (!window.confirm(`Deactivate work center type "${typeId}"?`)) return
+    if (!(await ask(`Deactivate work center type "${typeId}"?`, { title: 'Deactivate type', confirmText: 'Deactivate', danger: true }))) return
     setSaving(true)
     setError(null)
     try {

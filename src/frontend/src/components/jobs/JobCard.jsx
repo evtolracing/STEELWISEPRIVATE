@@ -48,6 +48,7 @@ import {
 import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
 import { PRIORITY_LEVELS_CONFIG } from '../../constants/materials'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const JobCard = ({
   job,
@@ -107,7 +108,7 @@ const JobCard = ({
   }
 
   return (
-    <Card
+    <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
       draggable={draggable && !editing}
       onDragStart={handleDragStart}
       onClick={(e) => {
@@ -146,7 +147,7 @@ const JobCard = ({
           )}
           <Box sx={{ flex: 1, minWidth: 0 }}>
             {editing ? (
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Job instructions" }}
                 size="small"
                 value={editedJob.instructions || ''}
                 onChange={(e) => setEditedJob({ ...editedJob, instructions: e.target.value })}
@@ -173,7 +174,7 @@ const JobCard = ({
             )}
           </Box>
           {onUpdate && !editing && (
-            <IconButton
+            <IconButton aria-label="Edit"
               size="small"
               onClick={(e) => { e.stopPropagation(); setEditing(true); }}
               sx={{ p: 0.5 }}

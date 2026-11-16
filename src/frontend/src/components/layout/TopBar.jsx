@@ -4,8 +4,7 @@ import {
   IconButton,
   Typography,
   Box,
-  Badge,
-  InputBase,
+  Tooltip,
   Avatar,
   Menu,
   MenuItem,
@@ -14,20 +13,18 @@ import {
 } from '@mui/material'
 import {
   Menu as MenuIcon,
-  Search as SearchIcon,
-  Notifications as NotificationsIcon,
   Help as HelpIcon,
 } from '@mui/icons-material'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link as RouterLink } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import ChangePasswordDialog from './ChangePasswordDialog'
 import HeaderAIAssistant from './HeaderAIAssistant'
 import CutoffClockChip from './CutoffClockChip'
+import GlobalSearch from './GlobalSearch'
 
 export default function TopBar({ drawerWidth, onMenuClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
-  const [notificationAnchor, setNotificationAnchor] = useState(null)
   const [passwordOpen, setPasswordOpen] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -54,14 +51,6 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
     setAnchorEl(null)
   }
 
-  const handleNotificationClick = (event) => {
-    setNotificationAnchor(event.currentTarget)
-  }
-
-  const handleNotificationClose = () => {
-    setNotificationAnchor(null)
-  }
-
   return (
     <AppBar
       position="fixed"
@@ -78,49 +67,19 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
           color="inherit"
           edge="start"
           onClick={onMenuClick}
+          aria-label="Open the menu"
           sx={{ mr: 2, display: { md: 'none' } }}
         >
           <MenuIcon />
         </IconButton>
 
-        {/* Search */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            bgcolor: 'background.default',
-            borderRadius: 1,
-            px: 2,
-            py: 0.5,
-            flex: 1,
-            maxWidth: 400,
-          }}
-        >
-          <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
-          <InputBase
-            placeholder="Search heats, units, orders..."
-            sx={{ flex: 1, fontSize: '0.875rem' }}
-          />
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'text.disabled',
-              bgcolor: 'background.paper',
-              px: 1,
-              py: 0.25,
-              borderRadius: 0.5,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            ⌘K
-          </Typography>
-        </Box>
+        {/* Search: pages and records. */}
+        <GlobalSearch />
 
         <Box sx={{ flex: 1 }} />
 
         {/* Cutoff Clock */}
-        <Box sx={{ mr: 1 }}>
+        <Box sx={{ mr: 1, display: { xs: 'none', sm: 'block' } }}>
           <CutoffClockChip />
         </Box>
 
@@ -128,19 +87,14 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
         <HeaderAIAssistant />
 
         {/* Help */}
-        <IconButton color="inherit" sx={{ mr: 1 }}>
-          <HelpIcon />
-        </IconButton>
-
-        {/* Notifications */}
-        <IconButton color="inherit" onClick={handleNotificationClick} sx={{ mr: 1 }}>
-          <Badge badgeContent={3} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
+        <Tooltip title="Instruction manual">
+          <IconButton color="inherit" sx={{ mr: 1 }} component={RouterLink} to="/help/manual" aria-label="Instruction manual">
+            <HelpIcon />
+          </IconButton>
+        </Tooltip>
 
         {/* Profile */}
-        <IconButton onClick={handleProfileClick} sx={{ p: 0 }}>
+        <IconButton onClick={handleProfileClick} sx={{ p: 0 }} aria-label={`Account menu for ${displayName || 'this user'}`} aria-haspopup="menu" aria-expanded={Boolean(anchorEl)}>
           <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
             <Typography variant="caption">{initials}</Typography>
           </Avatar>
@@ -163,53 +117,6 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
         </Menu>
 
         <ChangePasswordDialog open={passwordOpen} onClose={() => setPasswordOpen(false)} />
-
-        {/* Notifications Menu */}
-        <Menu
-          anchorEl={notificationAnchor}
-          open={Boolean(notificationAnchor)}
-          onClose={handleNotificationClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          PaperProps={{ sx: { width: 320, maxHeight: 400 } }}
-        >
-          <Box sx={{ px: 2, py: 1 }}>
-            <Typography variant="subtitle2" fontWeight={600}>
-              Notifications
-            </Typography>
-          </Box>
-          <Divider />
-          <MenuItem onClick={handleNotificationClose}>
-            <Box>
-              <Typography variant="body2" fontWeight={500}>
-                QC Hold: Coil #C-2024-0012
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Surface defect detected - 5 min ago
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleNotificationClose}>
-            <Box>
-              <Typography variant="body2" fontWeight={500}>
-                Shipment Dispatched
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                SH-2024-0045 en route - 1 hour ago
-              </Typography>
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleNotificationClose}>
-            <Box>
-              <Typography variant="body2" fontWeight={500}>
-                Work Order Complete
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                WO-2024-0089 finished - 2 hours ago
-              </Typography>
-            </Box>
-          </MenuItem>
-        </Menu>
       </Toolbar>
     </AppBar>
   )

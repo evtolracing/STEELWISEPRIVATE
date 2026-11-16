@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-16T02:29:50.398Z",
+ "generated": "2026-11-16T06:45:17.593Z",
  "commit": "ref: refs/heads/claude/project-thread-25z3jd",
  "schema": {
   "models": [
@@ -6113,7 +6113,8 @@
     "IN_TRANSIT",
     "DELIVERED",
     "EXCEPTION",
-    "CANCELLED"
+    "CANCELLED",
+    "LOST"
    ],
    "InvoiceStatus": [
     "DRAFT",
@@ -6892,12 +6893,21 @@
     "alters": 4,
     "checks": 1,
     "indexes": 1
+   },
+   {
+    "name": "20261116230000_shipment_lost",
+    "lines": 4,
+    "creates": 0,
+    "drops": 0,
+    "alters": 0,
+    "checks": 0,
+    "indexes": 0
    }
   ],
   "sqlEditor": [
    "src/backend/prisma/upgrades/001_lists_to_json.sql",
    "src/backend/prisma/upgrades/checks/check-before-phase-8.sql",
-   "src/backend/prisma/upgrades/checks/verify-6-to-14.sql",
+   "src/backend/prisma/upgrades/checks/verify-6-to-15.sql",
    "src/backend/prisma/upgrades/sql-editor/20261110221503_customer_addresses_and_executive.sql",
    "src/backend/prisma/upgrades/sql-editor/20261111010902_orderhub_intake.sql",
    "src/backend/prisma/upgrades/sql-editor/20261111012618_pos_sessions.sql",
@@ -6928,6 +6938,7 @@
    "src/backend/prisma/upgrades/sql-editor/20261115200000_stock_transfers_po_receipts_piece_stock.sql",
    "src/backend/prisma/upgrades/sql-editor/20261116090000_production_decisions.sql",
    "src/backend/prisma/upgrades/sql-editor/20261116200000_fulfilment_costing.sql",
+   "src/backend/prisma/upgrades/sql-editor/20261116230000_shipment_lost.sql",
    "src/backend/prisma/upgrades/sql-editor/fix-rls-app-access.sql",
    "src/backend/prisma/upgrades/supabase-sql-editor-upgrade.sql"
   ],
@@ -8183,7 +8194,7 @@
     "mock": 0
    },
    "src/backend/src/routes/auth.js": {
-    "lines": 125,
+    "lines": 127,
     "routers": [
      "router"
     ],
@@ -8192,7 +8203,7 @@
       "router": "router",
       "method": "POST",
       "path": "/login",
-      "line": 21,
+      "line": 23,
       "lines": 55,
       "guards": [],
       "models": [
@@ -8217,7 +8228,7 @@
       "router": "router",
       "method": "POST",
       "path": "/register",
-      "line": 75,
+      "line": 77,
       "lines": 15,
       "guards": [],
       "models": [
@@ -8242,7 +8253,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/password",
-      "line": 89,
+      "line": 91,
       "lines": 27,
       "guards": [
        "authenticate"
@@ -8269,7 +8280,7 @@
       "router": "router",
       "method": "GET",
       "path": "/me",
-      "line": 115,
+      "line": 117,
       "lines": 7,
       "guards": [
        "authenticate"
@@ -15948,7 +15959,7 @@
     "mock": 0
    },
    "src/backend/src/routes/orders.js": {
-    "lines": 508,
+    "lines": 513,
     "routers": [
      "router"
     ],
@@ -15958,7 +15969,7 @@
       "method": "GET",
       "path": "/",
       "line": 136,
-      "lines": 37,
+      "lines": 42,
       "guards": [],
       "models": [
        "Order",
@@ -15983,7 +15994,7 @@
       "router": "router",
       "method": "GET",
       "path": "/credit-holds",
-      "line": 172,
+      "line": 177,
       "lines": 25,
       "guards": [],
       "models": [
@@ -16008,7 +16019,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/credit-release",
-      "line": 196,
+      "line": 201,
       "lines": 14,
       "guards": [],
       "models": [],
@@ -16031,7 +16042,7 @@
       "router": "router",
       "method": "GET",
       "path": "/closeout",
-      "line": 209,
+      "line": 214,
       "lines": 12,
       "guards": [],
       "models": [],
@@ -16054,7 +16065,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/closeout",
-      "line": 220,
+      "line": 225,
       "lines": 12,
       "guards": [],
       "models": [],
@@ -16077,7 +16088,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/cost",
-      "line": 231,
+      "line": 236,
       "lines": 13,
       "guards": [],
       "models": [],
@@ -16100,7 +16111,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 243,
+      "line": 248,
       "lines": 22,
       "guards": [],
       "models": [
@@ -16125,7 +16136,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 264,
+      "line": 269,
       "lines": 68,
       "guards": [],
       "models": [
@@ -16153,7 +16164,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 331,
+      "line": 336,
       "lines": 95,
       "guards": [],
       "models": [
@@ -16181,7 +16192,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/allocate",
-      "line": 425,
+      "line": 430,
       "lines": 67,
       "guards": [],
       "models": [
@@ -21713,7 +21724,7 @@
     "mock": 0
    },
    "src/backend/src/routes/shipments.js": {
-    "lines": 572,
+    "lines": 615,
     "routers": [
      "router"
     ],
@@ -21722,7 +21733,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 128,
+      "line": 129,
       "lines": 25,
       "guards": [],
       "models": [
@@ -21747,7 +21758,7 @@
       "router": "router",
       "method": "GET",
       "path": "/shippable",
-      "line": 152,
+      "line": 153,
       "lines": 31,
       "guards": [],
       "models": [
@@ -21772,7 +21783,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 182,
+      "line": 183,
       "lines": 27,
       "guards": [],
       "models": [
@@ -21799,7 +21810,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 208,
+      "line": 209,
       "lines": 41,
       "guards": [],
       "models": [
@@ -21825,7 +21836,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 248,
+      "line": 249,
       "lines": 8,
       "guards": [],
       "models": [
@@ -21850,7 +21861,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/items",
-      "line": 255,
+      "line": 256,
       "lines": 7,
       "guards": [],
       "models": [
@@ -21876,7 +21887,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/items",
-      "line": 261,
+      "line": 262,
       "lines": 10,
       "guards": [],
       "models": [
@@ -21901,8 +21912,8 @@
       "router": "router",
       "method": "DELETE",
       "path": "/:id/items/:itemId",
-      "line": 270,
-      "lines": 233,
+      "line": 271,
+      "lines": 263,
       "guards": [],
       "models": [
        "ShipmentItem",
@@ -21914,10 +21925,11 @@
        "Shipment",
        "Job",
        "Order",
+       "Invoice",
        "AuditLog",
        "WorkCenter"
       ],
-      "writes": 15,
+      "writes": 16,
       "transaction": true,
       "findMany": 3,
       "bounded": 1,
@@ -21936,7 +21948,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/dispatch",
-      "line": 502,
+      "line": 533,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -21959,7 +21971,30 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/deliver",
-      "line": 506,
+      "line": 537,
+      "lines": 5,
+      "guards": [],
+      "models": [],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": false,
+      "raw": false,
+      "usesUser": true,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "PUT",
+      "path": "/:id/lost",
+      "line": 541,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -21982,7 +22017,7 @@
       "router": "router",
       "method": "PATCH",
       "path": "/:id/status",
-      "line": 510,
+      "line": 545,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -22005,7 +22040,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/documents",
-      "line": 517,
+      "line": 552,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -22030,6 +22065,7 @@
      "src/backend/src/lib/numbering.js",
      "src/backend/src/lib/workflowRules.js",
      "src/backend/src/services/billing.js",
+     "src/backend/src/lib/roleAccess.js",
      "src/backend/src/lib/jobHistory.js",
      "src/backend/src/services/webhookService.js",
      "src/backend/src/lib/branchScope.js",
@@ -23877,7 +23913,7 @@
     "router": "router",
     "method": "POST",
     "path": "/login",
-    "line": 21,
+    "line": 23,
     "lines": 55,
     "guards": [],
     "models": [
@@ -23902,8 +23938,8 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 218,
-     "refused": 2,
+     "ok": 375,
+     "refused": 4,
      "error": 0
     }
    },
@@ -23911,7 +23947,7 @@
     "router": "router",
     "method": "POST",
     "path": "/register",
-    "line": 75,
+    "line": 77,
     "lines": 15,
     "guards": [],
     "models": [
@@ -23941,7 +23977,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/password",
-    "line": 89,
+    "line": 91,
     "lines": 27,
     "guards": [
      "authenticate"
@@ -23977,7 +24013,7 @@
     "router": "router",
     "method": "GET",
     "path": "/me",
-    "line": 115,
+    "line": 117,
     "lines": 7,
     "guards": [
      "authenticate"
@@ -24002,7 +24038,7 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 478,
+     "ok": 2168,
      "refused": 4,
      "error": 0
     }
@@ -24038,7 +24074,7 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 6,
+     "ok": 24,
      "refused": 4,
      "error": 0
     }
@@ -24074,7 +24110,7 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 11,
      "error": 0
     }
@@ -24191,7 +24227,7 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 0,
+     "ok": 1,
      "refused": 3,
      "error": 0
     }
@@ -24407,7 +24443,7 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 6,
+     "ok": 22,
      "refused": 3,
      "error": 0
     }
@@ -24505,7 +24541,7 @@
     "file": "src/backend/src/routes/grades.js",
     "mount": "/api/grades",
     "exercised": {
-     "ok": 14,
+     "ok": 99,
      "refused": 3,
      "error": 0
     }
@@ -24843,7 +24879,7 @@
     "file": "src/backend/src/routes/heats.js",
     "mount": "/api/heats",
     "exercised": {
-     "ok": 13,
+     "ok": 37,
      "refused": 5,
      "error": 0
     }
@@ -24877,7 +24913,7 @@
     "file": "src/backend/src/routes/heats.js",
     "mount": "/api/heats",
     "exercised": {
-     "ok": 4,
+     "ok": 7,
      "refused": 3,
      "error": 0
     }
@@ -24911,8 +24947,8 @@
     "file": "src/backend/src/routes/heats.js",
     "mount": "/api/heats",
     "exercised": {
-     "ok": 7,
-     "refused": 9,
+     "ok": 15,
+     "refused": 11,
      "error": 0
     }
    },
@@ -25048,8 +25084,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 21,
-     "refused": 5,
+     "ok": 79,
+     "refused": 6,
      "error": 0
     }
    },
@@ -25116,8 +25152,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 18,
-     "refused": 12,
+     "ok": 43,
+     "refused": 17,
      "error": 0
     }
    },
@@ -25153,8 +25189,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 9,
-     "refused": 9,
+     "ok": 35,
+     "refused": 13,
      "error": 0
     }
    },
@@ -25261,8 +25297,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 48,
-     "refused": 22,
+     "ok": 47,
+     "refused": 23,
      "error": 0
     }
    },
@@ -25295,8 +25331,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 35,
-     "refused": 14,
+     "ok": 33,
+     "refused": 16,
      "error": 0
     }
    },
@@ -25501,7 +25537,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 10,
+     "ok": 16,
      "refused": 4,
      "error": 0
     }
@@ -25701,8 +25737,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 50,
-     "refused": 52,
+     "ok": 44,
+     "refused": 61,
      "error": 0
     }
    },
@@ -25735,7 +25771,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 18,
+     "ok": 31,
      "refused": 3,
      "error": 0
     }
@@ -25767,8 +25803,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 551,
-     "refused": 68,
+     "ok": 592,
+     "refused": 72,
      "error": 0
     }
    },
@@ -25799,7 +25835,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 12,
+     "ok": 45,
      "refused": 3,
      "error": 0
     }
@@ -25932,7 +25968,7 @@
     "file": "src/backend/src/routes/intakeOrders.js",
     "mount": "/api/orders/intake",
     "exercised": {
-     "ok": 11,
+     "ok": 113,
      "refused": 4,
      "error": 0
     }
@@ -25966,7 +26002,7 @@
     "file": "src/backend/src/routes/intakeOrders.js",
     "mount": "/api/orders/intake",
     "exercised": {
-     "ok": 18,
+     "ok": 48,
      "refused": 4,
      "error": 0
     }
@@ -26001,7 +26037,7 @@
     "file": "src/backend/src/routes/intakeOrders.js",
     "mount": "/api/orders/intake",
     "exercised": {
-     "ok": 10,
+     "ok": 16,
      "refused": 3,
      "error": 0
     }
@@ -26035,8 +26071,8 @@
     "file": "src/backend/src/routes/intakeOrders.js",
     "mount": "/api/orders/intake",
     "exercised": {
-     "ok": 4,
-     "refused": 7,
+     "ok": 16,
+     "refused": 11,
      "error": 0
     }
    },
@@ -26174,7 +26210,7 @@
     "file": "src/backend/src/routes/onlineOrders.js",
     "mount": "/api/orders/online",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -26312,7 +26348,7 @@
     "file": "src/backend/src/routes/remnants.js",
     "mount": "/api/remnants",
     "exercised": {
-     "ok": 9,
+     "ok": 23,
      "refused": 2,
      "error": 0
     }
@@ -26344,7 +26380,7 @@
     "file": "src/backend/src/routes/remnants.js",
     "mount": "/api/remnants",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 2,
      "error": 0
     }
@@ -26408,7 +26444,7 @@
     "file": "src/backend/src/routes/remnants.js",
     "mount": "/api/remnants",
     "exercised": {
-     "ok": 52,
+     "ok": 171,
      "refused": 1,
      "error": 0
     }
@@ -26600,7 +26636,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/ecom/my-orders",
     "exercised": {
-     "ok": 9,
+     "ok": 16,
      "refused": 2,
      "error": 0
     }
@@ -26633,7 +26669,7 @@
     "mount": "/api/ecom/my-orders",
     "exercised": {
      "ok": 0,
-     "refused": 17,
+     "refused": 25,
      "error": 0
     }
    },
@@ -26664,7 +26700,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/ecom/my-orders",
     "exercised": {
-     "ok": 5,
+     "ok": 13,
      "refused": 2,
      "error": 0
     }
@@ -26696,7 +26732,7 @@
     "file": "src/backend/src/routes/ecom.js",
     "mount": "/api/ecom",
     "exercised": {
-     "ok": 13,
+     "ok": 30,
      "refused": 0,
      "error": 0
     }
@@ -26728,7 +26764,7 @@
     "file": "src/backend/src/routes/ecom.js",
     "mount": "/api/ecom",
     "exercised": {
-     "ok": 2,
+     "ok": 10,
      "refused": 0,
      "error": 0
     }
@@ -26788,7 +26824,7 @@
     "file": "src/backend/src/routes/ecom.js",
     "mount": "/api/ecom",
     "exercised": {
-     "ok": 2,
+     "ok": 8,
      "refused": 0,
      "error": 0
     }
@@ -26820,7 +26856,7 @@
     "file": "src/backend/src/routes/ecom.js",
     "mount": "/api/ecom",
     "exercised": {
-     "ok": 1,
+     "ok": 7,
      "refused": 2,
      "error": 0
     }
@@ -26852,7 +26888,7 @@
     "file": "src/backend/src/routes/ecom.js",
     "mount": "/api/ecom",
     "exercised": {
-     "ok": 12,
+     "ok": 15,
      "refused": 0,
      "error": 0
     }
@@ -26884,7 +26920,7 @@
     "file": "src/backend/src/routes/ecom.js",
     "mount": "/api/ecom",
     "exercised": {
-     "ok": 2,
+     "ok": 12,
      "refused": 0,
      "error": 0
     }
@@ -27016,7 +27052,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 11,
+     "ok": 37,
      "refused": 4,
      "error": 0
     }
@@ -27048,7 +27084,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 8,
+     "ok": 34,
      "refused": 4,
      "error": 0
     }
@@ -27080,7 +27116,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 9,
+     "ok": 17,
      "refused": 4,
      "error": 0
     }
@@ -27176,7 +27212,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 4,
      "error": 0
     }
@@ -27208,7 +27244,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 2,
+     "ok": 8,
      "refused": 4,
      "error": 0
     }
@@ -27306,8 +27342,8 @@
     "file": "src/backend/src/routes/processingRecipes.js",
     "mount": "/api/processing-recipes",
     "exercised": {
-     "ok": 10,
-     "refused": 3,
+     "ok": 40,
+     "refused": 4,
      "error": 0
     }
    },
@@ -27341,7 +27377,7 @@
     "file": "src/backend/src/routes/processingRecipes.js",
     "mount": "/api/processing-recipes",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27545,7 +27581,7 @@
     "file": "src/backend/src/routes/demandShaping.js",
     "mount": "/api/demand-shaping",
     "exercised": {
-     "ok": 2,
+     "ok": 10,
      "refused": 2,
      "error": 0
     }
@@ -27643,7 +27679,7 @@
     "file": "src/backend/src/routes/demandShaping.js",
     "mount": "/api/demand-shaping",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27739,7 +27775,7 @@
     "file": "src/backend/src/routes/compressionMetrics.js",
     "mount": "/api/metrics/compression",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27771,7 +27807,7 @@
     "file": "src/backend/src/routes/compressionMetrics.js",
     "mount": "/api/metrics/compression",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27803,7 +27839,7 @@
     "file": "src/backend/src/routes/compressionMetrics.js",
     "mount": "/api/metrics/compression",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27835,7 +27871,7 @@
     "file": "src/backend/src/routes/compressionMetrics.js",
     "mount": "/api/metrics/compression",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27867,7 +27903,7 @@
     "file": "src/backend/src/routes/compressionMetrics.js",
     "mount": "/api/metrics/compression",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27931,7 +27967,7 @@
     "file": "src/backend/src/routes/compressionMetrics.js",
     "mount": "/api/metrics/compression",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -27997,7 +28033,7 @@
     "file": "src/backend/src/routes/intakePricing.js",
     "mount": "/api/pricing",
     "exercised": {
-     "ok": 13,
+     "ok": 50,
      "refused": 3,
      "error": 0
     }
@@ -28029,7 +28065,7 @@
     "file": "src/backend/src/routes/intakePricing.js",
     "mount": "/api/pricing",
     "exercised": {
-     "ok": 7,
+     "ok": 8,
      "refused": 3,
      "error": 0
     }
@@ -28065,7 +28101,7 @@
     "file": "src/backend/src/routes/intakePricing.js",
     "mount": "/api/pricing",
     "exercised": {
-     "ok": 10,
+     "ok": 22,
      "refused": 3,
      "error": 0
     }
@@ -28100,7 +28136,7 @@
     "file": "src/backend/src/routes/intakePricing.js",
     "mount": "/api/pricing",
     "exercised": {
-     "ok": 10,
+     "ok": 18,
      "refused": 3,
      "error": 0
     }
@@ -28169,7 +28205,7 @@
     "file": "src/backend/src/routes/intakeProcessing.js",
     "mount": "/api/processing",
     "exercised": {
-     "ok": 2,
+     "ok": 8,
      "refused": 3,
      "error": 0
     }
@@ -28248,7 +28284,7 @@
     "method": "GET",
     "path": "/",
     "line": 136,
-    "lines": 37,
+    "lines": 42,
     "guards": [],
     "models": [
      "Order",
@@ -28273,7 +28309,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 18,
+     "ok": 30,
      "refused": 13,
      "error": 0
     }
@@ -28282,7 +28318,7 @@
     "router": "router",
     "method": "GET",
     "path": "/credit-holds",
-    "line": 172,
+    "line": 177,
     "lines": 25,
     "guards": [],
     "models": [
@@ -28307,7 +28343,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 13,
+     "ok": 19,
      "refused": 4,
      "error": 0
     }
@@ -28316,7 +28352,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/credit-release",
-    "line": 196,
+    "line": 201,
     "lines": 14,
     "guards": [],
     "models": [],
@@ -28348,7 +28384,7 @@
     "router": "router",
     "method": "GET",
     "path": "/closeout",
-    "line": 209,
+    "line": 214,
     "lines": 12,
     "guards": [],
     "models": [],
@@ -28371,7 +28407,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 24,
+     "ok": 31,
      "refused": 9,
      "error": 0
     }
@@ -28380,7 +28416,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/closeout",
-    "line": 220,
+    "line": 225,
     "lines": 12,
     "guards": [],
     "models": [],
@@ -28403,7 +28439,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 40,
+     "ok": 55,
      "refused": 10,
      "error": 0
     }
@@ -28412,7 +28448,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/cost",
-    "line": 231,
+    "line": 236,
     "lines": 13,
     "guards": [],
     "models": [],
@@ -28435,8 +28471,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 18,
-     "refused": 17,
+     "ok": 24,
+     "refused": 23,
      "error": 0
     }
    },
@@ -28444,7 +28480,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 243,
+    "line": 248,
     "lines": 22,
     "guards": [],
     "models": [
@@ -28469,8 +28505,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 14,
-     "refused": 9,
+     "ok": 18,
+     "refused": 11,
      "error": 0
     }
    },
@@ -28478,7 +28514,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 264,
+    "line": 269,
     "lines": 68,
     "guards": [],
     "models": [
@@ -28506,7 +28542,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 844,
+     "ok": 885,
      "refused": 53,
      "error": 0
     }
@@ -28515,7 +28551,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 331,
+    "line": 336,
     "lines": 95,
     "guards": [],
     "models": [
@@ -28543,8 +28579,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 735,
-     "refused": 29,
+     "ok": 776,
+     "refused": 30,
      "error": 0
     }
    },
@@ -28552,7 +28588,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/allocate",
-    "line": 425,
+    "line": 430,
     "lines": 67,
     "guards": [],
     "models": [
@@ -28582,7 +28618,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 459,
+     "ok": 489,
      "refused": 63,
      "error": 0
     }
@@ -28616,7 +28652,7 @@
     "file": "src/backend/src/routes/purchaseOrders.js",
     "mount": "/api/purchase-orders",
     "exercised": {
-     "ok": 3,
+     "ok": 6,
      "refused": 3,
      "error": 0
     }
@@ -28650,7 +28686,7 @@
     "file": "src/backend/src/routes/purchaseOrders.js",
     "mount": "/api/purchase-orders",
     "exercised": {
-     "ok": 8,
+     "ok": 10,
      "refused": 6,
      "error": 0
     }
@@ -28684,7 +28720,7 @@
     "file": "src/backend/src/routes/purchaseOrders.js",
     "mount": "/api/purchase-orders",
     "exercised": {
-     "ok": 1,
+     "ok": 2,
      "refused": 8,
      "error": 0
     }
@@ -28754,7 +28790,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 7,
+     "ok": 45,
      "refused": 5,
      "error": 0
     }
@@ -28789,8 +28825,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 11,
-     "refused": 10,
+     "ok": 19,
+     "refused": 12,
      "error": 0
     }
    },
@@ -28927,8 +28963,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 46,
-     "refused": 49,
+     "ok": 48,
+     "refused": 47,
      "error": 0
     }
    },
@@ -29025,8 +29061,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 7,
-     "refused": 4,
+     "ok": 6,
+     "refused": 5,
      "error": 0
     }
    },
@@ -29034,7 +29070,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 128,
+    "line": 129,
     "lines": 25,
     "guards": [],
     "models": [
@@ -29059,7 +29095,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 46,
+     "ok": 131,
      "refused": 6,
      "error": 0
     }
@@ -29068,7 +29104,7 @@
     "router": "router",
     "method": "GET",
     "path": "/shippable",
-    "line": 152,
+    "line": 153,
     "lines": 31,
     "guards": [],
     "models": [
@@ -29094,7 +29130,7 @@
     "mount": "/api/shipments",
     "exercised": {
      "ok": 12,
-     "refused": 12,
+     "refused": 13,
      "error": 0
     }
    },
@@ -29102,7 +29138,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 182,
+    "line": 183,
     "lines": 27,
     "guards": [],
     "models": [
@@ -29129,8 +29165,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 61,
-     "refused": 13,
+     "ok": 119,
+     "refused": 18,
      "error": 0
     }
    },
@@ -29138,7 +29174,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 208,
+    "line": 209,
     "lines": 41,
     "guards": [],
     "models": [
@@ -29164,7 +29200,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 407,
+     "ok": 438,
      "refused": 118,
      "error": 0
     }
@@ -29173,7 +29209,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 248,
+    "line": 249,
     "lines": 8,
     "guards": [],
     "models": [
@@ -29198,7 +29234,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 5,
+     "ok": 6,
      "refused": 7,
      "error": 0
     }
@@ -29207,7 +29243,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/items",
-    "line": 255,
+    "line": 256,
     "lines": 7,
     "guards": [],
     "models": [
@@ -29242,7 +29278,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/items",
-    "line": 261,
+    "line": 262,
     "lines": 10,
     "guards": [],
     "models": [
@@ -29276,8 +29312,8 @@
     "router": "router",
     "method": "DELETE",
     "path": "/:id/items/:itemId",
-    "line": 270,
-    "lines": 233,
+    "line": 271,
+    "lines": 263,
     "guards": [],
     "models": [
      "ShipmentItem",
@@ -29289,10 +29325,11 @@
      "Shipment",
      "Job",
      "Order",
+     "Invoice",
      "AuditLog",
      "WorkCenter"
     ],
-    "writes": 15,
+    "writes": 16,
     "transaction": true,
     "findMany": 3,
     "bounded": 1,
@@ -29320,7 +29357,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/dispatch",
-    "line": 502,
+    "line": 533,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -29343,8 +29380,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 328,
-     "refused": 67,
+     "ok": 347,
+     "refused": 70,
      "error": 0
     }
    },
@@ -29352,7 +29389,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/deliver",
-    "line": 506,
+    "line": 537,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -29375,8 +29412,40 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 128,
-     "refused": 28,
+     "ok": 129,
+     "refused": 29,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "PUT",
+    "path": "/:id/lost",
+    "line": 541,
+    "lines": 5,
+    "guards": [],
+    "models": [],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": false,
+    "raw": false,
+    "usesUser": true,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/shipments/:id/lost",
+    "key": "PUT /api/shipments/:id/lost",
+    "file": "src/backend/src/routes/shipments.js",
+    "mount": "/api/shipments",
+    "exercised": {
+     "ok": 5,
+     "refused": 9,
      "error": 0
     }
    },
@@ -29384,7 +29453,7 @@
     "router": "router",
     "method": "PATCH",
     "path": "/:id/status",
-    "line": 510,
+    "line": 545,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -29407,8 +29476,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 18,
-     "refused": 14,
+     "ok": 25,
+     "refused": 15,
      "error": 0
     }
    },
@@ -29416,7 +29485,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/documents",
-    "line": 517,
+    "line": 552,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -29439,7 +29508,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 46,
+     "ok": 101,
      "refused": 9,
      "error": 0
     }
@@ -29471,8 +29540,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 92,
-     "refused": 6,
+     "ok": 122,
+     "refused": 24,
      "error": 0
     }
    },
@@ -29503,8 +29572,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 15,
-     "refused": 6,
+     "ok": 19,
+     "refused": 10,
      "error": 0
     }
    },
@@ -29535,8 +29604,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 9,
-     "refused": 7,
+     "ok": 23,
+     "refused": 11,
      "error": 0
     }
    },
@@ -29599,8 +29668,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 120,
-     "refused": 159,
+     "ok": 119,
+     "refused": 166,
      "error": 0
     }
    },
@@ -29631,8 +29700,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 18,
-     "refused": 25,
+     "ok": 19,
+     "refused": 26,
      "error": 0
     }
    },
@@ -29730,7 +29799,7 @@
     "file": "src/backend/src/routes/returns.js",
     "mount": "/api/returns",
     "exercised": {
-     "ok": 10,
+     "ok": 26,
      "refused": 5,
      "error": 0
     }
@@ -29765,7 +29834,7 @@
     "mount": "/api/returns",
     "exercised": {
      "ok": 3,
-     "refused": 5,
+     "refused": 6,
      "error": 0
     }
    },
@@ -29980,7 +30049,7 @@
     "file": "src/backend/src/routes/taxRates.js",
     "mount": "/api/tax-rates",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -30114,7 +30183,7 @@
     "file": "src/backend/src/routes/overrides.js",
     "mount": "/api/overrides",
     "exercised": {
-     "ok": 7,
+     "ok": 23,
      "refused": 5,
      "error": 0
     }
@@ -30178,7 +30247,7 @@
     "file": "src/backend/src/routes/overrides.js",
     "mount": "/api/overrides",
     "exercised": {
-     "ok": 5,
+     "ok": 11,
      "refused": 4,
      "error": 0
     }
@@ -30210,7 +30279,7 @@
     "file": "src/backend/src/routes/overrides.js",
     "mount": "/api/overrides",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -30280,7 +30349,7 @@
     "file": "src/backend/src/routes/salesDashboard.js",
     "mount": "/api/sales-dashboard",
     "exercised": {
-     "ok": 10,
+     "ok": 16,
      "refused": 3,
      "error": 0
     }
@@ -30317,7 +30386,7 @@
     "file": "src/backend/src/routes/dashboard.js",
     "mount": "/api/dashboard",
     "exercised": {
-     "ok": 8,
+     "ok": 17,
      "refused": 3,
      "error": 0
     }
@@ -30387,7 +30456,7 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 14,
+     "ok": 119,
      "refused": 5,
      "error": 0
     }
@@ -30421,7 +30490,7 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -30489,8 +30558,8 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 1,
-     "refused": 8,
+     "ok": 3,
+     "refused": 9,
      "error": 0
     }
    },
@@ -30559,8 +30628,8 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 483,
-     "refused": 9,
+     "ok": 65,
+     "refused": 5,
      "error": 0
     }
    },
@@ -30664,7 +30733,7 @@
     "file": "src/backend/src/routes/rfqs.js",
     "mount": "/api/rfqs",
     "exercised": {
-     "ok": 19,
+     "ok": 100,
      "refused": 4,
      "error": 0
     }
@@ -30699,7 +30768,7 @@
     "file": "src/backend/src/routes/rfqs.js",
     "mount": "/api/rfqs",
     "exercised": {
-     "ok": 5,
+     "ok": 7,
      "refused": 6,
      "error": 0
     }
@@ -30731,7 +30800,7 @@
     "file": "src/backend/src/routes/rfqs.js",
     "mount": "/api/rfqs",
     "exercised": {
-     "ok": 38,
+     "ok": 39,
      "refused": 17,
      "error": 0
     }
@@ -31037,7 +31106,7 @@
     "file": "src/backend/src/routes/workCenters.js",
     "mount": "/api/work-centers",
     "exercised": {
-     "ok": 18,
+     "ok": 85,
      "refused": 5,
      "error": 0
     }
@@ -31209,7 +31278,7 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 39,
+     "ok": 172,
      "refused": 7,
      "error": 0
     }
@@ -31277,8 +31346,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 23,
-     "refused": 12,
+     "ok": 33,
+     "refused": 17,
      "error": 0
     }
    },
@@ -31314,8 +31383,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 408,
-     "refused": 14,
+     "ok": 409,
+     "refused": 15,
      "error": 0
     }
    },
@@ -31348,7 +31417,7 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 12,
+     "ok": 22,
      "refused": 6,
      "error": 0
     }
@@ -31382,8 +31451,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 5,
-     "refused": 15,
+     "ok": 11,
+     "refused": 19,
      "error": 0
     }
    },
@@ -31489,8 +31558,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 530,
-     "refused": 199,
+     "ok": 531,
+     "refused": 198,
      "error": 0
     }
    },
@@ -31555,8 +31624,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 2,
-     "refused": 14,
+     "ok": 1,
+     "refused": 15,
      "error": 0
     }
    },
@@ -31758,8 +31827,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 13,
-     "refused": 12,
+     "ok": 23,
+     "refused": 16,
      "error": 0
     }
    },
@@ -34928,7 +34997,7 @@
     "file": "src/backend/src/routes/inventoryV1.js",
     "mount": "/api/v1/inventory",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -35218,7 +35287,7 @@
     "file": "src/backend/src/routes/bomV1.js",
     "mount": "/api/v1/bom",
     "exercised": {
-     "ok": 1,
+     "ok": 7,
      "refused": 4,
      "error": 0
     }
@@ -35253,7 +35322,7 @@
     "mount": "/api/v1/bom",
     "exercised": {
      "ok": 3,
-     "refused": 5,
+     "refused": 11,
      "error": 0
     }
    },
@@ -35587,7 +35656,7 @@
     "file": "src/backend/src/routes/optimizationV1.js",
     "mount": "/api/v1/ai/work-order-optimize",
     "exercised": {
-     "ok": 6,
+     "ok": 12,
      "refused": 3,
      "error": 0
     }
@@ -35653,7 +35722,7 @@
     "file": "src/backend/src/routes/analyticsV1.js",
     "mount": "/api/v1/analytics",
     "exercised": {
-     "ok": 2,
+     "ok": 8,
      "refused": 3,
      "error": 0
     }
@@ -35690,7 +35759,7 @@
     "file": "src/backend/src/routes/analyticsV1.js",
     "mount": "/api/v1/analytics",
     "exercised": {
-     "ok": 5,
+     "ok": 11,
      "refused": 3,
      "error": 0
     }
@@ -35724,7 +35793,7 @@
     "file": "src/backend/src/routes/analyticsV1.js",
     "mount": "/api/v1/analytics",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 3,
      "error": 0
     }
@@ -35758,7 +35827,7 @@
     "file": "src/backend/src/routes/analyticsV1.js",
     "mount": "/api/v1/analytics",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -35790,7 +35859,7 @@
     "file": "src/backend/src/routes/analyticsV1.js",
     "mount": "/api/v1/analytics",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -35824,7 +35893,7 @@
     "file": "src/backend/src/routes/shippingV1.js",
     "mount": "/api/v1/shipping",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 3,
      "error": 0
     }
@@ -35926,7 +35995,7 @@
     "file": "src/backend/src/routes/shippingV1.js",
     "mount": "/api/v1/shipments",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 4,
      "error": 0
     }
@@ -35960,7 +36029,7 @@
     "file": "src/backend/src/routes/eventsV1.js",
     "mount": "/api/v1/events",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -36130,7 +36199,7 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/v1/jobs",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -36885,7 +36954,7 @@
     "file": "src/backend/src/routes/dispatchRoutes.js",
     "mount": "/api/v1/dispatch",
     "exercised": {
-     "ok": 16,
+     "ok": 55,
      "refused": 3,
      "error": 0
     }
@@ -37055,7 +37124,7 @@
     "file": "src/backend/src/routes/dispatchRoutes.js",
     "mount": "/api/v1/dispatch",
     "exercised": {
-     "ok": 12,
+     "ok": 41,
      "refused": 3,
      "error": 0
     }
@@ -37126,7 +37195,7 @@
     "mount": "/api/v1/dispatch",
     "exercised": {
      "ok": 54,
-     "refused": 2,
+     "refused": 3,
      "error": 0
     }
    },
@@ -37229,7 +37298,7 @@
     "file": "src/backend/src/routes/dispatchRoutes.js",
     "mount": "/api/v1/dispatch",
     "exercised": {
-     "ok": 18,
+     "ok": 57,
      "refused": 3,
      "error": 0
     }
@@ -37298,7 +37367,7 @@
     "file": "src/backend/src/routes/dispatchRoutes.js",
     "mount": "/api/v1/dispatch",
     "exercised": {
-     "ok": 15,
+     "ok": 41,
      "refused": 3,
      "error": 0
     }
@@ -37333,7 +37402,7 @@
     "file": "src/backend/src/routes/dispatchRoutes.js",
     "mount": "/api/v1/dispatch",
     "exercised": {
-     "ok": 12,
+     "ok": 30,
      "refused": 3,
      "error": 0
     }
@@ -37406,7 +37475,7 @@
     "file": "src/backend/src/routes/dispatchRoutes.js",
     "mount": "/api/v1/dispatch",
     "exercised": {
-     "ok": 6,
+     "ok": 14,
      "refused": 5,
      "error": 0
     }
@@ -37441,7 +37510,7 @@
     "file": "src/backend/src/routes/dispatchRoutes.js",
     "mount": "/api/v1/dispatch",
     "exercised": {
-     "ok": 12,
+     "ok": 25,
      "refused": 3,
      "error": 0
     }
@@ -37475,7 +37544,7 @@
     "file": "src/backend/src/routes/operationsRoutes.js",
     "mount": "/api/v1/operations",
     "exercised": {
-     "ok": 11,
+     "ok": 21,
      "refused": 3,
      "error": 0
     }
@@ -37511,7 +37580,7 @@
     "file": "src/backend/src/routes/operationsRoutes.js",
     "mount": "/api/v1/operations",
     "exercised": {
-     "ok": 12,
+     "ok": 22,
      "refused": 4,
      "error": 0
     }
@@ -37621,8 +37690,8 @@
     "file": "src/backend/src/routes/operationsRoutes.js",
     "mount": "/api/v1/operations",
     "exercised": {
-     "ok": 5,
-     "refused": 7,
+     "ok": 6,
+     "refused": 6,
      "error": 0
     }
    },
@@ -40045,7 +40114,7 @@
     "file": "src/backend/src/routes/ecom.js",
     "mount": "/api/admin/catalog",
     "exercised": {
-     "ok": 2,
+     "ok": 8,
      "refused": 0,
      "error": 0
     }
@@ -40133,7 +40202,7 @@
     "file": "src/backend/src/routes/onlineSettings.js",
     "mount": "/api/admin/online-settings",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -40197,7 +40266,7 @@
     "file": "src/backend/src/routes/onlineSettings.js",
     "mount": "/api/admin/online-settings",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -40261,7 +40330,7 @@
     "file": "src/backend/src/routes/onlineSettings.js",
     "mount": "/api/admin/online-settings",
     "exercised": {
-     "ok": 6,
+     "ok": 18,
      "refused": 3,
      "error": 0
     }
@@ -40325,7 +40394,7 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 19,
+     "ok": 25,
      "refused": 11,
      "error": 0
     }
@@ -40528,7 +40597,7 @@
     "file": "src/backend/src/routes/admin.js",
     "mount": "/api/admin",
     "exercised": {
-     "ok": 10,
+     "ok": 26,
      "refused": 6,
      "error": 0
     }
@@ -40560,7 +40629,7 @@
     "file": "src/backend/src/routes/dropTagRoutes.js",
     "mount": "/api/drop-tags",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 4,
      "error": 0
     }
@@ -40592,7 +40661,7 @@
     "file": "src/backend/src/routes/dropTagRoutes.js",
     "mount": "/api/drop-tags",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -41264,7 +41333,7 @@
     "file": "src/backend/src/routes/dropTagRoutes.js",
     "mount": "/api/drop-tags",
     "exercised": {
-     "ok": 13,
+     "ok": 29,
      "refused": 5,
      "error": 0
     }
@@ -41614,7 +41683,7 @@
     "file": "src/backend/src/routes/staff.js",
     "mount": "/api/staff",
     "exercised": {
-     "ok": 4,
+     "ok": 14,
      "refused": 4,
      "error": 0
     }
@@ -42068,7 +42137,7 @@
     "file": "src/backend/src/routes/staff.js",
     "mount": "/api/staff",
     "exercised": {
-     "ok": 4,
+     "ok": 14,
      "refused": 3,
      "error": 0
     }
@@ -42137,7 +42206,7 @@
     "file": "src/backend/src/routes/qcRoutes.js",
     "mount": "/api/qc",
     "exercised": {
-     "ok": 16,
+     "ok": 34,
      "refused": 3,
      "error": 0
     }
@@ -42172,7 +42241,7 @@
     "file": "src/backend/src/routes/qcRoutes.js",
     "mount": "/api/qc",
     "exercised": {
-     "ok": 11,
+     "ok": 29,
      "refused": 3,
      "error": 0
     }
@@ -42206,7 +42275,7 @@
     "file": "src/backend/src/routes/qcRoutes.js",
     "mount": "/api/qc",
     "exercised": {
-     "ok": 9,
+     "ok": 28,
      "refused": 3,
      "error": 0
     }
@@ -42240,7 +42309,7 @@
     "file": "src/backend/src/routes/qcRoutes.js",
     "mount": "/api/qc",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 8,
      "error": 0
     }
@@ -42278,7 +42347,7 @@
     "mount": "/api/qc",
     "exercised": {
      "ok": 211,
-     "refused": 14,
+     "refused": 15,
      "error": 0
     }
    },
@@ -42478,7 +42547,7 @@
     "file": "src/backend/src/routes/qcRoutes.js",
     "mount": "/api/qc",
     "exercised": {
-     "ok": 13,
+     "ok": 37,
      "refused": 3,
      "error": 0
     }
@@ -42515,7 +42584,7 @@
     "file": "src/backend/src/routes/materialTrackingRoutes.js",
     "mount": "/api/material-tracking",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -42553,7 +42622,7 @@
     "file": "src/backend/src/routes/materialTrackingRoutes.js",
     "mount": "/api/material-tracking",
     "exercised": {
-     "ok": 6,
+     "ok": 18,
      "refused": 3,
      "error": 0
     }
@@ -42724,7 +42793,7 @@
     "file": "src/backend/src/routes/materialTrackingRoutes.js",
     "mount": "/api/material-tracking",
     "exercised": {
-     "ok": 5,
+     "ok": 11,
      "refused": 3,
      "error": 0
     }
@@ -42825,7 +42894,7 @@
     "file": "src/backend/src/routes/maintenanceOrders.js",
     "mount": "/api/maintenance-orders",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 4,
      "error": 0
     }
@@ -42859,7 +42928,7 @@
     "file": "src/backend/src/routes/maintenanceOrders.js",
     "mount": "/api/maintenance-orders",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -42893,7 +42962,7 @@
     "file": "src/backend/src/routes/maintenanceOrders.js",
     "mount": "/api/maintenance-orders",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -43131,7 +43200,7 @@
     "file": "src/backend/src/routes/assets.js",
     "mount": "/api/assets",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 4,
      "error": 0
     }
@@ -43165,7 +43234,7 @@
     "file": "src/backend/src/routes/assets.js",
     "mount": "/api/assets",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -43199,7 +43268,7 @@
     "file": "src/backend/src/routes/assets.js",
     "mount": "/api/assets",
     "exercised": {
-     "ok": 4,
+     "ok": 10,
      "refused": 3,
      "error": 0
     }
@@ -43515,7 +43584,7 @@
     "file": "src/backend/src/routes/opsCockpit.js",
     "mount": "/api/ops-cockpit",
     "exercised": {
-     "ok": 5,
+     "ok": 11,
      "refused": 3,
      "error": 0
     }
@@ -43688,8 +43757,8 @@
     "file": "src/backend/src/routes/printQueue.js",
     "mount": "/api/print-queue",
     "exercised": {
-     "ok": 472,
-     "refused": 5,
+     "ok": 2189,
+     "refused": 23,
      "error": 0
     }
    },
@@ -43752,7 +43821,7 @@
     "file": "src/backend/src/routes/printQueue.js",
     "mount": "/api/print-queue",
     "exercised": {
-     "ok": 8,
+     "ok": 10,
      "refused": 7,
      "error": 0
     }
@@ -43914,7 +43983,7 @@
     "file": "src/backend/src/routes/printQueue.js",
     "mount": "/api/print-queue",
     "exercised": {
-     "ok": 11,
+     "ok": 13,
      "refused": 5,
      "error": 0
     }
@@ -45214,7 +45283,7 @@
     "file": "src/backend/src/routes/partner/adminRoutes.js",
     "mount": "/api/v1/admin/partners",
     "exercised": {
-     "ok": 3,
+     "ok": 9,
      "refused": 5,
      "error": 0
     }
@@ -47081,7 +47150,7 @@
   "files": [
    {
     "file": "App.jsx",
-    "lines": 42,
+    "lines": 46,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -47135,7 +47204,7 @@
    },
    {
     "file": "api/client.js",
-    "lines": 78,
+    "lines": 80,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -47207,7 +47276,7 @@
    },
    {
     "file": "api/index.js",
-    "lines": 43,
+    "lines": 45,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -47531,7 +47600,7 @@
    },
    {
     "file": "apps/bom/BomRecipeEditorPage.jsx",
-    "lines": 968,
+    "lines": 969,
     "reachable": true,
     "useState": 23,
     "useEffect": 1,
@@ -47539,7 +47608,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 24,
-    "ariaLabels": 0,
+    "ariaLabels": 5,
     "iconButtons": 5,
     "consoleLog": 0,
     "todo": 0,
@@ -47549,7 +47618,7 @@
    },
    {
     "file": "apps/bom/BomRecipeListPage.jsx",
-    "lines": 223,
+    "lines": 224,
     "reachable": true,
     "useState": 6,
     "useEffect": 1,
@@ -47675,7 +47744,7 @@
    },
    {
     "file": "apps/inventory/InventoryDashboardPage.jsx",
-    "lines": 545,
+    "lines": 546,
     "reachable": false,
     "useState": 14,
     "useEffect": 1,
@@ -47683,7 +47752,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 4,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 1,
     "todo": 0,
@@ -47747,7 +47816,7 @@
    },
    {
     "file": "apps/optimization/WorkOrderOptimizationPage.jsx",
-    "lines": 437,
+    "lines": 438,
     "reachable": true,
     "useState": 6,
     "useEffect": 1,
@@ -47755,11 +47824,11 @@
     "dialogs": 0,
     "tables": 2,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 2,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
@@ -47783,7 +47852,7 @@
    },
    {
     "file": "apps/orderhub/OrderDetailPage.jsx",
-    "lines": 537,
+    "lines": 538,
     "reachable": false,
     "useState": 5,
     "useEffect": 1,
@@ -47791,11 +47860,11 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
@@ -47819,7 +47888,7 @@
    },
    {
     "file": "apps/orderhub/RfqCreatePage.jsx",
-    "lines": 616,
+    "lines": 617,
     "reachable": false,
     "useState": 14,
     "useEffect": 0,
@@ -47827,7 +47896,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 16,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -47845,7 +47914,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -47855,7 +47924,7 @@
    },
    {
     "file": "apps/orderhub/RfqListPage.jsx",
-    "lines": 331,
+    "lines": 332,
     "reachable": false,
     "useState": 4,
     "useEffect": 1,
@@ -47891,7 +47960,7 @@
    },
    {
     "file": "apps/orders/OrdersPage.jsx",
-    "lines": 357,
+    "lines": 362,
     "reachable": true,
     "useState": 4,
     "useEffect": 1,
@@ -47989,7 +48058,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 12,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -47999,7 +48068,7 @@
    },
    {
     "file": "apps/safety/IncidentDetailPage.jsx",
-    "lines": 751,
+    "lines": 752,
     "reachable": true,
     "useState": 5,
     "useEffect": 1,
@@ -48007,7 +48076,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 6,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48017,7 +48086,7 @@
    },
    {
     "file": "apps/safety/IncidentsPage.jsx",
-    "lines": 690,
+    "lines": 692,
     "reachable": true,
     "useState": 13,
     "useEffect": 1,
@@ -48025,7 +48094,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 10,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -48035,7 +48104,7 @@
    },
    {
     "file": "apps/safety/InspectionDetailPage.jsx",
-    "lines": 602,
+    "lines": 604,
     "reachable": true,
     "useState": 7,
     "useEffect": 1,
@@ -48043,7 +48112,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48053,7 +48122,7 @@
    },
    {
     "file": "apps/safety/InspectionsPage.jsx",
-    "lines": 727,
+    "lines": 728,
     "reachable": true,
     "useState": 14,
     "useEffect": 1,
@@ -48061,7 +48130,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 8,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -48079,7 +48148,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 9,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -48089,7 +48158,7 @@
    },
    {
     "file": "apps/safety/PermitDetailPage.jsx",
-    "lines": 544,
+    "lines": 545,
     "reachable": true,
     "useState": 5,
     "useEffect": 1,
@@ -48097,7 +48166,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48107,7 +48176,7 @@
    },
    {
     "file": "apps/safety/PermitsPage.jsx",
-    "lines": 786,
+    "lines": 787,
     "reachable": true,
     "useState": 13,
     "useEffect": 1,
@@ -48115,7 +48184,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 11,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -48143,7 +48212,7 @@
    },
    {
     "file": "apps/safety/SafetyAssistantPage.jsx",
-    "lines": 834,
+    "lines": 835,
     "reachable": true,
     "useState": 4,
     "useEffect": 2,
@@ -48151,7 +48220,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 5,
     "consoleLog": 3,
     "todo": 0,
@@ -48161,7 +48230,7 @@
    },
    {
     "file": "apps/safety/SafetyDashboard.jsx",
-    "lines": 622,
+    "lines": 623,
     "reachable": true,
     "useState": 3,
     "useEffect": 1,
@@ -48179,7 +48248,7 @@
    },
    {
     "file": "apps/safety/StopWorkClearance.jsx",
-    "lines": 686,
+    "lines": 687,
     "reachable": true,
     "useState": 5,
     "useEffect": 1,
@@ -48205,7 +48274,7 @@
     "dialogs": 2,
     "tables": 2,
     "forms": 5,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 5,
     "consoleLog": 0,
     "todo": 2,
@@ -48215,7 +48284,7 @@
    },
    {
     "file": "apps/safety/TrainingPage.jsx",
-    "lines": 611,
+    "lines": 612,
     "reachable": true,
     "useState": 10,
     "useEffect": 0,
@@ -48223,7 +48292,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 8,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -48269,7 +48338,7 @@
    },
    {
     "file": "apps/shopfloor/ManageWorkCenterTypesDialog.jsx",
-    "lines": 551,
+    "lines": 553,
     "reachable": true,
     "useState": 5,
     "useEffect": 1,
@@ -48281,7 +48350,7 @@
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
@@ -48305,7 +48374,7 @@
    },
    {
     "file": "apps/shopfloor/WorkCenterQueuePage.jsx",
-    "lines": 702,
+    "lines": 704,
     "reachable": true,
     "useState": 10,
     "useEffect": 3,
@@ -48313,17 +48382,17 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 5,
+    "alerts": 0,
     "timers": 2,
     "clears": 2
    },
    {
     "file": "apps/shopfloor/WorkCenterSelectPage.jsx",
-    "lines": 724,
+    "lines": 730,
     "reachable": true,
     "useState": 14,
     "useEffect": 2,
@@ -48331,11 +48400,11 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
@@ -48359,7 +48428,7 @@
    },
    {
     "file": "components/InventoryAiAssistantPanel.jsx",
-    "lines": 418,
+    "lines": 419,
     "reachable": false,
     "useState": 7,
     "useEffect": 0,
@@ -48367,7 +48436,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48385,8 +48454,26 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 4,
     "iconButtons": 3,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "components/common/AskHost.jsx",
+    "lines": 37,
+    "reachable": true,
+    "useState": 3,
+    "useEffect": 1,
+    "ts": false,
+    "dialogs": 1,
+    "tables": 0,
+    "forms": 1,
+    "ariaLabels": 0,
+    "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
     "alerts": 0,
@@ -48413,7 +48500,7 @@
    },
    {
     "file": "components/common/DataTable.jsx",
-    "lines": 177,
+    "lines": 178,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -48485,7 +48572,7 @@
    },
    {
     "file": "components/common/FileUploadZone.jsx",
-    "lines": 340,
+    "lines": 341,
     "reachable": true,
     "useState": 6,
     "useEffect": 0,
@@ -48493,7 +48580,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48504,6 +48591,42 @@
    {
     "file": "components/common/LoadingOverlay.jsx",
     "lines": 70,
+    "reachable": true,
+    "useState": 0,
+    "useEffect": 0,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "components/common/NotBuiltNotice.jsx",
+    "lines": 21,
+    "reachable": true,
+    "useState": 1,
+    "useEffect": 1,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "components/common/NotFoundPage.jsx",
+    "lines": 33,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -48583,7 +48706,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48599,6 +48722,24 @@
     "useEffect": 0,
     "ts": false,
     "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "components/common/UnsavedWorkGuard.jsx",
+    "lines": 39,
+    "reachable": true,
+    "useState": 0,
+    "useEffect": 2,
+    "ts": false,
+    "dialogs": 1,
     "tables": 0,
     "forms": 0,
     "ariaLabels": 0,
@@ -48629,7 +48770,7 @@
    },
    {
     "file": "components/demo/DemoOverlay.jsx",
-    "lines": 341,
+    "lines": 342,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -48655,7 +48796,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -48665,14 +48806,14 @@
    },
    {
     "file": "components/ecommerce/CheckoutForm.jsx",
-    "lines": 213,
+    "lines": 198,
     "reachable": true,
     "useState": 2,
     "useEffect": 0,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
-    "forms": 9,
+    "forms": 8,
     "ariaLabels": 0,
     "iconButtons": 0,
     "consoleLog": 0,
@@ -48719,7 +48860,7 @@
    },
    {
     "file": "components/ecommerce/DivisionSelector.jsx",
-    "lines": 54,
+    "lines": 55,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -48773,7 +48914,7 @@
    },
    {
     "file": "components/ecommerce/ProcessingConfigurator.jsx",
-    "lines": 123,
+    "lines": 124,
     "reachable": true,
     "useState": 3,
     "useEffect": 1,
@@ -48781,7 +48922,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48817,7 +48958,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48907,7 +49048,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -48935,7 +49076,7 @@
    },
    {
     "file": "components/inventory/InventoryUpload.jsx",
-    "lines": 852,
+    "lines": 853,
     "reachable": true,
     "useState": 7,
     "useEffect": 0,
@@ -48943,7 +49084,7 @@
     "dialogs": 1,
     "tables": 2,
     "forms": 0,
-    "ariaLabels": 1,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49007,7 +49148,7 @@
    },
    {
     "file": "components/jobs/JobCard.jsx",
-    "lines": 528,
+    "lines": 529,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -49015,7 +49156,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 4,
     "consoleLog": 0,
     "todo": 0,
@@ -49033,7 +49174,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 11,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 4,
     "consoleLog": 0,
     "todo": 0,
@@ -49043,15 +49184,15 @@
    },
    {
     "file": "components/jobs/KanbanBoard.jsx",
-    "lines": 324,
+    "lines": 338,
     "reachable": true,
-    "useState": 3,
+    "useState": 4,
     "useEffect": 0,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49061,7 +49202,7 @@
    },
    {
     "file": "components/jobs/ModernJobCard.jsx",
-    "lines": 958,
+    "lines": 959,
     "reachable": true,
     "useState": 6,
     "useEffect": 0,
@@ -49069,7 +49210,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 6,
     "consoleLog": 0,
     "todo": 0,
@@ -49079,15 +49220,15 @@
    },
    {
     "file": "components/jobs/ModernKanbanBoard.jsx",
-    "lines": 522,
+    "lines": 533,
     "reachable": true,
-    "useState": 4,
+    "useState": 5,
     "useEffect": 0,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49097,7 +49238,7 @@
    },
    {
     "file": "components/jobs/ShopFloorTaskCard.jsx",
-    "lines": 300,
+    "lines": 301,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -49141,7 +49282,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -49169,10 +49310,10 @@
    },
    {
     "file": "components/layout/AppLayout.jsx",
-    "lines": 77,
+    "lines": 131,
     "reachable": true,
-    "useState": 1,
-    "useEffect": 0,
+    "useState": 2,
+    "useEffect": 2,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
@@ -49182,8 +49323,8 @@
     "consoleLog": 0,
     "todo": 0,
     "alerts": 0,
-    "timers": 0,
-    "clears": 0
+    "timers": 1,
+    "clears": 2
    },
    {
     "file": "components/layout/ChangePasswordDialog.jsx",
@@ -49240,8 +49381,26 @@
     "clears": 0
    },
    {
+    "file": "components/layout/GlobalSearch.jsx",
+    "lines": 184,
+    "reachable": true,
+    "useState": 6,
+    "useEffect": 3,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 2,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 1,
+    "clears": 1
+   },
+   {
     "file": "components/layout/HeaderAIAssistant.jsx",
-    "lines": 867,
+    "lines": 868,
     "reachable": true,
     "useState": 11,
     "useEffect": 4,
@@ -49249,11 +49408,11 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 10,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 5,
     "clears": 1
    },
@@ -49267,7 +49426,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -49277,7 +49436,7 @@
    },
    {
     "file": "components/layout/PrintQueueDrawer.jsx",
-    "lines": 689,
+    "lines": 690,
     "reachable": true,
     "useState": 12,
     "useEffect": 2,
@@ -49285,7 +49444,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -49295,7 +49454,7 @@
    },
    {
     "file": "components/layout/Sidebar.jsx",
-    "lines": 577,
+    "lines": 269,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -49304,7 +49463,7 @@
     "tables": 0,
     "forms": 0,
     "ariaLabels": 0,
-    "iconButtons": 1,
+    "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
     "alerts": 0,
@@ -49313,16 +49472,16 @@
    },
    {
     "file": "components/layout/TopBar.jsx",
-    "lines": 217,
+    "lines": 124,
     "reachable": true,
-    "useState": 3,
+    "useState": 2,
     "useEffect": 0,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
-    "iconButtons": 4,
+    "ariaLabels": 3,
+    "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
     "alerts": 0,
@@ -49339,7 +49498,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49393,7 +49552,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -49421,7 +49580,7 @@
    },
    {
     "file": "components/logistics/InboundShipmentTracker.jsx",
-    "lines": 282,
+    "lines": 283,
     "reachable": false,
     "useState": 3,
     "useEffect": 0,
@@ -49439,7 +49598,7 @@
    },
    {
     "file": "components/logistics/LoadDiagram.jsx",
-    "lines": 193,
+    "lines": 194,
     "reachable": false,
     "useState": 0,
     "useEffect": 0,
@@ -49493,7 +49652,7 @@
    },
    {
     "file": "components/orders/AuditLogViewer.jsx",
-    "lines": 350,
+    "lines": 352,
     "reachable": true,
     "useState": 9,
     "useEffect": 1,
@@ -49501,7 +49660,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49519,7 +49678,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 5,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -49529,7 +49688,7 @@
    },
    {
     "file": "components/orders/DemandShapingSuggestionPanel.jsx",
-    "lines": 226,
+    "lines": 227,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -49537,7 +49696,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49573,7 +49732,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 4,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -49583,7 +49742,7 @@
    },
    {
     "file": "components/orders/MaterialPicker.jsx",
-    "lines": 468,
+    "lines": 469,
     "reachable": true,
     "useState": 12,
     "useEffect": 4,
@@ -49591,7 +49750,7 @@
     "dialogs": 1,
     "tables": 3,
     "forms": 6,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -49691,7 +49850,7 @@
    },
    {
     "file": "components/orders/PricingSummaryPanel.jsx",
-    "lines": 71,
+    "lines": 85,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -49717,7 +49876,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49727,7 +49886,7 @@
    },
    {
     "file": "components/orders/RemnantSuggestionPanel.jsx",
-    "lines": 219,
+    "lines": 220,
     "reachable": true,
     "useState": 4,
     "useEffect": 1,
@@ -49799,7 +49958,7 @@
    },
    {
     "file": "components/pos/RemnantQuickAdd.jsx",
-    "lines": 209,
+    "lines": 210,
     "reachable": true,
     "useState": 4,
     "useEffect": 1,
@@ -49807,7 +49966,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -49835,7 +49994,7 @@
    },
    {
     "file": "components/pos/screens/ConfirmationScreen.jsx",
-    "lines": 325,
+    "lines": 326,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -49847,7 +50006,7 @@
     "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
@@ -49861,7 +50020,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -49897,7 +50056,7 @@
     "dialogs": 2,
     "tables": 1,
     "forms": 4,
-    "ariaLabels": 0,
+    "ariaLabels": 6,
     "iconButtons": 6,
     "consoleLog": 1,
     "todo": 0,
@@ -49925,7 +50084,7 @@
    },
    {
     "file": "components/pos/screens/OrderReviewScreen.jsx",
-    "lines": 616,
+    "lines": 617,
     "reachable": true,
     "useState": 6,
     "useEffect": 0,
@@ -49933,7 +50092,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -49989,9 +50148,9 @@
     "forms": 0,
     "ariaLabels": 0,
     "iconButtons": 0,
-    "consoleLog": 3,
+    "consoleLog": 2,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 1,
     "clears": 0
    },
@@ -50005,7 +50164,7 @@
     "dialogs": 2,
     "tables": 1,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 1,
     "todo": 0,
@@ -50015,7 +50174,7 @@
    },
    {
     "file": "components/pos/screens/WillCallQueueScreen.jsx",
-    "lines": 417,
+    "lines": 418,
     "reachable": true,
     "useState": 7,
     "useEffect": 1,
@@ -50023,7 +50182,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -50033,7 +50192,7 @@
    },
    {
     "file": "components/pos/screens/WillCallVerifyScreen.jsx",
-    "lines": 479,
+    "lines": 480,
     "reachable": true,
     "useState": 10,
     "useEffect": 0,
@@ -50077,7 +50236,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -50167,7 +50326,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 10,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -50213,7 +50372,7 @@
    },
    {
     "file": "components/shipping/ShipmentTracker.jsx",
-    "lines": 296,
+    "lines": 297,
     "reachable": false,
     "useState": 1,
     "useEffect": 0,
@@ -50221,7 +50380,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -50239,7 +50398,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -50302,8 +50461,26 @@
     "clears": 0
    },
    {
+    "file": "config/navigation.jsx",
+    "lines": 343,
+    "reachable": true,
+    "useState": 0,
+    "useEffect": 0,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
     "file": "config/roleAccess.js",
-    "lines": 113,
+    "lines": 129,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -50447,10 +50624,10 @@
    },
    {
     "file": "contexts/CustomerSessionContext.jsx",
-    "lines": 128,
+    "lines": 136,
     "reachable": true,
-    "useState": 3,
-    "useEffect": 3,
+    "useState": 4,
+    "useEffect": 4,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
@@ -50537,7 +50714,7 @@
    },
    {
     "file": "dashboard/widgets/index.jsx",
-    "lines": 900,
+    "lines": 902,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -50545,7 +50722,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -50905,7 +51082,7 @@
     "dialogs": 1,
     "tables": 2,
     "forms": 23,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 5,
     "consoleLog": 0,
     "todo": 0,
@@ -50933,7 +51110,7 @@
    },
    {
     "file": "pages/Admin/StaffManagementPage.jsx",
-    "lines": 1335,
+    "lines": 1337,
     "reachable": true,
     "useState": 35,
     "useEffect": 6,
@@ -50941,11 +51118,11 @@
     "dialogs": 4,
     "tables": 3,
     "forms": 29,
-    "ariaLabels": 0,
+    "ariaLabels": 5,
     "iconButtons": 5,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 3,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
@@ -50987,7 +51164,7 @@
    },
    {
     "file": "pages/Admin/UserManagementPage.jsx",
-    "lines": 496,
+    "lines": 497,
     "reachable": true,
     "useState": 17,
     "useEffect": 2,
@@ -50995,11 +51172,11 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
@@ -51023,15 +51200,15 @@
    },
    {
     "file": "pages/Auth/LoginPage.jsx",
-    "lines": 133,
+    "lines": 150,
     "reachable": true,
     "useState": 2,
-    "useEffect": 0,
+    "useEffect": 1,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51077,7 +51254,7 @@
    },
    {
     "file": "pages/ContractorPortal/ActiveVisitorsDashboard.jsx",
-    "lines": 572,
+    "lines": 573,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -51085,7 +51262,7 @@
     "dialogs": 2,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -51095,7 +51272,7 @@
    },
    {
     "file": "pages/ContractorPortal/CheckInKiosk.jsx",
-    "lines": 432,
+    "lines": 433,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -51113,7 +51290,7 @@
    },
    {
     "file": "pages/ContractorPortal/ContractorRegistryPage.jsx",
-    "lines": 693,
+    "lines": 694,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -51121,7 +51298,7 @@
     "dialogs": 1,
     "tables": 2,
     "forms": 9,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51131,7 +51308,7 @@
    },
    {
     "file": "pages/ContractorPortal/PreRegistrationPage.jsx",
-    "lines": 623,
+    "lines": 624,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -51139,7 +51316,7 @@
     "dialogs": 2,
     "tables": 1,
     "forms": 10,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 4,
     "consoleLog": 0,
     "todo": 0,
@@ -51149,7 +51326,7 @@
    },
    {
     "file": "pages/CustomerQuality/CARManagementPage.jsx",
-    "lines": 616,
+    "lines": 617,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -51157,7 +51334,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51167,7 +51344,7 @@
    },
    {
     "file": "pages/CustomerQuality/ClaimsInboxPage.jsx",
-    "lines": 723,
+    "lines": 725,
     "reachable": true,
     "useState": 6,
     "useEffect": 0,
@@ -51175,7 +51352,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 11,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51185,7 +51362,7 @@
    },
    {
     "file": "pages/CustomerQuality/CreditsApprovalsPage.jsx",
-    "lines": 520,
+    "lines": 521,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -51193,7 +51370,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -51203,7 +51380,7 @@
    },
    {
     "file": "pages/CustomerQuality/RMAManagementPage.jsx",
-    "lines": 619,
+    "lines": 620,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -51211,7 +51388,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51221,7 +51398,7 @@
    },
    {
     "file": "pages/Customers/CustomerPreferencesPage.jsx",
-    "lines": 801,
+    "lines": 802,
     "reachable": true,
     "useState": 11,
     "useEffect": 1,
@@ -51239,15 +51416,15 @@
    },
    {
     "file": "pages/Customers/CustomersPage.jsx",
-    "lines": 519,
+    "lines": 527,
     "reachable": true,
     "useState": 18,
-    "useEffect": 2,
+    "useEffect": 3,
     "ts": false,
     "dialogs": 2,
     "tables": 1,
     "forms": 11,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51265,7 +51442,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51293,7 +51470,7 @@
    },
    {
     "file": "pages/Ecommerce/AccountDashboardPage.jsx",
-    "lines": 227,
+    "lines": 228,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -51319,7 +51496,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51329,7 +51506,7 @@
    },
    {
     "file": "pages/Ecommerce/AccountOrdersPage.jsx",
-    "lines": 315,
+    "lines": 316,
     "reachable": true,
     "useState": 10,
     "useEffect": 1,
@@ -51337,7 +51514,7 @@
     "dialogs": 0,
     "tables": 2,
     "forms": 5,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -51347,7 +51524,7 @@
    },
    {
     "file": "pages/Ecommerce/AccountShipmentsPage.jsx",
-    "lines": 218,
+    "lines": 223,
     "reachable": true,
     "useState": 4,
     "useEffect": 1,
@@ -51355,7 +51532,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51373,7 +51550,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 6,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -51391,7 +51568,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -51401,7 +51578,7 @@
    },
    {
     "file": "pages/Ecommerce/CheckoutPage.jsx",
-    "lines": 305,
+    "lines": 306,
     "reachable": true,
     "useState": 8,
     "useEffect": 2,
@@ -51419,15 +51596,15 @@
    },
    {
     "file": "pages/Ecommerce/MyOrderDetailPage.jsx",
-    "lines": 247,
+    "lines": 264,
     "reachable": true,
-    "useState": 3,
+    "useState": 4,
     "useEffect": 1,
     "ts": false,
     "dialogs": 0,
     "tables": 2,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -51437,7 +51614,7 @@
    },
    {
     "file": "pages/Ecommerce/MyOrdersPage.jsx",
-    "lines": 160,
+    "lines": 161,
     "reachable": true,
     "useState": 4,
     "useEffect": 1,
@@ -51445,7 +51622,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51463,7 +51640,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 10,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51509,7 +51686,7 @@
    },
    {
     "file": "pages/Ecommerce/SearchResultsPage.jsx",
-    "lines": 213,
+    "lines": 215,
     "reachable": true,
     "useState": 8,
     "useEffect": 3,
@@ -51527,7 +51704,7 @@
    },
    {
     "file": "pages/Ecommerce/ShopHomePage.jsx",
-    "lines": 165,
+    "lines": 166,
     "reachable": true,
     "useState": 3,
     "useEffect": 1,
@@ -51545,7 +51722,7 @@
    },
    {
     "file": "pages/Executive/CompressionMetricsDashboard.jsx",
-    "lines": 696,
+    "lines": 697,
     "reachable": true,
     "useState": 13,
     "useEffect": 2,
@@ -51553,7 +51730,7 @@
     "dialogs": 0,
     "tables": 4,
     "forms": 4,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51563,7 +51740,7 @@
    },
    {
     "file": "pages/Executive/DecisionLog.jsx",
-    "lines": 756,
+    "lines": 758,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -51571,7 +51748,7 @@
     "dialogs": 1,
     "tables": 3,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51581,7 +51758,7 @@
    },
    {
     "file": "pages/Executive/DigitalTwinViewer.jsx",
-    "lines": 752,
+    "lines": 754,
     "reachable": true,
     "useState": 7,
     "useEffect": 0,
@@ -51589,7 +51766,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 8,
     "iconButtons": 7,
     "consoleLog": 0,
     "todo": 0,
@@ -51599,7 +51776,7 @@
    },
    {
     "file": "pages/Executive/ExecutiveCockpit.jsx",
-    "lines": 730,
+    "lines": 732,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -51607,7 +51784,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51617,7 +51794,7 @@
    },
    {
     "file": "pages/Executive/ForecastExplorer.jsx",
-    "lines": 531,
+    "lines": 532,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -51625,7 +51802,7 @@
     "dialogs": 0,
     "tables": 2,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -51635,7 +51812,7 @@
    },
    {
     "file": "pages/Executive/SimulationWorkspace.jsx",
-    "lines": 742,
+    "lines": 744,
     "reachable": true,
     "useState": 9,
     "useEffect": 0,
@@ -51643,7 +51820,7 @@
     "dialogs": 2,
     "tables": 3,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -51671,7 +51848,7 @@
    },
    {
     "file": "pages/Freight/ExceptionInbox.jsx",
-    "lines": 581,
+    "lines": 582,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -51689,7 +51866,7 @@
    },
    {
     "file": "pages/Freight/FreightComparison.jsx",
-    "lines": 612,
+    "lines": 613,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -51701,13 +51878,13 @@
     "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
    {
     "file": "pages/Freight/PODViewer.jsx",
-    "lines": 574,
+    "lines": 576,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -51715,7 +51892,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51725,7 +51902,7 @@
    },
    {
     "file": "pages/Freight/RouteView.jsx",
-    "lines": 426,
+    "lines": 427,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -51743,7 +51920,7 @@
    },
    {
     "file": "pages/Freight/ShipmentPlanner.jsx",
-    "lines": 650,
+    "lines": 652,
     "reachable": true,
     "useState": 6,
     "useEffect": 0,
@@ -51751,7 +51928,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 7,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51761,7 +51938,7 @@
    },
    {
     "file": "pages/Freight/ShipmentTrackingBoard.jsx",
-    "lines": 536,
+    "lines": 538,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -51769,7 +51946,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51779,7 +51956,7 @@
    },
    {
     "file": "pages/Heats/HeatDetailPage.jsx",
-    "lines": 268,
+    "lines": 269,
     "reachable": true,
     "useState": 11,
     "useEffect": 3,
@@ -51797,7 +51974,7 @@
    },
    {
     "file": "pages/Heats/HeatListPage.jsx",
-    "lines": 205,
+    "lines": 206,
     "reachable": true,
     "useState": 12,
     "useEffect": 2,
@@ -51869,7 +52046,7 @@
    },
    {
     "file": "pages/Maintenance/AssetRegistry.jsx",
-    "lines": 652,
+    "lines": 653,
     "reachable": true,
     "useState": 19,
     "useEffect": 1,
@@ -51887,7 +52064,7 @@
    },
    {
     "file": "pages/Maintenance/MaintenanceDashboard.jsx",
-    "lines": 577,
+    "lines": 579,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -51895,7 +52072,7 @@
     "dialogs": 0,
     "tables": 3,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -51905,7 +52082,7 @@
    },
    {
     "file": "pages/Maintenance/PMSchedules.jsx",
-    "lines": 753,
+    "lines": 756,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -51913,17 +52090,17 @@
     "dialogs": 3,
     "tables": 1,
     "forms": 8,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 4,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 1,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
    {
     "file": "pages/Maintenance/PartsInventory.jsx",
-    "lines": 762,
+    "lines": 765,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -51935,13 +52112,13 @@
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 2,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
    {
     "file": "pages/Maintenance/WorkOrderCenter.jsx",
-    "lines": 927,
+    "lines": 928,
     "reachable": true,
     "useState": 12,
     "useEffect": 1,
@@ -51959,7 +52136,7 @@
    },
    {
     "file": "pages/MaterialTracking/MaterialTrackingDashboard.jsx",
-    "lines": 299,
+    "lines": 300,
     "reachable": true,
     "useState": 4,
     "useEffect": 1,
@@ -52067,7 +52244,7 @@
    },
    {
     "file": "pages/MobileRep/MobileInventoryLookup.jsx",
-    "lines": 302,
+    "lines": 303,
     "reachable": true,
     "useState": 10,
     "useEffect": 2,
@@ -52075,7 +52252,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -52093,7 +52270,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52121,7 +52298,7 @@
    },
    {
     "file": "pages/MobileRep/MobileRepHomePage.jsx",
-    "lines": 247,
+    "lines": 248,
     "reachable": true,
     "useState": 1,
     "useEffect": 1,
@@ -52139,7 +52316,7 @@
    },
    {
     "file": "pages/MobileRep/MobileRepIntakePage.jsx",
-    "lines": 564,
+    "lines": 565,
     "reachable": true,
     "useState": 17,
     "useEffect": 2,
@@ -52147,7 +52324,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 8,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52165,7 +52342,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 6,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 1,
     "todo": 0,
@@ -52183,7 +52360,7 @@
     "dialogs": 2,
     "tables": 0,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -52219,7 +52396,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 6,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 1,
     "todo": 0,
@@ -52229,7 +52406,7 @@
    },
    {
     "file": "pages/Orders/CSRIntakePage.jsx",
-    "lines": 602,
+    "lines": 603,
     "reachable": true,
     "useState": 29,
     "useEffect": 3,
@@ -52265,7 +52442,7 @@
    },
    {
     "file": "pages/Orders/InvoicesPage.jsx",
-    "lines": 262,
+    "lines": 263,
     "reachable": true,
     "useState": 17,
     "useEffect": 3,
@@ -52319,7 +52496,7 @@
    },
    {
     "file": "pages/Orders/OrderDetailPage.jsx",
-    "lines": 385,
+    "lines": 388,
     "reachable": true,
     "useState": 16,
     "useEffect": 2,
@@ -52327,7 +52504,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52337,7 +52514,7 @@
    },
    {
     "file": "pages/Orders/RetailPOSPage.jsx",
-    "lines": 358,
+    "lines": 363,
     "reachable": true,
     "useState": 13,
     "useEffect": 1,
@@ -52345,7 +52522,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 5,
-    "ariaLabels": 0,
+    "ariaLabels": 6,
     "iconButtons": 5,
     "consoleLog": 0,
     "todo": 0,
@@ -52399,7 +52576,7 @@
     "dialogs": 3,
     "tables": 3,
     "forms": 12,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 5,
     "consoleLog": 0,
     "todo": 0,
@@ -52445,7 +52622,7 @@
    },
    {
     "file": "pages/ProductionQuality/InspectionExecution.jsx",
-    "lines": 673,
+    "lines": 675,
     "reachable": true,
     "useState": 6,
     "useEffect": 0,
@@ -52453,17 +52630,17 @@
     "dialogs": 1,
     "tables": 2,
     "forms": 6,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 2,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
    {
     "file": "pages/ProductionQuality/NCRManagement.jsx",
-    "lines": 695,
+    "lines": 698,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -52475,13 +52652,13 @@
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
-    "alerts": 2,
+    "alerts": 0,
     "timers": 0,
     "clears": 0
    },
    {
     "file": "pages/ProductionQuality/QualityDashboard.jsx",
-    "lines": 506,
+    "lines": 507,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -52489,7 +52666,7 @@
     "dialogs": 0,
     "tables": 3,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -52499,7 +52676,7 @@
    },
    {
     "file": "pages/ProductionQuality/SPCChartsPage.jsx",
-    "lines": 620,
+    "lines": 622,
     "reachable": true,
     "useState": 3,
     "useEffect": 0,
@@ -52507,7 +52684,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52517,7 +52694,7 @@
    },
    {
     "file": "pages/ProductionQuality/TraceabilitySearch.jsx",
-    "lines": 577,
+    "lines": 578,
     "reachable": true,
     "useState": 5,
     "useEffect": 0,
@@ -52535,7 +52712,7 @@
    },
    {
     "file": "pages/Provenance/ProvenanceLookupPage.jsx",
-    "lines": 306,
+    "lines": 307,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -52571,7 +52748,7 @@
    },
    {
     "file": "pages/Purchasing/PurchaseOrdersPage.jsx",
-    "lines": 257,
+    "lines": 258,
     "reachable": true,
     "useState": 20,
     "useEffect": 3,
@@ -52589,7 +52766,7 @@
    },
    {
     "file": "pages/QAQC/QualityDashboardPage.jsx",
-    "lines": 273,
+    "lines": 274,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -52597,7 +52774,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52669,7 +52846,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 15,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52697,7 +52874,7 @@
    },
    {
     "file": "pages/SQM/IQCInspectionsPage.jsx",
-    "lines": 625,
+    "lines": 626,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -52705,7 +52882,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 5,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52715,7 +52892,7 @@
    },
    {
     "file": "pages/SQM/InboundReceivingPage.jsx",
-    "lines": 435,
+    "lines": 436,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -52723,7 +52900,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 10,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -52733,7 +52910,7 @@
    },
    {
     "file": "pages/SQM/SCARManagementPage.jsx",
-    "lines": 672,
+    "lines": 673,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -52741,7 +52918,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52751,7 +52928,7 @@
    },
    {
     "file": "pages/SQM/SupplierListPage.jsx",
-    "lines": 908,
+    "lines": 909,
     "reachable": true,
     "useState": 6,
     "useEffect": 0,
@@ -52759,7 +52936,7 @@
     "dialogs": 2,
     "tables": 1,
     "forms": 9,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -52769,7 +52946,7 @@
    },
    {
     "file": "pages/SQM/SupplierNonconformancePage.jsx",
-    "lines": 762,
+    "lines": 763,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -52777,7 +52954,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 11,
-    "ariaLabels": 0,
+    "ariaLabels": 2,
     "iconButtons": 2,
     "consoleLog": 0,
     "todo": 0,
@@ -52787,7 +52964,7 @@
    },
    {
     "file": "pages/SQM/SupplierScorecardsPage.jsx",
-    "lines": 623,
+    "lines": 624,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -52795,7 +52972,7 @@
     "dialogs": 0,
     "tables": 1,
     "forms": 2,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -52805,7 +52982,7 @@
    },
    {
     "file": "pages/Sales/QuotesPage.jsx",
-    "lines": 291,
+    "lines": 292,
     "reachable": true,
     "useState": 20,
     "useEffect": 3,
@@ -52841,7 +53018,7 @@
    },
    {
     "file": "pages/SchedulePage.jsx",
-    "lines": 346,
+    "lines": 347,
     "reachable": true,
     "useState": 6,
     "useEffect": 1,
@@ -52859,14 +53036,14 @@
    },
    {
     "file": "pages/Shipping/ShipmentPage.jsx",
-    "lines": 388,
+    "lines": 435,
     "reachable": true,
-    "useState": 21,
-    "useEffect": 4,
+    "useState": 25,
+    "useEffect": 5,
     "ts": false,
-    "dialogs": 5,
+    "dialogs": 6,
     "tables": 3,
-    "forms": 4,
+    "forms": 6,
     "ariaLabels": 4,
     "iconButtons": 1,
     "consoleLog": 0,
@@ -52877,7 +53054,7 @@
    },
    {
     "file": "pages/Shipping/ShippingPage.jsx",
-    "lines": 236,
+    "lines": 237,
     "reachable": true,
     "useState": 15,
     "useEffect": 3,
@@ -52931,7 +53108,7 @@
    },
    {
     "file": "pages/Training/CourseCatalogPage.jsx",
-    "lines": 459,
+    "lines": 460,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -52949,7 +53126,7 @@
    },
    {
     "file": "pages/Training/MyCertificationsPage.jsx",
-    "lines": 488,
+    "lines": 489,
     "reachable": true,
     "useState": 2,
     "useEffect": 0,
@@ -52957,7 +53134,7 @@
     "dialogs": 1,
     "tables": 1,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 3,
     "iconButtons": 3,
     "consoleLog": 0,
     "todo": 0,
@@ -52967,7 +53144,7 @@
    },
    {
     "file": "pages/Training/TrainingDashboard.jsx",
-    "lines": 459,
+    "lines": 460,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -52985,7 +53162,7 @@
    },
    {
     "file": "pages/Transfers/TransfersPage.jsx",
-    "lines": 237,
+    "lines": 238,
     "reachable": true,
     "useState": 14,
     "useEffect": 2,
@@ -53021,7 +53198,7 @@
    },
    {
     "file": "pages/Units/UnitListPage.jsx",
-    "lines": 162,
+    "lines": 164,
     "reachable": true,
     "useState": 9,
     "useEffect": 2,
@@ -53075,7 +53252,7 @@
    },
    {
     "file": "pages/WorkOrders/WorkOrderDetailPage.jsx",
-    "lines": 225,
+    "lines": 226,
     "reachable": true,
     "useState": 12,
     "useEffect": 2,
@@ -53093,7 +53270,7 @@
    },
    {
     "file": "pages/WorkOrders/WorkOrderListPage.jsx",
-    "lines": 112,
+    "lines": 113,
     "reachable": true,
     "useState": 8,
     "useEffect": 2,
@@ -53129,7 +53306,7 @@
    },
    {
     "file": "router/AppRouter.jsx",
-    "lines": 1569,
+    "lines": 1574,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -53137,7 +53314,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 0,
-    "ariaLabels": 0,
+    "ariaLabels": 1,
     "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
@@ -53165,7 +53342,7 @@
    },
    {
     "file": "screens/DispatchPlanningScreen.jsx",
-    "lines": 683,
+    "lines": 684,
     "reachable": true,
     "useState": 12,
     "useEffect": 0,
@@ -53191,7 +53368,7 @@
     "dialogs": 0,
     "tables": 0,
     "forms": 3,
-    "ariaLabels": 0,
+    "ariaLabels": 5,
     "iconButtons": 5,
     "consoleLog": 0,
     "todo": 0,
@@ -53201,7 +53378,7 @@
    },
    {
     "file": "screens/ShipmentTrackingScreen.jsx",
-    "lines": 769,
+    "lines": 770,
     "reachable": true,
     "useState": 10,
     "useEffect": 1,
@@ -53209,7 +53386,7 @@
     "dialogs": 1,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 0,
+    "ariaLabels": 4,
     "iconButtons": 1,
     "consoleLog": 0,
     "todo": 0,
@@ -54173,7 +54350,61 @@
    },
    {
     "file": "theme/index.js",
-    "lines": 199,
+    "lines": 306,
+    "reachable": true,
+    "useState": 0,
+    "useEffect": 0,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "utils/activateOnKey.js",
+    "lines": 14,
+    "reachable": true,
+    "useState": 0,
+    "useEffect": 0,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "utils/ask.js",
+    "lines": 24,
+    "reachable": true,
+    "useState": 0,
+    "useEffect": 0,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "utils/notBuilt.js",
+    "lines": 16,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -54307,7 +54538,7 @@
    "/admin/processing-recipes",
    "/help/manual"
   ],
-  "roleAccessLines": 113,
+  "roleAccessLines": 129,
   "tests": [],
   "unusedDeps": [
    "@elevenlabs/elevenlabs-js",
@@ -54349,6 +54580,12 @@
    },
    {
     "file": "src/backend/test/creditRules.test.js",
+    "tests": 8,
+    "importsDb": false,
+    "mocks": 0
+   },
+   {
+    "file": "src/backend/test/decision10.test.js",
     "tests": 8,
     "importsDb": false,
     "mocks": 0
@@ -54528,7 +54765,7 @@
    },
    {
     "file": "qa/sim/phase5-sales.mjs",
-    "lines": 1096,
+    "lines": 1097,
     "checks": 0
    },
    {
@@ -54543,7 +54780,57 @@
    },
    {
     "file": "qa/sim/phase8-fulfillment.mjs",
-    "lines": 1675,
+    "lines": 1739,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase9/fail.cjs",
+    "lines": 142,
+    "checks": 52
+   },
+   {
+    "file": "qa/sim/phase9/fit.cjs",
+    "lines": 127,
+    "checks": 30
+   },
+   {
+    "file": "qa/sim/phase9/form.cjs",
+    "lines": 258,
+    "checks": 72
+   },
+   {
+    "file": "qa/sim/phase9/lists.cjs",
+    "lines": 31,
+    "checks": 8
+   },
+   {
+    "file": "qa/sim/phase9/make.cjs",
+    "lines": 254,
+    "checks": 85
+   },
+   {
+    "file": "qa/sim/phase9/nav.cjs",
+    "lines": 336,
+    "checks": 93
+   },
+   {
+    "file": "qa/sim/phase9/sales.cjs",
+    "lines": 245,
+    "checks": 74
+   },
+   {
+    "file": "qa/sim/phase9/ship.cjs",
+    "lines": 195,
+    "checks": 82
+   },
+   {
+    "file": "qa/sim/phase9/stock.cjs",
+    "lines": 262,
+    "checks": 79
+   },
+   {
+    "file": "qa/sim/phase9-ui.cjs",
+    "lines": 123,
     "checks": 0
    },
    {
@@ -54555,6 +54842,11 @@
     "file": "qa/sim/security.mjs",
     "lines": 1516,
     "checks": 292
+   },
+   {
+    "file": "qa/sim/ui-audit.cjs",
+    "lines": 280,
+    "checks": 0
    },
    {
     "file": "qa/sim/ui-experience.cjs",
@@ -54588,8 +54880,8 @@
    },
    {
     "file": "qa/sim/ui-phase8.cjs",
-    "lines": 256,
-    "checks": 42
+    "lines": 304,
+    "checks": 53
    },
    {
     "file": "qa/sim/ui-sales.cjs",
@@ -54598,7 +54890,7 @@
    },
    {
     "file": "qa/sim/ui-shipping.cjs",
-    "lines": 216,
+    "lines": 218,
     "checks": 28
    },
    {
@@ -54615,7 +54907,7 @@
   "feTests": []
  },
  "contract": {
-  "total": 282,
+  "total": 283,
   "missing": [
    {
     "call": "GET /api/admin/integrations",
@@ -55016,12 +55308,13 @@
   ]
  },
  "screens": {
-  "screens": 144,
+  "screens": 145,
   "tally": {
    "STATIC": 5,
    "REAL": 77,
    "SAMPLE, LABELLED": 58,
-   "MIXED": 4
+   "MIXED": 4,
+   "UNKNOWN": 1
   },
   "unlabelled": [],
   "mixed": [
@@ -55894,21 +56187,27 @@
     "onMenu": true,
     "verdict": "STATIC",
     "file": "pages/Help/ManualPage.jsx"
+   },
+   {
+    "route": "*",
+    "onMenu": false,
+    "verdict": "UNKNOWN",
+    "file": null
    }
   ]
  },
  "exercised": {
-  "at": "2026-11-16T02:29:02.979Z",
+  "at": "2026-11-16T06:44:23.696Z",
   "sources": [
    {
     "file": "server-3011.log",
-    "requests": 11779
+    "requests": 11864
    },
    {
     "file": "server-3001.log",
-    "requests": 2497
+    "requests": 8253
    }
   ],
-  "distinct": 2511
+  "distinct": 2548
  }
 }

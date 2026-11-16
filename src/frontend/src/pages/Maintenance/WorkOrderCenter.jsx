@@ -63,6 +63,7 @@ import {
   completeMaintenanceOrder,
   getMaintenanceAssets,
 } from '../../api/maintenanceOrders';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const WorkOrderCenter = () => {
   const [tab, setTab] = useState(0);
@@ -283,7 +284,7 @@ const WorkOrderCenter = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Work Order Center
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -378,7 +379,7 @@ const WorkOrderCenter = () => {
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Search work orders" }}
               fullWidth
               size="small"
               placeholder="Search work orders..."
@@ -461,7 +462,7 @@ const WorkOrderCenter = () => {
                   </TableCell>
                 </TableRow>
               ) : filteredWOs.map((wo) => (
-                <TableRow 
+                <TableRow tabIndex={0} onKeyDown={activateOnKey} 
                   key={wo.id} 
                   hover 
                   sx={{ cursor: 'pointer' }}

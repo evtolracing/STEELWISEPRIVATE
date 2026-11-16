@@ -133,10 +133,10 @@ export default function AccountDocumentsPage() {
 
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Typography variant="h5" fontWeight={700}>Document Center</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>Document Center</Typography>
         <Chip label={`${docs.length} docs`} size="small" color="primary" />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          <TextField size="small" placeholder="Search docs, order…" value={search}
+          <TextField inputProps={{ 'aria-label': "Search docs, order" }} size="small" placeholder="Search docs, order…" value={search}
             onChange={e => setSearch(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment> }}
             sx={{ width: 180 }} />
@@ -156,7 +156,7 @@ export default function AccountDocumentsPage() {
               {branches.map(b => <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>)}
             </Select>
           </FormControl>
-          <IconButton onClick={load} size="small"><Refresh /></IconButton>
+          <IconButton aria-label="Refresh" onClick={load} size="small"><Refresh /></IconButton>
         </Box>
       </Box>
 
@@ -200,7 +200,7 @@ export default function AccountDocumentsPage() {
             <TableHead>
               <TableRow sx={{ bgcolor: 'grey.50' }}>
                 <TableCell padding="checkbox">
-                  <Checkbox checked={allSelected} indeterminate={someSelected} onChange={toggleAll} size="small" />
+                  <Checkbox inputProps={{ 'aria-label': 'Select all documents' }} checked={allSelected} indeterminate={someSelected} onChange={toggleAll} size="small" />
                 </TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Document</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Type</TableCell>
@@ -216,7 +216,7 @@ export default function AccountDocumentsPage() {
                 <TableRow key={doc.id} hover selected={selected.has(doc.id)}
                   sx={{ '&.Mui-selected': { bgcolor: (theme) => alpha(theme.palette.primary.main, 0.05) } }}>
                   <TableCell padding="checkbox">
-                    <Checkbox checked={selected.has(doc.id)} onChange={() => toggle(doc.id)} size="small" />
+                    <Checkbox inputProps={{ 'aria-label': `Select ${doc.name || doc.fileName || 'this document'}` }} checked={selected.has(doc.id)} onChange={() => toggle(doc.id)} size="small" />
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

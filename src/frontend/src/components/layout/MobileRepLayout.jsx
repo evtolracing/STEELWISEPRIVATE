@@ -83,7 +83,7 @@ export default function MobileRepLayout() {
       >
         <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }}>
           {!isHome && (
-            <IconButton edge="start" color="inherit" onClick={() => navigate(-1)} sx={{ mr: 1 }}>
+            <IconButton aria-label="Back" edge="start" color="inherit" onClick={() => navigate(-1)} sx={{ mr: 1 }}>
               <BackIcon />
             </IconButton>
           )}

@@ -47,6 +47,7 @@ import {
 } from '@mui/icons-material'
 import { KANBAN_COLUMNS, JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import ModernJobCard from './ModernJobCard'
+import { COLUMN_PAGE } from './KanbanBoard'
 
 // Modern Kanban Column
 const ModernKanbanColumn = ({
@@ -62,6 +63,9 @@ const ModernKanbanColumn = ({
 }) => {
   const config = JOB_STATUS_CONFIG[column.status] || JOB_STATUS_CONFIG[column.statuses?.[0]] || {}
   const [isDragOver, setIsDragOver] = useState(false)
+  // A column draws its first cards and offers the rest, so a branch with hundreds of jobs in one
+  // state does not freeze the page. The counts in the column's heading are always of all of them.
+  const [shown, setShown] = useState(COLUMN_PAGE)
   
   // Filter jobs by column's statuses array
   const columnJobs = jobs.filter(job => 
@@ -168,7 +172,7 @@ const ModernKanbanColumn = ({
                   size="small" 
                   sx={{ 
                     height: 24,
-                    bgcolor: alpha('#f44336', 0.1),
+                    bgcolor: alpha('#C62828', 0.1),
                     color: 'error.main',
                     fontWeight: 700,
                     '& .MuiChip-icon': { color: 'error.main' }
@@ -184,7 +188,7 @@ const ModernKanbanColumn = ({
                   size="small" 
                   sx={{ 
                     height: 24,
-                    bgcolor: alpha('#ff9800', 0.1),
+                    bgcolor: alpha('#B45309', 0.1),
                     color: 'warning.dark',
                     fontWeight: 700,
                     '& .MuiChip-icon': { color: 'warning.dark' }
@@ -244,19 +248,26 @@ const ModernKanbanColumn = ({
             </Typography>
           </Box>
         ) : (
-          sortedJobs.map((job) => (
-            <ModernJobCard
-              key={job.id}
-              job={job}
-              onClick={() => onJobClick?.(job)}
-              onStart={onStartJob}
-              onPause={onPauseJob}
-              onComplete={onCompleteJob}
-              onUpdate={onUpdateJob}
-              draggable
-              showAIHints
-            />
-          ))
+          <>
+            {sortedJobs.slice(0, shown).map((job) => (
+              <ModernJobCard
+                key={job.id}
+                job={job}
+                onClick={() => onJobClick?.(job)}
+                onStart={onStartJob}
+                onPause={onPauseJob}
+                onComplete={onCompleteJob}
+                onUpdate={onUpdateJob}
+                draggable
+                showAIHints
+              />
+            ))}
+            {sortedJobs.length > shown && (
+              <Button size="small" fullWidth onClick={() => setShown((n) => n + COLUMN_PAGE)} data-testid="column-show-more">
+                Show {Math.min(COLUMN_PAGE, sortedJobs.length - shown)} more of {sortedJobs.length - shown}
+              </Button>
+            )}
+          </>
         )}
       </Box>
     </Paper>
@@ -343,7 +354,7 @@ const ModernKanbanBoard = ({
         }}
       >
         {/* Search */}
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search jobs, customers, materials" }}
           size="small"
           placeholder="Search jobs, customers, materials..."
           value={searchQuery}
@@ -431,7 +442,7 @@ const ModernKanbanBoard = ({
               icon={<FireIcon sx={{ fontSize: '14px !important' }} />}
               label={`${hotJobs} hot`} 
               size="small" 
-              sx={{ fontWeight: 600, bgcolor: alpha('#f44336', 0.1), color: 'error.main' }}
+              sx={{ fontWeight: 600, bgcolor: alpha('#C62828', 0.1), color: 'error.main' }}
             />
           )}
           {overdueJobs > 0 && (
@@ -439,14 +450,14 @@ const ModernKanbanBoard = ({
               icon={<WarningIcon sx={{ fontSize: '14px !important' }} />}
               label={`${overdueJobs} overdue`} 
               size="small" 
-              sx={{ fontWeight: 600, bgcolor: alpha('#ff9800', 0.1), color: 'warning.dark' }}
+              sx={{ fontWeight: 600, bgcolor: alpha('#B45309', 0.1), color: 'warning.dark' }}
             />
           )}
           <Chip 
             icon={<SpeedIcon sx={{ fontSize: '14px !important' }} />}
             label={`${inProgressJobs} in progress`} 
             size="small" 
-            sx={{ fontWeight: 600, bgcolor: alpha('#4caf50', 0.1), color: 'success.main' }}
+            sx={{ fontWeight: 600, bgcolor: alpha('#2E7D32', 0.1), color: 'success.main' }}
           />
         </Stack>
 
@@ -454,7 +465,7 @@ const ModernKanbanBoard = ({
         {onRefresh && (
           <Tooltip title="Refresh jobs">
             <span>
-              <IconButton 
+              <IconButton aria-label="Refresh" 
                 onClick={onRefresh} 
                 disabled={loading}
                 sx={{

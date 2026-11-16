@@ -284,7 +284,7 @@ export default function DeliveryMapDialog({
           <LocalShipping />
           <Typography variant="h6">{title}</Typography>
         </Box>
-        <IconButton onClick={onClose}>
+        <IconButton aria-label="Close" onClick={onClose}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -316,7 +316,7 @@ export default function DeliveryMapDialog({
                     }}
                     onChange={(e, value) => handleSelectAddress(value)}
                     renderInput={(params) => (
-                      <TextField
+                      <TextField inputProps={{ 'aria-label': "Enter delivery address" }}
                         {...params}
                         placeholder="Enter delivery address..."
                         size="small"

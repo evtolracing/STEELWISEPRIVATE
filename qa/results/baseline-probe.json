@@ -1,11 +1,11 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-16T02:29:03.696Z",
+ "at": "2026-11-16T06:44:24.475Z",
  "sections": {
   "Read-only roles cannot change anything": {
    "pass": true,
-   "summary": "574 write calls as auditor and data analyst, 0 not refused",
-   "tested": 574,
+   "summary": "576 write calls as auditor and data analyst, 0 not refused",
+   "tested": 576,
    "findings": []
   },
   "A second address follows the same department rules": {
@@ -15,12 +15,12 @@
   },
   "Write routes sent an empty body do not crash": {
    "pass": true,
-   "summary": "292 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing",
-   "tested": 292,
+   "summary": "293 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing",
+   "tested": 293,
    "byStatus": {
     "200": 14,
     "201": 1,
-    "400": 157,
+    "400": 158,
     "403": 1,
     "404": 106,
     "410": 10,
@@ -34,9 +34,9 @@
   },
   "Branch to branch access (reported, not judged)": {
    "pass": true,
-   "summary": "a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0",
+   "summary": "a login whose home branch is DEMO-KZO read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0",
    "observations": [
-    "a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200",
+    "a login whose home branch is DEMO-KZO read 0 stock rows of another branch → 200",
     "the same login listed orders of every branch → 200",
     "it opened one order by id → 404",
     "it placed a hold on a stock item at the other branch → 400",

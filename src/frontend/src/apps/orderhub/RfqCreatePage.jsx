@@ -44,6 +44,7 @@ import {
 import { createRfq } from '../../services/rfqApi';
 import { searchContacts } from '../../services/contactApi';
 import { parseEmailRfq } from '../../services/aiOrderHubApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const COMMODITIES = ['METALS', 'PLASTICS', 'SUPPLIES'];
 const FORMS = ['PLATE', 'SHEET', 'BAR', 'TUBE', 'PIPE', 'ANGLE', 'CHANNEL', 'BEAM', 'ROD'];
@@ -224,7 +225,7 @@ export default function RfqCreatePage() {
     <Box sx={{ p: 2 }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <IconButton onClick={() => navigate('/orderhub')}>
+        <IconButton aria-label="Back" onClick={() => navigate('/orderhub')}>
           <BackIcon />
         </IconButton>
         <Typography variant="h5" fontWeight={700}>
@@ -272,7 +273,7 @@ export default function RfqCreatePage() {
               {contactResults.length > 0 && (
                 <Paper variant="outlined" sx={{ mb: 2, maxHeight: 150, overflow: 'auto' }}>
                   {contactResults.map((c) => (
-                    <Box
+                    <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                       key={c.id}
                       sx={{
                         p: 1,
@@ -414,7 +415,7 @@ export default function RfqCreatePage() {
                     {lines.map((line) => (
                       <TableRow key={line.id}>
                         <TableCell>
-                          <Select
+                          <Select inputProps={{ 'aria-label': 'Commodity' }}
                             size="small"
                             value={line.commodity}
                             onChange={(e) => updateLine(line.id, 'commodity', e.target.value)}
@@ -428,7 +429,7 @@ export default function RfqCreatePage() {
                           </Select>
                         </TableCell>
                         <TableCell>
-                          <Select
+                          <Select inputProps={{ 'aria-label': 'Form' }}
                             size="small"
                             value={line.form}
                             onChange={(e) => updateLine(line.id, 'form', e.target.value)}
@@ -442,7 +443,7 @@ export default function RfqCreatePage() {
                           </Select>
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <TextField inputProps={{ 'aria-label': "A36, 304" }}
                             size="small"
                             value={line.grade}
                             onChange={(e) => updateLine(line.id, 'grade', e.target.value)}
@@ -451,7 +452,7 @@ export default function RfqCreatePage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <TextField inputProps={{ 'aria-label': "0.25" }}
                             size="small"
                             type="number"
                             value={line.thickness}
@@ -462,7 +463,7 @@ export default function RfqCreatePage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <TextField inputProps={{ 'aria-label': "48" }}
                             size="small"
                             type="number"
                             value={line.width}
@@ -473,7 +474,7 @@ export default function RfqCreatePage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <TextField inputProps={{ 'aria-label': "96" }}
                             size="small"
                             type="number"
                             value={line.length}
@@ -484,7 +485,7 @@ export default function RfqCreatePage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <TextField inputProps={{ 'aria-label': 'Quantity' }}
                             size="small"
                             type="number"
                             value={line.quantity}
@@ -493,7 +494,7 @@ export default function RfqCreatePage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <TextField
+                          <TextField inputProps={{ 'aria-label': "Notes" }}
                             size="small"
                             value={line.notes}
                             onChange={(e) => updateLine(line.id, 'notes', e.target.value)}
@@ -502,7 +503,7 @@ export default function RfqCreatePage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <IconButton
+                          <IconButton aria-label="Delete"
                             size="small"
                             color="error"
                             onClick={() => removeLine(line.id)}
@@ -543,7 +544,7 @@ export default function RfqCreatePage() {
               title="AI Assistant"
               subheader="Parse email content to RFQ"
               action={
-                <IconButton onClick={() => setAiPanelOpen(!aiPanelOpen)}>
+                <IconButton aria-label="Hide details" onClick={() => setAiPanelOpen(!aiPanelOpen)}>
                   {aiPanelOpen ? <CollapseIcon /> : <ExpandIcon />}
                 </IconButton>
               }
@@ -556,7 +557,7 @@ export default function RfqCreatePage() {
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   Paste email content below and let AI extract RFQ details automatically.
                 </Typography>
-                <TextField
+                <TextField inputProps={{ 'aria-label': "Paste email content here... Example: Hi, I need a quote for 10 pcs of 1/4\" x 48\" x 96\" A36 plate. Thanks, John Smith Acme Corp john@acme.com" }}
                   multiline
                   rows={8}
                   fullWidth

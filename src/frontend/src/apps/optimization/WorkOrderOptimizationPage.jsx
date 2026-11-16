@@ -32,6 +32,7 @@ import {
   ExpandLess,
 } from '@mui/icons-material';
 import { getOptimizationPreview, applyOptimization, getOptimizationAnalysis } from '../../services/optimizationApi';
+import { tell } from '../../utils/ask'
 
 export default function WorkOrderOptimizationPage() {
   const [loading, setLoading] = useState(false);
@@ -79,12 +80,12 @@ export default function WorkOrderOptimizationPage() {
       // Says what the server saved, not what was sent: a job that started in the meantime is not rescheduled.
       const result = await applyOptimization(preview.optimizedJobs);
       const skipped = result?.skipped || [];
-      alert(`Schedule saved for ${result?.appliedCount ?? 0} of ${preview.optimizedJobs.length} jobs.${skipped.length ? ` ${skipped.length} not saved: ${skipped[0].reason}${skipped.length > 1 ? ' (and others)' : ''}.` : ''}`);
+      tell(`Schedule saved for ${result?.appliedCount ?? 0} of ${preview.optimizedJobs.length} jobs.${skipped.length ? ` ${skipped.length} not saved: ${skipped[0].reason}${skipped.length > 1 ? ' (and others)' : ''}.` : ''}`, skipped.length ? 'warning' : 'success');
       setPreview(null);
       loadAnalysis();
     } catch (error) {
       console.error('Failed to apply optimization:', error);
-      alert('Failed to apply optimization');
+      tell('The schedule could not be saved. Nothing was changed.', 'error');
     } finally {
       setApplying(false);
     }
@@ -119,7 +120,7 @@ export default function WorkOrderOptimizationPage() {
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
         <Box display="flex" alignItems="center" gap={1}>
           <AutoAwesome color="primary" />
-          <Typography variant="h5" fontWeight="bold">
+          <Typography component="h1" variant="h5" fontWeight="bold">
             Work Order Optimization AI
           </Typography>
         </Box>
@@ -256,7 +257,7 @@ export default function WorkOrderOptimizationPage() {
             <Typography variant="h6" fontWeight="bold">
               Bottlenecks Detected
             </Typography>
-            <IconButton onClick={() => setShowBottlenecks(!showBottlenecks)} size="small">
+            <IconButton aria-label="Hide details" onClick={() => setShowBottlenecks(!showBottlenecks)} size="small">
               {showBottlenecks ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Box>
@@ -371,7 +372,7 @@ export default function WorkOrderOptimizationPage() {
             <Typography variant="subtitle1" fontWeight="bold">
               Optimized Jobs ({preview.optimizedJobs.length})
             </Typography>
-            <IconButton onClick={() => setShowJobs(!showJobs)} sx={{ color: 'white' }}>
+            <IconButton aria-label="Hide details" onClick={() => setShowJobs(!showJobs)} sx={{ color: 'white' }}>
               {showJobs ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Box>

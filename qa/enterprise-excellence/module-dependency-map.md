@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -102,7 +102,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | File | Imported by (route files) | Count |
 |---|---|---:|
 | lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 59 |
-| lib/roleAccess.js | coils.js, customers.js, dispatchRoutes.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, … | 14 |
+| lib/roleAccess.js | coils.js, customers.js, dispatchRoutes.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, … | 15 |
 | lib/numbering.js | intakeOrders.js, inventory.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, quotes.js, … | 14 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
 | lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |

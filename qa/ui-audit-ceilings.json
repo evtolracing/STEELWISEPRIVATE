@@ -1,0 +1,15 @@
+{
+ "note": "Ceilings for qa/tools/ui-audit-gate.cjs. Lower them when a count falls; never raise one to pass.",
+ "screensMeasured": 154,
+ "ceilings": {
+  "controlsWithNoName": 0,
+  "fieldsWithNoLabel": 0,
+  "hardToReadTexts": 17,
+  "screensWithNoMainHeading": 0,
+  "screensWithSeveralMainHeadings": 0,
+  "screensWiderThanTheWindow": 0,
+  "smallTargetsOnAPhone": 3,
+  "screensWithAPageError": 0,
+  "screensSharingATitle": 32
+ }
+}

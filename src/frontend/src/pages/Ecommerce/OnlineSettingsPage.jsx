@@ -158,7 +158,7 @@ export default function OnlineSettingsPage() {
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
         <Settings color="primary" />
-        <Typography variant="h5" fontWeight={700}>Online Store Settings</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>Online Store Settings</Typography>
       </Box>
 
       <Grid container spacing={3}>
@@ -242,12 +242,12 @@ export default function OnlineSettingsPage() {
                       <Typography variant="body2" fontWeight={500}>{c.locationName}</Typography>
                     </TableCell>
                     <TableCell>
-                      <TextField size="small" type="time" value={c.cutoffTime || '14:00'}
+                      <TextField inputProps={{ 'aria-label': `Cutoff time for ${c.locationName}` }} size="small" type="time" value={c.cutoffTime || '14:00'}
                         onChange={e => updateCutoff(idx, 'cutoffTime', e.target.value)}
                         sx={{ width: 130 }} />
                     </TableCell>
                     <TableCell align="center">
-                      <Switch size="small" checked={c.active !== false}
+                      <Switch inputProps={{ 'aria-label': `Cutoff active for ${c.locationName}` }} size="small" checked={c.active !== false}
                         onChange={e => updateCutoff(idx, 'active', e.target.checked)} />
                     </TableCell>
                   </TableRow>
@@ -350,7 +350,7 @@ export default function OnlineSettingsPage() {
                       <TextField size="small" label="Reason" value={bw.reason}
                         onChange={e => updateBlackout(idx, 'reason', e.target.value)}
                         sx={{ flex: 1 }} />
-                      <IconButton size="small" color="error" onClick={() => removeBlackout(idx)}>
+                      <IconButton aria-label="Delete" size="small" color="error" onClick={() => removeBlackout(idx)}>
                         <Delete fontSize="small" />
                       </IconButton>
                     </Box>

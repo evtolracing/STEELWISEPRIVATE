@@ -38,6 +38,7 @@ import {
   Print as PrintIcon,
   Refresh as RenewIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock My Certifications Data
 const mockMyCertifications = [
@@ -181,14 +182,14 @@ export default function MyCertificationsPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             My Certifications
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Your training history and active competency certifications
           </Typography>
         </Box>
-        <Button variant="outlined" startIcon={<DownloadIcon />}>
+        <Button onClick={notBuilt} variant="outlined" startIcon={<DownloadIcon />}>
           Export All
         </Button>
       </Box>
@@ -289,7 +290,7 @@ export default function MyCertificationsPage() {
                         <Chip label={status.label} color={status.color} size="small" />
                       </Box>
                     </Box>
-                    <Button
+                    <Button onClick={notBuilt}
                       variant="contained"
                       startIcon={<StartIcon />}
                       sx={{ ml: 2 }}
@@ -391,14 +392,14 @@ export default function MyCertificationsPage() {
                       />
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton size="small" onClick={() => setSelectedCert(cert)}>
+                      <IconButton aria-label="View" size="small" onClick={() => setSelectedCert(cert)}>
                         <ViewIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton onClick={notBuilt} aria-label="Print" size="small">
                         <PrintIcon fontSize="small" />
                       </IconButton>
                       {(cert.status === 'EXPIRING_SOON' || cert.status === 'EXPIRED') && (
-                        <IconButton size="small" color="primary">
+                        <IconButton onClick={notBuilt} aria-label="Refresh" size="small" color="primary">
                           <RenewIcon fontSize="small" />
                         </IconButton>
                       )}
@@ -470,11 +471,11 @@ export default function MyCertificationsPage() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setSelectedCert(null)}>Close</Button>
-              <Button startIcon={<DownloadIcon />} variant="outlined">
+              <Button onClick={notBuilt} startIcon={<DownloadIcon />} variant="outlined">
                 Download PDF
               </Button>
               {(selectedCert.status === 'EXPIRING_SOON' || selectedCert.status === 'EXPIRED') && (
-                <Button variant="contained" startIcon={<RenewIcon />}>
+                <Button onClick={notBuilt} variant="contained" startIcon={<RenewIcon />}>
                   Renew Certification
                 </Button>
               )}

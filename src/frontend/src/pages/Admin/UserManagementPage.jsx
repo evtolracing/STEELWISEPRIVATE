@@ -46,6 +46,7 @@ import { getUsers, getRoleEnums, deleteUser, getRoleDisplayName, getRoleCategory
 import UserFormDialog from './UserFormDialog';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import RetentionNotice from '../../components/common/RetentionNotice';
+import { ask } from '../../utils/ask'
 
 const roleColorMap = {
   System: 'error',
@@ -155,12 +156,12 @@ export default function UserManagementPage() {
 
   const handleDeleteUser = async () => {
     if (!menuUser) return;
-    if (!window.confirm(`Are you sure you want to deactivate ${menuUser.firstName} ${menuUser.lastName}?`)) {
-      handleMenuClose();
-      return;
-    }
+    // The person is kept in a local name: closing the menu clears menuUser while the question is open.
+    const person = menuUser;
+    handleMenuClose();
+    if (!(await ask(`Deactivate ${person.firstName} ${person.lastName}? They will no longer be able to sign in.`, { title: 'Deactivate user', confirmText: 'Deactivate', danger: true }))) return;
     try {
-      await deleteUser(menuUser.id);
+      await deleteUser(person.id);
       loadUsers();
     } catch (err) {
       console.error('Failed to delete user:', err);
@@ -218,7 +219,7 @@ export default function UserManagementPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography component="h1" variant="h4" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <GroupIcon fontSize="large" color="primary" />
             User Management
           </Typography>
@@ -268,7 +269,7 @@ export default function UserManagementPage() {
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search by name or email" }}
             size="small"
             placeholder="Search by name or email..."
             value={searchTerm}
@@ -352,7 +353,9 @@ export default function UserManagementPage() {
                       key={user.id} 
                       hover
                       sx={{ 
-                        opacity: user.isActive ? 1 : 0.6,
+                        // An inactive user is marked by the "Inactive" chip and a grey badge. The row is not
+                        // dimmed: dimmed text falls below the contrast a person needs to read it.
+                        bgcolor: user.isActive ? undefined : 'action.hover',
                         '&:hover': { backgroundColor: 'action.hover' }
                       }}
                     >
@@ -363,7 +366,7 @@ export default function UserManagementPage() {
                             sx={{ 
                               width: 36, 
                               height: 36,
-                              bgcolor: user.isActive ? 'primary.main' : 'grey.400'
+                              bgcolor: user.isActive ? 'primary.main' : 'grey.700'
                             }}
                           >
                             {getInitials(user.firstName, user.lastName)}
@@ -431,7 +434,7 @@ export default function UserManagementPage() {
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        <IconButton size="small" onClick={(e) => handleMenuOpen(e, user)}>
+                        <IconButton aria-label="More actions" size="small" onClick={(e) => handleMenuOpen(e, user)}>
                           <MoreVertIcon />
                         </IconButton>
                       </TableCell>

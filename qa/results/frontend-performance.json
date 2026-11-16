@@ -1,0 +1,247 @@
+{
+ "at": "2026-11-16T05:40:40.219Z",
+ "app": "http://localhost:5198",
+ "build": {
+  "files": 277,
+  "totalBytes": 4443101,
+  "totalGzip": 1353401,
+  "largest": [
+   {
+    "file": "MapComponent-19w3pgly.js",
+    "bytes": 986720,
+    "gzip": 275736
+   },
+   {
+    "file": "index-B_iKKlrh.js",
+    "bytes": 803904,
+    "gzip": 255275
+   },
+   {
+    "file": "safety-DA8xBrQ4.js",
+    "bytes": 407533,
+    "gzip": 109165
+   },
+   {
+    "file": "ManualPage-DHU_GDvv.js",
+    "bytes": 183754,
+    "gzip": 58024
+   },
+   {
+    "file": "POSPage-VJhLhZ4X.js",
+    "bytes": 116064,
+    "gzip": 28793
+   },
+   {
+    "file": "ModernOrderBoardPage-CutaEY-1.js",
+    "bytes": 57469,
+    "gzip": 15612
+   },
+   {
+    "file": "WorkCenterSelectPage-DT5NkzVK.js",
+    "bytes": 42471,
+    "gzip": 13705
+   },
+   {
+    "file": "RoleDashboardPage-B4lB71xw.js",
+    "bytes": 41144,
+    "gzip": 10339
+   }
+  ]
+ },
+ "summary": {
+  "screens": 20,
+  "medianHeadingMs": 654,
+  "medianQuietMs": 1154,
+  "slowest": [
+   "/orders/closeout 1426 ms",
+   "/pricing 1382 ms",
+   "/heats 1377 ms"
+  ],
+  "totalApiCalls": 76,
+  "screensWithRepeatedCalls": 1
+ },
+ "rows": [
+  {
+   "url": "/",
+   "heading": 609,
+   "quiet": 1105,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 3483,
+   "longTask": 160
+  },
+  {
+   "url": "/orders",
+   "heading": 626,
+   "quiet": 1090,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 1915,
+   "longTask": 155
+  },
+  {
+   "url": "/orders/intake",
+   "heading": 772,
+   "quiet": 1369,
+   "apiCalls": 6,
+   "repeated": [
+    "2x POST /pricing/tax-estimate"
+   ],
+   "scriptBytes": 8971,
+   "longTask": 175
+  },
+  {
+   "url": "/customers",
+   "heading": 647,
+   "quiet": 1115,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 2795,
+   "longTask": 161
+  },
+  {
+   "url": "/units",
+   "heading": 599,
+   "quiet": 1296,
+   "apiCalls": 4,
+   "repeated": [],
+   "scriptBytes": 2752,
+   "longTask": 165
+  },
+  {
+   "url": "/heats",
+   "heading": 678,
+   "quiet": 1377,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 2049,
+   "longTask": 191
+  },
+  {
+   "url": "/receiving",
+   "heading": 818,
+   "quiet": 1123,
+   "apiCalls": 4,
+   "repeated": [],
+   "scriptBytes": 2752,
+   "longTask": 195
+  },
+  {
+   "url": "/purchase-orders",
+   "heading": 659,
+   "quiet": 1114,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 1549,
+   "longTask": 187
+  },
+  {
+   "url": "/work-orders",
+   "heading": 654,
+   "quiet": 1129,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 1642,
+   "longTask": 191
+  },
+  {
+   "url": "/schedule",
+   "heading": 619,
+   "quiet": 1124,
+   "apiCalls": 4,
+   "repeated": [],
+   "scriptBytes": 4468,
+   "longTask": 364
+  },
+  {
+   "url": "/order-board",
+   "heading": 652,
+   "quiet": 1151,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 8990,
+   "longTask": 1175
+  },
+  {
+   "url": "/production",
+   "heading": 925,
+   "quiet": 1293,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 2061,
+   "longTask": 200
+  },
+  {
+   "url": "/qc",
+   "heading": 726,
+   "quiet": 1120,
+   "apiCalls": 6,
+   "repeated": [],
+   "scriptBytes": 3933,
+   "longTask": 171
+  },
+  {
+   "url": "/shopfloor",
+   "heading": 652,
+   "quiet": 1154,
+   "apiCalls": 7,
+   "repeated": [],
+   "scriptBytes": 4770,
+   "longTask": 167
+  },
+  {
+   "url": "/shipping",
+   "heading": 734,
+   "quiet": 1155,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 1373,
+   "longTask": 179
+  },
+  {
+   "url": "/orders/invoices",
+   "heading": 612,
+   "quiet": 1275,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 743,
+   "longTask": 161
+  },
+  {
+   "url": "/orders/closeout",
+   "heading": 671,
+   "quiet": 1426,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 1640,
+   "longTask": 150
+  },
+  {
+   "url": "/sales/rfq-inbox",
+   "heading": 597,
+   "quiet": 1075,
+   "apiCalls": 3,
+   "repeated": [],
+   "scriptBytes": 919,
+   "longTask": 144
+  },
+  {
+   "url": "/pricing",
+   "heading": 674,
+   "quiet": 1382,
+   "apiCalls": 4,
+   "repeated": [],
+   "scriptBytes": 1640,
+   "longTask": 154
+  },
+  {
+   "url": "/admin/users",
+   "heading": 652,
+   "quiet": 1157,
+   "apiCalls": 5,
+   "repeated": [],
+   "scriptBytes": 2540,
+   "longTask": 174
+  }
+ ]
+}

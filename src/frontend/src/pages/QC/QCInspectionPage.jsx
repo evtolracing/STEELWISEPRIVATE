@@ -259,7 +259,7 @@ export default function QCInspectionPage() {
           <Button startIcon={<BackIcon />} onClick={() => navigate('/qc')} sx={{ mb: 1 }}>
             Back to QC Dashboard
           </Button>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             <QCIcon sx={{ mr: 1, verticalAlign: 'bottom', fontSize: 36 }} />
             {inspection.inspectionNumber}
           </Typography>
@@ -424,17 +424,17 @@ export default function QCInspectionPage() {
                   onChange={(_, val) => !isReadOnly && val !== null && handleChecklistChange(index, 'result', val)}
                   disabled={isReadOnly}
                 >
-                  <ToggleButton value="PASS" color="success" sx={{ px: 1.5 }}>
+                  <ToggleButton aria-label="Pass" value="PASS" color="success" sx={{ px: 1.5 }}>
                     <PassIcon fontSize="small" />
                   </ToggleButton>
-                  <ToggleButton value="FAIL" color="error" sx={{ px: 1.5 }}>
+                  <ToggleButton aria-label="Fail" value="FAIL" color="error" sx={{ px: 1.5 }}>
                     <FailIcon fontSize="small" />
                   </ToggleButton>
                   <ToggleButton value="N/A" sx={{ px: 1.5, fontSize: 11 }}>
                     N/A
                   </ToggleButton>
                 </ToggleButtonGroup>
-                <TextField
+                <TextField inputProps={{ 'aria-label': "Notes" }}
                   size="small"
                   placeholder="Notes"
                   value={item.notes || ''}
@@ -469,7 +469,7 @@ export default function QCInspectionPage() {
                       {dimensionalChecks.map((dim, i) => (
                         <TableRow key={i}>
                           <TableCell>
-                            <TextField
+                            <TextField inputProps={{ 'aria-label': "For example Width" }}
                               size="small"
                               value={dim.dimension}
                               onChange={(e) => handleDimChange(i, 'dimension', e.target.value)}
@@ -479,7 +479,7 @@ export default function QCInspectionPage() {
                             />
                           </TableCell>
                           <TableCell>
-                            <TextField
+                            <TextField inputProps={{ 'aria-label': 'Nominal' }}
                               size="small"
                               type="number"
                               value={dim.nominal}
@@ -489,7 +489,7 @@ export default function QCInspectionPage() {
                             />
                           </TableCell>
                           <TableCell>
-                            <TextField
+                            <TextField inputProps={{ 'aria-label': 'Tolerance' }}
                               size="small"
                               type="number"
                               value={dim.tolerance}
@@ -499,7 +499,7 @@ export default function QCInspectionPage() {
                             />
                           </TableCell>
                           <TableCell>
-                            <TextField
+                            <TextField inputProps={{ 'aria-label': 'Actual' }}
                               size="small"
                               type="number"
                               value={dim.actual}
@@ -534,7 +534,7 @@ export default function QCInspectionPage() {
               <Typography fontWeight={600}>Visual Inspection Notes</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Describe visual inspection findings: surface condition, markings, coatings, etc" }}
                 fullWidth
                 multiline
                 rows={4}
@@ -607,7 +607,7 @@ export default function QCInspectionPage() {
                     </Grid>
                     <Grid item xs={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {!isReadOnly && (
-                        <IconButton size="small" color="error" onClick={() => removeDefect(i)}>
+                        <IconButton aria-label="Cancel" size="small" color="error" onClick={() => removeDefect(i)}>
                           <FailIcon fontSize="small" />
                         </IconButton>
                       )}
@@ -629,7 +629,7 @@ export default function QCInspectionPage() {
               <Typography fontWeight={600}>Additional Notes</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Any additional comments, observations, or instructions" }}
                 fullWidth
                 multiline
                 rows={3}

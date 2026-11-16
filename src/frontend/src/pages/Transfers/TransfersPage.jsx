@@ -13,6 +13,7 @@ import {
   DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar, LinearProgress, Chip, Stack, Link as MuiLink,
 } from '@mui/material'
 import { LocalShipping as TransferIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // A list answer is the rows themselves, or { data } when a page of them was asked for.
 const listOf = (b) => (Array.isArray(b) ? b : b?.data || [])
@@ -136,7 +137,7 @@ export default function TransfersPage() {
       <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
         <TransferIcon color="primary" sx={{ fontSize: 36 }} />
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h4" fontWeight={700}>Transfers</Typography>
+          <Typography component="h1" variant="h4" fontWeight={700}>Transfers</Typography>
           <Typography variant="body2" color="text.secondary">Material on its way between branches. Send an item from its page; receive it here when it arrives.</Typography>
         </Box>
         <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>
@@ -156,7 +157,7 @@ export default function TransfersPage() {
               {rows.map((t) => {
                 const odd = (t.lines || []).filter((l) => l.condition && !['GOOD', 'SETTLED_FOUND'].includes(l.condition))
                 return (
-                  <TableRow key={t.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpen(t)}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={t.id} hover sx={{ cursor: 'pointer' }} onClick={() => setOpen(t)}>
                     <TableCell>{t.transferNumber}</TableCell>
                     <TableCell>{branch(t.fromLocation)}</TableCell>
                     <TableCell>{branch(t.toLocation)}</TableCell>

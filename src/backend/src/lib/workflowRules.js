@@ -69,9 +69,12 @@ const SHIPMENT_MOVES = {
   EXCEPTION: ['IN_TRANSIT', 'DELIVERED'],
   DELIVERED: [],
   CANCELLED: [],
+  // Ended as lost by a manager (N-027). Reached only through its own step, never by a plain status change.
+  LOST: [],
 };
 export function shipmentMoveError(from, to) {
   if (!(to in SHIPMENT_MOVES)) return `Unknown shipment status "${to}"`;
+  if (to === 'LOST') return 'A shipment is recorded as lost by a manager, with what happened, from the shipment screen';
   if (from === to) return `Shipment is already ${to}`;
   return SHIPMENT_MOVES[from]?.includes(to) ? null : `A shipment cannot go from ${from} to ${to}`;
 }

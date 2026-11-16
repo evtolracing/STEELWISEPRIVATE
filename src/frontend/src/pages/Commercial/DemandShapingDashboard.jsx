@@ -74,7 +74,7 @@ export default function DemandShapingDashboard() {
             <TrendingDown />
           </Avatar>
           <Box>
-            <Typography variant="h5" fontWeight={700}>
+            <Typography component="h1" variant="h5" fontWeight={700}>
               Demand Shaping Analytics
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -163,7 +163,7 @@ export default function DemandShapingDashboard() {
                       <Avatar
                         sx={{
                           width: 28, height: 28,
-                          bgcolor: `${suggestionColor(row.type)}.light`,
+                          bgcolor: `${suggestionColor(row.type)}.tint`,
                           color: `${suggestionColor(row.type)}.dark`,
                         }}
                       >

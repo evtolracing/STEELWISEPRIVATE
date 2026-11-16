@@ -43,6 +43,7 @@ import {
   Warning as WarningIcon,
   LocalShipping as TruckIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock data
 const mockReceipts = [
@@ -190,7 +191,7 @@ export default function InboundReceivingPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Inbound Receiving
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -198,7 +199,7 @@ export default function InboundReceivingPage() {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<RefreshIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<RefreshIcon />}>
             Refresh
           </Button>
           <Button
@@ -269,7 +270,7 @@ export default function InboundReceivingPage() {
             <Tab label={`Accepted (${acceptedCount})`} />
             <Tab label={`Rejected (${rejectedCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search receipts" }}
             size="small"
             placeholder="Search receipts..."
             value={searchQuery}
@@ -347,7 +348,7 @@ export default function InboundReceivingPage() {
                       />
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedReceipt(receipt)}
@@ -355,7 +356,7 @@ export default function InboundReceivingPage() {
                         <ViewIcon fontSize="small" />
                       </IconButton>
                       {receipt.status === 'PENDING_INSPECTION' && (
-                        <IconButton size="small" color="success">
+                        <IconButton onClick={notBuilt} aria-label="Start" size="small" color="success">
                           <InspectIcon fontSize="small" />
                         </IconButton>
                       )}

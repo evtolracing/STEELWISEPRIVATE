@@ -3,6 +3,7 @@ import {
   Box,
   Paper,
   Typography,
+  Button,
   IconButton,
   Badge,
   Chip,
@@ -24,6 +25,8 @@ import {
 import { KANBAN_COLUMNS, JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import JobCard from './JobCard'
 
+export const COLUMN_PAGE = 30
+
 const KanbanColumn = ({
   column,
   jobs,
@@ -39,6 +42,10 @@ const KanbanColumn = ({
   const columnJobs = jobs.filter(job => 
     column.statuses ? column.statuses.includes(job.status) : job.status === column.status
   )
+  // A column draws its first cards and offers the rest, so a branch with hundreds of jobs in one
+  // state does not freeze the page. The count in the column's heading is always of all of them.
+  const [shown, setShown] = useState(COLUMN_PAGE)
+  const visibleJobs = columnJobs.slice(0, shown)
 
   const handleDragOver = (e) => {
     e.preventDefault()
@@ -131,18 +138,25 @@ const KanbanColumn = ({
             <Typography variant="body2">No jobs</Typography>
           </Box>
         ) : (
-          columnJobs.map((job) => (
-            <JobCard
-              key={job.id}
-              job={job}
-              onClick={() => onJobClick?.(job)}
-              onStart={onStartJob}
-              onPause={onPauseJob}
-              onComplete={onCompleteJob}
-              onUpdate={onUpdateJob}
-              draggable
-            />
-          ))
+          <>
+            {visibleJobs.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                onClick={() => onJobClick?.(job)}
+                onStart={onStartJob}
+                onPause={onPauseJob}
+                onComplete={onCompleteJob}
+                onUpdate={onUpdateJob}
+                draggable
+              />
+            ))}
+            {columnJobs.length > shown && (
+              <Button size="small" fullWidth onClick={() => setShown((n) => n + COLUMN_PAGE)} data-testid="column-show-more">
+                Show {Math.min(COLUMN_PAGE, columnJobs.length - shown)} more of {columnJobs.length - shown}
+              </Button>
+            )}
+          </>
         )}
       </Box>
     </Paper>
@@ -216,7 +230,7 @@ const KanbanBoard = ({
         }}
       >
         {/* Search */}
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search jobs" }}
           size="small"
           placeholder="Search jobs..."
           value={searchQuery}
@@ -283,7 +297,7 @@ const KanbanBoard = ({
         {onRefresh && (
           <Tooltip title="Refresh">
             <span>
-              <IconButton onClick={onRefresh} disabled={loading}>
+              <IconButton aria-label="Refresh" onClick={onRefresh} disabled={loading}>
                 <RefreshIcon />
               </IconButton>
             </span>

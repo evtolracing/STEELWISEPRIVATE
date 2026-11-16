@@ -96,6 +96,23 @@ Workflow 1 (customer to cash) and workflow 5 (return and credit) were walked fro
 
 Not part of any workflow, because they do not exist: an accounting ledger (N-025), carrier rating and tracking (N-026), customer notices and invoice delivery (N-028).
 
+### Phase 9 update (2026-11-16)
+
+Phase 9 changed no workflow rule. It walked the screens of each workflow in a browser (232 scenarios, `qa/sim/phase9-ui.cjs`) and compared what each shows with the record. What the screens now guarantee, by workflow:
+
+| Workflow | Before Phase 9 | Now |
+|---|---|---|
+| 1. Customer to cash: find and read an order | The top-bar search did nothing; the order list ignored a search; the order page worked out its own total at 6% tax with no freight and did not name the customer (V-001, V-019, V-020) | Search by number from any screen; the page shows the stored subtotal, tax, freight and total, and the customer |
+| 1. Customer to cash: enter an order | A half-entered order was lost on a stray click, Back or reload (V-017) | Asks first; Stay keeps every entry |
+| 1. Customer to cash: dispatch | A double click on "Dispatch now" dispatched and then cancelled the shipment (V-022) | One press, one action; one invoice |
+| 1. Customer to cash: invoice and payment | Sound | Verified on screen: every figure of an invoice as stored; a failed payment is not shown as paid; the dock sees a number and no amount |
+| 2. Procure to stock | Sound | Verified on screen: purchase order lines and totals as stored; a receipt appears in stock; an item in transit says so in the list (K-014) |
+| 3. Make to order | The shop floor opened on the first branch for everyone (V-021); the order board froze for over a second (V-026) | Opens on the person's branch; the board draws 30 cards a column |
+| 4. Branch transfer | In transit shown only on the item's page | Shown on the list row |
+| 5. Return and credit | Sound | Verified on screen: a return for an order not on file says so and creates nothing |
+| 7. Exception management | An unknown address showed the dashboard; a session that ended dropped the person at home; a server failure could crash a list (V-014, V-005, V-023) | Page not found; back to the same page after sign-in; an error with Retry |
+| All | Rows opened only with a mouse; controls and fields with no name; confirmations in the browser's own box | Keyboard throughout the paths the scenarios walk; names on every control; the application's own dialogs |
+
 ## Job types found
 
 Order types in the schema: RFQ, QUOTE, SO (sales order), PO, RETURN. PO is never used. Sales channels that create a sales order: order entry, quote acceptance, web store, counter quick sale, counter session flow, partner API. The order hub creates its own orders that are not sales orders (B-009).

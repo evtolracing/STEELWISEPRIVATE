@@ -22,7 +22,7 @@ Not built: a signature drawn on a screen, a photo taken in the product (an image
 
 A problem on the road is recorded with what happened. The shipment can then go back on the road, without shipping or billing a second time, or be delivered. It cannot be cancelled or put back on the dock, because the stock has left and the invoice exists.
 
-What the product does not do is end a load as lost, destroyed or refused for good (N-027). Today that is a return (material back) or a credit memo (money back), each entered by a person. A shipment left in "problem" holds its order open on the Orders Not Closed list, so it cannot be forgotten.
+Since owner decision 10 (2026-11-15) a manager can end a shipment that has a problem as lost, destroyed or refused for good (N-027): the kind and what happened are required, and what is left on its invoice is credited in the same save. Stock is not moved a second time. Detail in `phase-08-owner-decision-10.md`.
 
 ## Verified
 

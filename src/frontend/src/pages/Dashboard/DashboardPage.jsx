@@ -175,7 +175,7 @@ function AlertCard({ alerts = [] }) {
   )
 }
 
-function RecentOrdersTable({ orders = [] }) {
+function RecentOrdersTable({ orders = [], onRefresh, refreshing = false }) {
   const columns = [
     { id: 'orderNumber', label: 'Order #', minWidth: 100 },
     { id: 'customer', label: 'Customer', minWidth: 150 },
@@ -209,7 +209,7 @@ function RecentOrdersTable({ orders = [] }) {
           </Avatar>
           <Typography variant="h6" fontWeight={700}>Recent Orders</Typography>
         </Box>
-        <IconButton size="small" sx={{ 
+        <IconButton aria-label="Refresh the recent orders" size="small" onClick={onRefresh} disabled={refreshing} sx={{ 
           bgcolor: alpha('#1976d2', 0.1),
           '&:hover': { bgcolor: alpha('#1976d2', 0.2) }
         }}>
@@ -227,7 +227,7 @@ function RecentOrdersTable({ orders = [] }) {
 }
 
 export default function DashboardPage() {
-  const { data: stats, isLoading: statsLoading } = useApiQuery(
+  const { data: stats, isLoading: statsLoading, refetch, isFetching } = useApiQuery(
     'dashboardStats',
     getDashboardStats,
     { refetchInterval: 60000 } // Refresh every minute
@@ -283,7 +283,7 @@ export default function DashboardPage() {
               <DashboardIcon sx={{ fontSize: 30 }} />
             </Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+              <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                 Dashboard
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
@@ -346,7 +346,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <RecentOrdersTable orders={displayOrders} />
+          <RecentOrdersTable orders={displayOrders} onRefresh={() => refetch()} refreshing={isFetching} />
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack spacing={3}>

@@ -13,7 +13,7 @@ Scores are a judgement from the evidence named, not a measurement, on the scale 
 | Carriers and tracking | NOT ASSESSED | No carrier is connected (N-026). The partner key path for a carrier is verified | |
 | Freight calculation | NOT ASSESSED | Not built (N-026). Freight typed on the order is billed once: verified | |
 | Delivery and proof of delivery | 88 | Name, image address or reason required (N-004); once only; carrier reports marked; papers carry it | No signature capture or photo upload; old deliveries without proof stay as they are |
-| Shipment exceptions | 72 | A reason is required (N-003); back on the road without a second shipment or invoice | No rule for a lost or destroyed load (N-027) |
+| Shipment exceptions | 86 | A reason is required (N-003); back on the road without a second shipment or invoice; a lost load is ended by a manager with a credit (N-027, owner decision 10: 4 scenarios, 6 rule removals) | No carrier claim is tracked; a reshipment is a new order |
 | Invoice generation | 94 | One invoice per shipment in the same step; numbering in sequence under load; tax and freight by part to the cent; 25 scenarios | Invoices are not sent (N-028) |
 | Payments and receivables | 88 | Part payments, overpayment refused, future date refused (N-007), roles; receivables by age with unit-tested columns | No processing, statements, dunning or write-off; a payment is a typed record |
 | Credits, refunds, adjustments | 91 | Never above the invoice, in total, by line and under races; exact to the cent (N-021); an invoice is never edited | Refunds move no money |
@@ -23,7 +23,7 @@ Scores are a judgement from the evidence named, not a measurement, on the scale 
 | Order costing and margin | 78 | Cost fixed on the movement at dispatch; order cost and margin with every gap named; 12 scenarios; cost hidden from other roles on every answer (N-017, N-020) | No overhead, freight cost or valuation; movements before file 14 have no cost; labor rates not yet entered |
 | Order closeout | 88 | Thirteen open reasons from one pure rule with nine unit tests; list agrees with each order; 8 scenarios; 133 to 206 ms at 85 branches | Nothing locks or archives a closed order (owner's rule) |
 | Customer communication | NOT ASSESSED | Not built (N-028, owner decision 5) | |
-| Security and branch isolation | 91 | Group 7; the security sweep; branch boundary suite; custody records cannot be forged (N-011); print queue per branch (N-015); cost guard (N-020) | F-009 (who may read invoices) is the owner's; live roles NOT VERIFIED |
+| Security and branch isolation | 93 | Group 7; the security sweep; branch boundary suite; custody records cannot be forged (N-011); print queue per branch (N-015); cost guard (N-020); invoices read by sales, accounting and managers only (F-009, owner decision 10) | Live roles NOT VERIFIED |
 | Concurrency and recovery | 92 | 20 scenarios; every once-only rule raced; request keys; dropped connections | Local machine; no multi-server run |
 | Screens | 80 | 45 browser checks on six screens including phone width | No real user timed; accessibility beyond labels deferred to Phase 9; seven freight screens are samples (U-035) |
 | Performance at 85 branches | see `phase-08-ux-efficiency.md` | 18 calls timed, 6 to 206 ms | Local machine, not the host; no packages in the scale data |
@@ -34,7 +34,7 @@ Scores are a judgement from the evidence named, not a measurement, on the scale 
 |---|---|---|
 | A. Fulfilment eligibility | PASS | Group 1 and group 2; N-001, N-002, N-005 corrected and proven |
 | B. Picking and packaging | PASS for what exists, with stated limits | The packaging chain completes and is verified; picking is a list, not a confirmed task |
-| C. Shipping and delivery | PARTIAL | Shipment, dispatch, delivery and proof pass. Carriers, freight rating and lost loads do not exist (N-026, N-027) |
+| C. Shipping and delivery | PARTIAL | Shipment, dispatch, delivery and proof pass. Carriers and freight rating do not exist (N-026, deferred by owner decision 10). A lost load is handled since decision 10 (N-027) |
 | D. Financial integrity | PARTIAL | Invoices, payments, credits and refunds pass and reconcile to shipments. No ledger, no accounting connection (N-025) |
 | E. Costing and profitability | PARTIAL | Order cost and margin pass for what owner decision 9 covers. No overhead, freight cost, valuation or cost of goods |
 | F. Returns and credits | PASS | Group 6; N-016 corrected |
@@ -48,7 +48,7 @@ Scores are a judgement from the evidence named, not a measurement, on the scale 
 | Gate | Result | Basis |
 |---|---|---|
 | A. Scope understood | PASS | `phase-08-fulfillment-inventory.md` |
-| B. Requirements met | PARTIAL | Everything that exists is corrected and verified. Accounting, carriers, freight rating, notices and lost-load handling are not built and wait on the owner |
+| B. Requirements met | PARTIAL | Everything that exists is corrected and verified. Accounting, carriers, freight rating and notices are not built and wait on the owner |
 | C. Defects reproduced before correction | PASS | Probe on the starting code (`qa/sim/p8-probe.mjs`); N-020 to N-023 found by the new scenarios |
 | D. Corrections minimal and in place | PASS | No module replaced; three new library files, two new screens, one additive database file |
 | E. Automated checks fail without the fix | PASS | 31 rules removed one at a time, each failed a scenario; two further lines were shown to be backed by a second check |

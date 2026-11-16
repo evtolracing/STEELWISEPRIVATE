@@ -44,6 +44,7 @@ import {
   Refresh as RefreshIcon,
   Print as PrintIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Active Visitors Data
 const mockActiveVisitors = [
@@ -199,7 +200,7 @@ export default function ActiveVisitorsDashboard() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Active Visitors Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -207,10 +208,10 @@ export default function ActiveVisitorsDashboard() {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<RefreshIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<RefreshIcon />}>
             Refresh
           </Button>
-          <Button variant="contained" startIcon={<AddIcon />}>
+          <Button onClick={notBuilt} variant="contained" startIcon={<AddIcon />}>
             Quick Check-In
           </Button>
         </Box>
@@ -286,7 +287,7 @@ export default function ActiveVisitorsDashboard() {
             <Tab label={`Drivers (${driverCount})`} />
             <Tab label={`Visitors (${visitorCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search by name, company, badge" }}
             size="small"
             placeholder="Search by name, company, badge..."
             value={searchQuery}
@@ -412,17 +413,17 @@ export default function ActiveVisitorsDashboard() {
                       )}
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedVisitor(visitor)}
                       >
                         <ViewIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small">
+                      <IconButton onClick={notBuilt} aria-label="Print" size="small">
                         <PrintIcon fontSize="small" />
                       </IconButton>
-                      <IconButton
+                      <IconButton aria-label="Sign out"
                         size="small"
                         color="error"
                         onClick={() => setCheckoutDialog(visitor)}

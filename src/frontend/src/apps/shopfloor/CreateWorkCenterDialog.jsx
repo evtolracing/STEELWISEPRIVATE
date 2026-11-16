@@ -346,7 +346,7 @@ export default function CreateWorkCenterDialog({
               Capabilities
             </Typography>
             <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-              <TextField
+              <TextField inputProps={{ 'aria-label': "Add capability (e.g. THICK_PLATE)" }}
                 size="small"
                 value={capInput}
                 onChange={(e) => setCapInput(e.target.value)}

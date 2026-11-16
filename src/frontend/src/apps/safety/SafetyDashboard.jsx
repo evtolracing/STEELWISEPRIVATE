@@ -58,6 +58,7 @@ import {
   ElectricalServices as ElectricalIcon,
   Lock as LotoIcon,
 } from '@mui/icons-material';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock data - will be replaced with API calls
 const mockDashboardData = {
@@ -132,7 +133,7 @@ const getPermitIcon = (type) => {
 // KPI Card Component
 function KpiCard({ title, value, subtitle, icon, color = 'primary', trend, trendValue, onClick }) {
   return (
-    <Card 
+    <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
       sx={{ 
         height: '100%', 
         cursor: onClick ? 'pointer' : 'default',
@@ -251,7 +252,7 @@ export default function SafetyDashboard() {
       {/* Header */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Safety Dashboard
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -383,7 +384,7 @@ export default function SafetyDashboard() {
             <Grid container spacing={2}>
               {data.activePermits.map((permit) => (
                 <Grid item xs={12} sm={6} key={permit.id}>
-                  <Card variant="outlined" sx={{ bgcolor: alpha('#4caf50', 0.05) }}>
+                  <Card variant="outlined" sx={{ bgcolor: alpha('#2E7D32', 0.05) }}>
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                       <Stack direction="row" spacing={1.5} alignItems="center">
                         <Avatar sx={{ bgcolor: permit.type === 'LOTO' ? 'warning.light' : 'error.light', width: 40, height: 40 }}>
@@ -431,7 +432,7 @@ export default function SafetyDashboard() {
               {data.recentIncidents.map((incident, index) => (
                 <Box key={incident.id}>
                   {index > 0 && <Divider />}
-                  <ListItem
+                  <ListItem tabIndex={0} onKeyDown={activateOnKey}
                     sx={{ px: 0, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
                     onClick={() => navigate(`/safety/incidents/${incident.id}`)}
                   >
@@ -537,19 +538,19 @@ export default function SafetyDashboard() {
 
             <Grid container spacing={1}>
               <Grid item xs={4}>
-                <Box sx={{ textAlign: 'center', p: 1, bgcolor: 'success.light', borderRadius: 1 }}>
+                <Box sx={{ textAlign: 'center', p: 1, bgcolor: 'success.tint', borderRadius: 1 }}>
                   <Typography variant="h6" color="success.dark">{data.trainingStatus.fullyTrained}</Typography>
                   <Typography variant="caption" color="success.dark">Current</Typography>
                 </Box>
               </Grid>
               <Grid item xs={4}>
-                <Box sx={{ textAlign: 'center', p: 1, bgcolor: 'warning.light', borderRadius: 1 }}>
+                <Box sx={{ textAlign: 'center', p: 1, bgcolor: 'warning.tint', borderRadius: 1 }}>
                   <Typography variant="h6" color="warning.dark">{data.trainingStatus.dueWithin30Days}</Typography>
                   <Typography variant="caption" color="warning.dark">Due Soon</Typography>
                 </Box>
               </Grid>
               <Grid item xs={4}>
-                <Box sx={{ textAlign: 'center', p: 1, bgcolor: 'error.light', borderRadius: 1 }}>
+                <Box sx={{ textAlign: 'center', p: 1, bgcolor: 'error.tint', borderRadius: 1 }}>
                   <Typography variant="h6" color="error.dark">{data.trainingStatus.overdue}</Typography>
                   <Typography variant="caption" color="error.dark">Overdue</Typography>
                 </Box>

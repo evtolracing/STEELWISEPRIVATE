@@ -78,7 +78,7 @@ export default function HelpDrawer({
             {module.title}
           </Typography>
         </Box>
-        <IconButton onClick={onClose} size="small" sx={{ color: 'inherit' }}>
+        <IconButton aria-label="Close" onClick={onClose} size="small" sx={{ color: 'inherit' }}>
           <CloseIcon />
         </IconButton>
       </Box>

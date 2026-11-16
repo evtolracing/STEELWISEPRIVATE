@@ -131,7 +131,7 @@ function OrdersPage() {
   return (
     <Box sx={{ p: 3 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5">Orders</Typography>
+        <Typography component="h1" variant="h5">Orders</Typography>
         <Stack direction="row" spacing={1}>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/orders/intake')}>
             New Order
@@ -331,12 +331,17 @@ function OrdersPage() {
 
                 {/* Actions */}
                 <Stack direction="row" spacing={2}>
-                  <Button variant="contained" startIcon={<PrintIcon />}>
+                  <Button variant="contained" startIcon={<PrintIcon />} onClick={() => window.print()} className="no-print">
                     Print Order
                   </Button>
-                  <Button variant="outlined" startIcon={<EmailIcon />}>
-                    Email Customer
-                  </Button>
+                  {selectedOrder.customerEmail ? (
+                    <Button variant="outlined" startIcon={<EmailIcon />} component="a" className="no-print"
+                      href={`mailto:${selectedOrder.customerEmail}?subject=${encodeURIComponent(`Order ${selectedOrder.orderNumber || ''}`)}`}>
+                      Email Customer
+                    </Button>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary" sx={{ alignSelf: 'center' }}>No email on file for this customer.</Typography>
+                  )}
                 </Stack>
               </Stack>
             </Paper>

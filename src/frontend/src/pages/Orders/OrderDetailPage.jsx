@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import {
   ArrowBack as BackIcon, Edit as EditIcon, Save as SaveIcon,
-  Send as SubmitIcon, Print as PrintIcon, ContentCopy as DuplicateIcon,
+  Send as SubmitIcon, Print as PrintIcon,
   Build as WOIcon, Inventory as AllocIcon, Receipt as InvoiceIcon,
   LocalShipping as ShipIcon, History as HistoryIcon, Delete as DeleteIcon,
   CheckCircle as CompleteIcon,
@@ -222,8 +222,9 @@ export default function OrderDetailPage() {
 
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <IconButton onClick={() => navigate(-1)}><BackIcon /></IconButton>
-        <Typography variant="h5" fontWeight={700}>{order.orderNumber}</Typography>
+        <IconButton aria-label="Back" onClick={() => navigate(-1)}><BackIcon /></IconButton>
+        <Typography component="h1" variant="h5" fontWeight={700}>{order.orderNumber}</Typography>
+        {(order.buyer?.name || order.customerName) && <Typography variant="body1" color="text.secondary" data-testid="order-customer">{order.buyer?.name || order.customerName}</Typography>}
         <OrderSourceChip source={order.source} />
         <Chip label={order.status?.replace(/_/g, ' ')} color={STATUS_COLOR[order.status] || 'default'} />
         {order.priority && order.priority !== 'STANDARD' && (
@@ -292,13 +293,13 @@ export default function OrderDetailPage() {
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Priority</Typography><Typography variant="body2" fontWeight={500}>{order.priority || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Ownership</Typography><Typography variant="body2" fontWeight={500}>{order.ownership?.replace(/_/g, ' ') || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">PO Number</Typography><Typography variant="body2" fontWeight={500}>{order.poNumber || '—'}</Typography></Grid>
-                  <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Customer</Typography><Typography variant="body2" fontWeight={500}>{order.customerName || '—'}</Typography></Grid>
+                  <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Customer</Typography><Typography variant="body2" fontWeight={500}>{order.buyer?.name || order.customerName || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Requested Date</Typography><Typography variant="body2" fontWeight={500}>{order.requestedDate || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Created</Typography><Typography variant="body2" fontWeight={500}>{order.createdAt ? new Date(order.createdAt).toLocaleString() : '—'}</Typography></Grid>
                   <Grid item xs={12}>
                     <Typography variant="caption" color="text.secondary">Notes</Typography>
                     {editing ? (
-                      <TextField fullWidth multiline rows={3} value={notes} onChange={e => setNotes(e.target.value)} sx={{ mt: 0.5 }} />
+                      <TextField inputProps={{ 'aria-label': 'Notes' }} fullWidth multiline rows={3} value={notes} onChange={e => setNotes(e.target.value)} sx={{ mt: 0.5 }} />
                     ) : (
                       <Typography variant="body2">{order.notes || '—'}</Typography>
                     )}
@@ -330,7 +331,10 @@ export default function OrderDetailPage() {
         <Grid item xs={12} md={4}>
           <PricingSummaryPanel
             lines={lines}
-            taxRate={6}
+            // A saved order shows the money on file. While a draft is being edited the tax is an estimate at
+            // the rate the order was saved with; the server works out the real figure on save.
+            stored={editing ? undefined : order}
+            taxRate={Number(order.subtotal) > 0 ? (Number(order.taxAmount || 0) / Number(order.subtotal)) * 100 : 0}
             priceSource={order.priceSource}
             contractName={order.contractName}
           />
@@ -346,8 +350,7 @@ export default function OrderDetailPage() {
               {['SUBMITTED', 'PENDING', 'CONFIRMED'].includes(order.status) && (
                 <Button fullWidth size="small" variant="contained" color="secondary" startIcon={<WOIcon />} onClick={handleCreateWOs} disabled={saving}>Create Work Orders</Button>
               )}
-              <Button fullWidth size="small" variant="outlined" startIcon={<PrintIcon />} disabled>Print</Button>
-              <Button fullWidth size="small" variant="outlined" startIcon={<DuplicateIcon />} disabled>Duplicate</Button>
+              <Button fullWidth size="small" variant="outlined" startIcon={<PrintIcon />} onClick={() => window.print()} className="no-print">Print</Button>
             </Box>
           </Paper>
         </Grid>

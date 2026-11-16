@@ -4,6 +4,7 @@ import { canAccessPath } from '../config/roleAccess'
 import { Box, CircularProgress } from '@mui/material'
 import { AppLayout } from '../components/layout'
 import { RouteErrorPage } from '../components/common'
+import NotFoundPage from '../components/common/NotFoundPage'
 import SampleScreen from '../components/common/SampleScreen'
 import { useAuth } from '../hooks/useAuth'
 
@@ -210,8 +211,10 @@ function PageLoader() {
         justifyContent: 'center',
         minHeight: '50vh',
       }}
+      role="status"
+      aria-label="Loading the page"
     >
-      <CircularProgress />
+      <CircularProgress aria-hidden />
     </Box>
   )
 }
@@ -228,7 +231,9 @@ function ProtectedRoute({ children, checkRole = false }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    // A deep link survives the sign-in: the person lands on the page they asked for.
+    const here = `${location.pathname}${location.search}`
+    return <Navigate to={here && here !== '/' ? `/login?next=${encodeURIComponent(here)}` : '/login'} replace />
   }
 
   if (checkRole && !canAccessPath(user?.role, location.pathname)) {
@@ -1549,10 +1554,10 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Catch-all redirect
+      // An address that is not a page says so; it no longer shows the dashboard without a word.
       {
         path: '*',
-        element: <Navigate to="/" replace />,
+        element: <NotFoundPage />,
       },
     ],
   },

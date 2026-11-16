@@ -38,6 +38,7 @@ import {
   QrCodeScanner as RfidIcon,
 } from '@mui/icons-material';
 import { askInventoryAssistant } from '../services/inventoryAiApi';
+import { activateOnKey } from '../utils/activateOnKey'
 
 const QUICK_PROMPTS = [
   'Where is RFID-HR-001-A7F3?',
@@ -206,7 +207,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
             {/* Supporting Data */}
             {response.supportingData && (
               <Box>
-                <Box
+                <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -218,7 +219,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
                   <Typography variant="subtitle2" color="text.secondary">
                     Details
                   </Typography>
-                  <IconButton size="small">
+                  <IconButton aria-label="Hide details" size="small">
                     {showData ? <CollapseIcon /> : <ExpandIcon />}
                   </IconButton>
                 </Box>
@@ -369,7 +370,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
           <Collapse in={showHistory}>
             <List dense sx={{ maxHeight: 150, overflowY: 'auto' }}>
               {history.map((item, idx) => (
-                <ListItem
+                <ListItem tabIndex={0} onKeyDown={activateOnKey}
                   key={idx}
                   button
                   onClick={() => handleAsk(item.query)}
@@ -391,7 +392,7 @@ export default function InventoryAiAssistantPanel({ context = {}, onActionClick 
       {/* Input Area */}
       <Box sx={{ p: 2, bgcolor: 'white', borderTop: '1px solid', borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Ask about inventory" }}
             fullWidth
             size="small"
             placeholder="Ask about inventory..."

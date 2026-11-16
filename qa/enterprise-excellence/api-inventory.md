@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
 
-648 routes in 75 route files, served at 76 mount points. 337 change data.
+649 routes in 75 route files, served at 76 mount points. 338 change data.
 
 ## What the columns mean
 
@@ -15,11 +15,11 @@ Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 419 of 648 |
-| Changing routes that returned a success in a test | 175 of 337 |
+| Routes that returned a success in a test | 421 of 649 |
+| Changing routes that returned a success in a test | 177 of 338 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
-| Handlers with no try/catch of their own | 195 (many use a shared wrapper) |
+| Handlers with no try/catch of their own | 196 (many use a shared wrapper) |
 | Routes that use raw SQL | 7 |
 | Calls the screens make that have no server route | 66 |
 
@@ -53,8 +53,8 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
 | `GET /api/processing/operations` | intakeProcessing.js:20 |
 | `GET /api/processing/templates` | intakeProcessing.js:43 |
-| `GET /api/shipments/shippable` | shipments.js:152 |
-| `GET /api/shipments/:id/items` | shipments.js:255 |
+| `GET /api/shipments/shippable` | shipments.js:153 |
+| `GET /api/shipments/:id/items` | shipments.js:256 |
 | `GET /api/tax-rates` | taxRates.js:8 |
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:8 |
@@ -98,7 +98,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 ## Every route, by route file
 
-### auth.js (4 routes, 125 lines)
+### auth.js (4 routes, 127 lines)
 
 Mounted at /api/auth. Tables: User.
 
@@ -119,7 +119,7 @@ Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserR
 | `GET /api/users/:id` | yes |  |  |  |  |  |
 | `POST /api/users` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 | `PUT /api/users/:id` | yes | 8 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
-| `DELETE /api/users/:id` |  | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
+| `DELETE /api/users/:id` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `POST /api/users/:id/reset-password` |  | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `GET /api/users/roles/list` | yes |  |  | yes |  |  |
 | `GET /api/users/roles/:id` |  |  |  |  |  |  |
@@ -350,7 +350,7 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (10 routes, 508 lines)
+### orders.js (10 routes, 513 lines)
 
 Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, Shipment, User.
 
@@ -394,7 +394,7 @@ Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, Job, OrderLine, 
 | `PUT /api/work-orders/:id/release-hold` | yes |  |  |  |  |  |
 | `PUT /api/work-orders/:id/cancel` | yes |  |  |  |  |  |
 
-### shipments.js (12 routes, 572 lines)
+### shipments.js (13 routes, 615 lines)
 
 Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter.
 
@@ -407,9 +407,10 @@ Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, S
 | `PUT /api/shipments/:id` | yes | 1 |  |  |  |  |
 | `GET /api/shipments/:id/items` |  |  |  | yes |  |  |
 | `POST /api/shipments/:id/items` | yes | 1 | yes |  |  |  |
-| `DELETE /api/shipments/:id/items/:itemId` | yes | 15 | yes | yes | yes |  |
+| `DELETE /api/shipments/:id/items/:itemId` | yes | 16 | yes | yes | yes |  |
 | `PUT /api/shipments/:id/dispatch` | yes |  |  |  |  |  |
 | `PUT /api/shipments/:id/deliver` | yes |  |  |  |  |  |
+| `PUT /api/shipments/:id/lost` | yes |  |  |  |  |  |
 | `PATCH /api/shipments/:id/status` | yes |  |  |  |  |  |
 | `GET /api/shipments/:id/documents` | yes |  |  |  |  |  |
 

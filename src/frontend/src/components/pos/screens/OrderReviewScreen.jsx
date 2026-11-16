@@ -55,6 +55,7 @@ import {
   Lock as LockIcon
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { activateOnKey } from '../../../utils/activateOnKey'
 
 // ============================================
 // CUSTOMER SUMMARY CARD
@@ -71,7 +72,7 @@ function CustomerSummaryCard({ customer, division, onEdit }) {
               Customer
             </Typography>
           </Box>
-          <IconButton size="small" onClick={onEdit}>
+          <IconButton aria-label="Edit" size="small" onClick={onEdit}>
             <EditIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -186,7 +187,7 @@ function PricingSummaryCard({ pricing, pendingApprovals, onApplyDiscount, onRemo
                     -${discount.amount?.toFixed(2)}
                   </Typography>
                   {!isLocked && onRemoveDiscount && (
-                    <IconButton size="small" onClick={() => onRemoveDiscount(discount.id)} color="error">
+                    <IconButton aria-label="Delete" size="small" onClick={() => onRemoveDiscount(discount.id)} color="error">
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   )}
@@ -302,7 +303,7 @@ function OrderLinesTable({ lines, pricingWarnings, onEditLine }) {
   
   return (
     <Paper variant="outlined">
-      <Box 
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey} 
         sx={{ 
           p: 2, 
           display: 'flex', 
@@ -326,7 +327,7 @@ function OrderLinesTable({ lines, pricingWarnings, onEditLine }) {
             />
           )}
         </Box>
-        <IconButton size="small">
+        <IconButton aria-label="Hide details" size="small">
           {expanded ? <CollapseIcon /> : <ExpandIcon />}
         </IconButton>
       </Box>
@@ -351,7 +352,7 @@ function OrderLinesTable({ lines, pricingWarnings, onEditLine }) {
                 const margin = line.pricing?.margin;
                 
                 return (
-                  <TableRow key={line.id} hover sx={{ bgcolor: warning ? 'warning.light' : undefined }}>
+                  <TableRow key={line.id} hover sx={{ bgcolor: warning ? 'warning.tint' : undefined }}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box>

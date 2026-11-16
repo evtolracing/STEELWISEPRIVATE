@@ -87,6 +87,7 @@ import {
   formatHours,
   slaColor,
 } from '../../services/compressionMetricsApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // ─── STAGE ICONS ─────────────────────────────────────────────────────────────
 
@@ -231,7 +232,7 @@ const CompressionMetricsDashboard = () => {
                 <Speed />
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={700}>
+                <Typography component="h1" variant="h5" fontWeight={700}>
                   Quote-to-Order Speed Metrics
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -612,7 +613,7 @@ const CompressionMetricsDashboard = () => {
       {/* ─── SLA RISK ORDERS ──────────────────────────────────────────── */}
       {slaRisk && slaRisk.data?.length > 0 && (
         <Paper sx={{ p: 2, mb: 3 }}>
-          <Box
+          <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
             onClick={() => setShowSlaDetails(!showSlaDetails)}
           >
@@ -628,7 +629,7 @@ const CompressionMetricsDashboard = () => {
                 sx={{ fontWeight: 600, height: 22 }}
               />
             </Box>
-            <IconButton size="small">
+            <IconButton aria-label="Hide details" size="small">
               {showSlaDetails ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Box>

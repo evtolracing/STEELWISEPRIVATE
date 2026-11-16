@@ -30,6 +30,6 @@ An invoice is never edited. The only adjustments are a credit memo, a refund aga
 ## Not built, and for the owner
 
 - Restocking fees, return authorisation approval levels and return windows: no rule exists.
-- A return of material from a load that never arrived, or was destroyed: N-027.
+- A load that never arrived, or was destroyed, is not a return: a manager ends it as lost and its invoice is credited (N-027, owner decision 10).
 - A return to a supplier: purchasing (Phase 6, K-series).
 - Refunds move no money. A refund is a record that money was sent back by some other means.

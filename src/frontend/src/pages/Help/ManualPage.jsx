@@ -172,7 +172,7 @@ export default function ManualPage() {
       {/* Page header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
         <MenuBookIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
           SteelWise Help Manual
         </Typography>
       </Box>
@@ -265,7 +265,7 @@ export default function ManualPage() {
                 width: 40,
                 height: 40,
                 borderRadius: 2,
-                bgcolor: 'primary.light',
+                bgcolor: 'primary.tint',
                 color: 'primary.contrastText',
                 display: 'flex',
                 alignItems: 'center',

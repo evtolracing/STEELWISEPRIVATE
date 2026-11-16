@@ -50,7 +50,8 @@ const mods = MODULES.map((m) => {
 const claimedFiles = new Set(mods.flatMap((m) => m.srcFiles));
 const unclaimed = Object.keys(d.backend.files).filter((f) => d.backend.files[f].endpoints.length && !claimedFiles.has(f));
 const claimedScreens = new Set(mods.flatMap((m) => m.screensFound.map((s) => s.route)));
-const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
+// The catch-all address ('*', the "Page not found" page) belongs to the shell, not to a module.
+const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route) && s.route !== '*');
 
 // ── system-inventory.md ─────────────────────────────────────────────────────────────────────
 {
@@ -199,6 +200,13 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '33. `lib/branchScope.js` (Phase 8): a shipment is seen by the dock it leaves from and by the branch that sold the order; only the dock changes it (`routes/shipments.js` `ownDock`). A print job belongs to a branch (`PrintQueueJob.locationId`, file 14).',
     '34. `lib/numbering.js` `isOverlap` (Phase 8): the retry recognises a database overlap from Prisma\'s own queries (P2034) and from raw statements (P2010 with 40001 or 40P01). Any new raw statement inside a serializable save is covered by it. A deadlock met by one of the client\'s own statements arrives with no code at all, only the database\'s words; that third form is recognised too (N-029), and the order save in `routes/orders.js` runs under the same retry because cancelling an order and dispatching its shipment take the same rows in opposite order.',
     '35. `services/dropTagService.js` (Phase 8): every package and tag step locks the package row and moves a tag only from the state the person saw. Package, tag and listing numbers come from the document counter (`nextNumber`).', ''];
+    '36. `components/layout/GlobalSearch.jsx` (new in Phase 9): the search asks five lists the server already limits by branch and role (`/orders?search=`, `/customers?search=`, `/coils?search=`, `/heats?search=`, `/shipments?search=`) and offers a kind only to a role that may open its page (`config/roleAccess.js`). A list that stops narrowing by `search`, or stops applying the branch, shows through the search at once.',
+    '37. `config/roleAccess.js` `ROLE_START` and `workspaceFor` (Phase 9): the first screen after sign-in, by role. `LoginPage.jsx` and the role gate in `AppLayout.jsx` both use it. A start page the role cannot open falls back to the dashboard, so a change to who may open a page never strands a role.',
+    '38. `components/layout/AppLayout.jsx` (Phase 9): the browser title is taken from the page\'s one main heading, and focus moves to the content on a change of page. A page with no main heading has no title of its own; `qa/tools/frontend-checks.mjs` fails on one.',
+    '39. `utils/ask.js` with `components/common/AskHost.jsx`, and `utils/notBuilt.js` with `components/common/NotBuiltNotice.jsx` (Phase 9): the application\'s own question, message and "not built" boxes. Both hosts are mounted once in `App.jsx`. The browser\'s `confirm`, `alert` and `prompt` are not used anywhere; the static check fails on one.',
+    '40. `components/common/UnsavedWorkGuard.jsx` (Phase 9) needs the data router (`useBlocker`); it is used by order entry. `utils/activateOnKey.js` gives 87 rows and cards their keyboard opening.',
+    '41. `theme/index.js` `tokens` (Phase 9): status colours, text colours, the focus ring and touch sizes are set here once. A screen that sets its own colour is outside them (94 files, V-035).',
+    '42. `GET /api/coils` (list) now carries the stock record\'s state (`inventory.status`) so the list can say "In Transit" (K-014). `GET /api/orders` accepts `search`. `POST /api/auth/login` answers the person\'s home branch, which the shop floor opens on.',
   write('module-dependency-map.md', L);
 }
 
@@ -207,6 +215,8 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
   const ra = fs.readFileSync(path.join(root, 'src/backend/src/lib/roleAccess.js'), 'utf8');
   const groups = Object.fromEntries([...ra.matchAll(/^\s+(\w+): \[([^\]]+)\],$/gm)].map((m) => [m[1], m[2].replace(/'/g, '').split(',').map((s) => s.trim())]));
   const roles = d.schema.enums.UserRole || [];
+  const feRa = fs.readFileSync(path.join(root, 'src/frontend/src/config/roleAccess.js'), 'utf8'); const startBlock = (feRa.match(/const ROLE_START = \{([\s\S]*?)\n\}/) || ['', ''])[1];
+  const roleStart = {}; for (const m of startBlock.matchAll(/(\w+): '([^']+)'/g)) (roleStart[m[2]] ||= []).push(m[1]);
   const sectionsP = probe?.sections || {};
   const AREAS_W = [['Orders, quotes, RFQs, customers, invoices and payments, opening a return', 'sales'], ['Counter sales', 'sales, warehouse'], ['Reserving stock for an order; receiving a return', 'sales, warehouse, production'], ['Stock records (stock items, heats, receiving, holds, transfers)', 'warehouse, production, quality'], ['Shipments', 'warehouse, sales, plus production manager, packaging lead, material handler, work-center lead'], ['Jobs and coil work orders (at both addresses since B-001)', 'production, sales, warehouse, quality'], ['Credits, refunds, cancelling an invoice, voiding a counter sale, tax rates', 'managers only: admin, leadership, credit manager, sales director'], ['Anything under /api/admin and /api/v1/admin', 'admin group only'], ['Users', 'SUPER_ADMIN, TENANT_OWNER, ADMIN, BRANCH_MANAGER, OPS_MANAGER (route guard)'], ['Products, grades, price levels', 'checked inside the handlers (sweep section "Heats, products and grades")'], ['Executive pages and order-speed metrics (reading too)', 'leadership roles']];
   const L = ['# Permissions matrix', '', made('qa/tools/excellence-docs.mjs'), '',
@@ -229,6 +239,11 @@ const unclaimedScreens = screens.filter((s) => !claimedScreens.has(s.route));
     '## Areas with no department rule (B-004)', '', 'Any staff login that is not read-only can change these. Measured with a saw-operator login against every write route.', '',
     '| Area | Write routes | Routes |', '|---|---:|---|',
     ...[['Processing recipes', '/api/processing-recipes'], ['Work centers', '/api/work-centers'], ['Staff, skills and shifts', '/api/staff'], ['Dispatch set-up and queue', '/api/v1/dispatch'], ['Shop-floor operations', '/api/v1/operations'], ['Bills of material', '/api/v1/bom'], ['Assets', '/api/assets'], ['Maintenance orders', '/api/maintenance-orders'], ['Documents (upload, delete)', '/api/documents'], ['Drop tags and packages', '/api/drop-tags'], ['Print queue', '/api/print-queue'], ['Stop work', '/api/safety/stop-work'], ['Second stock list', '/api/v1/inventory'], ['Order hub', '/api/v1'], ['Demand shaping', '/api/demand-shaping'], ['Exception events', '/api/v1/events'], ['Material tracking', '/api/material-tracking'], ['Quality inspections', '/api/qc'], ['Operations cockpit actions', '/api/ops-cockpit']].map(([n, p]) => { const l = eps.filter((e) => e.method !== 'GET' && e.mount === p); return `| ${n} | ${l.length} | ${p} |`; }), '',
+    '## Where each role starts, and what the screens were seen to refuse (Phase 9)', '',
+    'After sign-in a role starts at its workspace (`src/frontend/src/config/roleAccess.js`, `ROLE_START`). This is a convenience of the screens, not an access rule: the server rules above decide what a role may read and change. A role not listed starts at the dashboard.', '',
+    '| Starts at | Roles |', '|---|---|', ...Object.entries(roleStart).map(([page, rs]) => `| \`${page}\` | ${rs.join(', ')} |`), '',
+    'Verified in a browser for fifteen staff roles and a web shop customer, each signed in at the form (`qa/sim/phase9-ui.cjs`, navigation group): the start page; that a page the role may not open is absent from its menu and from the search, and says "No access" by address; and that the server refuses the call behind it. The table of roles tested is in `phase-09-role-workspaces.md`. No permission was added, removed or loosened in Phase 9.', '',
+    'Found in Phase 9 and not fixed: `GET /api/v1/dispatch/work-centers?locationId=` answers another branch\'s work centres to an operator who asks for them, and `GET /api/v1/dispatch/locations` lists every branch to any signed-in user (V-028, Phase 10). Names and types only.', '',
     '## Evidence from this session', '', '| Check | Result |', '|---|---|', ...Object.entries(sectionsP).map(([k, v]) => `| ${k} | ${esc(v.summary)} |`), '',
     '## Decisions needed from the owner', '', '1. Which roles are held to their own branch, and which to a region, for reading and for changing (B-003).', '2. The owner department for each area in the table above (B-004).', '3. Whether every staff login should read invoices and cost-bearing records (F-009).', ''];
   write('permissions-matrix.md', L);
@@ -331,7 +346,8 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
       }
       const adj = (state.scoreAdjustments || []).find((x) => x.group === g.title && x.category === cat);
       if (adj) { ev = `${adj.evidence}. Was ${s} (${ev})`; s = adj.score; }
-      if (cat === 'Accessibility') { s = null; ev = P1NOTE.Accessibility; }
+      // Accessibility had no evidence until Phase 9 measured it; a group with a Phase 9 judgement shows it, the rest stay not verified.
+      if (cat === 'Accessibility' && !adj) { s = null; ev = P1NOTE.Accessibility; }
       if (cat === 'Performance' && s == null) ev = 'NOT VERIFIED for this group. Only the routes in the Workstream 1 benchmark were measured';
       if (s != null) { sum += s * wgt; wsum += wgt; }
       rows.push(`| ${cat} | ${wgt}% | ${s == null ? 'NOT VERIFIED' : s} | ${esc(ev)} |`);

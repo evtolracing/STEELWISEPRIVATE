@@ -29,7 +29,7 @@ import {
 const STAT_CARDS = [
   { key: 'totalActive', label: 'Active Overrides',  icon: <ActiveIcon />, color: '#2e7d32' },
   { key: 'totalAllTime', label: 'Total (All Time)',  icon: <StatsIcon />,  color: '#546e7a' },
-  { key: 'todayCount',   label: "Today's Overrides", icon: <GavelIcon />,  color: '#e65100' },
+  { key: 'todayCount',   label: "Today's Overrides", icon: <GavelIcon />,  color: '#A63A00' },
 ]
 
 const TYPE_ICON_MAP = {
@@ -69,7 +69,7 @@ export default function AuditLogPage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
         <GavelIcon sx={{ fontSize: 32, color: '#546e7a' }} />
         <Box>
-          <Typography variant="h5" fontWeight={700}>CSR Override Audit Log</Typography>
+          <Typography component="h1" variant="h5" fontWeight={700}>CSR Override Audit Log</Typography>
           <Typography variant="body2" color="text.secondary">
             Review all override events — cutoff violations, capacity warnings, and pricing changes
           </Typography>

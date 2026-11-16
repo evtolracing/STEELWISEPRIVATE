@@ -30,6 +30,7 @@ import {
 } from '@mui/icons-material';
 import { speak, stopSpeaking, isSpeaking, isVoiceEnabled, setVoiceEnabled, createSpeechQueue } from '../../services/voiceService';
 import VoiceSettingsDialog from './VoiceSettingsDialog';
+import { tell } from '../../utils/ask'
 
 const ASSISTANT_API = '/api/ai/assistant';
 const STREAM_API = '/api/ai/assistant/stream';
@@ -187,7 +188,7 @@ export default function HeaderAIAssistant() {
 
   const startListening = (autoSend = false) => {
     if (!recognitionRef.current) {
-      alert('Speech recognition is not supported. Use Chrome or Edge.');
+      tell('Speech recognition is not supported in this browser. Use Chrome or Edge.', 'warning');
       return;
     }
     autoSendRef.current = autoSend;
@@ -487,7 +488,7 @@ export default function HeaderAIAssistant() {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              bgcolor: voiceMode ? '#FF5722' : '#4CAF50',
+              bgcolor: voiceMode ? '#BF360C' : '#2E7D32',
               border: '2px solid',
               borderColor: open ? 'primary.main' : 'background.paper',
               animation: voiceMode ? 'pulse 1s ease-in-out infinite' : 'none',
@@ -533,7 +534,7 @@ export default function HeaderAIAssistant() {
                       px: 2,
                       py: 1.5,
                       background: voiceMode
-                        ? 'linear-gradient(135deg, #E65100 0%, #FF6D00 100%)'
+                        ? 'linear-gradient(135deg, #A63A00 0%, #FF6D00 100%)'
                         : 'linear-gradient(135deg, #1565C0 0%, #1976D2 100%)',
                       color: 'white',
                       display: 'flex',
@@ -585,7 +586,7 @@ export default function HeaderAIAssistant() {
                           <SettingsIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <IconButton size="small" onClick={handleClose} sx={{ color: 'white', ml: 0.5 }}>
+                      <IconButton aria-label="Close" size="small" onClick={handleClose} sx={{ color: 'white', ml: 0.5 }}>
                         <CloseIcon fontSize="small" />
                       </IconButton>
                     </Box>
@@ -805,7 +806,7 @@ export default function HeaderAIAssistant() {
                         {listening ? <GraphicEqIcon /> : <MicIcon />}
                       </IconButton>
                     </Tooltip>
-                    <InputBase
+                    <InputBase inputProps={{ 'aria-label': listening ? 'Listening...' : 'Ask about jobs, orders, inventory...' }}
                       inputRef={inputRef}
                       value={query + (transcript ? ' ' + transcript : '')}
                       onChange={(e) => setQuery(e.target.value)}
@@ -825,7 +826,7 @@ export default function HeaderAIAssistant() {
                       }}
                       disabled={loading}
                     />
-                    <IconButton
+                    <IconButton aria-label="Send"
                       type="submit"
                       color="primary"
                       disabled={!query.trim() || loading}

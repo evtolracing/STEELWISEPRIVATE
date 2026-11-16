@@ -36,6 +36,8 @@ import {
   getStaffStats,
 } from '../../api/staff'
 import { getWorkCenters } from '../../api/workCenters'
+import { activateOnKey } from '../../utils/activateOnKey'
+import { ask } from '../../utils/ask'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -77,10 +79,10 @@ const STATUS_COLORS = {
 }
 
 const SKILL_COLORS = {
-  NOVICE: '#9e9e9e',
-  STANDARD: '#2196f3',
-  ADVANCED: '#ff9800',
-  EXPERT: '#4caf50',
+  NOVICE: '#616161',
+  STANDARD: '#1565C0',
+  ADVANCED: '#B45309',
+  EXPERT: '#2E7D32',
 }
 
 // ============================================================================
@@ -225,7 +227,7 @@ export default function StaffManagementPage() {
 
   const handleDelete = async (op) => {
     setMenuAnchor(null)
-    if (!window.confirm(`Deactivate operator ${op.firstName} ${op.lastName}?`)) return
+    if (!(await ask(`Deactivate operator ${op.firstName} ${op.lastName}?`, { title: 'Deactivate operator', confirmText: 'Deactivate', danger: true }))) return
     try {
       await deleteOperator(op.id)
       loadOperators()
@@ -292,7 +294,7 @@ export default function StaffManagementPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Staff & Operators
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -316,10 +318,10 @@ export default function StaffManagementPage() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {[
             { label: 'Total Operators', value: stats.totalOperators, icon: <PeopleIcon />, color: '#1976d2' },
-            { label: 'Active', value: stats.activeOperators, icon: <ActiveIcon />, color: '#4caf50' },
-            { label: 'On Leave', value: stats.onLeave, icon: <ScheduleIcon />, color: '#ff9800' },
+            { label: 'Active', value: stats.activeOperators, icon: <ActiveIcon />, color: '#2E7D32' },
+            { label: 'On Leave', value: stats.onLeave, icon: <ScheduleIcon />, color: '#B45309' },
             { label: 'Active Certifications', value: stats.totalSkills, icon: <VerifiedIcon />, color: '#9c27b0' },
-            { label: 'Today\'s Shifts', value: stats.todayShifts, icon: <ShiftIcon />, color: '#00bcd4' },
+            { label: 'Today\'s Shifts', value: stats.todayShifts, icon: <ShiftIcon />, color: '#00738A' },
           ].map((stat) => (
             <Grid item xs={12} sm={6} md key={stat.label}>
               <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
@@ -381,7 +383,7 @@ export default function StaffManagementPage() {
           onAddShift={() => { setEditingShift(null); setShiftDialog(true) }}
           onEditShift={(s) => { setEditingShift(s); setShiftDialog(true) }}
           onCancelShift={async (s) => {
-            if (!window.confirm('Cancel this shift?')) return
+            if (!(await ask('Cancel this shift?', { title: 'Cancel shift', confirmText: 'Cancel shift', cancelText: 'Keep shift', danger: true }))) return
             await cancelShift(s.id)
             loadShifts()
           }}
@@ -445,7 +447,7 @@ function OperatorsTab({
     <>
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-        <TextField
+        <TextField inputProps={{ 'aria-label': "Search operators" }}
           size="small" placeholder="Search operators..."
           value={searchTerm} onChange={(e) => onSearchChange(e.target.value)}
           InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> }}
@@ -500,7 +502,7 @@ function OperatorsTab({
                   </TableRow>
                 ) : (
                   paginated.map((op) => (
-                    <TableRow
+                    <TableRow tabIndex={0} onKeyDown={activateOnKey}
                       key={op.id}
                       hover
                       sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
@@ -565,7 +567,7 @@ function OperatorsTab({
                         <Typography variant="body2">{op.phone || '—'}</Typography>
                       </TableCell>
                       <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                        <IconButton
+                        <IconButton aria-label="More actions"
                           size="small"
                           onClick={(e) => { setMenuAnchor(e.currentTarget); setMenuOperator(op) }}
                         >
@@ -672,10 +674,10 @@ function ShiftsTab({ shifts, operators, onAddShift, onEditShift, onCancelShift }
                   <TableCell align="right">
                     {s.status !== 'CANCELLED' && s.status !== 'COMPLETED' && (
                       <>
-                        <IconButton size="small" onClick={() => onEditShift(s)}>
+                        <IconButton aria-label="Edit" size="small" onClick={() => onEditShift(s)}>
                           <EditIcon fontSize="small" />
                         </IconButton>
-                        <IconButton size="small" onClick={() => onCancelShift(s)} color="error">
+                        <IconButton aria-label="Delete" size="small" onClick={() => onCancelShift(s)} color="error">
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </>
@@ -906,7 +908,7 @@ function OperatorDialog({ open, onClose, onSave, operator, locations, workCenter
                   </FormControl>
                 </Grid>
                 <Grid item xs={2}>
-                  <IconButton color="error" onClick={() => removeSkillRow(idx)} sx={{ mt: 0.5 }}>
+                  <IconButton aria-label="Delete" color="error" onClick={() => removeSkillRow(idx)} sx={{ mt: 0.5 }}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Grid>
@@ -965,7 +967,7 @@ function SkillDialog({ open, onClose, operator, wcTypes, onSave, onRemove }) {
   }
 
   const handleRemove = async (skillId) => {
-    if (!window.confirm('Remove this certification?')) return
+    if (!(await ask('Remove this certification?', { title: 'Remove certification', confirmText: 'Remove', danger: true }))) return
     await onRemove(operator.id, skillId)
   }
 
@@ -1009,7 +1011,7 @@ function SkillDialog({ open, onClose, operator, wcTypes, onSave, onRemove }) {
                       {new Date(s.certifiedDate).toLocaleDateString()}
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" color="error" onClick={() => handleRemove(s.id)}>
+                      <IconButton aria-label="Delete" size="small" color="error" onClick={() => handleRemove(s.id)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </TableCell>

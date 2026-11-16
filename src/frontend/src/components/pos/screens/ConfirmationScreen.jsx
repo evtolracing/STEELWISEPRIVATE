@@ -35,6 +35,7 @@ import {
   ContentCut as CutIcon
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { sayNotBuilt } from '../../../utils/notBuilt'
 
 // ============================================
 // CONFIRMATION SCREEN
@@ -60,9 +61,9 @@ export function ConfirmationScreen({ screen, onNext, onBack }) {
   
   // Handle email
   const handleEmail = useCallback(() => {
-    // In production, call API to send email
-    alert('Email confirmation sent to ' + (customer?.contact?.email || customer?.email));
-  }, [customer]);
+    // No email is sent by this product yet (owner decision 5), and the screen says so.
+    sayNotBuilt('Email confirmation');
+  }, []);
   
   // Start new order
   const handleNewOrder = useCallback(() => {

@@ -38,6 +38,7 @@ import {
   AccessTime as TimeIcon
 } from '@mui/icons-material';
 import { usePOS } from '../POSContext';
+import { sayNotBuilt } from '../../../utils/notBuilt'
 
 // ============================================
 // DOCUMENT ROW
@@ -90,7 +91,7 @@ function DocumentRow({ document, onPrint, onEmail, printing }) {
 
 function CompletionSummary({ completion }) {
   return (
-    <Card variant="outlined" sx={{ bgcolor: 'success.light', borderColor: 'success.main' }}>
+    <Card variant="outlined" sx={{ bgcolor: 'success.tint', borderColor: 'success.main' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <Avatar sx={{ bgcolor: 'success.main', width: 56, height: 56 }}>
@@ -227,9 +228,8 @@ export function WillCallCompleteScreen({ screen, onNext, onBack }) {
   
   // Handle email
   const handleEmail = async (document) => {
-    // In production, would call email API
-    console.log('Emailing document:', document.name, 'to', order.customer?.email);
-    alert(`Document "${document.name}" will be emailed to ${order.customer?.email || 'customer'}`);
+    // No email is sent by this product yet (owner decision 5), and the screen says so.
+    sayNotBuilt(`Email ${document.name}`);
   };
   
   // Handle next pickup

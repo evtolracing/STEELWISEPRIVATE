@@ -41,6 +41,7 @@ import TimeEstimatePreview from '../../components/processing/TimeEstimatePreview
 import useCustomerDefaults from '../../hooks/useCustomerDefaults'
 import DemandShapingSuggestionPanel from '../../components/orders/DemandShapingSuggestionPanel'
 import useDemandShaping from '../../hooks/useDemandShaping'
+import UnsavedWorkGuard from '../../components/common/UnsavedWorkGuard'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -352,6 +353,7 @@ export default function CSRIntakePage() {
   // ──────────────────── RENDER ──────────────────
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+      <UnsavedWorkGuard when={!orderId && (Boolean(customer) || lines.length > 0 || Boolean(poNumber) || Boolean(notes))} what="an order" />
       {/* Breadcrumb */}
       <Breadcrumbs sx={{ mb: 2 }}>
         <MuiLink underline="hover" color="inherit" href="/" onClick={e => { e.preventDefault(); navigate('/') }}>Home</MuiLink>
@@ -361,7 +363,7 @@ export default function CSRIntakePage() {
 
       {/* Title bar */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <Typography variant="h5" fontWeight={700}>CSR Order Intake</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>CSR Order Intake</Typography>
         <OrderSourceChip source={source} />
         {orderId && <Chip label={`Draft #${orderId}`} size="small" variant="outlined" />}
         {overrides.length > 0 && <OverrideIndicator overrides={overrides} compact />}
@@ -491,7 +493,7 @@ export default function CSRIntakePage() {
           {/* Notes */}
           <Paper sx={{ p: 2.5, borderRadius: 2 }}>
             <Typography variant="subtitle1" fontWeight={600} gutterBottom>Internal Notes</Typography>
-            <TextField multiline rows={3} fullWidth placeholder="Add notes for production, shipping, etc." value={notes} onChange={e => setNotes(e.target.value)} />
+            <TextField inputProps={{ 'aria-label': "Add notes for production, shipping, etc" }} multiline rows={3} fullWidth placeholder="Add notes for production, shipping, etc." value={notes} onChange={e => setNotes(e.target.value)} />
           </Paper>
         </Grid>
 
@@ -551,8 +553,7 @@ export default function CSRIntakePage() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Button size="small" startIcon={<SaveIcon />} onClick={handleSaveDraft} disabled={saving} fullWidth variant="outlined">Save Draft</Button>
               <Button size="small" startIcon={<SendIcon />} onClick={handleSubmit} disabled={saving || !customer || lines.length === 0} fullWidth variant="contained">Submit</Button>
-              <Button size="small" startIcon={<DuplicateIcon />} fullWidth variant="outlined" color="secondary" disabled>Duplicate Order</Button>
-              <Button size="small" startIcon={<PrintIcon />} fullWidth variant="outlined" color="secondary" disabled>Print</Button>
+              <Button size="small" startIcon={<PrintIcon />} fullWidth variant="outlined" onClick={() => window.print()} disabled={lines.length === 0} className="no-print">Print this entry</Button>
             </Box>
           </Paper>
         </Grid>

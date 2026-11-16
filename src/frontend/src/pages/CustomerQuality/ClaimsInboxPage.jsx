@@ -47,6 +47,8 @@ import {
   TrendingUp as TrendUpIcon,
   TrendingDown as TrendDownIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock Claims Data
 const mockClaims = [
@@ -265,7 +267,7 @@ export default function ClaimsInboxPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Claims Inbox
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -366,7 +368,7 @@ export default function ClaimsInboxPage() {
         </Box>
         
         <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search claims" }}
             size="small"
             placeholder="Search claims..."
             value={searchQuery}
@@ -420,7 +422,7 @@ export default function ClaimsInboxPage() {
                 const status = statusConfig[claim.status]
                 const severity = severityConfig[claim.severity]
                 return (
-                  <TableRow
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey}
                     key={claim.id}
                     hover
                     sx={{
@@ -471,7 +473,7 @@ export default function ClaimsInboxPage() {
                       </Tooltip>
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton size="small" color="primary" onClick={(e) => { e.stopPropagation(); setSelectedClaim(claim); }}>
+                      <IconButton aria-label="View" size="small" color="primary" onClick={(e) => { e.stopPropagation(); setSelectedClaim(claim); }}>
                         <ViewIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -491,7 +493,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Customer *</InputLabel>
-                <Select label="Customer *" defaultValue="">
+                <Select label="Customer" required defaultValue="">
                   <MenuItem value="CUST-001">ABC Manufacturing</MenuItem>
                   <MenuItem value="CUST-002">XYZ Industries</MenuItem>
                   <MenuItem value="CUST-003">Premier Fabrication</MenuItem>
@@ -505,7 +507,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Claim Type *</InputLabel>
-                <Select label="Claim Type *" defaultValue="">
+                <Select label="Claim Type" required defaultValue="">
                   {Object.entries(claimTypeLabels).map(([key, label]) => (
                     <MenuItem key={key} value={key}>{label}</MenuItem>
                   ))}
@@ -515,7 +517,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Severity *</InputLabel>
-                <Select label="Severity *" defaultValue="STANDARD">
+                <Select label="Severity" required defaultValue="STANDARD">
                   <MenuItem value="CRITICAL">Critical (Production Stopped)</MenuItem>
                   <MenuItem value="MAJOR">Major (Significant Impact)</MenuItem>
                   <MenuItem value="STANDARD">Standard</MenuItem>
@@ -526,7 +528,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Description *"
+                label="Description" required
                 multiline
                 rows={4}
                 placeholder="Describe the customer's complaint in detail..."
@@ -598,9 +600,9 @@ function ClaimDetailView({ claim, onBack }) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined">Acknowledge</Button>
-          <Button variant="outlined" color="warning">Set Disposition</Button>
-          <Button variant="contained" color="success">Resolve</Button>
+          <Button onClick={notBuilt} variant="outlined">Acknowledge</Button>
+          <Button onClick={notBuilt} variant="outlined" color="warning">Set Disposition</Button>
+          <Button onClick={notBuilt} variant="contained" color="success">Resolve</Button>
         </Box>
       </Box>
 
@@ -673,15 +675,15 @@ function ClaimDetailView({ claim, onBack }) {
                 Claim created by {claim.owner} on {new Date(claim.createdAt).toLocaleString()}
               </Typography>
             </Box>
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Add a note or message" }}
               fullWidth
               placeholder="Add a note or message..."
               multiline
               rows={2}
             />
             <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-              <Button variant="contained" size="small">Send to Customer</Button>
-              <Button variant="outlined" size="small">Internal Note</Button>
+              <Button onClick={notBuilt} variant="contained" size="small">Send to Customer</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small">Internal Note</Button>
             </Box>
           </Paper>
         </Grid>
@@ -710,9 +712,9 @@ function ClaimDetailView({ claim, onBack }) {
           <Paper sx={{ p: 2, mb: 2 }}>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>Quick Actions</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Button variant="outlined" size="small" fullWidth>Create RMA</Button>
-              <Button variant="outlined" size="small" fullWidth>Issue Credit</Button>
-              <Button variant="outlined" size="small" fullWidth>Create CAR</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>Create RMA</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>Issue Credit</Button>
+              <Button onClick={notBuilt} variant="outlined" size="small" fullWidth>Create CAR</Button>
             </Box>
           </Paper>
         </Grid>

@@ -38,6 +38,7 @@ import {
   RequestQuote as RfqIcon,
 } from '@mui/icons-material';
 import { listRfqs } from '../../services/rfqApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const channelIcons = {
   EMAIL: <EmailIcon fontSize="small" />,
@@ -194,7 +195,7 @@ export default function RfqListPage() {
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Stack direction="row" spacing={2} alignItems="center">
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search RFQs" }}
             size="small"
             placeholder="Search RFQs..."
             value={search}
@@ -256,7 +257,7 @@ export default function RfqListPage() {
               </TableRow>
             ) : (
               filteredRfqs.map((rfq) => (
-                <TableRow
+                <TableRow tabIndex={0} onKeyDown={activateOnKey}
                   key={rfq.id}
                   hover
                   sx={{ cursor: 'pointer' }}

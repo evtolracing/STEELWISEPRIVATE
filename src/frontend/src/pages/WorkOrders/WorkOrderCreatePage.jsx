@@ -159,7 +159,7 @@ export default function WorkOrderCreatePage() {
             <WorkOrderIcon />
           </Avatar>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Create Work Order
             </Typography>
             <Typography variant="body2" color="text.secondary">

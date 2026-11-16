@@ -62,6 +62,7 @@ import {
 import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
 import { PRIORITY_LEVELS_CONFIG } from '../../constants/materials'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Modern gradient backgrounds based on priority
 const PRIORITY_GRADIENTS = {
@@ -196,7 +197,7 @@ const ModernJobCard = ({
 
   return (
     <>
-      <Card
+      <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
         draggable={draggable && !editing}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -211,9 +212,9 @@ const ModernJobCard = ({
           backdropFilter: 'blur(10px)',
           border: '1px solid',
           borderColor: isHotJob 
-            ? alpha('#f44336', 0.4) 
+            ? alpha('#C62828', 0.4) 
             : isUrgent 
-              ? alpha('#ff9800', 0.4) 
+              ? alpha('#B45309', 0.4) 
               : alpha('#e0e0e0', 0.8),
           borderRadius: 3,
           overflow: 'visible',
@@ -226,10 +227,10 @@ const ModernJobCard = ({
           animation: isHotJob ? 'hotPulse 2s infinite' : 'none',
           '@keyframes hotPulse': {
             '0%, 100%': { 
-              boxShadow: `0 0 0 0 ${alpha('#f44336', 0.4)}`,
+              boxShadow: `0 0 0 0 ${alpha('#C62828', 0.4)}`,
             },
             '50%': { 
-              boxShadow: `0 0 0 8px ${alpha('#f44336', 0)}`,
+              boxShadow: `0 0 0 8px ${alpha('#C62828', 0)}`,
             },
           },
           '&:active': {
@@ -245,8 +246,8 @@ const ModernJobCard = ({
             height: 3,
             borderRadius: '12px 12px 0 0',
             background: isHotJob 
-              ? 'linear-gradient(90deg, #f44336, #ff5722, #f44336)'
-              : 'linear-gradient(90deg, #ff9800, #ffc107, #ff9800)',
+              ? 'linear-gradient(90deg, #C62828, #BF360C, #C62828)'
+              : 'linear-gradient(90deg, #B45309, #8A6100, #B45309)',
             backgroundSize: '200% 100%',
             animation: 'shimmer 2s infinite linear',
           } : {},
@@ -276,7 +277,7 @@ const ModernJobCard = ({
             )}
             <Box sx={{ flex: 1, minWidth: 0 }}>
               {editing ? (
-                <TextField
+                <TextField inputProps={{ 'aria-label': "Job instructions" }}
                   size="small"
                   value={editedJob.instructions || ''}
                   onChange={(e) => setEditedJob({ ...editedJob, instructions: e.target.value })}
@@ -333,7 +334,7 @@ const ModernJobCard = ({
             <Stack direction="row" spacing={0.5} alignItems="center">
               {onUpdate && !editing && isHovered && (
                 <Zoom in>
-                  <IconButton
+                  <IconButton aria-label="Edit"
                     size="small"
                     onClick={(e) => { e.stopPropagation(); setEditing(true); }}
                     sx={{ 
@@ -420,7 +421,7 @@ const ModernJobCard = ({
           {!compact && (
             <>
               {/* Material Info - Clickable */}
-              <Box 
+              <Box role="button" tabIndex={0} onKeyDown={activateOnKey} 
                 onClick={(e) => { e.stopPropagation(); setMaterialDialogOpen(true); }}
                 sx={{ 
                   display: 'flex', 
@@ -472,7 +473,7 @@ const ModernJobCard = ({
                       '& .MuiLinearProgress-bar': {
                         borderRadius: 4,
                         background: getProgressValue() > 80 
-                          ? 'linear-gradient(90deg, #4caf50, #8bc34a)'
+                          ? 'linear-gradient(90deg, #2E7D32, #3B7A1E)'
                           : 'linear-gradient(90deg, #1976d2, #42a5f5)',
                       }
                     }}
@@ -495,7 +496,7 @@ const ModernJobCard = ({
                   px: 1,
                   py: 0.5,
                   borderRadius: 1,
-                  bgcolor: isOverdue ? alpha('#f44336', 0.1) : 'transparent',
+                  bgcolor: isOverdue ? alpha('#C62828', 0.1) : 'transparent',
                 }}>
                   <TimeIcon sx={{ fontSize: 14, color: getDueDateColor() }} />
                   <Typography 
@@ -765,7 +766,7 @@ const ModernJobCard = ({
                 fontWeight: 600,
               }}
             />
-            <IconButton 
+            <IconButton aria-label="Close" 
               onClick={(e) => { e.stopPropagation(); setMaterialDialogOpen(false); }}
               size="small"
             >
@@ -834,7 +835,7 @@ const ModernJobCard = ({
                       label={formatDate(job.dueDate)} 
                       size="small"
                       sx={{ 
-                        bgcolor: isOverdue ? alpha('#f44336', 0.1) : alpha('#4caf50', 0.1),
+                        bgcolor: isOverdue ? alpha('#C62828', 0.1) : alpha('#2E7D32', 0.1),
                         color: isOverdue ? 'error.main' : 'success.main',
                         fontWeight: 600,
                       }}
@@ -893,7 +894,7 @@ const ModernJobCard = ({
                 <Typography variant="subtitle2" color="text.secondary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <NotesIcon sx={{ fontSize: 16 }} /> Notes & Instructions
                 </Typography>
-                <Box sx={{ p: 2, borderRadius: 2, bgcolor: alpha('#ff9800', 0.05), border: '1px solid', borderColor: alpha('#ff9800', 0.2) }}>
+                <Box sx={{ p: 2, borderRadius: 2, bgcolor: alpha('#B45309', 0.05), border: '1px solid', borderColor: alpha('#B45309', 0.2) }}>
                   {job.instructions && (
                     <Typography variant="body2" sx={{ mb: job.notes ? 1 : 0 }}>{job.instructions}</Typography>
                   )}

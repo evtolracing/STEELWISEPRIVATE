@@ -28,7 +28,7 @@ export const MarginStatus = {
 
 export const MarginColors = {
   [MarginStatus.CRITICAL]: '#d32f2f',
-  [MarginStatus.WARNING]: '#f57c00',
+  [MarginStatus.WARNING]: '#B45309',
   [MarginStatus.ACCEPTABLE]: '#fbc02d',
   [MarginStatus.GOOD]: '#388e3c',
   [MarginStatus.EXCELLENT]: '#1b5e20'

@@ -54,6 +54,7 @@ import {
   Email as EmailIcon,
   Gavel as SCARIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock SNC data
 const mockSNCs = [
@@ -218,7 +219,7 @@ export default function SupplierNonconformancePage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Supplier Nonconformances
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -315,7 +316,7 @@ export default function SupplierNonconformancePage() {
             <Tab label={`SCAR Issued (${scarCount})`} />
             <Tab label={`Closed (${closedCount})`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search SNCs" }}
             size="small"
             placeholder="Search SNCs..."
             value={searchQuery}
@@ -399,7 +400,7 @@ export default function SupplierNonconformancePage() {
                     </TableCell>
                     <TableCell>{snc.owner}</TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedSNC(snc)}
@@ -407,7 +408,7 @@ export default function SupplierNonconformancePage() {
                         <ViewIcon fontSize="small" />
                       </IconButton>
                       {snc.status === 'OPEN' && (
-                        <IconButton size="small" color="info">
+                        <IconButton onClick={notBuilt} aria-label="Send" size="small" color="info">
                           <SendIcon fontSize="small" />
                         </IconButton>
                       )}
@@ -433,7 +434,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Supplier *</InputLabel>
-                <Select label="Supplier *" defaultValue="">
+                <Select label="Supplier" required defaultValue="">
                   <MenuItem value="SUP-001">Nucor Corporation</MenuItem>
                   <MenuItem value="SUP-002">ArcelorMittal</MenuItem>
                   <MenuItem value="SUP-003">Steel Dynamics</MenuItem>
@@ -444,7 +445,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Issue Type *</InputLabel>
-                <Select label="Issue Type *" defaultValue="">
+                <Select label="Issue Type" required defaultValue="">
                   {Object.entries(issueTypeLabels).map(([key, label]) => (
                     <MenuItem key={key} value={key}>
                       {label}
@@ -456,7 +457,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Severity *</InputLabel>
-                <Select label="Severity *" defaultValue="">
+                <Select label="Severity" required defaultValue="">
                   <MenuItem value="CRITICAL">Critical (Safety/Major Impact)</MenuItem>
                   <MenuItem value="MAJOR">Major (Significant Impact)</MenuItem>
                   <MenuItem value="MINOR">Minor (Limited Impact)</MenuItem>
@@ -481,7 +482,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Description of Issue *"
+                label="Description of Issue" required
                 multiline
                 rows={4}
                 placeholder="Describe the nonconformance in detail..."
@@ -553,10 +554,10 @@ function SNCDetailView({ snc, onBack }) {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<EmailIcon />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<EmailIcon />}>
             Notify Supplier
           </Button>
-          <Button variant="contained" color="error" startIcon={<SCARIcon />}>
+          <Button onClick={notBuilt} variant="contained" color="error" startIcon={<SCARIcon />}>
             Issue SCAR
           </Button>
         </Box>
@@ -674,14 +675,14 @@ function SNCDetailView({ snc, onBack }) {
             </List>
 
             <Divider sx={{ my: 2 }} />
-            <TextField
+            <TextField inputProps={{ 'aria-label': "Add a comment" }}
               fullWidth
               placeholder="Add a comment..."
               multiline
               rows={2}
             />
             <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-              <Button variant="contained" size="small">
+              <Button onClick={notBuilt} variant="contained" size="small">
                 Add Comment
               </Button>
               <FileUploadZone

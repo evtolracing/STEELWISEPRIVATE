@@ -125,7 +125,7 @@ export default function JobDetailPage() {
         <IconButton onClick={() => navigate(-1)} aria-label="Back"><BackIcon /></IconButton>
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Typography variant="h5" fontWeight={700}>{job.jobNumber}</Typography>
+            <Typography component="h1" variant="h5" fontWeight={700}>{job.jobNumber}</Typography>
             <JobStatusChip status={job.status} />
             <Chip label={`${PRIORITY_LABELS[job.priority] || job.priority} priority`} size="small" variant="outlined" color={job.priority === 'HOT' ? 'error' : job.priority === 'HIGH' ? 'warning' : 'default'} />
           </Box>

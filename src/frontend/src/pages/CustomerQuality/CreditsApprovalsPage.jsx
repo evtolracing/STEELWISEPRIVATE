@@ -31,6 +31,7 @@ import {
   Cancel as RejectedIcon,
   AttachMoney as MoneyIcon,
 } from '@mui/icons-material'
+import { notBuilt } from '../../utils/notBuilt'
 
 // Mock Credit Requests Data
 const mockCredits = [
@@ -168,7 +169,7 @@ export default function CreditsApprovalsPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 700 }}>
             Credits & Approvals
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -248,7 +249,7 @@ export default function CreditsApprovalsPage() {
             <Tab label={`Approved (${approvedCount})`} />
             <Tab label={`Issued`} />
           </Tabs>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search credits" }}
             size="small"
             placeholder="Search credits..."
             value={searchQuery}
@@ -313,7 +314,7 @@ export default function CreditsApprovalsPage() {
                       {new Date(credit.requestedAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      <IconButton aria-label="View"
                         size="small"
                         color="primary"
                         onClick={() => setSelectedCredit(credit)}
@@ -322,10 +323,10 @@ export default function CreditsApprovalsPage() {
                       </IconButton>
                       {['PENDING_L1', 'PENDING_L2', 'PENDING_L3'].includes(credit.status) && (
                         <>
-                          <IconButton size="small" color="success">
+                          <IconButton onClick={notBuilt} aria-label="Confirm" size="small" color="success">
                             <ApprovedIcon fontSize="small" />
                           </IconButton>
-                          <IconButton size="small" color="error">
+                          <IconButton onClick={notBuilt} aria-label="Cancel" size="small" color="error">
                             <RejectedIcon fontSize="small" />
                           </IconButton>
                         </>
@@ -372,16 +373,16 @@ function CreditDetailView({ credit, onBack }) {
         <Box sx={{ display: 'flex', gap: 1 }}>
           {['PENDING_L1', 'PENDING_L2', 'PENDING_L3'].includes(credit.status) && (
             <>
-              <Button variant="contained" color="success" startIcon={<ApprovedIcon />}>
+              <Button onClick={notBuilt} variant="contained" color="success" startIcon={<ApprovedIcon />}>
                 Approve
               </Button>
-              <Button variant="outlined" color="error" startIcon={<RejectedIcon />}>
+              <Button onClick={notBuilt} variant="outlined" color="error" startIcon={<RejectedIcon />}>
                 Reject
               </Button>
             </>
           )}
           {credit.status === 'APPROVED' && (
-            <Button variant="contained" color="primary">
+            <Button onClick={notBuilt} variant="contained" color="primary">
               Issue Credit
             </Button>
           )}

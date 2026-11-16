@@ -11,25 +11,25 @@ export const PRIORITY_LEVELS = {
 export const PRIORITY_CONFIG = {
   [PRIORITY_LEVELS.LOW]: {
     label: 'Low',
-    color: '#9E9E9E',
+    color: '#616161',
     bgColor: '#F5F5F5',
     sortOrder: 5,
   },
   [PRIORITY_LEVELS.NORMAL]: {
     label: 'Normal',
-    color: '#2196F3',
+    color: '#1565C0',
     bgColor: '#E3F2FD',
     sortOrder: 4,
   },
   [PRIORITY_LEVELS.HIGH]: {
     label: 'High',
-    color: '#FF9800',
+    color: '#B45309',
     bgColor: '#FFF3E0',
     sortOrder: 3,
   },
   [PRIORITY_LEVELS.RUSH]: {
     label: 'Rush',
-    color: '#F44336',
+    color: '#C62828',
     bgColor: '#FFEBEE',
     sortOrder: 2,
   },

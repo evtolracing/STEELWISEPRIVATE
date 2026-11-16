@@ -4,7 +4,7 @@
  * Work center types, icons, and colors are loaded dynamically from the server
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -58,10 +58,14 @@ import {
   getDispatchStats,
 } from '../../services/dispatchApi'
 import { ICON_MAP, resolveIcon } from './iconMap'
+import { useAuth } from '../../hooks/useAuth'
 import CreateWorkCenterDialog from './CreateWorkCenterDialog'
 import ManageWorkCenterTypesDialog from './ManageWorkCenterTypesDialog'
+import { ask } from '../../utils/ask'
 
 function WorkCenterSelectPage() {
+  const { user } = useAuth()
+  const homeRef = useRef(user?.homeLocationId || null)
   const navigate = useNavigate()
   
   // Core data
@@ -106,7 +110,9 @@ function WorkCenterSelectPage() {
         setWorkCenterTypesState(typesData)
         setDivisionsData(divsData)
         if (locsData.length > 0) {
-          setSelectedLocation(locsData[0].id)
+          // Start at the person's own branch. It used to start at the first branch of the list, whoever was signed in.
+          const home = homeRef.current
+          setSelectedLocation((locsData.find((l) => l.id === home) || locsData[0]).id)
         }
       } catch (err) {
         console.error('Failed to load initial data:', err)
@@ -193,7 +199,7 @@ function WorkCenterSelectPage() {
 
   // Delete (take offline) a work center
   const handleDeleteWorkCenter = async (wc) => {
-    if (!window.confirm(`Take "${wc.name}" offline? Active operations must be completed first.`)) return
+    if (!(await ask(`Take "${wc.name}" offline? Active operations must be completed first.`, { title: 'Take work center offline', confirmText: 'Take offline', danger: true }))) return
     try {
       await deleteWorkCenter(wc.id)
       setSnackbar({ open: true, message: `"${wc.name}" taken offline`, severity: 'info' })
@@ -279,7 +285,7 @@ function WorkCenterSelectPage() {
             <FactoryIcon />
           </Avatar>
           <Box>
-            <Typography variant="h4" fontWeight={700}>
+            <Typography component="h1" variant="h4" fontWeight={700}>
               Shop Floor Control
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -438,7 +444,7 @@ function WorkCenterSelectPage() {
                   >
                     {/* Edit/Menu button */}
                     <Box sx={{ position: 'absolute', top: 4, right: 4, zIndex: 1 }}>
-                      <IconButton
+                      <IconButton aria-label="More actions"
                         size="small"
                         onClick={(e) => {
                           e.stopPropagation()
@@ -483,8 +489,11 @@ function WorkCenterSelectPage() {
                             label={typeLabel}
                             size="small"
                             sx={{
+                              // The type's colour marks the chip; its words are in the text colour, which
+                              // can be read on any tint (a type's own colour on its tint often cannot).
                               bgcolor: alpha(color, 0.1),
-                              color: color,
+                              color: 'text.primary',
+                              borderLeft: `3px solid ${color}`,
                               fontWeight: 600,
                             }}
                           />
@@ -545,7 +554,7 @@ function WorkCenterSelectPage() {
                               textAlign: 'center',
                             }}
                           >
-                            <Typography variant="body2" fontWeight={600} color={color}>
+                            <Typography variant="body2" fontWeight={600} color="text.primary">
                               {queueCount} job{queueCount !== 1 ? 's' : ''} in queue
                             </Typography>
                           </Box>
@@ -629,7 +638,8 @@ function WorkCenterSelectPage() {
                   size="small"
                   sx={{
                     bgcolor: alpha(type.color, 0.1),
-                    color: type.color,
+                    color: 'text.primary',
+                    '& .MuiChip-icon': { color: type.color },
                   }}
                 />
               )

@@ -87,7 +87,8 @@ async function shipped(qty = 500, opts = {}) {
   if (opts.unitCost != null) await setCost(r.coilId, opts.unitCost);
   const d = await B.dispatch(r.shipment);
   if (d.status !== 200) throw new Error(`dispatch ${d.status} ${err(d)}`);
-  return { ...r, dispatch: d.body, invoice: d.body.invoice };
+  // The dock's answer names the invoice without its amount (F-009); the fixture reads the amount from the record.
+  return { ...r, dispatch: d.body, invoice: d.body.invoice ? { ...d.body.invoice, totalAmount: num((await invOf(d.body.invoice.id)).totalAmount) } : d.body.invoice };
 }
 /** An order with two lines and stock reserved for each. */
 async function twoLines(q1 = 600, q2 = 400, { reserve1 = q1, reserve2 = q2 } = {}) {
@@ -669,7 +670,48 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
     ok('cancel and back-to-dock are refused: the stock and the invoice already moved', c.status === 409 && p.status === 409 && (await shp(r.shipment.id)).status === 'EXCEPTION', `${c.status} ${p.status}`);
     const d = await B.deliver(r.shipment);
     ok('it is delivered with its proof', d.status === 200 && (await shp(r.shipment.id)).status === 'DELIVERED');
-    ok('a lost or destroyed load has no status of its own: it stays a problem until someone decides (recorded as a business decision)', true);
+    ok('a plain status change cannot end it as lost: that is a manager\'s own step', (await A.patch(`/api/shipments/${r.shipment.id}/status`, { status: 'LOST', reason: 'gone' }, 'admin')).status === 409 && (await shp(r.shipment.id)).status === 'DELIVERED');
+  });
+  const lost = (id, body, who = mgr1) => who.put(`/api/shipments/${id}/lost`, body);
+  const creditRows = (orderId) => prisma.invoice.findMany({ where: { orderId, kind: 'CREDIT', status: { not: 'CANCELLED' } }, include: { payments: true } });
+  await scenario(G3, 'a load that never arrives is ended as lost by a manager, with what happened, and its invoice is credited in full (N-027, owner decision 10)', async (ok) => {
+    const r = await shipped(400); await problem(r.shipment.id, 'Truck fire on I-94');
+    const inv0 = await invOf(r.invoice.id); const stock0 = await stock(r.coilId); const moves0 = (await movesOf(r.shipment.id)).length;
+    const dock = await A.put(`/api/shipments/${r.shipment.id}/lost`, { kind: 'DESTROYED', reason: 'Burned' }, 'shipping');
+    ok('the shipping desk cannot do it: it credits an invoice', dock.status === 403 && (await shp(r.shipment.id)).status === 'EXCEPTION', `${dock.status} ${err(dock)}`);
+    const noWhy = await lost(r.shipment.id, { kind: 'DESTROYED' }); const noKind = await lost(r.shipment.id, { kind: 'VANISHED', reason: 'Burned with the trailer' });
+    ok('a manager must say which kind of loss and what happened', noWhy.status === 400 && noKind.status === 400 && (await creditRows(r.order.id)).length === 0, `${noWhy.status} ${noKind.status}`);
+    const done = await lost(r.shipment.id, { kind: 'DESTROYED', reason: 'Burned with the trailer, police report 4471' });
+    const credits = await creditRows(r.order.id); const inv1 = await invOf(r.invoice.id);
+    ok('the shipment ends as lost', done.status === 200 && (await shp(r.shipment.id)).status === 'LOST', `${done.status} ${err(done)}`);
+    ok('one credit memo for the whole invoice, goods and tax, naming the shipment and what happened', credits.length === 1 && Math.abs(num(credits[0].totalAmount) + num(inv0.totalAmount)) < 0.005 && /Burned with the trailer/.test(credits[0].notes) && credits[0].notes.includes(r.shipment.shipmentNumber), JSON.stringify(credits.map((c) => [c.totalAmount, c.notes])));
+    ok('nothing is owed on the invoice any more', Math.abs(num(inv1.totalAmount) - num(inv1.paidAmount)) < 0.005 && inv1.status === 'PAID', `${inv1.status} ${inv1.paidAmount}`);
+    ok('what happened and who decided are in the history', (await historyOf(r.shipment.id)).some((h) => /Destroyed in transit\. Burned with the trailer/.test(JSON.stringify(h))) && (await audits('SHIPMENT_STATUS_CHANGED', r.shipment.id)).some((a) => a.details?.to === 'LOST' && a.userId === mgr1.user.id));
+    const stock1 = await stock(r.coilId);
+    ok('stock is not moved a second time: it left the books when the truck did', num(stock1.qtyOnHand) === num(stock0.qtyOnHand) && (await movesOf(r.shipment.id)).length === moves0 && num((await lineOf(r.order.lines[0].id)).qtyShipped) === 400);
+    const c = await closeout(r.order.id);
+    ok('the order is no longer held open by a problem or an unpaid invoice', !codes(c).includes('SHIPMENT_PROBLEM') && !codes(c).includes('UNPAID') && !codes(c).includes('ON_ROAD'), codes(c));
+    const again = await lost(r.shipment.id, { kind: 'LOST', reason: 'Second try' }); const deliver = await B.deliver(r.shipment);
+    ok('it cannot be ended twice, delivered or put back on the road, and there is still one credit', again.status === 409 && deliver.status === 409 && (await shp(r.shipment.id)).status === 'LOST' && (await creditRows(r.order.id)).length === 1, `${again.status} ${deliver.status}`);
+  });
+  await scenario(G3, 'only a shipment with a problem on record can be ended as lost; when the invoice was already paid the credit is owed back (N-027)', async (ok) => {
+    const r = await shipped(300);
+    const early = await lost(r.shipment.id, { kind: 'LOST', reason: 'Carrier cannot find it' });
+    ok('a shipment simply on the road is refused: the problem is reported first', early.status === 409 && (await shp(r.shipment.id)).status === 'IN_TRANSIT' && (await creditRows(r.order.id)).length === 0, `${early.status} ${err(early)}`);
+    const total = num((await invOf(r.invoice.id)).totalAmount); await pay(r.invoice.id, total); await problem(r.shipment.id, 'Carrier cannot find it');
+    const done = await lost(r.shipment.id, { kind: 'LOST', reason: 'Carrier closed the trace with no result' }, credit);
+    const credits = await creditRows(r.order.id);
+    ok('a credit manager may decide it too, and the credit is for the whole invoice', done.status === 200 && credits.length === 1 && Math.abs(num(credits[0].totalAmount) + total) < 0.005, `${done.status} ${err(done)}`);
+    ok('no money is moved: the credit stands as owed back to the customer until a refund is recorded', num(credits[0].paidAmount) === 0 && codes(await closeout(r.order.id)).includes('CREDIT_OWED'), codes(await closeout(r.order.id)));
+  });
+  await scenario(G3, 'a lost load credits only what earlier credits left (N-027)', async (ok) => {
+    const r = await shipped(500); const total = num((await invOf(r.invoice.id)).totalAmount);
+    const first = await credit.post(`/api/invoices/${r.invoice.id}/credit`, { reason: 'Goodwill', lines: [{ invoiceLineId: (await invOf(r.invoice.id)).lines[0].id, quantity: 100 }] });
+    await problem(r.shipment.id, 'Rolled over'); const done = await lost(r.shipment.id, { kind: 'DESTROYED', reason: 'Rolled over on the ramp' });
+    const credits = await creditRows(r.order.id);
+    ok('the two credits together equal the invoice, to the cent', first.status === 201 && done.status === 200 && credits.length === 2 && Math.abs(credits.reduce((a, c) => a + num(c.totalAmount), 0) + total) < 0.005, `${first.status} ${done.status} ${credits.map((c) => c.totalAmount)} of ${total}`);
+    const third = await credit.post(`/api/invoices/${r.invoice.id}/credit`, { reason: 'More', amount: 1 });
+    ok('nothing more can be credited afterwards', third.status === 409, `${third.status}`);
   });
   await scenario(G3, 'nothing ships to a customer whose account was closed after the order was confirmed (N-005)', async (ok) => {
     const c = await prisma.organization.create({ data: { code: tag('P8C'), name: 'P8 closing customer', type: 'OEM' } });
@@ -1302,10 +1344,10 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
   await scenario(G5, 'orders, shipments, stock and invoices reconcile across everything this run has done', async (ok) => {
     const q = (sql) => prisma.$queryRawUnsafe(sql).then((r) => r[0].n);
     ok('no line has shipped more than was ordered', (await q(`select count(*)::int as n from "OrderLine" l join "Order" o on o.id = l."orderId" where o."orderType" = 'SO' and l."qtyShipped" > l."qtyOrdered" + 0.000001`)) === 0);
-    ok('every line\'s shipped quantity is the sum of its shipments that left', (await q(`select count(*)::int as n from "OrderLine" l join "Order" o on o.id = l."orderId" where o."orderType" = 'SO' and o."poReference" like 'PO-${run}-%' and abs(l."qtyShipped" - coalesce((select sum(si."qtyShipped") from "ShipmentItem" si join "Shipment" s on s.id = si."shipmentId" where si."orderLineId" = l.id and s.status in ('IN_TRANSIT','DELIVERED','EXCEPTION')), 0)) > 0.000001`)) === 0);
+    ok('every line\'s shipped quantity is the sum of its shipments that left', (await q(`select count(*)::int as n from "OrderLine" l join "Order" o on o.id = l."orderId" where o."orderType" = 'SO' and o."poReference" like 'PO-${run}-%' and abs(l."qtyShipped" - coalesce((select sum(si."qtyShipped") from "ShipmentItem" si join "Shipment" s on s.id = si."shipmentId" where si."orderLineId" = l.id and s.status in ('IN_TRANSIT','DELIVERED','EXCEPTION','LOST')), 0)) > 0.000001`)) === 0);
     ok('and the sum of the stock movements that name the line', (await q(`select count(*)::int as n from "OrderLine" l join "Order" o on o.id = l."orderId" where o."orderType" = 'SO' and o."poReference" like 'PO-${run}-%' and abs(l."qtyShipped" - coalesce((select sum(m."qtyMoved") from "MaterialMovement" m where m."orderLineId" = l.id and m."movementType" = 'SHIP'), 0)) > 0.000001`)) === 0);
     ok('no line is invoiced for more than has shipped', (await q(`select count(*)::int as n from "OrderLine" l where coalesce((select sum(il.quantity) from "InvoiceLine" il join "Invoice" i on i.id = il."invoiceId" where il."orderLineId" = l.id and i.kind = 'INVOICE' and i.status <> 'CANCELLED'), 0) > l."qtyShipped" + 0.000001`)) === 0);
-    ok('every shipment that left has an invoice, or its order is listed as shipped and not invoiced', (await q(`select count(*)::int as n from "Shipment" s join "Order" o on o.id = s."orderId" where o."poReference" like 'PO-${run}-%' and s.status in ('IN_TRANSIT','DELIVERED','EXCEPTION') and not exists (select 1 from "Invoice" i where i."shipmentId" = s.id) and not exists (select 1 from "Invoice" i where i."orderId" = o.id and i.status = 'CANCELLED') and exists (select 1 from "ShipmentItem" si where si."shipmentId" = s.id)`)) === 0);
+    ok('every shipment that left has an invoice, or its order is listed as shipped and not invoiced', (await q(`select count(*)::int as n from "Shipment" s join "Order" o on o.id = s."orderId" where o."poReference" like 'PO-${run}-%' and s.status in ('IN_TRANSIT','DELIVERED','EXCEPTION','LOST') and not exists (select 1 from "Invoice" i where i."shipmentId" = s.id) and not exists (select 1 from "Invoice" i where i."orderId" = o.id and i.status = 'CANCELLED') and exists (select 1 from "ShipmentItem" si where si."shipmentId" = s.id)`)) === 0);
     ok('no stock record is below zero or reserved beyond what is on hand', (await q(`select count(*)::int as n from "Inventory" where "qtyOnHand" < -0.000001 or "qtyAllocated" < -0.000001 or "qtyAllocated" > "qtyOnHand" + 0.000001`)) === 0);
     ok('no shipment was dispatched twice: one departure row in each history', (await q(`select count(*)::int as n from (select a."resourceId" from "AuditLog" a where a."eventType" = 'SHIPMENT_STATUS_CHANGED' and a.details->>'to' = 'IN_TRANSIT' and a.details->>'from' in ('PENDING','LOADING') group by 1 having count(*) > 1) t`)) === 0);
     ok('no shipment has two invoices', (await q(`select count(*)::int as n from (select "shipmentId" from "Invoice" where "shipmentId" is not null and kind = 'INVOICE' and status <> 'CANCELLED' group by 1 having count(*) > 1) t`)) === 0);
@@ -1656,6 +1698,28 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
     ok('in six rounds the order either shipped whole (stock out, one invoice) or was cancelled whole (stock in, no invoice)', bad === 0, detail.join(' | '));
     ok(`outcomes: ${seen.shipped} shipped, ${seen.cancelled} cancelled`, seen.shipped + seen.cancelled === 6);
     ok('and neither request was ever answered with a server error: the loser is told plainly (N-029)', answers.every((x) => x === 200 || x === 409), answers.join(' '));
+  });
+  await scenario(G7, 'two managers ending the same shipment as lost at the same moment leave one credit (N-027)', async (ok) => {
+    const r = await shipped(250); await problem(r.shipment.id, 'Stolen with the trailer');
+    const rs = await all(2, (i) => (i ? credit : mgr1).put(`/api/shipments/${r.shipment.id}/lost`, { kind: 'LOST', reason: `Stolen with the trailer ${i}` }));
+    const credits = await prisma.invoice.findMany({ where: { orderId: r.order.id, kind: 'CREDIT' } });
+    ok('one succeeds, the other is told it was just changed or is already lost', rs.map((x) => x.status).sort().join() === '200,409', rs.map((x) => `${x.status} ${err(x)}`).join(' | '));
+    ok('one credit, for the invoice total', credits.length === 1 && Math.abs(num(credits[0].totalAmount) + num((await invOf(r.invoice.id)).totalAmount)) < 0.005, `${credits.length}`);
+  });
+  await scenario(G7, 'invoices and payments are read by sales, accounting and managers only (F-009, owner decision 10)', async (ok) => {
+    const r = await shipped(200); const total = num((await invOf(r.invoice.id)).totalAmount); await pay(r.invoice.id, 10);
+    const reads = (who) => Promise.all([who.get('/api/invoices?limit=5'), who.get('/api/invoices/aging'), who.get(`/api/invoices/${r.invoice.id}`)]);
+    const shut = await Promise.all([ship2, qc1, pack1].map(reads));
+    ok('shipping, quality and packing staff are refused the list, what is owed by age, and one invoice', shut.flat().every((x) => x.status === 403 && /sales, accounting and managers/.test(err(x))), shut.flat().map((x) => x.status).join());
+    const open = await Promise.all([mgr1, credit, auditor].map(reads)); const csr = await A.get(`/api/invoices/${r.invoice.id}`, 'csr');
+    ok('a manager, the credit manager, an auditor and a sales rep read all three', open.flat().every((x) => x.status === 200) && csr.status === 200 && num(csr.body.totalAmount) === total, open.flat().map((x) => x.status).join());
+    const dock = (await A.get(`/api/shipments/${r.shipment.id}`, 'shipping')).body; const desk = (await A.get(`/api/shipments/${r.shipment.id}`, 'csr')).body;
+    ok('the dock still sees that an invoice was raised, its number and status, and no amount', dock.invoices?.length === 1 && dock.invoices[0].invoiceNumber === desk.invoices[0].invoiceNumber && dock.invoices[0].status && deepKeys(dock.invoices, /amount|payments|subtotal/i).length === 0, JSON.stringify(dock.invoices));
+    ok('sales sees the amount on the same shipment', num(desk.invoices[0].totalAmount) === total);
+    const asDock = (await A.get(`/api/orders/${r.order.id}`, 'shipping')).body; const asSales = (await A.get(`/api/orders/${r.order.id}`, 'csr')).body;
+    ok('an order read by the dock carries its invoices by number only; read by sales, in full', asDock.invoices?.length === 1 && deepKeys(asDock.invoices, /amount|payments|subtotal/i).length === 0 && num(asSales.invoices[0].totalAmount) === total, JSON.stringify(asDock.invoices));
+    const r2 = await B.readyToShip(100); const d = await A.put(`/api/shipments/${r2.shipment.id}/dispatch`, {}, 'shipping');
+    ok('the answer to a dispatch names the invoice it raised without its amount', d.status === 200 && d.body.invoice?.invoiceNumber && d.body.invoice.totalAmount === undefined, JSON.stringify(d.body.invoice));
   });
   await scenario(G7, 'after every simultaneous request in this run, nothing was duplicated or lost', async (ok) => {
     const q = (sql) => prisma.$queryRawUnsafe(sql).then((r) => r[0].n);

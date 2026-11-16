@@ -17,7 +17,7 @@ export default function CatalogSearchBar({ onSearch, initialValue = '', placehol
 
   return (
     <Paper component="form" onSubmit={handleSubmit} elevation={2} sx={{ display: 'flex', alignItems: 'center', borderRadius: 3, overflow: 'hidden' }}>
-      <TextField
+      <TextField inputProps={{ 'aria-label': placeholder || 'Search by material, grade, spec, or keyword…' }}
         fullWidth variant="outlined" size="medium" autoFocus={autoFocus}
         placeholder={placeholder || 'Search by material, grade, spec, or keyword…'}
         value={value}
@@ -25,12 +25,12 @@ export default function CatalogSearchBar({ onSearch, initialValue = '', placehol
         onKeyDown={e => { if (e.key === 'Enter') handleSubmit(e) }}
         InputProps={{
           startAdornment: <InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>,
-          endAdornment: value ? <InputAdornment position="end"><IconButton size="small" onClick={handleClear}><ClearIcon /></IconButton></InputAdornment> : null,
+          endAdornment: value ? <InputAdornment position="end"><IconButton aria-label="Clear" size="small" onClick={handleClear}><ClearIcon /></IconButton></InputAdornment> : null,
           sx: { '& fieldset': { border: 'none' } },
         }}
         sx={{ '& .MuiOutlinedInput-root': { py: 0.5 } }}
       />
-      <IconButton type="submit" color="primary" sx={{ px: 2.5, borderRadius: 0, bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, height: '100%', minHeight: 56 }}>
+      <IconButton aria-label="Search" type="submit" color="primary" sx={{ px: 2.5, borderRadius: 0, bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, height: '100%', minHeight: 56 }}>
         <SearchIcon />
       </IconButton>
     </Paper>

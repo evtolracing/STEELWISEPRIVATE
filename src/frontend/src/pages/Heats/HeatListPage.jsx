@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 import { Search as SearchIcon, Whatshot as HeatIcon, Add as AddIcon, Refresh as RefreshIcon } from '@mui/icons-material'
 import { StatusChip } from '../../components/common'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const PAGE = 25
 export const HEAT_STATUSES = [['ACTIVE', 'Active'], ['CONSUMED', 'Consumed'], ['ARCHIVED', 'Archived']]
@@ -138,7 +139,7 @@ export default function HeatListPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar sx={{ width: 56, height: 56, background: 'rgba(255,255,255,0.15)' }}><HeatIcon sx={{ fontSize: 30 }} /></Avatar>
             <Box>
-              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>Heats</Typography>
+              <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>Heats</Typography>
               <Typography variant="body2" sx={{ opacity: 0.85 }}>Mill heats and the stock that came from each one</Typography>
             </Box>
           </Box>
@@ -175,7 +176,7 @@ export default function HeatListPage() {
               </TableHead>
               <TableBody>
                 {rows.map((h) => (
-                  <TableRow key={h.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/heats/${h.id}`)}>
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={h.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/heats/${h.id}`)}>
                     <TableCell><Typography variant="body2" fontWeight={600} color="primary">{h.heatNumber}</Typography></TableCell>
                     <TableCell>{h.mill?.name}</TableCell>
                     <TableCell>{h.grade?.code}</TableCell>

@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 50 |
 | Server route files | 75 |
-| API routes (each address counted; two route files are mounted twice) | 648 |
-| API routes that change data | 337 |
+| API routes (each address counted; two route files are mounted twice) | 649 |
+| API routes that change data | 338 |
 | Database tables in the schema | 161 |
 | Enumerations | 96 |
-| Migrations | 32 |
-| Screens (routes in the browser) | 144 |
-| Frontend source files | 396 (119,494 lines) |
-| Server route code | 25,121 lines |
+| Migrations | 33 |
+| Screens (routes in the browser) | 145 |
+| Frontend source files | 405 (120,277 lines) |
+| Server route code | 25,171 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -59,7 +59,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Create and edit users, assign role, home branch, divisions
 - **Screens:** 1 (1 real): /admin/users
 - **Server:** `src/backend/src/routes/users.js`; served at /api/users
-- **Routes:** 13, of which 6 change data. Returned a success in a test this session: 6 of 13; of the changing routes, 2 of 6
+- **Routes:** 13, of which 6 change data. Returned a success in a test this session: 7 of 13; of the changing routes, 3 of 6
 - **Tables:** User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Role, Location, Division
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
@@ -79,7 +79,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
 - **Feeds:** Every module
-- **Findings:** F-009
+- **Findings:** none open
 - **Production concern:** No branch, division or region boundary. 16 areas have no department rule
 
 ### Staff and operators
@@ -170,7 +170,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Order entry, quotes, web store, counter
 - **Feeds:** Jobs, shipments, invoices
-- **Findings:** F-009
+- **Findings:** none open
 
 ### Pricing and customer tiers
 
@@ -365,7 +365,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, receiving
 - **Feeds:** Reservation, shipping, returns
-- **Findings:** K-007, K-008, K-009, K-014
+- **Findings:** K-007, K-008, K-009
 - **Production concern:** No cost is written at receipt (K-007); no cycle count program (K-008)
 
 ### Receiving
@@ -410,7 +410,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Stock, branches
 - **Feeds:** Stock, reservation, shipping
-- **Findings:** K-014
+- **Findings:** none open
 - **Production concern:** The stock list row does not say in transit (K-014)
 
 ### Second stock list (unit tracking)
@@ -559,7 +559,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Create, dispatch and deliver a shipment; partial shipments; proof of delivery
 - **Screens:** 2 (2 real): /shipping, /shipping/:id
 - **Server:** `src/backend/src/routes/shipments.js`, `src/backend/src/routes/shippingV1.js`; served at /api/shipments, /api/v1/shipping, /api/v1/shipments
-- **Routes:** 16, of which 7 change data. Returned a success in a test this session: 15 of 16; of the changing routes, 7 of 7
+- **Routes:** 17, of which 8 change data. Returned a success in a test this session: 16 of 17; of the changing routes, 8 of 8
 - **Tables:** Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders, jobs, stock
@@ -655,7 +655,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Shipping, counter, returns
 - **Feeds:** Customer account pages, partner API
-- **Findings:** F-009, B-019
+- **Findings:** B-019
 - **Production concern:** No statements, no ageing, no overdue by date, no export to accounting
 
 ### Sales tax
@@ -826,30 +826,30 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 
 ## Code nothing uses
 
-Found by following imports from the application entry points. 54 frontend files (9,354 lines) and 5 server files. Finding B-013.
+Found by following imports from the application entry points. 54 frontend files (9,362 lines) and 5 server files. Finding B-013.
 
 | File | Lines |
 |---|---:|
-| src/frontend/src/apps/orderhub/RfqCreatePage.jsx | 616 |
+| src/frontend/src/apps/orderhub/RfqCreatePage.jsx | 617 |
 | src/frontend/src/hooks/useRealTimePricing.js | 610 |
 | src/frontend/src/apps/inventory/InventoryDetailPage.jsx | 587 |
 | src/frontend/src/services/splitShipmentApi.js | 571 |
 | src/frontend/src/apps/orderhub/RfqDetailPage.jsx | 554 |
-| src/frontend/src/apps/inventory/InventoryDashboardPage.jsx | 545 |
-| src/frontend/src/apps/orderhub/OrderDetailPage.jsx | 537 |
+| src/frontend/src/apps/inventory/InventoryDashboardPage.jsx | 546 |
+| src/frontend/src/apps/orderhub/OrderDetailPage.jsx | 538 |
 | src/frontend/src/hooks/useValidation.js | 529 |
-| src/frontend/src/components/InventoryAiAssistantPanel.jsx | 418 |
+| src/frontend/src/components/InventoryAiAssistantPanel.jsx | 419 |
 | src/frontend/src/components/shipping/SplitShipmentDialog.jsx | 405 |
 | src/frontend/src/pages/OrderBoardPage.jsx | 362 |
-| src/frontend/src/apps/orderhub/RfqListPage.jsx | 331 |
+| src/frontend/src/apps/orderhub/RfqListPage.jsx | 332 |
 | src/frontend/src/components/logistics/DeliveryZoneMap.jsx | 302 |
-| src/frontend/src/components/shipping/ShipmentTracker.jsx | 296 |
-| src/frontend/src/components/logistics/InboundShipmentTracker.jsx | 282 |
+| src/frontend/src/components/shipping/ShipmentTracker.jsx | 297 |
+| src/frontend/src/components/logistics/InboundShipmentTracker.jsx | 283 |
 | src/frontend/src/components/logistics/AddressAutocomplete.jsx | 276 |
 | src/frontend/src/components/shipping/PartialFulfillmentBanner.jsx | 259 |
 | src/frontend/src/constants/permissions.js | 242 |
 | src/frontend/src/components/shipping/OrderStatusTimeline.jsx | 214 |
-| src/frontend/src/components/logistics/LoadDiagram.jsx | 193 |
+| src/frontend/src/components/logistics/LoadDiagram.jsx | 194 |
 | src/frontend/src/components/logistics/RouteMap.jsx | 167 |
 | src/frontend/src/hooks/useSplitShipment.js | 151 |
 | src/frontend/src/services/aiService.js | 124 |
@@ -899,25 +899,25 @@ Finding B-014.
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
 | src/frontend/src/help/manualContent.js | 3542 | 0 |
-| src/frontend/src/router/AppRouter.jsx | 1569 | 0 |
-| src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1335 | 35 |
+| src/frontend/src/router/AppRouter.jsx | 1574 | 0 |
+| src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1337 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
 | src/frontend/src/apps/safety/StopWorkDashboard.jsx | 979 | 9 |
-| src/frontend/src/apps/bom/BomRecipeEditorPage.jsx | 968 | 23 |
-| src/frontend/src/components/jobs/ModernJobCard.jsx | 958 | 6 |
-| src/frontend/src/pages/Maintenance/WorkOrderCenter.jsx | 927 | 12 |
-| src/frontend/src/pages/SQM/SupplierListPage.jsx | 908 | 6 |
-| src/frontend/src/dashboard/widgets/index.jsx | 900 | 3 |
-| src/frontend/src/components/layout/HeaderAIAssistant.jsx | 867 | 11 |
-| src/frontend/src/components/inventory/InventoryUpload.jsx | 852 | 7 |
-| src/frontend/src/apps/safety/SafetyAssistantPage.jsx | 834 | 4 |
+| src/frontend/src/apps/bom/BomRecipeEditorPage.jsx | 969 | 23 |
+| src/frontend/src/components/jobs/ModernJobCard.jsx | 959 | 6 |
+| src/frontend/src/pages/Maintenance/WorkOrderCenter.jsx | 928 | 12 |
+| src/frontend/src/pages/SQM/SupplierListPage.jsx | 909 | 6 |
+| src/frontend/src/dashboard/widgets/index.jsx | 902 | 3 |
+| src/frontend/src/components/layout/HeaderAIAssistant.jsx | 868 | 11 |
+| src/frontend/src/components/inventory/InventoryUpload.jsx | 853 | 7 |
+| src/frontend/src/apps/safety/SafetyAssistantPage.jsx | 835 | 4 |
 | src/frontend/src/pages/QC/QCInspectionPage.jsx | 829 | 16 |
 | src/frontend/src/components/pos/screens/LineEntryScreen.jsx | 823 | 13 |
-| src/frontend/src/pages/Customers/CustomerPreferencesPage.jsx | 801 | 11 |
-| src/frontend/src/apps/safety/PermitsPage.jsx | 786 | 13 |
-| src/frontend/src/screens/ShipmentTrackingScreen.jsx | 769 | 10 |
-| src/frontend/src/pages/Maintenance/PartsInventory.jsx | 762 | 5 |
+| src/frontend/src/pages/Customers/CustomerPreferencesPage.jsx | 802 | 11 |
+| src/frontend/src/apps/safety/PermitsPage.jsx | 787 | 13 |
+| src/frontend/src/screens/ShipmentTrackingScreen.jsx | 770 | 10 |
+| src/frontend/src/pages/Maintenance/PartsInventory.jsx | 765 | 5 |
 | src/backend/src/routes/pos.js | 1313 | |
 | src/backend/src/routes/jobs.js | 1007 | |
 | src/backend/src/routes/stopWork.js | 985 | |
@@ -938,12 +938,12 @@ Finding B-014.
 | Files over 600 lines | 66 |
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
-| Icon-only buttons | 302 |
-| aria-label attributes | 53 |
-| Browser alert or confirm calls | 25 in 15 files |
-| Timers started (setInterval, setTimeout) | 68 |
-| Timers cleared | 38 |
-| console.log calls | 18 |
-| Dialogs | 134 |
+| Icon-only buttons | 300 |
+| aria-label attributes | 264 |
+| Browser alert or confirm calls | 0 in 0 files |
+| Timers started (setInterval, setTimeout) | 70 |
+| Timers cleared | 41 |
+| console.log calls | 17 |
+| Dialogs | 137 |
 | Frontend unit test files | 0 |
 

@@ -53,6 +53,8 @@ import {
   Close,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock cockpit data
 const cockpitData = {
@@ -193,7 +195,7 @@ const ExecutiveCockpit = () => {
 
   // Tile Component
   const CockpitTile = ({ title, icon, children, status, trend, onClick }) => (
-    <Paper 
+    <Paper role="button" tabIndex={0} onKeyDown={activateOnKey} 
       sx={{ 
         p: 2, 
         height: '100%',
@@ -234,7 +236,7 @@ const ExecutiveCockpit = () => {
       {/* Header */}
       <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Executive Ops Cockpit
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -247,7 +249,7 @@ const ExecutiveCockpit = () => {
             sx={{ 
               px: 3, 
               py: 1.5, 
-              bgcolor: cockpitData.overallRisk.level === 'MEDIUM' ? 'warning.light' : 
+              bgcolor: cockpitData.overallRisk.level === 'MEDIUM' ? 'warning.tint' : 
                        cockpitData.overallRisk.level === 'LOW' ? 'success.light' : 'error.light',
               display: 'flex',
               alignItems: 'center',
@@ -269,7 +271,7 @@ const ExecutiveCockpit = () => {
               sx={{ ml: 1 }}
             />
           </Paper>
-          <IconButton onClick={() => window.location.reload()}>
+          <IconButton aria-label="Refresh" onClick={() => window.location.reload()}>
             <Refresh />
           </IconButton>
         </Box>
@@ -613,7 +615,7 @@ const ExecutiveCockpit = () => {
                       Impact: {action.impact}
                     </Typography>
                     <Box sx={{ mt: 1.5 }}>
-                      <Button size="small" variant="contained" fullWidth>
+                      <Button onClick={notBuilt} size="small" variant="contained" fullWidth>
                         Take Action
                       </Button>
                     </Box>
@@ -679,7 +681,7 @@ const ExecutiveCockpit = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Ask about operations, risks, or run a simulation" }}
             fullWidth
             multiline
             rows={2}

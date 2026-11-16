@@ -394,7 +394,8 @@ export async function checkout(payload = {}, { quote = false } = {}) {
     payload.poNumber ? `PO ${payload.poNumber}` : null,
     payload.requestedDate || payload.requestedShipDate ? `Requested ${payload.requestedDate || payload.requestedShipDate}` : null,
     shipTo ? `Ship to: ${shipTo}` : null,
-    payload.paymentMethod ? `Payment: ${payload.paymentMethod}` : null,
+    // The web shop takes no payment: every web order is on account, whatever the browser sent (H-013, owner decision 10).
+    'Payment: on account',
     payload.orderNotes || payload.notes || null,
     ...priceFlags,
   ].filter(Boolean).join(' · ');

@@ -58,6 +58,7 @@ import {
   ZoomOut,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { notBuilt } from '../../utils/notBuilt'
 
 // Forecast categories
 const forecastCategories = [
@@ -262,7 +263,7 @@ const ForecastExplorer = () => {
       {/* Header */}
       <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             Forecast Explorer
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -273,10 +274,10 @@ const ForecastExplorer = () => {
           <Button variant="outlined" onClick={() => navigate('/executive/cockpit')}>
             Back to Cockpit
           </Button>
-          <Button variant="outlined" startIcon={<Download />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Download />}>
             Export
           </Button>
-          <Button variant="contained" startIcon={<Refresh />}>
+          <Button onClick={notBuilt} variant="contained" startIcon={<Refresh />}>
             Refresh
           </Button>
         </Box>
@@ -350,8 +351,8 @@ const ForecastExplorer = () => {
                 {forecast.title}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton size="small"><ZoomIn /></IconButton>
-                <IconButton size="small"><ZoomOut /></IconButton>
+                <IconButton onClick={notBuilt} aria-label="Zoom in" size="small"><ZoomIn /></IconButton>
+                <IconButton onClick={notBuilt} aria-label="Zoom out" size="small"><ZoomOut /></IconButton>
               </Box>
             </Box>
             
@@ -506,7 +507,7 @@ const ForecastExplorer = () => {
               </Table>
             </TableContainer>
             <Box sx={{ mt: 2 }}>
-              <Button variant="outlined" size="small" startIcon={<Timeline />}>
+              <Button onClick={notBuilt} variant="outlined" size="small" startIcon={<Timeline />}>
                 Run Sensitivity Analysis
               </Button>
             </Box>
@@ -519,7 +520,7 @@ const ForecastExplorer = () => {
         <Button variant="outlined" onClick={() => navigate('/executive/simulation')}>
           Open in Simulation
         </Button>
-        <Button variant="contained" startIcon={<Assessment />}>
+        <Button onClick={notBuilt} variant="contained" startIcon={<Assessment />}>
           Generate Report
         </Button>
       </Box>

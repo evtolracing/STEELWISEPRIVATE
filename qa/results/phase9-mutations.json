@@ -1,0 +1,168 @@
+{
+ "at": "2026-11-16T05:37:04.937Z",
+ "mutations": [
+  {
+   "n": 1,
+   "what": "a double click on Dispatch now no longer cancels",
+   "scenario": "Dispatch asks first",
+   "result": "HOLDS: 1 of 1 fail (the screen says it is on the road: )"
+  },
+  {
+   "n": 2,
+   "what": "the order page shows the money on file",
+   "scenario": "an order page shows the number",
+   "result": "HOLDS: 1 of 1 fail (the total: $268.80)"
+  },
+  {
+   "n": 3,
+   "what": "the order page names the customer",
+   "scenario": "an order page shows the number",
+   "result": "HOLDS: 1 of 1 fail (the customer: )"
+  },
+  {
+   "n": 4,
+   "what": "the order list search narrows",
+   "scenario": "search: nothing found says what to try",
+   "result": "HOLDS: 1 of 1 fail (says nothing was found: )"
+  },
+  {
+   "n": 5,
+   "what": "each role starts at its workspace",
+   "scenario": "a sales representative signs in",
+   "result": "HOLDS: 1 of 1 fail (starts at the role’s own workspace: /)"
+  },
+  {
+   "n": 6,
+   "what": "a wrong address says Page not found",
+   "scenario": "an address that is not a page",
+   "result": "HOLDS: 1 of 1 fail (locator.click: Timeout 12000ms exceeded.)"
+  },
+  {
+   "n": 7,
+   "what": "unsaved order entry asks before leaving",
+   "scenario": "leaving with an order half typed",
+   "result": "HOLDS: 1 of 1 fail (locator.click: Timeout 12000ms exceeded.)"
+  },
+  {
+   "n": 8,
+   "what": "the tab warns before reload",
+   "scenario": "closing or reloading the tab",
+   "result": "HOLDS: 1 of 1 fail (a typed form warns before reload: 0)"
+  },
+  {
+   "n": 9,
+   "what": "the phone menu is a menu landmark",
+   "scenario": "on a phone the menu is a drawer",
+   "result": "HOLDS: 1 of 1 fail (locator.click: Timeout 12000ms exceeded.)"
+  },
+  {
+   "n": 10,
+   "what": "every control shows a focus ring",
+   "scenario": "the keyboard’s place is always visible",
+   "result": "HOLDS: 1 of 1 fail (no stop is without a visible ring: Skip to the page | Jackson • METALS — Cutoff 3:30 | AI Assistant (Ctrl+J) |)"
+  },
+  {
+   "n": 11,
+   "what": "rows open from the keyboard",
+   "scenario": "a stock item opens from its row with the keyboard",
+   "result": "HOLDS: 1 of 1 fail (Enter on the row opens the item: /units)"
+  },
+  {
+   "n": 12,
+   "what": "an unreadable customer answer is a failure, not a crash",
+   "scenario": "/customers: when there is nothing to list",
+   "result": "HOLDS: 1 of 1 fail (it says there is nothing: Oops! Something went wrong) on a rerun of this mutation alone",
+   "firstResult": "DOES NOT HOLD: 1 of 1 still pass against scenario \"an answer that is not what the screen expects\" (an HTML answer fails to parse with or without the guard, so that scenario could not catch it)"
+  },
+  {
+   "n": 13,
+   "what": "search offers a role only its own pages",
+   "scenario": "search shows a role only",
+   "result": "HOLDS: 1 of 1 fail (the Customers page is not offered to an operator: Pages Customers Sales & Customers Demand Shaping Sales & Cus)"
+  },
+  {
+   "n": 14,
+   "what": "every page has its own title",
+   "scenario": "every page has its own browser title",
+   "result": "HOLDS: 1 of 1 fail (/orders: the title is \"Orders · SteelWise\": SteelWise ERP)"
+  },
+  {
+   "n": 15,
+   "what": "the shop floor starts at the person’s branch",
+   "scenario": "the shop floor lists the work centres",
+   "result": "HOLDS: 1 of 1 fail (the branch’s work centre is there: Shop Floor Control Select work center to view queue • 46 work center types )"
+  },
+  {
+   "n": 16,
+   "what": "required fields say so",
+   "scenario": "a form tells a screen reader",
+   "result": "HOLDS: 1 of 1 fail (the required field says so: )"
+  },
+  {
+   "n": 17,
+   "what": "the way back cannot leave the app",
+   "scenario": "the way back after sign-in cannot be pointed",
+   "result": "HOLDS: 1 of 1 fail (\"//evil.example/x\" is ignored: http://localhost:5199/evil.example/x)"
+  },
+  {
+   "n": 18,
+   "what": "an ended session keeps the way back",
+   "scenario": "the session ends in the middle of work",
+   "result": "HOLDS: 1 of 1 fail (told that the session ended: )"
+  },
+  {
+   "n": 19,
+   "what": "a sample button says it is not built",
+   "scenario": "a button on a sample screen says",
+   "result": "HOLDS: 1 of 1 fail (a button answered with the notice: 11 buttons tried)"
+  },
+  {
+   "n": 20,
+   "what": "the menu is left off the paper",
+   "scenario": "Print on an order",
+   "result": "HOLDS: 1 of 1 fail (the menu is not printed: )"
+  },
+  {
+   "n": 21,
+   "what": "less motion when asked",
+   "scenario": "a person who asks for less motion",
+   "result": "HOLDS: 1 of 1 fail (no transition lasts longer than a hundredth of a millisecond: 300)"
+  },
+  {
+   "n": 22,
+   "what": "a full board column draws thirty cards at a time",
+   "scenario": "a full column on the order board",
+   "result": "HOLDS: 1 of 1 fail (the button says how many are left and draws up to thirty more: Show 30 more of 80: 416 then 416), run alone after the fix was added"
+  },
+  {
+   "n": 23,
+   "what": "a question is asked in the application’s own box",
+   "scenario": "deactivating a user asks",
+   "result": "HOLDS: 1 of 1 fail (the application box never opens), run after the fix was added"
+  },
+  {
+   "n": 24,
+   "what": "a sample form does not announce a save",
+   "scenario": "a sample form that used to announce",
+   "result": "HOLDS: 1 of 1 fail (no browser box claims a schedule was created: 1 browser boxes), run after the fix was added"
+  },
+  {
+   "n": 25,
+   "what": "an item in transit says so on its row",
+   "scenario": "on its way to another branch",
+   "result": "HOLDS: 1 of 1 fail (the row says In Transit), run after the fix was added"
+  },
+  {
+   "n": 26,
+   "what": "Work Orders is in the menu",
+   "scenario": "the work order list is in the menu",
+   "result": "HOLDS: 1 of 1 fail (Work Orders is in the menu), run after the fix was added"
+  },
+  {
+   "n": 27,
+   "what": "web shop preferences are not asked on staff screens",
+   "scenario": "a long round of 24 screens",
+   "result": "HOLDS: 1 of 1 fail (no staff screen asks for a web shop customer's preferences: 48 calls), run after the check was added to the scenario"
+  }
+ ]
+}

@@ -28,7 +28,7 @@ import { evaluatePromise } from '../../services/promiseApi'
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
 import { useCart } from '../../contexts/CartContext'
 
-const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#e65100', OUTLET: '#c62828' }
+const DIV_COLOR = { METALS: '#1565c0', PLASTICS: '#2e7d32', SUPPLIES: '#A63A00', OUTLET: '#c62828' }
 
 export default function ProductDetailPage() {
   const { id } = useParams()
@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
             <Box sx={{ height: 6, bgcolor: DIV_COLOR[product.division] || '#666' }} />
             <Box sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1 }}>
-                <Typography variant="h5" fontWeight={700}>{product.name}</Typography>
+                <Typography component="h1" variant="h5" fontWeight={700}>{product.name}</Typography>
                 {product.isRemnant && <Chip label="REMNANT" size="small" color="warning" />}
               </Box>
 

@@ -43,6 +43,7 @@ import {
 } from '@mui/icons-material'
 import useMobileMode from '../../hooks/useMobileMode'
 import { searchInventory } from '../../services/intakeInventoryApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Stock comes from the live inventory search (/api/inventory/search).
 const num = (v) => (v == null ? null : Number(v))
@@ -119,16 +120,16 @@ export default function MobileInventoryLookup() {
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
+        <Typography component="h1" variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
           <StockIcon sx={{ verticalAlign: 'bottom', mr: 0.5 }} /> Inventory Lookup
         </Typography>
-        <IconButton onClick={handleRefresh} disabled={loading}>
+        <IconButton aria-label="Refresh" onClick={handleRefresh} disabled={loading}>
           {loading ? <CircularProgress size={22} /> : <RefreshIcon />}
         </IconButton>
       </Box>
 
       {/* ── Search bar ──────────────────────────────────────── */}
-      <TextField
+      <TextField inputProps={{ 'aria-label': "Search material, grade, code" }}
         fullWidth
         placeholder="Search material, grade, code..."
         value={search}
@@ -201,7 +202,7 @@ export default function MobileInventoryLookup() {
         const expanded = expandedId === item.id
 
         return (
-          <Paper
+          <Paper role="button" tabIndex={0} onKeyDown={activateOnKey}
             key={item.id}
             elevation={0}
             onClick={() => setExpandedId(expanded ? null : item.id)}
@@ -250,7 +251,7 @@ export default function MobileInventoryLookup() {
                 </Box>
               </Box>
 
-              <IconButton size="small" sx={{ mt: 0.5 }}>
+              <IconButton aria-label="Hide details" size="small" sx={{ mt: 0.5 }}>
                 {expanded ? <CollapseIcon /> : <ExpandIcon />}
               </IconButton>
             </Box>

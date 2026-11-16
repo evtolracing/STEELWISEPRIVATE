@@ -1,39 +1,88 @@
 import { createTheme } from '@mui/material/styles'
 
-// Steel Blue primary color with Industrial Orange accent
+// The design tokens of the product. Brand: steel blue with an industrial orange accent.
+// Phase 9 (design system audit): every colour that carries text is chosen to read at 4.5 to 1 or
+// better against what it sits on (WCAG 2.2 AA, 1.4.3). Screens take colours, spacing and radii from
+// here, by name, and do not write their own.
+export const tokens = {
+  brand: { steel: '#1E3A5F', steelLight: '#4A6FA5', steelDark: '#0D1F33', orange: '#FF6B35' },
+  // Text on white and on the page background.
+  ink: { primary: '#1A1A2E', secondary: '#666687', muted: '#6B6B85' },
+  surface: { page: '#F5F7FA', paper: '#FFFFFF', sunken: '#EEF1F6', divider: '#E0E0E9' },
+  // One meaning, one colour. `main` reads on white; `tint` is a background that `ink` reads on.
+  status: {
+    good: { main: '#2E7D32', tint: '#E8F5E9', ink: '#1B5E20' },
+    attention: { main: '#A34A00', tint: '#FFF3E0', ink: '#7A3600' },
+    problem: { main: '#C62828', tint: '#FDECEA', ink: '#9F1B1B' },
+    information: { main: '#0B6FB0', tint: '#E3F2FD', ink: '#01579B' },
+    neutral: { main: '#5F6377', tint: '#EEF1F6', ink: '#3D4152' },
+  },
+  radius: { control: 6, surface: 8, card: 12 },
+  // Multiples of the 8px grid, by use.
+  space: { page: 3, section: 3, card: 2, field: 2, tight: 1 },
+  layout: { drawerWidth: 260, topBarHeight: 64, readableWidth: 1440 },
+  focusRing: '2px solid #1E3A5F',
+  // The smallest target for a finger (WCAG 2.2 AA, 2.5.8 asks for 24; 40 is used where a hand is busy).
+  touchTarget: 40,
+}
+
 const theme = createTheme({
   palette: {
     primary: {
       main: '#1E3A5F',
       light: '#4A6FA5',
       dark: '#0D1F33',
+      tint: '#E8EEF6',
+      ink: '#0D1F33',
       contrastText: '#FFFFFF',
     },
     secondary: {
       main: '#FF6B35',
       light: '#FF9066',
-      dark: '#CC4A1A',
-      contrastText: '#FFFFFF',
+      // Orange text on white: 5.6 to 1 (the brand orange itself is 2.8 to 1 and is for fills).
+      dark: '#B8400F',
+      tint: '#FFF0EA',
+      ink: '#B8400F',
+      // The brand orange is a light colour: white on it is 2.8 to 1, dark ink is 6.0 to 1.
+      contrastText: tokens.ink.primary,
     },
     success: {
+      // A background that dark text reads on, and the dark text for it.
+      tint: tokens.status.good.tint,
+      ink: tokens.status.good.ink,
       main: '#2E7D32',
       light: '#4CAF50',
       dark: '#1B5E20',
     },
+    // Darker than the Material default, so warning text and outlined warning chips read on white
+    // (5.0 to 1; the default #ED6C02 is 3.1 to 1).
     warning: {
-      main: '#ED6C02',
+      // A background that dark text reads on, and the dark text for it.
+      tint: tokens.status.attention.tint,
+      ink: tokens.status.attention.ink,
+      main: tokens.status.attention.main,
       light: '#FF9800',
-      dark: '#E65100',
+      dark: tokens.status.attention.ink,
+      contrastText: '#FFFFFF',
     },
+    // Slightly darker than the Material default, so red text reads on its own tint (4.9 to 1).
     error: {
-      main: '#D32F2F',
+      tint: tokens.status.problem.tint,
+      ink: tokens.status.problem.ink,
+      main: tokens.status.problem.main,
       light: '#EF5350',
-      dark: '#C62828',
+      dark: tokens.status.problem.ink,
+      contrastText: '#FFFFFF',
     },
+    // 5.4 to 1 on white (the default #0288D1 is 3.9 to 1).
     info: {
-      main: '#0288D1',
+      // A background that dark text reads on, and the dark text for it.
+      tint: tokens.status.information.tint,
+      ink: tokens.status.information.ink,
+      main: tokens.status.information.main,
       light: '#03A9F4',
-      dark: '#01579B',
+      dark: tokens.status.information.ink,
+      contrastText: '#FFFFFF',
     },
     background: {
       default: '#F5F7FA',
@@ -42,7 +91,8 @@ const theme = createTheme({
     text: {
       primary: '#1A1A2E',
       secondary: '#666687',
-      disabled: '#A0A0B9',
+      // Also used for hints. 5.2 to 1 on white.
+      disabled: tokens.ink.muted,
     },
     divider: '#E0E0E9',
   },
@@ -122,12 +172,67 @@ const theme = createTheme({
     '0px 80px 88px rgba(0, 0, 0, 0.1)',
   ],
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        // A person using a keyboard always sees where they are (2.4.7, 2.4.11).
+        // Stronger than a component's own "outline: 0", so every control shows where the keyboard is (2.4.7).
+        'body *:focus-visible, body .Mui-focusVisible': { outline: `${tokens.focusRing} !important`, outlineOffset: '2px !important' },
+        // In the menu the ring sits inside the item, and on the dark current item it is white.
+        'body .MuiDrawer-paper *:focus-visible, body .MuiDrawer-paper .Mui-focusVisible': { outlineOffset: '-2px !important' },
+        'body .MuiDrawer-paper [aria-current="page"]:focus-visible, body .MuiButton-containedPrimary:focus-visible': { outline: '2px solid #FFFFFF !important', outlineOffset: '-4px !important' },
+        // A text field shows focus on its frame, not on the bare text inside it.
+        'body .MuiInputBase-input:focus-visible': { outline: 'none !important' },
+        // Reaches the content without tabbing through the menu (2.4.1).
+        '.skip-link': {
+          position: 'absolute', left: 8, top: -48, zIndex: 2000, padding: '8px 16px', borderRadius: tokens.radius.control,
+          background: tokens.brand.steel, color: '#FFFFFF', fontWeight: 600, textDecoration: 'none',
+          '&:focus': { top: 8 },
+        },
+        '.visually-hidden': {
+          position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0,
+        },
+        // Printing a page prints the page: no menu, no top bar, nothing cut off by a scrolling box.
+        // A dialog marked data-print-dialog (a receipt, an order) prints alone.
+        '@media print': {
+          '.MuiDrawer-root, .MuiAppBar-root, .skip-link, .no-print, .MuiSnackbar-root, nav': { display: 'none !important' },
+          'html, body': { background: '#FFFFFF !important' },
+          main: { margin: '0 !important', padding: '0 !important', height: 'auto !important', width: '100% !important', overflow: 'visible !important' },
+          '.MuiPaper-root': { boxShadow: 'none !important' },
+          'body:has([data-print-dialog]) #root': { display: 'none !important' },
+          '[data-print-dialog] .MuiDialogActions-root, [data-print-dialog] .MuiBackdrop-root': { display: 'none !important' },
+          '[data-print-dialog].MuiDialog-root, [data-print-dialog] .MuiDialog-container': { position: 'static !important', height: 'auto !important', display: 'block !important' },
+          '[data-print-dialog] .MuiDialog-paper': { margin: '0 !important', maxWidth: 'none !important', maxHeight: 'none !important', width: '100% !important' },
+        },
+        // People who ask their device for less motion get none (2.3.3).
+        '@media (prefers-reduced-motion: reduce)': {
+          '*, *::before, *::after': { animationDuration: '0.01ms !important', animationIterationCount: '1 !important', transitionDuration: '0.01ms !important', scrollBehavior: 'auto !important' },
+        },
+        // On a touch screen a control is big enough for a finger (2.5.8).
+        '@media (pointer: coarse)': {
+          '.MuiIconButton-root': { minWidth: tokens.touchTarget, minHeight: tokens.touchTarget },
+          '.MuiButton-root': { minHeight: 36 },
+          '.MuiChip-clickable, .MuiChip-deletable': { minHeight: 28 },
+          '.MuiTableSortLabel-root': { minHeight: 24, minWidth: 24 },
+        },
+      },
+    },
+    // The Material default (light text on light grey) is 1.8 to 1.
+    MuiAvatar: { styleOverrides: { colorDefault: { backgroundColor: tokens.status.neutral.main, color: '#FFFFFF' } } },
+    MuiTooltip: { defaultProps: { arrow: true, enterDelay: 400 } },
+    MuiDialog: { styleOverrides: { paper: { borderRadius: tokens.radius.card } } },
+    MuiDialogTitle: { styleOverrides: { root: { fontWeight: 600, fontSize: '1.125rem' } } },
+    MuiDialogActions: { styleOverrides: { root: { padding: '12px 24px 16px' } } },
+    MuiTab: { styleOverrides: { root: { textTransform: 'none', fontWeight: 500, minHeight: 44 } } },
+    MuiLink: { defaultProps: { underline: 'hover' } },
+    MuiAlert: { styleOverrides: { root: { borderRadius: tokens.radius.surface } } },
     MuiButton: {
       styleOverrides: {
         root: {
           borderRadius: 6,
           padding: '8px 16px',
         },
+        textSecondary: { color: '#B8400F' },
+        outlinedSecondary: { color: '#B8400F', borderColor: '#E0885F' },
         containedPrimary: {
           '&:hover': {
             backgroundColor: '#2A4A70',
@@ -152,8 +257,10 @@ const theme = createTheme({
     },
     MuiChip: {
       styleOverrides: {
+        outlinedSecondary: { color: '#B8400F', borderColor: '#E0885F' },
         root: {
           borderRadius: 6,
+          fontWeight: 500,
         },
       },
     },

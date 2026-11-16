@@ -22,6 +22,7 @@ import {
 import { useNavigate, Link } from 'react-router-dom'
 import { listAccountOrders, exportOrdersCSV } from '../../services/customerAccountApi'
 import useEnterpriseAccount from '../../hooks/useEnterpriseAccount'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const STATUS_CFG = {
   NEEDS_REVIEW:  { color: 'warning',   icon: <RateReview fontSize="inherit" />,   label: 'Needs Review' },
@@ -124,11 +125,11 @@ export default function AccountOrdersPage() {
 
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Typography variant="h5" fontWeight={700}>Orders</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>Orders</Typography>
         <Chip label={`${orders.length} total`} size="small" color="primary" />
         {meta.openCount > 0 && <Chip label={`${meta.openCount} open`} size="small" color="warning" variant="outlined" />}
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          <TextField size="small" placeholder="Search orders, PO…" value={search}
+          <TextField inputProps={{ 'aria-label': "Search orders, PO" }} size="small" placeholder="Search orders, PO…" value={search}
             onChange={e => setSearch(e.target.value)}
             InputProps={{ startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment> }}
             sx={{ width: 200 }}
@@ -138,7 +139,7 @@ export default function AccountOrdersPage() {
               <FilterList />
             </IconButton>
           </Tooltip>
-          <IconButton onClick={loadOrders} size="small"><Refresh /></IconButton>
+          <IconButton aria-label="Refresh" onClick={loadOrders} size="small"><Refresh /></IconButton>
           {canExport && (
             <Button variant="outlined" size="small" startIcon={exporting ? <CircularProgress size={16} /> : <Download />}
               onClick={handleExport} disabled={exporting}>
@@ -218,7 +219,7 @@ export default function AccountOrdersPage() {
 
                 return (
                   <React.Fragment key={order.id}>
-                    <TableRow hover sx={{ cursor: 'pointer', '& > td': { borderBottom: expanded ? 0 : undefined } }}
+                    <TableRow tabIndex={0} onKeyDown={activateOnKey} hover sx={{ cursor: 'pointer', '& > td': { borderBottom: expanded ? 0 : undefined } }}
                       onClick={() => setExpandedRow(expanded ? null : order.id)}>
                       <TableCell>
                         <Typography variant="body2" fontWeight={600} color="primary">{order.orderNumber}</Typography>
@@ -254,7 +255,7 @@ export default function AccountOrdersPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <IconButton size="small">{expanded ? <ExpandLess /> : <ExpandMore />}</IconButton>
+                        <IconButton aria-label="Hide details" size="small">{expanded ? <ExpandLess /> : <ExpandMore />}</IconButton>
                       </TableCell>
                     </TableRow>
 

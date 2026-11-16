@@ -22,6 +22,7 @@ import {
   CheckCircle      as CheckIcon,
 } from '@mui/icons-material'
 import { getRemnantSuggestions, getAgingBucket, REMNANT_CONDITION } from '../../services/remnantInventoryApi'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
@@ -87,7 +88,7 @@ export default function RemnantSuggestionPanel({ lines = [], location, onSelectR
       }}
     >
       {/* Header */}
-      <Box
+      <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
         sx={{
           p: 1.5,
           display: 'flex',

@@ -57,6 +57,7 @@ import {
   reprintJob,
   getPrintQueueHistory,
 } from '../../services/printQueueApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // ── Tag type metadata ──────────────────────────────────────────────────────────
 const TAG_META = {
@@ -366,7 +367,7 @@ export default function PrintQueueDrawer() {
                 },
               }}
             >
-              <Box
+              <Box role="button" tabIndex={0} onKeyDown={activateOnKey} aria-label={pendingCount > 0 ? `Open the print queue, ${pendingCount} waiting` : 'Open the print queue'}
                 onClick={() => setOpen(true)}
                 sx={{
                   width: 56,
@@ -440,7 +441,7 @@ export default function PrintQueueDrawer() {
                 {polling ? <CircularProgress size={18} sx={{ color: 'white' }} /> : <RefreshIcon />}
               </IconButton>
             </Tooltip>
-            <IconButton size="small" onClick={() => setOpen(false)} sx={{ color: 'white' }}>
+            <IconButton aria-label="Close" size="small" onClick={() => setOpen(false)} sx={{ color: 'white' }}>
               <CloseIcon />
             </IconButton>
           </Box>
@@ -498,7 +499,7 @@ export default function PrintQueueDrawer() {
                 transition: 'border-color 0.2s',
               }}
             >
-              <Box
+              <Box role="button" tabIndex={0} onKeyDown={activateOnKey} aria-expanded={manualOpen}
                 onClick={() => setManualOpen(!manualOpen)}
                 sx={{
                   px: 1.5,

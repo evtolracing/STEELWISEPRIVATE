@@ -67,7 +67,9 @@ client.interceptors.response.use(
     const isCredentialCheck = url.includes('/auth/login') || url.includes('/auth/password')
     if (error.response?.status === 401 && !isCredentialCheck && window.location.pathname !== '/login') {
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      // The person returns to the page they were on, and the sign-in page says why it appeared.
+      const here = `${window.location.pathname}${window.location.search}`
+      window.location.href = `/login?expired=1${here && here !== '/' ? `&next=${encodeURIComponent(here)}` : ''}`
     }
     return Promise.reject(error)
   }

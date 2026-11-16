@@ -260,7 +260,7 @@ const OrderBoardPage = () => {
       >
         <DialogTitle>
           Create New Job
-          <IconButton
+          <IconButton aria-label="Close"
             onClick={() => setCreateDialogOpen(false)}
             sx={{ position: 'absolute', right: 8, top: 8 }}
           >

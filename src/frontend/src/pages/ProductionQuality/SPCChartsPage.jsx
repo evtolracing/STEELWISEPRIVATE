@@ -49,6 +49,8 @@ import {
   NotificationsActive,
   Search,
 } from '@mui/icons-material';
+import { notBuilt } from '../../utils/notBuilt'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // Mock SPC Chart Data
 const spcCharts = [
@@ -289,7 +291,7 @@ const SPCChartsPage = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography component="h1" variant="h4" fontWeight={700}>
             SPC Charts
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -297,10 +299,10 @@ const SPCChartsPage = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<Settings />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Settings />}>
             Configure Charts
           </Button>
-          <Button variant="outlined" startIcon={<Refresh />}>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Refresh />}>
             Refresh
           </Button>
         </Box>
@@ -386,7 +388,7 @@ const SPCChartsPage = () => {
       {/* Search */}
       {tab !== 2 && (
         <Paper sx={{ p: 2, mb: 3 }}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Search by characteristic, work center" }}
             fullWidth
             placeholder="Search by characteristic, work center..."
             value={searchQuery}
@@ -407,7 +409,7 @@ const SPCChartsPage = () => {
         <Grid container spacing={3}>
           {filteredCharts.map((chart) => (
             <Grid item xs={12} md={6} key={chart.id}>
-              <Card 
+              <Card role="button" tabIndex={0} onKeyDown={activateOnKey} 
                 sx={{ 
                   cursor: 'pointer',
                   border: chart.status === 'ALERT' ? 2 : chart.status === 'WARNING' ? 1 : 0,
@@ -507,11 +509,11 @@ const SPCChartsPage = () => {
                     <TableCell>{violation.acknowledgedBy || '—'}</TableCell>
                     <TableCell align="right">
                       {violation.status === 'Active' && (
-                        <Button size="small" variant="outlined" color="warning">
+                        <Button onClick={notBuilt} size="small" variant="outlined" color="warning">
                           Acknowledge
                         </Button>
                       )}
-                      <IconButton size="small">
+                      <IconButton onClick={notBuilt} aria-label="View" size="small">
                         <Visibility />
                       </IconButton>
                     </TableCell>
@@ -602,10 +604,10 @@ const SPCChartsPage = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" startIcon={<History />}>View History</Button>
-          <Button variant="outlined" startIcon={<Refresh />}>Recalculate Limits</Button>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<History />}>View History</Button>
+          <Button onClick={notBuilt} variant="outlined" startIcon={<Refresh />}>Recalculate Limits</Button>
           {selectedChart?.status !== 'OK' && (
-            <Button variant="contained" color="warning" startIcon={<NotificationsActive />}>
+            <Button onClick={notBuilt} variant="contained" color="warning" startIcon={<NotificationsActive />}>
               Acknowledge Violation
             </Button>
           )}

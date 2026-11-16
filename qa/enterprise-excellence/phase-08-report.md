@@ -8,6 +8,8 @@ Date: 2026-11-16. Branch `claude/project-thread-25z3jd`, pull request 31 (not me
 
 **PARTIALLY COMPLETE**
 
+**Updated 2026-11-15 after owner decision 10.** Of the items below, the rule for a lost load (N-027) is now built and verified, and carriers (N-026) are decided as typed tracking numbers. Accounting (N-025) and notices (N-028) remain. See "Decisions that are the owner's" and `phase-08-owner-decision-10.md`. The status does not change.
+
 Readiness decision under the directive: **CONDITIONAL**.
 
 Why not VERIFIED COMPLETE:
@@ -212,14 +214,18 @@ Risks R-49 to R-56 are in `production-risk-register.md`.
 
 ### Decisions that are the owner's
 
-| Item | Question | Recommended |
+**Updated 2026-11-15 by owner decision 10.** The first issue of this report asked six questions. The owner answered "let's go with your recommended, except leave the promise date for demo purposes", and asked for advice, not a build, on an internal accounting module.
+
+| Item | Question | Outcome |
 |---|---|---|
-| N-025 | Which accounting system, if any, should receive invoices, payments and credits; and when is cost of goods recognised | Name the system first. Until then the product keeps receivables and order margin and posts nowhere |
-| N-026 | Which carriers, and whether rating, labels and tracking are wanted in the product | Start with tracking numbers typed by dispatch, which works today; connect one carrier when a contract exists |
-| N-027 | What happens to a load that is lost, destroyed or refused for good: who decides, is the stock written off, is the customer credited or reshipped | A manager's decision with a reason, a credit for the invoice, and a write-off movement; nothing automatic |
-| F-009 | Whether every staff login should read every invoice and its payments | Limit to sales, accounting and managers of the branch |
-| S-010 | Delivery promise dates and cutoff times shown from invented data | Remove the promise until it can be worked out from real stock and capacity |
-| H-013 | Web checkout collects a payment method that does nothing | Sell on account only and say so, until a processor is chosen |
+| N-027 | A load that is lost, destroyed or refused for good | **Built.** A manager ends the shipment as lost with what happened; what is left on its invoice is credited in the same save. VERIFIED FIXED |
+| F-009 | Whether every staff login should read every invoice and its payments | **Built.** Sales, managers, leadership and view-only roles read invoices. Other staff see an invoice's number and status only. VERIFIED FIXED |
+| H-013 | Web checkout collected a payment method that did nothing | **Built.** The web shop says every order is on account and takes no payment method. VERIFIED FIXED |
+| N-026 | Carriers, rating, labels and tracking | **Decided, nothing to build.** Tracking numbers typed by dispatch for now; a carrier is connected when a contract exists. DEFERRED TO SPECIFIC PHASE |
+| S-010 | Delivery promise dates shown from invented data | **Left as it is, by the owner, for demonstration.** ACCEPTED RISK WITH APPROVAL |
+| N-025 | Accounting, ledger and cost of goods | **Still open.** Advice was given on an internal ledger. Three answers are needed before a build: when cost of goods counts (recommended: at shipment), the chart of accounts, and the start date. REQUIRES BUSINESS DECISION |
+
+Detail of what was built, how it was verified and what changes for staff is in `phase-08-owner-decision-10.md`. It ships one more database file, number 15, which adds one shipment state and changes no row.
 
 Also the owner's, from Phase 7 and still needed for margin to be complete: labor rates per kind of work center.
 

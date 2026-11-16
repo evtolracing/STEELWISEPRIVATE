@@ -146,7 +146,7 @@ export default function MobileOrderPlacement() {
 
   return (
     <Box>
-      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+      <Typography component="h1" variant="h6" fontWeight={700} sx={{ mb: 2 }}>
         <PlaceIcon sx={{ verticalAlign: 'bottom', mr: 0.5 }} /> Place Orders
       </Typography>
 
@@ -237,7 +237,7 @@ export default function MobileOrderPlacement() {
                 </Box>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                  <IconButton size="small" color="error" onClick={() => handleDelete(order.id)} sx={{ border: '1px solid', borderColor: 'error.light' }}>
+                  <IconButton aria-label="Delete" size="small" color="error" onClick={() => handleDelete(order.id)} sx={{ border: '1px solid', borderColor: 'error.light' }}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Box>

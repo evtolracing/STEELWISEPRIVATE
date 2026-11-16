@@ -343,7 +343,7 @@ function TimeTrackingPage() {
                 <TimerIcon sx={{ fontSize: 30 }} />
               </Avatar>
               <Box>
-                <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                   Time Tracking Report
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center">

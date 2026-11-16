@@ -67,6 +67,7 @@ import {
   getMockSlaRiskJobs,
 } from '../../services/mockDashboardData';
 import { askOpsAssistant } from '../../services/aiConsoleApi';
+import { activateOnKey } from '../../utils/activateOnKey'
 
 // ============================================
 // Loading & Error Wrapper Component
@@ -97,7 +98,7 @@ function WidgetWrapper({ title, loading, error, onRetry, children, minHeight = 1
             sx={{ fontSize: '0.75rem' }}
             action={
               onRetry && (
-                <IconButton size="small" onClick={onRetry}>
+                <IconButton aria-label="Refresh" size="small" onClick={onRetry}>
                   <RefreshIcon fontSize="small" />
                 </IconButton>
               )
@@ -159,7 +160,7 @@ export function FlowBoardWidget({ title = 'Job Flow', data, loading, error, onRe
                 </Stack>
                 <Stack spacing={0.5}>
                   {groupedJobs[status].slice(0, 3).map((job) => (
-                    <Box
+                    <Box role="button" tabIndex={0} onKeyDown={activateOnKey}
                       key={job.id}
                       onClick={() => onJobClick?.(job)}
                       sx={{
@@ -651,7 +652,7 @@ export function ExceptionsFeedWidget({ title = 'Exceptions', data, loading, erro
                     sx={{
                       width: 24,
                       height: 24,
-                      bgcolor: `${getSeverityColor(exc.severity)}.light`,
+                      bgcolor: `${getSeverityColor(exc.severity)}.tint`,
                       color: `${getSeverityColor(exc.severity)}.main`,
                     }}
                   >
@@ -842,7 +843,7 @@ export function AiAssistantPanel({ title = 'Ops Assistant', role, context, onAsk
       <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', pt: 0 }}>
         <Box sx={{ flex: 1, mb: 2, overflow: 'auto', maxHeight: 200 }}>
           {answer ? (
-            <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'primary.light', borderRadius: 1 }}>
+            <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'primary.tint', borderRadius: 1 }}>
               <Typography variant="body2">{answer}</Typography>
             </Paper>
           ) : (
@@ -855,7 +856,7 @@ export function AiAssistantPanel({ title = 'Ops Assistant', role, context, onAsk
           )}
         </Box>
         <Stack direction="row" spacing={1}>
-          <TextField
+          <TextField inputProps={{ 'aria-label': "Ask a question" }}
             fullWidth
             size="small"
             placeholder="Ask a question..."
@@ -869,6 +870,7 @@ export function AiAssistantPanel({ title = 'Ops Assistant', role, context, onAsk
             onClick={handleAsk}
             disabled={isLoading || !query.trim()}
             sx={{ minWidth: 48 }}
+            aria-label="Ask"
           >
             <SendIcon />
           </Button>

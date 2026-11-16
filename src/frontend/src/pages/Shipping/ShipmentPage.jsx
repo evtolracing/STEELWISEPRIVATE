@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom'
 import {
-  Box, Typography, Paper, Grid, Button, IconButton, Alert, CircularProgress, Snackbar, Link, TextField,
+  Box, Typography, Paper, Grid, Button, IconButton, Alert, CircularProgress, Snackbar, Link, TextField, MenuItem,
   Dialog, DialogTitle, DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Chip, FormControlLabel, Checkbox,
 } from '@mui/material'
 import { ArrowBack as BackIcon, LocalShipping as DispatchIcon, CheckCircle as DeliverIcon, Cancel as CancelIcon, Edit as EditIcon, Print as PrintIcon, ReportProblem as ProblemIcon } from '@mui/icons-material'
@@ -95,6 +95,45 @@ function DeliverDialog({ shipment, open, onClose, onDone }) {
   )
 }
 
+const LOST_KINDS = [['LOST', 'Lost in transit'], ['DESTROYED', 'Destroyed in transit'], ['REFUSED', 'Refused and not coming back']]
+
+/** A load that never arrives: a manager ends the shipment and its invoice is credited (N-027). */
+function LostDialog({ shipment, open, onClose, onDone }) {
+  const [kind, setKind] = useState('LOST')
+  const [reason, setReason] = useState('')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  useEffect(() => { if (open) { setKind('LOST'); setReason(''); setError('') } }, [open])
+  const save = async () => {
+    setBusy(true); setError('')
+    try {
+      const r = await client.put(`/shipments/${shipment.id}/lost`, { kind, reason: reason.trim() })
+      onDone(r.data?.credit ? `Recorded as lost. Credit ${r.data.credit.invoiceNumber} issued.` : 'Recorded as lost. Its invoice was already credited in full.')
+    } catch (e) {
+      setError(errorText(e, 'The loss could not be recorded'))
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <Dialog open={open} onClose={busy ? undefined : onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>End {shipment.shipmentNumber} as lost</DialogTitle>
+      <DialogContent>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        <Alert severity="warning" sx={{ mb: 2 }}>A manager's decision. The shipment ends here and everything not yet credited on its invoice is credited to the customer. This cannot be undone. If the material is coming back, use a return instead.</Alert>
+        <TextField select fullWidth label="What kind of loss" value={kind} onChange={(e) => setKind(e.target.value)} sx={{ mb: 2 }}>
+          {LOST_KINDS.map(([value, label]) => <MenuItem key={value} value={value}>{label}</MenuItem>)}
+        </TextField>
+        <TextField fullWidth multiline minRows={2} label="What happened" helperText="Kept in the shipment's history and on the credit." value={reason} onChange={(e) => setReason(e.target.value)} inputProps={{ maxLength: 300 }} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={busy}>Cancel</Button>
+        <Button variant="contained" color="error" onClick={save} disabled={busy || reason.trim().length < 3}>End as lost and credit</Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 function ProblemDialog({ shipment, open, onClose, onDone }) {
   const [reason, setReason] = useState('')
   const [error, setError] = useState('')
@@ -156,6 +195,12 @@ export default function ShipmentPage() {
   const [busy, setBusy] = useState(false)
   const [dialog, setDialog] = useState(null)
   const [confirm, setConfirm] = useState(null)
+  // The question being asked is remembered while its dialog fades out. Without this the closing dialog
+  // turned into the other question for a moment, and the second click of a double click on "Dispatch now"
+  // landed on "Cancel the shipment" and cancelled it.
+  const lastConfirm = useRef(null)
+  if (confirm) lastConfirm.current = confirm
+  const asking = confirm || lastConfirm.current
   const [toast, setToast] = useState('')
   const [papers, setPapers] = useState(null)
   const [paper, setPaper] = useState(null)
@@ -229,7 +274,7 @@ export default function ShipmentPage() {
         <IconButton onClick={() => navigate('/shipping')} aria-label="Back to shipping"><BackIcon /></IconButton>
         <Box sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-            <Typography variant="h5" fontWeight={700}>{shipment.shipmentNumber}</Typography>
+            <Typography component="h1" variant="h5" fontWeight={700}>{shipment.shipmentNumber}</Typography>
             <ShipmentStatusChip status={shipment.status} />
           </Box>
           <Typography variant="body2" color="text.secondary">
@@ -240,6 +285,7 @@ export default function ShipmentPage() {
         {onDock && <Button variant="contained" startIcon={<DispatchIcon />} disabled={busy} onClick={() => setConfirm('dispatch')}>Dispatch</Button>}
         {shipment.status === 'EXCEPTION' && <Button variant="contained" startIcon={<DispatchIcon />} disabled={busy} onClick={dispatch}>Back on the road</Button>}
         {onRoad && <Button variant="contained" color="success" startIcon={<DeliverIcon />} disabled={busy} onClick={() => setDialog('deliver')}>Mark delivered</Button>}
+        {shipment.status === 'EXCEPTION' && <Button color="error" disabled={busy} onClick={() => setDialog('lost')}>Lost for good</Button>}
         {shipment.status === 'IN_TRANSIT' && <Button color="warning" startIcon={<ProblemIcon />} disabled={busy} onClick={() => setDialog('problem')}>Report a problem</Button>}
         {shipment.status !== 'CANCELLED' && <Button startIcon={<PrintIcon />} disabled={busy} onClick={() => print('PACKING_LIST')}>Packing list</Button>}
         {shipment.status !== 'CANCELLED' && <Button startIcon={<PrintIcon />} disabled={busy} onClick={() => print('BOL')}>Bill of lading</Button>}
@@ -350,7 +396,7 @@ export default function ShipmentPage() {
             <Typography variant="h6" gutterBottom>Invoice</Typography>
             {shipment.invoices?.length ? shipment.invoices.map((inv) => (
               <Fact key={inv.id} name={inv.kind === 'CREDIT' ? 'Credit' : 'Invoice'}>
-                <Link component={RouterLink} to="/orders/invoices">{inv.invoiceNumber}</Link> {dollars(inv.totalAmount)} ({String(inv.status).toLowerCase()})
+                <Link component={RouterLink} to="/orders/invoices">{inv.invoiceNumber}</Link> {inv.totalAmount == null ? '' : dollars(inv.totalAmount)} ({String(inv.status).toLowerCase()})
               </Fact>
             )) : (
               <Typography variant="body2" color="text.secondary">
@@ -362,22 +408,23 @@ export default function ShipmentPage() {
       </Grid>
 
       <Dialog open={!!confirm} onClose={() => setConfirm(null)} maxWidth="xs" fullWidth>
-        <DialogTitle>{confirm === 'dispatch' ? `Dispatch ${shipment.shipmentNumber}?` : `Cancel ${shipment.shipmentNumber}?`}</DialogTitle>
+        <DialogTitle>{asking === 'dispatch' ? `Dispatch ${shipment.shipmentNumber}?` : `Cancel ${shipment.shipmentNumber}?`}</DialogTitle>
         <DialogContent>
           <Typography variant="body2">
-            {confirm === 'dispatch'
+            {asking === 'dispatch'
               ? 'The stock reserved for these lines is taken out of inventory, the order is updated and the invoice is raised. This cannot be undone here.'
               : 'Nothing has left the dock, so stock and the order are not changed. The lines can go on another shipment.'}
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirm(null)}>Go back</Button>
-          {confirm === 'dispatch'
-            ? <Button variant="contained" onClick={dispatch}>Dispatch now</Button>
-            : <Button variant="contained" color="error" onClick={cancel}>Cancel the shipment</Button>}
+          {asking === 'dispatch'
+            ? <Button variant="contained" disabled={!confirm || busy} onClick={dispatch}>Dispatch now</Button>
+            : <Button variant="contained" color="error" disabled={!confirm || busy} onClick={cancel}>Cancel the shipment</Button>}
         </DialogActions>
       </Dialog>
       <TruckDialog shipment={shipment} open={dialog === 'truck'} onClose={() => setDialog(null)} onSaved={() => { setDialog(null); setToast('Saved'); load() }} />
+      <LostDialog shipment={shipment} open={dialog === 'lost'} onClose={() => setDialog(null)} onDone={(text) => { setDialog(null); setToast(text); load() }} />
       <ProblemDialog shipment={shipment} open={dialog === 'problem'} onClose={() => setDialog(null)} onDone={() => { setDialog(null); setToast('Problem recorded'); load() }} />
       <PaperDialog paper={paper} onClose={() => setPaper(null)} />
       <DeliverDialog shipment={shipment} open={dialog === 'deliver'} onClose={() => setDialog(null)} onDone={() => { setDialog(null); setToast('Marked delivered'); load() }} />

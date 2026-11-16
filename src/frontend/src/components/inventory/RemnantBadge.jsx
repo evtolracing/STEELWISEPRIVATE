@@ -118,7 +118,7 @@ export function LimitedQtyBadge({ qty, threshold = 3, size = 'small' }) {
         size={size}
         sx={{
           bgcolor: '#fff3e0',
-          color: '#e65100',
+          color: '#A63A00',
           fontWeight: 700,
           border: '1px solid #ffcc80',
           fontSize: size === 'small' ? '0.7rem' : '0.8rem',

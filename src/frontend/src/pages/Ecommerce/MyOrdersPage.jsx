@@ -17,6 +17,7 @@ import { useNavigate, Link } from 'react-router-dom'
 
 import { listMyOrders } from '../../services/customerOrdersApi'
 import { useCustomerSession } from '../../contexts/CustomerSessionContext'
+import { activateOnKey } from '../../utils/activateOnKey'
 
 const STATUS_CFG = {
   DRAFT:         { color: 'default', icon: <Schedule fontSize="inherit" /> },
@@ -70,10 +71,10 @@ export default function MyOrdersPage() {
       </Breadcrumbs>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Typography variant="h5" fontWeight={700}>My Orders</Typography>
+        <Typography component="h1" variant="h5" fontWeight={700}>My Orders</Typography>
         <Chip label={`${orders.length} order(s)`} size="small" color="primary" />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-          <TextField size="small" placeholder="Search orders…" value={search}
+          <TextField inputProps={{ 'aria-label': "Search orders" }} size="small" placeholder="Search orders…" value={search}
             onChange={e => setSearch(e.target.value)}
             InputProps={{
               startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment>,
@@ -85,7 +86,7 @@ export default function MyOrdersPage() {
             <MenuItem value="">All Statuses</MenuItem>
             {Object.keys(STATUS_CFG).map(s => <MenuItem key={s} value={s}>{s.replace(/_/g, ' ')}</MenuItem>)}
           </TextField>
-          <IconButton onClick={loadOrders} size="small"><Refresh /></IconButton>
+          <IconButton aria-label="Refresh" onClick={loadOrders} size="small"><Refresh /></IconButton>
         </Box>
       </Box>
 
@@ -116,7 +117,7 @@ export default function MyOrdersPage() {
               {orders.map(order => {
                 const cfg = STATUS_CFG[order.status] || STATUS_CFG.DRAFT
                 return (
-                  <TableRow key={order.id} hover sx={{ cursor: 'pointer' }}
+                  <TableRow tabIndex={0} onKeyDown={activateOnKey} key={order.id} hover sx={{ cursor: 'pointer' }}
                     onClick={() => navigate(`/shop/orders/${order.id}`)}>
                     <TableCell>
                       <Typography variant="body2" fontWeight={600} color="primary">
@@ -141,7 +142,7 @@ export default function MyOrdersPage() {
                       <Chip label={order.source || 'ONLINE'} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
                     </TableCell>
                     <TableCell>
-                      <IconButton size="small" color="primary"><Visibility fontSize="small" /></IconButton>
+                      <IconButton aria-label="View" size="small" color="primary"><Visibility fontSize="small" /></IconButton>
                     </TableCell>
                   </TableRow>
                 )

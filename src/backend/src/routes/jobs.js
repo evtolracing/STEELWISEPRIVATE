@@ -5,8 +5,9 @@ import { createNumbered, padded } from '../lib/numbering.js';
 import { JOB_STATUSES, UNFINISHED_JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
 import { shipForJob } from './shipments.js';
 import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
-import { changeJobStatusTx, sendRefusal, inspectionsOf } from '../lib/jobGates.js';
-import { owesInspection } from '../lib/productionRules.js';
+import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates.js';
+import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
+import { COST_VIEWERS } from '../lib/roleAccess.js';
 
 const router = Router();
 const STALE = 'This job was changed by someone else a moment ago. Reload it and try again.';
@@ -439,6 +440,32 @@ router.post('/', async (req, res) => {
 });
 
 // GET /jobs/:id/plan - Retrieve existing dispatch plan for a job
+// GET /api/jobs/:id/material: the coil work orders raised for this job, with what they used, made and scrapped (L-024).
+router.get('/:id/material', async (req, res) => {
+  try {
+    const job = await prisma.job.findUnique({ where: { id: req.params.id }, select: { id: true, workOrderId: true } }).catch(() => null);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    res.json(publicMaterial(await jobMaterial(prisma, job)));
+  } catch (error) {
+    console.error('Error reading job material:', error);
+    res.status(500).json({ error: 'The material for this job could not be loaded' });
+  }
+});
+
+// GET /api/jobs/:id/cost: material at actual cost plus labor at the rate on file (L-026). Cost goes only to the roles that manage it.
+router.get('/:id/cost', async (req, res) => {
+  try {
+    if (!COST_VIEWERS.has(req.user?.role)) return res.status(403).json({ error: 'Job cost is shown to managers, the inventory manager and buyers.' });
+    const job = await prisma.job.findUnique({ where: { id: req.params.id }, select: { id: true, workOrderId: true } }).catch(() => null);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const material = await jobMaterial(prisma, job);
+    res.json({ jobId: job.id, ...(await jobCost(prisma, job, material)), material: publicMaterial(material).totals });
+  } catch (error) {
+    console.error('Error reading job cost:', error);
+    res.status(500).json({ error: 'The cost of this job could not be worked out' });
+  }
+});
+
 router.get('/:id/plan', async (req, res) => {
   try {
     const { id } = req.params;
@@ -841,7 +868,7 @@ router.post('/:id/complete', async (req, res) => {
     const updatedJob = await prisma.$transaction(async (tx) => {
       const moved = await changeJobStatusTx(tx, id, 'READY_TO_SHIP', {
         from: ['IN_PROCESS', 'PACKAGING'], fromError: (j) => `Cannot complete job with status ${j.status}`, note, via: 'complete', userId: req.user?.id,
-        decide: async (j, db) => (j.status === 'IN_PROCESS' && owesInspection(await inspectionsOf(db, j.id)) ? 'WAITING_QC' : 'READY_TO_SHIP'),
+        decide: async (j, db) => (j.status === 'IN_PROCESS' ? afterProduction(db, j, 'READY_TO_SHIP') : 'READY_TO_SHIP'),
       });
       from = moved.from; to = moved.to;
       return tx.job.findUnique({
@@ -858,7 +885,7 @@ router.post('/:id/complete', async (req, res) => {
     if (to === 'READY_TO_SHIP') onJobStatusChange(updatedJob, 'READY_TO_SHIP', from).catch((e) =>
       console.error('[PrintAutomation] complete hook error:', e.message)
     );
-    if (to === 'WAITING_QC') return res.json({ ...updatedJob, message: 'This job was sent back for rework, so it has gone to inspection before it can ship.' });
+    if (to === 'WAITING_QC') return res.json({ ...updatedJob, message: 'This job has gone to inspection. It moves on when an inspection is passed.' });
 
     res.json(updatedJob);
   } catch (error) {

@@ -15,7 +15,17 @@ import { changeError, lockedOut } from '../lib/workCenterGuard.js'
 import { planAssignments, SCHEDULABLE_JOB_STATUSES, PRIORITY_ORDER, SKILL_ORDER } from '../lib/dispatchPlan.js'
 
 import { currentScope } from '../lib/branchScope.js'
+import { Prisma } from '@prisma/client'
+import { readKindRules } from '../lib/workCenterKindRules.js'
+import { COST_VIEWERS } from '../lib/roleAccess.js'
 const router = express.Router()
+
+/** The labor rate of a kind of work center is cost: it goes only to the roles that manage cost. */
+const kindForViewer = (req, kind) => {
+  if (!kind || COST_VIEWERS.has(req.user?.role)) return kind
+  const { hourlyRate: _hourlyRate, ...rest } = kind
+  return rest
+}
 
 // ============================================================================
 // PRISMA ↔ DISPATCH FIELD MAPPING
@@ -86,7 +96,7 @@ router.get('/work-center-types', async (req, res) => {
       where,
       orderBy: { label: 'asc' },
     })
-    res.json({ success: true, data: types })
+    res.json({ success: true, data: types.map((t) => kindForViewer(req, t)) })
   } catch (error) {
     console.error('Error fetching work center types:', error)
     res.status(500).json({ success: false, error: 'Failed to fetch work center types' })
@@ -103,7 +113,7 @@ router.get('/work-center-types/:id', async (req, res) => {
     if (!wct) {
       return res.status(404).json({ success: false, error: 'Work center type not found' })
     }
-    res.json({ success: true, data: wct })
+    res.json({ success: true, data: kindForViewer(req, wct) })
   } catch (error) {
     console.error('Error fetching work center type:', error)
     res.status(500).json({ success: false, error: 'Failed to fetch work center type' })
@@ -123,6 +133,8 @@ router.post('/work-center-types', async (req, res) => {
     }
 
     const normalizedId = id.toUpperCase().replace(/[^A-Z0-9_]/g, '_')
+    const rules = readKindRules(req.body, { mayCost: COST_VIEWERS.has(req.user?.role) })
+    if (rules.error) return res.status(rules.status).json({ success: false, error: rules.error })
 
     // Check for existing
     const existing = await prisma.workCenterType.findUnique({ where: { id: normalizedId } })
@@ -139,10 +151,12 @@ router.post('/work-center-types', async (req, res) => {
         description: description || '',
         divisions: divs || [],
         isActive: true,
+        ...rules.data,
+        ...(rules.data.inspectionChecklist === null && { inspectionChecklist: Prisma.DbNull }),
       },
     })
 
-    res.status(201).json({ success: true, data: newType })
+    res.status(201).json({ success: true, data: kindForViewer(req, newType) })
   } catch (error) {
     console.error('Error creating work center type:', error)
     res.status(500).json({ success: false, error: 'Failed to create work center type' })
@@ -168,13 +182,18 @@ router.patch('/work-center-types/:id', async (req, res) => {
     if (description !== undefined) data.description = description
     if (divs !== undefined) data.divisions = divs
     if (isActive !== undefined) data.isActive = isActive
+    // Rules and rate for this kind of work: certification, two steps at once, labor rate, inspection checklist.
+    const rules = readKindRules(req.body, { mayCost: COST_VIEWERS.has(req.user?.role) })
+    if (rules.error) return res.status(rules.status).json({ success: false, error: rules.error })
+    Object.assign(data, rules.data)
+    if (data.inspectionChecklist === null) data.inspectionChecklist = Prisma.DbNull
 
     const updated = await prisma.workCenterType.update({
       where: { id: req.params.id },
       data,
     })
 
-    res.json({ success: true, data: updated })
+    res.json({ success: true, data: kindForViewer(req, updated) })
   } catch (error) {
     console.error('Error updating work center type:', error)
     res.status(500).json({ success: false, error: 'Failed to update work center type' })

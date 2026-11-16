@@ -1232,18 +1232,19 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     const m4 = await send('POST', `/api/jobs/${jobId}/complete`, operatorT, { note: 'Done, 2 skids' });
     moves = await movesOf(jobId);
     job = await prisma.job.findUnique({ where: { id: jobId } });
-    check('every way of moving a job leaves a record', m2.status === 200 && m3.status === 200 && m4.status === 200 && moves.length === 4 && moves.map((m) => m.details?.to).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>READY_TO_SHIP', `statuses ${m2.status}/${m3.status}/${m4.status}, records ${moves.map((m) => m.details?.to).join('>')}`);
+    check('every way of moving a job leaves a record', m2.status === 200 && m3.status === 200 && m4.status === 200 && moves.length === 4 && moves.map((m) => m.details?.to).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>WAITING_QC', `statuses ${m2.status}/${m3.status}/${m4.status}, records ${moves.map((m) => m.details?.to).join('>')}`);
     check('each record carries the right person', moves.length === 4 && moves[1].userId === csr.id && moves[2].userId === csr.id && moves[3].userId === operator.id, moves.map((m) => m.userId === operator.id ? 'operator' : m.userId === csr.id ? 'csr' : 'other').join(','));
     check('completing a job with a note still leaves its notes alone', job?.notes === 'Customer wants paper interleave', `notes are now ${JSON.stringify(job?.notes ?? null)}`);
-    const same = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'READY_TO_SHIP' });
+    // Since owner decision 9 a completed job goes to inspection, even with no planned steps (L-021).
+    const same = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'WAITING_QC' });
     check('setting the status a job already has adds no record', same.status === 200 && (await movesOf(jobId)).length === 4, `status ${same.status}, ${(await movesOf(jobId)).length} records`);
-    const refused = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'SCHEDULED' });
+    const refused = await send('POST', `/api/jobs/${jobId}/status`, operatorT, { status: 'READY_TO_SHIP' });
     check('a refused move adds no record', refused.status === 409 && (await movesOf(jobId)).length === 4, `status ${refused.status}`);
 
     const hist = await send('GET', `/api/jobs/${jobId}/history`, csrT);
     const h = Array.isArray(hist.body) ? hist.body : [];
     const statusRows = h.filter((e) => e.type === 'STATUS');
-    check('the job history lists every move in order', hist.status === 200 && h[0]?.type === 'CREATED' && statusRows.map((e) => e.status).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>READY_TO_SHIP', JSON.stringify(h.map((e) => e.status ?? e.type ?? null)));
+    check('the job history lists every move in order', hist.status === 200 && h[0]?.type === 'CREATED' && statusRows.map((e) => e.status).join('>') === 'IN_PROCESS>ON_HOLD>IN_PROCESS>WAITING_QC', JSON.stringify(h.map((e) => e.status ?? e.type ?? null)));
     check('the history names who made each move and carries the reason', statusRows.length === 4 && statusRows.every((e) => typeof e.by === 'string' && e.by.length > 1 && e.recorded === true) && statusRows[0]?.note === 'Saw is free' && statusRows[0]?.from === 'SCHEDULED', JSON.stringify(statusRows.map((e) => [e.by ?? null, e.note ?? null])));
     check('the history names who created the job', typeof h[0]?.by === 'string' && h[0].by.length > 1, JSON.stringify(h[0] ?? null));
     check('the history of a job that is not on file is a 404', (await send('GET', '/api/jobs/00000000-0000-0000-0000-000000000000/history', csrT)).status === 404, 'not 404');

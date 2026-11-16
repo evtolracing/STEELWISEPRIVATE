@@ -91,6 +91,23 @@
    ],
    "status": "OPEN",
    "date": "2026-11-15"
+  },
+  {
+   "n": 9,
+   "asked": "Six Phase 7 questions: how production cost is worked out; whether a job names its coil work orders; how rework is done; which jobs must be inspected; the labor rules (certification, two steps at once, forgotten clocks); and where inspection checklists come from.",
+   "answer": "Use the recommended option for each: what works best and is easiest to use.",
+   "recorded": "(1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked \"no inspection\". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then.",
+   "findings": [
+    "K-007",
+    "L-020",
+    "L-021",
+    "L-022",
+    "L-024",
+    "L-026",
+    "L-028"
+   ],
+   "status": "OPEN",
+   "date": "2026-11-15"
   }
  ]
 }

@@ -54,7 +54,9 @@ const as = (who) => (typeof who === 'string' ? (m, url, body) => A.call(m, url, 
 const T = `P7S${run}`.slice(0, 14);   // "saw"
 const T2 = `P7D${run}`.slice(0, 14);  // "deburr"
 for (const [id, label] of [[T, 'QA P7 saw'], [T2, 'QA P7 deburr']]) {
-  const r = await A.post('/api/v1/dispatch/work-center-types', { id, label, divisions: ['METALS'] });
+  // Marked for two steps at once, so scenarios that share an operator do not block each other.
+  // The one-step-at-a-time rule is tested on a kind of its own that is not marked.
+  const r = await A.post('/api/v1/dispatch/work-center-types', { id, label, divisions: ['METALS'], allowsConcurrentSteps: true });
   if (r.status !== 201) throw new Error(`type ${r.status} ${JSON.stringify(r.body)}`);
 }
 async function mkWc(loc, type = T, over = {}) {
@@ -1153,14 +1155,60 @@ if (want(4)) {
     const good = await A.post(`/api/staff/operators/${p.id}/skills`, { workCenterTypeId: T, skillLevel: 'ADVANCED', certifiedDate: longAgo, expiresAt: nextYear });
     ok('a valid certification is saved as entered', good.status === 201 && (await prisma.operatorSkill.findFirst({ where: { operatorId: p.id, workCenterTypeId: T } }))?.skillLevel === 'ADVANCED', `${good.status} ${JSON.stringify(good.body).slice(0, 160)}`);
   });
-  await scenario(G4, 'one operator clocked on to two steps at once: no rule against it is on file, so both clocks run and both are on record', async (ok) => {
+  await scenario(G4, 'one operator on two steps at once is refused, unless the kind of work center is marked for it (owner decision 9)', async (ok) => {
     const c = await cell({ wcs: 2 });
     const a = await cellJob(c); const b = await cellJob(c);
     const x = await startOp(a.ops[0], c.person, c.wcs[0]); const y = await startOp(b.ops[0], c.person, c.wcs[1]);
-    const running = await prisma.dispatchTimeLog.count({ where: { operatorId: c.person.id, status: 'RUNNING' } });
-    ok('both starts are accepted and the operator has two running clocks', x.status === 200 && y.status === 200 && running === 2, `${x.status} ${y.status} ${running}`);
-    ok('whether an operator may run two machines is a labor policy for the owner; none is invented here', true);
-  }, NA);
+    const running = () => prisma.dispatchTimeLog.count({ where: { operatorId: c.person.id, status: 'RUNNING' } });
+    ok('the first start is accepted; the second is refused with a sentence naming the step already running', x.status === 200 && y.status === 409 && /already clocked on/.test(y.body?.error || '') && (await running()) === 1, `${x.status} ${y.status} ${y.body?.error}`);
+    const bad = await A.call('PATCH', `/api/v1/dispatch/work-center-types/${c.type}`, { allowsConcurrentSteps: 'yes' });
+    ok('the mark must be yes or no', bad.status === 400, `${bad.status}`);
+    const floor = await pm1.call('PATCH', `/api/v1/dispatch/work-center-types/${c.type}`, { allowsConcurrentSteps: true });
+    const mark = floor.status === 200 ? floor : await A.call('PATCH', `/api/v1/dispatch/work-center-types/${c.type}`, { allowsConcurrentSteps: true });
+    const y2 = await startOp(b.ops[0], c.person, c.wcs[1]);
+    ok('once the kind is marked, the same operator runs both, and both clocks are on record', mark.status === 200 && y2.status === 200 && (await running()) === 2, `${mark.status} ${y2.status} ${y2.body?.error}`);
+    const d = await cell();
+    const other = await cellJob(d);
+    const z = await startOp(other.ops[0], c.person, d.wc);
+    ok('a third step of a kind that is not marked is still refused', z.status === 409 && (await running()) === 2, `${z.status} ${z.body?.error}`);
+    await clocks(ok, a.id); await clocks(ok, b.id);
+  });
+  await scenario(G4, 'where a kind of work center is marked "certification required", an operator with none on file cannot be clocked on (owner decision 9)', async (ok) => {
+    const c = await cell({ people: 0 });
+    const bare = await mkOperator(L1, { types: [] }); const certified = await mkOperator(L1, { types: [c.type] });
+    const a = await cellJob(c);
+    const before = await startOp(a.ops[0], bare, c.wc);
+    ok('not marked: an operator with no certification on file may work, as before', before.status === 200, `${before.status} ${before.body?.error}`);
+    await doneOp(a.ops[0]);
+    const mark = await A.call('PATCH', `/api/v1/dispatch/work-center-types/${c.type}`, { certificationRequired: true });
+    const b = await cellJob(c);
+    const no = await startOp(b.ops[0], bare, c.wc);
+    ok('marked: the same operator is refused, and the sentence says what to do', mark.status === 200 && no.status === 409 && /certification on file/.test(no.body?.error || ''), `${mark.status} ${no.status} ${no.body?.error}`);
+    ok('nothing was started', (await logsOf(b.ops[0].id)).length === 0 && (await prisma.dispatchOperation.findUnique({ where: { id: b.ops[0].id } })).status !== 'IN_PROCESS');
+    const yes = await startOp(b.ops[0], certified, c.wc);
+    ok('a certified operator is accepted', yes.status === 200, `${yes.status} ${yes.body?.error}`);
+    const seen = await A.call('GET', `/api/v1/dispatch/work-center-types/${c.type}`);
+    ok('the mark is on the kind\'s record', (seen.body?.data || seen.body)?.certificationRequired === true, JSON.stringify(seen.body).slice(0, 200));
+  });
+  await scenario(G4, 'a clock left running is listed for the supervisor after the hours on file; nothing is stopped (owner decision 9)', async (ok) => {
+    const c = await cell();
+    const j = await cellJob(c);
+    await startOp(j.ops[0], c.person, c.wc);
+    const fresh = await pm1.call('GET', '/api/v1/operations/long-running');
+    const mine = (r) => (r.body?.data || []).filter((e) => e.operator?.id === c.person.id);
+    ok('a clock started just now is not listed', fresh.status === 200 && mine(fresh).length === 0, `${fresh.status}`);
+    await prisma.dispatchTimeLog.updateMany({ where: { dispatchOperationId: j.ops[0].id, status: 'RUNNING' }, data: { startAt: new Date(Date.now() - 13 * 3600000) } });
+    const late = await pm1.call('GET', '/api/v1/operations/long-running');
+    ok('after 13 hours it is listed with operator, step, job and hours (the setting is 12 hours)', late.body.hours === 12 && mine(late).length === 1 && mine(late)[0].hoursRunning >= 13 && mine(late)[0].hoursRunning < 13.1, JSON.stringify(mine(late)).slice(0, 300));
+    const wide = await pm1.call('GET', '/api/v1/operations/long-running?hours=20');
+    ok('asked for 20 hours, it is not listed', wide.status === 200 && mine(wide).length === 0);
+    const bad = await pm1.call('GET', '/api/v1/operations/long-running?hours=0');
+    ok('a nonsense number of hours is refused', bad.status === 400, `${bad.status}`);
+    const away = await pm2.call('GET', '/api/v1/operations/long-running');
+    ok('another branch\'s production manager does not see it', away.status === 200 && mine(away).length === 0, `${away.status} ${mine(away).length}`);
+    ok('the clock is still running: the list changes nothing', (await logsOf(j.ops[0].id)).filter((l) => l.status === 'RUNNING').length === 1);
+    await doneOp(j.ops[0]);
+  });
   await scenario(G4, 'machine time, downtime and telemetry: no machine is connected, and the downtime table is not written by any screen', async (ok) => {
     ok('the downtime table exists', (await tables('^DowntimeRecord$')).length === 1);
     const routes = fs.readdirSync('src/backend/src/routes').filter((f) => f.endsWith('.js')).map((f) => fs.readFileSync(`src/backend/src/routes/${f}`, 'utf8')).join('\n');
@@ -1453,6 +1501,69 @@ if (want(5)) {
     const cols = (await prisma.$queryRawUnsafe(`select column_name from information_schema.columns where table_name = 'JobInspection'`)).map((r) => r.column_name);
     ok('what is recorded for a failure is the defects, a disposition and rework instructions on the inspection itself', ['defects', 'disposition', 'reworkInstructions'].every((c) => cols.includes(c)) && !cols.some((c) => /rootCause|correctiveAction|ncr|containment|verifiedBy/i.test(c)), cols.join());
   }, NA);
+  await scenario(G5, 'a job with no planned steps goes to inspection when it is completed; it cannot skip to the dock (owner decision 9)', async (ok) => {
+    const j = await mkJob({ planned: false });
+    await A.post(`/api/jobs/${j.id}/start`, {});
+    const dock = await move(j.id, 'READY_TO_SHIP'); const pack = await move(j.id, 'PACKAGING');
+    ok('from in process it cannot be moved by hand to packaging or the dock', dock.status === 409 && pack.status === 409 && (await jobOf(j.id)).status === 'IN_PROCESS', `${dock.status} ${pack.status} ${pack.body?.error}`);
+    const done = await A.post(`/api/jobs/${j.id}/complete`, {});
+    ok('"complete" sends it to inspection and says so', done.status === 200 && (await jobOf(j.id)).status === 'WAITING_QC' && /inspection/.test(done.body?.message || ''), `${done.status} ${(await jobOf(j.id)).status} ${done.body?.message}`);
+    const skip = await move(j.id, 'PACKAGING');
+    ok('waiting for inspection, it still cannot be released by hand', skip.status === 409, `${skip.status}`);
+    await inspected(j.id);
+    ok('a passed inspection moves it to packaging', (await jobOf(j.id)).status === 'PACKAGING');
+    await chain(ok, j.id);
+  });
+  await scenario(G5, 'a routing marked "no inspection" lets its jobs go straight to packaging; every other job is inspected (owner decision 9)', async (ok) => {
+    const bad = await A.post('/api/v1/bom/recipes', recipeBody({ inspectionRequired: 'no' }));
+    ok('the mark must be yes or no', bad.status === 400, `${bad.status}`);
+    const plain = await activeRecipe();
+    ok('a routing asks for inspection unless it says otherwise', plain.inspectionRequired === true);
+    const free = await activeRecipe({ inspectionRequired: false });
+    const shape = await A.post('/api/v1/bom/recipes', recipeBody({ operations: [{ name: 'Saw', workCenterType: T, parameters: { speed: 4 } }] }));
+    const bare = await activeRecipe({ operations: [{ name: 'Saw', workCenterType: T }] });
+    ok('a step whose parameters are not a list is refused; a step with none is saved with an empty list, which the routing screen can open', shape.status === 400 && bare.operations.length === 1 && Array.isArray(bare.operations[0].parameters) && bare.operations[0].parameters.length === 0, `${shape.status} ${JSON.stringify(bare.operations[0]?.parameters)}`);
+    ok('the mark is saved on the routing', free.inspectionRequired === false);
+    const c = await cell();
+    const a = await cellJob(c); const b = await cellJob(c); const n = await cellJob(c, { planned: false });
+    const put = [await A.patch(`/api/jobs/${a.id}`, { recipeId: free.id }), await A.patch(`/api/jobs/${b.id}`, { recipeId: plain.id }), await A.patch(`/api/jobs/${n.id}`, { recipeId: free.id })];
+    ok('the routings go on the jobs', put.every((p) => p.status === 200), put.map((p) => `${p.status} ${p.body?.error || ''}`).join());
+    await runOps(a, { person: c.person, wc: c.wc }); await runOps(b, { person: c.person, wc: c.wc });
+    ok('the last step of the "no inspection" job sends it to packaging', (await jobOf(a.id)).status === 'PACKAGING', (await jobOf(a.id)).status);
+    ok('the last step of the other job sends it to inspection', (await jobOf(b.id)).status === 'WAITING_QC', (await jobOf(b.id)).status);
+    ok('no inspection was made up for the first job', (await inspectionsOf(a.id)).length === 0);
+    await A.post(`/api/jobs/${n.id}/start`, {});
+    const done = await A.post(`/api/jobs/${n.id}/complete`, {});
+    ok('a job with no steps on the "no inspection" routing completes to the dock', done.status === 200 && (await jobOf(n.id)).status === 'READY_TO_SHIP', `${done.status} ${(await jobOf(n.id)).status}`);
+    await chain(ok, a.id); await chain(ok, b.id);
+  });
+  await scenario(G5, 'an inspection starts with the checklist the owner entered for that kind of work; with none entered, the standard list (owner decision 9)', async (ok) => {
+    const c = await cell();
+    const std = await cellJob(c); await runOps(std, { person: c.person, wc: c.wc });
+    const first = (await openInspection(std.id)).body.data;
+    ok('no list entered: the standard list', Array.isArray(first.checklist) && first.checklist.length >= 3, String(first.checklist?.length));
+    const url = `/api/v1/dispatch/work-center-types/${c.type}`;
+    const twice = await A.call('PATCH', url, { inspectionChecklist: ['Length to print', 'length to print'] });
+    const blank = await A.call('PATCH', url, { inspectionChecklist: ['Length to print', '  '] });
+    const many = await A.call('PATCH', url, { inspectionChecklist: Array.from({ length: 41 }, (_, i) => `Check ${i + 1}`) });
+    const shape = await A.call('PATCH', url, { inspectionChecklist: 'Length to print' });
+    ok('a list with the same check twice, an empty check, more than 40 checks, or not a list is refused', [twice, blank, many, shape].every((r) => r.status === 400), [twice, blank, many, shape].map((r) => r.status).join());
+    const set = await A.call('PATCH', url, { inspectionChecklist: ['Length to print', { item: 'Edge free of burr', required: true }, { item: 'Photo taken', required: false }] });
+    ok('a proper list is saved', set.status === 200, `${set.status} ${JSON.stringify(set.body).slice(0, 160)}`);
+    const j = await cellJob(c); await runOps(j, { person: c.person, wc: c.wc });
+    const made = (await openInspection(j.id)).body.data;
+    ok('a new inspection of that kind of work starts with exactly those checks, unanswered', made.checklist.length === 3 && made.checklist.map((x) => x.item).join('|') === 'Length to print|Edge free of burr|Photo taken' && made.checklist.every((x) => !x.result) && made.checklist[2].required === false, JSON.stringify(made.checklist));
+    ok('the inspection already open keeps the list it started with', (await prisma.jobInspection.findUnique({ where: { id: first.id } })).checklist.length === first.checklist.length);
+    const part = await decide(made, 'pass', { checklist: made.checklist.map((x, i) => (i === 1 ? { ...x, result: 'FAIL' } : { ...x, result: 'PASS' })) });
+    ok('a required check that failed blocks the pass', part.status === 409, `${part.status}`);
+    const good = await decide(made, 'pass', { checklist: made.checklist.map((x, i) => (i === 2 ? x : { ...x, result: 'PASS' })) });
+    ok('with the required checks passed it passes; the check that is not required may be left', good.status === 200 && (await jobOf(j.id)).status === 'PACKAGING', `${good.status} ${good.body?.error}`);
+    const clear = await A.call('PATCH', url, { inspectionChecklist: [] });
+    const k = await cellJob(c); await runOps(k, { person: c.person, wc: c.wc });
+    const back = (await openInspection(k.id)).body.data;
+    ok('emptied, the standard list is used again', clear.status === 200 && back.checklist.length === first.checklist.length && back.checklist[0].item === first.checklist[0].item, `${clear.status} ${back.checklist.length}`);
+    ok('the wording of the checks is the owner\'s to supply; none was written for him here (L-028)', true);
+  });
   await scenario(G5, 'inspection standards, sampling plans and gauge calibration are not on file; the built-in checklist is a fixed list', async (ok) => {
     ok('there is no inspection plan, sampling or gauge table', (await tables('inspectionplan|samplingplan|gauge|calibration|inspectionstandard')).length === 0, (await tables('inspectionplan|samplingplan|gauge|calibration|inspectionstandard')).join());
     ok('the checklist comes from a list written in the program, by kind of work, not from a standard the owner entered', /function getDefaultChecklist/.test(fs.readFileSync('src/backend/src/routes/qcRoutes.js', 'utf8')));
@@ -1591,24 +1702,163 @@ if (want(6)) {
     }
     ok('4 rounds: one of the two wins, nothing goes below zero, and the history equals the balance', bad === 0, seen.join(' '));
   });
-  await scenario(G6, 'sent for rework, a job goes back to the floor with the instructions and must pass a new inspection before it can be packed', async (ok) => {
+  await scenario(G6, 'sent for rework, a job gets a rework step that is started and clocked like any step, and must pass a new inspection (owner decision 9)', async (ok) => {
     const j = await atQc();
     const made = (await openInspection(j.id, qc1)).body.data;
     const r = await decide(made, 'rework', { reworkInstructions: 'Re-cut the two short pieces to 96 in', notes: 'Two of five short' }, qc1);
     const job = await jobOf(j.id);
-    ok('the job is scheduled again with the instructions at the top of its notes', r.status === 200 && job.status === 'SCHEDULED' && /^REWORK: Re-cut the two short pieces/.test(job.notes || ''), `${r.status} ${job.status}`);
+    ok('the job is scheduled again with the instructions at the top of its notes', r.status === 200 && job.status === 'SCHEDULED' && /^REWORK: Re-cut the two short pieces/.test(job.notes || ''), `${r.status} ${job.status} ${r.body?.error}`);
     const ins = await prisma.jobInspection.findUnique({ where: { id: made.id } });
     ok('the inspection is on record as failed, disposition rework, with the instructions', ins.status === 'FAILED' && ins.disposition === 'REWORK' && /Re-cut/.test(ins.reworkInstructions));
-    const start = await A.post(`/api/jobs/${j.id}/start`, { note: 'rework started' });
-    const dock = await move(j.id, 'READY_TO_SHIP'); const pack = await move(j.id, 'PACKAGING');
-    ok('back in process, it cannot be sent to packaging or the dock', start.status === 200 && dock.status === 409 && pack.status === 409, `${start.status} ${dock.status} ${pack.status}`);
-    const done = await A.post(`/api/jobs/${j.id}/complete`, {});
-    ok('"complete" sends it to inspection, not to the dock, and says so', done.status === 200 && (await jobOf(j.id)).status === 'WAITING_QC' && /inspection/.test(done.body.message || ''), `${done.status} ${(await jobOf(j.id)).status}`);
+    const steps = await opsOf(j.id);
+    const rw = steps.find((s) => s.reworkOfInspectionId === made.id);
+    ok('one rework step was added after the last step, named for the inspection, of the same kind of work', steps.length === 2 && rw && rw.sequence === steps[0].sequence + 1 && rw.name === `Rework (${ins.inspectionNumber})` && rw.requiredWorkCenterType === T && rw.status === 'PENDING', JSON.stringify(steps.map((s) => [s.sequence, s.name, s.status])));
+    const again = await startOp(j.ops[0]);
+    ok('the finished step cannot be run again', again.status === 409, `${again.status}`);
+    const a = await startOp(rw, opA, wc1);
+    ok('the rework step starts, and the job is in process', a.status === 200 && (await jobOf(j.id)).status === 'IN_PROCESS', `${a.status} ${a.body?.error} ${(await jobOf(j.id)).status}`);
+    const early = await A.post(`/api/jobs/${j.id}/complete`, {});
+    const pack = await move(j.id, 'PACKAGING');
+    ok('the job cannot be completed or packed while the rework step is open', early.status === 409 && pack.status === 409 && (await jobOf(j.id)).status === 'IN_PROCESS', `${early.status} ${pack.status}`);
+    const b = await doneOp(rw);
+    const logs = await logsOf(rw.id);
+    ok('finished, its time is on record against the operator and work center', b.status === 200 && logs.length === 1 && logs[0].operatorId === opA.id && logs[0].workCenterId === wc1.id && logs[0].endAt, `${b.status} ${logs.length}`);
+    ok('the job is back at inspection, not at the dock', (await jobOf(j.id)).status === 'WAITING_QC', (await jobOf(j.id)).status);
     await inspected(j.id);
     ok('the second inspection passes and the job is in packaging', (await jobOf(j.id)).status === 'PACKAGING');
     const all = await inspectionsOf(j.id);
     ok('both inspections are on file, the failed one first', all.length === 2 && all[0].status === 'FAILED' && all[1].status === 'PASSED');
-    await chain(ok, j.id);
+    await chain(ok, j.id); await clocks(ok, j.id);
+  });
+  await scenario(G6, 'the rework step can be sent to another kind of work center; an unknown kind is refused; a job with no plan gets the instructions only (owner decision 9)', async (ok) => {
+    const j = await atQc();
+    const made = (await openInspection(j.id)).body.data;
+    const bad = await decide(made, 'rework', { reworkInstructions: 'Deburr again', workCenterType: `NOPE${run}` });
+    ok('a kind of work center that is not on file is refused, and nothing changed', bad.status === 400 && (await jobOf(j.id)).status === 'WAITING_QC' && (await opsOf(j.id)).length === 1 && (await prisma.jobInspection.findUnique({ where: { id: made.id } })).status !== 'FAILED', `${bad.status} ${bad.body?.error}`);
+    const r = await decide(made, 'rework', { reworkInstructions: 'Deburr again', workCenterType: T2 });
+    const rw = (await opsOf(j.id)).find((s) => s.reworkOfInspectionId === made.id);
+    ok('the rework step is of the kind the inspector named', r.status === 200 && rw?.requiredWorkCenterType === T2, `${r.status} ${rw?.requiredWorkCenterType}`);
+    const wrong = await startOp(rw, opA, wc1);
+    ok('it runs only on a work center of that kind', wrong.status === 409, `${wrong.status}`);
+    const twice = await decide(made, 'rework', { reworkInstructions: 'again' });
+    ok('the same inspection cannot send it for rework twice, and there is still one rework step', twice.status === 409 && (await opsOf(j.id)).filter((s) => s.reworkOfInspectionId).length === 1, `${twice.status}`);
+    const right = await startOp(rw, opA, wcD); const fin = await doneOp(rw);
+    ok('on the right work center it runs and finishes, and the job returns to inspection', right.status === 200 && fin.status === 200 && (await jobOf(j.id)).status === 'WAITING_QC', `${right.status} ${right.body?.error} ${fin.status}`);
+    const second = (await openInspection(j.id)).body.data;
+    const r2 = await decide(second, 'rework', { reworkInstructions: 'Once more' });
+    const all = (await opsOf(j.id)).filter((s) => s.reworkOfInspectionId);
+    ok('a second failed inspection adds a second rework step, after the first', r2.status === 200 && all.length === 2 && all[1].sequence === all[0].sequence + 1 && all[1].reworkOfInspectionId === second.id, `${r2.status} ${all.length}`);
+    const n = await mkJob({ planned: false });
+    await A.post(`/api/jobs/${n.id}/start`, {}); await A.post(`/api/jobs/${n.id}/complete`, {});
+    const ni = (await openInspection(n.id)).body.data;
+    const nr = await decide(ni, 'rework', { reworkInstructions: 'Re-stack' });
+    ok('a job with no planned steps goes back with the instructions and a note that no step was added', nr.status === 200 && (await jobOf(n.id)).status === 'SCHEDULED' && /no planned steps/.test(JSON.stringify(nr.body)) && (await opsOf(n.id)).length === 0, `${nr.status} ${JSON.stringify(nr.body).slice(0, 200)}`);
+  });
+  const costedCoil = async (weightLb, price = 42, priceUnit = 'CWT') => {
+    const line = { gradeId: heat.gradeId, description: `QA P7 cost ${run}`, thicknessIn: 0.5, widthIn: 48, lengthIn: 96, qtyOrdered: weightLb, unit: 'LB', unitPrice: price, priceUnit, extendedPrice: +(priceUnit === 'CWT' ? (weightLb / 100) * price : weightLb * price).toFixed(2) };
+    const po = await A.post('/api/purchase-orders', { sellerId: w.supplierOrg.id, status: 'DRAFT', subtotal: line.extendedPrice, taxAmount: 0, freightAmount: 0, totalAmount: line.extendedPrice, lines: [line] });
+    if (po.status !== 201) throw new Error(`purchase order ${po.status} ${JSON.stringify(po.body).slice(0, 200)}`);
+    const placed = await A.put(`/api/purchase-orders/${po.body.id}`, { status: 'CONFIRMED' });
+    if (placed.status >= 300) throw new Error(`place ${placed.status} ${JSON.stringify(placed.body).slice(0, 200)}`);
+    const lines = await prisma.orderLine.findMany({ where: { orderId: po.body.id } });
+    return B.received({ weightLb, poLineId: lines[0].id });
+  };
+  await scenario(G6, 'an item\'s cost is taken from its purchase order line when it is received, and the pieces cut from it carry the same cost per pound (owner decision 9)', async (ok) => {
+    const coilId = await costedCoil(1000, 42, 'CWT');
+    const src = await coilOf(coilId); const srcInv = await invOf(coilId);
+    ok('$42.00 per hundredweight on the purchase order is $0.42 a pound on the item and its stock record', near(src.unitCost, 0.42) && near(srcInv.unitCost, 0.42), `${src.unitCost} ${srcInv.unitCost}`);
+    const bare = await B.received({ weightLb: 500 });
+    ok('an item received with no purchase order has no cost: none is assumed', (await coilOf(bare)).unitCost === null && (await invOf(bare)).unitCost === null);
+    const wo = await startedWorkOrder(coilId, { inputWeightLb: 1000 });
+    await finishWo(wo, { scrapWeightLb: 50, outputs: [{ weightLb: 600, widthIn: 24 }, { weightLb: 350, widthIn: 20 }] });
+    const pieces = await prisma.coil.findMany({ where: { parentCoilId: coilId } });
+    const invs = []; for (const p of pieces) invs.push(await invOf(p.id));
+    ok('both pieces carry $0.42 a pound', pieces.length === 2 && pieces.every((p) => near(p.unitCost, 0.42)) && invs.every((i) => near(i.unitCost, 0.42)), JSON.stringify(pieces.map((p) => p.unitCost)));
+    ok('the source\'s cost per pound is unchanged', near((await coilOf(coilId)).unitCost, 0.42));
+    const bwo = await startedWorkOrder(bare, { inputWeightLb: 500 });
+    await finishWo(bwo, { scrapWeightLb: 0, outputs: [{ weightLb: 500, widthIn: 24 }] });
+    const [bp] = await prisma.coil.findMany({ where: { parentCoilId: bare } });
+    ok('a piece cut from an item with no cost has no cost either', bp.unitCost === null);
+    ok('scrap is not given a value, and landed cost (freight, duty) is not worked out: neither is on file', (await tables('scrapvalue|landedcostrule|overhead')).length === 0);
+  });
+  await scenario(G6, 'a job\'s cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead (owner decision 9)', async (ok) => {
+    const c = await cell();
+    const url = `/api/v1/dispatch/work-center-types/${c.type}`;
+    const j = await cellJob(c, { qty: 1000 });
+    const coilId = await costedCoil(3000, 0.5, 'LB');
+    await B.reserve(j.order, j.line, coilId, 1000);
+    const made = await workOrder(coilId, { jobId: j.id, inputWeightLb: 1000 });
+    for (const s of ['release', 'start']) await A.put(`/api/work-orders/${made.body.id}/${s}`, {});
+    const fin = await finishWo(made.body, { scrapWeightLb: 40, outputs: [{ weightLb: 960, widthIn: 24 }] });
+    ok('the work order for the job is completed', made.status === 201 && fin.status === 200, `${made.status} ${fin.status} ${fin.body?.error}`);
+    await startOp(j.ops[0], c.person, c.wc);
+    await prisma.dispatchTimeLog.updateMany({ where: { dispatchOperationId: j.ops[0].id, status: 'RUNNING' }, data: { startAt: new Date(Date.now() - 2 * 3600000) } });
+    await doneOp(j.ops[0]);
+    const before = await A.call('GET', `/api/jobs/${j.id}/cost`);
+    ok('with no labor rate on file the material is costed, labor is not, and the answer says what is missing', before.status === 200 && near(before.body.materialCost, 500) && before.body.laborComplete === false && before.body.complete === false && before.body.missing.some((m) => /No labor rate is on file/.test(m)), JSON.stringify(before.body).slice(0, 300));
+    const floor = await pm1.call('PATCH', url, { hourlyRate: 60 });
+    ok('a production manager cannot set a labor rate', floor.status === 403 && (await prisma.workCenterType.findUnique({ where: { id: c.type } })).hourlyRate === null, `${floor.status}`);
+    const neg = await A.call('PATCH', url, { hourlyRate: -1 }); const word = await A.call('PATCH', url, { hourlyRate: 'sixty' });
+    ok('a negative rate or a word is refused', neg.status === 400 && word.status === 400, `${neg.status} ${word.status}`);
+    const set = await A.call('PATCH', url, { hourlyRate: 60 });
+    const seenFloor = await pm1.call('GET', url); const seenBoss = await A.call('GET', url);
+    const row = (r) => r.body?.data || r.body;
+    ok('the owner sets $60.00 an hour; the floor does not see the rate', set.status === 200 && row(seenBoss).hourlyRate != null && near(row(seenBoss).hourlyRate, 60) && !('hourlyRate' in row(seenFloor)), `${set.status} ${JSON.stringify(row(seenFloor)).slice(0, 200)}`);
+    const list = await pm1.call('GET', '/api/v1/dispatch/work-center-types');
+    ok('nor in the list of kinds', !JSON.stringify(list.body).includes('hourlyRate'));
+    const cost = await A.call('GET', `/api/jobs/${j.id}/cost`);
+    const b = cost.body;
+    ok('material: 1,000 lb used (960 out, 40 scrap) at $0.50 is $500.00', near(b.materialCost, 500) && b.materialComplete === true && near(b.material.usedLb, 1000) && near(b.material.scrapLb, 40) && near(b.material.yieldPct, 96), JSON.stringify(b.material));
+    ok('labor: 2 hours at $60.00 is $120.00 (to the minute)', Math.abs(b.laborCost - 120) < 1 && b.laborComplete === true && b.labor.length === 1 && Math.abs(b.labor[0].hours - 2) < 0.02, JSON.stringify(b.labor));
+    ok('the total is the two added together, complete, with nothing missing', near(b.totalCost, +(b.materialCost + b.laborCost).toFixed(2)) && b.complete === true && b.missing.length === 0, `${b.totalCost}`);
+    ok('the answer states its basis and that no overhead is included', /No overhead/.test(b.basis || ''));
+    const hidden = [await pm1.call('GET', `/api/jobs/${j.id}/cost`), await opr1.call('GET', `/api/jobs/${j.id}/cost`), await qc1.call('GET', `/api/jobs/${j.id}/cost`)];
+    ok('job cost is refused to the floor, the operator and quality', hidden.every((r) => r.status === 403), hidden.map((r) => r.status).join());
+    const mat = await pm1.call('GET', `/api/jobs/${j.id}/material`);
+    ok('the floor sees the material and yield of the job, with no cost in the answer', mat.status === 200 && mat.body.totals.completed === 1 && !/cost/i.test(JSON.stringify(mat.body)), JSON.stringify(mat.body).slice(0, 200));
+    const k = await cellJob(c, { qty: 500 });
+    const bare = await B.received({ weightLb: 800 });
+    await B.reserve(k.order, k.line, bare, 500);
+    const kw = await workOrder(bare, { jobId: k.id, inputWeightLb: 500 });
+    for (const s of ['release', 'start']) await A.put(`/api/work-orders/${kw.body.id}/${s}`, {});
+    await finishWo(kw.body, { scrapWeightLb: 0, outputs: [{ weightLb: 500, widthIn: 24 }] });
+    const kc = await A.call('GET', `/api/jobs/${k.id}/cost`);
+    ok('material with no cost on file is named as missing; it is not costed at zero as if known', kc.body.materialComplete === false && kc.body.complete === false && kc.body.missing.some((m) => /No cost is on file for the material/.test(m)), JSON.stringify(kc.body).slice(0, 300));
+    ok('no rate, cost or overhead figure was made up for this run: every figure above was entered by the test as the owner would enter it', true);
+  });
+  await scenario(G6, 'a job names the coil work orders raised for it, and shows what they used, made and scrapped (owner decision 9)', async (ok) => {
+    const j = await mkJob({ qty: 1000 });
+    const coilId = await B.received({ weightLb: 3000 });
+    await B.reserve(j.order, j.line, coilId, 1000);
+    const made = await workOrder(coilId, { jobId: j.id, inputWeightLb: 600 });
+    const row = await woOf(made.body.id);
+    ok('a work order raised for a job is linked to it and takes the job\'s order line', made.status === 201 && row.jobId === j.id && row.lineId === j.line.id, `${made.status} ${made.body?.error} ${row?.lineId}`);
+    const other = await mkOrder({ qty: 100 });
+    const cross = await workOrder(coilId, { jobId: j.id, lineId: other.lines[0].id, inputWeightLb: 100 });
+    ok('a work order cannot name a job and a different order line', cross.status === 409, `${cross.status} ${cross.body?.error}`);
+    const none = await workOrder(coilId, { jobId: '00000000-0000-4000-8000-000000000000', inputWeightLb: 100 });
+    ok('a job that is not on file is refused', none.status === 400, `${none.status}`);
+    const far = await mkJob({ loc: L2 });
+    const away = await workOrder(coilId, { jobId: far.id, inputWeightLb: 100 }, pm1);
+    ok('a job at a branch this person does not work at is "not on file" to them', away.status === 400, `${away.status} ${away.body?.error}`);
+    const dead = await mkJob({ planned: false }); await move(dead.id, 'CANCELLED');
+    const closed = await workOrder(coilId, { jobId: dead.id, inputWeightLb: 100 });
+    ok('no work order for a cancelled job', closed.status === 409, `${closed.status} ${closed.body?.error}`);
+    const open = await A.call('GET', `/api/jobs/${j.id}/material`);
+    ok('before it is completed the job shows the work order and no weight used', open.body.totals.workOrders === 1 && open.body.totals.completed === 0 && near(open.body.totals.usedLb, 0), JSON.stringify(open.body.totals));
+    for (const s of ['release', 'start']) await A.put(`/api/work-orders/${made.body.id}/${s}`, {});
+    await finishWo(made.body, { scrapWeightLb: 30, outputs: [{ weightLb: 570, widthIn: 24 }] });
+    const second = await workOrder(coilId, { jobId: j.id, inputWeightLb: 400 });
+    for (const s of ['release', 'start']) await A.put(`/api/work-orders/${second.body.id}/${s}`, {});
+    const f2 = await finishWo(second.body, { scrapWeightLb: 10, outputs: [{ weightLb: 390, widthIn: 24 }] });
+    const t = (await A.call('GET', `/api/jobs/${j.id}/material`)).body;
+    ok('two completed work orders: 1,000 lb used, 960 lb made, 40 lb scrap, 96% yield', f2.status === 200 && t.totals.completed === 2 && near(t.totals.usedLb, 1000) && near(t.totals.outputLb, 960) && near(t.totals.scrapLb, 40) && near(t.totals.yieldPct, 96), `${f2.status} ${f2.body?.error} ${JSON.stringify(t.totals)}`);
+    ok('each line names the source, its heat and the pieces made', t.workOrders.length === 2 && t.workOrders.every((x) => x.source.coilNumber && x.source.heatNumber === heat.heatNumber && x.pieces.length === 1));
+    const one = await A.call('GET', `/api/work-orders/${made.body.id}`);
+    ok('the work order shows the job it was raised for', (one.body?.job || one.body?.data?.job)?.id === j.id, JSON.stringify(one.body).slice(0, 150));
+    const gone = await pm2.call('GET', `/api/jobs/${j.id}/material`);
+    ok('another branch cannot read the job\'s material', gone.status === 404, `${gone.status}`);
+    await books(ok, coilId, 'source');
   });
   await scenario(G6, 'a failed job on hold can be sent for rework from the failed inspection; a passed one cannot', async (ok) => {
     const j = await atQc();
@@ -1623,38 +1873,6 @@ if (want(6)) {
     ok('a passed inspection cannot be turned into rework', no.status === 400 && (await jobOf(k.id)).status === 'PACKAGING', `${no.status}`);
     await chain(ok, j.id);
   });
-  await scenario(G6, 'rework is not routed or clocked: the finished steps cannot be run again and no rework step can be added', async (ok) => {
-    const j = await atQc();
-    const made = (await openInspection(j.id)).body.data;
-    await decide(made, 'rework', { reworkInstructions: 'Deburr again' });
-    const again = await startOp(j.ops[0]);
-    const replan = await A.post(`/api/jobs/${j.id}/plan`, { operations: [{ workCenterType: T, name: 'Rework' }] });
-    ok('the finished step cannot be started again, and the plan cannot be replaced because it has recorded work', again.status === 409 && replan.status === 409, `${again.status} ${replan.status}`);
-    ok('so the time spent on rework is not recorded anywhere', (await logsOf(j.ops[0].id)).filter((l) => l.status === 'RUNNING').length === 0);
-    const cols = (await prisma.$queryRawUnsafe(`select column_name from information_schema.columns where table_name in ('Job','DispatchOperation','JobInspection')`)).map((r) => r.column_name);
-    ok('there is no rework count, rework step or rework cost column', !cols.some((c) => /reworkCount|isRework|reworkCost|reworkOf/i.test(c)), cols.filter((c) => /rework/i.test(c)).join());
-  }, NA);
-  await scenario(G6, 'production costing is not part of this product: no job cost, labor cost or machine rate is calculated', async (ok) => {
-    ok('there is no job-cost, labor-cost, cost-rollup or overhead table', (await tables('jobcost|laborcost|costrollup|overhead|productioncost|standardcost')).length === 0, (await tables('jobcost|laborcost|costrollup|overhead|productioncost|standardcost')).join());
-    const cols = (await prisma.$queryRawUnsafe(`select table_name || '.' || column_name as c from information_schema.columns where table_schema = 'public' and table_name in ('Job','DispatchJob','DispatchOperation','DispatchTimeLog','WorkOrder','WorkOrderOutput','WorkCenter','BomOperation','MaterialMovement') and column_name ~* 'cost|rate'`)).map((r) => r.c);
-    ok('jobs, steps, time entries, work orders, work centers, routings and stock movements carry no cost or rate column', cols.length === 0, cols.join());
-    const src = fs.readdirSync('src/backend/src/routes').filter((f) => f.endsWith('.js')).map((f) => fs.readFileSync(`src/backend/src/routes/${f}`, 'utf8')).join('\n') + fs.readdirSync('src/backend/src/lib').filter((f) => f.endsWith('.js')).map((f) => fs.readFileSync(`src/backend/src/lib/${f}`, 'utf8')).join('\n');
-    ok('an operator\'s hourly rate is on file, and nothing multiplies it by recorded time', (await prisma.$queryRawUnsafe(`select 1 from information_schema.columns where table_name = 'Operator' and column_name = 'hourlyRate'`)).length === 1 && !/hourlyRate\s*\*|\*\s*(?:Number\()?[a-zA-Z.]*hourlyRate/.test(src));
-    ok('no cost rate, overhead or yield assumption was invented in this phase; the costing basis is the owner\'s open question K-007', true);
-  }, NA);
-  await scenario(G6, 'a work order does not carry cost from the source to the pieces it makes, and changes no cost on file', async (ok) => {
-    const coilId = await B.received({ weightLb: 1000 });
-    await prisma.coil.update({ where: { id: coilId }, data: { unitCost: 0.42, landedCost: 0.45 } });
-    await prisma.inventory.update({ where: { coilId }, data: { unitCost: 0.42, landedCost: 0.45, avgCost: 0.42 } });
-    const wo = await startedWorkOrder(coilId, { inputWeightLb: 1000 });
-    await finishWo(wo, { scrapWeightLb: 50, outputs: [{ weightLb: 950, widthIn: 24 }] });
-    const src = await coilOf(coilId); const srcInv = await invOf(coilId);
-    const [piece] = await prisma.coil.findMany({ where: { parentCoilId: coilId } });
-    const pInv = await invOf(piece.id);
-    ok('the source\'s cost figures are exactly as they were', near(src.unitCost, 0.42) && near(src.landedCost, 0.45) && near(srcInv.unitCost, 0.42) && near(srcInv.avgCost, 0.42));
-    ok('the piece has no cost of its own: none is assumed, and scrap is not valued', piece.unitCost === null && piece.landedCost === null && pInv.unitCost === null && pInv.avgCost === null, JSON.stringify([piece.unitCost, pInv.unitCost]));
-    ok('how cost should pass to pieces, drops and scrap (average, actual by heat, or standard) is the owner\'s open question K-007; nothing was changed without it', true);
-  }, NA);
   await scenario(G6, 'nesting and cut optimisation are not part of this product', async (ok) => {
     ok('there is no nesting, cut-plan or cut-list table', (await tables('nest|cutplan|cutlist|cutpattern')).length === 0, (await tables('nest|cutplan|cutlist|cutpattern')).join());
     const cols = (await prisma.$queryRawUnsafe(`select column_name from information_schema.columns where table_name = 'WorkOrder'`)).map((r) => r.column_name);
@@ -1774,6 +1992,19 @@ if (want(7)) {
     ok('so a QA-L02 operator cannot clock on at QA-L01', lent.status === 409, `${lent.status}`);
     ok('whether operators may be lent between branches is the owner\'s labor policy; none is invented here', true);
   }, NA);
+  await scenario(G7, 'one inspection sent for rework by two people at the same moment: one rework step, one move (owner decision 9)', async (ok) => {
+    let bad = 0; const seen = [];
+    for (let i = 0; i < 5; i++) {
+      const j = await atQc();
+      const made = (await openInspection(j.id)).body.data;
+      const [a, b] = await Promise.all([decide(made, 'rework', { reworkInstructions: 'Trim' }, qc1), decide(made, 'rework', { reworkInstructions: 'Trim', workCenterType: T2 })]);
+      const steps = (await opsOf(j.id)).filter((s) => s.reworkOfInspectionId === made.id);
+      const back = (await movesOf(j.id)).filter((m) => m.to === 'SCHEDULED' && m.from === 'WAITING_QC').length;
+      seen.push(`${a.status}/${b.status}:${steps.length}:${back}`);
+      if (steps.length !== 1 || back !== 1 || [a.status, b.status].filter((x) => x === 200).length !== 1 || (await jobOf(j.id)).status !== 'SCHEDULED') bad++;
+    }
+    ok('5 rounds: one of the two is accepted, the job has one rework step and went back once', bad === 0, seen.join(' '));
+  });
   await scenario(G7, 'one job moved by two people at the same moment: one move is saved and the history is one chain', async (ok) => {
     let bad = 0; const seen = [];
     for (let i = 0; i < 6; i++) {
@@ -1958,9 +2189,10 @@ if (want(7)) {
     ok('no cancelled, shipped or completed job has a running clock', closedRunning === 0, String(closedRunning));
     const backwards = await prisma.$queryRawUnsafe(`select count(*)::int as n from "DispatchTimeLog" where "endAt" is not null and "endAt" < "startAt"`);
     ok('no time entry ends before it starts', backwards[0].n === 0);
-    const released = await prisma.job.findMany({ where: { id: { in: ids }, status: { in: ['PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED'] } }, select: { id: true, inspections: { select: { status: true, completedAt: true, createdAt: true } }, dispatchJob: { select: { operations: { select: { status: true } } } } } });
-    const noPass = released.filter((x) => x.dispatchJob && !x.inspections.some((i) => i.status === 'PASSED'));
-    ok(`${released.length} jobs were released past inspection, and every one has a passed inspection on file`, noPass.length === 0, `${noPass.length} without`);
+    const released = await prisma.job.findMany({ where: { id: { in: ids }, status: { in: ['PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED'] } }, select: { id: true, recipeId: true, inspections: { select: { status: true, completedAt: true, createdAt: true } }, dispatchJob: { select: { operations: { select: { status: true } } } } } });
+    const exempt = new Set((await prisma.bomRecipe.findMany({ where: { inspectionRequired: false }, select: { id: true } })).map((r) => r.id));
+    const noPass = released.filter((x) => x.dispatchJob && !exempt.has(x.recipeId) && !x.inspections.some((i) => ['PASSED', 'CONDITIONAL'].includes(i.status)));
+    ok(`${released.length} jobs were released past inspection, and every one has a passed inspection on file or a routing marked "no inspection"`, noPass.length === 0, `${noPass.length} without`);
     const openSteps = released.filter((x) => x.dispatchJob?.operations.some((o) => o.status !== 'COMPLETE'));
     ok('and none has an unfinished step', openSteps.length === 0, `${openSteps.length}`);
     const twoOpen = await prisma.$queryRawUnsafe(`select count(*)::int as n from (select "jobId" from "JobInspection" where status in ('PENDING','IN_PROGRESS') group by "jobId" having count(*) > 1) t`);

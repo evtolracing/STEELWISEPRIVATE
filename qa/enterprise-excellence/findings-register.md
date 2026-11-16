@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -12,16 +12,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 |---|---:|---:|
 | P0 | 20 | 2 |
 | P1 | 96 | 15 |
-| P2 | 124 | 48 |
-| P3 | 80 | 31 |
-| Total | 320 | 96 |
+| P2 | 124 | 44 |
+| P3 | 81 | 31 |
+| Total | 321 | 92 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 223 |
+| VERIFIED FIXED | 228 |
 | DEFERRED TO SPECIFIC PHASE | 60 |
-| REQUIRES BUSINESS DECISION | 29 |
-| IN PROGRESS | 3 |
+| REQUIRES BUSINESS DECISION | 22 |
+| IN PROGRESS | 6 |
 | BLOCKED | 3 |
 | NOT APPLICABLE | 1 |
 | ACCEPTED RISK WITH APPROVAL | 1 |
@@ -41,8 +41,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
 | I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
 | I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
-| K-007 | P1 | REQUIRES BUSINESS DECISION | Inventory valuation | No cost unless typed by hand. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| L-026 | P1 | REQUIRES BUSINESS DECISION | Production costing | No production cost exists. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| K-007 | P1 | IN PROGRESS | Inventory valuation | No cost unless typed by hand. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-026 | P1 | IN PROGRESS | Production costing | No production cost exists. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | S-010 | P1 | REQUIRES BUSINESS DECISION | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
@@ -80,13 +80,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | K-010 | P2 | REQUIRES BUSINESS DECISION | Replenishment | Nothing. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-011 | P2 | REQUIRES BUSINESS DECISION | Purchasing | Exact, held. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-012 | P2 | DEFERRED TO SPECIFIC PHASE | Purchasing | Not recorded. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| L-020 | P2 | REQUIRES BUSINESS DECISION | Rework | Rework happens off the record between two inspections. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| L-021 | P2 | REQUIRES BUSINESS DECISION | Quality control | Inspection is tied to having planned steps. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| L-022 | P2 | REQUIRES BUSINESS DECISION | Operators; time entries | None of the three is on file, and none was invented. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-023 | P2 | DEFERRED TO SPECIFIC PHASE | Quality control | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| L-024 | P2 | REQUIRES BUSINESS DECISION | Jobs; material | Two partial records joined only by the order line. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-025 | P2 | DEFERRED TO SPECIFIC PHASE | Scheduling | A queue order with times where estimates exist, clearly labelled. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| L-028 | P2 | REQUIRES BUSINESS DECISION | Quality control | A fixed list of unknown origin. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-028 | P2 | IN PROGRESS | Quality control | A fixed list of unknown origin. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
@@ -3378,7 +3374,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Question for the owner: how is a remnant priced and valued (S-009)? The connection is not built until that is answered, because the outlet list is where the remnant price lives today.
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
-### K-007 · P1 · REQUIRES BUSINESS DECISION
+### K-007 · P1 · IN PROGRESS
 
 - **Discovered:** 2026-11-15
 - **Module:** Inventory valuation
@@ -3391,8 +3387,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Inventory value, margin and the cost of scrap and shortages cannot be reported from the records.
 - **Recommended correction:** Not made: the instruction forbids changing costing rules without authorisation. Recommended: actual cost per item from the purchase order line at receipt (steel is bought and traced by the item), landed cost added when freight is known, pieces inherit cost by weight.
 - **Required tests:** Per the decision: receipt, cut, scrap, transfer and shipment each carry the value; the sum of item values equals the ledger.
-- **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
-- **Status note:** Question for the owner: which costing method, and does the purchase order price become the item's cost at receipt?
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): actual cost per item. A receipt against a purchase order line now records the item's cost per stocked unit from the line's price (per hundredweight, pound or ton for stock kept in pounds; each for stock kept in pieces). Pieces cut by a work order and pieces received from a parent carry the parent's cost. A price that cannot be turned into a unit cost (for example per foot for stock kept in pounds) leaves the cost empty. Still open: stock already on hand has no cost unless typed; landed cost (freight, duty) is not worked out; stock movements carry no value, so scrap, shortage and count variance have no amount; Inventory.avgCost is still never written; there is no valuation report. These belong to Phase 8 (accounting).
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "an item's cost is taken from its purchase order line when it is received, and the pieces cut from it carry the same cost per pound"; qa/sim/phase6-inventory.mjs "receiving records the cost from the purchase order line". Mutation: 2 rules removed in turn, group 6 fails each time.
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
 ### K-008 · P2 · REQUIRES BUSINESS DECISION
@@ -3863,7 +3860,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "inspections at one branch cannot be seen or decided from another branch", "shop-floor work at one branch cannot be seen or touched from another branch", "a job belongs to its order's branch", "scheduling one branch leaves the other branch's work alone", "a production manager cannot open a work order on another branch's stock"; qa/sim/branch-boundary.mjs.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-020 · P2 · REQUIRES BUSINESS DECISION
+### L-020 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-15
 - **Module:** Rework
@@ -3877,10 +3874,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: it is a new record and a labor-recording policy. Recommended: a rework step added to the plan by quality when it sends the job back, named for the failed inspection, clocked like any step.
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Question for the owner: when quality sends a job back, should the system add a rework step that operators clock on to (recommended), or reopen the original step?
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): a rework step. Sending a job for rework from an inspection adds one step named for the inspection, after the last step, on the same kind of work center or the kind the inspector names. It is started, clocked and finished like any step, the job cannot be packed while it is open, and finishing it sends the job back to inspection. A job with no planned steps goes back with the instructions only. Needs database update 13.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "sent for rework, a job gets a rework step that is started and clocked like any step, and must pass a new inspection"; "the rework step can be sent to another kind of work center; an unknown kind is refused; a job with no plan gets the instructions only". Mutation: with the step removed, 1 scenario of group 6 fails.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-021 · P2 · REQUIRES BUSINESS DECISION
+### L-021 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-15
 - **Module:** Quality control
@@ -3894,10 +3892,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: making inspection compulsory for every job is a quality policy. Recommended: every job passes inspection before packaging unless its routing is marked "no inspection".
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Question for the owner: must every job be inspected before it can be packed, including jobs with no planned steps?
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): every job passes inspection before packing or the dock, including a job with no planned steps, unless its routing is marked "no inspection" (a checkbox on the routing, on by default). Work already in packaging or beyond when the update is applied carries on. Needs database update 13.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job with no planned steps goes to inspection when it is completed; it cannot skip to the dock"; "a routing marked \"no inspection\" lets its jobs go straight to packaging; every other job is inspected"; src/backend/test/phase7Rules.test.js. Mutation: 2 rules removed in turn, group 5 fails each time.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-022 · P2 · REQUIRES BUSINESS DECISION
+### L-022 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-15
 - **Module:** Operators; time entries
@@ -3911,7 +3910,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made. Recommended: require a current certification where the kind of work center is marked as needing one; allow two steps at once only on work centers marked for it; list entries over a shift length for the supervisor to confirm or correct, with the correction audited.
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Questions for the owner: (a) must an operator hold a certification to start a step, (b) may one operator be clocked on to two steps, (c) who corrects a forgotten clock.
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): (a) a current certification is required where the kind of work center is marked "certification required"; (b) one operator may be clocked on to two steps at once only where every kind involved is marked for it; (c) clocks running longer than the hours on file (12 by default, setting production.rules.longEntryHours) are listed on the time tracking screen for the supervisor; nothing is stopped automatically. Both marks are off until the owner turns them on, so no labor policy was invented. Shift length, breaks and overtime are still not on file (L-025). Needs database update 13.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "one operator on two steps at once is refused, unless the kind of work center is marked for it"; "where a kind of work center is marked \"certification required\", an operator with none on file cannot be clocked on"; "a clock left running is listed for the supervisor after the hours on file; nothing is stopped". Mutation: 3 rules removed in turn, group 4 fails each time.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-023 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -3936,7 +3936,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-024 · P2 · REQUIRES BUSINESS DECISION
+### L-024 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-15
 - **Module:** Jobs; material
@@ -3950,7 +3950,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: joining them changes established production workflow. Recommended: a job names the coil work orders raised for it (or a coil work order names its job), so steps, time, inspection, consumption and pieces are one chain.
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Question for the owner: should a job and the coil work orders that cut its material be linked as one production record (recommended)?
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): linked. A coil work order can be raised for a job (from the job screen); it takes the job's order line, and the job shows each work order with its source, heat, pieces, weight used, made, scrap and yield. A bill of material (materials and quantities per routing) and material requirements planning are still not built; the decision did not ask for them. Needs database update 13.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job names the coil work orders raised for it, and shows what they used, made and scrapped". Mutation: with the checks removed, 1 scenario of group 6 fails.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-025 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -3975,7 +3976,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-026 · P1 · REQUIRES BUSINESS DECISION
+### L-026 · P1 · IN PROGRESS
 
 - **Discovered:** 2026-11-15
 - **Module:** Production costing
@@ -3990,7 +3991,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: the instruction forbids inventing cost rates or changing costing, and K-007 is still the owner's question.
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Depends on K-007 (which costing method). Further questions: are machine rates per work center to be kept, and is labor costed at the operator's rate or a standard rate?
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): built as decided. A job's cost is the material its coil work orders used at actual cost per pound, plus the time clocked on its steps at the labor rate the owner enters for each kind of work center. No overhead. Shown to managers, the inventory manager and buyers only. Where a rate or a material cost is not on file the figure is left out and named as missing; nothing is assumed. Still to do by the owner: enter a labor rate for each kind of work center. Still not built: overhead, machine rates separate from labor, outside processing cost, and a cost report across jobs. Needs database update 13.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job's cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead"; src/backend/test/phase7Rules.test.js (unit cost from price, hours, adding up). Mutation: 3 rules removed in turn, group 6 fails each time.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-027 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -4015,7 +4017,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-028 · P2 · REQUIRES BUSINESS DECISION
+### L-028 · P2 · IN PROGRESS
 
 - **Discovered:** 2026-11-15
 - **Module:** Quality control
@@ -4029,7 +4031,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: the instruction forbids inventing or changing inspection standards. The product now enforces the checklist it has (L-002).
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Question for the owner: is the built-in checklist (including the 0.005 in slitting tolerance) your standard, or should checklists be entered by kind of work and customer?
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): each kind of work center can carry its own inspection checklist (up to 40 checks, each required or not), typed on the kinds-of-work-center screen. A new inspection of that kind of work starts with it; with none entered the built-in list is used. Waiting on the owner: the checks themselves. No inspection standard, tolerance or sampling plan was written for him. Per-customer checklists, sampling plans and gauge calibration are not built. Needs database update 13.
+- **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "an inspection starts with the checklist the owner entered for that kind of work; with none entered, the standard list". Mutation: with the rule removed, 1 scenario of group 5 fails.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-029 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -4043,8 +4046,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Expected:** An empty value for "not stated".
 - **Actual:** 0 by convention.
 - **Operational impact:** None found: the convention is applied in one place and tested.
-- **Recommended correction:** Not made in Phase 7, which ships no database change.
-- **Deferred: reason:** Needs a database change for no change in behaviour; Phase 7 deliberately ships none.
+- **Recommended correction:** Not made in Phase 7. The one database file of Phase 7 (file 13) was written for owner decision 9 and holds only what that decision needs.
+- **Deferred: reason:** Needs a database change for no change in behaviour. It was not added to file 13, which is limited to owner decision 9.
 - **Deferred: target phase:** Phase 12: final consolidation (or the next phase that ships a database change)
 - **Deferred: required correction:** Make both columns nullable and save null.
 - **Deferred: dependencies:** A SQL Editor file.
@@ -4074,6 +4077,24 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Physical test.
 - **Required tests:** None possible here.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **First recorded in:** Phase 7 manufacturing audit
+
+### L-031 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-15
+- **Module:** Routings
+- **Workflow:** Opening a routing
+- **Category:** Defect
+- **Source file or endpoint:** src/frontend/src/apps/bom/BomRecipeEditorPage.jsx; src/backend/src/routes/bomV1.js
+- **Evidence:** Found by the browser check added for owner decision 9 (qa/sim/ui-phase7.cjs "routing"): a routing whose step had been saved without a list of parameters opened as an error ("op.parameters.map is not a function"). The routing screen always sends a list, so this happened only to routings saved another way (the address directly, or an import); the server stored whatever shape it was given, and an empty object when given nothing.
+- **Expected:** A routing on file can always be opened.
+- **Actual:** The screen stopped with a script error.
+- **Operational impact:** A routing saved by an import or another program could not be opened or edited on the screen. No stored figure was wrong.
+- **Recommended correction:** The server saves an empty list when a step has no parameters and refuses parameters that are not a list (400). The screen shows a step with no list as having none.
+- **Required tests:** Open a routing saved with no parameters; refuse an object.
+- **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Routings already saved in the live database with another shape are opened by the corrected screen; they are not rewritten. Whether any exist is NOT VERIFIED.
+- **Verification evidence:** qa/sim/ui-phase7.cjs: "routing: no script errors" and the three routing checks before it, on a routing saved through the address with no parameters; qa/sim/phase7-manufacturing.mjs "a routing marked "no inspection" lets its jobs go straight to packaging": "a step whose parameters are not a list is refused; a step with none is saved with an empty list". With the fix removed the browser checks failed (that is how it was found).
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### M-001 · P0 · VERIFIED FIXED

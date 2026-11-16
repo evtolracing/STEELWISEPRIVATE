@@ -18,9 +18,10 @@ const time = (v) => (v ? new Date(v).getTime() : 0);
  * May this job be released (packaging, ready to ship, shipped, completed)?
  * inspections: [{ inspectionNumber, status, completedAt, createdAt }] for the job.
  * enteredQcAt: when the job last arrived in WAITING_QC, if it is there now.
+ * inspectionRequired: the job must have a passed inspection before it leaves production (false only when its routing says so).
  * null when allowed, otherwise the reason.
  */
-export function qualityReleaseError({ from, to, inspections = [], enteredQcAt = null }) {
+export function qualityReleaseError({ from, to, inspections = [], enteredQcAt = null, inspectionRequired = false }) {
   if (!RELEASED_JOB_STATUSES.includes(to)) return null;
   const open = inspections.find((i) => OPEN_INSPECTION.includes(i.status));
   if (open) return `Inspection ${open.inspectionNumber} is open for this job. Record its result in Quality before the job moves on.`;
@@ -30,6 +31,11 @@ export function qualityReleaseError({ from, to, inspections = [], enteredQcAt = 
   if (from === 'WAITING_QC') {
     if (!latest) return 'This job is waiting for inspection. Record the inspection result in Quality; a pass moves it to packaging.';
     if (enteredQcAt && time(latest.completedAt || latest.createdAt) < time(enteredQcAt)) return `This job came back to inspection after inspection ${latest.inspectionNumber} passed. It needs a new inspection.`;
+  }
+  // Every job is inspected before it is released, unless its routing says it needs none (owner's decision of
+  // 2026-11-15, L-021). Work that was already released when the rule arrived (packaging onwards) carries on.
+  if (inspectionRequired && !RELEASED_JOB_STATUSES.includes(from) && from !== 'WAITING_QC' && !latest) {
+    return 'This job has not been inspected. Send it to inspection; a passed inspection moves it to packaging.';
   }
   return null;
 }
@@ -67,15 +73,34 @@ export function workCenterEligibility(workCenter, operation, branchId) {
   return null;
 }
 
-/** Can this operator work this operation at this branch? Skills are optional here: an expired certification refuses, a missing one does not. */
-export function operatorEligibility(operator, operation, branchId, now = new Date()) {
+/**
+ * Can this operator work this operation at this branch?
+ * An expired certification always refuses. A missing one refuses only where the kind of work center is
+ * marked as needing a certification (kind.certificationRequired; owner's decision of 2026-11-15, L-022).
+ */
+export function operatorEligibility(operator, operation, branchId, now = new Date(), kind = null) {
   if (!operator) return 'That operator is not on file';
   const name = [operator.firstName, operator.lastName].filter(Boolean).join(' ') || 'That operator';
   if (operator.isActive === false || (operator.status && operator.status !== 'ACTIVE')) return `${name} is not active${operator.status && operator.status !== 'ACTIVE' ? ` (${String(operator.status).toLowerCase().replace(/_/g, ' ')})` : ''}`;
   if (branchId && operator.homeLocationId && operator.homeLocationId !== branchId) return `${name} works at another branch. This job is worked at its own branch.`;
-  const skill = (operator.skills || []).find((s) => s.workCenterTypeId === operation?.requiredWorkCenterType);
-  if (skill && skill.isActive !== false && skillExpired(skill, now)) return `${name}'s ${operation.requiredWorkCenterType} certification expired on ${new Date(skill.expiresAt).toISOString().slice(0, 10)}`;
+  const skill = (operator.skills || []).find((s) => s.workCenterTypeId === operation?.requiredWorkCenterType && s.isActive !== false);
+  if (skill && skillExpired(skill, now)) return `${name}'s ${operation.requiredWorkCenterType} certification expired on ${new Date(skill.expiresAt).toISOString().slice(0, 10)}`;
+  if (!skill && kind?.certificationRequired) return `${name} has no ${kind.label || operation.requiredWorkCenterType} certification on file, and this kind of work needs one. Add the certification to the operator's record first.`;
   return null;
+}
+
+/**
+ * May this operator be clocked on to another step while one is already running? (L-022)
+ * running: [{ stepName, jobNumber, kindId }] the operator's running entries on OTHER steps.
+ * kinds: Map or object of kindId → { label, allowsConcurrentSteps }. null when allowed.
+ */
+export function concurrentStepError(operatorName, running = [], startingKindId, kinds = {}) {
+  if (!running.length) return null;
+  const get = (id) => (kinds instanceof Map ? kinds.get(id) : kinds[id]) || null;
+  const blocking = [startingKindId, ...running.map((r) => r.kindId)].find((id) => !get(id)?.allowsConcurrentSteps);
+  if (blocking === undefined) return null;
+  const first = running[0];
+  return `${operatorName || 'This operator'} is already clocked on to ${first.stepName || 'a step'}${first.jobNumber ? ` of job ${first.jobNumber}` : ''}. Pause or finish it first: ${get(blocking)?.label || blocking || 'this kind of work'} is not marked for running two steps at once.`;
 }
 
 /**

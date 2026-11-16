@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
 
-635 routes in 75 route files, served at 76 mount points. 334 change data.
+640 routes in 75 route files, served at 76 mount points. 334 change data.
 
 ## What the columns mean
 
@@ -15,10 +15,10 @@ Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 380 of 635 |
-| Changing routes that returned a success in a test | 150 of 334 |
+| Routes that returned a success in a test | 387 of 640 |
+| Changing routes that returned a success in a test | 152 of 334 |
 | Changing handlers with two or more database writes and no transaction | 4 |
-| Read routes with a list query that has no row limit | 54 |
+| Read routes with a list query that has no row limit | 55 |
 | Handlers with no try/catch of their own | 171 (many use a shared wrapper) |
 | Routes that use raw SQL | 6 |
 | Calls the screens make that have no server route | 66 |
@@ -32,7 +32,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | Route | Writes | File |
 |---|---:|---|
 | `POST /api/demand-shaping/suggestions` | 2 | demandShaping.js:124 |
-| `DELETE /api/v1/dispatch/work-center-types/:id` | 2 | dispatchRoutes.js:156 |
+| `DELETE /api/v1/dispatch/work-center-types/:id` | 2 | dispatchRoutes.js:175 |
 | `POST /api/assets/seed-from-work-centers` | 2 | assets.js:66 |
 | `POST /api/ops-cockpit/recommendations/accept` | 3 | opsCockpit.js:527 |
 
@@ -59,30 +59,31 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:8 |
 | `GET /api/work-centers/:id/schedule` | workCenters.js:128 |
-| `GET /api/jobs/sla-risk` | jobs.js:217 |
+| `GET /api/jobs/sla-risk` | jobs.js:218 |
 | `GET /api/documents/entity/:entityType/:entityId` | documents.js:155 |
 | `GET /api/pos/quick-sale/daily-stats` | quickSale.js:301 |
-| `GET /api/v1/bom/recipes` | bomV1.js:124 |
+| `GET /api/v1/bom/recipes` | bomV1.js:126 |
 | `GET /api/v1/analytics/ops-forecast` | analyticsV1.js:12 |
 | `GET /api/v1/analytics/rfq-funnel` | analyticsV1.js:126 |
 | `GET /api/v1/analytics/work-centers/utilization` | analyticsV1.js:227 |
 | `GET /api/v1/events/exceptions/stats` | eventsV1.js:91 |
-| `GET /api/v1/jobs/sla-risk` | jobs.js:217 |
+| `GET /api/v1/jobs/sla-risk` | jobs.js:218 |
 | `GET /api/v1/work-centers` | workCenters.js:8 |
 | `GET /api/v1/work-centers/:id/schedule` | workCenters.js:128 |
-| `GET /api/v1/dispatch/work-center-types` | dispatchRoutes.js:62 |
-| `GET /api/v1/dispatch/locations` | dispatchRoutes.js:402 |
-| `GET /api/v1/dispatch/work-centers` | dispatchRoutes.js:457 |
-| `GET /api/v1/dispatch/operators` | dispatchRoutes.js:482 |
-| `GET /api/v1/dispatch/queue` | dispatchRoutes.js:640 |
-| `GET /api/v1/dispatch/stats` | dispatchRoutes.js:745 |
-| `GET /api/v1/operations/:id/time-logs` | operationsRoutes.js:450 |
+| `GET /api/v1/dispatch/work-center-types` | dispatchRoutes.js:72 |
+| `GET /api/v1/dispatch/locations` | dispatchRoutes.js:421 |
+| `GET /api/v1/dispatch/work-centers` | dispatchRoutes.js:476 |
+| `GET /api/v1/dispatch/operators` | dispatchRoutes.js:501 |
+| `GET /api/v1/dispatch/queue` | dispatchRoutes.js:659 |
+| `GET /api/v1/dispatch/stats` | dispatchRoutes.js:764 |
+| `GET /api/v1/operations/long-running` | operationsRoutes.js:120 |
+| `GET /api/v1/operations/:id/time-logs` | operationsRoutes.js:499 |
 | `GET /api/sales/dashboard/leaderboard` | salesRoutes.js:228 |
 | `GET /api/staff/operators` | staff.js:49 |
 | `GET /api/staff/operators/:id/skills` | staff.js:348 |
 | `GET /api/staff/shifts` | staff.js:471 |
 | `GET /api/staff/available` | staff.js:653 |
-| `GET /api/qc/inspectors` | qcRoutes.js:425 |
+| `GET /api/qc/inspectors` | qcRoutes.js:449 |
 | `GET /api/material-tracking/custody-log` | materialTrackingRoutes.js:77 |
 | `GET /api/material-tracking/jobs/:jobId/tags` | materialTrackingRoutes.js:188 |
 | `GET /api/material-tracking/jobs/:jobId/packages` | materialTrackingRoutes.js:210 |
@@ -374,9 +375,9 @@ Mounted at /api/purchase-orders. Tables: Organization, Location, Order, OrderLin
 | `GET /api/purchase-orders/:id` | yes |  |  |  |  |  |
 | `PUT /api/purchase-orders/:id` | yes | 3 | yes |  | yes |  |
 
-### workOrders.js (9 routes, 232 lines)
+### workOrders.js (9 routes, 244 lines)
 
-Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, OrderLine, Inventory.
+Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, Job, OrderLine, Inventory.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -532,7 +533,7 @@ Mounted at /api/work-centers, /api/v1/work-centers. Tables: WorkCenter, Location
 | `PATCH /api/v1/work-centers/:id` |  | 1 |  |  |  |  |
 | `GET /api/v1/work-centers/:id/schedule` | yes |  |  | yes |  |  |
 
-### jobs.js (32 routes, 980 lines)
+### jobs.js (36 routes, 1007 lines)
 
 Mounted at /api/jobs, /api/v1/jobs. Tables: Job, OrderLine, Order, WorkCenter, DispatchJob, WorkCenterType, DispatchOperation, User.
 
@@ -542,6 +543,8 @@ Mounted at /api/jobs, /api/v1/jobs. Tables: Job, OrderLine, Order, WorkCenter, D
 | `GET /api/jobs/sla-risk` | yes |  |  | yes |  |  |
 | `GET /api/jobs/:id` | yes |  |  |  |  |  |
 | `POST /api/jobs` | yes | 1 | yes |  |  |  |
+| `GET /api/jobs/:id/material` | yes |  |  |  |  |  |
+| `GET /api/jobs/:id/cost` | yes |  |  |  |  |  |
 | `GET /api/jobs/:id/plan` | yes |  |  |  |  |  |
 | `POST /api/jobs/:id/plan` | yes | 3 | yes | yes |  |  |
 | `POST /api/jobs/:id/status` | yes |  | yes |  |  |  |
@@ -558,6 +561,8 @@ Mounted at /api/jobs, /api/v1/jobs. Tables: Job, OrderLine, Order, WorkCenter, D
 | `GET /api/v1/jobs/sla-risk` | yes |  |  | yes |  |  |
 | `GET /api/v1/jobs/:id` |  |  |  |  |  |  |
 | `POST /api/v1/jobs` |  | 1 | yes |  |  |  |
+| `GET /api/v1/jobs/:id/material` |  |  |  |  |  |  |
+| `GET /api/v1/jobs/:id/cost` |  |  |  |  |  |  |
 | `GET /api/v1/jobs/:id/plan` |  |  |  |  |  |  |
 | `POST /api/v1/jobs/:id/plan` |  | 3 | yes | yes |  |  |
 | `POST /api/v1/jobs/:id/status` |  |  | yes |  |  |  |
@@ -725,16 +730,16 @@ Mounted at /api/v1/inventory. Tables: through a service or none.
 | `POST /api/v1/inventory/transfers/:id/status` |  |  |  |  |  |  |
 | `POST /api/v1/inventory/ai-assistant` |  |  |  |  |  |  |
 
-### bomV1.js (9 routes, 722 lines)
+### bomV1.js (9 routes, 734 lines)
 
 Mounted at /api/v1/bom. Tables: BomRecipe.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/v1/bom/recipes` | yes |  |  | yes |  |  |
-| `GET /api/v1/bom/recipes/:id` |  |  |  |  |  |  |
+| `GET /api/v1/bom/recipes/:id` | yes |  |  |  |  |  |
 | `POST /api/v1/bom/recipes` | yes | 1 |  |  |  |  |
-| `PUT /api/v1/bom/recipes/:id` |  | 1 |  |  |  |  |
+| `PUT /api/v1/bom/recipes/:id` | yes | 1 |  |  |  |  |
 | `POST /api/v1/bom/recipes/:id/activate` | yes |  |  |  |  |  |
 | `POST /api/v1/bom/recipes/:id/transition` | yes |  |  |  |  |  |
 | `POST /api/v1/bom/recipes/:id/clone` | yes | 1 |  | yes |  |  |
@@ -786,16 +791,16 @@ Mounted at /api/v1/events. Tables: ExceptionEvent.
 | `POST /api/v1/events/exceptions/:id/acknowledge` |  | 1 |  |  |  |  |
 | `GET /api/v1/events/exceptions/stats` | yes |  |  | yes |  |  |
 
-### dispatchRoutes.js (17 routes, 902 lines)
+### dispatchRoutes.js (17 routes, 921 lines)
 
 Mounted at /api/v1/dispatch. Tables: WorkCenterType, WorkCenter, DispatchDivision, Location, DispatchOperation, Organization, Operator, DispatchJob.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/v1/dispatch/work-center-types` | yes |  |  | yes |  |  |
-| `GET /api/v1/dispatch/work-center-types/:id` |  |  |  |  |  |  |
+| `GET /api/v1/dispatch/work-center-types/:id` | yes |  |  |  |  |  |
 | `POST /api/v1/dispatch/work-center-types` | yes | 1 |  |  |  |  |
-| `PATCH /api/v1/dispatch/work-center-types/:id` |  | 1 |  |  |  |  |
+| `PATCH /api/v1/dispatch/work-center-types/:id` | yes | 1 |  |  |  |  |
 | `DELETE /api/v1/dispatch/work-center-types/:id` |  | 2 |  | yes |  |  |
 | `GET /api/v1/dispatch/divisions` | yes |  |  |  |  |  |
 | `POST /api/v1/dispatch/divisions` |  | 1 |  |  |  |  |
@@ -810,13 +815,14 @@ Mounted at /api/v1/dispatch. Tables: WorkCenterType, WorkCenter, DispatchDivisio
 | `GET /api/v1/dispatch/queue` | yes |  |  | yes |  |  |
 | `GET /api/v1/dispatch/stats` | yes |  |  | yes |  |  |
 
-### operationsRoutes.js (7 routes, 619 lines)
+### operationsRoutes.js (8 routes, 672 lines)
 
-Mounted at /api/v1/operations. Tables: DispatchOperation, Operator, WorkCenter, Job, DispatchTimeLog.
+Mounted at /api/v1/operations. Tables: DispatchOperation, DispatchTimeLog, Operator, WorkCenter, Job, WorkCenterType.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/v1/operations` | yes |  |  |  |  |  |
+| `GET /api/v1/operations/long-running` | yes |  |  | yes |  |  |
 | `GET /api/v1/operations/:id` |  |  |  |  |  |  |
 | `POST /api/v1/operations/:id/start` | yes | 3 | yes | yes |  |  |
 | `POST /api/v1/operations/:id/pause` | yes | 1 | yes | yes |  |  |
@@ -1038,9 +1044,9 @@ Mounted at /api/staff. Tables: Operator, WorkCenterType, Location, WorkCenter, D
 | `GET /api/staff/stats` | yes |  |  |  |  |  |
 | `GET /api/staff/available` |  |  |  | yes |  |  |
 
-### qcRoutes.js (11 routes, 513 lines)
+### qcRoutes.js (11 routes, 541 lines)
 
-Mounted at /api/qc. Tables: Job, JobInspection, Operator, AuditLog.
+Mounted at /api/qc. Tables: Job, JobInspection, Operator, WorkCenterType, AuditLog, DispatchJob, DispatchOperation.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -1049,7 +1055,7 @@ Mounted at /api/qc. Tables: Job, JobInspection, Operator, AuditLog.
 | `GET /api/qc/inspections` | yes |  |  |  |  |  |
 | `GET /api/qc/inspections/:id` | yes |  |  |  |  |  |
 | `POST /api/qc/inspections` | yes | 1 | yes |  |  |  |
-| `PATCH /api/qc/inspections/:id` | yes | 3 | yes |  | yes |  |
+| `PATCH /api/qc/inspections/:id` | yes | 4 | yes |  | yes |  |
 | `POST /api/qc/inspections/:id/pass` | yes |  |  |  |  |  |
 | `POST /api/qc/inspections/:id/fail` | yes |  |  |  |  |  |
 | `POST /api/qc/inspections/:id/rework` | yes |  |  |  |  |  |

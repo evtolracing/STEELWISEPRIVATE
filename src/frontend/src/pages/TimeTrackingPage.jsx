@@ -53,7 +53,7 @@ import {
   AccessTime as ClockIcon,
   AutoAwesome as AIIcon,
 } from '@mui/icons-material'
-import { getOperations, getOperationTimeLogs } from '../services/operationsApi'
+import { getOperations, getOperationTimeLogs, getLongRunningEntries } from '../services/operationsApi'
 import { getWorkCenters, getOperators, getLocations } from '../services/dispatchApi'
 
 // Format seconds to display
@@ -210,6 +210,12 @@ function TimeTrackingPage() {
 
   useEffect(() => {
     loadData()
+  }, [])
+
+  // Clocks left running a long time, for the supervisor to check. A list only: nothing is stopped.
+  const [longRunning, setLongRunning] = useState(null)
+  useEffect(() => {
+    getLongRunningEntries().then(setLongRunning).catch(() => setLongRunning(null))
   }, [])
 
   // Filter logs
@@ -378,6 +384,13 @@ function TimeTrackingPage() {
         {error && (
           <Alert severity="warning" sx={{ mb: 2 }}>
             Time records could not be loaded, so nothing is shown. {error}
+          </Alert>
+        )}
+        {longRunning && longRunning.data.length > 0 && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            {longRunning.data.length === 1 ? '1 clock has' : `${longRunning.data.length} clocks have`} been running for more than {longRunning.hours} hours. Check that the work is still going on:{' '}
+            {longRunning.data.slice(0, 5).map((e) => `${e.operator?.name || 'no operator'} on ${e.step?.name || 'a step'} of job ${e.job?.jobNumber || ''} (${e.hoursRunning} h)`).join('; ')}
+            {longRunning.data.length > 5 ? `; and ${longRunning.data.length - 5} more` : ''}.
           </Alert>
         )}
 

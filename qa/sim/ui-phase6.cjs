@@ -93,6 +93,8 @@ const PASSWORD = 'qa-password-1';
     await page.keyboard.press('Escape');
     await page.getByRole('tab', { name: 'Supply position' }).click();
     await page.getByRole('table', { name: 'Supply position' }).waitFor({ timeout: 8000 }).catch(() => {});
+    // The table is drawn before its rows arrive, so wait for the first row before reading them.
+    await page.getByRole('table', { name: 'Supply position' }).locator('tbody tr').first().waitFor({ timeout: 8000 }).catch(() => {});
     const rows = await page.getByRole('table', { name: 'Supply position' }).locator('tbody tr').allInnerTexts();
     check('supply position: rows for my branch only, and it says nothing is suggested', rows.length > 0 && rows.every((r) => r.startsWith('QA-L01')) && /nothing is suggested/i.test(await body(page)), rows.slice(0, 3).join(' | '));
     check('purchase orders: no script errors', page.errors.length === 0, page.errors.join(' | '));

@@ -376,11 +376,27 @@ if (want(2)) {
     ok('one item with one receipt movement', c.length === 1 && (await movesOf(c[0].id)).length === 1, c.length);
     if (c[0]) await books(ok, c[0].id);
   });
-  await scenario(G2, 'receiving does not create a cost: cost is set by a manager afterwards (valuation finding)', async (ok) => {
+  await scenario(G2, 'a cost typed on a receipt is ignored; with no purchase order the item has no cost (valuation finding)', async (ok) => {
     const r = await receipt({ weightLb: 2000, unitCost: 0.61 });
     const i = await invOf(r.body.item.id);
     ok('received', r.status === 201);
     ok('no cost was taken from the receipt body', i.unitCost === null && (await coilOf(r.body.item.id)).unitCost == null, JSON.stringify({ i: i.unitCost }));
+  });
+  await scenario(G2, 'receiving records the cost from the purchase order line (owner decision 9: actual cost per item)', async (ok) => {
+    const lb = await purchaseOrder([poLine(4000)]);
+    const a = await receipt({ poLineId: lb.lines[0].id, weightLb: 4000, unitCost: 9.99 });
+    ok('$0.50 a pound on the order is $0.50 a pound on the item and its stock record; the figure typed on the receipt is ignored', a.status === 201 && near((await coilOf(a.body.item.id)).unitCost, 0.5) && near((await invOf(a.body.item.id)).unitCost, 0.5), `${a.status} ${(await coilOf(a.body.item.id))?.unitCost}`);
+    const cwt = await purchaseOrder([poLine(3000, { unitPrice: 48, priceUnit: 'CWT', extendedPrice: 1440 })]);
+    const b = await receipt({ poLineId: cwt.lines[0].id, weightLb: 3000 });
+    ok('$48.00 per hundredweight is $0.48 a pound', b.status === 201 && near((await coilOf(b.body.item.id)).unitCost, 0.48), `${b.status} ${(await coilOf(b.body.item.id))?.unitCost}`);
+    const ton = await purchaseOrder([poLine(2000, { unitPrice: 900, priceUnit: 'TON', extendedPrice: 900 })]);
+    const c = await receipt({ poLineId: ton.lines[0].id, weightLb: 2000 });
+    ok('$900.00 a ton is $0.45 a pound', c.status === 201 && near((await coilOf(c.body.item.id)).unitCost, 0.45), `${c.status} ${(await coilOf(c.body.item.id))?.unitCost}`);
+    const ft = await purchaseOrder([poLine(1000, { unitPrice: 12, priceUnit: 'LF', extendedPrice: 1200 })]);
+    const d = await receipt({ poLineId: ft.lines[0].id, weightLb: 1000 });
+    ok('a price per foot says nothing about a pound: the item is received with no cost rather than a wrong one', d.status === 201 && (await coilOf(d.body.item.id)).unitCost === null, `${d.status} ${JSON.stringify(d.body).slice(0, 120)}`);
+    ok('landed cost is not worked out', (await coilOf(a.body.item.id)).landedCost === null);
+    await books(ok, a.body.item.id, 'item');
   });
 }
 

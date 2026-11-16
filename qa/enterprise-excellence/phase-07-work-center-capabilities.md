@@ -29,7 +29,7 @@ The lockout is a software interlock on the schedule and on the start button. It 
 
 An operator has a home branch, skills, and certifications by kind of work center with an expiry date. Now enforced: a certification is for a kind on file and cannot expire before it was issued; an inactive operator, one from another branch, or one whose certification for that kind has lapsed cannot start a step; a clocked-on operator cannot be made inactive, deleted or moved; pay rate and emergency contact are sent to managers only.
 
-Not decided, and not invented: whether an operator with no certification on file at all may run a machine (today: yes, only a lapsed one refuses), whether one operator may be clocked on to two steps (today: yes, both on record), and a maximum shift length. These are L-022.
+Decided by the owner on 2026-11-15 (decision 9, L-022) and kept per kind of work center: "An operator needs a current certification to run it" (an operator with none on file is refused; off by default), "One operator may run two steps at once" (off by default), a labor rate for job cost (empty until the owner enters it, hidden from the floor), and an inspection checklist (empty: the standard list is used). A maximum shift length is still not on file and was not invented.
 
 ## 4. Gaps
 

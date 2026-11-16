@@ -1,5 +1,5 @@
 {
- "at": "2026-11-15T22:13:40.787Z",
+ "at": "2026-11-15T23:51:20.355Z",
  "base": "http://localhost:3011",
  "scenarios": 66,
  "passed": 66,
@@ -171,7 +171,7 @@
     }
    ],
    "pass": true,
-   "ms": 240
+   "ms": 253
   },
   {
    "group": "Internal API contracts and validation",
@@ -206,7 +206,7 @@
      "ok": true
     },
     {
-     "what": "and is less than half the size (41750 against 98448 bytes)",
+     "what": "and is less than half the size (41776 against 98546 bytes)",
      "ok": true
     },
     {
@@ -223,7 +223,7 @@
     }
    ],
    "pass": true,
-   "ms": 219
+   "ms": 210
   },
   {
    "group": "Internal API contracts and validation",
@@ -303,7 +303,7 @@
     }
    ],
    "pass": true,
-   "ms": 237
+   "ms": 258
   },
   {
    "group": "Internal API contracts and validation",
@@ -327,7 +327,7 @@
     }
    ],
    "pass": true,
-   "ms": 95
+   "ms": 96
   },
   {
    "group": "Internal API contracts and validation",
@@ -379,7 +379,7 @@
     }
    ],
    "pass": true,
-   "ms": 116
+   "ms": 89
   },
   {
    "group": "Internal API contracts and validation",
@@ -447,7 +447,7 @@
     }
    ],
    "pass": true,
-   "ms": 308
+   "ms": 323
   },
   {
    "group": "Internal API contracts and validation",
@@ -487,7 +487,7 @@
     }
    ],
    "pass": true,
-   "ms": 139
+   "ms": 90
   },
   {
    "group": "Internal API contracts and validation",
@@ -507,7 +507,7 @@
     }
    ],
    "pass": true,
-   "ms": 81
+   "ms": 62
   },
   {
    "group": "Internal API contracts and validation",
@@ -555,7 +555,7 @@
     }
    ],
    "pass": true,
-   "ms": 225
+   "ms": 204
   },
   {
    "group": "Internal API contracts and validation",
@@ -663,7 +663,7 @@
     }
    ],
    "pass": true,
-   "ms": 122
+   "ms": 111
   },
   {
    "group": "Internal API contracts and validation",
@@ -687,7 +687,7 @@
     }
    ],
    "pass": true,
-   "ms": 131
+   "ms": 92
   },
   {
    "group": "Cross-module workflow communication",
@@ -755,7 +755,7 @@
     }
    ],
    "pass": true,
-   "ms": 407
+   "ms": 393
   },
   {
    "group": "Cross-module workflow communication",
@@ -787,7 +787,7 @@
     }
    ],
    "pass": true,
-   "ms": 215
+   "ms": 198
   },
   {
    "group": "Cross-module workflow communication",
@@ -843,7 +843,7 @@
     }
    ],
    "pass": true,
-   "ms": 349
+   "ms": 305
   },
   {
    "group": "Cross-module workflow communication",
@@ -895,7 +895,7 @@
     }
    ],
    "pass": true,
-   "ms": 312
+   "ms": 297
   },
   {
    "group": "Cross-module workflow communication",
@@ -955,7 +955,7 @@
     }
    ],
    "pass": true,
-   "ms": 230
+   "ms": 195
   },
   {
    "group": "Cross-module workflow communication",
@@ -983,7 +983,7 @@
     }
    ],
    "pass": true,
-   "ms": 283
+   "ms": 270
   },
   {
    "group": "Cross-module workflow communication",
@@ -1043,7 +1043,7 @@
     }
    ],
    "pass": true,
-   "ms": 347
+   "ms": 355
   },
   {
    "group": "Cross-module workflow communication",
@@ -1075,7 +1075,7 @@
     }
    ],
    "pass": true,
-   "ms": 83
+   "ms": 59
   },
   {
    "group": "Cross-module workflow communication",
@@ -1111,7 +1111,7 @@
     }
    ],
    "pass": true,
-   "ms": 201
+   "ms": 156
   },
   {
    "group": "Cross-module workflow communication",
@@ -1151,7 +1151,7 @@
     }
    ],
    "pass": true,
-   "ms": 72
+   "ms": 70
   },
   {
    "group": "Event processing and background jobs",
@@ -1211,7 +1211,7 @@
     }
    ],
    "pass": true,
-   "ms": 346
+   "ms": 340
   },
   {
    "group": "Event processing and background jobs",
@@ -1243,7 +1243,7 @@
     }
    ],
    "pass": true,
-   "ms": 683
+   "ms": 630
   },
   {
    "group": "Event processing and background jobs",
@@ -1287,7 +1287,7 @@
     }
    ],
    "pass": true,
-   "ms": 291
+   "ms": 238
   },
   {
    "group": "Event processing and background jobs",
@@ -1335,7 +1335,7 @@
     }
    ],
    "pass": true,
-   "ms": 413
+   "ms": 335
   },
   {
    "group": "Event processing and background jobs",
@@ -1363,7 +1363,7 @@
     }
    ],
    "pass": true,
-   "ms": 59
+   "ms": 54
   },
   {
    "group": "Event processing and background jobs",
@@ -1391,7 +1391,7 @@
     }
    ],
    "pass": true,
-   "ms": 1149
+   "ms": 909
   },
   {
    "group": "Event processing and background jobs",
@@ -1419,7 +1419,7 @@
     }
    ],
    "pass": true,
-   "ms": 1134
+   "ms": 913
   },
   {
    "group": "Event processing and background jobs",
@@ -1439,7 +1439,7 @@
     }
    ],
    "pass": true,
-   "ms": 314
+   "ms": 237
   },
   {
    "group": "Event processing and background jobs",
@@ -1463,7 +1463,7 @@
     }
    ],
    "pass": true,
-   "ms": 616
+   "ms": 543
   },
   {
    "group": "Event processing and background jobs",
@@ -1495,7 +1495,7 @@
     }
    ],
    "pass": true,
-   "ms": 2263
+   "ms": 2005
   },
   {
    "group": "Event processing and background jobs",
@@ -1535,7 +1535,7 @@
     }
    ],
    "pass": true,
-   "ms": 43
+   "ms": 45
   },
   {
    "group": "Event processing and background jobs",
@@ -1555,7 +1555,7 @@
     }
    ],
    "pass": true,
-   "ms": 388
+   "ms": 393
   },
   {
    "group": "Event processing and background jobs",
@@ -1579,7 +1579,7 @@
     }
    ],
    "pass": true,
-   "ms": 1797
+   "ms": 1772
   },
   {
    "group": "Webhooks and external service failures",
@@ -1599,7 +1599,7 @@
     }
    ],
    "pass": true,
-   "ms": 97
+   "ms": 106
   },
   {
    "group": "Webhooks and external service failures",
@@ -1647,7 +1647,7 @@
     }
    ],
    "pass": true,
-   "ms": 14
+   "ms": 18
   },
   {
    "group": "Webhooks and external service failures",
@@ -1691,7 +1691,7 @@
     }
    ],
    "pass": true,
-   "ms": 6542
+   "ms": 6536
   },
   {
    "group": "Webhooks and external service failures",
@@ -1723,7 +1723,7 @@
     }
    ],
    "pass": true,
-   "ms": 6770
+   "ms": 6850
   },
   {
    "group": "Webhooks and external service failures",
@@ -1795,7 +1795,7 @@
     }
    ],
    "pass": true,
-   "ms": 275
+   "ms": 292
   },
   {
    "group": "Webhooks and external service failures",
@@ -1811,7 +1811,7 @@
     }
    ],
    "pass": true,
-   "ms": 223
+   "ms": 240
   },
   {
    "group": "Webhooks and external service failures",
@@ -1847,7 +1847,7 @@
     }
    ],
    "pass": true,
-   "ms": 265
+   "ms": 276
   },
   {
    "group": "Webhooks and external service failures",
@@ -1875,7 +1875,7 @@
     }
    ],
    "pass": true,
-   "ms": 88
+   "ms": 104
   },
   {
    "group": "Webhooks and external service failures",
@@ -1935,7 +1935,7 @@
     }
    ],
    "pass": true,
-   "ms": 48
+   "ms": 46
   },
   {
    "group": "Webhooks and external service failures",
@@ -1959,7 +1959,7 @@
     }
    ],
    "pass": true,
-   "ms": 706
+   "ms": 714
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -1987,7 +1987,7 @@
     }
    ],
    "pass": true,
-   "ms": 127
+   "ms": 125
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2019,7 +2019,7 @@
     }
    ],
    "pass": true,
-   "ms": 350
+   "ms": 307
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2047,7 +2047,7 @@
     }
    ],
    "pass": true,
-   "ms": 347
+   "ms": 343
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2075,7 +2075,7 @@
     }
    ],
    "pass": true,
-   "ms": 579
+   "ms": 552
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2107,7 +2107,7 @@
     }
    ],
    "pass": true,
-   "ms": 107
+   "ms": 94
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2127,7 +2127,7 @@
     }
    ],
    "pass": true,
-   "ms": 81
+   "ms": 107
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2155,7 +2155,7 @@
     }
    ],
    "pass": true,
-   "ms": 303
+   "ms": 273
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2195,7 +2195,7 @@
     }
    ],
    "pass": true,
-   "ms": 502
+   "ms": 430
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2211,7 +2211,7 @@
     }
    ],
    "pass": true,
-   "ms": 84
+   "ms": 54
   },
   {
    "group": "Idempotency, retries and concurrency",
@@ -2231,7 +2231,7 @@
     }
    ],
    "pass": true,
-   "ms": 44
+   "ms": 60
   },
   {
    "group": "Security, isolation and recovery",
@@ -2287,7 +2287,7 @@
     }
    ],
    "pass": true,
-   "ms": 155
+   "ms": 141
   },
   {
    "group": "Security, isolation and recovery",
@@ -2339,7 +2339,7 @@
     }
    ],
    "pass": true,
-   "ms": 69
+   "ms": 61
   },
   {
    "group": "Security, isolation and recovery",
@@ -2411,7 +2411,7 @@
     }
    ],
    "pass": true,
-   "ms": 279
+   "ms": 266
   },
   {
    "group": "Security, isolation and recovery",
@@ -2455,7 +2455,7 @@
     }
    ],
    "pass": true,
-   "ms": 17
+   "ms": 21
   },
   {
    "group": "Security, isolation and recovery",
@@ -2495,7 +2495,7 @@
     }
    ],
    "pass": true,
-   "ms": 711
+   "ms": 712
   },
   {
    "group": "Security, isolation and recovery",
@@ -2515,7 +2515,7 @@
     }
    ],
    "pass": true,
-   "ms": 285
+   "ms": 282
   },
   {
    "group": "Security, isolation and recovery",
@@ -2567,7 +2567,7 @@
     }
    ],
    "pass": true,
-   "ms": 1217
+   "ms": 1123
   },
   {
    "group": "Security, isolation and recovery",
@@ -2651,7 +2651,7 @@
     }
    ],
    "pass": true,
-   "ms": 91
+   "ms": 100
   },
   {
    "group": "Security, isolation and recovery",
@@ -2703,7 +2703,7 @@
     }
    ],
    "pass": true,
-   "ms": 18
+   "ms": 22
   },
   {
    "group": "Security, isolation and recovery",
@@ -2731,7 +2731,7 @@
     }
    ],
    "pass": true,
-   "ms": 299
+   "ms": 273
   },
   {
    "group": "Security, isolation and recovery",
@@ -2783,7 +2783,7 @@
     }
    ],
    "pass": true,
-   "ms": 20
+   "ms": 15
   }
  ]
 }

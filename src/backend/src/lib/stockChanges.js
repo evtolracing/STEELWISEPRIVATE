@@ -94,7 +94,7 @@ export function readPieces(body, FORMS) {
 export async function completeWorkOrder(tx, wo, { out, scrap, pieces }, userId) {
   const source = await tx.coil.findUnique({
     where: { id: wo.sourceCoilId },
-    select: { id: true, coilNumber: true, status: true, qcStatus: true, heatId: true, gradeId: true, ownerId: true, productId: true, form: true, thicknessIn: true, widthIn: true, lengthIn: true, locationId: true, temper: true, finish: true, coating: true },
+    select: { id: true, coilNumber: true, status: true, qcStatus: true, heatId: true, gradeId: true, ownerId: true, productId: true, form: true, thicknessIn: true, widthIn: true, lengthIn: true, locationId: true, temper: true, finish: true, coating: true, unitCost: true, landedCost: true },
   });
   if (!source) refuse(409, 'The source stock item is no longer on file');
   if (source.status === 'HOLD' || ['FAILED', 'HOLD'].includes(source.qcStatus)) refuse(409, `Stock item ${source.coilNumber} is on hold. Release the hold before completing work on it.`);
@@ -143,10 +143,12 @@ export async function completeWorkOrder(tx, wo, { out, scrap, pieces }, userId) 
         lengthIn: p.lengthIn ?? source.lengthIn, temper: source.temper, finish: source.finish, coating: source.coating,
         netWeightLb: p.weightLb, grossWeightLb: p.weightLb, qcStatus: source.qcStatus, status: reserved > EPS ? 'ALLOCATED' : 'AVAILABLE',
         originOrderId: wo.salesOrderId || null, createdById: userId,
+        // Cost follows weight: a piece costs per pound what the item it was cut from cost (K-007).
+        unitCost: source.unitCost ?? null, landedCost: source.landedCost ?? null,
       },
       select: { id: true, coilNumber: true },
     });
-    await tx.inventory.create({ data: { coilId: piece.id, locationId: bal.locationId, qtyOnHand: p.weightLb, qtyAvailable: round4(p.weightLb - reserved), qtyAllocated: reserved, unit: bal.unit, lastMovement: new Date() } });
+    await tx.inventory.create({ data: { coilId: piece.id, locationId: bal.locationId, qtyOnHand: p.weightLb, qtyAvailable: round4(p.weightLb - reserved), qtyAllocated: reserved, unit: bal.unit, unitCost: source.unitCost ?? null, landedCost: source.landedCost ?? null, lastMovement: new Date() } });
     if (reserved > EPS) await tx.orderLineAllocation.create({ data: { orderLineId: wo.lineId, coilId: piece.id, qtyAllocated: reserved } });
     await move({ coilId: piece.id, movementType: 'PROCESS', toLocationId: bal.locationId, qtyMoved: p.weightLb, reasonCode: 'WORK_ORDER', notes: `Cut from ${source.coilNumber} on ${wo.woNumber}` });
     await tx.workOrderOutput.create({ data: { workOrderId: wo.id, outputCoilId: piece.id, sequence: i + 1, targetWidth: p.widthIn ?? null, actualWidth: p.widthIn ?? null, actualWeight: p.weightLb } });

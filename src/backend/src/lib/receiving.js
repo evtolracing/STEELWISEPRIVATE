@@ -11,6 +11,7 @@ import { ci } from './dbText.js';
 import { readReceipt } from './receivingRules.js';
 import { takeFromParent } from './stockChanges.js';
 import { placeHold } from './holds.js';
+import { unitCostFromPrice } from './costing.js';
 
 const refuse = (message, status = 400) => Object.assign(new Error(message), { refuse: true, status });
 
@@ -19,7 +20,7 @@ async function resolve(db, receipt, user) {
   if (await db.coil.findUnique({ where: { coilNumber: receipt.coilNumber }, select: { id: true } })) throw refuse(`Item number ${receipt.coilNumber} is already in use`, 409);
 
   const parent = receipt.parentTag
-    ? await db.coil.findUnique({ where: { coilNumber: receipt.parentTag }, select: { id: true, heatId: true, gradeId: true, ownerId: true, form: true, productId: true } })
+    ? await db.coil.findUnique({ where: { coilNumber: receipt.parentTag }, select: { id: true, heatId: true, gradeId: true, ownerId: true, form: true, productId: true, unitCost: true, landedCost: true } })
     : null;
   if (receipt.parentTag && !parent) throw refuse(`Parent item ${receipt.parentTag} is not on file`);
 
@@ -83,7 +84,9 @@ async function resolve(db, receipt, user) {
   }
   const form = receipt.form || parent.form;
   const po = receipt.poLineId ? await matchPurchaseLine(db, receipt, { gradeId, productId, locationId: location.id, heatHasMtr, heatId, form }) : null;
-  return { heatId, gradeId, locationId: location.id, ownerId, productId, parentCoilId: parent?.id || null, form, warning, lotNote, po };
+  return { heatId, gradeId, locationId: location.id, ownerId, productId, parentCoilId: parent?.id || null, form, warning, lotNote, po,
+    // Actual cost per item (K-007): a piece carries its parent's unit cost; a receipt against a purchase order line takes the line's price.
+    parentCost: parent ? { unitCost: parent.unitCost ?? null, landedCost: parent.landedCost ?? null } : null };
 }
 
 // Converts a receipt to the purchase order line's unit.
@@ -150,8 +153,12 @@ export async function receiveStock({ input, templateType = null, user, source = 
   try {
     return await prisma.$transaction(async (tx) => {
       const found = await resolve(tx, receipt, user);
+      const cost = found.parentCost
+        ? found.parentCost
+        : found.po ? { unitCost: unitCostFromPrice({ unitPrice: found.po.line.unitPrice, priceUnit: found.po.line.priceUnit, stockUnit: receipt.unit }), landedCost: null } : { unitCost: null, landedCost: null };
       const coil = await tx.coil.create({
         data: {
+          unitCost: cost.unitCost, landedCost: cost.landedCost,
           coilNumber: receipt.coilNumber, form: found.form, heatId: found.heatId, gradeId: found.gradeId, ownerId: found.ownerId,
           productId: found.productId, parentCoilId: found.parentCoilId, locationId: found.locationId, binLocation: receipt.binLocation,
           thicknessIn: receipt.thicknessIn, widthIn: receipt.widthIn, lengthIn: receipt.lengthIn, odIn: receipt.odIn, idIn: receipt.idIn,
@@ -161,7 +168,7 @@ export async function receiveStock({ input, templateType = null, user, source = 
       });
       // A piece cut from an item on file comes off that item, so the weight is never counted twice.
       if (found.parentCoilId) await takeFromParent(tx, { parentId: found.parentCoilId, parentNumber: receipt.parentTag, weight: Number(receipt.weightLb), childNumber: receipt.coilNumber, userId: user.id });
-      let inventory = await tx.inventory.create({ data: { coilId: coil.id, locationId: found.locationId, qtyOnHand: receipt.quantity, qtyAvailable: receipt.quantity, unit: receipt.unit, lastMovement: new Date() } });
+      let inventory = await tx.inventory.create({ data: { coilId: coil.id, locationId: found.locationId, qtyOnHand: receipt.quantity, qtyAvailable: receipt.quantity, unit: receipt.unit, unitCost: cost.unitCost, landedCost: cost.landedCost, lastMovement: new Date() } });
       const po = found.po;
       const movement = await tx.materialMovement.create({
         data: {

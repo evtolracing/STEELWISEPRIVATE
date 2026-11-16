@@ -38,7 +38,7 @@ Yield is a calculation from recorded weights. No yield assumption or standard wa
 
 ## 4. Gaps
 
-- Jobs consume nothing (L-024): the scrap and yield of a job are knowable only if someone raises a coil work order beside it.
+- A job consumes nothing itself. Since owner decision 9 a coil work order raised for the job ties its scrap and yield to the job (L-024); one raised without a job does not.
 - Nesting and cut optimisation: not built (L-027, NOT APPLICABLE in group 6).
-- Remnant value and scrap value: no cost exists to carry (K-007, L-026). A work order changes no cost on file (group 6, checked).
+- Remnant and scrap value: since owner decision 9 a piece or remnant cut by a work order carries its source's cost per pound (group 6, checked). Scrap is given no value, and no movement carries an amount (K-007).
 - Outlet remnants have no heat link (K-006, Phase 6, still the owner's question).

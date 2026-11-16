@@ -60,7 +60,8 @@ export const SETTING_DEFAULTS = {
   },
   // Shop-floor rules that are the owner's to set. stepsInOrder: a step cannot start until the steps before it are finished.
   // The owner chose planned order on 2026-11-15.
-  'production.rules': { stepsInOrder: true },
+  // longEntryHours: a clock running longer than this is listed for the supervisor to check (it is a list, not a stop).
+  'production.rules': { stepsInOrder: true, longEntryHours: 12 },
 };
 
 export async function getSetting(key) {

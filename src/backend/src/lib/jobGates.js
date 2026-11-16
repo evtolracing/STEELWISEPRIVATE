@@ -30,6 +30,23 @@ export function inspectionsOf(db, jobId) {
   return db.jobInspection.findMany({ where: { jobId }, select: { inspectionNumber: true, status: true, completedAt: true, createdAt: true } });
 }
 
+/**
+ * Must this job be inspected before it is released? Yes, unless it runs on a routing marked as needing none
+ * (owner's decision of 2026-11-15, finding L-021).
+ */
+export async function inspectionRequiredFor(db, job) {
+  if (!job.recipeId) return true;
+  const routing = await db.bomRecipe.findUnique({ where: { id: job.recipeId }, select: { inspectionRequired: true } });
+  return routing ? routing.inspectionRequired !== false : true;
+}
+
+/** Where a job goes when its production is finished: inspection, or straight on when it needs none and owes none. */
+export async function afterProduction(db, job, straightOn) {
+  const inspections = await inspectionsOf(db, job.id);
+  if (qualityReleaseError({ from: 'IN_PROCESS', to: straightOn, inspections, inspectionRequired: await inspectionRequiredFor(db, job) })) return 'WAITING_QC';
+  return straightOn;
+}
+
 /** Why this job may not move to `to` on quality or planned-step grounds; null when it may. */
 export async function gateError(db, job, to) {
   if (!PAST_PRODUCTION.includes(to)) return null;
@@ -45,7 +62,7 @@ export async function gateError(db, job, to) {
     const rows = await db.auditLog.findMany({ where: { resourceType: 'Job', resourceId: job.id, eventType: JOB_MOVED }, orderBy: { timestamp: 'desc' }, take: 20, select: { timestamp: true, details: true } });
     enteredQcAt = rows.find((r) => r.details?.to === 'WAITING_QC')?.timestamp || null;
   }
-  return qualityReleaseError({ from: job.status, to, inspections, enteredQcAt });
+  return qualityReleaseError({ from: job.status, to, inspections, enteredQcAt, inspectionRequired: await inspectionRequiredFor(db, job) });
 }
 
 /**

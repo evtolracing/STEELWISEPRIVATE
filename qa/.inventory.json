@@ -817,6 +817,14 @@
    "file": "src/backend/src/routes/jobs.js"
   },
   {
+   "ep": "GET /api/jobs/:id/material",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/:id/cost",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
    "ep": "GET /api/jobs/:id/plan",
    "file": "src/backend/src/routes/jobs.js"
   },
@@ -1389,6 +1397,14 @@
    "file": "src/backend/src/routes/jobs.js"
   },
   {
+   "ep": "GET /api/v1/jobs/:id/material",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/v1/jobs/:id/cost",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
    "ep": "GET /api/v1/jobs/:id/plan",
    "file": "src/backend/src/routes/jobs.js"
   },
@@ -1526,6 +1542,10 @@
   },
   {
    "ep": "GET /api/v1/operations",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/operations/long-running",
    "file": "src/backend/src/routes/operationsRoutes.js"
   },
   {
@@ -2620,8 +2640,8 @@
   },
   {
    "name": "DispatchOperation",
-   "fields": 22,
-   "fks": 2,
+   "fields": 24,
+   "fks": 3,
    "status": "String"
   },
   {
@@ -2632,13 +2652,13 @@
   },
   {
    "name": "JobInspection",
-   "fields": 20,
+   "fields": 21,
    "fks": 2,
    "status": "String"
   },
   {
    "name": "WorkCenterType",
-   "fields": 9,
+   "fields": 13,
    "fks": 0,
    "status": null
   },
@@ -2650,7 +2670,7 @@
   },
   {
    "name": "Job",
-   "fields": 55,
+   "fields": 56,
    "fks": 7,
    "status": "JobStatus"
   },
@@ -2674,8 +2694,8 @@
   },
   {
    "name": "WorkOrder",
-   "fields": 25,
-   "fks": 3,
+   "fields": 27,
+   "fks": 4,
    "status": "WOStatus"
   },
   {
@@ -2746,7 +2766,7 @@
   },
   {
    "name": "BomRecipe",
-   "fields": 16,
+   "fields": 17,
    "fks": 0,
    "status": "BomRecipeStatus"
   },

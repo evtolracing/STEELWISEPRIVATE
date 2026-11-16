@@ -6,10 +6,10 @@
 
 import express from 'express'
 import prisma from '../lib/db.js'
-import { changeJobStatusTx } from '../lib/jobGates.js'
+import { changeJobStatusTx, afterProduction } from '../lib/jobGates.js'
 import { getSetting } from '../lib/settings.js'
 import { lockedOut } from '../lib/workCenterGuard.js'
-import { operationStartError, operationCompleteError, operationPauseError, workCenterEligibility, operatorEligibility } from '../lib/productionRules.js'
+import { operationStartError, operationCompleteError, operationPauseError, workCenterEligibility, operatorEligibility, concurrentStepError } from '../lib/productionRules.js'
 
 const router = express.Router()
 
@@ -131,6 +131,45 @@ router.get('/', async (req, res) => {
  * GET /v1/operations/:id
  * Get single operation with full details
  */
+/**
+ * GET /v1/operations/long-running?hours=
+ * Clocks that have been running longer than the hours given (default: the setting production.rules.longEntryHours).
+ * A list for the supervisor to check, oldest first. Nothing is stopped or changed. (L-022)
+ */
+router.get('/long-running', async (req, res) => {
+  try {
+    const fallback = Number((await getSetting('production.rules'))?.longEntryHours) || 12
+    const asked = req.query.hours === undefined ? fallback : Number(req.query.hours)
+    if (!Number.isFinite(asked) || asked <= 0 || asked > 720) return res.status(400).json({ success: false, error: 'hours must be a number between 0 and 720' })
+    const before = new Date(Date.now() - asked * 3600000)
+    const rows = await prisma.dispatchTimeLog.findMany({
+      where: { status: 'RUNNING', endAt: null, startAt: { lt: before } },
+      orderBy: { startAt: 'asc' },
+      take: 200,
+      select: { id: true, startAt: true, operatorId: true, workCenterId: true, dispatchOperation: { select: { id: true, name: true, sequence: true, requiredWorkCenterType: true, dispatchJob: { select: { jobId: true, jobNumber: true, locationId: true } } } } },
+    })
+    const people = rows.length ? await prisma.operator.findMany({ where: { id: { in: [...new Set(rows.map((r) => r.operatorId).filter(Boolean))] } }, select: { id: true, firstName: true, lastName: true } }) : []
+    const places = rows.length ? await prisma.workCenter.findMany({ where: { id: { in: [...new Set(rows.map((r) => r.workCenterId).filter(Boolean))] } }, select: { id: true, name: true } }) : []
+    const now = Date.now()
+    res.json({
+      success: true, hours: asked,
+      data: rows.map((r) => {
+        const who = people.find((p) => p.id === r.operatorId)
+        return {
+          id: r.id, startAt: r.startAt, hoursRunning: Math.round(((now - new Date(r.startAt).getTime()) / 3600000) * 100) / 100,
+          operator: who ? { id: who.id, name: [who.firstName, who.lastName].filter(Boolean).join(' ') } : null,
+          workCenter: places.find((p) => p.id === r.workCenterId) || null,
+          step: { id: r.dispatchOperation?.id, name: r.dispatchOperation?.name, sequence: r.dispatchOperation?.sequence },
+          job: { id: r.dispatchOperation?.dispatchJob?.jobId, jobNumber: r.dispatchOperation?.dispatchJob?.jobNumber },
+        }
+      }),
+    })
+  } catch (error) {
+    console.error('Error listing long-running time entries:', error)
+    res.status(500).json({ success: false, error: 'The list could not be loaded' })
+  }
+})
+
 router.get('/:id', async (req, res) => {
   try {
     const operation = await prisma.dispatchOperation.findUnique({
@@ -206,9 +245,22 @@ async function checkWho(tx, operation, { workCenterId, operatorId }) {
     if (locked) refuse(409, `${locked}. Work cannot be started there.`)
   }
   if (operatorId) {
-    const person = await tx.operator.findUnique({ where: { id: operatorId }, select: { id: true, firstName: true, lastName: true, isActive: true, status: true, homeLocationId: true, skills: { select: { workCenterTypeId: true, expiresAt: true, isActive: true } } } })
-    const why = operatorEligibility(person, operation, branchId)
+    const person = await tx.operator.findUnique({ where: { id: operatorId }, select: { id: true, firstName: true, lastName: true, isActive: true, status: true, homeLocationId: true, skills: { select: { workCenterTypeId: true, isActive: true, expiresAt: true } } } })
+    const kind = operation.requiredWorkCenterType ? await tx.workCenterType.findUnique({ where: { id: operation.requiredWorkCenterType }, select: { id: true, label: true, certificationRequired: true, allowsConcurrentSteps: true } }) : null
+    const why = operatorEligibility(person, operation, branchId, new Date(), kind)
     if (why) refuse(person ? 409 : 400, person ? why : 'Invalid operator')
+    // One step at a time, unless every kind of work involved is marked for running two at once (L-022).
+    const others = await tx.dispatchTimeLog.findMany({
+      where: { operatorId, status: 'RUNNING', dispatchOperationId: { not: operation.id } },
+      select: { dispatchOperation: { select: { name: true, requiredWorkCenterType: true, dispatchJob: { select: { jobNumber: true } } } } },
+      take: 5,
+    })
+    if (others.length) {
+      const ids = [...new Set([operation.requiredWorkCenterType, ...others.map((o) => o.dispatchOperation?.requiredWorkCenterType)].filter(Boolean))]
+      const kinds = new Map((await tx.workCenterType.findMany({ where: { id: { in: ids } }, select: { id: true, label: true, allowsConcurrentSteps: true } })).map((k) => [k.id, k]))
+      const clash = concurrentStepError([person.firstName, person.lastName].filter(Boolean).join(' '), others.map((o) => ({ stepName: o.dispatchOperation?.name, jobNumber: o.dispatchOperation?.dispatchJob?.jobNumber, kindId: o.dispatchOperation?.requiredWorkCenterType })), operation.requiredWorkCenterType, kinds)
+      if (clash) refuse(409, clash)
+    }
   }
 }
 
@@ -436,7 +488,8 @@ router.post('/:id/complete', async (req, res) => {
       // A job on hold stays on hold: finishing its last step records the work but does not release it.
       if (remaining === 0 && ['ORDERED', 'SCHEDULED', 'IN_PROCESS'].includes(job?.status)) {
         // All operations done → job goes to QC inspection queue (not directly to COMPLETE)
-        await changeJobStatusTx(tx, operation.dispatchJob.jobId, 'WAITING_QC', { note: 'All operations finished', via: 'operation', userId: req.user?.id })
+        // To inspection, unless the job's routing says it needs none and it owes none: then straight to packaging (L-021).
+        await changeJobStatusTx(tx, operation.dispatchJob.jobId, 'WAITING_QC', { note: 'All operations finished', via: 'operation', userId: req.user?.id, decide: (j, db) => (j.status === 'IN_PROCESS' ? afterProduction(db, j, 'PACKAGING') : 'WAITING_QC') })
         console.log(`[OPERATIONS] All ops complete for job ${operation.dispatchJob.jobId} — moved to WAITING_QC`)
       }
     }

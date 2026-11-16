@@ -146,6 +146,7 @@ export default function WorkOrderDetailPage() {
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, height: '100%' }}>
             <Typography variant="h6" gutterBottom>Source stock item</Typography>
+            {wo.job && <Fact name="For job"><Link component={RouterLink} to={`/jobs/${wo.job.id}`}>{wo.job.jobNumber}</Link></Fact>}
             <Fact name="Item">{coil ? <Link component={RouterLink} to={`/units/${coil.id}`}>{coil.coilNumber}</Link> : ''}</Fact>
             <Fact name="Grade">{coil?.grade?.code}</Fact>
             <Fact name="Heat">{coil?.heat?.heatNumber}</Fact>

@@ -57,7 +57,9 @@ async function readSteps(operations) {
       if (!Number.isFinite(v) || v < 0 || v > 100000) return { error: `${label}: ${f} must be zero or more` };
       minutes[f] = Math.round(v);
     }
-    steps.push({ sequence, name: op.name.trim().slice(0, 200), workCenterType: op.workCenterType, ...minutes, parameters: op.parameters && typeof op.parameters === 'object' ? op.parameters : {} });
+    // The routing screen lists a step's parameters, so anything else is refused rather than saved in a shape it cannot open.
+    if (op.parameters != null && !Array.isArray(op.parameters)) return { error: `${label}: parameters must be a list` };
+    steps.push({ sequence, name: op.name.trim().slice(0, 200), workCenterType: op.workCenterType, ...minutes, parameters: Array.isArray(op.parameters) ? op.parameters : [] });
   }
   return { steps };
 }
@@ -190,6 +192,7 @@ router.get('/recipes', async (req, res) => {
       thicknessMax: r.thicknessMax ? parseFloat(r.thicknessMax) : null,
       division: r.division,
       version: r.version,
+      inspectionRequired: r.inspectionRequired,
       status: r.status,
       operationCount: r.operations.length,
       createdAt: r.createdAt.toISOString(),
@@ -246,6 +249,9 @@ router.post('/recipes', async (req, res) => {
     if (!name || !code) {
       return res.status(400).json({ error: 'name and code are required' });
     }
+    // Jobs on a routing are inspected unless the routing says they need none (L-021).
+    const { inspectionRequired } = req.body;
+    if (inspectionRequired !== undefined && typeof inspectionRequired !== 'boolean') return res.status(400).json({ error: 'inspectionRequired must be true or false' });
     
     const range = thicknessRangeError(thicknessMin, thicknessMax);
     if (range) return res.status(400).json({ error: range });
@@ -271,6 +277,7 @@ router.post('/recipes', async (req, res) => {
         division: division || null,
         version: 1,
         status: 'DRAFT',
+        ...(inspectionRequired !== undefined && { inspectionRequired }),
         operations: {
           create: steps.steps
         }
@@ -346,6 +353,10 @@ router.put('/recipes/:id', async (req, res) => {
     if (thicknessMin !== undefined) updateData.thicknessMin = thicknessMin;
     if (thicknessMax !== undefined) updateData.thicknessMax = thicknessMax;
     if (division !== undefined) updateData.division = division;
+    if (req.body.inspectionRequired !== undefined) {
+      if (typeof req.body.inspectionRequired !== 'boolean') return res.status(400).json({ error: 'inspectionRequired must be true or false' });
+      updateData.inspectionRequired = req.body.inspectionRequired;
+    }
     
     const range = thicknessRangeError(thicknessMin !== undefined ? thicknessMin : recipe.thicknessMin, thicknessMax !== undefined ? thicknessMax : recipe.thicknessMax);
     if (range) return res.status(400).json({ error: range });
@@ -482,6 +493,7 @@ router.post('/recipes/:id/clone', async (req, res) => {
         thicknessMin: sourceRecipe.thicknessMin,
         thicknessMax: sourceRecipe.thicknessMax,
         division: sourceRecipe.division,
+        inspectionRequired: sourceRecipe.inspectionRequired,
         version: newVersion,
         status: 'DRAFT',
         operations: {

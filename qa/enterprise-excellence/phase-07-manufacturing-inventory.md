@@ -4,11 +4,11 @@ Written from the code at the Phase 7 baseline (commit `6cbedc5`) and re-checked 
 
 ## 1. Two production records, not one
 
-The product has two separate production records. They are not linked to each other (finding L-024, the owner's question).
+The product has two separate production records. Since owner decision 9 a coil work order can name the job it was raised for (finding L-024).
 
 | Record | Tables | What it is for | Touches stock |
 |---|---|---|---|
-| Job | `Job`, `DispatchJob` (the plan), `DispatchOperation` (a step), `DispatchTimeLog` (a clock entry), `JobInspection` | Work for an order line: planned steps, operators, time, inspection, then packaging and shipping | No. A job has input, output and scrap weight columns that no address writes (only the demo seed fills them), and it consumes nothing |
+| Job | `Job`, `DispatchJob` (the plan), `DispatchOperation` (a step), `DispatchTimeLog` (a clock entry), `JobInspection` | Work for an order line: planned steps, operators, time, inspection, then packaging and shipping | Not itself. It shows the material its coil work orders used, made and scrapped. Its own weight columns are still written by no address |
 | Coil work order | `WorkOrder`, `WorkOrderOutput` | Cutting a stock item: weight in, pieces out, scrap | Yes. Completion takes output and scrap off the source and creates the pieces with the source heat (Phase 3) |
 
 ## 2. Server code
@@ -28,7 +28,7 @@ The product has two separate production records. They are not linked to each oth
 | Cockpit recommendations | `routes/opsCockpit.js` | 5 (3) | Expedite and rebalance tested |
 | Processing recipes | `routes/processingRecipes.js` | 7 (4) | Read in the sweep only. NOT VERIFIED beyond that |
 
-New this phase, all pure functions or single-purpose helpers with unit tests (`src/backend/test/phase7Rules.test.js`): `lib/productionRules.js`, `lib/jobGates.js`, `lib/dispatchPlan.js`, `lib/capacityPlan.js`, `lib/workCenterGuard.js`.
+New this phase, all pure functions or single-purpose helpers with unit tests (`src/backend/test/phase7Rules.test.js`): `lib/productionRules.js`, `lib/jobGates.js`, `lib/dispatchPlan.js`, `lib/capacityPlan.js`, `lib/workCenterGuard.js`, and after owner decision 9 `lib/costing.js` and `lib/workCenterKindRules.js`.
 
 ## 3. Screens
 
@@ -52,7 +52,7 @@ New this phase, all pure functions or single-purpose helpers with unit tests (`s
 | Work order creation | Yes (both records) | Group 1 |
 | Routing and process definitions | Yes: versioned routings with steps | Group 1; L-011 |
 | Bill of material (materials and quantities) | No. "BOM recipe" is a routing; it lists steps, not materials | Group 2, NOT APPLICABLE; L-024 |
-| Material requirements for a job | No | Group 2, NOT APPLICABLE; L-024 |
+| Material requirements for a job | No. What a job used is known after the fact through its coil work orders | Group 2, NOT APPLICABLE; L-024 |
 | Work-center master data | Yes | `phase-07-work-center-capabilities.md` |
 | Capacity planning | Partly: hours per day on a work center, no calendar | L-025 |
 | Scheduling and dispatch queues | Yes | Group 3 |
@@ -63,9 +63,9 @@ New this phase, all pure functions or single-purpose helpers with unit tests (`s
 | Machine time, downtime | No machine connection. `DowntimeRecord` exists and nothing writes it | Group 4, NOT APPLICABLE; L-030 |
 | Quality control and inspection | Yes | Group 5 |
 | Nonconformance and corrective action | No. A failed inspection is the only record | L-023 |
-| Rework | Sent back with instructions; not routed or clocked | L-020 |
+| Rework | A rework step added to the plan, clocked like any step (owner decision 9) | L-020; group 6 |
 | Scrap and remnants | Yes, on coil work orders (Phase 3 and 6) | Group 6 |
-| Production costing | No | L-026, K-007 |
+| Production costing | Partly (owner decision 9): cost at receipt, cost carried to pieces, job cost from material and labor. No overhead, valuation or cost of goods | L-026, K-007; `phase-07-production-costing.md` |
 | Outsourced processing | No | L-027 |
 | Cross-location manufacturing | A job is worked at the branch of its work center, which may be a different branch from the one that sold the order. Material moves by transfer | Group 7; the multi-branch jobs of the simulation |
 | Machine integration | None. No equipment is driven | L-030 |

@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-15T22:16:15.260Z",
- "checks": 30,
+ "at": "2026-11-15T23:54:01.356Z",
+ "checks": 31,
  "failed": 0,
  "results": [
   {
@@ -26,6 +26,11 @@
   },
   {
    "name": "job: the change is still there after reloading",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: a job on hold cannot be sent straight to the dock without an inspection",
    "ok": true,
    "detail": ""
   },

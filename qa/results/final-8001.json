@@ -1,7 +1,7 @@
 {
  "seed": 8001,
  "base": "http://localhost:3011",
- "at": "2026-11-15T22:11:34.570Z",
+ "at": "2026-11-15T23:49:16.137Z",
  "scenarios": [
   {
    "id": "S8001-01",
@@ -212,7 +212,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 613
+   "ms": 687
   },
   {
    "id": "S8001-02",
@@ -397,7 +397,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 489
+   "ms": 542
   },
   {
    "id": "S8001-03",
@@ -608,7 +608,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 521
+   "ms": 520
   },
   {
    "id": "S8001-04",
@@ -803,7 +803,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 435
+   "ms": 478
   },
   {
    "id": "S8001-05",
@@ -988,7 +988,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 442
+   "ms": 435
   },
   {
    "id": "S8001-06",
@@ -1233,7 +1233,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 561
+   "ms": 581
   },
   {
    "id": "S8001-07",
@@ -1452,7 +1452,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 472
+   "ms": 524
   },
   {
    "id": "S8001-08",
@@ -1721,7 +1721,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 737
+   "ms": 719
   },
   {
    "id": "S8001-09",
@@ -2016,7 +2016,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 855
+   "ms": 878
   },
   {
    "id": "S8001-10",
@@ -2285,7 +2285,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 698
+   "ms": 763
   },
   {
    "id": "S8001-11",
@@ -2554,7 +2554,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 757
+   "ms": 756
   },
   {
    "id": "S8001-12",
@@ -2849,7 +2849,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 740
+   "ms": 721
   },
   {
    "id": "S8001-13",
@@ -3034,7 +3034,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 414
+   "ms": 386
   },
   {
    "id": "S8001-14",
@@ -3271,7 +3271,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 564
+   "ms": 568
   },
   {
    "id": "S8001-15",
@@ -3456,7 +3456,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 368
+   "ms": 406
   },
   {
    "id": "S8001-16",
@@ -3683,7 +3683,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 557
+   "ms": 671
   },
   {
    "id": "S8001-17",
@@ -3894,7 +3894,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 452
+   "ms": 467
   },
   {
    "id": "S8001-18",
@@ -4173,7 +4173,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 763
+   "ms": 714
   },
   {
    "id": "S8001-19",
@@ -4230,7 +4230,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 113
+   "ms": 107
   },
   {
    "id": "S8001-20",
@@ -4287,7 +4287,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 93
+   "ms": 81
   },
   {
    "id": "S8001-21",
@@ -4344,7 +4344,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 86
+   "ms": 74
   },
   {
    "id": "S8001-22",
@@ -4467,7 +4467,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 185
+   "ms": 152
   },
   {
    "id": "S8001-23",
@@ -4590,7 +4590,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 161
+   "ms": 140
   },
   {
    "id": "S8001-24",
@@ -4739,7 +4739,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 452
+   "ms": 419
   },
   {
    "id": "S8001-25",
@@ -4868,7 +4868,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 365
+   "ms": 348
   },
   {
    "id": "S8001-26",
@@ -4887,19 +4887,19 @@
      "ok": true
     },
     {
-     "name": "allocate 500 lb from QA-L31-S4",
+     "name": "allocate 500 lb from QA-L31-S3",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "transfer QA-L31-S4 QA-L31 → QA-L20",
+     "name": "transfer QA-L31-S3 QA-L31 → QA-L20",
      "expect": "2xx",
      "status": 201,
      "ok": true
     },
     {
-     "name": "transfer QA-L31-S4 QA-L31 → QA-L20: received at the other branch",
+     "name": "transfer QA-L31-S3 QA-L31 → QA-L20: received at the other branch",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -4967,7 +4967,7 @@
    ],
    "invariants": [
     {
-     "name": "transfer QA-L31-S4 QA-L31 → QA-L20: the item is in transit until it is received",
+     "name": "transfer QA-L31-S3 QA-L31 → QA-L20: the item is in transit until it is received",
      "ok": true
     },
     {
@@ -4999,25 +4999,25 @@
      "ok": true
     },
     {
-     "name": "QA-L31-S4: no negative quantities",
+     "name": "QA-L31-S3: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L31-S4: on hand = available + allocated + on hold",
+     "name": "QA-L31-S3: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L31-S4: inventory allocated = open allocations",
+     "name": "QA-L31-S3: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L31-S4: inventory branch = coil branch",
+     "name": "QA-L31-S3: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 442
+   "ms": 412
   },
   {
    "id": "S8001-27",
@@ -5146,7 +5146,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 424
+   "ms": 363
   },
   {
    "id": "S8001-28",
@@ -5275,7 +5275,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 353
+   "ms": 330
   },
   {
    "id": "S8001-29",
@@ -5404,7 +5404,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 386
+   "ms": 351
   },
   {
    "id": "S8001-30",
@@ -5427,19 +5427,19 @@
      "ok": true
     },
     {
-     "name": "QA-L36-S5: no negative quantities",
+     "name": "QA-L36-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L36-S5: on hand = available + allocated + on hold",
+     "name": "QA-L36-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L36-S5: inventory allocated = open allocations",
+     "name": "QA-L36-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L36-S5: inventory branch = coil branch",
+     "name": "QA-L36-S4: inventory branch = coil branch",
      "ok": true
     }
    ],
@@ -5478,7 +5478,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 10
+   "ms": 11
   },
   {
    "id": "S8001-32",
@@ -5525,7 +5525,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 48
+   "ms": 61
   },
   {
    "id": "S8001-33",
@@ -5558,7 +5558,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 14
+   "ms": 17
   },
   {
    "id": "S8001-34",
@@ -5573,25 +5573,25 @@
    ],
    "invariants": [
     {
-     "name": "QA-L54-S2: no negative quantities",
+     "name": "QA-L54-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L54-S2: on hand = available + allocated + on hold",
+     "name": "QA-L54-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L54-S2: inventory allocated = open allocations",
+     "name": "QA-L54-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L54-S2: inventory branch = coil branch",
+     "name": "QA-L54-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 14
   },
   {
    "id": "S8001-35",
@@ -5786,7 +5786,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 420
+   "ms": 395
   },
   {
    "id": "S8001-36",
@@ -5805,7 +5805,7 @@
      "ok": true
     },
     {
-     "name": "allocate 9000 lb from QA-L35-S1",
+     "name": "allocate 29000 lb from QA-L36-S4",
      "expect": "4xx",
      "status": 409,
      "ok": true
@@ -5833,25 +5833,25 @@
      "ok": true
     },
     {
-     "name": "QA-L35-S1: no negative quantities",
+     "name": "QA-L36-S4: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L35-S1: on hand = available + allocated + on hold",
+     "name": "QA-L36-S4: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L35-S1: inventory allocated = open allocations",
+     "name": "QA-L36-S4: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L35-S1: inventory branch = coil branch",
+     "name": "QA-L36-S4: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 63
+   "ms": 60
   },
   {
    "id": "S8001-37",
@@ -5932,7 +5932,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 104
+   "ms": 87
   },
   {
    "id": "S8001-38",
@@ -6063,7 +6063,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 265
+   "ms": 242
   },
   {
    "id": "S8001-39",
@@ -6140,7 +6140,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 106
+   "ms": 102
   },
   {
    "id": "S8001-40",
@@ -6415,7 +6415,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 583
+   "ms": 541
   },
   {
    "id": "S8001-41",
@@ -6674,7 +6674,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 502
+   "ms": 475
   },
   {
    "id": "S8001-42",
@@ -6869,7 +6869,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 443
+   "ms": 411
   },
   {
    "id": "S8001-43",
@@ -6888,7 +6888,7 @@
      "ok": true
     },
     {
-     "name": "allocate 300 lb from QA-L72-S4",
+     "name": "allocate 300 lb from QA-L72-S5",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7062,25 +7062,25 @@
      "ok": true
     },
     {
-     "name": "QA-L72-S4: no negative quantities",
+     "name": "QA-L72-S5: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L72-S4: on hand = available + allocated + on hold",
+     "name": "QA-L72-S5: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L72-S4: inventory allocated = open allocations",
+     "name": "QA-L72-S5: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L72-S4: inventory branch = coil branch",
+     "name": "QA-L72-S5: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 511
+   "ms": 470
   },
   {
    "id": "S8001-44",
@@ -7329,7 +7329,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 403
+   "ms": 417
   },
   {
    "id": "S8001-45",
@@ -7524,22 +7524,6 @@
      "ok": true
     },
     {
-     "name": "QA-L75-S2: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S2: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S2: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S2: inventory branch = coil branch",
-     "ok": true
-    },
-    {
      "name": "QA-L75-S3: no negative quantities",
      "ok": true
     },
@@ -7553,6 +7537,22 @@
     },
     {
      "name": "QA-L75-S3: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S2: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -7594,7 +7594,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 565
+   "ms": 660
   },
   {
    "id": "S8001-46",
@@ -7869,7 +7869,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 615
+   "ms": 607
   },
   {
    "id": "S8001-47",
@@ -8070,22 +8070,6 @@
      "ok": true
     },
     {
-     "name": "QA-L47-S2: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L47-S2: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L47-S2: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L47-S2: inventory branch = coil branch",
-     "ok": true
-    },
-    {
      "name": "QA-L47-S4: no negative quantities",
      "ok": true
     },
@@ -8099,6 +8083,22 @@
     },
     {
      "name": "QA-L47-S4: inventory branch = coil branch",
+     "ok": true
+    },
+    {
+     "name": "QA-L47-S2: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L47-S2: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L47-S2: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L47-S2: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -8144,7 +8144,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 662
+   "ms": 609
   },
   {
    "id": "S8001-48",
@@ -8169,7 +8169,7 @@
      "ok": true
     },
     {
-     "name": "allocate 600 lb from QA-L75-S4",
+     "name": "allocate 600 lb from QA-L75-S3",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -8345,6 +8345,22 @@
      "ok": true
     },
     {
+     "name": "QA-L75-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S3: inventory branch = coil branch",
+     "ok": true
+    },
+    {
      "name": "QA-L75-S2: no negative quantities",
      "ok": true
     },
@@ -8358,22 +8374,6 @@
     },
     {
      "name": "QA-L75-S2: inventory branch = coil branch",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -8419,7 +8419,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 566
+   "ms": 590
   },
   {
    "id": "S8001-49",
@@ -8538,7 +8538,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 204
+   "ms": 153
   },
   {
    "id": "S8001-50",
@@ -8641,7 +8641,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 155
+   "ms": 159
   }
  ],
  "concurrency": {
@@ -8655,7 +8655,7 @@
    {
     "name": "two reservations racing for the same stock: exactly one wins",
     "pass": true,
-    "detail": "statuses 409,201; available 6800"
+    "detail": "statuses 201,409; available 6800"
    },
    {
     "name": "two shipments racing for the same order line: exactly one is created",
@@ -8665,7 +8665,7 @@
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 409,409,200; line shipped 10200 of 10200; on hand 17000 → 6800"
+    "detail": "statuses 200,409,409; line shipped 10200 of 10200; on hand 17000 → 6800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",

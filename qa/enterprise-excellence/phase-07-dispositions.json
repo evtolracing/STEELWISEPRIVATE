@@ -12,6 +12,42 @@
    "phase": "Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence",
    "statusNote": "Phase 7: the first half is done. Every job status change, from every address, now goes through one function (lib/jobGates.js changeJobStatusTx) with one history entry and the same quality and open-step gates (L-001, L-006). What remains for the owner is narrower: the move table still allows some backward moves (for example in process back to ordered). Question: which backward moves should be allowed, and by whom?",
    "verification": "qa/sim/phase7-manufacturing.mjs: \"across everything this run did: every job is where its history says\"; \"one job moved by two people at the same moment\"."
+  },
+  "L-020": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Owner decision 9 (2026-11-15): a rework step. Sending a job for rework from an inspection adds one step named for the inspection, after the last step, on the same kind of work center or the kind the inspector names. It is started, clocked and finished like any step, the job cannot be packed while it is open, and finishing it sends the job back to inspection. A job with no planned steps goes back with the instructions only. Needs database update 13.",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"sent for rework, a job gets a rework step that is started and clocked like any step, and must pass a new inspection\"; \"the rework step can be sent to another kind of work center; an unknown kind is refused; a job with no plan gets the instructions only\". Mutation: with the step removed, 1 scenario of group 6 fails."
+  },
+  "L-021": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Owner decision 9 (2026-11-15): every job passes inspection before packing or the dock, including a job with no planned steps, unless its routing is marked \"no inspection\" (a checkbox on the routing, on by default). Work already in packaging or beyond when the update is applied carries on. Needs database update 13.",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"a job with no planned steps goes to inspection when it is completed; it cannot skip to the dock\"; \"a routing marked \\\"no inspection\\\" lets its jobs go straight to packaging; every other job is inspected\"; src/backend/test/phase7Rules.test.js. Mutation: 2 rules removed in turn, group 5 fails each time."
+  },
+  "L-022": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Owner decision 9 (2026-11-15): (a) a current certification is required where the kind of work center is marked \"certification required\"; (b) one operator may be clocked on to two steps at once only where every kind involved is marked for it; (c) clocks running longer than the hours on file (12 by default, setting production.rules.longEntryHours) are listed on the time tracking screen for the supervisor; nothing is stopped automatically. Both marks are off until the owner turns them on, so no labor policy was invented. Shift length, breaks and overtime are still not on file (L-025). Needs database update 13.",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"one operator on two steps at once is refused, unless the kind of work center is marked for it\"; \"where a kind of work center is marked \\\"certification required\\\", an operator with none on file cannot be clocked on\"; \"a clock left running is listed for the supervisor after the hours on file; nothing is stopped\". Mutation: 3 rules removed in turn, group 4 fails each time."
+  },
+  "L-024": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Owner decision 9 (2026-11-15): linked. A coil work order can be raised for a job (from the job screen); it takes the job's order line, and the job shows each work order with its source, heat, pieces, weight used, made, scrap and yield. A bill of material (materials and quantities per routing) and material requirements planning are still not built; the decision did not ask for them. Needs database update 13.",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"a job names the coil work orders raised for it, and shows what they used, made and scrapped\". Mutation: with the checks removed, 1 scenario of group 6 fails."
+  },
+  "L-026": {
+   "status": "IN PROGRESS",
+   "statusNote": "Owner decision 9 (2026-11-15): built as decided. A job's cost is the material its coil work orders used at actual cost per pound, plus the time clocked on its steps at the labor rate the owner enters for each kind of work center. No overhead. Shown to managers, the inventory manager and buyers only. Where a rate or a material cost is not on file the figure is left out and named as missing; nothing is assumed. Still to do by the owner: enter a labor rate for each kind of work center. Still not built: overhead, machine rates separate from labor, outside processing cost, and a cost report across jobs. Needs database update 13.",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"a job's cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead\"; src/backend/test/phase7Rules.test.js (unit cost from price, hours, adding up). Mutation: 3 rules removed in turn, group 6 fails each time."
+  },
+  "K-007": {
+   "status": "IN PROGRESS",
+   "phase": "Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence",
+   "statusNote": "Owner decision 9 (2026-11-15): actual cost per item. A receipt against a purchase order line now records the item's cost per stocked unit from the line's price (per hundredweight, pound or ton for stock kept in pounds; each for stock kept in pieces). Pieces cut by a work order and pieces received from a parent carry the parent's cost. A price that cannot be turned into a unit cost (for example per foot for stock kept in pounds) leaves the cost empty. Still open: stock already on hand has no cost unless typed; landed cost (freight, duty) is not worked out; stock movements carry no value, so scrap, shortage and count variance have no amount; Inventory.avgCost is still never written; there is no valuation report. These belong to Phase 8 (accounting).",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"an item's cost is taken from its purchase order line when it is received, and the pieces cut from it carry the same cost per pound\"; qa/sim/phase6-inventory.mjs \"receiving records the cost from the purchase order line\". Mutation: 2 rules removed in turn, group 6 fails each time."
+  },
+  "L-028": {
+   "status": "IN PROGRESS",
+   "statusNote": "Owner decision 9 (2026-11-15): each kind of work center can carry its own inspection checklist (up to 40 checks, each required or not), typed on the kinds-of-work-center screen. A new inspection of that kind of work starts with it; with none entered the built-in list is used. Waiting on the owner: the checks themselves. No inspection standard, tolerance or sampling plan was written for him. Per-customer checklists, sampling plans and gauge calibration are not built. Needs database update 13.",
+   "verification": "qa/sim/phase7-manufacturing.mjs: \"an inspection starts with the checklist the owner entered for that kind of work; with none entered, the standard list\". Mutation: with the rule removed, 1 scenario of group 5 fails."
   }
  }
 }

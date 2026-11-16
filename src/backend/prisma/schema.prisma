@@ -919,15 +919,18 @@ model DispatchOperation {
   scheduledEnd           DateTime?
   actualStart            DateTime?
   actualEnd              DateTime?
+  reworkOfInspectionId   String? // set on a rework step: the failed inspection it answers (L-020)
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
   dispatchJob DispatchJob       @relation(fields: [dispatchJobId], references: [id], onDelete: Cascade)
+  reworkOfInspection JobInspection? @relation("ReworkStep", fields: [reworkOfInspectionId], references: [id], onDelete: SetNull)
   timeLogs    DispatchTimeLog[]
 
   assignedWorkCenter WorkCenter? @relation("DispatchOperationWorkCenter", fields: [assignedWorkCenterId], references: [id], onDelete: SetNull)
 
   @@unique([dispatchJobId, sequence])
+  @@index([reworkOfInspectionId])
   @@index([dispatchJobId])
   @@index([assignedWorkCenterId])
   @@index([status])
@@ -976,6 +979,7 @@ model JobInspection {
 
   job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
   inspector Operator? @relation("InspectorInspections", fields: [inspectorId], references: [id])
+  reworkSteps DispatchOperation[] @relation("ReworkStep")
 
   @@index([jobId])
   @@index([inspectorId])
@@ -990,6 +994,10 @@ model WorkCenterType {
   description String?
   divisions   Json     @default("[]")
   isActive    Boolean  @default(true)
+  certificationRequired Boolean @default(false) // an operator needs a current certification for this kind (L-022)
+  allowsConcurrentSteps Boolean @default(false) // an operator may be clocked on to more than one step of this kind (L-022)
+  hourlyRate            Decimal? @db.Decimal(12, 2) // labor rate for costing; empty until set (L-026)
+  inspectionChecklist   Json? // the checks an inspection of this kind of work starts with (L-028)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -1075,6 +1083,8 @@ model Job {
 
   orderLine OrderLine? @relation("JobOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
   workOrder WorkOrder? @relation("JobWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
+  // Coil work orders raised for this job (finding L-024): its material, scrap and yield.
+  coilWorkOrders WorkOrder[] @relation("WorkOrderForJob")
 
   @@index([recipeId])
   @@index([assignedToId])
@@ -1242,12 +1252,15 @@ model WorkOrder {
   outputs        WorkOrderOutput[]
 
   jobs       Job[]      @relation("JobWorkOrder")
+  jobId      String?
+  job        Job?       @relation("WorkOrderForJob", fields: [jobId], references: [id], onDelete: SetNull)
   salesOrder Order?     @relation("WorkOrderSalesOrder", fields: [salesOrderId], references: [id], onDelete: SetNull)
   line       OrderLine? @relation("WorkOrderLine", fields: [lineId], references: [id], onDelete: SetNull)
 
   @@index([sourceCoilId])
   @@index([salesOrderId])
   @@index([lineId])
+  @@index([jobId])
 }
 
 model WorkOrderOutput {
@@ -1482,6 +1495,7 @@ model BomRecipe {
   division     String?
   version      Int             @default(1)
   status       BomRecipeStatus @default(DRAFT)
+  inspectionRequired Boolean   @default(true) // false: jobs on this routing skip inspection (L-021)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   operations   BomOperation[]

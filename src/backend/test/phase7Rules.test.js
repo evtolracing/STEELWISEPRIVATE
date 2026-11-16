@@ -237,3 +237,91 @@ test('coil work orders: a quality hold must be released before completion, and a
   assert.equal(gradeFitError({ sourceGrade: s304, lineGrade: null }), null, 'a line with no grade on file is not checked');
   assert.equal(gradeFitError({ sourceGrade: null, lineGrade: a36 }), null, 'a supply item has no grade');
 });
+
+// ── The owner's decisions of 2026-11-15 (L-020, L-021, L-022, L-024, L-026, L-028, K-007) ──
+import { unitCostFromPrice, addUpJobCost, hoursOf } from '../src/lib/costing.js';
+import { readKindRules, readChecklist, checklistFor } from '../src/lib/workCenterKindRules.js';
+import { concurrentStepError } from '../src/lib/productionRules.js';
+
+test('cost at receipt: a purchase price becomes a cost per stocked unit, and nothing is assumed when it cannot', () => {
+  assert.equal(unitCostFromPrice({ unitPrice: 45, priceUnit: 'CWT', stockUnit: 'LB' }), 0.45);
+  assert.equal(unitCostFromPrice({ unitPrice: 0.52, priceUnit: 'LB', stockUnit: 'LB' }), 0.52);
+  assert.equal(unitCostFromPrice({ unitPrice: 900, priceUnit: 'TON', stockUnit: 'LB' }), 0.45);
+  assert.equal(unitCostFromPrice({ unitPrice: 3.5, priceUnit: 'EACH', stockUnit: 'EA' }), 3.5);
+  assert.equal(unitCostFromPrice({ unitPrice: 3.5, priceUnit: 'EACH', stockUnit: 'LB' }), null, 'a price per piece says nothing about a pound');
+  assert.equal(unitCostFromPrice({ unitPrice: 45, priceUnit: 'CWT', stockUnit: 'EA' }), null);
+  assert.equal(unitCostFromPrice({ unitPrice: 2, priceUnit: 'LF', stockUnit: 'LB' }), null);
+  assert.equal(unitCostFromPrice({ unitPrice: null, priceUnit: 'CWT', stockUnit: 'LB' }), null);
+  assert.equal(unitCostFromPrice({ unitPrice: -1, priceUnit: 'LB', stockUnit: 'LB' }), null);
+});
+
+test('job cost: material used at its unit cost plus clocked hours at the rate for the kind of work; gaps are named, not filled', () => {
+  const full = addUpJobCost({ workOrders: [{ woNumber: 'WO-1', status: 'COMPLETE', usedLb: 1000, unitCost: 0.45 }, { woNumber: 'WO-2', status: 'RELEASED', usedLb: 0, unitCost: null }], labor: [{ kind: 'Saw', hours: 2, rate: 60 }] });
+  assert.equal(full.materialCost, 450); assert.equal(full.laborCost, 120); assert.equal(full.totalCost, 570);
+  assert.equal(full.complete, true); assert.deepEqual(full.missing, []);
+  const gaps = addUpJobCost({ workOrders: [{ woNumber: 'WO-3', status: 'COMPLETE', usedLb: 500, unitCost: null }], labor: [{ kind: 'Shear', hours: 1.5, rate: null }] });
+  assert.equal(gaps.complete, false); assert.equal(gaps.totalCost, 0);
+  assert.equal(gaps.missing.length, 2); assert.match(gaps.missing[0], /WO-3/); assert.match(gaps.missing[1], /Shear/);
+  assert.equal(addUpJobCost({}).complete, false, 'a job with nothing recorded has no cost to call complete');
+  assert.equal(hoursOf({ startAt: '2026-01-01T00:00:00Z', endAt: '2026-01-01T01:30:00Z' }), 1.5);
+  assert.equal(hoursOf({ startAt: '2026-01-01T00:00:00Z', endAt: null }, new Date('2026-01-01T02:00:00Z')), 2, 'a running clock counts to now');
+  assert.equal(hoursOf({ startAt: '2026-01-01T02:00:00Z', endAt: '2026-01-01T01:00:00Z' }), 0);
+});
+
+test('rules per kind of work center are validated, and only cost roles set a labor rate', () => {
+  assert.deepEqual(readKindRules({ certificationRequired: true, allowsConcurrentSteps: false }).data, { certificationRequired: true, allowsConcurrentSteps: false });
+  assert.equal(readKindRules({ certificationRequired: 'yes' }).status, 400);
+  assert.equal(readKindRules({ hourlyRate: 60 }).status, 403);
+  assert.equal(readKindRules({ hourlyRate: 60.456 }, { mayCost: true }).data.hourlyRate, 60.46);
+  assert.equal(readKindRules({ hourlyRate: null }, { mayCost: true }).data.hourlyRate, null);
+  assert.equal(readKindRules({ hourlyRate: -1 }, { mayCost: true }).status, 400);
+  assert.equal(readKindRules({ hourlyRate: 'abc' }, { mayCost: true }).status, 400);
+  assert.deepEqual(readKindRules({}).data, {});
+});
+
+test('an inspection checklist per kind of work: wording required, no duplicates, the standard list when none is set', () => {
+  assert.deepEqual(readChecklist(['Burr free', { item: 'Length checked', required: false }]).list, [{ item: 'Burr free', required: true }, { item: 'Length checked', required: false }]);
+  assert.equal(readChecklist([]).list, null); assert.equal(readChecklist(null).list, null);
+  assert.match(readChecklist('x').error, /list/);
+  assert.match(readChecklist([{ item: ' ' }]).error, /no wording/);
+  assert.match(readChecklist(['A', 'a']).error, /twice/);
+  assert.match(readChecklist(Array(41).fill(0).map((_, i) => `c${i}`)).error, /40/);
+  const standard = [{ item: 'std', required: true, result: null, notes: '' }];
+  assert.equal(checklistFor(null, standard), standard);
+  assert.equal(checklistFor({ inspectionChecklist: [] }, standard), standard);
+  assert.deepEqual(checklistFor({ inspectionChecklist: [{ item: 'Burr free', required: true }] }, standard), [{ item: 'Burr free', required: true, result: null, notes: '' }]);
+});
+
+test('a certification is required only where the kind of work center is marked, and a lapsed one always refuses', () => {
+  const op = { requiredWorkCenterType: 'SAW' }; const now = new Date('2026-06-01');
+  const bare = { firstName: 'Ann', lastName: 'Lee', isActive: true, status: 'ACTIVE', skills: [] };
+  assert.equal(operatorEligibility(bare, op, null, now, { certificationRequired: false }), null);
+  assert.equal(operatorEligibility(bare, op, null, now, null), null);
+  assert.match(operatorEligibility(bare, op, null, now, { label: 'Saw', certificationRequired: true }), /no Saw certification on file/);
+  const held = { ...bare, skills: [{ workCenterTypeId: 'SAW', isActive: true, expiresAt: '2027-01-01' }] };
+  assert.equal(operatorEligibility(held, op, null, now, { certificationRequired: true }), null);
+  const lapsed = { ...bare, skills: [{ workCenterTypeId: 'SAW', isActive: true, expiresAt: '2026-01-01' }] };
+  assert.match(operatorEligibility(lapsed, op, null, now, { certificationRequired: false }), /expired/);
+  const other = { ...bare, skills: [{ workCenterTypeId: 'SHEAR', isActive: true, expiresAt: null }] };
+  assert.match(operatorEligibility(other, op, null, now, { label: 'Saw', certificationRequired: true }), /no Saw certification/);
+});
+
+test('one step at a time, unless every kind of work involved is marked for two at once', () => {
+  const running = [{ stepName: 'Cut', jobNumber: 'J-1', kindId: 'SAW' }];
+  assert.equal(concurrentStepError('Ann Lee', [], 'SAW', {}), null);
+  assert.match(concurrentStepError('Ann Lee', running, 'SAW', { SAW: { label: 'Saw', allowsConcurrentSteps: false } }), /already clocked on to Cut of job J-1.*Saw is not marked/);
+  assert.equal(concurrentStepError('Ann Lee', running, 'SAW', { SAW: { allowsConcurrentSteps: true } }), null);
+  assert.match(concurrentStepError('Ann Lee', running, 'LASER', new Map([['SAW', { allowsConcurrentSteps: true }], ['LASER', { label: 'Laser', allowsConcurrentSteps: false }]])), /Laser is not marked/);
+  assert.match(concurrentStepError('Ann Lee', running, 'LASER', { LASER: { allowsConcurrentSteps: true } }), /SAW is not marked/);
+});
+
+test('every job is inspected before release unless its routing says it needs none', () => {
+  const none = { from: 'IN_PROCESS', to: 'READY_TO_SHIP', inspections: [] };
+  assert.match(qualityReleaseError({ ...none, inspectionRequired: true }), /has not been inspected/);
+  assert.equal(qualityReleaseError({ ...none, inspectionRequired: false }), null);
+  assert.equal(qualityReleaseError({ ...none, to: 'WAITING_QC', inspectionRequired: true }), null, 'going to inspection is always allowed');
+  const passed = [{ inspectionNumber: 'QC-1', status: 'PASSED', completedAt: '2026-01-02' }];
+  assert.equal(qualityReleaseError({ from: 'IN_PROCESS', to: 'PACKAGING', inspections: passed, inspectionRequired: true }), null);
+  assert.equal(qualityReleaseError({ from: 'PACKAGING', to: 'READY_TO_SHIP', inspections: [], inspectionRequired: true }), null, 'work already released when the rule arrived carries on');
+  assert.match(qualityReleaseError({ from: 'IN_PROCESS', to: 'PACKAGING', inspections: [{ inspectionNumber: 'QC-2', status: 'FAILED', completedAt: '2026-01-03' }], inspectionRequired: false }), /failed/, 'a failed inspection blocks even where none is required');
+});

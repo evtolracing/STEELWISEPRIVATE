@@ -117,6 +117,95 @@ const PASSWORD = 'qa-password-1';
     check('planner: no script errors', page.errors.length === 0, page.errors.join(' | '));
     await page.close();
   }
+  // Owner decision 9: the job screen shows the material cut for the job and what the job cost; the time
+  // tracking screen lists a clock left running; the kinds-of-work-center address keeps the owner's rules.
+  {
+    const { PrismaClient } = require(path.resolve('src/backend/node_modules/@prisma/client'));
+    const prisma = new PrismaClient();
+    const heat = await prisma.heat.findFirst({ include: { grade: true }, orderBy: { createdAt: 'asc' } });
+    const j = await job();
+    const item = must(await call('POST', '/api/inventory/receipts', { coilNumber: `UI7-${run}`, form: 'PLATE', heatNumber: heat.heatNumber, gradeCode: heat.grade.code, thicknessIn: 0.5, widthIn: 48, lengthIn: 96, weightLb: 1000, locationId: L1.id }), 'receipt', 201).item;
+    await prisma.coil.update({ where: { id: item.id }, data: { unitCost: 0.5 } });
+    const wo = must(await call('POST', '/api/work-orders', { woType: 'SLIT', sourceCoilId: item.id, jobId: j.id, inputWeightLb: 1000, priority: 3 }), 'work order', 201);
+    for (const s of ['release', 'start']) must(await call('PUT', `/api/work-orders/${wo.id}/${s}`, {}), s);
+    must(await call('PUT', `/api/work-orders/${wo.id}/complete`, { scrapWeightLb: 40, outputs: [{ weightLb: 960, widthIn: 24 }] }), 'finish');
+    must(await call('PATCH', `/api/v1/dispatch/work-center-types/${kind}`, { hourlyRate: 60 }), 'rate');
+    must(await call('POST', `/api/v1/operations/${j.ops[0].id}/start`, { operatorId: person.id, workCenterId: wc.id }), 'start');
+    await prisma.dispatchTimeLog.updateMany({ where: { dispatchOperationId: j.ops[0].id, status: 'RUNNING' }, data: { startAt: new Date(Date.now() - 13 * 3600000) } });
+    {
+      const page = await open('/time-tracking');
+      await page.getByText(/been running for more than/).first().waitFor({ timeout: 10000 }).catch(() => {});
+      const text = await body(page);
+      check('time tracking: a clock running for 13 hours is listed for the supervisor, with the operator and the job', /been running for more than 12 hours/.test(text) && text.includes(j.jobNumber) && text.includes(`P7-${run}`), (text.match(/.{0,80}running for more.{0,200}/) || [text.slice(0, 200)])[0]);
+      check('time tracking: no script errors', page.errors.length === 0, page.errors.join(' | '));
+      await page.close();
+    }
+    must(await call('POST', `/api/v1/operations/${j.ops[0].id}/complete`, {}), 'complete');
+    {
+      const page = await open(`/jobs/${j.id}`);
+      await page.getByText(wo.woNumber).first().waitFor({ timeout: 10000 }).catch(() => {});
+      const text = await body(page);
+      check('job: the work order cut for the job is listed with its weights and yield', text.includes(wo.woNumber) && /Material used/.test(text) && /1,000/.test(text) && /96/.test(text), text.slice(0, 400));
+      check('job: cost shows material $500.00, labor at the rate on file, a total, and says no overhead is included', /\$500\.00/.test(text) && /\$7[78]\d\.\d\d|\$780\.00/.test(text) && /No overhead is included/.test(text), (text.match(/Cost[\s\S]{0,400}/) || [''])[0]);
+      check('job: nothing reads NaN or undefined', !/\bNaN\b|undefined/.test(text), (text.match(/.{30}(NaN|undefined).{30}/) || [''])[0]);
+      check('job: "Cut material for this job" is offered while the job is open', await page.getByRole('link', { name: 'Cut material for this job' }).isVisible().catch(() => false));
+      check('job: no script errors', page.errors.length === 0, page.errors.join(' | '));
+      await page.close();
+    }
+    {
+      const page = await open(`/work-orders/new?jobId=${j.id}`);
+      await page.getByText(j.jobNumber).first().waitFor({ timeout: 10000 }).catch(() => {});
+      check('new work order: opened from a job, the screen says which job it is for', (await body(page)).includes(j.jobNumber), (await body(page)).slice(0, 300));
+      check('new work order: no script errors', page.errors.length === 0, page.errors.join(' | '));
+      await page.close();
+    }
+    {
+      const page = await open(`/work-orders/${wo.id}`);
+      await page.getByText('For job').first().waitFor({ timeout: 10000 }).catch(() => {});
+      const text = await body(page);
+      check('work order: the screen names the job it was raised for', /For job/.test(text) && text.includes(j.jobNumber), text.slice(0, 300));
+      check('work order: no script errors', page.errors.length === 0, page.errors.join(' | '));
+      await page.close();
+    }
+    // Routing: the "must pass inspection" box is ticked by default, and unticking it is saved with a warning shown.
+    {
+      const routing = must(await call('POST', '/api/v1/bom/recipes', { name: `UI P7 routing ${run}`, code: `UI7R${run}`, materialCode: `UI7M${run}`, commodity: 'METALS', form: 'PLATE', grade: heat.grade.code, thicknessMin: 0.25, thicknessMax: 1, division: 'METALS', operations: [{ name: 'Saw', workCenterType: kind, setupMinutes: 10, estimatedMachineMinutes: 30, estimatedLaborMinutes: 20 }] }), 'routing', 201);
+      const page = await open(`/bom/${routing.id}`);
+      const box = page.getByLabel('Jobs on this routing must pass inspection');
+      await box.waitFor({ timeout: 10000 }).catch(() => {});
+      check('routing: "Jobs on this routing must pass inspection" is ticked on a new routing', await box.isChecked().catch(() => false));
+      await box.uncheck().catch(() => {});
+      check('routing: unticked, the screen warns that jobs will go straight to packaging', /go straight to packaging/.test(await body(page)), (await body(page)).slice(0, 300));
+      await page.getByRole('button', { name: 'Save' }).first().click().catch(() => {});
+      await page.waitForTimeout(1500);
+      const saved = await prisma.bomRecipe.findUnique({ where: { id: routing.id } });
+      check('routing: the choice is saved', saved.inspectionRequired === false, `inspectionRequired ${saved.inspectionRequired}`);
+      check('routing: no script errors', page.errors.length === 0, page.errors.join(' | '));
+      await page.close();
+    }
+    // Kinds of work center: the owner's rules are on the form; the labor rate is there for a cost role and saved changes stick.
+    {
+      const page = await open('/shopfloor');
+      await page.getByRole('button', { name: 'Manage Types' }).first().click().catch(() => {});
+      const dialog = page.getByRole('dialog');
+      const row = dialog.locator('li').filter({ hasText: kind }).first();
+      await row.waitFor({ timeout: 10000 }).catch(() => {});
+      await row.getByRole('button', { name: 'Edit' }).click().catch(() => {});
+      const two = dialog.getByLabel('One operator may run two steps at once');
+      await two.waitFor({ timeout: 8000 }).catch(() => {});
+      const rate = dialog.getByLabel('Labor rate per hour ($)');
+      check('kinds of work center: the form shows the two rules, the labor rate on file and the checklist box', (await two.isVisible().catch(() => false)) && (await dialog.getByLabel('An operator needs a current certification to run it').isVisible().catch(() => false)) && Number(await rate.inputValue().catch(() => 'x')) === 60 && (await dialog.getByLabel('Inspection checklist').isVisible().catch(() => false)), await rate.inputValue().catch(() => 'no rate field'));
+      await two.check().catch(() => {});
+      await dialog.getByLabel('Inspection checklist').fill('Length to print\nEdge free of burr').catch(() => {});
+      await dialog.getByRole('button', { name: 'Update' }).click().catch(() => {});
+      await page.waitForTimeout(1500);
+      const row2 = await prisma.workCenterType.findUnique({ where: { id: kind } });
+      check('kinds of work center: ticking "two steps at once" and typing two checks is saved, and the rate is kept', row2.allowsConcurrentSteps === true && Array.isArray(row2.inspectionChecklist) && row2.inspectionChecklist.length === 2 && row2.inspectionChecklist[0].item === 'Length to print' && Number(row2.hourlyRate) === 60 && row2.certificationRequired === false, JSON.stringify({ two: row2.allowsConcurrentSteps, list: row2.inspectionChecklist, rate: row2.hourlyRate }));
+      check('kinds of work center: no script errors', page.errors.length === 0, page.errors.join(' | '));
+      await page.close();
+    }
+    await prisma.$disconnect();
+  }
   // Phone width: the shop-floor and Quality screens do not scroll sideways, and the main action can be reached by name.
   {
     const phone = await browser.newContext({ viewport: { width: 390, height: 844 } });

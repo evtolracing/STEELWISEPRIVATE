@@ -23,11 +23,13 @@ Scope: the job (`Job`) and the coil work order (`WorkOrder`). Evidence is the sc
 
 Order, order line, branch (the order's), status, priority, due date, work center, routing and routing version when one was put on it, who opened it, and a history row for every move with the person. One job was followed end to end (group 7, "one job followed end to end"): order line, job, steps, time entries, inspection and shipment all point at each other.
 
-## 3. What is not there
+## 3. A job and its coil work orders (finding L-024, owner decision 9)
 
-- A job does not name the stock it will use, and a coil work order does not name a job (L-024). Yield and scrap are therefore known per coil work order, not per job.
-- No cost on either record (L-026).
-- A job with no planned steps can be started and completed without an inspection being called for (L-021, the owner's question).
+A coil work order can be raised for a job ("Cut material for this job" on the job screen, or `jobId` on the address). It takes the job's order line, so it cuts the stock reserved for that line. Refused: a job that is not on file or belongs to a branch the person does not work at (400), a cancelled, shipped or completed job (409), a job together with a different order line (409). The job screen and `GET /api/jobs/:id/material` list each work order with its source, heat, pieces, weight made, scrap and yield, and the totals for the job. Evidence: group 6 "a job names the coil work orders raised for it...".
+
+## 3a. What is still not there
+
+- A bill of material and material requirements planning: a job does not say in advance what stock it will need (group 2, NOT APPLICABLE).
 - Thickness is a required column on the plan; "not stated" is stored as 0 (L-029, needs a database change, deferred).
 
 ## 4. Database checks (`qa/tools/db-facts.mjs`)

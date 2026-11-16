@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-15T22:18:59.948Z",
- "checks": 21,
+ "at": "2026-11-15T23:57:01.930Z",
+ "checks": 39,
  "failed": 0,
  "results": [
   {
@@ -81,6 +81,96 @@
   },
   {
    "name": "planner: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time tracking: a clock running for 13 hours is listed for the supervisor, with the operator and the job",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "time tracking: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: the work order cut for the job is listed with its weights and yield",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: cost shows material $500.00, labor at the rate on file, a total, and says no overhead is included",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: nothing reads NaN or undefined",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: \"Cut material for this job\" is offered while the job is open",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "job: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new work order: opened from a job, the screen says which job it is for",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new work order: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work order: the screen names the job it was raised for",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "work order: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: \"Jobs on this routing must pass inspection\" is ticked on a new routing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: unticked, the screen warns that jobs will go straight to packaging",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: the choice is saved",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "routing: no script errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kinds of work center: the form shows the two rules, the labor rate on file and the checklist box",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kinds of work center: ticking \"two steps at once\" and typing two checks is saved, and the rate is kept",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kinds of work center: no script errors",
    "ok": true,
    "detail": ""
   },

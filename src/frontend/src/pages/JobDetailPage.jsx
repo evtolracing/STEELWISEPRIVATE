@@ -16,6 +16,7 @@ import { JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 export const jobStatusLabel = (status) => JOB_STATUS_CONFIG[status]?.label || String(status || '').replace(/_/g, ' ').toLowerCase()
 const when = (v) => (v ? new Date(v).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '')
 const pounds = (v) => (v == null || v === '' ? '' : `${Number(v).toLocaleString()} lb`)
+const dollars = (v) => (v == null ? '' : Number(v).toLocaleString(undefined, { style: 'currency', currency: 'USD' }))
 const person = (u) => (u ? [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email : '')
 const PRIORITY_LABELS = { LOW: 'Low', NORMAL: 'Normal', HIGH: 'High', HOT: 'Hot' }
 
@@ -84,6 +85,9 @@ export default function JobDetailPage() {
   const [error, setError] = useState('')
   const [dialog, setDialog] = useState(false)
   const [toast, setToast] = useState('')
+  // What the job used and made, from the coil work orders raised for it; and its cost, for the roles that see cost.
+  const [material, setMaterial] = useState(null)
+  const [cost, setCost] = useState(null)
 
   const load = useCallback(async () => {
     setLoading(true); setError('')
@@ -91,6 +95,9 @@ export default function JobDetailPage() {
       const [j, h] = await Promise.all([client.get(`/jobs/${id}`), client.get(`/jobs/${id}/history`)])
       setJob(j.data)
       setHistory(Array.isArray(h.data) ? h.data : [])
+      client.get(`/jobs/${id}/material`).then((r) => setMaterial(r.data)).catch(() => setMaterial(null))
+      // 403 means this person does not see cost: the section is simply not shown.
+      client.get(`/jobs/${id}/cost`).then((r) => setCost(r.data)).catch(() => setCost(null))
     } catch (e) {
       setJob(null)
       setError(e.response?.status === 404 ? 'This job is not on file.' : (e.response?.data?.error || 'The job could not be loaded.'))
@@ -188,12 +195,56 @@ export default function JobDetailPage() {
             <Fact name="Work finished">{when(job.actualEnd)}</Fact>
             <Fact name="Shipped">{when(job.shippedAt)}</Fact>
           </Paper>
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, flexWrap: 'wrap' }}>
+              <Typography variant="h6">Material</Typography>
+              {!closed && <Button size="small" component={RouterLink} to={`/work-orders/new?jobId=${job.id}`}>Cut material for this job</Button>}
+            </Box>
+            {!material || material.workOrders.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                No coil work order has been raised for this job, so no material, scrap or yield is recorded against it.
+              </Typography>
+            ) : (
+              <>
+                <Grid container spacing={2} sx={{ mt: 0 }}>
+                  <Grid item xs={6}><Fact name="Material used">{pounds(material.totals.usedLb)}</Fact></Grid>
+                  <Grid item xs={6}><Fact name="Made">{pounds(material.totals.outputLb)}</Fact></Grid>
+                  <Grid item xs={6}><Fact name="Scrap">{pounds(material.totals.scrapLb)}</Fact></Grid>
+                  <Grid item xs={6}><Fact name="Yield">{material.totals.yieldPct == null ? '' : `${material.totals.yieldPct}%`}</Fact></Grid>
+                </Grid>
+                <Table size="small" aria-label="Coil work orders for this job">
+                  <TableHead><TableRow><TableCell>Work order</TableCell><TableCell>Cut from</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
+                  <TableBody>
+                    {material.workOrders.map((w) => (
+                      <TableRow key={w.id}>
+                        <TableCell><Link component={RouterLink} to={`/work-orders/${w.id}`}>{w.woNumber}</Link></TableCell>
+                        <TableCell>{w.source?.coilNumber}{w.source?.heatNumber ? `, heat ${w.source.heatNumber}` : ''}</TableCell>
+                        <TableCell>{String(w.status).replace(/_/g, ' ').toLowerCase()}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </>
+            )}
+          </Paper>
+          {cost && (
+            <Paper sx={{ p: 3, mb: 3 }}>
+              <Typography variant="h6" gutterBottom>Cost</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}><Fact name="Material">{cost.materialComplete || cost.materialCost > 0 ? dollars(cost.materialCost) : ''}</Fact></Grid>
+                <Grid item xs={6}><Fact name="Labor">{cost.laborComplete || cost.laborCost > 0 ? dollars(cost.laborCost) : ''}</Fact></Grid>
+                <Grid item xs={12}><Fact name={cost.complete ? 'Total' : 'Total so far'}>{cost.totalCost > 0 || cost.complete ? dollars(cost.totalCost) : ''}</Fact></Grid>
+              </Grid>
+              {cost.missing?.length > 0 && (
+                <Alert severity="warning" sx={{ mt: 1 }}>
+                  This cost is not complete. {cost.missing.slice(0, 3).join('. ')}.
+                </Alert>
+              )}
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>{cost.basis}</Typography>
+            </Paper>
+          )}
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>Weights and shipping</Typography>
-            <Fact name="Weight in">{pounds(job.inputWeightLb)}</Fact>
-            <Fact name="Weight out">{pounds(job.outputWeightLb)}</Fact>
-            <Fact name="Scrap">{pounds(job.scrapWeightLb)}</Fact>
-            <Divider sx={{ my: 1.5 }} />
+            <Typography variant="h6" gutterBottom>Shipping</Typography>
             <Fact name="Carrier">{job.shippingCarrier}</Fact>
             <Fact name="Tracking number">{job.trackingNumber}</Fact>
           </Paper>

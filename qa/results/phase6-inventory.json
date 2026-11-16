@@ -1,9 +1,9 @@
 {
- "at": "2026-11-15T22:14:04.831Z",
+ "at": "2026-11-15T23:51:44.150Z",
  "base": "http://localhost:3011",
- "scenarios": 105,
- "passed": 105,
- "checks": 486,
+ "scenarios": 106,
+ "passed": 106,
+ "checks": 494,
  "groups": {
   "Purchasing and replenishment": {
    "scenarios": 16,
@@ -11,9 +11,9 @@
    "checks": 52
   },
   "Receiving and putaway": {
-   "scenarios": 15,
-   "passed": 15,
-   "checks": 57
+   "scenarios": 16,
+   "passed": 16,
+   "checks": 65
   },
   "Reservations, allocation and picking": {
    "scenarios": 15,
@@ -64,7 +64,7 @@
     }
    ],
    "pass": true,
-   "ms": 38
+   "ms": 44
   },
   {
    "group": "Purchasing and replenishment",
@@ -80,7 +80,7 @@
     }
    ],
    "pass": true,
-   "ms": 8
+   "ms": 9
   },
   {
    "group": "Purchasing and replenishment",
@@ -120,7 +120,7 @@
     }
    ],
    "pass": true,
-   "ms": 43
+   "ms": 49
   },
   {
    "group": "Purchasing and replenishment",
@@ -136,7 +136,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 39
   },
   {
    "group": "Purchasing and replenishment",
@@ -172,7 +172,7 @@
     }
    ],
    "pass": true,
-   "ms": 70
+   "ms": 63
   },
   {
    "group": "Purchasing and replenishment",
@@ -188,7 +188,7 @@
     }
    ],
    "pass": true,
-   "ms": 82
+   "ms": 74
   },
   {
    "group": "Purchasing and replenishment",
@@ -224,7 +224,7 @@
     }
    ],
    "pass": true,
-   "ms": 76
+   "ms": 69
   },
   {
    "group": "Purchasing and replenishment",
@@ -264,7 +264,7 @@
     }
    ],
    "pass": true,
-   "ms": 100
+   "ms": 109
   },
   {
    "group": "Purchasing and replenishment",
@@ -280,7 +280,7 @@
     }
    ],
    "pass": true,
-   "ms": 53
+   "ms": 65
   },
   {
    "group": "Purchasing and replenishment",
@@ -304,7 +304,7 @@
     }
    ],
    "pass": true,
-   "ms": 92
+   "ms": 96
   },
   {
    "group": "Purchasing and replenishment",
@@ -320,7 +320,7 @@
     }
    ],
    "pass": true,
-   "ms": 65
+   "ms": 64
   },
   {
    "group": "Purchasing and replenishment",
@@ -336,7 +336,7 @@
     }
    ],
    "pass": true,
-   "ms": 45
+   "ms": 47
   },
   {
    "group": "Purchasing and replenishment",
@@ -356,7 +356,7 @@
     }
    ],
    "pass": true,
-   "ms": 94
+   "ms": 91
   },
   {
    "group": "Purchasing and replenishment",
@@ -376,7 +376,7 @@
     }
    ],
    "pass": true,
-   "ms": 14
+   "ms": 15
   },
   {
    "group": "Receiving and putaway",
@@ -412,7 +412,7 @@
     }
    ],
    "pass": true,
-   "ms": 28
+   "ms": 31
   },
   {
    "group": "Receiving and putaway",
@@ -428,7 +428,7 @@
     }
    ],
    "pass": true,
-   "ms": 30
+   "ms": 33
   },
   {
    "group": "Receiving and putaway",
@@ -452,7 +452,7 @@
     }
    ],
    "pass": true,
-   "ms": 28
+   "ms": 36
   },
   {
    "group": "Receiving and putaway",
@@ -468,7 +468,7 @@
     }
    ],
    "pass": true,
-   "ms": 13
+   "ms": 14
   },
   {
    "group": "Receiving and putaway",
@@ -484,7 +484,7 @@
     }
    ],
    "pass": true,
-   "ms": 26
+   "ms": 33
   },
   {
    "group": "Receiving and putaway",
@@ -512,7 +512,7 @@
     }
    ],
    "pass": true,
-   "ms": 26
+   "ms": 31
   },
   {
    "group": "Receiving and putaway",
@@ -536,7 +536,7 @@
     }
    ],
    "pass": true,
-   "ms": 28
+   "ms": 29
   },
   {
    "group": "Receiving and putaway",
@@ -556,7 +556,7 @@
     }
    ],
    "pass": true,
-   "ms": 70
+   "ms": 60
   },
   {
    "group": "Receiving and putaway",
@@ -572,7 +572,7 @@
     }
    ],
    "pass": true,
-   "ms": 71
+   "ms": 74
   },
   {
    "group": "Receiving and putaway",
@@ -592,7 +592,7 @@
     }
    ],
    "pass": true,
-   "ms": 21
+   "ms": 20
   },
   {
    "group": "Receiving and putaway",
@@ -616,7 +616,7 @@
     }
    ],
    "pass": true,
-   "ms": 132
+   "ms": 144
   },
   {
    "group": "Receiving and putaway",
@@ -636,7 +636,7 @@
     }
    ],
    "pass": true,
-   "ms": 50
+   "ms": 45
   },
   {
    "group": "Receiving and putaway",
@@ -680,7 +680,7 @@
     }
    ],
    "pass": true,
-   "ms": 60
+   "ms": 63
   },
   {
    "group": "Receiving and putaway",
@@ -708,11 +708,11 @@
     }
    ],
    "pass": true,
-   "ms": 30
+   "ms": 28
   },
   {
    "group": "Receiving and putaway",
-   "name": "receiving does not create a cost: cost is set by a manager afterwards (valuation finding)",
+   "name": "a cost typed on a receipt is ignored; with no purchase order the item has no cost (valuation finding)",
    "asserts": [
     {
      "what": "received",
@@ -724,7 +724,47 @@
     }
    ],
    "pass": true,
-   "ms": 21
+   "ms": 20
+  },
+  {
+   "group": "Receiving and putaway",
+   "name": "receiving records the cost from the purchase order line (owner decision 9: actual cost per item)",
+   "asserts": [
+    {
+     "what": "$0.50 a pound on the order is $0.50 a pound on the item and its stock record; the figure typed on the receipt is ignored",
+     "ok": true
+    },
+    {
+     "what": "$48.00 per hundredweight is $0.48 a pound",
+     "ok": true
+    },
+    {
+     "what": "$900.00 a ton is $0.45 a pound",
+     "ok": true
+    },
+    {
+     "what": "a price per foot says nothing about a pound: the item is received with no cost rather than a wrong one",
+     "ok": true
+    },
+    {
+     "what": "landed cost is not worked out",
+     "ok": true
+    },
+    {
+     "what": "item: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "item: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "item: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 252
   },
   {
    "group": "Reservations, allocation and picking",
@@ -752,7 +792,7 @@
     }
    ],
    "pass": true,
-   "ms": 95
+   "ms": 89
   },
   {
    "group": "Reservations, allocation and picking",
@@ -768,7 +808,7 @@
     }
    ],
    "pass": true,
-   "ms": 78
+   "ms": 80
   },
   {
    "group": "Reservations, allocation and picking",
@@ -784,7 +824,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 74
   },
   {
    "group": "Reservations, allocation and picking",
@@ -800,7 +840,7 @@
     }
    ],
    "pass": true,
-   "ms": 67
+   "ms": 68
   },
   {
    "group": "Reservations, allocation and picking",
@@ -816,7 +856,7 @@
     }
    ],
    "pass": true,
-   "ms": 136
+   "ms": 126
   },
   {
    "group": "Reservations, allocation and picking",
@@ -832,7 +872,7 @@
     }
    ],
    "pass": true,
-   "ms": 120
+   "ms": 133
   },
   {
    "group": "Reservations, allocation and picking",
@@ -860,7 +900,7 @@
     }
    ],
    "pass": true,
-   "ms": 138
+   "ms": 127
   },
   {
    "group": "Reservations, allocation and picking",
@@ -884,7 +924,7 @@
     }
    ],
    "pass": true,
-   "ms": 112
+   "ms": 103
   },
   {
    "group": "Reservations, allocation and picking",
@@ -912,7 +952,7 @@
     }
    ],
    "pass": true,
-   "ms": 112
+   "ms": 109
   },
   {
    "group": "Reservations, allocation and picking",
@@ -940,7 +980,7 @@
     }
    ],
    "pass": true,
-   "ms": 120
+   "ms": 113
   },
   {
    "group": "Reservations, allocation and picking",
@@ -956,7 +996,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 68
   },
   {
    "group": "Reservations, allocation and picking",
@@ -972,7 +1012,7 @@
     }
    ],
    "pass": true,
-   "ms": 82
+   "ms": 90
   },
   {
    "group": "Reservations, allocation and picking",
@@ -1000,7 +1040,7 @@
     }
    ],
    "pass": true,
-   "ms": 208
+   "ms": 189
   },
   {
    "group": "Reservations, allocation and picking",
@@ -1016,7 +1056,7 @@
     }
    ],
    "pass": true,
-   "ms": 115
+   "ms": 110
   },
   {
    "group": "Reservations, allocation and picking",
@@ -1048,7 +1088,7 @@
     }
    ],
    "pass": true,
-   "ms": 244
+   "ms": 260
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1080,7 +1120,7 @@
     }
    ],
    "pass": true,
-   "ms": 100
+   "ms": 92
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1120,7 +1160,7 @@
     }
    ],
    "pass": true,
-   "ms": 108
+   "ms": 100
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1160,7 +1200,7 @@
     }
    ],
    "pass": true,
-   "ms": 51
+   "ms": 55
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1176,7 +1216,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 34
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1192,7 +1232,7 @@
     }
    ],
    "pass": true,
-   "ms": 67
+   "ms": 73
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1220,7 +1260,7 @@
     }
    ],
    "pass": true,
-   "ms": 99
+   "ms": 110
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1248,7 +1288,7 @@
     }
    ],
    "pass": true,
-   "ms": 278
+   "ms": 235
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1272,7 +1312,7 @@
     }
    ],
    "pass": true,
-   "ms": 112
+   "ms": 105
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1304,7 +1344,7 @@
     }
    ],
    "pass": true,
-   "ms": 74
+   "ms": 70
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1320,7 +1360,7 @@
     }
    ],
    "pass": true,
-   "ms": 77
+   "ms": 74
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1368,7 +1408,7 @@
     }
    ],
    "pass": true,
-   "ms": 30
+   "ms": 28
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1384,7 +1424,7 @@
     }
    ],
    "pass": true,
-   "ms": 55
+   "ms": 73
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1400,7 +1440,7 @@
     }
    ],
    "pass": true,
-   "ms": 61
+   "ms": 70
   },
   {
    "group": "Consumption, remnants and scrap",
@@ -1440,7 +1480,7 @@
     }
    ],
    "pass": true,
-   "ms": 167
+   "ms": 170
   },
   {
    "group": "Interbranch transfers",
@@ -1451,7 +1491,7 @@
      "ok": true
     },
     {
-     "what": "item 68e5a7: at L1, all of it in transit, none on sale",
+     "what": "item 2abee2: at L1, all of it in transit, none on sale",
      "ok": true
     },
     {
@@ -1459,7 +1499,7 @@
      "ok": true
     },
     {
-     "what": "item e9b9bd: at L1, all of it in transit, none on sale",
+     "what": "item d9cdcd: at L1, all of it in transit, none on sale",
      "ok": true
     },
     {
@@ -1467,7 +1507,7 @@
      "ok": true
     },
     {
-     "what": "item b5c048: at L1, all of it in transit, none on sale",
+     "what": "item e0f80c: at L1, all of it in transit, none on sale",
      "ok": true
     },
     {
@@ -1484,7 +1524,7 @@
     }
    ],
    "pass": true,
-   "ms": 116
+   "ms": 110
   },
   {
    "group": "Interbranch transfers",
@@ -1512,7 +1552,7 @@
     }
    ],
    "pass": true,
-   "ms": 77
+   "ms": 81
   },
   {
    "group": "Interbranch transfers",
@@ -1544,7 +1584,7 @@
     }
    ],
    "pass": true,
-   "ms": 81
+   "ms": 100
   },
   {
    "group": "Interbranch transfers",
@@ -1580,7 +1620,7 @@
     }
    ],
    "pass": true,
-   "ms": 97
+   "ms": 115
   },
   {
    "group": "Interbranch transfers",
@@ -1596,7 +1636,7 @@
     }
    ],
    "pass": true,
-   "ms": 93
+   "ms": 99
   },
   {
    "group": "Interbranch transfers",
@@ -1636,7 +1676,7 @@
     }
    ],
    "pass": true,
-   "ms": 140
+   "ms": 121
   },
   {
    "group": "Interbranch transfers",
@@ -1656,7 +1696,7 @@
     }
    ],
    "pass": true,
-   "ms": 76
+   "ms": 67
   },
   {
    "group": "Interbranch transfers",
@@ -1672,7 +1712,7 @@
     }
    ],
    "pass": true,
-   "ms": 76
+   "ms": 63
   },
   {
    "group": "Interbranch transfers",
@@ -1688,7 +1728,7 @@
     }
    ],
    "pass": true,
-   "ms": 66
+   "ms": 65
   },
   {
    "group": "Interbranch transfers",
@@ -1716,7 +1756,7 @@
     }
    ],
    "pass": true,
-   "ms": 77
+   "ms": 72
   },
   {
    "group": "Interbranch transfers",
@@ -1732,7 +1772,7 @@
     }
    ],
    "pass": true,
-   "ms": 80
+   "ms": 72
   },
   {
    "group": "Interbranch transfers",
@@ -1764,7 +1804,7 @@
     }
    ],
    "pass": true,
-   "ms": 270
+   "ms": 225
   },
   {
    "group": "Interbranch transfers",
@@ -1792,7 +1832,7 @@
     }
    ],
    "pass": true,
-   "ms": 92
+   "ms": 83
   },
   {
    "group": "Interbranch transfers",
@@ -1812,7 +1852,7 @@
     }
    ],
    "pass": true,
-   "ms": 181
+   "ms": 167
   },
   {
    "group": "Interbranch transfers",
@@ -1840,7 +1880,7 @@
     }
    ],
    "pass": true,
-   "ms": 68
+   "ms": 76
   },
   {
    "group": "Interbranch transfers",
@@ -1864,7 +1904,7 @@
     }
    ],
    "pass": true,
-   "ms": 107
+   "ms": 98
   },
   {
    "group": "Interbranch transfers",
@@ -1884,7 +1924,7 @@
     }
    ],
    "pass": true,
-   "ms": 73
+   "ms": 86
   },
   {
    "group": "Returns, counts and adjustments",
@@ -1916,7 +1956,7 @@
     }
    ],
    "pass": true,
-   "ms": 262
+   "ms": 304
   },
   {
    "group": "Returns, counts and adjustments",
@@ -1944,7 +1984,7 @@
     }
    ],
    "pass": true,
-   "ms": 279
+   "ms": 307
   },
   {
    "group": "Returns, counts and adjustments",
@@ -1976,7 +2016,7 @@
     }
    ],
    "pass": true,
-   "ms": 287
+   "ms": 246
   },
   {
    "group": "Returns, counts and adjustments",
@@ -1992,7 +2032,7 @@
     }
    ],
    "pass": true,
-   "ms": 219
+   "ms": 204
   },
   {
    "group": "Returns, counts and adjustments",
@@ -2024,7 +2064,7 @@
     }
    ],
    "pass": true,
-   "ms": 46
+   "ms": 55
   },
   {
    "group": "Returns, counts and adjustments",
@@ -2040,7 +2080,7 @@
     }
    ],
    "pass": true,
-   "ms": 32
+   "ms": 36
   },
   {
    "group": "Returns, counts and adjustments",
@@ -2068,7 +2108,7 @@
     }
    ],
    "pass": true,
-   "ms": 44
+   "ms": 46
   },
   {
    "group": "Returns, counts and adjustments",
@@ -2096,7 +2136,7 @@
     }
    ],
    "pass": true,
-   "ms": 38
+   "ms": 40
   },
   {
    "group": "Returns, counts and adjustments",
@@ -2112,7 +2152,7 @@
     }
    ],
    "pass": true,
-   "ms": 89
+   "ms": 91
   },
   {
    "group": "Returns, counts and adjustments",
@@ -2128,7 +2168,7 @@
     }
    ],
    "pass": true,
-   "ms": 21
+   "ms": 25
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2188,7 +2228,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 65
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2216,7 +2256,7 @@
     }
    ],
    "pass": true,
-   "ms": 56
+   "ms": 61
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2232,7 +2272,7 @@
     }
    ],
    "pass": true,
-   "ms": 79
+   "ms": 70
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2260,7 +2300,7 @@
     }
    ],
    "pass": true,
-   "ms": 109
+   "ms": 107
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2288,7 +2328,7 @@
     }
    ],
    "pass": true,
-   "ms": 84
+   "ms": 79
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2316,7 +2356,7 @@
     }
    ],
    "pass": true,
-   "ms": 82
+   "ms": 87
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2328,18 +2368,18 @@
     }
    ],
    "pass": true,
-   "ms": 57
+   "ms": 69
   },
   {
    "group": "Concurrency, security and recovery",
    "name": "bad input to the stock routes is answered with a 4xx, never a server error",
    "asserts": [
     {
-     "what": "POST /api/inventory/transfers {\"toLocationId\":\"39295710-2409-4929-ac75: 400",
+     "what": "POST /api/inventory/transfers {\"toLocationId\":\"827c4f88-db8f-44fe-8f78: 400",
      "ok": true
     },
     {
-     "what": "POST /api/inventory/transfers {\"toLocationId\":42,\"coilIds\":[\"b23de12d-: 400",
+     "what": "POST /api/inventory/transfers {\"toLocationId\":42,\"coilIds\":[\"04ed88a4-: 400",
      "ok": true
     },
     {
@@ -2347,7 +2387,7 @@
      "ok": true
     },
     {
-     "what": "POST /api/inventory/transfers/nope/settle {\"coilId\":\"b23de12d-c48c-4ca2-b17f-6f0ce: 404",
+     "what": "POST /api/inventory/transfers/nope/settle {\"coilId\":\"04ed88a4-e73e-44f8-ba8b-8fdf9: 404",
      "ok": true
     },
     {
@@ -2363,19 +2403,19 @@
      "ok": true
     },
     {
-     "what": "POST /api/inventory/receipts {\"coilNumber\":\"RC-MWIE61FR-188\",\"form\":\": 400",
+     "what": "POST /api/inventory/receipts {\"coilNumber\":\"RC-MWIHNMBZ-192\",\"form\":\": 400",
      "ok": true
     },
     {
-     "what": "POST /api/inventory/adjust {\"coilId\":\"b23de12d-c48c-4ca2-b17f-6f0ce: 400",
+     "what": "POST /api/inventory/adjust {\"coilId\":\"04ed88a4-e73e-44f8-ba8b-8fdf9: 400",
      "ok": true
     },
     {
-     "what": "POST /api/inventory/adjust {\"coilId\":\"b23de12d-c48c-4ca2-b17f-6f0ce: 400",
+     "what": "POST /api/inventory/adjust {\"coilId\":\"04ed88a4-e73e-44f8-ba8b-8fdf9: 400",
      "ok": true
     },
     {
-     "what": "POST /api/coils/b23de12d-c48c-4ca2-b17f-6f0ce8c69b25/hold {\"holdType\":\"NOPE\",\"holdReason\":\"x\"}: 400",
+     "what": "POST /api/coils/04ed88a4-e73e-44f8-ba8b-8fdf97b6eef8/hold {\"holdType\":\"NOPE\",\"holdReason\":\"x\"}: 400",
      "ok": true
     },
     {
@@ -2387,7 +2427,7 @@
      "ok": true
     },
     {
-     "what": "POST /api/inventory/transfer {\"coilId\":\"b23de12d-c48c-4ca2-b17f-6f0ce: 400",
+     "what": "POST /api/inventory/transfer {\"coilId\":\"04ed88a4-e73e-44f8-ba8b-8fdf9: 400",
      "ok": true
     },
     {
@@ -2396,7 +2436,7 @@
     }
    ],
    "pass": true,
-   "ms": 103
+   "ms": 98
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2416,7 +2456,7 @@
     }
    ],
    "pass": true,
-   "ms": 176
+   "ms": 160
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2448,7 +2488,7 @@
     }
    ],
    "pass": true,
-   "ms": 179
+   "ms": 195
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2464,7 +2504,7 @@
     }
    ],
    "pass": true,
-   "ms": 159
+   "ms": 146
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2488,7 +2528,7 @@
     }
    ],
    "pass": true,
-   "ms": 17
+   "ms": 15
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2499,104 +2539,104 @@
      "ok": true
     },
     {
-     "what": "burst item ea72ac: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 9ef897: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item ea72ac: reserved equals the reservations on file",
+     "what": "burst item 9ef897: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item ea72ac: its history adds up to its balance",
+     "what": "burst item 9ef897: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 00462f: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 4eb3d0: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 00462f: reserved equals the reservations on file",
+     "what": "burst item 4eb3d0: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 00462f: its history adds up to its balance",
+     "what": "burst item 4eb3d0: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item a9f849: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item c941c5: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item a9f849: reserved equals the reservations on file",
+     "what": "burst item c941c5: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item a9f849: its history adds up to its balance",
+     "what": "burst item c941c5: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item a2c727: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 475198: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item a2c727: reserved equals the reservations on file",
+     "what": "burst item 475198: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item a2c727: its history adds up to its balance",
+     "what": "burst item 475198: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 373a40: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 6c94e3: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 373a40: reserved equals the reservations on file",
+     "what": "burst item 6c94e3: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 373a40: its history adds up to its balance",
+     "what": "burst item 6c94e3: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 31c039: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 088e92: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 31c039: reserved equals the reservations on file",
+     "what": "burst item 088e92: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 31c039: its history adds up to its balance",
+     "what": "burst item 088e92: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 4b8ee7: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 55b7d5: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 4b8ee7: reserved equals the reservations on file",
+     "what": "burst item 55b7d5: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 4b8ee7: its history adds up to its balance",
+     "what": "burst item 55b7d5: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "burst item 706ca3: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "burst item 5027b1: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "burst item 706ca3: reserved equals the reservations on file",
+     "what": "burst item 5027b1: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "burst item 706ca3: its history adds up to its balance",
+     "what": "burst item 5027b1: its history adds up to its balance",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 451
+   "ms": 475
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2607,152 +2647,152 @@
      "ok": true
     },
     {
-     "what": "raced item f4ee9b: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item f520be: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item f4ee9b: reserved equals the reservations on file",
+     "what": "raced item f520be: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item f4ee9b: its history adds up to its balance",
+     "what": "raced item f520be: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 272adf: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item edcb16: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 272adf: reserved equals the reservations on file",
+     "what": "raced item edcb16: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 272adf: its history adds up to its balance",
+     "what": "raced item edcb16: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item aa0360: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item d772fd: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item aa0360: reserved equals the reservations on file",
+     "what": "raced item d772fd: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item aa0360: its history adds up to its balance",
+     "what": "raced item d772fd: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item d84d87: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 7bdaa4: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item d84d87: reserved equals the reservations on file",
+     "what": "raced item 7bdaa4: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item d84d87: its history adds up to its balance",
+     "what": "raced item 7bdaa4: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 5939a6: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item acc2b0: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 5939a6: reserved equals the reservations on file",
+     "what": "raced item acc2b0: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 5939a6: its history adds up to its balance",
+     "what": "raced item acc2b0: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item c9ffcd: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 483715: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item c9ffcd: reserved equals the reservations on file",
+     "what": "raced item 483715: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item c9ffcd: its history adds up to its balance",
+     "what": "raced item 483715: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item bbcf0e: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item ae196a: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item bbcf0e: reserved equals the reservations on file",
+     "what": "raced item ae196a: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item bbcf0e: its history adds up to its balance",
+     "what": "raced item ae196a: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 5cf883: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item a7f092: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 5cf883: reserved equals the reservations on file",
+     "what": "raced item a7f092: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 5cf883: its history adds up to its balance",
+     "what": "raced item a7f092: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item bb518d: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item c4c826: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item bb518d: reserved equals the reservations on file",
+     "what": "raced item c4c826: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item bb518d: its history adds up to its balance",
+     "what": "raced item c4c826: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item 0803d8: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 876af2: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item 0803d8: reserved equals the reservations on file",
+     "what": "raced item 876af2: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item 0803d8: its history adds up to its balance",
+     "what": "raced item 876af2: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item aff25e: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 381dd9: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item aff25e: reserved equals the reservations on file",
+     "what": "raced item 381dd9: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item aff25e: its history adds up to its balance",
+     "what": "raced item 381dd9: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "raced item cf165a: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "raced item 0c5a1f: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "raced item cf165a: reserved equals the reservations on file",
+     "what": "raced item 0c5a1f: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "raced item cf165a: its history adds up to its balance",
+     "what": "raced item 0c5a1f: its history adds up to its balance",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 736
+   "ms": 708
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2784,7 +2824,7 @@
     }
    ],
    "pass": true,
-   "ms": 542
+   "ms": 546
   },
   {
    "group": "Concurrency, security and recovery",
@@ -2824,7 +2864,7 @@
     }
    ],
    "pass": true,
-   "ms": 16
+   "ms": 12
   }
  ]
 }

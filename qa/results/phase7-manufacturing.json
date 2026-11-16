@@ -1,9 +1,9 @@
 {
- "at": "2026-11-15T22:25:19.041Z",
+ "at": "2026-11-15T23:52:23.011Z",
  "base": "http://localhost:3011",
- "scenarios": 134,
- "passed": 134,
- "checks": 542,
+ "scenarios": 141,
+ "passed": 141,
+ "checks": 618,
  "groups": {
   "Work order creation and routing": {
    "scenarios": 15,
@@ -21,24 +21,24 @@
    "checks": 74
   },
   "Shop-floor execution and labor and machine tracking": {
-   "scenarios": 21,
-   "passed": 21,
-   "checks": 82
+   "scenarios": 23,
+   "passed": 23,
+   "checks": 97
   },
   "Quality control and nonconformance": {
-   "scenarios": 22,
-   "passed": 22,
-   "checks": 86
+   "scenarios": 25,
+   "passed": 25,
+   "checks": 111
   },
   "Scrap, remnants, rework and costing": {
-   "scenarios": 16,
-   "passed": 16,
-   "checks": 79
+   "scenarios": 17,
+   "passed": 17,
+   "checks": 114
   },
   "Cross-location production, concurrency and recovery": {
-   "scenarios": 21,
-   "passed": 21,
-   "checks": 94
+   "scenarios": 22,
+   "passed": 22,
+   "checks": 95
   }
  },
  "results": [
@@ -64,7 +64,7 @@
     }
    ],
    "pass": true,
-   "ms": 85
+   "ms": 118
   },
   {
    "group": "Work order creation and routing",
@@ -80,7 +80,7 @@
     }
    ],
    "pass": true,
-   "ms": 97
+   "ms": 105
   },
   {
    "group": "Work order creation and routing",
@@ -100,7 +100,7 @@
     }
    ],
    "pass": true,
-   "ms": 144
+   "ms": 131
   },
   {
    "group": "Work order creation and routing",
@@ -128,7 +128,7 @@
     }
    ],
    "pass": true,
-   "ms": 112
+   "ms": 126
   },
   {
    "group": "Work order creation and routing",
@@ -156,7 +156,7 @@
     }
    ],
    "pass": true,
-   "ms": 214
+   "ms": 248
   },
   {
    "group": "Work order creation and routing",
@@ -172,7 +172,7 @@
     }
    ],
    "pass": true,
-   "ms": 89
+   "ms": 97
   },
   {
    "group": "Work order creation and routing",
@@ -188,7 +188,7 @@
     }
    ],
    "pass": true,
-   "ms": 140
+   "ms": 166
   },
   {
    "group": "Work order creation and routing",
@@ -212,7 +212,7 @@
     }
    ],
    "pass": true,
-   "ms": 106
+   "ms": 132
   },
   {
    "group": "Work order creation and routing",
@@ -228,7 +228,7 @@
     }
    ],
    "pass": true,
-   "ms": 173
+   "ms": 175
   },
   {
    "group": "Work order creation and routing",
@@ -240,7 +240,7 @@
     }
    ],
    "pass": true,
-   "ms": 482
+   "ms": 580
   },
   {
    "group": "Work order creation and routing",
@@ -272,7 +272,7 @@
     }
    ],
    "pass": true,
-   "ms": 110
+   "ms": 128
   },
   {
    "group": "Work order creation and routing",
@@ -292,7 +292,7 @@
     }
    ],
    "pass": true,
-   "ms": 45
+   "ms": 49
   },
   {
    "group": "Work order creation and routing",
@@ -312,7 +312,7 @@
     }
    ],
    "pass": true,
-   "ms": 81
+   "ms": 80
   },
   {
    "group": "Work order creation and routing",
@@ -340,7 +340,7 @@
     }
    ],
    "pass": true,
-   "ms": 92
+   "ms": 86
   },
   {
    "group": "Work order creation and routing",
@@ -364,7 +364,7 @@
     }
    ],
    "pass": true,
-   "ms": 124
+   "ms": 133
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -416,7 +416,7 @@
     }
    ],
    "pass": true,
-   "ms": 176
+   "ms": 161
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -452,7 +452,7 @@
     }
    ],
    "pass": true,
-   "ms": 138
+   "ms": 153
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -480,7 +480,7 @@
     }
    ],
    "pass": true,
-   "ms": 150
+   "ms": 166
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -512,7 +512,7 @@
     }
    ],
    "pass": true,
-   "ms": 142
+   "ms": 148
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -524,7 +524,7 @@
     }
    ],
    "pass": true,
-   "ms": 408
+   "ms": 466
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -540,7 +540,7 @@
     }
    ],
    "pass": true,
-   "ms": 62
+   "ms": 68
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -559,27 +559,27 @@
      "ok": true
     },
     {
-     "what": "WO-00084-01: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "WO-00040-01: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "WO-00084-01: reserved equals the reservations on file",
+     "what": "WO-00040-01: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "WO-00084-01: its history adds up to its balance",
+     "what": "WO-00040-01: its history adds up to its balance",
      "ok": true
     },
     {
-     "what": "WO-00084-02: on hand = available + reserved + on hold + in transit, none below zero",
+     "what": "WO-00040-02: on hand = available + reserved + on hold + in transit, none below zero",
      "ok": true
     },
     {
-     "what": "WO-00084-02: reserved equals the reservations on file",
+     "what": "WO-00040-02: reserved equals the reservations on file",
      "ok": true
     },
     {
-     "what": "WO-00084-02: its history adds up to its balance",
+     "what": "WO-00040-02: its history adds up to its balance",
      "ok": true
     },
     {
@@ -596,7 +596,7 @@
     }
    ],
    "pass": true,
-   "ms": 96
+   "ms": 99
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -628,7 +628,7 @@
     }
    ],
    "pass": true,
-   "ms": 111
+   "ms": 115
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -644,7 +644,7 @@
     }
    ],
    "pass": true,
-   "ms": 106
+   "ms": 110
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -672,7 +672,7 @@
     }
    ],
    "pass": true,
-   "ms": 93
+   "ms": 80
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -692,7 +692,7 @@
     }
    ],
    "pass": true,
-   "ms": 148
+   "ms": 172
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -712,7 +712,7 @@
     }
    ],
    "pass": true,
-   "ms": 55
+   "ms": 62
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -732,7 +732,7 @@
     }
    ],
    "pass": true,
-   "ms": 72
+   "ms": 82
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -756,7 +756,7 @@
     }
    ],
    "pass": true,
-   "ms": 6
+   "ms": 7
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -772,7 +772,7 @@
     }
    ],
    "pass": true,
-   "ms": 46
+   "ms": 68
   },
   {
    "group": "BOMs, material requirements and allocation",
@@ -805,7 +805,7 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 6,
    "status": "NOT APPLICABLE"
   },
   {
@@ -834,7 +834,7 @@
     }
    ],
    "pass": true,
-   "ms": 237
+   "ms": 271
   },
   {
    "group": "Capacity planning and scheduling",
@@ -854,7 +854,7 @@
     }
    ],
    "pass": true,
-   "ms": 126
+   "ms": 146
   },
   {
    "group": "Capacity planning and scheduling",
@@ -874,7 +874,7 @@
     }
    ],
    "pass": true,
-   "ms": 355
+   "ms": 444
   },
   {
    "group": "Capacity planning and scheduling",
@@ -890,7 +890,7 @@
     }
    ],
    "pass": true,
-   "ms": 302
+   "ms": 339
   },
   {
    "group": "Capacity planning and scheduling",
@@ -918,7 +918,7 @@
     }
    ],
    "pass": true,
-   "ms": 194
+   "ms": 224
   },
   {
    "group": "Capacity planning and scheduling",
@@ -934,7 +934,7 @@
     }
    ],
    "pass": true,
-   "ms": 281
+   "ms": 297
   },
   {
    "group": "Capacity planning and scheduling",
@@ -954,7 +954,7 @@
     }
    ],
    "pass": true,
-   "ms": 136
+   "ms": 152
   },
   {
    "group": "Capacity planning and scheduling",
@@ -970,7 +970,7 @@
     }
    ],
    "pass": true,
-   "ms": 139
+   "ms": 172
   },
   {
    "group": "Capacity planning and scheduling",
@@ -990,7 +990,7 @@
     }
    ],
    "pass": true,
-   "ms": 315
+   "ms": 390
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1010,7 +1010,7 @@
     }
    ],
    "pass": true,
-   "ms": 557
+   "ms": 617
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1030,7 +1030,7 @@
     }
    ],
    "pass": true,
-   "ms": 360
+   "ms": 370
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1050,7 +1050,7 @@
     }
    ],
    "pass": true,
-   "ms": 130
+   "ms": 137
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1078,7 +1078,7 @@
     }
    ],
    "pass": true,
-   "ms": 191
+   "ms": 234
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1098,7 +1098,7 @@
     }
    ],
    "pass": true,
-   "ms": 157
+   "ms": 198
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1122,7 +1122,7 @@
     }
    ],
    "pass": true,
-   "ms": 192
+   "ms": 244
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1142,7 +1142,7 @@
     }
    ],
    "pass": true,
-   "ms": 122
+   "ms": 132
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1162,7 +1162,7 @@
     }
    ],
    "pass": true,
-   "ms": 204
+   "ms": 223
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1182,7 +1182,7 @@
     }
    ],
    "pass": true,
-   "ms": 190
+   "ms": 221
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1206,7 +1206,7 @@
     }
    ],
    "pass": true,
-   "ms": 138
+   "ms": 167
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1234,7 +1234,7 @@
     }
    ],
    "pass": true,
-   "ms": 337
+   "ms": 377
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1258,7 +1258,7 @@
     }
    ],
    "pass": true,
-   "ms": 178
+   "ms": 210
   },
   {
    "group": "Capacity planning and scheduling",
@@ -1278,7 +1278,7 @@
     }
    ],
    "pass": true,
-   "ms": 25,
+   "ms": 21,
    "status": "NOT APPLICABLE"
   },
   {
@@ -1311,7 +1311,7 @@
     }
    ],
    "pass": true,
-   "ms": 144
+   "ms": 185
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1327,7 +1327,7 @@
     }
    ],
    "pass": true,
-   "ms": 90
+   "ms": 114
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1355,7 +1355,7 @@
     }
    ],
    "pass": true,
-   "ms": 199
+   "ms": 218
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1375,7 +1375,7 @@
     }
    ],
    "pass": true,
-   "ms": 198
+   "ms": 259
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1395,7 +1395,7 @@
     }
    ],
    "pass": true,
-   "ms": 145
+   "ms": 175
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1419,7 +1419,7 @@
     }
    ],
    "pass": true,
-   "ms": 179
+   "ms": 213
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1459,7 +1459,7 @@
     }
    ],
    "pass": true,
-   "ms": 199
+   "ms": 258
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1479,7 +1479,7 @@
     }
    ],
    "pass": true,
-   "ms": 84
+   "ms": 113
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1511,7 +1511,7 @@
     }
    ],
    "pass": true,
-   "ms": 198
+   "ms": 246
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1523,7 +1523,7 @@
     }
    ],
    "pass": true,
-   "ms": 600
+   "ms": 793
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1535,7 +1535,7 @@
     }
    ],
    "pass": true,
-   "ms": 650
+   "ms": 875
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1559,7 +1559,7 @@
     }
    ],
    "pass": true,
-   "ms": 435
+   "ms": 578
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1583,7 +1583,7 @@
     }
    ],
    "pass": true,
-   "ms": 135
+   "ms": 167
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1607,7 +1607,7 @@
     }
    ],
    "pass": true,
-   "ms": 151
+   "ms": 219
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1639,7 +1639,7 @@
     }
    ],
    "pass": true,
-   "ms": 246
+   "ms": 285
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1667,7 +1667,7 @@
     }
    ],
    "pass": true,
-   "ms": 133
+   "ms": 136
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1687,7 +1687,7 @@
     }
    ],
    "pass": true,
-   "ms": 176
+   "ms": 199
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1715,7 +1715,7 @@
     }
    ],
    "pass": true,
-   "ms": 53
+   "ms": 42
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1735,24 +1735,99 @@
     }
    ],
    "pass": true,
-   "ms": 37
+   "ms": 38
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
-   "name": "one operator clocked on to two steps at once: no rule against it is on file, so both clocks run and both are on record",
+   "name": "one operator on two steps at once is refused, unless the kind of work center is marked for it (owner decision 9)",
    "asserts": [
     {
-     "what": "both starts are accepted and the operator has two running clocks",
+     "what": "the first start is accepted; the second is refused with a sentence naming the step already running",
      "ok": true
     },
     {
-     "what": "whether an operator may run two machines is a labor policy for the owner; none is invented here",
+     "what": "the mark must be yes or no",
+     "ok": true
+    },
+    {
+     "what": "once the kind is marked, the same operator runs both, and both clocks are on record",
+     "ok": true
+    },
+    {
+     "what": "a third step of a kind that is not marked is still refused",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 218,
-   "status": "NOT APPLICABLE"
+   "ms": 488
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "where a kind of work center is marked \"certification required\", an operator with none on file cannot be clocked on (owner decision 9)",
+   "asserts": [
+    {
+     "what": "not marked: an operator with no certification on file may work, as before",
+     "ok": true
+    },
+    {
+     "what": "marked: the same operator is refused, and the sentence says what to do",
+     "ok": true
+    },
+    {
+     "what": "nothing was started",
+     "ok": true
+    },
+    {
+     "what": "a certified operator is accepted",
+     "ok": true
+    },
+    {
+     "what": "the mark is on the kind's record",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 336
+  },
+  {
+   "group": "Shop-floor execution and labor and machine tracking",
+   "name": "a clock left running is listed for the supervisor after the hours on file; nothing is stopped (owner decision 9)",
+   "asserts": [
+    {
+     "what": "a clock started just now is not listed",
+     "ok": true
+    },
+    {
+     "what": "after 13 hours it is listed with operator, step, job and hours (the setting is 12 hours)",
+     "ok": true
+    },
+    {
+     "what": "asked for 20 hours, it is not listed",
+     "ok": true
+    },
+    {
+     "what": "a nonsense number of hours is refused",
+     "ok": true
+    },
+    {
+     "what": "another branch's production manager does not see it",
+     "ok": true
+    },
+    {
+     "what": "the clock is still running: the list changes nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 219
   },
   {
    "group": "Shop-floor execution and labor and machine tracking",
@@ -1776,7 +1851,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 10,
    "status": "NOT APPLICABLE"
   },
   {
@@ -1805,7 +1880,7 @@
     }
    ],
    "pass": true,
-   "ms": 312
+   "ms": 339
   },
   {
    "group": "Quality control and nonconformance",
@@ -1821,7 +1896,7 @@
     }
    ],
    "pass": true,
-   "ms": 226
+   "ms": 301
   },
   {
    "group": "Quality control and nonconformance",
@@ -1841,7 +1916,7 @@
     }
    ],
    "pass": true,
-   "ms": 711
+   "ms": 878
   },
   {
    "group": "Quality control and nonconformance",
@@ -1869,7 +1944,7 @@
     }
    ],
    "pass": true,
-   "ms": 173
+   "ms": 214
   },
   {
    "group": "Quality control and nonconformance",
@@ -1893,7 +1968,7 @@
     }
    ],
    "pass": true,
-   "ms": 179
+   "ms": 208
   },
   {
    "group": "Quality control and nonconformance",
@@ -1921,7 +1996,7 @@
     }
    ],
    "pass": true,
-   "ms": 243
+   "ms": 311
   },
   {
    "group": "Quality control and nonconformance",
@@ -1949,7 +2024,7 @@
     }
    ],
    "pass": true,
-   "ms": 163
+   "ms": 206
   },
   {
    "group": "Quality control and nonconformance",
@@ -1981,7 +2056,7 @@
     }
    ],
    "pass": true,
-   "ms": 266
+   "ms": 335
   },
   {
    "group": "Quality control and nonconformance",
@@ -2009,7 +2084,7 @@
     }
    ],
    "pass": true,
-   "ms": 196
+   "ms": 211
   },
   {
    "group": "Quality control and nonconformance",
@@ -2021,7 +2096,7 @@
     }
    ],
    "pass": true,
-   "ms": 960
+   "ms": 1163
   },
   {
    "group": "Quality control and nonconformance",
@@ -2041,7 +2116,7 @@
     }
    ],
    "pass": true,
-   "ms": 204
+   "ms": 240
   },
   {
    "group": "Quality control and nonconformance",
@@ -2057,7 +2132,7 @@
     }
    ],
    "pass": true,
-   "ms": 182
+   "ms": 235
   },
   {
    "group": "Quality control and nonconformance",
@@ -2085,7 +2160,7 @@
     }
    ],
    "pass": true,
-   "ms": 213
+   "ms": 228
   },
   {
    "group": "Quality control and nonconformance",
@@ -2109,7 +2184,7 @@
     }
    ],
    "pass": true,
-   "ms": 228
+   "ms": 279
   },
   {
    "group": "Quality control and nonconformance",
@@ -2129,7 +2204,7 @@
     }
    ],
    "pass": true,
-   "ms": 193
+   "ms": 237
   },
   {
    "group": "Quality control and nonconformance",
@@ -2153,7 +2228,7 @@
     }
    ],
    "pass": true,
-   "ms": 489
+   "ms": 576
   },
   {
    "group": "Quality control and nonconformance",
@@ -2189,7 +2264,7 @@
     }
    ],
    "pass": true,
-   "ms": 136
+   "ms": 150
   },
   {
    "group": "Quality control and nonconformance",
@@ -2209,7 +2284,7 @@
     }
    ],
    "pass": true,
-   "ms": 114
+   "ms": 116
   },
   {
    "group": "Quality control and nonconformance",
@@ -2241,7 +2316,7 @@
     }
    ],
    "pass": true,
-   "ms": 574
+   "ms": 646
   },
   {
    "group": "Quality control and nonconformance",
@@ -2257,8 +2332,132 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 11,
    "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a job with no planned steps goes to inspection when it is completed; it cannot skip to the dock (owner decision 9)",
+   "asserts": [
+    {
+     "what": "from in process it cannot be moved by hand to packaging or the dock",
+     "ok": true
+    },
+    {
+     "what": "\"complete\" sends it to inspection and says so",
+     "ok": true
+    },
+    {
+     "what": "waiting for inspection, it still cannot be released by hand",
+     "ok": true
+    },
+    {
+     "what": "a passed inspection moves it to packaging",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at PACKAGING",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 163
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "a routing marked \"no inspection\" lets its jobs go straight to packaging; every other job is inspected (owner decision 9)",
+   "asserts": [
+    {
+     "what": "the mark must be yes or no",
+     "ok": true
+    },
+    {
+     "what": "a routing asks for inspection unless it says otherwise",
+     "ok": true
+    },
+    {
+     "what": "a step whose parameters are not a list is refused; a step with none is saved with an empty list, which the routing screen can open",
+     "ok": true
+    },
+    {
+     "what": "the mark is saved on the routing",
+     "ok": true
+    },
+    {
+     "what": "the routings go on the jobs",
+     "ok": true
+    },
+    {
+     "what": "the last step of the \"no inspection\" job sends it to packaging",
+     "ok": true
+    },
+    {
+     "what": "the last step of the other job sends it to inspection",
+     "ok": true
+    },
+    {
+     "what": "no inspection was made up for the first job",
+     "ok": true
+    },
+    {
+     "what": "a job with no steps on the \"no inspection\" routing completes to the dock",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at PACKAGING",
+     "ok": true
+    },
+    {
+     "what": "job: the history is one chain ending at WAITING_QC",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 595
+  },
+  {
+   "group": "Quality control and nonconformance",
+   "name": "an inspection starts with the checklist the owner entered for that kind of work; with none entered, the standard list (owner decision 9)",
+   "asserts": [
+    {
+     "what": "no list entered: the standard list",
+     "ok": true
+    },
+    {
+     "what": "a list with the same check twice, an empty check, more than 40 checks, or not a list is refused",
+     "ok": true
+    },
+    {
+     "what": "a proper list is saved",
+     "ok": true
+    },
+    {
+     "what": "a new inspection of that kind of work starts with exactly those checks, unanswered",
+     "ok": true
+    },
+    {
+     "what": "the inspection already open keeps the list it started with",
+     "ok": true
+    },
+    {
+     "what": "a required check that failed blocks the pass",
+     "ok": true
+    },
+    {
+     "what": "with the required checks passed it passes; the check that is not required may be left",
+     "ok": true
+    },
+    {
+     "what": "emptied, the standard list is used again",
+     "ok": true
+    },
+    {
+     "what": "the wording of the checks is the owner's to supply; none was written for him here (L-028)",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 588
   },
   {
    "group": "Quality control and nonconformance",
@@ -2278,7 +2477,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 12,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2299,7 +2498,7 @@
     }
    ],
    "pass": true,
-   "ms": 168,
+   "ms": 198,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2340,7 +2539,7 @@
     }
    ],
    "pass": true,
-   "ms": 104
+   "ms": 109
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2372,7 +2571,7 @@
     }
    ],
    "pass": true,
-   "ms": 73
+   "ms": 80
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2400,7 +2599,7 @@
     }
    ],
    "pass": true,
-   "ms": 79
+   "ms": 88
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2444,7 +2643,7 @@
     }
    ],
    "pass": true,
-   "ms": 120
+   "ms": 129
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2476,7 +2675,7 @@
     }
    ],
    "pass": true,
-   "ms": 127
+   "ms": 129
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2516,7 +2715,7 @@
     }
    ],
    "pass": true,
-   "ms": 151
+   "ms": 156
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2552,7 +2751,7 @@
     }
    ],
    "pass": true,
-   "ms": 102
+   "ms": 98
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2576,7 +2775,7 @@
     }
    ],
    "pass": true,
-   "ms": 74
+   "ms": 66
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2588,11 +2787,11 @@
     }
    ],
    "pass": true,
-   "ms": 270
+   "ms": 293
   },
   {
    "group": "Scrap, remnants, rework and costing",
-   "name": "sent for rework, a job goes back to the floor with the instructions and must pass a new inspection before it can be packed",
+   "name": "sent for rework, a job gets a rework step that is started and clocked like any step, and must pass a new inspection (owner decision 9)",
    "asserts": [
     {
      "what": "the job is scheduled again with the instructions at the top of its notes",
@@ -2603,11 +2802,27 @@
      "ok": true
     },
     {
-     "what": "back in process, it cannot be sent to packaging or the dock",
+     "what": "one rework step was added after the last step, named for the inspection, of the same kind of work",
      "ok": true
     },
     {
-     "what": "\"complete\" sends it to inspection, not to the dock, and says so",
+     "what": "the finished step cannot be run again",
+     "ok": true
+    },
+    {
+     "what": "the rework step starts, and the job is in process",
+     "ok": true
+    },
+    {
+     "what": "the job cannot be completed or packed while the rework step is open",
+     "ok": true
+    },
+    {
+     "what": "finished, its time is on record against the operator and work center",
+     "ok": true
+    },
+    {
+     "what": "the job is back at inspection, not at the dock",
      "ok": true
     },
     {
@@ -2621,10 +2836,206 @@
     {
      "what": "job: the history is one chain ending at PACKAGING",
      "ok": true
+    },
+    {
+     "what": "job: recorded time is consistent",
+     "ok": true
     }
    ],
    "pass": true,
-   "ms": 309
+   "ms": 385
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "the rework step can be sent to another kind of work center; an unknown kind is refused; a job with no plan gets the instructions only (owner decision 9)",
+   "asserts": [
+    {
+     "what": "a kind of work center that is not on file is refused, and nothing changed",
+     "ok": true
+    },
+    {
+     "what": "the rework step is of the kind the inspector named",
+     "ok": true
+    },
+    {
+     "what": "it runs only on a work center of that kind",
+     "ok": true
+    },
+    {
+     "what": "the same inspection cannot send it for rework twice, and there is still one rework step",
+     "ok": true
+    },
+    {
+     "what": "on the right work center it runs and finishes, and the job returns to inspection",
+     "ok": true
+    },
+    {
+     "what": "a second failed inspection adds a second rework step, after the first",
+     "ok": true
+    },
+    {
+     "what": "a job with no planned steps goes back with the instructions and a note that no step was added",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 497
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "an item's cost is taken from its purchase order line when it is received, and the pieces cut from it carry the same cost per pound (owner decision 9)",
+   "asserts": [
+    {
+     "what": "$42.00 per hundredweight on the purchase order is $0.42 a pound on the item and its stock record",
+     "ok": true
+    },
+    {
+     "what": "an item received with no purchase order has no cost: none is assumed",
+     "ok": true
+    },
+    {
+     "what": "both pieces carry $0.42 a pound",
+     "ok": true
+    },
+    {
+     "what": "the source's cost per pound is unchanged",
+     "ok": true
+    },
+    {
+     "what": "a piece cut from an item with no cost has no cost either",
+     "ok": true
+    },
+    {
+     "what": "scrap is not given a value, and landed cost (freight, duty) is not worked out: neither is on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 219
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a job's cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead (owner decision 9)",
+   "asserts": [
+    {
+     "what": "the work order for the job is completed",
+     "ok": true
+    },
+    {
+     "what": "with no labor rate on file the material is costed, labor is not, and the answer says what is missing",
+     "ok": true
+    },
+    {
+     "what": "a production manager cannot set a labor rate",
+     "ok": true
+    },
+    {
+     "what": "a negative rate or a word is refused",
+     "ok": true
+    },
+    {
+     "what": "the owner sets $60.00 an hour; the floor does not see the rate",
+     "ok": true
+    },
+    {
+     "what": "nor in the list of kinds",
+     "ok": true
+    },
+    {
+     "what": "material: 1,000 lb used (960 out, 40 scrap) at $0.50 is $500.00",
+     "ok": true
+    },
+    {
+     "what": "labor: 2 hours at $60.00 is $120.00 (to the minute)",
+     "ok": true
+    },
+    {
+     "what": "the total is the two added together, complete, with nothing missing",
+     "ok": true
+    },
+    {
+     "what": "the answer states its basis and that no overhead is included",
+     "ok": true
+    },
+    {
+     "what": "job cost is refused to the floor, the operator and quality",
+     "ok": true
+    },
+    {
+     "what": "the floor sees the material and yield of the job, with no cost in the answer",
+     "ok": true
+    },
+    {
+     "what": "material with no cost on file is named as missing; it is not costed at zero as if known",
+     "ok": true
+    },
+    {
+     "what": "no rate, cost or overhead figure was made up for this run: every figure above was entered by the test as the owner would enter it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 670
+  },
+  {
+   "group": "Scrap, remnants, rework and costing",
+   "name": "a job names the coil work orders raised for it, and shows what they used, made and scrapped (owner decision 9)",
+   "asserts": [
+    {
+     "what": "a work order raised for a job is linked to it and takes the job's order line",
+     "ok": true
+    },
+    {
+     "what": "a work order cannot name a job and a different order line",
+     "ok": true
+    },
+    {
+     "what": "a job that is not on file is refused",
+     "ok": true
+    },
+    {
+     "what": "a job at a branch this person does not work at is \"not on file\" to them",
+     "ok": true
+    },
+    {
+     "what": "no work order for a cancelled job",
+     "ok": true
+    },
+    {
+     "what": "before it is completed the job shows the work order and no weight used",
+     "ok": true
+    },
+    {
+     "what": "two completed work orders: 1,000 lb used, 960 lb made, 40 lb scrap, 96% yield",
+     "ok": true
+    },
+    {
+     "what": "each line names the source, its heat and the pieces made",
+     "ok": true
+    },
+    {
+     "what": "the work order shows the job it was raised for",
+     "ok": true
+    },
+    {
+     "what": "another branch cannot read the job's material",
+     "ok": true
+    },
+    {
+     "what": "source: on hand = available + reserved + on hold + in transit, none below zero",
+     "ok": true
+    },
+    {
+     "what": "source: reserved equals the reservations on file",
+     "ok": true
+    },
+    {
+     "what": "source: its history adds up to its balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 550
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2648,74 +3059,7 @@
     }
    ],
    "pass": true,
-   "ms": 372
-  },
-  {
-   "group": "Scrap, remnants, rework and costing",
-   "name": "rework is not routed or clocked: the finished steps cannot be run again and no rework step can be added",
-   "asserts": [
-    {
-     "what": "the finished step cannot be started again, and the plan cannot be replaced because it has recorded work",
-     "ok": true
-    },
-    {
-     "what": "so the time spent on rework is not recorded anywhere",
-     "ok": true
-    },
-    {
-     "what": "there is no rework count, rework step or rework cost column",
-     "ok": true
-    }
-   ],
-   "pass": true,
-   "ms": 190,
-   "status": "NOT APPLICABLE"
-  },
-  {
-   "group": "Scrap, remnants, rework and costing",
-   "name": "production costing is not part of this product: no job cost, labor cost or machine rate is calculated",
-   "asserts": [
-    {
-     "what": "there is no job-cost, labor-cost, cost-rollup or overhead table",
-     "ok": true
-    },
-    {
-     "what": "jobs, steps, time entries, work orders, work centers, routings and stock movements carry no cost or rate column",
-     "ok": true
-    },
-    {
-     "what": "an operator's hourly rate is on file, and nothing multiplies it by recorded time",
-     "ok": true
-    },
-    {
-     "what": "no cost rate, overhead or yield assumption was invented in this phase; the costing basis is the owner's open question K-007",
-     "ok": true
-    }
-   ],
-   "pass": true,
-   "ms": 20,
-   "status": "NOT APPLICABLE"
-  },
-  {
-   "group": "Scrap, remnants, rework and costing",
-   "name": "a work order does not carry cost from the source to the pieces it makes, and changes no cost on file",
-   "asserts": [
-    {
-     "what": "the source's cost figures are exactly as they were",
-     "ok": true
-    },
-    {
-     "what": "the piece has no cost of its own: none is assumed, and scrap is not valued",
-     "ok": true
-    },
-    {
-     "what": "how cost should pass to pieces, drops and scrap (average, actual by heat, or standard) is the owner's open question K-007; nothing was changed without it",
-     "ok": true
-    }
-   ],
-   "pass": true,
-   "ms": 84,
-   "status": "NOT APPLICABLE"
+   "ms": 434
   },
   {
    "group": "Scrap, remnants, rework and costing",
@@ -2731,7 +3075,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 10,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2748,7 +3092,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 11,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2773,7 +3117,7 @@
     }
    ],
    "pass": true,
-   "ms": 125
+   "ms": 169
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2797,7 +3141,7 @@
     }
    ],
    "pass": true,
-   "ms": 168
+   "ms": 172
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2833,7 +3177,7 @@
     }
    ],
    "pass": true,
-   "ms": 258
+   "ms": 275
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2857,7 +3201,7 @@
     }
    ],
    "pass": true,
-   "ms": 236
+   "ms": 258
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2909,7 +3253,7 @@
     }
    ],
    "pass": true,
-   "ms": 235
+   "ms": 284
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2941,7 +3285,7 @@
     }
    ],
    "pass": true,
-   "ms": 134
+   "ms": 151
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2961,8 +3305,20 @@
     }
    ],
    "pass": true,
-   "ms": 117,
+   "ms": 128,
    "status": "NOT APPLICABLE"
+  },
+  {
+   "group": "Cross-location production, concurrency and recovery",
+   "name": "one inspection sent for rework by two people at the same moment: one rework step, one move (owner decision 9)",
+   "asserts": [
+    {
+     "what": "5 rounds: one of the two is accepted, the job has one rework step and went back once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1043
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2974,7 +3330,7 @@
     }
    ],
    "pass": true,
-   "ms": 1167
+   "ms": 1247
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -2986,7 +3342,7 @@
     }
    ],
    "pass": true,
-   "ms": 939
+   "ms": 1021
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3022,7 +3378,7 @@
     }
    ],
    "pass": true,
-   "ms": 189
+   "ms": 207
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3034,7 +3390,7 @@
     }
    ],
    "pass": true,
-   "ms": 741
+   "ms": 874
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3066,7 +3422,7 @@
     }
    ],
    "pass": true,
-   "ms": 115
+   "ms": 109
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3090,7 +3446,7 @@
     }
    ],
    "pass": true,
-   "ms": 136
+   "ms": 145
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3110,7 +3466,7 @@
     }
    ],
    "pass": true,
-   "ms": 220
+   "ms": 236
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3130,7 +3486,7 @@
     }
    ],
    "pass": true,
-   "ms": 188
+   "ms": 208
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3154,7 +3510,7 @@
     }
    ],
    "pass": true,
-   "ms": 492
+   "ms": 648
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3178,7 +3534,7 @@
     }
    ],
    "pass": true,
-   "ms": 154
+   "ms": 160
   },
   {
    "group": "Cross-location production, concurrency and recovery",
@@ -3218,14 +3574,14 @@
     }
    ],
    "pass": true,
-   "ms": 311
+   "ms": 371
   },
   {
    "group": "Cross-location production, concurrency and recovery",
    "name": "across everything this run did: every job is where its history says, no finished step has a clock running, and no closed job has one either",
    "asserts": [
     {
-     "what": "159 jobs: each history is one chain ending at the job's status",
+     "what": "181 jobs: each history is one chain ending at the job's status",
      "ok": true
     },
     {
@@ -3241,7 +3597,7 @@
      "ok": true
     },
     {
-     "what": "18 jobs were released past inspection, and every one has a passed inspection on file",
+     "what": "23 jobs were released past inspection, and every one has a passed inspection on file or a routing marked \"no inspection\"",
      "ok": true
     },
     {
@@ -3254,7 +3610,7 @@
     }
    ],
    "pass": true,
-   "ms": 189
+   "ms": 231
   },
   {
    "group": "Cross-location production, concurrency and recovery",

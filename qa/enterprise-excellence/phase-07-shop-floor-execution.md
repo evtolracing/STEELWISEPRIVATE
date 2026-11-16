@@ -1,6 +1,6 @@
 # Phase 7: shop-floor execution
 
-Evidence: group 4 (19 verified, 2 NOT APPLICABLE), group 7, `qa/sim/phase2-integrity.mjs` (82 checks), unit tests on `lib/productionRules.js`.
+Evidence: group 4 (22 verified, 1 NOT APPLICABLE), group 7, `qa/sim/phase2-integrity.mjs` (82 checks), unit tests on `lib/productionRules.js`.
 
 ## 1. State rules for a step (finding L-004)
 
@@ -39,6 +39,6 @@ Time entries, inspections and operators are now branch-owned in `lib/branchScope
 
 ## 6. Not built
 
-- One operator on two steps at once is allowed and both clocks are on record; no rule is on file (L-022).
+- One operator on two steps at once is refused, unless every kind of work center involved is marked for it (L-022, owner decision 9). Where it is marked, both clocks are on record.
 - Machine time, downtime and telemetry: no machine is connected (L-030).
 - No equipment was triggered in testing; there is nothing to trigger.

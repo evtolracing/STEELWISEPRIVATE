@@ -21,7 +21,7 @@ Written by hand in Phase 1 from the code (`src/backend/src/lib/workflowRules.js`
 | Credit hold and release | Yes | Yes | |
 | Stock hold and release | Yes | Yes | Whether held or uninspected stock may ship is partly decided |
 | Coil work order | Yes | Yes | Does not consume or produce stock (M-016) |
-| Quality inspection of a job | Yes | Yes (Phase 7: pass, conditional, fail, hold, rework, re-inspection) | Rework is not routed or clocked (L-020); no inspection standard on file (L-028) |
+| Quality inspection of a job | Yes | Yes (Phase 7: pass, conditional, fail, hold, rework, re-inspection) | Nonconformance records are not built (L-023); the inspection checklists are the owner's to enter (L-028) |
 | Shipment documents and tags | Routes exist | No | Not examined (F-011) |
 | Partner API (customer, supplier, carrier) | Routes exist | Refusal only | No success-path test; failed webhooks are not retried (B-018) |
 | User life cycle | Yes | Refusal only | No success-path test |
@@ -54,7 +54,7 @@ Sales channels that create a sales order after Phase 5: order entry (including R
 | Count and correct | Corrections with reason, note and person verified. No cycle count program exists (K-008) | same, group 6 |
 | Replenishment | A supply position per branch and grade (stock, inbound, demand). Nothing is calculated or ordered (K-010) | same, group 1 |
 
-Inventory valuation is not a workflow in the code: receiving writes no cost (K-007).
+Inventory valuation is not a workflow in the code. Since owner decision 9 (2026-11-15) a receipt against a purchase order line records the item's cost; nothing values movements or stock (K-007).
 
 ### Phase 7 update (2026-11-15)
 
@@ -67,10 +67,14 @@ Inventory valuation is not a workflow in the code: receiving writes no cost (K-0
 | Make to order: leave production | Not with a planned step unfinished (L-006). Cancelling stops the clocks (L-018) | same, groups 4 and 7 |
 | Quality inspection of a job | Now verified on every path: pass, conditional pass, fail and hold, rework and re-inspection. A job leaves inspection only by a passed inspection (L-001, L-002, L-003) | same, group 5; `qa/sim/ui-phase7.cjs` |
 | Coil work order | Quality hold cannot be completed; substitution needs a reason; failed, held or in-transit material is refused (L-013) | same, groups 2, 5 and 6 |
-| Rework | Sent back with instructions and inspected again. The rework itself is not routed or clocked (L-020, the owner's question) | same, group 6 |
+| Rework | Sent back with instructions and inspected again. Since owner decision 9 a rework step is added to the plan and clocked like any step (L-020) | same, group 6 |
+| Which jobs are inspected | Every job, unless its routing is marked "no inspection" (L-021, owner decision 9) | same, group 5 |
+| Material for a job | A coil work order can be raised for a job; the job shows what was used, made and scrapped (L-024, owner decision 9) | same, group 6; `qa/sim/ui-phase7.cjs` |
+| Cost of a job | Material at actual cost from the purchase order at receipt, plus labor at the owner's rate per kind of work center; no overhead; shown to cost roles only (L-026, K-007, owner decision 9) | same, group 6; `qa/sim/phase6-inventory.mjs` |
+| Labor rules | Certification required and two steps at once, each by a mark on the kind of work center; long-running clocks listed for the supervisor (L-022, owner decision 9) | same, group 4 |
 | Sold at one branch, worked at another | Unchanged and confirmed: the job follows its work center | same, group 7; the multi-branch jobs of the order-to-cash simulation |
 
-Not workflows in the code, recorded as such: bill of material and material requirements (L-024), calendar capacity (L-025), production costing (L-026), nonconformance and corrective action (L-023), outside processing and nesting (L-027), machine connection (L-030).
+Not workflows in the code, recorded as such: bill of material and material requirements (L-024), calendar capacity (L-025), stock valuation and cost of goods (K-007), nonconformance and corrective action (L-023), outside processing and nesting (L-027), machine connection (L-030).
 
 ## Job types found
 

@@ -21,6 +21,8 @@ const WO_FIELDS = {
   inputWeightLb: { type: 'number', min: 0, max: 10000000 },
   // The order line this work is for. Stock reserved on the source item for that line is what gets cut.
   lineId: { type: 'id' },
+  // The job this work is for (finding L-024). The job then shows what it used, what it made and what was scrapped.
+  jobId: { type: 'id' },
 };
 
 const LIST_MAX = 200;
@@ -61,6 +63,7 @@ router.get('/:id', async (req, res) => {
       include: {
         sourceCoil: { select: { id: true, coilNumber: true, netWeightLb: true, status: true, grade: { select: { code: true, name: true } }, heat: { select: { id: true, heatNumber: true } }, location: { select: { id: true, code: true, name: true } } } },
         outputs: { include: { outputCoil: { select: { id: true, coilNumber: true, netWeightLb: true, status: true } } } },
+        job: { select: { id: true, jobNumber: true, status: true } },
       },
     });
     if (!wo) return res.status(404).json({ error: 'Work order not found' });
@@ -99,6 +102,15 @@ router.post('/', async (req, res) => {
     if (!['AVAILABLE', 'ALLOCATED', 'IN_PROCESS'].includes(coil.status)) return res.status(409).json({ error: `The source stock item is ${String(coil.status).toLowerCase().replace(/_/g, ' ')}, so it cannot be put on a work order` });
     // Material that failed inspection is not cut for anyone.
     if (['FAILED', 'HOLD'].includes(coil.qcStatus)) return res.status(409).json({ error: 'The source stock item has not been released by quality, so it cannot be put on a work order' });
+    if (data.jobId) {
+      // Read under the signed-in person's branches: another branch's job is not on file for them.
+      const job = await prisma.job.findUnique({ where: { id: data.jobId }, select: { id: true, jobNumber: true, status: true, orderLineId: true } }).catch(() => null);
+      if (!job) return res.status(400).json({ error: 'That job is not on file' });
+      if (['CANCELLED', 'SHIPPED', 'COMPLETED'].includes(job.status)) return res.status(409).json({ error: `Job ${job.jobNumber} is ${job.status.toLowerCase()}, so no material can be cut for it` });
+      // A job for an order line cuts for that line, so the stock reserved for the line is what is used.
+      if (job.orderLineId && data.lineId && data.lineId !== job.orderLineId) return res.status(409).json({ error: `Job ${job.jobNumber} is for a different order line` });
+      if (job.orderLineId && !data.lineId) data.lineId = job.orderLineId;
+    }
     const substitutionReason = typeof req.body?.substitutionReason === 'string' ? req.body.substitutionReason.trim().slice(0, 500) : null;
     let substitution = null;
     if (data.lineId) {

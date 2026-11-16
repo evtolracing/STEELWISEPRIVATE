@@ -17,7 +17,7 @@ Every figure below is counted from records by the server. After this phase none 
 ## Not available, and not invented
 
 - Overall equipment effectiveness, machine availability, downtime by cause: no machine data (L-030).
-- Cost per job, margin (L-026).
+- A cost or margin report across jobs. Cost is shown per job on the job screen, to cost roles (L-026, owner decision 9).
 - First-pass yield across jobs: an inspection result exists per job, but no report totals it. Not built; no request on file.
 - On-time production against a calendar plan (L-025).
 - Operator productivity: time entries exist; no standard times are on file to compare against, and none were invented.

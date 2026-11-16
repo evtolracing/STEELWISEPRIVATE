@@ -1,7 +1,7 @@
 {
  "seed": 8002,
  "base": "http://localhost:3011",
- "at": "2026-11-15T22:11:54.787Z",
+ "at": "2026-11-15T23:49:35.913Z",
  "scenarios": [
   {
    "id": "S8002-01",
@@ -186,7 +186,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 417
+   "ms": 414
   },
   {
    "id": "S8002-02",
@@ -217,25 +217,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00123 → IN_PROCESS",
+     "name": "job JOB-00122 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00123 → WAITING_QC",
+     "name": "job JOB-00122 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00123 cannot be released from inspection by hand",
+     "name": "job JOB-00122 cannot be released from inspection by hand",
      "expect": 409,
      "status": 409,
      "ok": true
     },
     {
-     "name": "open an inspection for JOB-00123",
+     "name": "open an inspection for JOB-00122",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -247,7 +247,7 @@
      "ok": true
     },
     {
-     "name": "job JOB-00123 → READY_TO_SHIP",
+     "name": "job JOB-00122 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -371,7 +371,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 389
+   "ms": 368
   },
   {
    "id": "S8002-03",
@@ -402,25 +402,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00124 → IN_PROCESS",
+     "name": "job JOB-00123 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00124 → WAITING_QC",
+     "name": "job JOB-00123 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00124 cannot be released from inspection by hand",
+     "name": "job JOB-00123 cannot be released from inspection by hand",
      "expect": 409,
      "status": 409,
      "ok": true
     },
     {
-     "name": "open an inspection for JOB-00124",
+     "name": "open an inspection for JOB-00123",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -432,7 +432,7 @@
      "ok": true
     },
     {
-     "name": "job JOB-00124 → READY_TO_SHIP",
+     "name": "job JOB-00123 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -556,7 +556,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 406
+   "ms": 370
   },
   {
    "id": "S8002-04",
@@ -587,25 +587,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00125 → IN_PROCESS",
+     "name": "job JOB-00124 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 → WAITING_QC",
+     "name": "job JOB-00124 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00125 cannot be released from inspection by hand",
+     "name": "job JOB-00124 cannot be released from inspection by hand",
      "expect": 409,
      "status": 409,
      "ok": true
     },
     {
-     "name": "open an inspection for JOB-00125",
+     "name": "open an inspection for JOB-00124",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -617,7 +617,7 @@
      "ok": true
     },
     {
-     "name": "job JOB-00125 → READY_TO_SHIP",
+     "name": "job JOB-00124 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -741,7 +741,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 425
+   "ms": 388
   },
   {
    "id": "S8002-05",
@@ -772,25 +772,25 @@
      "ok": true
     },
     {
-     "name": "job JOB-00126 → IN_PROCESS",
+     "name": "job JOB-00125 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00126 → WAITING_QC",
+     "name": "job JOB-00125 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00126 cannot be released from inspection by hand",
+     "name": "job JOB-00125 cannot be released from inspection by hand",
      "expect": 409,
      "status": 409,
      "ok": true
     },
     {
-     "name": "open an inspection for JOB-00126",
+     "name": "open an inspection for JOB-00125",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -802,7 +802,7 @@
      "ok": true
     },
     {
-     "name": "job JOB-00126 → READY_TO_SHIP",
+     "name": "job JOB-00125 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -936,7 +936,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 414
+   "ms": 408
   },
   {
    "id": "S8002-06",
@@ -991,31 +991,31 @@
      "ok": true
     },
     {
-     "name": "assign JOB-00127 to QA-L30-LASER",
+     "name": "assign JOB-00126 to QA-L30-LASER",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00127 → IN_PROCESS",
+     "name": "job JOB-00126 → IN_PROCESS",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00127 → WAITING_QC",
+     "name": "job JOB-00126 → WAITING_QC",
      "expect": "2xx",
      "status": 200,
      "ok": true
     },
     {
-     "name": "job JOB-00127 cannot be released from inspection by hand",
+     "name": "job JOB-00126 cannot be released from inspection by hand",
      "expect": 409,
      "status": 409,
      "ok": true
     },
     {
-     "name": "open an inspection for JOB-00127",
+     "name": "open an inspection for JOB-00126",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -1027,7 +1027,7 @@
      "ok": true
     },
     {
-     "name": "job JOB-00127 → READY_TO_SHIP",
+     "name": "job JOB-00126 → READY_TO_SHIP",
      "expect": "2xx",
      "status": 200,
      "ok": true
@@ -1155,7 +1155,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 461
+   "ms": 430
   },
   {
    "id": "S8002-07",
@@ -1384,7 +1384,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 484
+   "ms": 459
   },
   {
    "id": "S8002-08",
@@ -1663,7 +1663,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 706
+   "ms": 691
   },
   {
    "id": "S8002-09",
@@ -1932,7 +1932,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 727
+   "ms": 723
   },
   {
    "id": "S8002-10",
@@ -2211,7 +2211,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 723
+   "ms": 733
   },
   {
    "id": "S8002-11",
@@ -2506,7 +2506,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 778
+   "ms": 763
   },
   {
    "id": "S8002-12",
@@ -2775,7 +2775,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 765
+   "ms": 671
   },
   {
    "id": "S8002-13",
@@ -2960,7 +2960,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 387
+   "ms": 404
   },
   {
    "id": "S8002-14",
@@ -3213,7 +3213,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 600
+   "ms": 586
   },
   {
    "id": "S8002-15",
@@ -3398,7 +3398,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 460
+   "ms": 404
   },
   {
    "id": "S8002-16",
@@ -3651,7 +3651,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 656
+   "ms": 586
   },
   {
    "id": "S8002-17",
@@ -3846,7 +3846,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 406
+   "ms": 390
   },
   {
    "id": "S8002-18",
@@ -4083,7 +4083,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 575
+   "ms": 505
   },
   {
    "id": "S8002-19",
@@ -4140,7 +4140,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 95
+   "ms": 89
   },
   {
    "id": "S8002-20",
@@ -4197,7 +4197,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 83
+   "ms": 81
   },
   {
    "id": "S8002-21",
@@ -4254,7 +4254,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 85
+   "ms": 74
   },
   {
    "id": "S8002-22",
@@ -4377,7 +4377,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 164
+   "ms": 147
   },
   {
    "id": "S8002-23",
@@ -4500,7 +4500,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 150
+   "ms": 144
   },
   {
    "id": "S8002-24",
@@ -4649,7 +4649,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 442
+   "ms": 432
   },
   {
    "id": "S8002-25",
@@ -4798,7 +4798,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 461
+   "ms": 389
   },
   {
    "id": "S8002-26",
@@ -4927,7 +4927,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 361
+   "ms": 334
   },
   {
    "id": "S8002-27",
@@ -5056,7 +5056,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 396
+   "ms": 342
   },
   {
    "id": "S8002-28",
@@ -5185,7 +5185,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 337
+   "ms": 335
   },
   {
    "id": "S8002-29",
@@ -5334,7 +5334,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 395
+   "ms": 391
   },
   {
    "id": "S8002-30",
@@ -5375,7 +5375,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 26
+   "ms": 21
   },
   {
    "id": "S8002-31",
@@ -5437,25 +5437,25 @@
      "ok": true
     },
     {
-     "name": "QA-L36-S4: no negative quantities",
+     "name": "QA-L36-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L36-S4: on hand = available + allocated + on hold",
+     "name": "QA-L36-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L36-S4: inventory allocated = open allocations",
+     "name": "QA-L36-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L36-S4: inventory branch = coil branch",
+     "name": "QA-L36-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 52
+   "ms": 53
   },
   {
    "id": "S8002-33",
@@ -5488,7 +5488,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 13
   },
   {
    "id": "S8002-34",
@@ -5503,25 +5503,25 @@
    ],
    "invariants": [
     {
-     "name": "QA-L76-S2: no negative quantities",
+     "name": "QA-L76-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: on hand = available + allocated + on hold",
+     "name": "QA-L76-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory allocated = open allocations",
+     "name": "QA-L76-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L76-S2: inventory branch = coil branch",
+     "name": "QA-L76-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 12
+   "ms": 17
   },
   {
    "id": "S8002-35",
@@ -5732,7 +5732,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 414
+   "ms": 451
   },
   {
    "id": "S8002-36",
@@ -5797,7 +5797,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 60
+   "ms": 59
   },
   {
    "id": "S8002-37",
@@ -5816,7 +5816,7 @@
      "ok": true
     },
     {
-     "name": "allocate 400 lb from QA-L76-S1",
+     "name": "allocate 400 lb from QA-L76-S2",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -5860,25 +5860,25 @@
      "ok": true
     },
     {
-     "name": "QA-L76-S1: no negative quantities",
+     "name": "QA-L76-S2: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L76-S1: on hand = available + allocated + on hold",
+     "name": "QA-L76-S2: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L76-S1: inventory allocated = open allocations",
+     "name": "QA-L76-S2: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L76-S1: inventory branch = coil branch",
+     "name": "QA-L76-S2: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 95
+   "ms": 98
   },
   {
    "id": "S8002-38",
@@ -6009,7 +6009,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 271
+   "ms": 236
   },
   {
    "id": "S8002-39",
@@ -6086,7 +6086,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 112
+   "ms": 107
   },
   {
    "id": "S8002-40",
@@ -6355,7 +6355,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 534
+   "ms": 596
   },
   {
    "id": "S8002-41",
@@ -6614,7 +6614,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 534
+   "ms": 506
   },
   {
    "id": "S8002-42",
@@ -6809,7 +6809,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 447
+   "ms": 443
   },
   {
    "id": "S8002-43",
@@ -6828,7 +6828,7 @@
      "ok": true
     },
     {
-     "name": "allocate 300 lb from QA-L54-S2",
+     "name": "allocate 300 lb from QA-L54-S1",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -7002,25 +7002,25 @@
      "ok": true
     },
     {
-     "name": "QA-L54-S2: no negative quantities",
+     "name": "QA-L54-S1: no negative quantities",
      "ok": true
     },
     {
-     "name": "QA-L54-S2: on hand = available + allocated + on hold",
+     "name": "QA-L54-S1: on hand = available + allocated + on hold",
      "ok": true
     },
     {
-     "name": "QA-L54-S2: inventory allocated = open allocations",
+     "name": "QA-L54-S1: inventory allocated = open allocations",
      "ok": true
     },
     {
-     "name": "QA-L54-S2: inventory branch = coil branch",
+     "name": "QA-L54-S1: inventory branch = coil branch",
      "ok": true
     }
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 523
+   "ms": 487
   },
   {
    "id": "S8002-44",
@@ -7269,7 +7269,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 401
+   "ms": 421
   },
   {
    "id": "S8002-45",
@@ -7534,7 +7534,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 597
+   "ms": 628
   },
   {
    "id": "S8002-46",
@@ -7707,18 +7707,6 @@
      "ok": true
     },
     {
-     "name": "line 1: shipped qty matches dispatched shipments",
-     "ok": true
-    },
-    {
-     "name": "line 1: shipped ≤ ordered",
-     "ok": true
-    },
-    {
-     "name": "line 1: allocated ≤ ordered",
-     "ok": true
-    },
-    {
      "name": "line 2: shipped qty matches dispatched shipments",
      "ok": true
     },
@@ -7728,6 +7716,18 @@
     },
     {
      "name": "line 2: allocated ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped qty matches dispatched shipments",
+     "ok": true
+    },
+    {
+     "name": "line 1: shipped ≤ ordered",
+     "ok": true
+    },
+    {
+     "name": "line 1: allocated ≤ ordered",
      "ok": true
     },
     {
@@ -7771,11 +7771,11 @@
      "ok": true
     },
     {
-     "name": "line 1: invoiced qty = shipped qty",
+     "name": "line 2: invoiced qty = shipped qty",
      "ok": true
     },
     {
-     "name": "line 2: invoiced qty = shipped qty",
+     "name": "line 1: invoiced qty = shipped qty",
      "ok": true
     },
     {
@@ -7809,7 +7809,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 565
+   "ms": 626
   },
   {
    "id": "S8002-47",
@@ -7834,7 +7834,7 @@
      "ok": true
     },
     {
-     "name": "allocate 1300 lb from QA-L75-S4",
+     "name": "allocate 1300 lb from QA-L75-S3",
      "expect": "2xx",
      "status": 201,
      "ok": true
@@ -8022,6 +8022,22 @@
      "ok": true
     },
     {
+     "name": "QA-L75-S3: no negative quantities",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S3: on hand = available + allocated + on hold",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S3: inventory allocated = open allocations",
+     "ok": true
+    },
+    {
+     "name": "QA-L75-S3: inventory branch = coil branch",
+     "ok": true
+    },
+    {
      "name": "QA-L75-S2: no negative quantities",
      "ok": true
     },
@@ -8035,22 +8051,6 @@
     },
     {
      "name": "QA-L75-S2: inventory branch = coil branch",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: no negative quantities",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: on hand = available + allocated + on hold",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: inventory allocated = open allocations",
-     "ok": true
-    },
-    {
-     "name": "QA-L75-S4: inventory branch = coil branch",
      "ok": true
     },
     {
@@ -8100,7 +8100,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 655
+   "ms": 631
   },
   {
    "id": "S8002-48",
@@ -8391,7 +8391,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 631
+   "ms": 689
   },
   {
    "id": "S8002-49",
@@ -8510,7 +8510,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 181
+   "ms": 169
   },
   {
    "id": "S8002-50",
@@ -8613,7 +8613,7 @@
    ],
    "result": "PASS",
    "notes": [],
-   "ms": 137
+   "ms": 144
   }
  ],
  "concurrency": {
@@ -8637,7 +8637,7 @@
    {
     "name": "one shipment dispatched three times at once: counted once",
     "pass": true,
-    "detail": "statuses 200,409,409; line shipped 7200 of 7200; on hand 12000 → 4800"
+    "detail": "statuses 409,200,409; line shipped 7200 of 7200; on hand 12000 → 4800"
    },
    {
     "name": "10 simultaneous jobs all saved with distinct numbers",
@@ -8652,12 +8652,12 @@
    {
     "name": "three full payments at once on one invoice: taken once",
     "pass": true,
-    "detail": "statuses 201,409,409; paid 4680 of 4680"
+    "detail": "statuses 409,409,201; paid 4680 of 4680"
    },
    {
     "name": "one return received three times at once: counted once, one credit",
     "pass": true,
-    "detail": "statuses 409,200,409; 1 credit memo(s); source coil on hand 4800 → 6600"
+    "detail": "statuses 200,409,409; 1 credit memo(s); source coil on hand 4800 → 6600"
    }
   ]
  },

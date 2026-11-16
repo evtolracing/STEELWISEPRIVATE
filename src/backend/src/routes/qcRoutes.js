@@ -9,6 +9,7 @@
  */
 
 import express from 'express'
+import { checklistFor } from '../lib/workCenterKindRules.js'
 import prisma from '../lib/db.js'
 import { changeJobStatusTx, lockJob, sendRefusal, JobMoveRefused } from '../lib/jobGates.js'
 import { inspectionPassBlockers, OPEN_INSPECTION } from '../lib/productionRules.js'
@@ -240,7 +241,8 @@ router.post('/inspections', async (req, res) => {
           inspectionType,
           status: inspectorId ? 'IN_PROGRESS' : 'PENDING',
           startedAt: inspectorId ? new Date() : null,
-          checklist: checklist || getDefaultChecklist(job.operationType),
+          // The checks come from the kind of work when it has its own list, else the standard list (L-028).
+          checklist: checklist || checklistFor(job.operationType ? await tx.workCenterType.findUnique({ where: { id: job.operationType }, select: { inspectionChecklist: true } }) : null, getDefaultChecklist(job.operationType)),
           notes,
         },
         include: {
@@ -338,6 +340,7 @@ async function decide(req, res, decision) {
     }
     const data = decision.data(inspection)
     const saved = await tx.jobInspection.update({ where: { id: inspection.id }, data, include: INSPECTION_INCLUDE })
+    if (decision.before) saved.extra = await decision.before(tx, inspection)
     await changeJobStatusTx(tx, inspection.jobId, decision.to, {
       data: decision.jobData ? decision.jobData(inspection) : {},
       note: decision.note(inspection), via: 'inspection', userId: req.user?.id,
@@ -350,7 +353,30 @@ async function decide(req, res, decision) {
     return saved
   })
   console.log(`[QC] Inspection ${updated.inspectionNumber} ${decision.name} — job ${updated.job.jobNumber} → ${decision.to}`)
-  res.json({ success: true, data: updated })
+  const { extra, ...data } = updated
+  res.json({ success: true, data, ...(extra || {}) })
+}
+
+/**
+ * Rework is a step on the job's plan (owner's decision of 2026-11-15, finding L-020): it is named for the
+ * failed inspection, run on a work center and clocked like any other step, and when it is finished the job
+ * goes back to inspection. kindId: the kind of work center the rework needs; the last planned step's kind when not given.
+ */
+async function addReworkStep(tx, inspection, kindId) {
+  const plan = await tx.dispatchJob.findUnique({ where: { jobId: inspection.jobId }, include: { operations: { orderBy: { sequence: 'asc' } } } })
+  if (!plan || !plan.operations.length) return { reworkStep: null, reworkNote: 'This job has no planned steps, so no rework step was added. The instructions are on the job.' }
+  const already = plan.operations.find((o) => o.reworkOfInspectionId === inspection.id)
+  if (already) return { reworkStep: { id: already.id, sequence: already.sequence, name: already.name } }
+  const last = plan.operations[plan.operations.length - 1]
+  const kind = kindId || last.requiredWorkCenterType
+  const onFile = await tx.workCenterType.findUnique({ where: { id: kind }, select: { id: true, isActive: true } })
+  if (!onFile || onFile.isActive === false) refuse(400, `"${kind}" is not a kind of work center on file`)
+  const step = await tx.dispatchOperation.create({ data: {
+    dispatchJobId: plan.id, sequence: last.sequence + 1, name: `Rework (${inspection.inspectionNumber})`.slice(0, 200),
+    requiredWorkCenterType: kind, requiredDivision: last.requiredDivision, requiredSkillLevel: last.requiredSkillLevel,
+    thickness: last.thickness, materialCode: last.materialCode, status: 'PENDING', reworkOfInspectionId: inspection.id,
+  } })
+  return { reworkStep: { id: step.id, sequence: step.sequence, name: step.name, requiredWorkCenterType: kind } }
 }
 
 // ── POST /inspections/:id/pass ── Pass QC → Job moves to PACKAGING ──────────
@@ -404,9 +430,11 @@ router.post('/inspections/:id/fail', async (req, res) => {
 // The job goes back to the floor. It owes a new inspection: it cannot be packed or shipped until one passes.
 router.post('/inspections/:id/rework', async (req, res) => {
   try {
-    const { reworkInstructions, notes } = req.body || {}
+    const { reworkInstructions, notes, workCenterType } = req.body || {}
     const instructions = reworkInstructions || 'Rework required per QC inspector'
+    if (workCenterType !== undefined && workCenterType !== null && typeof workCenterType !== 'string') return res.status(400).json({ success: false, error: 'workCenterType must be the id of a kind of work center' })
     await decide(req, res, {
+      before: (tx, inspection) => addReworkStep(tx, inspection, workCenterType || null),
       name: 'REWORK', open: [...OPEN_INSPECTION, 'FAILED'], closedError: 'Cannot rework a passed inspection', jobFrom: ['WAITING_QC', 'ON_HOLD'], to: 'SCHEDULED',
       data: (inspection) => ({
         status: 'FAILED', overallResult: 'FAIL', disposition: 'REWORK', completedAt: inspection.completedAt || new Date(),

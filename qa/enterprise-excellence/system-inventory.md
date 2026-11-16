@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-15 by `qa/tools/excellence-docs.mjs` at commit 6cbedc5. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 50 |
 | Server route files | 75 |
-| API routes (each address counted; two route files are mounted twice) | 635 |
+| API routes (each address counted; two route files are mounted twice) | 640 |
 | API routes that change data | 334 |
 | Database tables in the schema | 161 |
 | Enumerations | 96 |
-| Migrations | 30 |
+| Migrations | 31 |
 | Screens (routes in the browser) | 142 |
-| Frontend source files | 393 (118,752 lines) |
-| Server route code | 25,058 lines |
+| Frontend source files | 393 (118,927 lines) |
+| Server route code | 25,209 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -94,7 +94,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Users, work centers
 - **Feeds:** Dispatch, time tracking
-- **Findings:** B-012, B-014, L-022
+- **Findings:** B-012, B-014
 - **Production concern:** Labor rules (certification required, two steps at once, shift length) are not on file (L-022)
 
 ### Settings, tax rates and online settings
@@ -329,12 +329,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Versioned routings (called BOM recipes in the code: steps, not materials) and processing recipes
 - **Screens:** 4 (1 sample, labelled, 3 real): /boms, /bom//, /bom//new, /bom//:recipeId
 - **Server:** `src/backend/src/routes/processingRecipes.js`, `src/backend/src/routes/bomV1.js`; served at /api/processing-recipes, /api/v1/bom
-- **Routes:** 16, of which 11 change data. Returned a success in a test this session: 9 of 16; of the changing routes, 6 of 11
+- **Routes:** 16, of which 11 change data. Returned a success in a test this session: 11 of 16; of the changing routes, 7 of 11
 - **Tables:** ProcessingRecipe, RecipeRoutingTemplate, BomRecipe
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, work centers
 - **Feeds:** Jobs, planning
-- **Findings:** I-011, L-024
+- **Findings:** I-011
 - **Production concern:** A bill of material and material requirements do not exist
 
 ### Customer specifications
@@ -451,14 +451,14 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Basis:** Simulation: every job; sweep "Shop floor records" (50 checks); qa/sim/phase7-manufacturing.mjs groups 1, 4, 5 and 7; unit tests on moves, gates and history; browser suite (shop)
 - **Purpose:** Shop jobs: create, plan, move through the shop, every move recorded against a person and passed through one quality and open-steps gate
 - **Screens:** 6 (6 real): /production, /production/shop-floor, /production/shipping, /order-board, /schedule, /jobs/:id
-- **Server:** `src/backend/src/routes/jobs.js`, `src/backend/src/lib/jobGates.js`; served at /api/jobs, /api/v1/jobs
-- **Routes:** 32, of which 20 change data. Returned a success in a test this session: 19 of 32; of the changing routes, 10 of 20
+- **Server:** `src/backend/src/routes/jobs.js`, `src/backend/src/lib/jobGates.js`, `src/backend/src/lib/costing.js`; served at /api/jobs, /api/v1/jobs
+- **Routes:** 36, of which 20 change data. Returned a success in a test this session: 21 of 36; of the changing routes, 10 of 20
 - **Tables:** Job, OrderLine, Order, WorkCenter, DispatchJob, WorkCenterType, DispatchOperation, User
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders, routings
 - **Feeds:** Shipping (unfinished jobs hold their lines), quality
-- **Findings:** M-017, L-021, L-024, L-029
-- **Production concern:** A job names no stock and carries no cost (L-024, L-026); a job with no steps is not inspected (L-021)
+- **Findings:** M-017, L-029
+- **Production concern:** Job cost waits on the owner's labor rates and has no overhead (L-026); no bill of material (L-024)
 
 ### Coil work orders
 
@@ -468,11 +468,11 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 3 (3 real): /work-orders, /work-orders/new, /work-orders/:id
 - **Server:** `src/backend/src/routes/workOrders.js`; served at /api/work-orders
 - **Routes:** 9, of which 7 change data. Returned a success in a test this session: 9 of 9; of the changing routes, 7 of 7
-- **Tables:** WorkOrder, AuditLog, Coil, OrderLine, Inventory
+- **Tables:** WorkOrder, AuditLog, Coil, Job, OrderLine, Inventory
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Stock
 - **Feeds:** Stock (pieces, scrap, drops)
-- **Findings:** L-024
+- **Findings:** none open
 - **Production concern:** Not linked to a job (L-024); carries no cost (L-026)
 
 ### Dispatch, work centers and shop-floor operations
@@ -482,7 +482,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Work-center kinds, queues, the scheduling run, start, pause and finish a step, time entries
 - **Screens:** 3 (3 real): /time-tracking, /shopfloor, /shopfloor/:workCenterId
 - **Server:** `src/backend/src/routes/dispatchRoutes.js`, `src/backend/src/routes/operationsRoutes.js`, `src/backend/src/routes/workCenters.js`, `src/backend/src/lib/productionRules.js`, `src/backend/src/lib/dispatchPlan.js`, `src/backend/src/lib/workCenterGuard.js`; served at /api/work-centers, /api/v1/work-centers, /api/v1/dispatch, /api/v1/operations
-- **Routes:** 34, of which 17 change data. Returned a success in a test this session: 24 of 34; of the changing routes, 11 of 17
+- **Routes:** 35, of which 17 change data. Returned a success in a test this session: 27 of 35; of the changing routes, 12 of 17
 - **Tables:** WorkCenter, Location, Job, WorkCenterType, DispatchDivision, DispatchOperation, Organization, Operator, DispatchJob, DispatchTimeLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Jobs, staff, maintenance (lockout)
@@ -508,17 +508,17 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 ### Quality inspections
 
 - **Status:** IMPLEMENTED AND VERIFIED
-- **Basis:** qa/sim/phase7-manufacturing.mjs group 5 (19 scenarios) and group 6 rework; qa/sim/ui-phase7.cjs; unit tests on the gate
+- **Basis:** qa/sim/phase7-manufacturing.mjs group 5 (22 scenarios) and group 6 rework; qa/sim/ui-phase7.cjs; unit tests on the gate
 - **Purpose:** Inspection of a job: open, fill in, pass, conditional pass, fail and hold, rework; the only way out of the inspection queue
 - **Screens:** 2 (2 real): /qc, /qc/inspect/:id
 - **Server:** `src/backend/src/routes/qcRoutes.js`; served at /api/qc
 - **Routes:** 11, of which 6 change data. Returned a success in a test this session: 11 of 11; of the changing routes, 6 of 6
-- **Tables:** Job, JobInspection, Operator, AuditLog
+- **Tables:** Job, JobInspection, Operator, WorkCenterType, AuditLog, DispatchJob, DispatchOperation
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Jobs
 - **Feeds:** Jobs (packaging or hold), shipping
-- **Findings:** L-020, L-021, L-023, L-028
-- **Production concern:** No inspection standard on file (L-028); no nonconformance record (L-023); rework not routed or clocked (L-020)
+- **Findings:** L-023, L-028
+- **Production concern:** The inspection checklists are the owner's to enter (L-028); no nonconformance record (L-023)
 
 ### Material tracking, packages and drop tags
 
@@ -810,11 +810,10 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 | Contract pricing | S-009 |
 | Carrier assignment with rates, freight cost | F-007 |
 | Statements, ageing, accounting export or integration |  |
-| Material and processing costing, profitability reporting from actual cost | L-026, K-007 |
+| Overhead, stock valuation, cost of goods and profitability reporting (job cost from material and labor exists since owner decision 9) | L-026, K-007 |
 | Bill of material and material requirements for a job | L-024 |
 | Finite-capacity scheduling against shift calendars | L-025 |
 | Nonconformance reports and corrective actions | L-023 |
-| Rework routing and rework labor | L-020 |
 | Outside processing; nesting and cut optimisation | L-027 |
 | Machine connection, machine time and downtime capture | L-030 |
 | Email or text notifications of any kind | D-034, B-019 |
@@ -905,8 +904,8 @@ Finding B-014.
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
 | src/frontend/src/apps/safety/StopWorkDashboard.jsx | 979 | 9 |
+| src/frontend/src/apps/bom/BomRecipeEditorPage.jsx | 968 | 23 |
 | src/frontend/src/components/jobs/ModernJobCard.jsx | 958 | 6 |
-| src/frontend/src/apps/bom/BomRecipeEditorPage.jsx | 949 | 22 |
 | src/frontend/src/pages/Maintenance/WorkOrderCenter.jsx | 927 | 12 |
 | src/frontend/src/pages/SQM/SupplierListPage.jsx | 908 | 6 |
 | src/frontend/src/dashboard/widgets/index.jsx | 900 | 3 |
@@ -920,17 +919,17 @@ Finding B-014.
 | src/frontend/src/screens/ShipmentTrackingScreen.jsx | 769 | 10 |
 | src/frontend/src/pages/Maintenance/PartsInventory.jsx | 762 | 5 |
 | src/backend/src/routes/pos.js | 1313 | |
+| src/backend/src/routes/jobs.js | 1007 | |
 | src/backend/src/routes/stopWork.js | 985 | |
-| src/backend/src/routes/jobs.js | 980 | |
-| src/backend/src/routes/dispatchRoutes.js | 902 | |
+| src/backend/src/routes/dispatchRoutes.js | 921 | |
 | src/backend/src/routes/inventoryV1.js | 876 | |
 | src/backend/src/routes/opsCockpit.js | 873 | |
 | src/backend/src/routes/staff.js | 788 | |
-| src/backend/src/routes/bomV1.js | 722 | |
+| src/backend/src/routes/bomV1.js | 734 | |
 | src/backend/src/routes/dropTagRoutes.js | 716 | |
 | src/backend/src/routes/users.js | 692 | |
+| src/backend/src/routes/operationsRoutes.js | 672 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
-| src/backend/src/routes/intakeOrders.js | 651 | |
 
 ## Other counts from the frontend
 
@@ -940,7 +939,7 @@ Finding B-014.
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
 | Icon-only buttons | 302 |
-| aria-label attributes | 47 |
+| aria-label attributes | 48 |
 | Browser alert or confirm calls | 25 in 15 files |
 | Timers started (setInterval, setTimeout) | 67 |
 | Timers cleared | 37 |

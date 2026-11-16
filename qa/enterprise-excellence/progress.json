@@ -3,10 +3,10 @@
   "program": "Enterprise Excellence Program",
   "currentPhase": 7,
   "phaseStatus": "PARTIALLY COMPLETE",
-  "updated": "2026-11-15T22:26:05.089Z",
+  "updated": "2026-11-16T00:05:05.917Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "6cbedc5a9188a02eb972869fa0a5465c5d1b0614",
+    "commit": "88561a3f50f4677747cfb8d3b3f5cb147b1922e4",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 31,
     "merged": false,
@@ -24,12 +24,12 @@
     "DISCONNECTED": 3
   },
   "discovered": {
-    "apiRoutes": 635,
+    "apiRoutes": 640,
     "apiRoutesThatChangeData": 334,
     "routeFiles": 75,
     "databaseTables": 161,
     "enumerations": 96,
-    "migrations": 30,
+    "migrations": 31,
     "screens": 142,
     "frontendFiles": 393,
     "roles": 48
@@ -44,35 +44,35 @@
   "findingsBySeverity": {
     "P1": 96,
     "P2": 124,
-    "P3": 80,
+    "P3": 81,
     "P0": 20
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 223,
-    "IN PROGRESS": 3,
+    "VERIFIED FIXED": 228,
+    "IN PROGRESS": 6,
     "DEFERRED TO SPECIFIC PHASE": 60,
     "BLOCKED": 3,
     "NOT APPLICABLE": 1,
-    "REQUIRES BUSINESS DECISION": 29,
+    "REQUIRES BUSINESS DECISION": 22,
     "ACCEPTED RISK WITH APPROVAL": 1
   },
   "openFindingsBySeverity": {
     "P1": 15,
-    "P2": 48,
+    "P2": 44,
     "P3": 31,
     "P0": 2
   },
-  "findingsTotal": 320,
-  "findingsAddedThisPhase": 30,
+  "findingsTotal": 321,
+  "findingsAddedThisPhase": 31,
   "testsExecuted": [
     {
       "test": "Phase 7 manufacturing scenarios (qa/sim/phase7-manufacturing.mjs, new in Phase 7)",
-      "result": "134 of 134 scenarios pass, 542 checks, on the final code (in the full run 133 of 134: one rewritten scenario stopped on a mistake in the test script, which was corrected and the whole suite run again with no product change). 119 verify built behaviour and 15 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: work orders and routing 15 and 0; BOMs and material 15 and 2; capacity and scheduling 21 and 1; shop floor, labor and machine 19 and 2; quality 19 and 3; scrap, remnants, rework and costing 11 and 5; cross-location, concurrency and recovery 19 and 2",
+      "result": "141 of 141 scenarios pass, 618 checks, in the fifth full run on the final code. 130 verify built behaviour and 11 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: work orders and routing 15 and 0; BOMs and material 15 and 2; capacity and scheduling 21 and 1; shop floor, labor and machine 22 and 1; quality 22 and 3; scrap, remnants, rework and costing 15 and 2; cross-location, concurrency and recovery 20 and 2. Before owner decision 9: 134 scenarios, 119 verified, 15 not built",
       "before": "Did not exist. A probe on the starting code reproduced 17 defects before any fix"
     },
     {
       "test": "Proof the Phase 7 checks fail without the fixes",
-      "result": "21 fixes removed one at a time; each made 1 to 3 scenarios fail; source restored. A twenty-second belonged to a check that was withdrawn and is not counted"
+      "result": "34 rules removed one at a time (21 fixes, then 13 rules of owner decision 9); each made 1 or more scenarios fail; source restored. A further mutation belonged to a check that was withdrawn and is not counted"
     },
     {
       "test": "First full run of every check on the Phase 7 code",
@@ -80,13 +80,18 @@
       "before": "150 of 150"
     },
     {
+      "test": "Full runs after owner decision 9 (third, fourth and fifth of the phase)",
+      "result": "Third: every suite passed except the security sweep section \"Shop floor records\" (5 of 50), the shop browser suite (2 of 30) and the new Phase 7 browser script (a mistake in the script). The two older checks completed a job with no planned steps straight to the dock, which decision 9 forbids; they were updated to follow the rule. Fourth, on a rebuilt database: every suite passed. Nine browser checks added after it found the routing screen defect L-031, which was fixed. Fifth, on a rebuilt database and the final code: every suite passed except one check of the Phase 6 browser suite (supply position), which read a table before its rows had arrived; the test was corrected to wait for the first row and then passed 14 of 14 four times in a row. No product change. Simulation 150 of 150; sweep 20 of 20; branch boundary 39; Phase 2: 82; Phase 3: 74 of 74; Phase 4: 66 of 66; Phase 5: 76 of 76; Phase 6: 106 of 106 (494 checks); Phase 7: 141 of 141 (618); unit 178; browser 22, 29, 31, 24, 23, 33, 14, 14, 39; 128 screens open; 334 changing routes, 0 with no rule; lint 0 errors, 1,526 warnings; build passes",
+      "before": "Result of record before decision 9 (commit 88561a3)"
+    },
+    {
       "test": "Phase 7 browser checks (qa/sim/ui-phase7.cjs, new)",
-      "result": "21 checks, 0 failed: quality queue, conditional pass, scheduling messages, work center with no default limits, planner notes, phone width",
+      "result": "39 checks, 0 failed: quality queue, conditional pass, scheduling messages, work center with no default limits, planner notes, phone width, and for owner decision 9 the job's material and cost, the long-running clock notice, the work order's job, the routing's inspection box and the kinds-of-work-center rules.",
       "before": "Did not exist"
     },
     {
       "test": "Unit tests (src/backend, npm test)",
-      "result": "171 of 171 pass (13 new: phase7Rules)",
+      "result": "178 of 178 pass (20 new in Phase 7: phase7Rules)",
       "before": "158 of 158"
     },
     {
@@ -131,9 +136,9 @@
     }
   ],
   "testReach": {
-    "routesWithSuccess": 380,
-    "routes": 635,
-    "changingRoutesWithSuccess": 150,
+    "routesWithSuccess": 387,
+    "routes": 640,
+    "changingRoutesWithSuccess": 152,
     "changingRoutes": 334
   },
   "correctionsCompleted": [
@@ -224,7 +229,12 @@
     "L-016",
     "L-017",
     "L-018",
-    "L-019"
+    "L-019",
+    "L-020",
+    "L-021",
+    "L-022",
+    "L-024",
+    "L-031"
   ],
   "scoreSummary": [
     {
@@ -247,7 +257,7 @@
     },
     {
       "group": "Manufacturing and processing",
-      "weighted": 80,
+      "weighted": 81,
       "evidenceShare": 97,
       "openP0P1": 1
     },
@@ -265,26 +275,27 @@
     }
   ],
   "unverifiedAreas": [
-    "The live database and the host: nothing in Phase 7 was run against either. Live operators, certifications, work-center kinds, routings and open jobs are unknown, and the new rules will refuse records that do not meet them (R-46)",
-    "SQL Editor files 6 to 12 on the live database: the owner has not sent the result of the read-only check (verify-6-to-12.sql)",
+    "The live database and the host: nothing in Phase 7 was run against either. Live operators, certifications, work-center kinds, routings and open jobs are unknown, and the new rules will refuse records that do not meet them (R-46, R-47)",
+    "SQL Editor files 6 to 13 on the live database: the owner has not sent the result of the read-only check (verify-6-to-13.sql, which replaces verify-6-to-12.sql). File 13 (owner decision 9) has been run twice on a local copy only",
+    "The 85-branch timings were not re-run after owner decision 9",
     "Machines and shop-floor hardware (L-030, K-013)",
-    "Production costing, bill of material, calendar capacity, nonconformance, rework routing, outsourced processing, nesting: not built (L-020, L-023 to L-027)",
+    "Bill of material, calendar capacity, nonconformance, outsourced processing, nesting, stock valuation and cost of goods: not built (L-023 to L-027, K-007)",
     "Accessibility of the shop-floor screens: not assessed (Phase 9)",
     "Time per task with real users: no minutes-saved figure is claimed",
-    "Earlier unverified areas unchanged: scanners (K-013), inventory valuation (K-007), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), customer messages (decision 5), backup and restore (E-015), host pool (G-015), host schedule (B-019), sustained load"
+    "Earlier unverified areas unchanged: scanners (K-013), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), customer messages (decision 5), backup and restore (E-015), host pool (G-015), host schedule (B-019), sustained load"
   ],
   "currentBlockers": [
-    "Owner: SQL Editor files 6 to 12 must be applied, in order, and confirmed before pull request 31 is merged",
-    "L-026 with K-007 (P1): production costing and the costing method",
-    "L-024: whether a job and a coil work order are linked, so a job knows its material, scrap and yield",
-    "L-020, L-021, L-022, L-028: how rework is recorded; which jobs must be inspected; labor rules; inspection standards",
+    "Owner: SQL Editor files 6 to 12, then file 13, must be applied in order and confirmed before pull request 31 is merged. The code of owner decision 9 fails on a database without file 13",
+    "Owner: labor rates per kind of work center (job cost shows material only until entered), inspection checklists, and the tick boxes on kinds of work center and routings (R-47)",
+    "L-026 with K-007 (P1): IN PROGRESS. Job cost is built; stock valuation, value on movements, overhead and cost of goods are not",
     "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-013, H-015, B-019, E-015, K-013"
   ],
   "nextActions": [
-    "Owner: send the result of verify-6-to-12.sql, then say when to merge pull request 31",
-    "Owner: answer the six Phase 7 questions in phase-07-report.md (costing; job and coil work order; rework; which jobs are inspected; labor rules; inspection standards)",
-    "Owner: tell the branches about the new shop-floor rules before go-live (R-40), and allow a read-only check of live operators and work centers (R-46)",
+    "Owner: apply SQL Editor files 6 to 13 in order, send the result of verify-6-to-13.sql, then say when to merge pull request 31",
+    "Owner: before go-live, tick \"One operator may run two steps at once\" on the kinds of work center where that is normal, and untick \"must pass inspection\" on routings that need none; tell the branches about the seventeen behaviour changes (R-40, R-47)",
+    "Owner: enter a labor rate for each kind of work center and type the inspection checklists",
+    "Owner: allow a read-only check of live operators and work centers (R-46)",
     "Owner: issue the Phase 8 prompt (shipping, logistics, invoicing, reconciliation, closeout). Phase 8 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 7: second full gate run on the final code; 134 manufacturing scenarios run (119 verified, 15 not built), 542 checks; 21 browser checks; 21 fixes proven by mutation; production screens timed at 85 branches; 30 findings recorded (L-001 to L-030: 19 fixed, 6 for the owner, 5 deferred); B-011 closed; no database change; documents written."
+  "lastCompletedCheckpoint": "Phase 7 with owner decision 9: the six decisions built (job-to-work-order link, rework step, inspection for every job, labor rules, checklists per kind of work, actual-cost job costing); SQL Editor file 13; fourth full gate run on the final code clean; 141 manufacturing scenarios (130 verified, 11 not built), 39 browser checks, 34 rules proven by mutation; 31 findings (L-001 to L-031: 24 fixed, 2 in progress, 5 deferred); K-007 in progress; documents updated."
 }

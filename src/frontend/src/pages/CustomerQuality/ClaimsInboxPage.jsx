@@ -493,7 +493,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Customer *</InputLabel>
-                <Select label="Customer *" defaultValue="">
+                <Select label="Customer" required defaultValue="">
                   <MenuItem value="CUST-001">ABC Manufacturing</MenuItem>
                   <MenuItem value="CUST-002">XYZ Industries</MenuItem>
                   <MenuItem value="CUST-003">Premier Fabrication</MenuItem>
@@ -507,7 +507,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Claim Type *</InputLabel>
-                <Select label="Claim Type *" defaultValue="">
+                <Select label="Claim Type" required defaultValue="">
                   {Object.entries(claimTypeLabels).map(([key, label]) => (
                     <MenuItem key={key} value={key}>{label}</MenuItem>
                   ))}
@@ -517,7 +517,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Severity *</InputLabel>
-                <Select label="Severity *" defaultValue="STANDARD">
+                <Select label="Severity" required defaultValue="STANDARD">
                   <MenuItem value="CRITICAL">Critical (Production Stopped)</MenuItem>
                   <MenuItem value="MAJOR">Major (Significant Impact)</MenuItem>
                   <MenuItem value="STANDARD">Standard</MenuItem>
@@ -528,7 +528,7 @@ export default function ClaimsInboxPage() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Description *"
+                label="Description" required
                 multiline
                 rows={4}
                 placeholder="Describe the customer's complaint in detail..."

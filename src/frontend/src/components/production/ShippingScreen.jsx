@@ -263,7 +263,7 @@ export default function ShippingScreen() {
             <InputLabel>Carrier *</InputLabel>
             <Select
               value={shipmentData.carrier}
-              label="Carrier *"
+              label="Carrier" required
               onChange={(e) => setShipmentData({ ...shipmentData, carrier: e.target.value })}
             >
               {CARRIERS.map(carrier => (
@@ -274,7 +274,7 @@ export default function ShippingScreen() {
 
           <TextField
             fullWidth
-            label="Tracking Number *"
+            label="Tracking Number" required
             value={shipmentData.trackingNumber}
             onChange={(e) => setShipmentData({ ...shipmentData, trackingNumber: e.target.value })}
             sx={{ mb: 2 }}

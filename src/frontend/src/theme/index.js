@@ -175,8 +175,13 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         // A person using a keyboard always sees where they are (2.4.7, 2.4.11).
-        '*:focus-visible': { outline: tokens.focusRing, outlineOffset: 2 },
-        '.MuiInputBase-input:focus-visible': { outline: 'none' },
+        // Stronger than a component's own "outline: 0", so every control shows where the keyboard is (2.4.7).
+        'body *:focus-visible, body .Mui-focusVisible': { outline: `${tokens.focusRing} !important`, outlineOffset: '2px !important' },
+        // In the menu the ring sits inside the item, and on the dark current item it is white.
+        'body .MuiDrawer-paper *:focus-visible, body .MuiDrawer-paper .Mui-focusVisible': { outlineOffset: '-2px !important' },
+        'body .MuiDrawer-paper [aria-current="page"]:focus-visible, body .MuiButton-containedPrimary:focus-visible': { outline: '2px solid #FFFFFF !important', outlineOffset: '-4px !important' },
+        // A text field shows focus on its frame, not on the bare text inside it.
+        'body .MuiInputBase-input:focus-visible': { outline: 'none !important' },
         // Reaches the content without tabbing through the menu (2.4.1).
         '.skip-link': {
           position: 'absolute', left: 8, top: -48, zIndex: 2000, padding: '8px 16px', borderRadius: tokens.radius.control,

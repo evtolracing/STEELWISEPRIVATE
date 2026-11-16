@@ -29,7 +29,9 @@ function Row({ label, value, bold, color, tooltip }) {
 
 const fmt = (n) => `$${(n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
-export default function PricingSummaryPanel({ lines = [], taxRate = 0, taxAmount, priceSource, contractName, loading }) {
+// `stored` is the money saved on an order (subtotal, tax, freight and total). When it is given the
+// panel shows those figures as they are on file and works nothing out for itself.
+export default function PricingSummaryPanel({ lines = [], taxRate = 0, taxAmount, priceSource, contractName, loading, stored }) {
   if (loading) return (
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
       {[...Array(6)].map((_, i) => <Skeleton key={i} height={24} sx={{ my: 0.5 }} />)}
@@ -61,10 +63,22 @@ export default function PricingSummaryPanel({ lines = [], taxRate = 0, taxAmount
       <Row label="Supplies" value={fmt(suppliesTotal)} />
       {feeTotal > 0 && <Row label="Fees" value={fmt(feeTotal)} />}
       <Divider sx={{ my: 1 }} />
-      <Row label="Subtotal" value={fmt(subtotal)} bold />
-      <Row label={`Tax (${taxRate}%)`} value={fmt(computedTax)} />
-      <Divider sx={{ my: 1 }} />
-      <Row label="Grand Total" value={fmt(grandTotal)} bold color="primary.main" />
+      {stored ? (
+        <>
+          <Row label="Subtotal" value={fmt(Number(stored.subtotal || 0))} bold />
+          <Row label="Tax" value={fmt(Number(stored.taxAmount || 0))} />
+          <Row label="Freight" value={fmt(Number(stored.freightAmount || 0))} />
+          <Divider sx={{ my: 1 }} />
+          <Row label="Order total" value={fmt(Number(stored.totalAmount || 0))} bold color="primary.main" />
+        </>
+      ) : (
+        <>
+          <Row label="Subtotal" value={fmt(subtotal)} bold />
+          <Row label={`Tax (${Number(taxRate.toFixed ? taxRate.toFixed(2) : taxRate)}%)`} value={fmt(computedTax)} />
+          <Divider sx={{ my: 1 }} />
+          <Row label="Grand Total" value={fmt(grandTotal)} bold color="primary.main" />
+        </>
+      )}
     </Paper>
   )
 }

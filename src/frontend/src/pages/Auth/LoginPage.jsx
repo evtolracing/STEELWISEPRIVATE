@@ -24,7 +24,9 @@ export default function LoginPage() {
   const { login, loading, error } = useAuth()
   const expired = params.get('expired') === '1'
   // Only a page of this application: never a link to somewhere else.
-  const next = (() => { const n = params.get('next') || ''; return /^\/(?!\/)/.test(n) && !n.startsWith('/login') ? n : '/' })()
+  // Where the person was going, if it is a page of this app. Anything else is ignored.
+  const asked = (() => { const n = params.get('next') || ''; return /^\/(?!\/)/.test(n) && !n.startsWith('/login') && n !== '/' ? n : null })()
+  const next = asked || '/'
   useEffect(() => { document.title = 'Sign in · SteelWise' }, [])
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
@@ -41,7 +43,7 @@ export default function LoginPage() {
     const result = await login(formData.email, formData.password)
     if (result.success) {
       // With nowhere to go back to, the layout sends the person to their own workspace.
-      navigate(next, { replace: true, state: { justSignedIn: !params.get('next') } })
+      navigate(next, { replace: true, state: { justSignedIn: !asked } })
     }
   }
 

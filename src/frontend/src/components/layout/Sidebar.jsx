@@ -235,17 +235,14 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
   )
 
   return (
-    <Box component="nav" aria-label="Main menu" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
-      {/* Mobile drawer */}
+    <Box sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
+      {/* Phone and tablet: the menu is a drawer. It exists only while open, holds the keyboard while it is,
+          and gives focus back to the menu button when it closes. */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
         onClose={onMobileClose}
-        ModalProps={{ 
-          keepMounted: true,
-          disableRestoreFocus: true,
-          disableEnforceFocus: true,
-        }}
+        PaperProps={{ component: 'nav', 'aria-label': 'Main menu' }}
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
@@ -257,6 +254,7 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
       {/* Desktop drawer */}
       <Drawer
         variant="permanent"
+        PaperProps={{ component: 'nav', 'aria-label': 'Main menu' }}
         sx={{
           display: { xs: 'none', md: 'block' },
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },

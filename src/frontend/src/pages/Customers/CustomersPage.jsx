@@ -129,8 +129,11 @@ export default function CustomersPage() {
       const res = await fetch(`${API_BASE}?${params}`)
       if (!res.ok) throw new Error('Failed to load customers')
       const json = await res.json()
-      setCustomers(json.data)
-      setTotal(json.meta?.total ?? json.data.length)
+      // An answer in a form this screen cannot read is a failure to say, not a list to draw.
+      const list = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : null
+      if (!list) throw new Error('Failed to load customers')
+      setCustomers(list)
+      setTotal(json?.meta?.total ?? list.length)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -414,7 +417,7 @@ export default function CustomersPage() {
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
             <Grid item xs={4}>
               <TextField
-                label="Code *"
+                label="Code" required
                 size="small"
                 fullWidth
                 value={form.code}
@@ -424,7 +427,7 @@ export default function CustomersPage() {
               />
             </Grid>
             <Grid item xs={8}>
-              <TextField label="Name *" size="small" fullWidth value={form.name} onChange={handleChange('name')} />
+              <TextField label="Name" required size="small" fullWidth value={form.name} onChange={handleChange('name')} />
             </Grid>
             <Grid item xs={6}>
               <FormControl size="small" fullWidth>

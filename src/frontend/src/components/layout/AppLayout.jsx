@@ -22,7 +22,7 @@ const PRODUCT = 'SteelWise'
 function usePageName(mainRef) {
   const { pathname } = useLocation()
   const [name, setName] = useState('')
-  const first = useRef(true)
+  const last = useRef(null)
   useEffect(() => {
     let stop = false
     const fromMenu = navItemFor(pathname)?.label || ''
@@ -35,13 +35,18 @@ function usePageName(mainRef) {
       setName(text)
     }
     read()
-    // The page's heading arrives with its code and sometimes with its data.
-    const timers = [100, 400, 1200, 3000].map((ms) => setTimeout(read, ms))
+    // The page's heading arrives with its code and sometimes with its data, however long that takes:
+    // watch the content and read the heading again whenever it changes.
+    let queued = 0
+    const watcher = typeof MutationObserver === 'undefined' || !mainRef.current ? null : new MutationObserver(() => { clearTimeout(queued); queued = setTimeout(read, 60) })
+    watcher?.observe(mainRef.current, { childList: true, subtree: true, characterData: true })
     // On a move to another page the content, not the menu, is where the keyboard continues from.
-    if (first.current) first.current = false
-    else if (!mainRef.current?.contains(document.activeElement) || document.activeElement === document.body) mainRef.current?.focus({ preventScroll: true })
+    // Only on a move: the first page keeps the browser's own starting point, so the skip link is the first stop.
+    const moved = last.current !== null && last.current !== pathname
+    last.current = pathname
+    if (moved && (!mainRef.current?.contains(document.activeElement) || document.activeElement === document.body)) mainRef.current?.focus({ preventScroll: true })
     mainRef.current?.scrollTo?.({ top: 0 })
-    return () => { stop = true; timers.forEach(clearTimeout) }
+    return () => { stop = true; clearTimeout(queued); watcher?.disconnect() }
   }, [pathname, mainRef])
   return name
 }
@@ -59,7 +64,7 @@ function RoleGate() {
   if (location.pathname === '/' && home !== '/') return <Navigate to={home} replace />
   return (
     <Paper sx={{ p: 4, maxWidth: 520, mx: 'auto', mt: 6, textAlign: 'center' }}>
-      <Typography variant="h5" gutterBottom>No access</Typography>
+      <Typography variant="h5" component="h1" gutterBottom>No access</Typography>
       <Typography color="text.secondary" sx={{ mb: 3 }}>
         Your role doesn't include this page. Ask an administrator if you need it.
       </Typography>

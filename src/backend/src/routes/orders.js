@@ -146,10 +146,15 @@ router.get('/', async (req, res) => {
   try {
     const { orderType, status, buyerId, view } = req.query;
     if (view !== undefined && view !== 'summary') return res.status(400).json({ error: 'view must be "summary" when it is given' });
+    // `search` narrows the list by order number, customer PO or customer name. It only ever narrows:
+    // the branch and role rules below still decide which orders can be listed at all.
+    const search = typeof req.query.search === 'string' ? req.query.search.trim().slice(0, 60) : '';
+    const like = { contains: search, mode: 'insensitive' };
     const where = {
       ...(orderType && { orderType }),
       ...(status && { status }),
       ...(buyerId && { buyerId }),
+      ...(search && { OR: [{ orderNumber: like }, { poReference: like }, { buyer: { name: like } }] }),
     };
     const window = listWindow(req.query, { max: 100 });
     // `view=summary` is the list a screen shows: the header, who it is for and how many lines.

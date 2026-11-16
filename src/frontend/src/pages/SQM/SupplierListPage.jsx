@@ -492,12 +492,12 @@ export default function SupplierListPage() {
         <DialogContent dividers>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Company Name *" />
+              <TextField fullWidth label="Company Name" required />
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Category *</InputLabel>
-                <Select label="Category *" defaultValue="">
+                <Select label="Category" required defaultValue="">
                   <MenuItem value="Primary Mill">Primary Mill</MenuItem>
                   <MenuItem value="Specialty Mill">Specialty Mill</MenuItem>
                   <MenuItem value="Service Center">Service Center</MenuItem>
@@ -506,13 +506,13 @@ export default function SupplierListPage() {
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Contact Name *" />
+              <TextField fullWidth label="Contact Name" required />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Contact Role" />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Email *" type="email" />
+              <TextField fullWidth label="Email" required type="email" />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Phone" />

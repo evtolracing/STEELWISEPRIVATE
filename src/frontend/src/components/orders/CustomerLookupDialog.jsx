@@ -107,8 +107,8 @@ export default function CustomerLookupDialog({ open, onClose, onSelect }) {
             {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Quick walk-in entry — name + phone minimum.</Typography>
             <Grid container spacing={2}>
-              <Grid item xs={6}><TextField fullWidth size="small" label="Name *" value={wiName} onChange={e => setWiName(e.target.value)} /></Grid>
-              <Grid item xs={6}><TextField fullWidth size="small" label="Phone *" value={wiPhone} onChange={e => setWiPhone(e.target.value)} /></Grid>
+              <Grid item xs={6}><TextField fullWidth size="small" label="Name" required value={wiName} onChange={e => setWiName(e.target.value)} /></Grid>
+              <Grid item xs={6}><TextField fullWidth size="small" label="Phone" required value={wiPhone} onChange={e => setWiPhone(e.target.value)} /></Grid>
               <Grid item xs={6}><TextField fullWidth size="small" label="Company" value={wiCompany} onChange={e => setWiCompany(e.target.value)} /></Grid>
               <Grid item xs={6}><TextField fullWidth size="small" label="Email" value={wiEmail} onChange={e => setWiEmail(e.target.value)} /></Grid>
             </Grid>

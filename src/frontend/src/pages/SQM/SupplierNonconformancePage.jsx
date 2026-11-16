@@ -434,7 +434,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Supplier *</InputLabel>
-                <Select label="Supplier *" defaultValue="">
+                <Select label="Supplier" required defaultValue="">
                   <MenuItem value="SUP-001">Nucor Corporation</MenuItem>
                   <MenuItem value="SUP-002">ArcelorMittal</MenuItem>
                   <MenuItem value="SUP-003">Steel Dynamics</MenuItem>
@@ -445,7 +445,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Issue Type *</InputLabel>
-                <Select label="Issue Type *" defaultValue="">
+                <Select label="Issue Type" required defaultValue="">
                   {Object.entries(issueTypeLabels).map(([key, label]) => (
                     <MenuItem key={key} value={key}>
                       {label}
@@ -457,7 +457,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel>Severity *</InputLabel>
-                <Select label="Severity *" defaultValue="">
+                <Select label="Severity" required defaultValue="">
                   <MenuItem value="CRITICAL">Critical (Safety/Major Impact)</MenuItem>
                   <MenuItem value="MAJOR">Major (Significant Impact)</MenuItem>
                   <MenuItem value="MINOR">Minor (Limited Impact)</MenuItem>
@@ -482,7 +482,7 @@ export default function SupplierNonconformancePage() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Description of Issue *"
+                label="Description of Issue" required
                 multiline
                 rows={4}
                 placeholder="Describe the nonconformance in detail..."

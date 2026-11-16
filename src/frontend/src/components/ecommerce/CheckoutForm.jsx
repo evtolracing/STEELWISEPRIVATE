@@ -88,11 +88,11 @@ export default function CheckoutForm({ onSubmit, submitting = false, hasReviewRe
               <TextField size="small" fullWidth label="Ship To Name" value={form.shipToName} onChange={set('shipToName')} />
             </Grid>
             <Grid item xs={12}>
-              <TextField size="small" fullWidth label="Address *" value={form.shipToAddress} onChange={set('shipToAddress')}
+              <TextField size="small" fullWidth label="Address" required value={form.shipToAddress} onChange={set('shipToAddress')}
                 error={!!errors.shipToAddress} helperText={errors.shipToAddress} />
             </Grid>
             <Grid item xs={5}>
-              <TextField size="small" fullWidth label="City *" value={form.shipToCity} onChange={set('shipToCity')}
+              <TextField size="small" fullWidth label="City" required value={form.shipToCity} onChange={set('shipToCity')}
                 error={!!errors.shipToCity} helperText={errors.shipToCity} />
             </Grid>
             <Grid item xs={3}>
@@ -101,14 +101,14 @@ export default function CheckoutForm({ onSubmit, submitting = false, hasReviewRe
               </TextField>
             </Grid>
             <Grid item xs={4}>
-              <TextField size="small" fullWidth label="ZIP *" value={form.shipToZip} onChange={set('shipToZip')}
+              <TextField size="small" fullWidth label="ZIP" required value={form.shipToZip} onChange={set('shipToZip')}
                 error={!!errors.shipToZip} helperText={errors.shipToZip} />
             </Grid>
           </Grid>
         )}
 
         {form.deliveryMethod === 'WILL_CALL' && (
-          <TextField size="small" fullWidth select label="Pickup Location *" sx={{ mt: 1 }}
+          <TextField size="small" fullWidth select label="Pickup Location" required sx={{ mt: 1 }}
             value={form.locationId} onChange={set('locationId')} error={!!errors.locationId} helperText={errors.locationId}>
             {locations.map(l => <MenuItem key={l.id} value={l.id}>{l.name}</MenuItem>)}
           </TextField>

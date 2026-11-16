@@ -1,5 +1,5 @@
 {
- "at": "2026-11-16T04:09:15.102Z",
+ "at": "2026-11-16T05:29:12.659Z",
  "effects": [
   "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:90",
   "src/frontend/src/apps/bom/BomRecipeListPage.jsx:40",
@@ -37,7 +37,7 @@
   "src/frontend/src/pages/Admin/UserManagementPage.jsx:100",
   "src/frontend/src/pages/Ecommerce/OnlineSettingsPage.jsx:63",
   "src/frontend/src/pages/Executive/CompressionMetricsDashboard.jsx:151",
-  "src/frontend/src/pages/Orders/CSRIntakePage.jsx:289",
+  "src/frontend/src/pages/Orders/CSRIntakePage.jsx:290",
   "src/frontend/src/pages/Orders/RetailPOSPage.jsx:163"
  ],
  "invented": [],
@@ -47,6 +47,6 @@
   "pagesMissingAMainHeading": 0,
   "pagesWhereNoTitleCouldBeFound": 2,
   "sampleButtonsWithNoActionAndNoNotice": 0,
-  "clickOnlyRowsAndCards": 1
+  "clickOnlyRowsAndCards": 0
  }
 }

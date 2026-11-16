@@ -4,6 +4,7 @@ import { canAccessPath } from '../config/roleAccess'
 import { Box, CircularProgress } from '@mui/material'
 import { AppLayout } from '../components/layout'
 import { RouteErrorPage } from '../components/common'
+import NotFoundPage from '../components/common/NotFoundPage'
 import SampleScreen from '../components/common/SampleScreen'
 import { useAuth } from '../hooks/useAuth'
 
@@ -1553,10 +1554,10 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
 
-      // Catch-all redirect
+      // An address that is not a page says so; it no longer shows the dashboard without a word.
       {
         path: '*',
-        element: <Navigate to="/" replace />,
+        element: <NotFoundPage />,
       },
     ],
   },

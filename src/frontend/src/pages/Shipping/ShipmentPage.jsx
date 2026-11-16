@@ -195,6 +195,12 @@ export default function ShipmentPage() {
   const [busy, setBusy] = useState(false)
   const [dialog, setDialog] = useState(null)
   const [confirm, setConfirm] = useState(null)
+  // The question being asked is remembered while its dialog fades out. Without this the closing dialog
+  // turned into the other question for a moment, and the second click of a double click on "Dispatch now"
+  // landed on "Cancel the shipment" and cancelled it.
+  const lastConfirm = useRef(null)
+  if (confirm) lastConfirm.current = confirm
+  const asking = confirm || lastConfirm.current
   const [toast, setToast] = useState('')
   const [papers, setPapers] = useState(null)
   const [paper, setPaper] = useState(null)
@@ -402,19 +408,19 @@ export default function ShipmentPage() {
       </Grid>
 
       <Dialog open={!!confirm} onClose={() => setConfirm(null)} maxWidth="xs" fullWidth>
-        <DialogTitle>{confirm === 'dispatch' ? `Dispatch ${shipment.shipmentNumber}?` : `Cancel ${shipment.shipmentNumber}?`}</DialogTitle>
+        <DialogTitle>{asking === 'dispatch' ? `Dispatch ${shipment.shipmentNumber}?` : `Cancel ${shipment.shipmentNumber}?`}</DialogTitle>
         <DialogContent>
           <Typography variant="body2">
-            {confirm === 'dispatch'
+            {asking === 'dispatch'
               ? 'The stock reserved for these lines is taken out of inventory, the order is updated and the invoice is raised. This cannot be undone here.'
               : 'Nothing has left the dock, so stock and the order are not changed. The lines can go on another shipment.'}
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirm(null)}>Go back</Button>
-          {confirm === 'dispatch'
-            ? <Button variant="contained" onClick={dispatch}>Dispatch now</Button>
-            : <Button variant="contained" color="error" onClick={cancel}>Cancel the shipment</Button>}
+          {asking === 'dispatch'
+            ? <Button variant="contained" disabled={!confirm || busy} onClick={dispatch}>Dispatch now</Button>
+            : <Button variant="contained" color="error" disabled={!confirm || busy} onClick={cancel}>Cancel the shipment</Button>}
         </DialogActions>
       </Dialog>
       <TruckDialog shipment={shipment} open={dialog === 'truck'} onClose={() => setDialog(null)} onSaved={() => { setDialog(null); setToast('Saved'); load() }} />

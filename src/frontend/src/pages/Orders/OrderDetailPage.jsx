@@ -224,6 +224,7 @@ export default function OrderDetailPage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <IconButton aria-label="Back" onClick={() => navigate(-1)}><BackIcon /></IconButton>
         <Typography component="h1" variant="h5" fontWeight={700}>{order.orderNumber}</Typography>
+        {(order.buyer?.name || order.customerName) && <Typography variant="body1" color="text.secondary" data-testid="order-customer">{order.buyer?.name || order.customerName}</Typography>}
         <OrderSourceChip source={order.source} />
         <Chip label={order.status?.replace(/_/g, ' ')} color={STATUS_COLOR[order.status] || 'default'} />
         {order.priority && order.priority !== 'STANDARD' && (
@@ -292,7 +293,7 @@ export default function OrderDetailPage() {
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Priority</Typography><Typography variant="body2" fontWeight={500}>{order.priority || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Ownership</Typography><Typography variant="body2" fontWeight={500}>{order.ownership?.replace(/_/g, ' ') || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">PO Number</Typography><Typography variant="body2" fontWeight={500}>{order.poNumber || '—'}</Typography></Grid>
-                  <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Customer</Typography><Typography variant="body2" fontWeight={500}>{order.customerName || '—'}</Typography></Grid>
+                  <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Customer</Typography><Typography variant="body2" fontWeight={500}>{order.buyer?.name || order.customerName || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Requested Date</Typography><Typography variant="body2" fontWeight={500}>{order.requestedDate || '—'}</Typography></Grid>
                   <Grid item xs={6} sm={3}><Typography variant="caption" color="text.secondary">Created</Typography><Typography variant="body2" fontWeight={500}>{order.createdAt ? new Date(order.createdAt).toLocaleString() : '—'}</Typography></Grid>
                   <Grid item xs={12}>
@@ -330,7 +331,10 @@ export default function OrderDetailPage() {
         <Grid item xs={12} md={4}>
           <PricingSummaryPanel
             lines={lines}
-            taxRate={6}
+            // A saved order shows the money on file. While a draft is being edited the tax is an estimate at
+            // the rate the order was saved with; the server works out the real figure on save.
+            stored={editing ? undefined : order}
+            taxRate={Number(order.subtotal) > 0 ? (Number(order.taxAmount || 0) / Number(order.subtotal)) * 100 : 0}
             priceSource={order.priceSource}
             contractName={order.contractName}
           />

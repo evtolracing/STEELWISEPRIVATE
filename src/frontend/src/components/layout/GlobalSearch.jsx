@@ -20,7 +20,7 @@ const rowsOf = (data) => (Array.isArray(data) ? data : data?.data || [])
 // result opens, and a kind whose page the role cannot open is not asked for at all.
 const RECORD_KINDS = [
   {
-    key: 'orders', title: 'Orders', icon: OrderIcon, page: '/orders', url: (q) => `/orders?search=${q}&limit=5`,
+    key: 'orders', title: 'Orders', icon: OrderIcon, page: '/orders', url: (q) => `/orders?search=${q}&view=summary&limit=5`,
     row: (o) => ({ id: o.id, primary: o.orderNumber, secondary: [o.buyer?.name || o.customerName, String(o.status || '').replace(/_/g, ' ').toLowerCase()].filter(Boolean).join(' · '), to: `/orders/${o.id}` }),
   },
   {

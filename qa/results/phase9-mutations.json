@@ -127,6 +127,12 @@
    "what": "less motion when asked",
    "scenario": "a person who asks for less motion",
    "result": "HOLDS: 1 of 1 fail (no transition lasts longer than a hundredth of a millisecond: 300)"
+  },
+  {
+   "n": 22,
+   "what": "a full board column draws thirty cards at a time",
+   "scenario": "a full column on the order board",
+   "result": "HOLDS: 1 of 1 fail (the button says how many are left and draws up to thirty more: Show 30 more of 80: 416 then 416), run alone after the fix was added"
   }
  ]
 }

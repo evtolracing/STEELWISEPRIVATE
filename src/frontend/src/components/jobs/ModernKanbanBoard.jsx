@@ -47,6 +47,7 @@ import {
 } from '@mui/icons-material'
 import { KANBAN_COLUMNS, JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import ModernJobCard from './ModernJobCard'
+import { COLUMN_PAGE } from './KanbanBoard'
 
 // Modern Kanban Column
 const ModernKanbanColumn = ({
@@ -62,6 +63,9 @@ const ModernKanbanColumn = ({
 }) => {
   const config = JOB_STATUS_CONFIG[column.status] || JOB_STATUS_CONFIG[column.statuses?.[0]] || {}
   const [isDragOver, setIsDragOver] = useState(false)
+  // A column draws its first cards and offers the rest, so a branch with hundreds of jobs in one
+  // state does not freeze the page. The counts in the column's heading are always of all of them.
+  const [shown, setShown] = useState(COLUMN_PAGE)
   
   // Filter jobs by column's statuses array
   const columnJobs = jobs.filter(job => 
@@ -244,19 +248,26 @@ const ModernKanbanColumn = ({
             </Typography>
           </Box>
         ) : (
-          sortedJobs.map((job) => (
-            <ModernJobCard
-              key={job.id}
-              job={job}
-              onClick={() => onJobClick?.(job)}
-              onStart={onStartJob}
-              onPause={onPauseJob}
-              onComplete={onCompleteJob}
-              onUpdate={onUpdateJob}
-              draggable
-              showAIHints
-            />
-          ))
+          <>
+            {sortedJobs.slice(0, shown).map((job) => (
+              <ModernJobCard
+                key={job.id}
+                job={job}
+                onClick={() => onJobClick?.(job)}
+                onStart={onStartJob}
+                onPause={onPauseJob}
+                onComplete={onCompleteJob}
+                onUpdate={onUpdateJob}
+                draggable
+                showAIHints
+              />
+            ))}
+            {sortedJobs.length > shown && (
+              <Button size="small" fullWidth onClick={() => setShown((n) => n + COLUMN_PAGE)} data-testid="column-show-more">
+                Show {Math.min(COLUMN_PAGE, sortedJobs.length - shown)} more of {sortedJobs.length - shown}
+              </Button>
+            )}
+          </>
         )}
       </Box>
     </Paper>

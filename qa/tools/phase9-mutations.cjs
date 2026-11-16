@@ -28,6 +28,7 @@ const M = [
   ['a sample button says it is not built', F('utils/notBuilt.js'), [['window.dispatchEvent(new CustomEvent(NOT_BUILT_EVENT, { detail: { label } }))', 'void label']], 'a button on a sample screen says'],
   ['the menu is left off the paper', F('theme/index.js'), [["'.MuiDrawer-root, .MuiAppBar-root, .skip-link, .no-print, .MuiSnackbar-root, nav': { display: 'none !important' },", '']], 'Print on an order'],
   ['less motion when asked', F('theme/index.js'), [["'*, *::before, *::after': { animationDuration: '0.01ms !important', animationIterationCount: '1 !important', transitionDuration: '0.01ms !important', scrollBehavior: 'auto !important' },", '']], 'a person who asks for less motion'],
+  ['a full board column draws thirty cards at a time', F('components/jobs/ModernKanbanBoard.jsx'), [['sortedJobs.slice(0, shown).map', 'sortedJobs.map']], 'a full column on the order board'],
   ['web shop preferences are not asked on staff screens', F('contexts/CustomerSessionContext.jsx'), [['if (!wanted || !session.customerId) return', 'if (!session.customerId) return']], 'a long round of 24 screens', false, 'skip'],
 ];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

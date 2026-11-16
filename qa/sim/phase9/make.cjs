@@ -238,4 +238,16 @@ module.exports = async (s) => {
     const r2 = await api(P.scheduler, 'GET', '/api/invoices'); t.check('invoices are refused', r2.status === 403, r2.status);
     const c = await ctx(P.scheduler); const page = await open(c, '/pricing'); await settle(page, 600); t.check('the pricing page says No access', /No access/.test(await text(page, 'main')));
   });
+  await sc('MAKE', 'a full column on the order board draws its first cards and offers the rest', async (t) => {
+    const c = await ctx(boss); const page = await open(c, '/order-board'); await settle(page, 2000);
+    const jobs = sent(page, 'jobNumber', /^\/jobs/); const cards = () => page.locator('main [role="button"]', { hasText: /JOB-\d+/ }).count();
+    const more = page.getByTestId('column-show-more'); const first = await cards(); const offered = await more.count();
+    if (jobs.length <= 30 * 8) { t.na('this database has too few jobs to fill a column'); await c.close(); return; }
+    t.check('not every job is drawn at once', first > 0 && first < jobs.length, `${first} cards for ${jobs.length} jobs`);
+    t.check('the rest are offered', offered >= 1, `${offered} columns offer more`);
+    const label = await more.first().innerText(); await more.first().click(); await settle(page, 400); const after = await cards();
+    t.check('the button says how many are left and draws up to thirty more', /Show \d+ more of \d+/i.test(label) && after > first && after <= first + 30, `${label}: ${first} then ${after}`);
+    t.check('a job far down the list is still found by the search', true === (await (async () => { const last = jobs[jobs.length - 1].jobNumber; await page.getByLabel('Search jobs, customers, materials').fill(last); await settle(page, 700); return (await text(page, 'main')).includes(last); })()), jobs[jobs.length - 1].jobNumber);
+    await c.close();
+  });
 };

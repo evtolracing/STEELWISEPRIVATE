@@ -1,0 +1,50 @@
+{
+ "at": "2026-11-16T05:43:48.570Z",
+ "tasks": [
+  {
+   "task": "find an order by its number and open it, from any screen",
+   "done": true,
+   "clicks": 0,
+   "keys": 2,
+   "typed": 8,
+   "ms": 2431,
+   "note": "1239 ms after the page was up"
+  },
+  {
+   "task": "a shipping coordinator signs in and reaches the shipping desk",
+   "done": true,
+   "clicks": 0,
+   "keys": 1,
+   "typed": 32,
+   "ms": 1530,
+   "note": "lands on /shipping"
+  },
+  {
+   "task": "reach the page content by keyboard, past the menu",
+   "done": true,
+   "clicks": 0,
+   "keys": 2,
+   "typed": 0,
+   "ms": 1624,
+   "note": "122 stops stand before the content without the skip link"
+  },
+  {
+   "task": "open a stock item from the list without a mouse",
+   "done": true,
+   "clicks": 0,
+   "keys": 1,
+   "typed": 0,
+   "ms": 1799,
+   "note": "Enter on the focused row; before, a row answered only to a mouse"
+  },
+  {
+   "task": "come back to the same page after the session ends",
+   "done": true,
+   "clicks": 0,
+   "keys": 1,
+   "typed": 29,
+   "ms": 1080,
+   "note": "back on Invoices with no further step"
+  }
+ ]
+}

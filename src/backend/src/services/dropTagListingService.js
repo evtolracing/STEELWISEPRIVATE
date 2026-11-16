@@ -4,14 +4,10 @@
  */
 
 import prisma from '../lib/db.js';
+import { nextNumber, createTraceEvent as recordTrace, TagRefusal } from './dropTagService.js';
 import crypto from 'crypto';
 
 // ID Generation
-function generateListingId() {
-  const year = new Date().getFullYear();
-  const random = Math.floor(Math.random() * 999999).toString().padStart(6, '0');
-  return `DTL-${year}-${random}`;
-}
 
 // Create a new listing
 export async function createListing({ shipmentId, originLocationId, dropTagIds = [], userId }) {
@@ -21,7 +17,14 @@ export async function createListing({ shipmentId, originLocationId, dropTagIds =
   });
 
   if (!shipment) {
-    throw new Error('Shipment not found');
+    throw new TagRefusal(404, 'Shipment not found');
+  }
+  // A listing is the load plan of a shipment that is still on the dock (Phase 8).
+  if (!['PENDING', 'LOADING'].includes(shipment.status)) {
+    throw new TagRefusal(409, `Shipment ${shipment.shipmentNumber} is ${shipment.status}. A listing is made while the shipment is on the dock.`);
+  }
+  if (originLocationId !== shipment.fromLocationId) {
+    throw new TagRefusal(409, 'The listing starts where its shipment leaves from.');
   }
 
   // Validate origin location
@@ -36,7 +39,8 @@ export async function createListing({ shipmentId, originLocationId, dropTagIds =
   // Create listing
   const listing = await prisma.dropTagListing.create({
     data: {
-      listingId: generateListingId(),
+      // From the counter, one after another (Phase 8, N-012).
+      listingId: await prisma.$transaction((tx) => nextNumber(tx, 'DTL', 'DTL')),
       shipmentId,
       originLocationId,
       stopSequence: [],
@@ -95,7 +99,13 @@ export async function addTagsToListing(listingId, { dropTagIds, userId }) {
   });
 
   const errors = [];
+  const shipment = await prisma.shipment.findUnique({ where: { id: listing.shipmentId }, select: { orderId: true, shipmentNumber: true } });
+  if (tags.length !== new Set(dropTagIds).size) errors.push('One or more of those tags is not on file');
   for (const tag of tags) {
+    // What goes on a truck's listing is material of the order that truck carries (Phase 8).
+    if (shipment && tag.orderId !== shipment.orderId) {
+      errors.push(`Tag ${tag.dropTagId} is for a different order than shipment ${shipment.shipmentNumber}`);
+    }
     // Check if already assigned to another listing
     if (tag.listingId && tag.listingId !== listingId) {
       errors.push(`Tag ${tag.dropTagId} is already assigned to another listing`);
@@ -263,19 +273,12 @@ export async function printListing(listingId, { stationId, userId, includePackin
     throw new Error('Listing not found');
   }
 
-  // Generate packing list document ID (in real implementation, would create PDF)
-  const packingListDocId = `PKL-${Date.now()}`;
-  const cocBundleId = includeDocBundle ? `COC-BUNDLE-${Date.now()}` : null;
-  const mtrBundleId = includeDocBundle ? `MTR-BUNDLE-${Date.now()}` : null;
-
+  // No document numbers are made up (Phase 8, N-014). The packing list and the bill of lading are
+  // drawn from the shipment itself: GET /api/shipments/:id/documents, or the print queue.
+  const packingListDocId = null; const cocBundleId = null; const mtrBundleId = null;
   const updated = await prisma.dropTagListing.update({
     where: { id: listingId },
-    data: {
-      status: 'PRINTED',
-      packingListDocId,
-      cocBundleId,
-      mtrBundleId,
-    },
+    data: { status: 'PRINTED' },
   });
 
   await createTraceEvent({
@@ -299,11 +302,7 @@ export async function printListing(listingId, { stationId, userId, includePackin
   return {
     success: true,
     listing: updated,
-    documents: {
-      packingListUrl: `/documents/${packingListDocId}`,
-      cocBundleUrl: cocBundleId ? `/documents/${cocBundleId}` : null,
-      mtrBundleUrl: mtrBundleId ? `/documents/${mtrBundleId}` : null,
-    },
+    documents: { shipmentPapers: `/api/shipments/${listing.shipmentId}/documents`, note: 'The packing list and bill of lading are drawn from the shipment. Certificates are the mill certificates on file for each heat.' },
   };
 }
 
@@ -347,6 +346,12 @@ export async function lockAndDepart(listingId, userId) {
   const unloadedTags = listing.dropTags.filter(t => t.status !== 'LOADED');
   if (unloadedTags.length > 0) {
     throw new Error(`Cannot depart: ${unloadedTags.length} packages not loaded`);
+  }
+  // The truck has left when its shipment has been dispatched: that is what takes the stock and
+  // raises the invoice. A listing cannot say "departed" on its own (Phase 8).
+  const truck = await prisma.shipment.findUnique({ where: { id: listing.shipmentId }, select: { status: true, shipmentNumber: true } });
+  if (!truck || !['IN_TRANSIT', 'EXCEPTION', 'DELIVERED'].includes(truck.status)) {
+    throw new TagRefusal(409, `Dispatch shipment ${truck?.shipmentNumber || ''} first. The listing departs with it.`.replace('  ', ' '));
   }
 
   // Validate totals match
@@ -405,6 +410,11 @@ export async function confirmAllDelivered(listingId, { podDocId, podSignature, p
 
   if (listing.status !== 'DEPARTED') {
     throw new Error('Listing must be in DEPARTED status');
+  }
+  // Delivered is said once, on the shipment, with who received it (Phase 8).
+  const delivered = await prisma.shipment.findUnique({ where: { id: listing.shipmentId }, select: { status: true, shipmentNumber: true } });
+  if (!delivered || delivered.status !== 'DELIVERED') {
+    throw new TagRefusal(409, `Record the delivery on shipment ${delivered?.shipmentNumber || ''} first. The listing follows it.`.replace('  ', ' '));
   }
 
   // Update all tags to DELIVERED
@@ -561,24 +571,10 @@ async function updateListingTotals(listingId) {
   return totals;
 }
 
+/** The custody record of a listing step: the role is the one the person really has, and the hash is a hash (Phase 8, N-011). */
 async function createTraceEvent(data) {
-  return prisma.traceEvent.create({
-    data: {
-      eventType: data.eventType,
-      eventCategory: data.eventCategory,
-      actorUserId: data.actorUserId,
-      actorRole: data.actorRole,
-      resourceType: data.resourceType,
-      resourceId: data.resourceId,
-      previousState: data.previousState,
-      newState: data.newState,
-      stationId: data.stationId,
-      metadata: data.metadata,
-      shipmentId: data.shipmentId,
-      occurredAt: new Date(),
-      eventHash: crypto.randomUUID(),
-    },
-  });
+  const actor = data.actorUserId ? await prisma.user.findUnique({ where: { id: data.actorUserId }, select: { role: true } }) : null;
+  return recordTrace(prisma, { ...data, actorRole: actor?.role || 'UNKNOWN' });
 }
 
 export default {

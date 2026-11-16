@@ -475,7 +475,9 @@ if (want(3)) {
     const c = await customer();
     const { quote: live } = await quoted(c);
     const { quote: lapsed } = await quoted(c);
-    await prisma.quote.update({ where: { id: lapsed.id }, data: { validUntil: new Date(Date.now() - 3600e3) } });
+    // Lapsed a second ago, not an hour ago: in the first hour of a week an hour ago is last week, and
+    // the week's figures rightly leave it out (this check failed for that reason on 2026-11-16 at 00:30 UTC).
+    await prisma.quote.update({ where: { id: lapsed.id }, data: { validUntil: new Date(Date.now() - 1000) } });
     const after = (await A.get('/api/sales-dashboard?range=week', 'admin')).body;
     const k = after.pipeline || {};
     const kb = before.pipeline || {};

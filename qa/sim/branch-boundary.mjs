@@ -84,7 +84,10 @@ if (back.body?.transfer?.id) await A.post(`/api/inventory/transfers/${back.body.
 
 // ── Shipments, jobs, invoices ──
 const shipOther = await A.post('/api/shipments', { orderId: oB.body.id, fromLocationId: L2, items: [{ orderLineId: oB.body.lines[0].id, qtyShipped: 1 }] }, 'branchA');
-check('shipping another branch\'s order is refused', shipOther.status === 404, `${shipOther.status}`);
+// Phase 8 (N-002): the dock is checked first, so a dock that is not yours answers 403; from your own dock,
+// an order of another branch that you hold nothing for is not found (404). Either way nothing is written.
+const shipOtherOwnDock = await A.post('/api/shipments', { orderId: oB.body.id, fromLocationId: L1, items: [{ orderLineId: oB.body.lines[0].id, qtyShipped: 1 }] }, 'branchA');
+check('shipping another branch\'s order is refused', shipOther.status === 403 && shipOtherOwnDock.status === 404 && !(await prisma.shipment.findFirst({ where: { orderId: oB.body.id } })), `${shipOther.status} ${shipOtherOwnDock.status}`);
 const shipFromOther = await A.post('/api/shipments', { orderId: oA.body.id, fromLocationId: L2, items: [{ orderLineId: oA.body.lines[0].id, qtyShipped: 1 }] }, 'branchA');
 check('shipping your order from a branch you are not in is refused', shipFromOther.status === 403 && !(await prisma.shipment.findFirst({ where: { orderId: oA.body.id } })), `${shipFromOther.status}`);
 const ship = await A.post('/api/shipments', { orderId: oA.body.id, fromLocationId: L1, items: [{ orderLineId: oA.body.lines[0].id, qtyShipped: 10 }] }, 'branchA');

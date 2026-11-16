@@ -57,6 +57,8 @@ const EVERY_DEPARTMENT = ['sales', 'production', 'warehouse', 'quality', 'mainte
 
 const MANAGER_ONLY = [
   /^\/api\/invoices\/[^/]+\/(credit|refund|cancel)$/,
+  // Issuing or settling the credit of a return that was received without one (Phase 8, N-016).
+  /^\/api\/returns\/[^/]+\/credit$/,
   /^\/api\/pos\/quick-sale\/[^/]+\/void$/,
   /^\/api\/tax-rates(\/|$)/,
 ];
@@ -83,6 +85,8 @@ const WRITE_RULES = [
   [(p, m) => under(p, '/api/maintenance-orders') && m === 'DELETE', ['MAINTENANCE_MANAGER', 'PRODUCTION_MANAGER'], 'Deleting a maintenance order', 'the maintenance or production manager'],
   [(p) => under(p, '/api/maintenance-orders'), ['maintenance', 'production'], 'Maintenance orders', 'maintenance or production staff'],
   [(p) => under(p, '/api/drop-tags/templates'), ['PRODUCTION_MANAGER', 'INVENTORY_MANAGER', 'PACKAGING_LEAD'], 'Tag templates', 'the production manager, the inventory manager or the packaging lead'],
+  // Releasing or holding a package is an inspection decision: the same people as inspections (Phase 8, N-008).
+  [(p) => /^\/api\/drop-tags\/packages\/[^/]+\/qc-(release|hold)$/.test(p), ['quality', 'PRODUCTION_MANAGER'], 'Releasing or holding a package', 'quality staff or the production manager'],
   [(p) => under(p, '/api/drop-tags'), ['production', 'warehouse'], 'Drop tags and packages', 'production or warehouse staff'],
   [(p) => under(p, '/api/print-queue'), ['production', 'warehouse', 'sales', 'quality'], 'The print queue', 'production, warehouse, sales or quality staff'],
   // Anyone may stop work for safety. Moving it on and clearing it is for a supervisor.

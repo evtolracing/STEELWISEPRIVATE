@@ -9,8 +9,13 @@
  *   POST   /api/shipments/:id/items           add a line while it has not left
  *   DELETE /api/shipments/:id/items/:itemId
  *   PUT    /api/shipments/:id/dispatch        leaves the dock: order lines, order status and stock are updated
- *   PUT    /api/shipments/:id/deliver         proof of delivery
- *   PATCH  /api/shipments/:id/status          { status } — same rules as above
+ *   PUT    /api/shipments/:id/deliver         proof of delivery: who received it, or why there is no name
+ *   PATCH  /api/shipments/:id/status          { status } — same rules as above. EXCEPTION needs a reason.
+ *   GET    /api/shipments/:id/documents       what the pick list, packing list and bill of lading print
+ *
+ * Branches (Phase 8, N-001 and N-002): a shipment is changed only by the branch it leaves from.
+ * That branch may ship an order sold by another branch when the stock reserved for it, or the job
+ * that made it, stands at its dock. Stock standing at another branch cannot leave on this shipment.
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
@@ -22,11 +27,15 @@ import {
 import { invoiceShipment } from '../services/billing.js';
 import { moveJobsWhere } from '../lib/jobHistory.js';
 import { recordBusinessEvent, kick } from '../services/webhookService.js';
+import { acrossBranches, currentScope } from '../lib/branchScope.js';
+import { shipmentDocuments } from '../lib/shippingDocuments.js';
 const router = Router();
 
 const EDIT_FIELDS = ['carrierId', 'carrierName', 'truckNumber', 'driverName', 'driverPhone', 'scheduledDate', 'totalWeightLb', 'bolNumber', 'notes'];
 const OPEN = ['PENDING', 'LOADING'];
 const num = (d) => Number(d || 0);
+/** The branches this person is held to; null when they work across every branch. */
+const myBranches = () => currentScope()?.branches ?? null;
 
 class Refuse extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -58,6 +67,34 @@ function pickEdits(body) {
     } else data[f] = body[f];
   }
   return data;
+}
+
+/** Only the branch a shipment leaves from changes it. The selling branch can read it. */
+function ownDock(shipment) {
+  const branches = myBranches();
+  if (branches && !branches.includes(shipment.fromLocationId)) refuse(403, 'This shipment leaves from another branch. Only that branch can change it.');
+}
+
+/**
+ * The order someone is about to ship. Their own branch's order is found as usual. An order sold by
+ * another branch is found only when stock reserved for it, or a job for it, stands at a dock of
+ * theirs (the one named, when one is named). Anything else stays "not found" (N-002).
+ */
+async function orderToShip(where, select, fromLocationId) {
+  const own = await prisma.order.findFirst({ where, select });
+  const branches = myBranches();
+  if (own || !branches) return own;
+  const docks = fromLocationId ? branches.filter((id) => id === fromLocationId) : branches;
+  if (!docks.length) return null;
+  return acrossBranches(async () => {
+    const order = await prisma.order.findFirst({ where, select: { ...select, id: true } });
+    if (!order) return null;
+    const [stock, jobs] = await Promise.all([
+      prisma.orderLineAllocation.count({ where: { orderLine: { orderId: order.id }, coil: { locationId: { in: docks } } } }),
+      prisma.job.count({ where: { orderId: order.id, workCenter: { locationId: { in: docks } } } }),
+    ]);
+    return stock || jobs ? order : null;
+  });
 }
 
 /**
@@ -144,15 +181,13 @@ router.get('/', handle('fetch shipments', async (req, res) => {
 router.get('/shippable', handle('look up what can ship', async (req, res) => {
   const orderNumber = typeof req.query.orderNumber === 'string' ? req.query.orderNumber.trim() : '';
   if (!orderNumber) refuse(400, 'orderNumber is required');
-  const order = await prisma.order.findFirst({
-    where: { orderNumber: { equals: orderNumber, mode: 'insensitive' } },
-    select: {
-      id: true, orderNumber: true, status: true, buyer: BUYER,
-      lines: { orderBy: { lineNumber: 'asc' }, include: { shipmentItems: { where: { shipment: { status: { in: OPEN } } } } } },
-    },
+  const order = await orderToShip({ orderNumber: { equals: orderNumber, mode: 'insensitive' } }, {
+    id: true, orderNumber: true, status: true, locationId: true, buyer: BUYER,
+    lines: { orderBy: { lineNumber: 'asc' }, include: { shipmentItems: { where: { shipment: { status: { in: OPEN } } } } } },
   });
   if (!order) refuse(404, `Order ${orderNumber} is not on file`);
-  const jobs = await prisma.job.findMany({ where: { orderId: order.id }, select: { jobNumber: true, status: true, orderLineId: true, workCenter: { select: { locationId: true } } } });
+  // Every job on the order counts, whichever branch runs it.
+  const jobs = await acrossBranches(() => prisma.job.findMany({ where: { orderId: order.id }, select: { jobNumber: true, status: true, orderLineId: true, workCenter: { select: { locationId: true } } } }));
   const lines = order.lines.filter((l) => l.lineStatus !== 'CANCELLED').map((l) => {
     const onDock = l.shipmentItems.reduce((sum, it) => sum + num(it.qtyShipped), 0);
     const open = Math.max(0, num(l.qtyOrdered) - num(l.qtyShipped) - onDock);
@@ -163,9 +198,12 @@ router.get('/shippable', handle('look up what can ship', async (req, res) => {
     };
   });
   const canShip = SHIPPABLE_ORDER_STATUSES.includes(order.status);
+  const branches = myBranches();
+  const atMine = (id) => !branches || branches.includes(id);
   res.json({
     orderId: order.id, orderNumber: order.orderNumber, status: order.status, customer: order.buyer, lines,
-    suggestedLocationId: jobs.find((j) => j.workCenter?.locationId)?.workCenter.locationId || null,
+    soldByAnotherBranch: Boolean(branches && order.locationId && !branches.includes(order.locationId)),
+    suggestedLocationId: jobs.map((j) => j.workCenter?.locationId).find((id) => id && atMine(id)) || null,
     reason: canShip ? (lines.some((l) => l.qtyOpen > 0) ? null : 'Everything on this order has shipped or is already on a shipment.') : `Order ${order.orderNumber} is ${String(order.status).toLowerCase()}. Only confirmed orders can be shipped.`,
   });
 }));
@@ -199,9 +237,11 @@ router.get('/:id', handle('fetch shipment', async (req, res) => {
 router.post('/', handle('create shipment', async (req, res) => {
   const body = req.body || {};
   if (!body.orderId || !body.fromLocationId) refuse(400, 'orderId and fromLocationId are required');
+  const branches = myBranches();
+  if (branches && !branches.includes(String(body.fromLocationId))) refuse(403, 'That record belongs to another branch.');
   const [order, location] = await Promise.all([
-    prisma.order.findUnique({ where: { id: body.orderId }, select: { id: true, status: true, orderNumber: true } }),
-    prisma.location.findUnique({ where: { id: body.fromLocationId }, select: { id: true } }),
+    orderToShip({ id: String(body.orderId) }, { id: true, status: true, orderNumber: true }, String(body.fromLocationId)),
+    prisma.location.findUnique({ where: { id: String(body.fromLocationId) }, select: { id: true } }),
   ]);
   if (!order) refuse(404, 'Order not found');
   if (!location) refuse(400, 'Ship-from location not found');
@@ -210,7 +250,8 @@ router.post('/', handle('create shipment', async (req, res) => {
   }
   const edits = pickEdits(body);
 
-  const shipment = await createNumbered({
+  // The dock was checked above; the order may belong to the branch that sold it.
+  const shipment = await acrossBranches(() => createNumbered({
     count: () => prisma.shipment.count(),
     format: padded('SHP'),
     create: (shipmentNumber) => prisma.$transaction(async (tx) => {
@@ -221,7 +262,7 @@ router.post('/', handle('create shipment', async (req, res) => {
         include: { order: true, fromLocation: true, items: true },
       });
     }, { isolationLevel: 'Serializable' }),
-  });
+  }));
   await recordShipmentEvent(prisma, { shipment, from: null, to: shipment.status, userId: req.user?.id });
   res.status(201).json(shipment);
 }));
@@ -229,6 +270,7 @@ router.post('/', handle('create shipment', async (req, res) => {
 async function openShipment(id) {
   const shipment = await prisma.shipment.findUnique({ where: { id }, include: { items: true } });
   if (!shipment) refuse(404, 'Shipment not found');
+  ownDock(shipment);
   if (!OPEN.includes(shipment.status)) refuse(409, `This shipment is ${shipment.status} and can no longer be changed`);
   return shipment;
 }
@@ -248,10 +290,10 @@ router.get('/:id/items', handle('fetch shipment items', async (req, res) => {
 
 router.post('/:id/items', handle('add shipment item', async (req, res) => {
   const shipment = await openShipment(req.params.id);
-  const item = await retryOverlap(() => prisma.$transaction(async (tx) => {
+  const item = await acrossBranches(() => retryOverlap(() => prisma.$transaction(async (tx) => {
     const [checked] = await checkItems(tx, shipment.orderId, [req.body || {}]);
     return tx.shipmentItem.create({ data: { ...checked, shipmentId: shipment.id } });
-  }, { isolationLevel: 'Serializable' }));
+  }, { isolationLevel: 'Serializable' })));
   res.status(201).json(item);
 }));
 
@@ -274,7 +316,13 @@ async function consumeReserved(tx, shipment, item, userId) {
     if (left <= 1e-9) break;
     const take = Math.min(left, num(a.qtyAllocated));
     if (take <= 0) continue;
-    const held = await tx.coil.findUnique({ where: { id: a.coilId }, select: { coilNumber: true, status: true, qcStatus: true, inventory: { select: { status: true } } } });
+    const held = await tx.coil.findUnique({ where: { id: a.coilId }, select: { coilNumber: true, status: true, qcStatus: true, unitCost: true, inventory: { select: { status: true, locationId: true, location: { select: { name: true, code: true } } } } } });
+    // What leaves this dock must be standing at this dock (N-001). Otherwise the other branch's
+    // balance falls for a truck that left from here.
+    if (held?.inventory && held.inventory.locationId !== shipment.fromLocationId) {
+      const at = held.inventory.location ? `${held.inventory.location.name} (${held.inventory.location.code})` : 'another branch';
+      refuse(409, `Stock item ${held.coilNumber} reserved for this shipment is at ${at}, not at the branch this shipment leaves from. Transfer it here, or ship it from ${at}.`);
+    }
     if (held?.inventory?.status === 'IN_TRANSIT') {
       refuse(409, `Stock item ${held.coilNumber} reserved for this shipment is still on its way from another branch. Receive the transfer first.`);
     }
@@ -288,11 +336,13 @@ async function consumeReserved(tx, shipment, item, userId) {
     if (!moved.count) refuse(409, 'The stock reserved for this shipment is no longer on hand. Check the inventory record before shipping.');
     if (take + 1e-9 >= num(a.qtyAllocated)) await tx.orderLineAllocation.delete({ where: { id: a.id } });
     else await tx.orderLineAllocation.update({ where: { id: a.id }, data: { qtyAllocated: { decrement: take } } });
-    const inv = await tx.inventory.findUnique({ where: { coilId: a.coilId }, select: { qtyOnHand: true, locationId: true } });
+    const inv = await tx.inventory.findUnique({ where: { coilId: a.coilId }, select: { qtyOnHand: true, locationId: true, unit: true } });
     await tx.materialMovement.create({
       data: {
-        coilId: a.coilId, movementType: 'SHIP', fromLocationId: inv.locationId, qtyMoved: take,
+        coilId: a.coilId, movementType: 'SHIP', fromLocationId: inv.locationId, qtyMoved: take, unit: inv.unit,
         orderId: shipment.orderId, shipmentId: shipment.id, createdById: userId,
+        // The cost of what was sold is fixed here, at the item's cost on file (N-017). Empty when there is none.
+        orderLineId: item.orderLineId, unitCost: held?.unitCost ?? null,
       },
     });
     if (num(inv.qtyOnHand) <= 1e-9) await tx.coil.update({ where: { id: a.coilId }, data: { status: 'SHIPPED' } });
@@ -309,8 +359,9 @@ async function consumeReserved(tx, shipment, item, userId) {
 }
 
 async function dispatch(id, body, userId) {
-  const shipment = await prisma.shipment.findUnique({ where: { id }, include: { items: true, order: { select: { status: true, orderNumber: true, buyerId: true } } } });
+  const shipment = await prisma.shipment.findUnique({ where: { id }, include: { items: true, order: { select: { status: true, orderNumber: true, buyerId: true, buyer: { select: { name: true, isActive: true } } } } } });
   if (!shipment) refuse(404, 'Shipment not found');
+  ownDock(shipment);
   const why = shipmentMoveError(shipment.status, 'IN_TRANSIT');
   if (why) refuse(409, why);
   const resuming = shipment.status === 'EXCEPTION';
@@ -319,13 +370,19 @@ async function dispatch(id, body, userId) {
     if (!SHIPPABLE_ORDER_STATUSES.includes(shipment.order.status)) {
       refuse(409, `Order ${shipment.order.orderNumber} is ${shipment.order.status}, so this shipment cannot go out`);
     }
-    const jobs = await prisma.job.findMany({ where: { orderId: shipment.orderId }, select: { jobNumber: true, status: true, orderLineId: true } });
+    // A closed account takes no new business (J-002), and a shipment is a new invoice (N-005).
+    if (shipment.order.buyer && shipment.order.buyer.isActive === false) {
+      refuse(409, `${shipment.order.buyer.name}'s account is closed, so nothing more can ship to it. Reopen the account, or cancel the order.`);
+    }
+    const jobs = await acrossBranches(() => prisma.job.findMany({ where: { orderId: shipment.orderId }, select: { jobNumber: true, status: true, orderLineId: true } }));
     const blocked = jobsBlockingShipment(jobs, shipment.items.map((i) => i.orderLineId));
     if (blocked) refuse(409, blocked);
   }
   const edits = pickEdits(body);
 
-  return retryOverlap(() => prisma.$transaction(async (tx) => {
+  // The dock is this person's (checked above). The order lines, the stock record and the jobs are
+  // updated whichever branch sold the order.
+  return acrossBranches(() => retryOverlap(() => prisma.$transaction(async (tx) => {
     // Only one dispatch can win.
     const claimed = await tx.shipment.updateMany({
       where: { id, status: shipment.status },
@@ -358,21 +415,25 @@ async function dispatch(id, body, userId) {
       await recordBusinessEvent(tx, 'shipment.dispatched', shipment.id, { shipmentId: shipment.id, shipmentNumber: shipment.shipmentNumber, orderId: shipment.orderId, orderNumber: shipment.order.orderNumber, status: 'IN_TRANSIT' }, { customerOrgId: shipment.order.buyerId, carrierOrgId: edits.carrierId || shipment.carrierId });
     }
     return tx.shipment.findUnique({ where: { id }, include: { items: true, order: { select: { id: true, status: true } } } });
-  }));
+  })));
 }
 
 export async function moveShipment(id, to, extra, userId, note) { return move(id, to, extra, userId, note); }
 
 async function move(id, to, extra = {}, userId = null, note = null) {
-  const shipment = await prisma.shipment.findUnique({ where: { id }, select: { id: true, status: true, shipmentNumber: true, orderId: true, carrierId: true, order: { select: { buyerId: true, orderNumber: true } } } });
+  const shipment = await prisma.shipment.findUnique({ where: { id }, select: { id: true, status: true, shipmentNumber: true, orderId: true, carrierId: true, fromLocationId: true, order: { select: { buyerId: true, orderNumber: true } } } });
   if (!shipment) refuse(404, 'Shipment not found');
+  ownDock(shipment);
   const why = shipmentMoveError(shipment.status, to);
   if (why) refuse(409, why);
+  // A problem on the road is recorded with what the problem is (N-003).
+  if (to === 'EXCEPTION' && !note) refuse(400, 'Say what the problem is. It is kept in the shipment\'s history.');
   // The move, who made it and the event for partners are one save.
   await prisma.$transaction(async (tx) => {
     const changed = await tx.shipment.updateMany({ where: { id, status: shipment.status }, data: { ...extra, status: to } });
     if (!changed.count) refuse(409, 'This shipment was just changed by someone else. Reload and try again.');
-    await recordShipmentEvent(tx, { shipment, from: shipment.status, to, userId, note: note || (extra.podSignature ? `Signed for by ${extra.podSignature}` : null) });
+    const pod = extra.podSignature ? `Signed for by ${extra.podSignature}` : extra.noPodReason ? `No signature: ${extra.noPodReason}` : null;
+    await recordShipmentEvent(tx, { shipment, from: shipment.status, to, userId, note: [note, pod].filter(Boolean).join('. ') || null });
     const event = { DELIVERED: 'shipment.delivered', EXCEPTION: 'shipment.exception' }[to];
     if (event) {
       const key = to === 'DELIVERED' ? shipment.id : `${shipment.id}:${Date.now()}`;
@@ -391,15 +452,26 @@ function podText(value, name, max) {
   return text || undefined;
 }
 
-export function deliver(id, body, userId, note = null) {
+/**
+ * Proof of delivery (N-004): the name of who received it, or a picture of the signed receipt. Where
+ * there is neither, the person recording the delivery says why (left at the gate, driver did not
+ * get a name). A carrier's own system reporting the delivery is its own reason. Nothing is filled in.
+ */
+export function deliver(id, body, userId, note = null, { reportedByCarrier = false } = {}) {
   const podSignature = podText(body.podSignature, 'podSignature', 200);
   const podImageUrl = podText(body.podImageUrl, 'podImageUrl', 2000);
   if (podImageUrl && !/^(https:\/\/|\/api\/documents\/)/.test(podImageUrl)) refuse(400, 'podImageUrl must be an https address or a stored document');
+  let noPodReason;
+  if (!podSignature && !podImageUrl) {
+    noPodReason = podText(body.noPodReason, 'noPodReason', 300) || (reportedByCarrier ? 'Reported delivered by the carrier\'s system, with no name' : undefined);
+    if (!noPodReason || noPodReason.length < 3) refuse(400, 'Give the name of the person who received it, or say why there is no name.');
+  }
   return move(id, 'DELIVERED', {
     deliveredAt: new Date(),
     podCaptured: Boolean(podSignature || podImageUrl),
     ...(podSignature !== undefined && { podSignature }),
     ...(podImageUrl !== undefined && { podImageUrl }),
+    ...(noPodReason !== undefined && { noPodReason }),
   }, userId, note);
 }
 
@@ -413,7 +485,8 @@ async function dispatchAndInvoice(id, body, userId) {
   let invoice = null;
   let invoiceWarning = null;
   try {
-    invoice = await invoiceShipment(id, userId);
+    // The invoice belongs to the branch that sold the order, whoever loaded the truck.
+    invoice = await acrossBranches(() => invoiceShipment(id, userId));
   } catch (error) {
     // The shipment has left and stays left. The missing invoice is put on record, said in the
     // answer, and listed in the integration report until it is raised (finding H-006).
@@ -433,13 +506,14 @@ async function dispatchAndInvoice(id, body, userId) {
  */
 export async function shipForJob(job, { carrier, trackingNumber, userId }) {
   if (!job.orderId) return null;
-  const [order, workCenter] = await Promise.all([
+  // The order may have been sold by another branch than the one that made it (N-002): it is still shipped and billed.
+  const [order, workCenter] = await acrossBranches(() => Promise.all([
     prisma.order.findUnique({
       where: { id: job.orderId },
       select: { id: true, status: true, orderNumber: true, lines: { where: job.orderLineId ? { id: job.orderLineId } : {}, include: { shipmentItems: { where: { shipment: { status: { in: OPEN } } } } } } },
     }),
     job.workCenterId ? prisma.workCenter.findUnique({ where: { id: job.workCenterId }, select: { locationId: true } }) : null,
-  ]);
+  ]));
   if (!order) return null;
   // A job with no line is for the whole order: everything still open goes.
   const lines = order.lines.filter((l) => l.lineStatus !== 'CANCELLED');
@@ -449,7 +523,9 @@ export async function shipForJob(job, { carrier, trackingNumber, userId }) {
   if (!wanted.length) return null;
   if (!SHIPPABLE_ORDER_STATUSES.includes(order.status)) refuse(409, `Order ${order.orderNumber} is ${order.status}, so this job cannot ship`);
   if (!workCenter?.locationId) refuse(409, 'This job has no work center, so the branch it ships from is not known. Create the shipment on the shipping desk.');
-  const shipment = await createNumbered({
+  const branches = myBranches();
+  if (branches && !branches.includes(workCenter.locationId)) refuse(403, 'This job ships from another branch. Only that branch can ship it.');
+  const shipment = await acrossBranches(() => createNumbered({
     count: () => prisma.shipment.count(),
     format: padded('SHP'),
     create: (shipmentNumber) => prisma.$transaction(async (tx) => {
@@ -461,12 +537,12 @@ export async function shipForJob(job, { carrier, trackingNumber, userId }) {
         },
       });
     }, { isolationLevel: 'Serializable' }),
-  });
+  }));
   try {
     return await dispatchAndInvoice(shipment.id, {}, userId);
   } catch (error) {
     // Nothing left the dock: do not leave an empty shipment behind.
-    await prisma.shipment.delete({ where: { id: shipment.id } }).catch(() => {});
+    await acrossBranches(() => prisma.shipment.delete({ where: { id: shipment.id } })).catch(() => {});
     throw error;
   }
 }
@@ -483,7 +559,13 @@ router.patch('/:id/status', handle('update shipment status', async (req, res) =>
   const { status, ...rest } = req.body || {};
   if (status === 'IN_TRANSIT') return res.json(await dispatchAndInvoice(req.params.id, rest, req.user.id));
   if (status === 'DELIVERED') return res.json(await deliver(req.params.id, rest, req.user?.id));
-  res.json(await move(req.params.id, status, {}, req.user?.id));
+  res.json(await move(req.params.id, status, {}, req.user?.id, podText(rest.reason ?? rest.note, 'reason', 300) || null));
+}));
+
+router.get('/:id/documents', handle('read shipping documents', async (req, res) => {
+  const docs = await shipmentDocuments(req.params.id);
+  if (!docs) refuse(404, 'Shipment not found');
+  res.json(docs);
 }));
 
 export default router;

@@ -1,181 +1,89 @@
 /**
- * Print Queue Routes
- * REST API for the automated print queue
- * GET  /api/print-queue          — list pending print jobs
- * GET  /api/print-queue/history  — last 50 queue events
- * GET  /api/print-queue/:id/render — HTML rendition of a tag for browser printing
- * POST /api/print-queue/:id/printed — mark as printed
- * POST /api/print-queue/:id/skip    — skip (won't be requeued)
- * POST /api/print-queue/trigger  — manually trigger a print job by jobId/status
+ * Print queue API. Mount: /api/print-queue
+ *
+ *   GET  /                    waiting jobs for the reader's branch (urgent first), with the full count
+ *   GET  /history             the most recent jobs, any status
+ *   GET  /:id/render          the printable page of one job
+ *   POST /:id/printed         mark a waiting job printed (once)
+ *   POST /:id/skip            { reason } mark a waiting job skipped (once)
+ *   POST /:id/reprint         queue another copy
+ *   POST /trigger             { jobId | jobNumber, type?, force? } queue a tag for a job
+ *   POST /trigger-shipment    { shipmentId } queue the bill of lading and packing list of a shipment
+ *
+ * A print job belongs to one branch (Phase 8, N-015): the lists and every step are held to the
+ * reader's branches by the database layer (lib/branchScope.js).
  */
-
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import printAutomation, {
-  markPrinted,
-  markSkipped,
-  getPendingQueue,
-  getQueueHistory,
-  getPrintJob,
-  onJobStatusChange,
-  onShipmentCreated,
-  manualEnqueue,
-  reprintById,
+import {
+  markPrinted, markSkipped, getPendingQueue, getQueueHistory, getPrintJob, onJobStatusChange, queueShipmentPapers, manualEnqueue, reprintById,
 } from '../services/printAutomationService.js';
 import { renderTagHTML } from '../services/tagRenderer.js';
 
 const router = Router();
 
-// ── GET /api/print-queue ──────────────────────────────────────────────────────
-router.get('/', async (req, res) => {
+const step = (label, fn) => async (req, res) => {
   try {
-    const pending = await getPendingQueue();
-    res.json({
-      pendingCount: pending.length,
-      queue: pending,
-    });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load print queue' });
+    await fn(req, res);
+  } catch (error) {
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
+    if (error?.name === 'OutsideBranch') return res.status(403).json({ error: error.message });
+    console.error(`Print queue: ${label} failed:`, error);
+    res.status(500).json({ error: `Failed to ${label}` });
   }
-});
+};
 
-// ── GET /api/print-queue/history ─────────────────────────────────────────────
-router.get('/history', async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 50;
-    res.json({ history: await getQueueHistory(limit) });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load print history' });
+router.get('/', step('load the print queue', async (req, res) => {
+  const pending = await getPendingQueue();
+  res.json({ pendingCount: pending.total, shown: pending.length, queue: pending });
+}));
+
+router.get('/history', step('load the print history', async (req, res) => {
+  res.json({ history: await getQueueHistory(parseInt(req.query.limit, 10) || 50) });
+}));
+
+router.get('/:id/render', step('draw the print job', async (req, res) => {
+  const job = await getPrintJob(req.params.id);
+  if (!job) return res.status(404).json({ error: 'Print job not found' });
+  res.setHeader('Content-Type', 'text/html');
+  res.send(renderTagHTML(job.type, job.payload));
+}));
+
+router.post('/:id/printed', step('mark the job printed', async (req, res) => {
+  res.json({ success: true, job: await markPrinted(req.params.id, req.user?.id) });
+}));
+
+router.post('/:id/skip', step('skip the job', async (req, res) => {
+  res.json({ success: true, job: await markSkipped(req.params.id, req.body?.reason, req.user?.id) });
+}));
+
+const TAG_FOR_STATUS = { DTL_TAG: 'SCHEDULED', BUNDLE_TAG: 'PACKAGING', SHIPPING_LABEL: 'READY_TO_SHIP' };
+router.post('/trigger', step('queue the tag', async (req, res) => {
+  const { jobId, jobNumber, type, force } = req.body || {};
+  if (!jobId && !jobNumber) return res.status(400).json({ error: 'jobId or jobNumber is required' });
+  if (type !== undefined && !(type in TAG_FOR_STATUS)) return res.status(400).json({ error: `type must be one of: ${Object.keys(TAG_FOR_STATUS).join(', ')}` });
+  // Found under the reader's branch rule: a job of another branch is not found.
+  const job = await prisma.job.findFirst({ where: jobId ? { id: String(jobId) } : { jobNumber: String(jobNumber) }, select: { id: true, jobNumber: true, status: true } });
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+  if (force && type) {
+    const printJob = await manualEnqueue(type, job);
+    return res.json({ success: true, message: `Print job queued for ${job.jobNumber} (${type})`, printJobId: printJob.id });
   }
-});
+  const status = type ? TAG_FOR_STATUS[type] : job.status;
+  const printJob = await onJobStatusChange(job, status);
+  res.json({ success: true, queued: Boolean(printJob), printJobId: printJob?.id || null, message: printJob ? `Print job queued for ${job.jobNumber}` : `Nothing new was queued for ${job.jobNumber}: its tag is already waiting, or its status needs none.` });
+}));
 
-// ── GET /api/print-queue/:id/render ──────────────────────────────────────────
-// Returns complete, print-ready HTML for a given queue entry
-router.get('/:id/render', async (req, res) => {
-  try {
-    const job = await getPrintJob(req.params.id);
-    if (!job) {
-      return res.status(404).json({ error: 'Print job not found' });
-    }
+router.post('/:id/reprint', step('queue another copy', async (req, res) => {
+  const newJob = await reprintById(req.params.id);
+  res.json({ success: true, message: `Reprinted: ${newJob.label}`, printJob: newJob });
+}));
 
-    const html = renderTagHTML(job.type, job.payload);
-    res.setHeader('Content-Type', 'text/html');
-    res.send(html);
-  } catch (err) {
-    res.status(500).json({ error: 'Render failed', details: err.message });
-  }
-});
-
-// ── POST /api/print-queue/:id/printed ────────────────────────────────────────
-router.post('/:id/printed', async (req, res) => {
-  try {
-    const job = await markPrinted(req.params.id);
-    res.json({ success: true, job });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
-// ── POST /api/print-queue/:id/skip ───────────────────────────────────────────
-router.post('/:id/skip', async (req, res) => {
-  try {
-    const { reason } = req.body;
-    const job = await markSkipped(req.params.id, reason);
-    res.json({ success: true, job });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
-// ── POST /api/print-queue/trigger ────────────────────────────────────────────
-// Manual trigger: queue a print job for any job by ID or number
-// Send { force: true } to bypass dedup (reprint scenarios)
-router.post('/trigger', async (req, res) => {
-  try {
-    const { jobId, jobNumber, type, force } = req.body;
-
-    let job;
-    if (jobId) {
-      job = await prisma.job.findUnique({
-        where: { id: jobId },
-        include: {
-          order: { include: { buyer: true } },
-          workCenter: true,
-        },
-      });
-    } else if (jobNumber) {
-      job = await prisma.job.findFirst({
-        where: { jobNumber },
-        include: {
-          order: { include: { buyer: true } },
-          workCenter: true,
-        },
-      });
-    }
-
-    if (!job) {
-      return res.status(404).json({ error: 'Job not found' });
-    }
-
-    // If force is set, use manualEnqueue which always queues
-    if (force && type) {
-      const printJob = await manualEnqueue(type, job);
-      return res.json({
-        success: true,
-        message: `Print job queued for ${job.jobNumber} (${type})`,
-        printJobId: printJob.id,
-      });
-    }
-
-    // Default to READY_TO_SHIP to trigger shipping label, or use provided type
-    const triggerStatus = type === 'DTL_TAG' ? 'SCHEDULED'
-      : type === 'BUNDLE_TAG' ? 'PACKAGING'
-      : type === 'SHIPPING_LABEL' ? 'READY_TO_SHIP'
-      : job.status;
-
-    await onJobStatusChange(job, triggerStatus, job.status);
-
-    res.json({
-      success: true,
-      message: `Print job triggered for ${job.jobNumber} (${triggerStatus})`,
-    });
-  } catch (err) {
-    console.error('Trigger error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ── POST /api/print-queue/:id/reprint ─────────────────────────────────────────
-// Re-queue a previously printed or skipped job (creates a new pending entry)
-router.post('/:id/reprint', async (req, res) => {
-  try {
-    const newJob = await reprintById(req.params.id);
-    res.json({ success: true, message: `Reprinted: ${newJob.label}`, printJob: newJob });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
-// ── POST /api/print-queue/trigger-shipment ────────────────────────────────────
-router.post('/trigger-shipment', async (req, res) => {
-  try {
-    const { shipmentId } = req.body;
-    if (!shipmentId) return res.status(400).json({ error: 'shipmentId required' });
-
-    const shipment = await prisma.shipment.findUnique({
-      where: { id: shipmentId },
-      include: {
-        jobs: { include: { order: true } },
-      },
-    });
-
-    if (!shipment) return res.status(404).json({ error: 'Shipment not found' });
-
-    await onShipmentCreated(shipment);
-    res.json({ success: true, message: `BOL + Packing List queued for shipment ${shipmentId}` });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.post('/trigger-shipment', step('queue the shipping papers', async (req, res) => {
+  const { shipmentId } = req.body || {};
+  if (!shipmentId) return res.status(400).json({ error: 'shipmentId required' });
+  const jobs = await queueShipmentPapers(String(shipmentId));
+  res.json({ success: true, message: 'The bill of lading and the packing list are in the print queue.', printJobIds: jobs.map((j) => j.id), papers: jobs.map((j) => ({ id: j.id, type: j.type })) });
+}));
 
 export default router;

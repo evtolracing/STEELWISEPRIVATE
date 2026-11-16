@@ -10,69 +10,67 @@
   },
   "testsExecuted": [
     {
-      "test": "Phase 7 manufacturing scenarios (qa/sim/phase7-manufacturing.mjs, new in Phase 7)",
-      "result": "141 of 141 scenarios pass, 618 checks, in the fifth full run on the final code. 130 verify built behaviour and 11 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: work orders and routing 15 and 0; BOMs and material 15 and 2; capacity and scheduling 21 and 1; shop floor, labor and machine 22 and 1; quality 22 and 3; scrap, remnants, rework and costing 15 and 2; cross-location, concurrency and recovery 20 and 2. Before owner decision 9: 134 scenarios, 119 verified, 15 not built",
-      "before": "Did not exist. A probe on the starting code reproduced 17 defects before any fix"
+      "test": "Phase 8 fulfilment scenarios (qa/sim/phase8-fulfillment.mjs, new in Phase 8)",
+      "result": "150 of 150 scenarios pass, 496 checks, in the second full run on the final code. 142 verify built behaviour and 8 record, with evidence, a capability that is not built (NOT APPLICABLE). By group, verified and not built: release, picking and packaging 20 and 0; shipment creation, partial shipments and back orders 25 and 0; dispatch, carriers, freight and delivery 21 and 4; invoicing, payments and accounting 22 and 3; costing, reconciliation and closeout 19 and 1; returns and credits 15 and 0; concurrency, security and recovery 20 and 0",
+      "before": "Did not exist. A probe on the starting code (qa/sim/p8-probe.mjs) reproduced the defects before any fix"
     },
     {
-      "test": "Proof the Phase 7 checks fail without the fixes",
-      "result": "34 rules removed one at a time (21 fixes, then 13 rules of owner decision 9); each made 1 or more scenarios fail; source restored. A further mutation belonged to a check that was withdrawn and is not counted"
+      "test": "Proof the Phase 8 checks fail without the fixes",
+      "result": "31 rules removed one at a time; each made 1 or more scenarios fail; source restored. Two further removals failed nothing because a second check covers the same request; recorded, not counted. The retry around the order save (second half of N-029) fails only about one round in twelve without it and is not counted"
     },
     {
-      "test": "First full run of every check on the Phase 7 code",
-      "result": "Every suite passed except the order-to-cash simulation: 147 create-job steps refused, because a check added in this phase blocked orders sold at one branch and worked at another. The check was withdrawn and the scenario rewritten to verify the established behaviour",
-      "before": "150 of 150"
+      "test": "First full run of every check on the Phase 8 code",
+      "result": "Every suite passed. Reading the server log of the run then showed six dispatch requests answered 500 (a deadlock between an order cancel and a dispatch, N-029), one database check that counted the wrong series, and one scenario fixture that left an order subtotal wrong. All three corrected"
     },
     {
-      "test": "Full runs after owner decision 9 (third, fourth and fifth of the phase)",
-      "result": "Third: every suite passed except the security sweep section \"Shop floor records\" (5 of 50), the shop browser suite (2 of 30) and the new Phase 7 browser script (a mistake in the script). The two older checks completed a job with no planned steps straight to the dock, which decision 9 forbids; they were updated to follow the rule. Fourth, on a rebuilt database: every suite passed. Nine browser checks added after it found the routing screen defect L-031, which was fixed. Fifth, on a rebuilt database and the final code: every suite passed except one check of the Phase 6 browser suite (supply position), which read a table before its rows had arrived; the test was corrected to wait for the first row and then passed 14 of 14 four times in a row. No product change. Simulation 150 of 150; sweep 20 of 20; branch boundary 39; Phase 2: 82; Phase 3: 74 of 74; Phase 4: 66 of 66; Phase 5: 76 of 76; Phase 6: 106 of 106 (494 checks); Phase 7: 141 of 141 (618); unit 178; browser 22, 29, 31, 24, 23, 33, 14, 14, 39; 128 screens open; 334 changing routes, 0 with no rule; lint 0 errors, 1,526 warnings; build passes",
-      "before": "Result of record before decision 9 (commit 88561a3)"
-    },
-    {
-      "test": "Phase 7 browser checks (qa/sim/ui-phase7.cjs, new)",
-      "result": "39 checks, 0 failed: quality queue, conditional pass, scheduling messages, work center with no default limits, planner notes, phone width, and for owner decision 9 the job's material and cost, the long-running clock notice, the work order's job, the routing's inspection box and the kinds-of-work-center rules.",
+      "test": "Phase 8 browser checks (qa/sim/ui-phase8.cjs, new)",
+      "result": "45 of 45: shipment papers and print buttons, delivery with a name or a reason, the Packing screen through the whole chain, Orders Not Closed, the closeout and cost panel, phone width",
       "before": "Did not exist"
     },
     {
       "test": "Unit tests (src/backend, npm test)",
-      "result": "178 of 178 pass (20 new in Phase 7: phase7Rules)",
-      "before": "158 of 158"
+      "result": "201 of 201 (23 new: phase8Rules)",
+      "before": "178 of 178"
     },
     {
-      "test": "Production screens at 85 branches (about 9,300 plans, 18,600 steps, 1,500 inspections; one branch with 7,090 waiting jobs)",
-      "result": "Median of 7: job list 41 to 82 ms, late jobs 74 to 83 ms, shop-floor figures 73 to 98 ms, inspection queue 76 ms, planner preview 137 ms, work center queue 7 ms. Scheduling run at the largest branch 1,859 ms placing 14,180 steps",
-      "before": "Late jobs 653 ms; inspection queue 303 ms and 3.7 MB; scheduling run 45,342 ms"
+      "test": "Shipping, invoicing and closeout calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices, 20,000 print jobs)",
+      "result": "Median of 7: eighteen calls, 6 to 206 ms; the slowest is the first page of orders not closed (133 ms all branches, 206 ms one branch); every other call under 40 ms. Measured before the N-029 correction, which changes no query. No packages in the scale data, so packing was not timed at scale",
+      "before": "Shipment and invoice lists only (Phase 3)"
     },
     {
       "test": "Order-to-cash simulation, seeds 8001 to 8003 (second full run, final code)",
-      "result": "150 of 150 jobs pass; reconciliation 0 problems after each seed (plus 52 in demo seed data)",
-      "before": "150 of 150"
+      "result": "150 of 150 jobs, 0 reconciliation problems; payment and return races taken once in each seed",
+      "before": "150 of 150, 0 problems"
     },
     {
-      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, 4, 5 and 6 scenarios (second full run)",
-      "result": "20 of 20 sections; 39 of 39; 82 of 82; 74 of 74 (612 checks); 66 of 66 (555 checks); 76 of 76 (386 checks); 105 of 105 (486 checks)",
-      "before": "20 of 20; 39 of 39; 80 of 80; 74 of 74 (612); 66 of 66 (555); 76 of 76 (386); 105 of 105 (486)"
+      "test": "Security sweep; branch boundary; Phase 2 integrity; Phase 3, 4, 5, 6 and 7 scenarios (second full run)",
+      "result": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 76 of 76 (386); 106 of 106 (494); 141 of 141 (618)",
+      "before": "20 of 20; 39 of 39; 82 of 82; 74 of 74 (612); 66 of 66 (555); 75 of 76 (386), the one failure being a test that depended on the time of day (N-024); 106 of 106 (494); 141 of 141 (618)"
     },
     {
       "test": "Browser suites, every screen opens, baseline probe, department coverage, screen audit, lint, build (second full run)",
-      "result": "All pass (22, 29, 30, 24, 23, 33, 14, 14 browser checks); 334 changing routes, 0 with no rule; 0 screens with made-up data and no notice; lint 0 errors, 1,526 warnings; build succeeds",
-      "before": "The same, 332 changing routes, 1,528 warnings"
+      "result": "Browser suites 22, 30, 31, 24, 23, 33, 14, 14, 39 and 45 (275 checks, 0 failed); 130 of 130 screens open; 574 write calls as read-only roles, 0 not refused; 292 write routes with an empty body, 0 server errors; 337 changing routes, 0 with no rule; 0 screens with unlabelled made-up data; lint 0 errors, 1,522 warnings; build passes",
+      "before": "Browser suites 22, 29, 31, 24, 23, 33, 14, 14, 39; 334 changing routes, 0 with no rule; 1,526 warnings, 0 errors"
     },
     {
       "test": "Database checks after the full run",
-      "result": "0 on every stock, reservation, transfer and production check, including 13 added in Phase 7. Known rows unchanged"
+      "result": "75 checks read; 64 at 0; the rest are counts of demo seed data and of records made on purpose, each explained in phase-08-regression-results.md section 2. The 8 Phase 8 checks: 6 at 0, and two counts to be read (9 shipments with no invoice, each listed for billing; 48 deliveries with neither name nor reason, 47 of the demo seed and 1 stripped on purpose by a scenario)"
+    },
+    {
+      "test": "Server errors in the full run",
+      "result": "Four answers of 500, the same four as the baseline, each planted by a scenario. No dispatch or order save answered a server error (six in the first run, N-029)"
     },
     {
       "test": "Database change",
-      "result": "None. Phase 7 ships no migration and no SQL Editor file"
+      "result": "SQL Editor file 14 (20261116200000_fulfilment_costing): adds three columns. Run twice on a copy without them; the first run added the columns, the second changed nothing; row counts unchanged"
     },
     {
-      "test": "Machines, scales, scanners, telemetry",
-      "result": "NOT EXECUTED: no hardware and no machine connection exists (L-030, K-013). No certification is claimed"
+      "test": "Printers, label printers, scales, scanners",
+      "result": "NOT EXECUTED: no hardware. Papers were read in a browser"
     },
     {
-      "test": "Bill of material, material requirements, calendar capacity, costing, nesting, outsourced processing, nonconformance and corrective action",
-      "result": "NOT EXECUTED: not built (L-023 to L-027). Recorded NOT APPLICABLE with evidence; nothing was invented"
+      "test": "Carriers, freight rating, tracking, accounting system, card payments, customer notices",
+      "result": "NOT APPLICABLE: not built (N-025, N-026, N-028, H-013). Recorded with evidence; nothing was invented"
     },
     {
       "test": "The host and live data",
@@ -80,31 +78,33 @@
     }
   ],
   "unverifiedAreas": [
-    "The live database and the host: nothing in Phase 7 was run against either. Live operators, certifications, work-center kinds, routings and open jobs are unknown, and the new rules will refuse records that do not meet them (R-46, R-47)",
-    "SQL Editor files 6 to 13 on the live database: the owner has not sent the result of the read-only check (verify-6-to-13.sql, which replaces verify-6-to-12.sql). File 13 (owner decision 9) has been run twice on a local copy only",
-    "The 85-branch timings were not re-run after owner decision 9",
-    "Machines and shop-floor hardware (L-030, K-013)",
-    "Bill of material, calendar capacity, nonconformance, outsourced processing, nesting, stock valuation and cost of goods: not built (L-023 to L-027, K-007)",
-    "Accessibility of the shop-floor screens: not assessed (Phase 9)",
-    "Time per task with real users: no minutes-saved figure is claimed",
-    "Earlier unverified areas unchanged: scanners (K-013), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), customer messages (decision 5), backup and restore (E-015), host pool (G-015), host schedule (B-019), sustained load"
+    "The live database and the host: nothing in Phase 8 was run against either. Live shipments reserved against another branch's stock, branches with no street address and waiting print jobs are unknown until the owner runs check-before-phase-8.sql (R-50, R-52, R-54)",
+    "SQL Editor files 6 to 14 on the live database: the owner has not sent the result of the read-only check (verify-6-to-14.sql)",
+    "Printers, label printers, scales and scanners (K-013). The bill of lading and packing list were never printed on paper",
+    "Accounting, ledger, cost of goods and stock valuation: not built (N-025, K-007). Carriers, freight rating and tracking: not built (N-026). Lost loads: no rule (N-027). Notices: not built (N-028)",
+    "Order margin beyond material, labor and scrap: overhead, freight paid and packaging are not in it; orders shipped before file 14 carry no cost",
+    "Accessibility of the shipping, packing and closeout screens: not assessed (Phase 9)",
+    "Time per task with real users: no minutes-saved figure is claimed. More than one server at once: not run",
+    "Earlier unverified areas unchanged: machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), payment at web checkout (H-013, H-015), backup and restore (E-015), host pool (G-015)"
   ],
   "currentBlockers": [
-    "Owner: SQL Editor files 6 to 12, then file 13, must be applied in order and confirmed before pull request 31 is merged. The code of owner decision 9 fails on a database without file 13",
-    "Owner: labor rates per kind of work center (job cost shows material only until entered), inspection checklists, and the tick boxes on kinds of work center and routings (R-47)",
-    "L-026 with K-007 (P1): IN PROGRESS. Job cost is built; stock valuation, value on movements, overhead and cost of goods are not",
-    "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-013, H-015, B-019, E-015, K-013"
+    "Owner: SQL Editor files 6 to 14 must be applied in order and confirmed before pull request 31 is merged. The Phase 8 code fails at dispatch, delivery and the print queue on a database without file 14 (R-49)",
+    "Owner: N-025 (accounting system and when cost of goods is recognised), N-026 (carriers, rating, tracking), N-027 (a load that never arrives)",
+    "Owner: F-009 (who may read invoices), S-010 (delivery promise from invented data), H-013 (payment method at web checkout)",
+    "Owner: labor rates per kind of work center, without which order margin shows material and scrap only",
+    "L-026 with K-007 (P1): IN PROGRESS. Cost now reaches the sale (N-017); stock valuation, overhead and cost of goods are not built",
+    "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-015, B-019, E-015, K-013, L-023 to L-027, L-030"
   ],
   "nextActions": [
-    "Owner: apply SQL Editor files 6 to 13 in order, send the result of verify-6-to-13.sql, then say when to merge pull request 31",
-    "Owner: before go-live, tick \"One operator may run two steps at once\" on the kinds of work center where that is normal, and untick \"must pass inspection\" on routings that need none; tell the branches about the seventeen behaviour changes (R-40, R-47)",
-    "Owner: enter a labor rate for each kind of work center and type the inspection checklists",
-    "Owner: allow a read-only check of live operators and work centers (R-46)",
-    "Owner: issue the Phase 8 prompt (shipping, logistics, invoicing, reconciliation, closeout). Phase 8 has not been started"
+    "Owner: apply SQL Editor files 6 to 14 in order, send the result of verify-6-to-14.sql, and run the read-only check-before-phase-8.sql on the live database",
+    "Owner: tell dispatch, drivers and packing staff about the sixteen behaviour changes in phase-08-report.md before go-live (R-50, R-51)",
+    "Owner: answer the six questions in phase-08-report.md under \"Decisions that are the owner's\"",
+    "Owner: say when to merge pull request 31",
+    "Owner: issue the Phase 9 prompt (enterprise UI and UX). Phase 9 has not been started"
   ],
-  "lastCompletedCheckpoint": "Phase 7 with owner decision 9: the six decisions built (job-to-work-order link, rework step, inspection for every job, labor rules, checklists per kind of work, actual-cost job costing); SQL Editor file 13; fourth full gate run on the final code clean; 141 manufacturing scenarios (130 verified, 11 not built), 39 browser checks, 34 rules proven by mutation; 31 findings (L-001 to L-031: 24 fixed, 2 in progress, 5 deferred); K-007 in progress; documents updated.",
-  "currentPhase": 7,
-  "findingPrefix": "L-",
+  "lastCompletedCheckpoint": "Phase 8: second full gate run on the final code; 150 of 150 Phase 8 scenarios (142 verified, 8 not built); 45 browser checks; 31 rules proven by mutation; eighteen calls timed at 85 branches; 29 findings recorded (N-001 to N-029: 24 fixed and verified, 1 fixed not verified, 3 for the owner, 1 deferred); SQL Editor file 14. Continuation point: nothing of Phase 8 remains that does not need the owner",
+  "currentPhase": 8,
+  "findingPrefix": "N-",
   "phase2BaselineCommit": "0ad7857",
   "scoreAdjustments": [
     {
@@ -170,14 +170,14 @@
     {
       "group": "Logistics and financial operations",
       "category": "Data integrity",
-      "score": 92,
-      "evidence": "Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken (C-002)"
+      "score": 93,
+      "evidence": "Phase 8: 7 new database checks; cost fixed on the stock movement at dispatch and unchanged by later edits (N-017); packing inputs read from the stock item (N-009); fixed tag states (N-010); custody records cannot be forged (N-011); a cancelled order keeps no live shipment (N-006); reconciliation of shipped, moved and invoiced quantities across every record of the run. Held at 93: no ledger to reconcile against; a package is not tied to one shipment; movements before file 14 carry no cost. Earlier: Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken "
     },
     {
       "group": "Logistics and financial operations",
       "category": "Performance",
-      "score": 80,
-      "evidence": "Phase 3: shipment and invoice lists measured at 85 branches: 18 and 101 ms at the 95th percentile for a branch login, 267 ms for an all-branch login. Held at 80: local machine; a branch's invoices are found by scanning every invoice (16 ms now)"
+      "score": 84,
+      "evidence": "Phase 8: eighteen shipping, invoicing, closeout, returns and print calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices): 6 to 206 ms, all but one under 40 ms. Held at 84: local machine, the host NOT VERIFIED; the first page of orders not closed works out every open order before paging; packing not timed at scale. Was 80"
     },
     {
       "group": "Platform infrastructure",
@@ -206,8 +206,8 @@
     {
       "group": "Logistics and financial operations",
       "category": "Reliability",
-      "score": 84,
-      "evidence": "Phase 4: a billing failure at dispatch is said, recorded and listed until closed (H-006); a carrier's repeated or late report changes nothing; dispatch and delivery carry request keys from the screen (H-009). Held at 84: nothing retries a failed invoice on its own"
+      "score": 89,
+      "evidence": "Phase 8: 20 concurrency and recovery scenarios; every once-only rule raced; overlaps met by raw statements and deadlocks reported by the database client are run again (N-022, N-029); a packing step pressed twice happens once (N-013); a return whose credit fails is flagged until settled, once (N-016). Held at 89: one server and one database only; N-029 was found in a log, not by a failing check; nothing retries a failed invoice on its own. Earlier: Phase 4: a billing failure at dispatch is said, recorded and listed until closed (H-006); a carrier's repeated or late report changes nothing; dispatch and delivery carry request keys from the screen (H-009). Held at 84: nothing retries a failed invoice on its own"
     },
     {
       "group": "Sales and customer operations",
@@ -256,6 +256,36 @@
       "category": "Security",
       "score": 90,
       "evidence": "Phase 7: inspections, time entries and operators are branch-owned (L-019); a planner schedules only their own branch (L-007); pay and emergency contacts go to managers only (L-014); quality decisions are for quality staff and production management and are audited against the signed-in user (L-003). Held at 90: live roles NOT VERIFIED"
+    },
+    {
+      "group": "Logistics and financial operations",
+      "category": "Functional correctness",
+      "score": 87,
+      "evidence": "Phase 8: 142 verified scenarios across release, packing, shipments, dispatch, delivery, invoices, payments, credits, returns, costing and closeout; the packaging chain completes for the first time (N-008); stock leaves only the dock it stands at and the holding branch ships (N-001, N-002); papers are built from records with nothing invented (N-014); an order's open items are answered in one place (N-018). Held at 87: no carriers, freight rating or tracking (N-026); no accounting or cost of goods (N-025); no rule for a lost load (N-027); freight planning screens are samples (U-035). Was 75"
+    },
+    {
+      "group": "Logistics and financial operations",
+      "category": "Security",
+      "score": 88,
+      "evidence": "Phase 8: stock cost removed from every answer for roles outside cost viewers (N-020); print jobs per branch (N-015); shipment changes held to the dock they leave from (N-002); text on printed papers escaped (N-019); custody notes only in the writer's own name (N-011); 337 changing routes, 0 with no rule. Held at 88: who may read invoices is undecided (F-009); live roles NOT VERIFIED. Was 78"
+    },
+    {
+      "group": "Logistics and financial operations",
+      "category": "Maintainability",
+      "score": 80,
+      "evidence": "Phase 8: three small libraries with pure rules (shipping papers, order closeout, order cost) and 23 unit tests; one reader for three papers; one guard for cost on every answer; one retry for every overlap form. Held at 80: the drop tag route file is large (33 addresses). Was 70"
+    },
+    {
+      "group": "Logistics and financial operations",
+      "category": "Operational efficiency",
+      "score": 78,
+      "evidence": "Phase 8: the bill of lading and packing list print from the shipment in one button (F-011, U-036); one panel answers what is still open on an order, and one list shows every order not closed by reason (N-018); the Packing screen offers only the next valid step. Held at 78: a pick is a list, not a confirmed scan; no carrier booking; no real user timed. Was 68"
+    },
+    {
+      "group": "Logistics and financial operations",
+      "category": "User experience",
+      "score": 77,
+      "evidence": "Phase 8: 45 browser checks on six screens including phone width; refusals in plain words naming the item and the branch (N-001), the missing name (N-004), the missing reason (N-003); blanks on papers are named so they can be written in by hand. Held at 77: two new screens have had no real user; accessibility beyond labels is Phase 9. Was 72"
     }
   ],
   "pullRequest": 31,
@@ -266,5 +296,6 @@
   "phase4BaselineCommit": "dffa7d2",
   "phase5BaselineCommit": "fce9593",
   "phase6BaselineCommit": "c43ee25",
-  "phase7BaselineCommit": "6cbedc5"
+  "phase7BaselineCommit": "6cbedc5",
+  "phase8BaselineCommit": "b2e8c5d"
 }

@@ -26,7 +26,12 @@ test('every read and change of a branch-owned record carries the branch', () => 
 
 test('records reached through a parent are held to the parent\'s branch', () => {
   assert.deepEqual(scopedArgs('Payment', 'findMany', {}, held).where.AND, [{ invoice: { order: { locationId: { in: [A] } } } }]);
-  assert.deepEqual(scopedArgs('ShipmentItem', 'findMany', {}, held).where.AND, [{ shipment: { fromLocationId: { in: [A] } } }]);
+  // Phase 8 (N-002): a shipment is seen by the dock it leaves from and by the branch that sold the order.
+  const seen = { OR: [{ fromLocationId: { in: [A] } }, { order: { locationId: { in: [A] } } }] };
+  assert.deepEqual(scopedArgs('ShipmentItem', 'findMany', {}, held).where.AND, [{ shipment: seen }]);
+  assert.deepEqual(scopedArgs('Shipment', 'findMany', {}, held).where.AND, [seen]);
+  // A print job with no branch on file is seen by every branch; one with a branch only by that branch (N-015).
+  assert.deepEqual(scopedArgs('PrintQueueJob', 'findMany', {}, held).where.AND, [{ OR: [{ locationId: { in: [A] } }, { locationId: null }] }]);
   assert.equal(scopedArgs('Job', 'findMany', {}, held).where.AND[0].OR.length, 3);
 });
 

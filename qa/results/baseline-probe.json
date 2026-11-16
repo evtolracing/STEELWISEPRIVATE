@@ -1,11 +1,11 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-16T00:02:10.542Z",
+ "at": "2026-11-16T02:29:03.696Z",
  "sections": {
   "Read-only roles cannot change anything": {
    "pass": true,
-   "summary": "568 write calls as auditor and data analyst, 0 not refused",
-   "tested": 568,
+   "summary": "574 write calls as auditor and data analyst, 0 not refused",
+   "tested": 574,
    "findings": []
   },
   "A second address follows the same department rules": {
@@ -15,15 +15,15 @@
   },
   "Write routes sent an empty body do not crash": {
    "pass": true,
-   "summary": "289 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing",
-   "tested": 289,
+   "summary": "292 write routes, 0 answered with a server error (allowed: 0), 2 saved a record from nothing",
+   "tested": 292,
    "byStatus": {
     "200": 14,
     "201": 1,
-    "400": 158,
+    "400": 157,
     "403": 1,
-    "404": 103,
-    "410": 9,
+    "404": 106,
+    "410": 10,
     "501": 3
    },
    "findings": [],
@@ -34,9 +34,9 @@
   },
   "Branch to branch access (reported, not judged)": {
    "pass": true,
-   "summary": "a login whose home branch is DEMO-KZO read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0",
+   "summary": "a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0",
    "observations": [
-    "a login whose home branch is DEMO-KZO read 0 stock rows of another branch → 200",
+    "a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200",
     "the same login listed orders of every branch → 200",
     "it opened one order by id → 404",
     "it placed a hold on a stock item at the other branch → 400",

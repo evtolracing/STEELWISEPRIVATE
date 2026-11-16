@@ -32,6 +32,7 @@ import {
 import { getOverridesForOrder } from '../../services/overrideApi'
 import OverrideIndicator from '../../components/orders/OverrideIndicator'
 import AuditLogViewer from '../../components/orders/AuditLogViewer'
+import OrderCloseoutPanel from '../../components/orders/OrderCloseoutPanel'
 import { ReleaseHoldDialog } from './CreditHoldsPage'
 
 const STATUS_COLOR = {
@@ -333,6 +334,8 @@ export default function OrderDetailPage() {
             priceSource={order.priceSource}
             contractName={order.contractName}
           />
+
+          {!['DRAFT', 'SUBMITTED', 'PENDING'].includes(order.status) && <OrderCloseoutPanel orderId={order.id} refreshKey={order.status} />}
 
           <Paper variant="outlined" sx={{ p: 2, mt: 3, borderRadius: 2 }}>
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>Actions</Typography>

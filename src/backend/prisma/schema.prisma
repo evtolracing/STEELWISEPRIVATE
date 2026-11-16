@@ -561,6 +561,8 @@ model MaterialMovement {
   orderLineId    String?
   reasonCode     String?
   notes          String?
+  /// What one unit of the item cost when it moved (Phase 8). Written when material ships or comes back; empty when the item had no cost on file.
+  unitCost       Decimal?     @db.Decimal(18, 6)
   createdAt      DateTime     @default(now())
   createdById    String
   orderLine      OrderLine?   @relation("MovementOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
@@ -1299,6 +1301,8 @@ model Shipment {
   podCaptured     Boolean            @default(false)
   podImageUrl     String?
   podSignature    String?
+  /// Why a delivery was recorded with no name and no image (Phase 8).
+  noPodReason     String?
   notes           String?
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
@@ -5105,6 +5109,8 @@ model PrintQueueJob {
   priority   String    @default("NORMAL")
   status     String    @default("PENDING")
   jobId      String?
+  /// The branch whose printer this is for (Phase 8). Empty on rows written before, which every branch still sees.
+  locationId String?
   payload    Json
   skipReason String?
   createdAt  DateTime  @default(now())
@@ -5113,6 +5119,7 @@ model PrintQueueJob {
 
   @@index([status, createdAt])
   @@index([jobId, type, status])
+  @@index([locationId, status])
 }
 
 // ---------------------------------------------------------------------------

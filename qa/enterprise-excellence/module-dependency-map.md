@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -63,26 +63,26 @@ Two views. The first is the business flow, written by hand in the module map. Th
 
 | Table | Modules | Count |
 |---|---|---:|
-| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Purchase orders and supply position; Coil work orders; Quality inspections; Shipping; Partner API; Operations cockpit and dashboards | 12 |
+| AuditLog | Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Purchase orders and supply position; Coil work orders; Quality inspections; Shipping; Returns; Partner API; Operations cockpit and dashboards | 13 |
 | Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Dispatch, work centers and shop-floor operations; Shipping | 11 |
 | Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Purchase orders and supply position; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 11 |
 | Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Purchase orders and supply position; Jobs, job board and schedule; Shipping; Returns; Partner API; Operations cockpit and dashboards | 11 |
 | Job | Order entry; Customer specifications; Jobs, job board and schedule; Coil work orders; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Operations cockpit and dashboards | 10 |
+| Coil | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Material tracking, packages and drop tags; Shipping; Returns; Operations cockpit and dashboards | 9 |
 | OrderLine | Order entry; Sales orders; Customer specifications; Purchase orders and supply position; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 8 |
 | Inventory | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 8 |
-| Coil | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 8 |
 | MaterialMovement | Counter quick sale; Products, grades and heats; Stock items and stock levels; Receiving; Interbranch transfers; Shipping; Returns; Operations cockpit and dashboards | 8 |
 | WorkCenter | Staff and operators; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 7 |
 | User | Sign-in and sessions; Users, roles and branches; RFQs and quotes; Sales orders; Stock items and stock levels; Jobs, job board and schedule | 6 |
 | Product | Order entry; Counter quick sale; Web store; Products, grades and heats; Stock items and stock levels | 5 |
 | WorkCenterType | Staff and operators; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Quality inspections | 4 |
 | Quote | RFQs and quotes; Order entry; Partner API; Operations cockpit and dashboards | 4 |
+| Shipment | Sales orders; Shipping; Partner API; Operations cockpit and dashboards | 4 |
+| Invoice | Counter quick sale; Shipping; Returns; Partner API | 4 |
 | DispatchOperation | Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Quality inspections; Operations cockpit and dashboards | 4 |
-| Shipment | Material tracking, packages and drop tags; Shipping; Partner API; Operations cockpit and dashboards | 4 |
 | Operator | Staff and operators; Dispatch, work centers and shop-floor operations; Quality inspections | 3 |
 | RFQ | RFQs and quotes; Partner API; Operations cockpit and dashboards | 3 |
 | OrderLineAllocation | Sales orders; Stock items and stock levels; Shipping | 3 |
-| Invoice | Counter quick sale; Shipping; Partner API | 3 |
 | Grade | Products, grades and heats; Stock items and stock levels; Operations cockpit and dashboards | 3 |
 | Heat | Products, grades and heats; Stock items and stock levels; Documents | 3 |
 | QCHold | Stock items and stock levels; Returns; Operations cockpit and dashboards | 3 |
@@ -109,11 +109,11 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/workflowRules.js | intakeOrders.js, inventory.js, jobs.js, orders.js, returns.js, rfqs.js, shipments.js | 7 |
 | services/webhookService.js | integrations.js, orders.js, carrierRoutes.js, customerRoutes.js, webhookRoutes.js, shipments.js | 6 |
 | middleware/partnerAuth.js | adminRoutes.js, carrierRoutes.js, common.js, customerRoutes.js, partnerAuthRoutes.js, supplierRoutes.js | 6 |
+| lib/branchScope.js | dispatchRoutes.js, intakeOrders.js, inventory.js, purchaseOrders.js, shipments.js | 5 |
 | middleware/auth.js | admin.js, auth.js, integrations.js, users.js | 4 |
 | services/intakeCatalogService.js | coils.js, intakePricing.js, inventory.js, products.js | 4 |
 | lib/settings.js | compressionMetrics.js, demandShaping.js, onlineSettings.js, operationsRoutes.js | 4 |
 | lib/workCenterGuard.js | dispatchRoutes.js, operationsRoutes.js, optimizationV1.js, workCenters.js | 4 |
-| lib/branchScope.js | dispatchRoutes.js, intakeOrders.js, inventory.js, purchaseOrders.js | 4 |
 | lib/creditControl.js | intakeOrders.js, onlineOrders.js, orders.js, quotes.js | 4 |
 | lib/billingRules.js | intakeOrders.js, onlineOrders.js, quickSale.js, returns.js | 4 |
 | lib/orderTax.js | intakeOrders.js, intakePricing.js, onlineOrders.js, quotes.js | 4 |
@@ -128,14 +128,15 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/holds.js | coils.js, returns.js | 2 |
 | lib/priceRules.js | customers.js, intakePricing.js | 2 |
 | lib/workCenterKindRules.js | dispatchRoutes.js, qcRoutes.js | 2 |
+| services/dropTagService.js | dropTagRoutes.js, materialTrackingRoutes.js | 2 |
 | lib/listing.js | inventory.js, orders.js | 2 |
 | lib/stockChanges.js | inventory.js, workOrders.js | 2 |
 | services/printAutomationService.js | jobs.js, printQueue.js | 2 |
 | lib/jobHistory.js | jobs.js, shipments.js | 2 |
 | lib/productionRules.js | operationsRoutes.js, qcRoutes.js | 2 |
 | lib/reservationRules.js | orders.js, returns.js | 2 |
+| lib/orderCloseout.js | orders.js, returns.js | 2 |
 | lib/dispatchPlan.js | dispatchRoutes.js | 1 |
-| services/dropTagService.js | dropTagRoutes.js | 1 |
 | services/dropTagListingService.js | dropTagRoutes.js | 1 |
 | services/scanService.js | dropTagRoutes.js | 1 |
 | services/templateService.js | dropTagRoutes.js | 1 |
@@ -157,6 +158,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | services/tagRenderer.js | printQueue.js | 1 |
 | services/remnantService.js | remnants.js | 1 |
 | services/pricingIntelligenceService.js | salesRoutes.js | 1 |
+| lib/shippingDocuments.js | shipments.js | 1 |
 | lib/userAdminRules.js | users.js | 1 |
 | lib/workOrderRules.js | workOrders.js | 1 |
 
@@ -182,4 +184,19 @@ Two views. The first is the business flow, written by hand in the module map. Th
 18. `lib/holds.js` (new in Phase 6): places and releases holds with their reasons for receiving, transfers, returns and the stock routes.
 19. `routes/purchaseOrders.js` (new in Phase 6): purchase orders are Orders of type PO. Receiving (`routes/inventory.js`, `lib/receiving.js`) reads the line and writes what was received on it; the supply position reads stock, open purchase orders, open transfers and open order lines.
 20. The balance check now includes the in-transit quantity (SQL Editor file 12). Every script that writes `Inventory` directly must keep on hand = available + reserved + on hold + in transit.
+21. `lib/jobGates.js` (new in Phase 7): the only code that changes a job's status. It locks the job, applies the move table, the quality gate (no release without a passed inspection) and the open-steps gate, writes the history row, and closes running clocks on a cancel. Called by every status address in `routes/jobs.js`, by `routes/operationsRoutes.js` and by `routes/qcRoutes.js`.
+22. `lib/productionRules.js` (new in Phase 7): the state rules of a step and who may run it where (kind of work center, branch, operator, certification, planned order). The planned-order rule reads the setting `production.rules` in `lib/settings.js` (owner decision 8).
+23. `lib/dispatchPlan.js` and `lib/capacityPlan.js` (new in Phase 7): the scheduling run and the planner decide in pure functions with unit tests; the routes only read, lock and write. `lib/workCenterGuard.js` answers whether a machine is locked out (maintenance orders, asset status) and validates a work center change; scheduling, the planner and step start all ask it.
+24. `lib/branchScope.js` (Phase 7): inspections, time entries and operators are branch-owned. A job is scoped by its order's branch or its work center's branch, so an order sold at one branch can be worked at another.
+25. `lib/costing.js` (new, owner decision 9): the only code that turns a purchase price into a unit cost and adds up a job's cost. Called by `lib/receiving.js` at receipt and by `routes/jobs.js`. A change to the unit rules changes the cost of every item received afterwards. Covered by unit tests, group 6 of the Phase 7 scenarios and the Phase 6 receiving scenario.
+26. `WorkOrder.jobId` (SQL Editor file 13): ties a coil work order to a job. `lib/costing.js` `jobMaterial` reads it for the job's material and cost; deleting a job clears the link and keeps the work order.
+27. `WorkCenterType` carries rules read on every step start (`routes/operationsRoutes.js` `checkWho`: certification required, two steps at once), the labor rate read by job cost, and the checklist read when an inspection is opened (`routes/qcRoutes.js`). The labor rate must never be sent to roles outside `COST_VIEWERS` (`kindForViewer` in `routes/dispatchRoutes.js`).
+28. `lib/jobGates.js` `afterProduction` and `inspectionRequiredFor` (owner decision 9): every address that takes a job out of production asks here whether it goes to inspection. `BomRecipe.inspectionRequired` is the only exception. A new address that moves a job must go through `changeJobStatusTx` or the rule is bypassed.
+29. `lib/shippingDocuments.js` (new in Phase 8): the only reader behind the pick list, the packing list and the bill of lading. The shipment screen, the print queue and the papers all take its answer, so they cannot disagree. It fills in nothing; a missing fact is named in `missing`.
+30. `lib/orderCloseout.js` (new in Phase 8): what stands between an order and closed (`closeoutPosition`, pure), the list of orders not closed, and an order's cost and margin. It stores nothing. It reads shipments, invoices, returns, jobs, reservations and stock movements, so a change to any of those states must keep its rule in step.
+31. `lib/costView.js` (new in Phase 8): one guard on every API answer removes stock cost for readers who are not cost viewers (`lib/roleAccess.js` `COST_VIEWERS`). A new field that carries cost must be added to its list, and a new role that should see cost to `COST_VIEWERS`.
+32. `routes/shipments.js` dispatch writes `MaterialMovement.unitCost` (SQL Editor file 14) from the stock item at the moment it leaves; `lib/orderCloseout.js` `orderCost` reads it. A new path that takes stock out for a sale must write it too.
+33. `lib/branchScope.js` (Phase 8): a shipment is seen by the dock it leaves from and by the branch that sold the order; only the dock changes it (`routes/shipments.js` `ownDock`). A print job belongs to a branch (`PrintQueueJob.locationId`, file 14).
+34. `lib/numbering.js` `isOverlap` (Phase 8): the retry recognises a database overlap from Prisma's own queries (P2034) and from raw statements (P2010 with 40001 or 40P01). Any new raw statement inside a serializable save is covered by it. A deadlock met by one of the client's own statements arrives with no code at all, only the database's words; that third form is recognised too (N-029), and the order save in `routes/orders.js` runs under the same retry because cancelling an order and dispatching its shipment take the same rows in opposite order.
+35. `services/dropTagService.js` (Phase 8): every package and tag step locks the package row and moves a tag only from the state the person saw. Package, tag and listing numbers come from the document counter (`nextNumber`).
 

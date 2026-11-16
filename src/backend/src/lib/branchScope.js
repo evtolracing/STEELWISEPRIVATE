@@ -70,8 +70,12 @@ export const BRANCH_OWNED = {
   // Stock moves to another branch by transfer, so a change of branch is not refused here.
   Inventory: direct('locationId', true),
   Coil: direct('locationId', true),
-  Shipment: direct('fromLocationId'),
-  ShipmentItem: through((ids) => ({ shipment: { fromLocationId: { in: ids } } })),
+  // A shipment is seen by the branch it leaves from and by the branch that sold the order (Phase 8, N-002).
+  // Only the branch it leaves from changes it: that is checked where shipments are changed (routes/shipments.js).
+  Shipment: { field: 'fromLocationId', moves: false, where: (ids) => ({ OR: [{ fromLocationId: { in: ids } }, { order: { locationId: { in: ids } } }] }) },
+  ShipmentItem: through((ids) => ({ shipment: { OR: [{ fromLocationId: { in: ids } }, { order: { locationId: { in: ids } } }] } })),
+  // A print job is for one branch's printer; one with no branch on file is seen by every branch (Phase 8, N-015).
+  PrintQueueJob: { field: 'locationId', moves: false, where: ownOrUnassigned },
   Job: through(jobIn),
   // An inspection belongs to its job's branch; recorded shop-floor time to its plan's branch (Phase 7).
   JobInspection: through((ids) => ({ job: jobIn(ids) })),

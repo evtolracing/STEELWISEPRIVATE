@@ -161,6 +161,7 @@ const navSections = [
       { path: '/pos/retail', label: 'Retail POS', icon: RetailPOSIcon },
       { path: '/orders/invoices', label: 'Invoices', icon: InvoicesIcon },
       { path: '/orders/returns', label: 'Returns', icon: RMAIcon },
+      { path: '/orders/closeout', label: 'Orders Not Closed', icon: OrdersIcon },
     ],
   },
 
@@ -199,6 +200,7 @@ const navSections = [
     items: [
       { path: '/material-tracking', label: 'Dashboard', icon: QualityDashIcon },
       { path: '/material-tracking/packaging', label: 'Packaging Queue', icon: PackagingQueueIcon },
+      { path: '/material-tracking/packages', label: 'Packing', icon: PackagingQueueIcon },
       { path: '/material-tracking/tags', label: 'Tag Management', icon: LabelIcon },
       { path: '/material-tracking/staging', label: 'Staging & Loading', icon: StagingIcon },
       { path: '/material-tracking/traceability', label: 'Traceability', icon: CustodyIcon },

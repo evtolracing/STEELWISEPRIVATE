@@ -1,8 +1,8 @@
 {
- "screens": 142,
+ "screens": 144,
  "tally": {
   "STATIC": 5,
-  "REAL": 75,
+  "REAL": 77,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
  },
@@ -459,6 +459,12 @@
    "file": "pages/MaterialTracking/PackagingQueue.jsx"
   },
   {
+   "route": "material-tracking/packages",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/MaterialTracking/PackagesPage.jsx"
+  },
+  {
    "route": "material-tracking/tags",
    "onMenu": true,
    "verdict": "REAL",
@@ -625,6 +631,12 @@
    "onMenu": true,
    "verdict": "REAL",
    "file": "pages/Orders/InvoicesPage.jsx"
+  },
+  {
+   "route": "orders/closeout",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Orders/OrderCloseoutPage.jsx"
   },
   {
    "route": "orders/returns",

@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
 
@@ -11,25 +11,27 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 96 | 15 |
-| P2 | 124 | 44 |
-| P3 | 81 | 31 |
-| Total | 321 | 92 |
+| P1 | 103 | 15 |
+| P2 | 140 | 45 |
+| P3 | 86 | 31 |
+| Total | 350 | 94 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 228 |
-| DEFERRED TO SPECIFIC PHASE | 60 |
-| REQUIRES BUSINESS DECISION | 22 |
+| VERIFIED FIXED | 255 |
+| DEFERRED TO SPECIFIC PHASE | 58 |
+| REQUIRES BUSINESS DECISION | 25 |
 | IN PROGRESS | 6 |
 | BLOCKED | 3 |
 | NOT APPLICABLE | 1 |
 | ACCEPTED RISK WITH APPROVAL | 1 |
+| FIXED — NOT VERIFIED | 1 |
 
 ## Open findings, most severe first
 
 | ID | Sev | Status | Module | What is wrong | Assigned to |
 |---|---|---|---|---|---|
+| N-024 | P4 | FIXED — NOT VERIFIED | Tests | Failed in the first hour of each week. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
 | X-001 | P0 | DEFERRED TO SPECIFIC PHASE | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
 | X-002 | P0 | DEFERRED TO SPECIFIC PHASE | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
 | B-009 | P1 | IN PROGRESS | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
@@ -64,8 +66,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | E-021 | P2 | DEFERRED TO SPECIFIC PHASE | API | List routes answer in two shapes: a bare list, or `{ data, meta }` | Phase 2: architecture and code quality |
 | F-008 | P2 | REQUIRES BUSINESS DECISION | Web store checkout | The store shows the buyer an estimate of tax by the ship-to state. On acceptance the order is taxed by the selling branch (rule 27). The two can differ | Shipping and financial operations |
 | F-009 | P2 | REQUIRES BUSINESS DECISION | Invoices | Any staff login can read every invoice and its payments (reads are open to all staff by design; only changes are restricted) | Shipping and financial operations |
-| F-011 | P2 | DEFERRED TO SPECIFIC PHASE | Shipping documents | Whether a bill of lading or packing list can be printed for a shipment was not examined. Print code exists in the server (`printQueue`, `printAutomationService`); the new Shipment screen has no print button | Shipping and financial operations |
-| F-012 | P2 | DEFERRED TO SPECIFIC PHASE | Frontend build | A stray word left in `AppRouter.jsx` by a patch in this workstream passed the production build and broke every screen at run time. Caught by the browser check before commit | Shipping and financial operations |
 | G-003 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017). | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-011 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-015 | P2 | BLOCKED | Platform | Unknown. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
@@ -85,6 +85,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | L-028 | P2 | IN PROGRESS | Quality control | A fixed list of unknown origin. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
+| N-025 | P2 | REQUIRES BUSINESS DECISION | Accounting | Not built. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
+| N-026 | P2 | REQUIRES BUSINESS DECISION | Freight and carriers | None is. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
+| N-027 | P2 | REQUIRES BUSINESS DECISION | Shipping | Handled today by a return (material back) or a credit memo (money back), each by hand. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
 | S-024 | P2 | IN PROGRESS | Help manual | Pricing, Sales Dashboard, Sales Rep Mobile and customer pages described tabs, contracts, signatures, visit logs and offline use that do not exist | Sales and customer operations |
@@ -109,6 +112,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | L-027 | P3 | DEFERRED TO SPECIFIC PHASE | Manufacturing | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-029 | P3 | DEFERRED TO SPECIFIC PHASE | Jobs | 0 by convention. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-030 | P3 | DEFERRED TO SPECIFIC PHASE | Equipment | None is made. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| N-028 | P3 | DEFERRED TO SPECIFIC PHASE | Customer communication | Not built. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
 | U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | DEFERRED TO SPECIFIC PHASE | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user experience |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
@@ -118,7 +122,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | U-028 | P3 | DEFERRED TO SPECIFIC PHASE | Old operator screen | Recorded output into nothing | Phase 9: user experience |
 | U-029 | P3 | DEFERRED TO SPECIFIC PHASE | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
 | U-035 | P3 | DEFERRED TO SPECIFIC PHASE | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
-| U-036 | P3 | DEFERRED TO SPECIFIC PHASE | Shipment | No button to print a bill of lading or packing list | Phase 9: user experience |
 | U-037 | P3 | DEFERRED TO SPECIFIC PHASE | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
 | U-040 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
 | U-041 | P3 | DEFERRED TO SPECIFIC PHASE | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user experience |
@@ -1946,7 +1949,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Rewritten from the screens as built
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### F-011 · P2 · DEFERRED TO SPECIFIC PHASE
+### F-011 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Shipping documents
@@ -1958,17 +1961,13 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** Unknown
 - **Affected dependencies:** None
 - **Recommended correction:** Not examined in this workstream either
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Shipping and financial operations.
-- **Deferred: target phase:** Shipping and financial operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: dependencies:** None
-- **Deferred: acceptance criteria:** To be examined
-- **Deferred: verification:** The print path examined and either wired to the Shipment screen or recorded as a gap
 - **Required tests:** The print path examined and either wired to the Shipment screen or recorded as a gap
-- **Assigned phase:** Shipping and financial operations
-- **Status note:** Open
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Open Phase 8: examined (N-014, N-019). A packing list and a bill of lading are drawn for a shipment from what is on file, with blanks for what is not, and opened from the shipment screen.
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "the bill of lading and packing list are drawn from the shipment, with nothing invented (N-014)"; qa/sim/ui-phase8.cjs: packing list and bill of lading checks.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### F-012 · P2 · DEFERRED TO SPECIFIC PHASE
+### F-012 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Frontend build
@@ -1980,14 +1979,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Operational impact:** A broken release could pass the build
 - **Affected dependencies:** None
 - **Recommended correction:** Fixed in Workstream 6 (X-006)
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Shipping and financial operations.
-- **Deferred: target phase:** Shipping and financial operations: The phase the owner issues for that subject (prompts 4 to 8 and 12 have not been issued yet); if none covers it, Phase 12
-- **Deferred: dependencies:** None
-- **Deferred: acceptance criteria:** A build or lint step that rejects an undefined name
-- **Deferred: verification:** `npm run lint` fails on an undefined name; shown failing on the F-012 defect
 - **Required tests:** `npm run lint` fails on an undefined name; shown failing on the F-012 defect
-- **Assigned phase:** Shipping and financial operations
-- **Status note:** Open (see E-016)
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Open (see E-016) Phase 8: checked in this session. A file with an undefined name was added to the frontend and linted: eslint answered "'strayWord' is not defined (no-undef)", 1 error. The file was removed. Lint runs in every gate run.
+- **Verification evidence:** npx eslint on a file with an undefined name: 1 error (no-undef), 2026-11-16. qa/tools/run-gates.sh "lint, frontend": 0 errors.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### G-001 · P1 · VERIFIED FIXED
@@ -3388,7 +3383,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: the instruction forbids changing costing rules without authorisation. Recommended: actual cost per item from the purchase order line at receipt (steel is bought and traced by the item), landed cost added when freight is known, pieces inherit cost by weight.
 - **Required tests:** Per the decision: receipt, cut, scrap, transfer and shipment each carry the value; the sum of item values equals the ledger.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): actual cost per item. A receipt against a purchase order line now records the item's cost per stocked unit from the line's price (per hundredweight, pound or ton for stock kept in pounds; each for stock kept in pieces). Pieces cut by a work order and pieces received from a parent carry the parent's cost. A price that cannot be turned into a unit cost (for example per foot for stock kept in pounds) leaves the cost empty. Still open: stock already on hand has no cost unless typed; landed cost (freight, duty) is not worked out; stock movements carry no value, so scrap, shortage and count variance have no amount; Inventory.avgCost is still never written; there is no valuation report. These belong to Phase 8 (accounting).
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): actual cost per item. A receipt against a purchase order line now records the item's cost per stocked unit from the line's price (per hundredweight, pound or ton for stock kept in pounds; each for stock kept in pieces). Pieces cut by a work order and pieces received from a parent carry the parent's cost. A price that cannot be turned into a unit cost (for example per foot for stock kept in pounds) leaves the cost empty. Still open: stock already on hand has no cost unless typed; landed cost (freight, duty) is not worked out; stock movements carry no value, so scrap, shortage and count variance have no amount; Inventory.avgCost is still never written; there is no valuation report. These belong to Phase 8 (accounting). Phase 8: shipment movements now carry the item's unit cost (N-017). A valuation report and a ledger are not built (N-025).
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "an item's cost is taken from its purchase order line when it is received, and the pieces cut from it carry the same cost per pound"; qa/sim/phase6-inventory.mjs "receiving records the cost from the purchase order line". Mutation: 2 rules removed in turn, group 6 fails each time.
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
@@ -3991,7 +3986,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: the instruction forbids inventing cost rates or changing costing, and K-007 is still the owner's question.
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): built as decided. A job's cost is the material its coil work orders used at actual cost per pound, plus the time clocked on its steps at the labor rate the owner enters for each kind of work center. No overhead. Shown to managers, the inventory manager and buyers only. Where a rate or a material cost is not on file the figure is left out and named as missing; nothing is assumed. Still to do by the owner: enter a labor rate for each kind of work center. Still not built: overhead, machine rates separate from labor, outside processing cost, and a cost report across jobs. Needs database update 13.
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): built as decided. A job's cost is the material its coil work orders used at actual cost per pound, plus the time clocked on its steps at the labor rate the owner enters for each kind of work center. No overhead. Shown to managers, the inventory manager and buyers only. Where a rate or a material cost is not on file the figure is left out and named as missing; nothing is assumed. Still to do by the owner: enter a labor rate for each kind of work center. Still not built: overhead, machine rates separate from labor, outside processing cost, and a cost report across jobs. Needs database update 13. Phase 8: the cost of what is sold is now fixed on the stock movement when it leaves (database file 14), and an order shows its cost and margin from actual item cost, job labor and scrap (N-017). Still not built: posting to a ledger, overhead, freight cost and stock valuation reports; these wait on the owner (N-025).
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job's cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead"; src/backend/test/phase7Rules.test.js (unit cost from price, hours, adding up). Mutation: 3 rules removed in turn, group 6 fails each time.
 - **First recorded in:** Phase 7 manufacturing audit
 
@@ -4387,6 +4382,514 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Manufacturing and processing
 - **Status note:** Partly fixed
 - **First recorded in:** qa/engineering-quality-findings.md
+
+### N-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping
+- **Workflow:** Dispatching a shipment
+- **Category:** Stock taken at the wrong branch
+- **Source file or endpoint:** src/backend/src/routes/shipments.js (consumeReserved)
+- **Evidence:** Probe on the QA database, before (qa/sim/p8-probe.mjs): an order was reserved against a stock item standing at branch 2 and put on a shipment leaving from branch 1. Dispatch answered 200 and took the quantity from the item at branch 2.
+- **Expected:** What leaves a dock is stock standing at that dock.
+- **Actual:** Dispatch drew whatever was reserved, wherever it stood.
+- **Root cause or suspected cause:** The dispatch step read the reservation and never compared the item's branch with the shipment's.
+- **Operational impact:** Branch 2's books fell for a truck that left branch 1. Branch 1 still showed material it had loaded.
+- **Recommended correction:** Dispatch refuses (409) and names the item and the branch it is at. The pick list marks such an item "At another branch" before anyone loads it.
+- **Required tests:** Reserve at one branch, ship from another: refused, nothing moves.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "stock standing at another branch is not picked for a shipment from this dock (N-001)". With the rule removed the scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-002 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping
+- **Workflow:** An order sold at one branch and shipped from another
+- **Category:** Branch boundary
+- **Source file or endpoint:** src/backend/src/lib/branchScope.js (Shipment, ShipmentItem); routes/shipments.js (ownDock, orderToShip)
+- **Evidence:** Probe, before: a shipping clerk at branch 2 could not find an order sold by branch 1 whose stock was reserved at branch 2 (404), so the order could not be shipped from where the material was. The selling branch could not see a shipment that left from another dock.
+- **Expected:** The branch that holds the stock ships it; the branch that sold the order sees the shipment; only the dock it leaves from changes it.
+- **Actual:** A shipment belonged only to its dock, and an order only to the branch that sold it.
+- **Operational impact:** Cross-branch orders, which Phase 7 confirmed are normal practice, could not be shipped by the branch holding the material without a head-office login.
+- **Recommended correction:** A branch may open a shipment for another branch's order when stock reserved for it, or a job for it, stands at its own dock. The selling branch reads the shipment. Changes are held to the dock (403). A dock that is not the user's is refused first (403).
+- **Required tests:** Ship and bill across branches; refuse when nothing is held; refuse changes from the selling branch.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "an order sold by one branch is shipped and billed from the branch that holds the stock (N-002)", "a branch cannot ship another branch's order when it holds nothing for it", "a warehouse cannot open a shipment from another branch's dock". Two rules removed one at a time; each made a scenario fail. src/backend/test/branchScope.test.js. qa/sim/branch-boundary.mjs updated to the new answer.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-003 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping
+- **Workflow:** Reporting a problem on the road
+- **Category:** Missing record
+- **Source file or endpoint:** routes/shipments.js (move)
+- **Evidence:** Probe, before: PATCH status EXCEPTION with no text answered 200 and the history line said nothing.
+- **Expected:** A problem is recorded with what happened.
+- **Actual:** Any text, or none.
+- **Operational impact:** A shipment marked as a problem told nobody what the problem was.
+- **Recommended correction:** A reason is required (400 without). It is kept in the history. The screen asks "What happened".
+- **Required tests:** Refuse without a reason; keep the reason.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a problem on the road is recorded with what happened (N-003)"; qa/sim/ui-phase8.cjs: "problem: it cannot be recorded without saying what happened". Rule removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-004 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Delivery
+- **Workflow:** Recording a delivery
+- **Category:** Missing proof of delivery
+- **Source file or endpoint:** routes/shipments.js (deliver); Shipment.noPodReason (database file 14)
+- **Evidence:** Probe, before: PUT deliver with an empty body answered 200. The shipment was DELIVERED with no name, no image and no reason.
+- **Expected:** A delivery names who received it, or says why there is no name.
+- **Actual:** Nothing was required.
+- **Operational impact:** A disputed delivery had nothing on file.
+- **Recommended correction:** A delivery needs the receiver's name or a proof image address, or a written reason for having neither. A carrier's own system reporting delivery is recorded as that reason. Nothing is filled in.
+- **Required tests:** Refuse empty; accept a name; accept a reason; carrier report marked as such.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Deliveries recorded before this rule keep what they have and are not rewritten. The order closeout notes them and does not hold the order open for them. How many exist in the live database is NOT VERIFIED.
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a delivery with no name and no reason is refused (N-004)", "a delivery is recorded with the name of the person who received it", "a carrier's system reports delivery with no name: it is accepted and marked as such"; qa/sim/ui-phase8.cjs delivery checks. Rule removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-005 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping
+- **Workflow:** Dispatching to a closed account
+- **Category:** Business rule not applied
+- **Source file or endpoint:** routes/shipments.js (dispatch)
+- **Evidence:** Probe, before: an account was closed after its order was confirmed; the shipment was dispatched and invoiced (200).
+- **Expected:** A closed account takes no new business (J-002), and a shipment is a new invoice.
+- **Actual:** The rule was applied at order entry only.
+- **Operational impact:** Material could leave for, and an invoice be raised on, an account the owner had closed.
+- **Recommended correction:** Dispatch refuses (409) and says to reopen the account or cancel the order.
+- **Required tests:** Close the account, dispatch: refused, nothing moves.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "nothing ships to a customer whose account was closed after the order was confirmed (N-005)". Rule removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-006 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Orders
+- **Workflow:** Cancelling an order
+- **Category:** Orphan record
+- **Source file or endpoint:** routes/orders.js (cancel)
+- **Evidence:** Probe, before: an order with a shipment on the dock was cancelled; the shipment stayed PENDING for ever and could not be dispatched.
+- **Expected:** Shipments that have not left go with the order.
+- **Actual:** They were left standing.
+- **Operational impact:** The dock list showed loads for cancelled orders.
+- **Recommended correction:** Cancelling the order cancels its shipments still on the dock in the same save, each with a history line saying why.
+- **Required tests:** Cancel with a dock shipment: shipment cancelled, history written.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "cancelling an order cancels its shipments still on the dock (N-006)" and "an order cancelled at the very moment its shipment is dispatched ends one way or the other, never half of each". Rule removed: scenario fails. qa/tools/db-facts.mjs "shipments still on the dock for a cancelled order".
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-007 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Payments
+- **Workflow:** Recording a payment
+- **Category:** Input not checked
+- **Source file or endpoint:** services/billing.js (recordPayment)
+- **Evidence:** Probe, before: a payment dated a year ahead was accepted (201).
+- **Expected:** A payment is recorded once received.
+- **Actual:** Any date.
+- **Operational impact:** Aging and cash reports could be distorted by a mistyped year.
+- **Recommended correction:** A payment date more than a day ahead is refused (400). A day is allowed for time zones.
+- **Required tests:** Refuse a future date.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "what is typed for a payment is checked, including its date (N-007)". Rule removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-008 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Packaging
+- **Workflow:** Sending a package to quality
+- **Category:** Workflow could not be completed
+- **Source file or endpoint:** services/dropTagService.js; routes/dropTagRoutes.js; new screen src/frontend/src/pages/MaterialTracking/PackagesPage.jsx
+- **Evidence:** Probe, before: no address moved a package to "ready for quality", so quality could never release one, and a drop tag (which needs a released package) could not be made through the product. There was no screen to open a package or put material in it.
+- **Expected:** A package is opened, packed, sent to quality, released, tagged and sealed.
+- **Actual:** The chain stopped after packing.
+- **Root cause or suspected cause:** The step was never written; the states existed in the schema only.
+- **Operational impact:** Packaging and drop tags could not be used end to end.
+- **Recommended correction:** The step exists (only a package with something in it; gross weight not less than its contents). Only quality roles release or hold. A new Packing screen walks the chain. A seal needs a seal number.
+- **Required tests:** The whole chain; each step refused out of order; roles.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a packed package is sent to quality; an empty one is not (N-008)", "only quality releases or holds a package", "a tag is printed only for a package that quality has released", "print, apply and seal happen in that order"; qa/sim/ui-phase8.cjs packing checks. Two rules removed one at a time: each made a scenario fail.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-009 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Packaging
+- **Workflow:** Putting material in a package
+- **Category:** Input not checked
+- **Source file or endpoint:** services/dropTagService.js (createPackage, addPackageItem)
+- **Evidence:** Probe, before: a package was opened for an order that does not exist, of a kind that does not exist; an item was added with a heat that is not the stock item's, zero pieces and a negative weight (all 201).
+- **Expected:** A package is for a real order line; its contents agree with the stock item.
+- **Actual:** Whatever was typed was saved.
+- **Operational impact:** A tag could print a heat or grade the material does not have.
+- **Recommended correction:** The order, line and kind are checked. Heat, grade and form are read from the stock item, and a different typed value is refused. Pieces and weight must be positive, and no more than the item weighs across all packages. Stock on hold cannot be packed.
+- **Required tests:** Each refusal; the happy path.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a package is opened only for a real order line and a known kind of package", "what goes into a package is checked against the stock item". Rule removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-010 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Drop tags
+- **Workflow:** Tag states
+- **Category:** State rule
+- **Source file or endpoint:** services/dropTagService.js
+- **Evidence:** Probe, before: sealing a package set every tag on it to SEALED, including a voided one; a package could be sealed with a tag not applied; two live tags could be made for one package; a tag could be printed again without limit.
+- **Expected:** One live tag per package; print, apply, seal in order; a void tag stays void; further copies are controlled.
+- **Actual:** Each step changed the status without looking at the others.
+- **Operational impact:** A voided tag came back to life at sealing; duplicate tags for one bundle.
+- **Recommended correction:** Fixed moves, checked in the same save. Sealing touches applied tags only. A further copy needs one of the listed reasons, and after three a manager.
+- **Required tests:** Each rule, and a second tag refused.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a package has one live tag at a time", "print, apply and seal happen in that order", "a voided tag stays void when the package is sealed (N-010)", "a further copy of a tag needs a reason, and after three copies a manager". Three rules removed one at a time: each made a scenario fail. qa/tools/db-facts.mjs "packages with more than one live tag".
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-011 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Custody records
+- **Workflow:** Who did what to material
+- **Category:** Records could be forged
+- **Source file or endpoint:** routes/materialTrackingRoutes.js; services/dropTagService.js; services/scanService.js
+- **Evidence:** Probe, before: any signed-in user could post a custody record of any kind ("job shipped", "hold placed") for any job, with any person's id as the actor; the role on packing records was a fixed word, not the user's role; the record's "hash" was a random string.
+- **Expected:** A custody record is written by the system when the thing happens, in the name of the signed-in person.
+- **Actual:** It could be typed by hand in anyone's name.
+- **Operational impact:** The chain of custody could not be relied on.
+- **Recommended correction:** The hand-entry address takes notes only, from a short list of kinds, marked as manual and always in the writer's own name and role. Status records are written by the step itself. The second address that accepted them answers 410. The fingerprint is a SHA-256 of the record.
+- **Required tests:** Forged kinds refused; a note kept under the writer's name; real role on packing records.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "packing records name the real person and role, and custody records cannot be forged (N-011)". Two rules removed one at a time: each made the scenario fail. A third line (holds refused by name) was found to be backed by the list of kinds, so removing it alone changes nothing.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-012 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Packaging
+- **Workflow:** Numbering packages, tags and listings
+- **Category:** Numbering
+- **Source file or endpoint:** services/dropTagService.js (nextNumber); services/dropTagListingService.js
+- **Evidence:** Code read and probe, before: package, tag and listing numbers were made from the clock and a random number, so two made together could collide and the numbers had no order.
+- **Expected:** Numbers run one after another and are never repeated.
+- **Actual:** Random.
+- **Operational impact:** A rare duplicate number; numbers that cannot be read in sequence.
+- **Recommended correction:** The three series use the document counter table (Phase 3), taken inside the same save.
+- **Required tests:** Many at once: all different, in sequence.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a package is opened only for a real order line and a known kind of package" (number format and sequence) and "package steps taken twice at once happen once (N-013)".
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-013 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Packaging
+- **Workflow:** Two people pressing at once
+- **Category:** Concurrency
+- **Source file or endpoint:** services/dropTagService.js (lockPackage, moveTag)
+- **Evidence:** Probe, before: two "print" requests for one tag at the same moment both answered 200 and two print records were written; two tags could be made for one package at the same moment.
+- **Expected:** Each step happens once.
+- **Actual:** Read, then write, with nothing held between.
+- **Operational impact:** Duplicate tags and duplicate print records.
+- **Recommended correction:** Each package step locks the package row; each tag move succeeds only if the tag is still in the state the person saw (409 otherwise).
+- **Required tests:** Each step sent twice at once.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "package steps taken twice at once happen once (N-013)". The lock and the state check removed one at a time: each made the scenario fail.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-014 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping documents
+- **Workflow:** Labels, packing list and bill of lading
+- **Category:** Invented content on printed papers
+- **Source file or endpoint:** services/tagRenderer.js; services/printAutomationService.js; new lib/shippingDocuments.js
+- **Evidence:** Code read and probe, before: the bill of lading and the job labels printed a fixed company name and address that are not the branch's, a ship-to built from placeholder text, "1" for pieces and weights that were not on file. The packing list listed nothing from the shipment.
+- **Expected:** A paper prints what is on file, and a blank for what is not.
+- **Actual:** Placeholders were printed as facts.
+- **Root cause or suspected cause:** The templates were written before the data was connected.
+- **Operational impact:** A bill of lading is a legal document. A wrong shipper, address or weight on it is a real exposure.
+- **Recommended correction:** One reader (lib/shippingDocuments.js) builds the pick list, packing list and bill of lading from the shipment, the order, the branch and the stock movements. Anything missing is left blank on the paper and named on the screen before printing. Job labels read the real branch, order and customer PO.
+- **Required tests:** Papers agree with the records; blanks for missing facts; nothing invented.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** No printer, label stock or scanner was used. What a paper looks like on a real printer is NOT VERIFIED.
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "the papers show a blank, never an invented value, for what is not on file", "the bill of lading and packing list are drawn from the shipment, with nothing invented (N-014)", "a job label prints the real branch, order and customer PO, and blanks for what is not on file", "the pick list names the reserved stock items with their heat and bin, oldest reservation first"; qa/sim/ui-phase8.cjs paper checks. An invented address put back: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-015 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Print queue
+- **Workflow:** Whose print jobs
+- **Category:** Branch boundary
+- **Source file or endpoint:** PrintQueueJob.locationId (database file 14); lib/branchScope.js; routes/printQueue.js; services/printAutomationService.js
+- **Evidence:** Probe, before: every branch saw and could settle every other branch's print jobs; a job could be marked printed twice, or printed and then skipped; nothing recorded who.
+- **Expected:** A print job is for one branch's printer and is settled once by a named person.
+- **Actual:** One shared list.
+- **Operational impact:** Branch 2 could mark branch 1's tags printed, so they were never printed.
+- **Recommended correction:** A print job carries its branch. Each branch sees its own (and jobs with no branch on file). A job is settled once (409 after), with who did it in the audit log.
+- **Required tests:** Two branches; settle twice.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Print jobs already waiting in the live database have no branch and stay visible to every branch until settled.
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "each branch sees and settles its own print jobs (N-015)", "a print job is settled once, by a named person". Each rule removed: scenario fails. src/backend/test/branchScope.test.js.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-016 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Returns
+- **Workflow:** A return received when its credit cannot be issued
+- **Category:** Money owed not recorded
+- **Source file or endpoint:** routes/returns.js; lib/orderCloseout.js; lib/integrationReport.js; src/frontend/src/pages/Orders/ReturnsPage.jsx
+- **Evidence:** Probe, before: a return was received on an order whose invoice had already been credited in full. The material came back, the credit was refused, and the answer was 200 with a line in the server log. Nothing on any screen showed that the customer had returned material without a credit.
+- **Expected:** A return received without its credit is listed until someone settles it.
+- **Actual:** It was lost.
+- **Operational impact:** A customer owed a credit, or a duplicate return, with nothing to find it by.
+- **Recommended correction:** The receipt answers with a warning and writes a record. The return is flagged on the returns list, on the order's closeout and in the integration report until a manager issues the credit or records, with a reason, how it was settled. It can be settled once.
+- **Required tests:** Flag raised; settled by a manager only, once.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a return received when its credit cannot be issued is flagged until a manager settles it (N-016)", "only a manager settles a missing credit, with the reason, once", "two managers settling the same missing credit at once leave one record"; qa/sim/ui-phase8.cjs returns checks. The flag and the once-only check removed one at a time: each made a scenario fail. A first-pass duplicate check before the lock was found to be backed by the one inside it.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-017 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Order costing
+- **Workflow:** What a sale cost
+- **Category:** Not built
+- **Source file or endpoint:** MaterialMovement.unitCost (database file 14); routes/shipments.js; lib/orderCloseout.js (orderCost); src/frontend/src/components/orders/OrderCloseoutPanel.jsx
+- **Evidence:** Schema and code read, before: a shipment movement recorded quantity only. The cost of the item on the day it left was kept nowhere, so the margin on an order could not be worked out, and a later change to the item's cost would have changed history.
+- **Expected:** By owner decision 9, actual cost per item: the cost of what was sold is fixed when it leaves.
+- **Actual:** No cost of sale.
+- **Operational impact:** No order margin.
+- **Recommended correction:** Dispatch writes the item's unit cost on the stock movement. An order's cost and margin are read from those movements, the returns that came back to stock, the labor and scrap on its jobs (Phase 7) and the goods lines of its invoices, less credits. Tax and freight billed are not revenue. A missing cost is named and the margin is not shown. Shown to the roles that manage cost only.
+- **Required tests:** Cost fixed at dispatch; unchanged by later cost edits; partial shipments; returns; missing cost; roles.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** This is cost of sale per order from actual item cost. Posting cost of goods to a ledger, overhead, freight cost and landed-cost allocation are not built (N-025). Movements written before database file 14 carry no cost, and orders shipped before it show "cost not on file".
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs group "Costing, reconciliation and closeout" (twelve cost scenarios, among them "the cost of what was sold is the cost fixed on the stock movement when it left" and "a later change to the stock item's cost does not change what a past sale cost"); qa/sim/ui-phase8.cjs "order: a manager sees cost and margin, from what left". With the cost not written at dispatch seven scenarios fail.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-018 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Order closeout
+- **Workflow:** Knowing an order is finished
+- **Category:** Not built
+- **Source file or endpoint:** new lib/orderCloseout.js; routes/orders.js (GET /:id/closeout, GET /closeout); new screen pages/Orders/OrderCloseoutPage.jsx
+- **Evidence:** Code read: an order became COMPLETE when its last line shipped. Nothing said whether it was delivered, invoiced, paid, or had a return, credit, job or reserved stock still open.
+- **Expected:** One answer to "is this order done, and if not, what is it waiting for".
+- **Actual:** None.
+- **Operational impact:** Back orders, unbilled shipments and unpaid invoices were found only by looking in four places.
+- **Recommended correction:** A closeout position per order (pure rule, lib/orderCloseout.js closeoutPosition) lists each open item with its figure. A list of orders not closed, oldest first, by reason, held to the reader's branches. Nothing is stored and no order status is changed: it is read from the records each time.
+- **Required tests:** Each open reason; closed; reopened by a return; list agrees with each order.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: eight closeout scenarios, among them "an order closes only when it is shipped, delivered, invoiced and paid" and "the list of orders not closed is paged, oldest first, and agrees with each order's own closeout"; src/backend/test/phase8Rules.test.js (nine closeout tests); qa/sim/ui-phase8.cjs closeout checks. Rule removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-019 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping documents
+- **Workflow:** Printing from the shipment screen
+- **Category:** Not built; unsafe text
+- **Source file or endpoint:** src/frontend/src/pages/Shipping/ShipmentPage.jsx; routes/printQueue.js; services/tagRenderer.js
+- **Evidence:** Screen read: no button printed a packing list or bill of lading (U-036). Probe: text typed into a shipment (carrier, notes) was written into the paper's HTML as it was.
+- **Expected:** The papers can be opened and printed from the shipment; typed text is text.
+- **Actual:** No button; markup passed through.
+- **Operational impact:** Papers were written by hand. A typed tag could have changed what a paper showed.
+- **Recommended correction:** Two buttons open the paper exactly as the server draws it, with Print. Every value is escaped before it is drawn.
+- **Required tests:** Open each paper; markup shows as text.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "text on a printed paper cannot carry markup"; qa/sim/ui-phase8.cjs: packing list and bill of lading checks. Escaping removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-020 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Costing
+- **Workflow:** Who sees stock cost
+- **Category:** Cost shown to roles that should not see it
+- **Source file or endpoint:** new src/backend/src/lib/costView.js; src/backend/src/app.js
+- **Evidence:** Found by a Phase 8 scenario: a sales login read GET /api/orders/:id and received the unit cost of the reserved stock item; an operator read GET /api/coils/:id and received the cost on each movement. Owner decision 9 keeps cost to managers, the inventory manager and buyers.
+- **Expected:** Cost is sent only to the roles that manage it, on every answer.
+- **Actual:** Each route had to remember to remove it, and two did not.
+- **Root cause or suspected cause:** The rule was applied route by route.
+- **Operational impact:** Any staff login could read what the company paid for material.
+- **Recommended correction:** One guard on every API answer removes cost from every stock item, stock record and stock movement, wherever it sits in the answer, unless the reader is a cost viewer.
+- **Required tests:** Search every answer a non-cost role can read for a cost field.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "stock cost does not leak through the order, the shipment or the stock item (N-020)", "cost and margin are shown only to the roles that manage cost"; src/backend/test/phase8Rules.test.js (two cost-view tests). Guard removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-021 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Credit memos
+- **Workflow:** A typed credit amount
+- **Category:** Arithmetic
+- **Source file or endpoint:** services/billing.js (createCredit)
+- **Evidence:** Found by a Phase 8 scenario: a typed credit of up to two cents more than was left on an invoice was accepted, and the difference was taken off a tax figure that was zero, giving a credit with tax of the wrong sign.
+- **Expected:** A typed amount over what is left is refused, to the cent.
+- **Actual:** A rounding allowance meant for line-by-line credits was applied to typed amounts.
+- **Operational impact:** A credit memo with a small tax figure of the wrong sign.
+- **Recommended correction:** The allowance applies only to a credit by line, and only when the tax can absorb it. Otherwise 409 with the amount left.
+- **Required tests:** One cent over: refused.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a credit memo is a manager's decision, needs a reason, and never exceeds the invoice". Rule removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-022 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Invoicing
+- **Workflow:** Many dispatches or credits at the same moment
+- **Category:** Concurrency
+- **Source file or endpoint:** src/backend/src/lib/numbering.js (isOverlap, retryOverlap)
+- **Evidence:** Found by a Phase 8 scenario: six shipments dispatched at the same moment. Some left with no invoice (the answer carried an invoice warning), and simultaneous credits answered 500. The database had reported a serialization failure on a raw statement, which arrives under a different error code from the one the retry looked for.
+- **Expected:** Work that overlaps is run again, as Phase 3 built.
+- **Actual:** Retried for one error code only.
+- **Root cause or suspected cause:** Prisma reports the same database condition as P2034 from its own queries and as P2010 from raw statements.
+- **Operational impact:** Under load, shipments leaving without an invoice. Each was listed for billing in the integration report, so none was lost, but each needed a person.
+- **Recommended correction:** Both forms are recognised and retried.
+- **Required tests:** Six dispatches at once: six invoices, numbers in sequence. Credits at once: no 500.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "six shipments dispatched at once get six different invoice numbers with no gap", "credits issued together never exceed the invoice"; src/backend/test/phase8Rules.test.js (two overlap tests). Fix removed: two scenarios fail.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-023 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Print queue
+- **Workflow:** A paper waiting to print
+- **Category:** Stale content
+- **Source file or endpoint:** services/printAutomationService.js (queueShipmentPapers)
+- **Evidence:** Found by a Phase 8 scenario: a packing list queued before dispatch still said "not yet dispatched", and showed the old carrier, when printed after the shipment had left.
+- **Expected:** A waiting paper prints what the shipment says now.
+- **Actual:** It printed what the shipment said when it was queued.
+- **Operational impact:** A wrong carrier or status on a printed paper.
+- **Recommended correction:** A paper still waiting is brought up to date when it is asked for again; one waiting copy of each per shipment.
+- **Required tests:** Queue, change the shipment, print.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a paper waiting in the queue is brought up to date, never printed stale, and never queued twice". Fix removed: scenario fails.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-024 · P4 · FIXED — NOT VERIFIED
+
+- **Discovered:** 2026-11-16
+- **Module:** Tests
+- **Workflow:** Phase 5 sales scenarios
+- **Category:** Test defect
+- **Source file or endpoint:** qa/sim/phase5-sales.mjs ("the sales dashboard counts open business before tax and leaves expired quotes out")
+- **Evidence:** The Phase 8 baseline run started at 00:20 UTC on a Monday and this scenario failed (75 of 76). It lapses a quote "an hour ago" and expects the week's figures to count it. In the first hour of a week, an hour ago is last week.
+- **Expected:** A check that does not depend on the time of day.
+- **Actual:** Failed in the first hour of each week.
+- **Operational impact:** A false alarm. The product was right.
+- **Recommended correction:** The quote is lapsed one second ago.
+- **Required tests:** Run in the first hour of a week.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** The scenario passes at other hours (this session). It was not run again in the first hour of a week, which is the only time the defect shows.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-025 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Accounting
+- **Workflow:** Ledger, cost of goods and valuation
+- **Category:** Not built; needs the owner
+- **Source file or endpoint:** No table
+- **Evidence:** qa/sim/phase8-fulfillment.mjs: "there is no accounting system connected: nothing is posted to a ledger", "overhead, freight cost, landed cost allocation and cost of goods posting are not built". There is no chart of accounts, journal, period or accounting connection in the schema or the code. Invoices, payments and credits are the only financial records.
+- **Expected:** Recorded as a gap. The Phase 8 instruction forbids assuming when cost of goods is recognised and inventing account mappings.
+- **Actual:** Not built.
+- **Operational impact:** Books are kept in another system by hand, from the invoice and payment lists.
+- **Recommended correction:** Not made. Built this phase: cost of sale per order (N-017) and receivables by age.
+- **Required tests:** None until decided.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** The owner decides: which accounting system, if any, the product posts to; the chart of accounts; when cost of goods is recognised (at shipment, at invoice or at delivery); whether overhead and freight cost are part of cost; the period-close rule. Nothing was assumed.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-026 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Freight and carriers
+- **Workflow:** Rates, labels, pickups, tracking
+- **Category:** Not built; needs the owner
+- **Source file or endpoint:** src/frontend/src/pages/Freight (seven sample screens); routes/partner/carrierRoutes.js
+- **Evidence:** qa/sim/phase8-fulfillment.mjs: "freight rates are not calculated by this product", "no carrier is connected: there is no label purchase, pickup request or tracking pull to test", "the six freight planning screens are marked as sample screens". Freight on an invoice is the amount staff type on the order, billed once on the first shipment. A carrier that has been given a partner key can report status and delivery for its own shipments; that is the only carrier connection.
+- **Expected:** No carrier capability is invented.
+- **Actual:** None is.
+- **Operational impact:** Rating, booking and tracking are done outside the product.
+- **Recommended correction:** Not made.
+- **Required tests:** None until a carrier is chosen.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** The owner decides which carriers or rating service to connect and the freight rules (rate tables, minimums, accessorials, who pays). The sample screens stay marked as samples (U-035, Phase 9).
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-027 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Shipping
+- **Workflow:** A load that is lost, destroyed or refused for good
+- **Category:** Needs the owner
+- **Source file or endpoint:** routes/shipments.js (moves)
+- **Evidence:** qa/sim/phase8-fulfillment.mjs: "a shipment with a problem can end delivered, and cannot be cancelled or put back on the dock". A shipment that has left has taken stock and raised an invoice. From "problem" it can go back on the road or be delivered. There is no way to end it as lost or destroyed, and none was invented.
+- **Expected:** A rule from the owner for loads that never arrive.
+- **Actual:** Handled today by a return (material back) or a credit memo (money back), each by hand.
+- **Operational impact:** A lost load stays "problem" and holds its order open on the closeout list, which is visible and correct, until someone credits it.
+- **Recommended correction:** Not made.
+- **Required tests:** None until decided.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** The owner decides: who may write a load off, whether stock is written off or claimed from the carrier, whether the invoice is credited automatically, and whether a replacement ships on the same order.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-028 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Customer communication
+- **Workflow:** Shipment, delivery and invoice notices
+- **Category:** Not built
+- **Source file or endpoint:** None
+- **Evidence:** qa/sim/phase8-fulfillment.mjs: "no email or text is sent when a shipment leaves or arrives", "invoices are not sent by this product". A customer's own system that has subscribed is told of shipments and invoices by webhook (Phase 4). No person is told anything.
+- **Expected:** By owner decision 5, email and text come later.
+- **Actual:** Not built.
+- **Operational impact:** Staff tell customers by phone or their own email; invoices are printed or sent from another system.
+- **Recommended correction:** Not made.
+- **Deferred: reason:** Owner decision 5 (2026-11-14): email and text notices later.
+- **Deferred: target phase:** The phase the owner issues for notifications; if none covers it, Phase 12
+- **Deferred: required correction:** Notices on dispatch and delivery, and invoice delivery, through the service the owner chooses.
+- **Deferred: dependencies:** A mail or text service, and its host settings, which are the owner's.
+- **Deferred: acceptance criteria:** A customer contact receives one notice per event, never from a test.
+- **Deferred: verification:** Scenario with a captured outbox; nothing sent from simulations.
+- **Required tests:** None.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
+
+### N-029 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Orders and shipping
+- **Workflow:** Cancelling an order at the moment its shipment is dispatched
+- **Category:** Concurrency
+- **Source file or endpoint:** src/backend/src/lib/numbering.js (isOverlap); src/backend/src/routes/orders.js (update)
+- **Evidence:** Found by reading the server log of the first full Phase 8 regression run: six dispatch requests answered 500 in the scenario that cancels an order while its shipment is dispatched. The database had stopped one of the two saves as a deadlock (the cancel releases the reserved stock while the dispatch takes it). The scenario itself had passed, because the records were right in every round: the save that lost was rolled back whole. A later run showed the cancel side answering 500 the same way.
+- **Expected:** The save that loses is run again and its user is told plainly what happened (409).
+- **Actual:** A 500 with "Failed to dispatch" or "Failed to update order". Nothing was half-saved.
+- **Root cause or suspected cause:** A deadlock met by one of the database client's own statements is reported with no error code, only the database's words, so the retry did not recognise it; and the order save had no retry.
+- **Operational impact:** Rare: needs a cancel and a dispatch of the same order within the same fraction of a second. The user saw an error and had to look again. No record was wrong.
+- **Recommended correction:** The retry recognises this third form of the same event, and the order save uses the retry. The loser now answers 409.
+- **Required tests:** Cancel and dispatch together, many rounds: every answer is 200 or 409.
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "an order cancelled at the very moment its shipment is dispatched ends one way or the other, never half of each" now also checks that no request is answered with a server error; src/backend/test/phase8Rules.test.js (overlap forms). With the recognition removed the scenario fails. The order-save retry was run 36 rounds with no error; without it one round in about twelve failed, so its removal is not a reliable mutation and is not counted.
+- **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
 ### S-001 · P0 · VERIFIED FIXED
 
@@ -5286,21 +5789,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-036 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-036 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Shipment
 - **Category:** User experience
 - **Source file or endpoint:** Shipment
 - **Actual:** No button to print a bill of lading or packing list
-- **Deferred: reason:** Outside the scope of Phase 2 (architecture and code quality). It was assigned in Phase 1 to: Phase 9: user experience.
-- **Deferred: target phase:** Phase 9: user experience
-- **Deferred: required correction:** See "Recommended correction".
-- **Deferred: dependencies:** None recorded.
-- **Deferred: acceptance criteria:** The behaviour under "Expected".
-- **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
-- **Assigned phase:** Phase 9: user experience
-- **Status note:** Open (F-011)
+- **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Open (F-011) Phase 8: the shipment screen has "Packing list" and "Bill of lading" buttons that open the paper as it will print (N-019).
+- **Verification evidence:** qa/sim/ui-phase8.cjs: "packing list: opens as it will print, with the shipment, the order and the stock item", "bill of lading: drawn from the shipment".
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-037 · P3 · DEFERRED TO SPECIFIC PHASE

@@ -493,6 +493,18 @@
    "file": "src/backend/src/routes/orders.js"
   },
   {
+   "ep": "GET /api/orders/closeout",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/orders/:id/closeout",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
+   "ep": "GET /api/orders/:id/cost",
+   "file": "src/backend/src/routes/orders.js"
+  },
+  {
    "ep": "GET /api/orders/:id",
    "file": "src/backend/src/routes/orders.js"
   },
@@ -605,7 +617,15 @@
    "file": "src/backend/src/routes/shipments.js"
   },
   {
+   "ep": "GET /api/shipments/:id/documents",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
    "ep": "GET /api/invoices",
+   "file": "src/backend/src/routes/invoices.js"
+  },
+  {
+   "ep": "GET /api/invoices/aging",
    "file": "src/backend/src/routes/invoices.js"
   },
   {
@@ -650,6 +670,10 @@
   },
   {
    "ep": "POST /api/returns/:id/receive",
+   "file": "src/backend/src/routes/returns.js"
+  },
+  {
+   "ep": "POST /api/returns/:id/credit",
    "file": "src/backend/src/routes/returns.js"
   },
   {
@@ -1885,10 +1909,6 @@
    "file": "src/backend/src/routes/admin.js"
   },
   {
-   "ep": "POST /api/drop-tags",
-   "file": "src/backend/src/routes/dropTagRoutes.js"
-  },
-  {
    "ep": "GET /api/drop-tags",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
@@ -1929,6 +1949,10 @@
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
+   "ep": "POST /api/drop-tags",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
    "ep": "POST /api/drop-tags/:id/validate",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
@@ -1953,11 +1977,11 @@
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
-   "ep": "GET /api/drop-tags/packages/ready",
+   "ep": "POST /api/drop-tags/packages/:id/items",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
-   "ep": "POST /api/drop-tags/packages/:id/items",
+   "ep": "POST /api/drop-tags/packages/:id/ready",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
@@ -1966,6 +1990,14 @@
   },
   {
    "ep": "POST /api/drop-tags/packages/:id/qc-release",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "POST /api/drop-tags/packages/:id/qc-hold",
+   "file": "src/backend/src/routes/dropTagRoutes.js"
+  },
+  {
+   "ep": "GET /api/drop-tags/packages/ready",
    "file": "src/backend/src/routes/dropTagRoutes.js"
   },
   {
@@ -2574,7 +2606,7 @@
   },
   {
    "name": "MaterialMovement",
-   "fields": 23,
+   "fields": 24,
    "fks": 8,
    "status": null
   },
@@ -2706,7 +2738,7 @@
   },
   {
    "name": "Shipment",
-   "fields": 30,
+   "fields": 31,
    "fks": 3,
    "status": "ShipmentStatus"
   },
@@ -3342,7 +3374,7 @@
   },
   {
    "name": "PrintQueueJob",
-   "fields": 11,
+   "fields": 12,
    "fks": 0,
    "status": "String"
   },
@@ -4298,6 +4330,7 @@
   "purchase-orders",
   "material-tracking",
   "material-tracking/packaging",
+  "material-tracking/packages",
   "material-tracking/tags",
   "material-tracking/staging",
   "material-tracking/traceability",
@@ -4329,6 +4362,7 @@
   "logistics/tracking",
   "logistics/dispatch",
   "orders/invoices",
+  "orders/closeout",
   "orders/returns",
   "orders",
   "boms",

@@ -298,7 +298,8 @@ const skipDone = await A.post(`/api/jobs/${early.body.id}/status`, { status: 'CO
 check('a job that has not started cannot be marked completed', skipDone.status === 409 && (await jobOf(early.body.id)).status === 'SCHEDULED', `${skipDone.status}`);
 const pendingShipment = await prisma.shipment.findFirst({ where: { status: 'PENDING' } });
 if (pendingShipment) {
-  const earlyDeliver = await A.put(`/api/shipments/${pendingShipment.id}/deliver`, { receivedBy: 'QA' });
+  // Phase 8 (N-004): a delivery needs the receiver's name, so one is sent; the refusal checked here is the state.
+  const earlyDeliver = await A.put(`/api/shipments/${pendingShipment.id}/deliver`, { podSignature: 'QA Receiver' });
   check('a shipment that has not left cannot be marked delivered', earlyDeliver.status === 409 && (await prisma.shipment.findUnique({ where: { id: pendingShipment.id } })).status === 'PENDING', `${earlyDeliver.status}`);
 }
 const openInvoice = await prisma.invoice.findFirst({ where: { kind: 'INVOICE', status: 'PAID' } });

@@ -4,7 +4,7 @@
  */
 
 import express from 'express';
-import dropTagService from '../services/dropTagService.js';
+import dropTagService, { TagRefusal } from '../services/dropTagService.js';
 import dropTagListingService from '../services/dropTagListingService.js';
 import scanService from '../services/scanService.js';
 import templateService from '../services/templateService.js';
@@ -12,37 +12,13 @@ import templateService from '../services/templateService.js';
 const router = express.Router();
 
 // Helper to get user ID from request (simplified for now)
-const getUserId = (req) => req.user?.id || req.headers['x-user-id'] || 'system';
+// The person is the one signed in. A header naming someone else is never taken as who did it.
+const getUserId = (req) => req.user.id;
 
 // ============================================================================
 // DROP TAG ENDPOINTS
 // ============================================================================
 
-/**
- * POST /api/drop-tags
- * Generate a new drop tag for a package
- */
-router.post('/', async (req, res) => {
-  try {
-    const { packageId, templateCode, generateForEachPiece } = req.body;
-    const userId = getUserId(req);
-
-    if (!packageId) {
-      return res.status(400).json({ error: 'packageId is required' });
-    }
-
-    const result = await dropTagService.generateDropTag({
-      packageId,
-      templateCode,
-      userId,
-    });
-
-    res.status(201).json(result);
-  } catch (error) {
-    console.error('Error generating drop tag:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
 
 /**
  * GET /api/drop-tags
@@ -205,7 +181,9 @@ router.post('/templates/seed', async (req, res) => {
  * GET /api/drop-tags/:id
  * Get a drop tag by ID
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
+  // "listings" is the list of listings further down, not a tag (Phase 8: this route used to answer for it).
+  if (req.params.id === 'listings') return next();
   try {
     const { id } = req.params;
     
@@ -245,155 +223,62 @@ router.post('/validate', async (req, res) => {
   }
 });
 
-/**
- * POST /api/drop-tags/:id/validate
- * Validate and mark tag ready to print
- */
-router.post('/:id/validate', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = getUserId(req);
 
-    const tag = await dropTagService.validateAndReadyToPrint(id, userId);
-    res.json(tag);
-  } catch (error) {
-    console.error('Error validating drop tag:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
 
-/**
- * POST /api/drop-tags/:id/print
- * Print a drop tag
- */
-router.post('/:id/print', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { stationId, templateCode, copies = 1 } = req.body;
-    const userId = getUserId(req);
 
-    const result = await dropTagService.printDropTag(id, {
-      stationId,
-      templateCode,
-      copies,
-      userId,
-    });
 
-    res.json(result);
-  } catch (error) {
-    console.error('Error printing drop tag:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
-
-/**
- * POST /api/drop-tags/:id/reprint
- * Reprint a drop tag (requires reason)
- */
-router.post('/:id/reprint', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { reason, stationId, copies = 1 } = req.body;
-    const userId = getUserId(req);
-
-    if (!reason) {
-      return res.status(400).json({ error: 'reason is required for reprint' });
-    }
-
-    const result = await dropTagService.reprintDropTag(id, {
-      reason,
-      stationId,
-      copies,
-      userId,
-    });
-
-    res.json(result);
-  } catch (error) {
-    console.error('Error reprinting drop tag:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
-
-/**
- * POST /api/drop-tags/:id/apply
- * Apply a drop tag to package (scan confirmation)
- */
-router.post('/:id/apply', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { packageScanValue } = req.body;
-    const userId = getUserId(req);
-
-    const result = await dropTagService.applyDropTag(id, {
-      packageScanValue,
-      userId,
-    });
-
-    res.json(result);
-  } catch (error) {
-    console.error('Error applying drop tag:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
-
-/**
- * POST /api/drop-tags/:id/void
- * Void a drop tag
- */
-router.post('/:id/void', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { reason, claimId } = req.body;
-    const userId = getUserId(req);
-
-    if (!reason) {
-      return res.status(400).json({ error: 'reason is required for void' });
-    }
-
-    const result = await dropTagService.voidDropTag(id, {
-      reason,
-      claimId,
-      userId,
-    });
-
-    res.json(result);
-  } catch (error) {
-    console.error('Error voiding drop tag:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
 
 // ============================================================================
 // PACKAGE ENDPOINTS
 // ============================================================================
 
-/**
- * POST /api/drop-tags/packages
- * Create a new package
- */
-router.post('/packages', async (req, res) => {
+
+// ============================================================================
+// PACKAGES AND TAGS: every step that changes one (Phase 8, N-008 to N-013)
+// ============================================================================
+// The person is the one signed in, and the custody record carries the role they really have.
+const who = (req) => ({ userId: req.user.id, role: req.user.role });
+const step = (label, fn) => async (req, res) => {
   try {
-    const { packageType, orderId, orderLineId, jobId } = req.body;
-    const userId = getUserId(req);
-
-    if (!packageType) {
-      return res.status(400).json({ error: 'packageType is required' });
-    }
-
-    const pkg = await dropTagService.createPackage({
-      packageType,
-      orderId,
-      orderLineId,
-      jobId,
-      userId,
-    });
-
-    res.status(201).json(pkg);
+    const out = await fn(req);
+    res.status(out?.created ? 201 : 200).json(out?.created ? out.body : out);
   } catch (error) {
-    console.error('Error creating package:', error);
-    res.status(400).json({ error: error.message });
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
+    if (error?.status === 403 && error?.name === 'OutsideBranch') return res.status(403).json({ error: error.message });
+    if (error?.code === 'P2003' || error?.code === 'P2025' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The request has a field that is not valid' });
+    console.error(`Drop tags: ${label} failed:`, error);
+    res.status(500).json({ error: `Failed to ${label}` });
   }
-});
+};
+
+router.post('/', step('make the tag', async (req) => {
+  const { packageId, templateCode } = req.body || {};
+  if (!packageId) throw new TagRefusal(400, 'packageId is required');
+  return { created: true, body: await dropTagService.generateDropTag({ packageId: String(packageId), templateCode, ...who(req) }) };
+}));
+router.post('/:id/validate', step('validate the tag', (req) => dropTagService.validateAndReadyToPrint(req.params.id, req.user.id, req.user.role)));
+router.post('/:id/print', step('print the tag', (req) => {
+  const { stationId, templateCode, copies = 1 } = req.body || {};
+  return dropTagService.printDropTag(req.params.id, { stationId, templateCode, copies, ...who(req) });
+}));
+router.post('/:id/reprint', step('print the tag again', (req) => {
+  const { reason, stationId, copies = 1 } = req.body || {};
+  if (!reason) throw new TagRefusal(400, 'reason is required for reprint');
+  return dropTagService.reprintDropTag(req.params.id, { reason, stationId, copies, ...who(req) });
+}));
+router.post('/:id/apply', step('apply the tag', (req) => dropTagService.applyDropTag(req.params.id, { packageScanValue: req.body?.packageScanValue, ...who(req) })));
+router.post('/:id/void', step('void the tag', (req) => dropTagService.voidDropTag(req.params.id, { reason: req.body?.reason, claimId: req.body?.claimId, ...who(req) })));
+
+router.post('/packages', step('open the package', async (req) => {
+  const { packageType, orderId, orderLineId, jobId } = req.body || {};
+  if (!packageType) throw new TagRefusal(400, 'packageType is required');
+  return { created: true, body: await dropTagService.createPackage({ packageType, orderId, orderLineId, jobId, ...who(req) }) };
+}));
+router.post('/packages/:id/items', step('add to the package', async (req) => ({ created: true, body: await dropTagService.addPackageItem(req.params.id, req.body || {}, req.user.id, req.user.role) })));
+router.post('/packages/:id/ready', step('send the package to quality', (req) => dropTagService.markPackageReady(req.params.id, { grossWeightLbs: req.body?.grossWeightLbs, ...who(req) })));
+router.post('/packages/:id/seal', step('seal the package', (req) => dropTagService.sealPackage(req.params.id, { sealId: req.body?.sealId, ...who(req) })));
+router.post('/packages/:id/qc-release', step('release the package', (req) => dropTagService.releasePackageQC(req.params.id, { notes: req.body?.notes, ...who(req) })));
+router.post('/packages/:id/qc-hold', step('hold the package', (req) => dropTagService.holdPackageQC(req.params.id, { reason: req.body?.reason, ...who(req) })));
 
 /**
  * GET /api/drop-tags/packages/ready
@@ -409,62 +294,8 @@ router.get('/packages/ready', async (req, res) => {
   }
 });
 
-/**
- * POST /api/drop-tags/packages/:id/items
- * Add item to package
- */
-router.post('/packages/:id/items', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = getUserId(req);
 
-    const item = await dropTagService.addPackageItem(id, req.body, userId);
-    res.status(201).json(item);
-  } catch (error) {
-    console.error('Error adding package item:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
 
-/**
- * POST /api/drop-tags/packages/:id/seal
- * Seal a package
- */
-router.post('/packages/:id/seal', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { sealId } = req.body;
-    const userId = getUserId(req);
-
-    if (!sealId) {
-      return res.status(400).json({ error: 'sealId is required' });
-    }
-
-    const result = await dropTagService.sealPackage(id, { sealId, userId });
-    res.json(result);
-  } catch (error) {
-    console.error('Error sealing package:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
-
-/**
- * POST /api/drop-tags/packages/:id/qc-release
- * QC release a package
- */
-router.post('/packages/:id/qc-release', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { notes } = req.body;
-    const userId = getUserId(req);
-
-    const pkg = await dropTagService.releasePackageQC(id, { notes, userId });
-    res.json(pkg);
-  } catch (error) {
-    console.error('Error releasing package QC:', error);
-    res.status(400).json({ error: error.message });
-  }
-});
 
 // ============================================================================
 // DROP TAG LISTING ENDPOINTS
@@ -493,6 +324,7 @@ router.post('/listings', async (req, res) => {
     res.status(201).json(listing);
   } catch (error) {
     console.error('Error creating listing:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });
@@ -563,6 +395,7 @@ router.post('/listings/:id/tags', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('Error adding tags to listing:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });
@@ -585,6 +418,7 @@ router.delete('/listings/:id/tags', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('Error removing tags from listing:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });
@@ -609,6 +443,7 @@ router.post('/listings/:id/print', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('Error printing listing:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });
@@ -626,6 +461,7 @@ router.post('/listings/:id/lock', async (req, res) => {
     res.json(listing);
   } catch (error) {
     console.error('Error locking listing:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });
@@ -650,6 +486,7 @@ router.post('/listings/:id/deliver', async (req, res) => {
     res.json(listing);
   } catch (error) {
     console.error('Error confirming delivery:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });
@@ -667,6 +504,7 @@ router.post('/listings/:id/close', async (req, res) => {
     res.json(listing);
   } catch (error) {
     console.error('Error closing listing:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });
@@ -708,6 +546,7 @@ router.post('/scans', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('Error processing scan:', error);
+    if (error?.refused) return res.status(error.status).json({ error: error.message });
     res.status(400).json({ error: error.message });
   }
 });

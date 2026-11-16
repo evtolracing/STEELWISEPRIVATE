@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
 
-640 routes in 75 route files, served at 76 mount points. 334 change data.
+648 routes in 75 route files, served at 76 mount points. 337 change data.
 
 ## What the columns mean
 
@@ -15,12 +15,12 @@ Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 387 of 640 |
-| Changing routes that returned a success in a test | 152 of 334 |
+| Routes that returned a success in a test | 419 of 648 |
+| Changing routes that returned a success in a test | 175 of 337 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
-| Handlers with no try/catch of their own | 171 (many use a shared wrapper) |
-| Routes that use raw SQL | 6 |
+| Handlers with no try/catch of their own | 195 (many use a shared wrapper) |
+| Routes that use raw SQL | 7 |
 | Calls the screens make that have no server route | 66 |
 
 ## Reply shapes
@@ -53,8 +53,8 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
 | `GET /api/processing/operations` | intakeProcessing.js:20 |
 | `GET /api/processing/templates` | intakeProcessing.js:43 |
-| `GET /api/shipments/shippable` | shipments.js:124 |
-| `GET /api/shipments/:id/items` | shipments.js:223 |
+| `GET /api/shipments/shippable` | shipments.js:152 |
+| `GET /api/shipments/:id/items` | shipments.js:255 |
 | `GET /api/tax-rates` | taxRates.js:8 |
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:8 |
@@ -84,10 +84,10 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/staff/shifts` | staff.js:471 |
 | `GET /api/staff/available` | staff.js:653 |
 | `GET /api/qc/inspectors` | qcRoutes.js:449 |
-| `GET /api/material-tracking/custody-log` | materialTrackingRoutes.js:77 |
-| `GET /api/material-tracking/jobs/:jobId/tags` | materialTrackingRoutes.js:188 |
-| `GET /api/material-tracking/jobs/:jobId/packages` | materialTrackingRoutes.js:210 |
-| `GET /api/material-tracking/jobs/:jobId/timeline` | materialTrackingRoutes.js:233 |
+| `GET /api/material-tracking/custody-log` | materialTrackingRoutes.js:78 |
+| `GET /api/material-tracking/jobs/:jobId/tags` | materialTrackingRoutes.js:178 |
+| `GET /api/material-tracking/jobs/:jobId/packages` | materialTrackingRoutes.js:200 |
+| `GET /api/material-tracking/jobs/:jobId/timeline` | materialTrackingRoutes.js:223 |
 | `GET /api/maintenance-orders/assets/list` | maintenanceOrders.js:50 |
 | `GET /api/assets/types` | assets.js:53 |
 | `GET /api/ops-cockpit` | opsCockpit.js:28 |
@@ -215,7 +215,7 @@ Mounted at /api/orders/intake. Tables: Organization, Order, Location, Quote, Job
 | `GET /api/orders/intake` | yes |  |  |  |  |  |
 | `GET /api/orders/intake/branches` | yes |  |  |  |  |  |
 | `GET /api/orders/intake/summary` | yes |  |  |  |  |  |
-| `GET /api/orders/intake/:id` |  |  |  |  |  |  |
+| `GET /api/orders/intake/:id` | yes |  |  |  |  |  |
 | `PATCH /api/orders/intake/:id` | yes | 4 | yes |  |  |  |
 | `POST /api/orders/intake/:id/submit` | yes | 1 |  |  |  |  |
 | `POST /api/orders/intake/:id/create-work-orders` | yes | 2 | yes |  |  |  |
@@ -350,18 +350,21 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (7 routes, 458 lines)
+### orders.js (10 routes, 508 lines)
 
-Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, User.
+Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, Shipment, User.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/orders` | yes |  |  |  |  |  |
 | `GET /api/orders/credit-holds` | yes |  |  |  |  |  |
 | `POST /api/orders/:id/credit-release` | yes |  |  |  |  |  |
+| `GET /api/orders/closeout` | yes |  |  |  |  |  |
+| `GET /api/orders/:id/closeout` | yes |  |  |  |  |  |
+| `GET /api/orders/:id/cost` | yes |  |  |  |  |  |
 | `GET /api/orders/:id` | yes |  |  |  |  |  |
 | `POST /api/orders` | yes | 4 | yes | yes |  |  |
-| `PUT /api/orders/:id` | yes | 3 | yes |  | yes |  |
+| `PUT /api/orders/:id` | yes | 5 | yes |  | yes |  |
 | `POST /api/orders/:id/allocate` | yes | 4 | yes |  | yes |  |
 
 ### purchaseOrders.js (4 routes, 164 lines)
@@ -391,9 +394,9 @@ Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, Job, OrderLine, 
 | `PUT /api/work-orders/:id/release-hold` | yes |  |  |  |  |  |
 | `PUT /api/work-orders/:id/cancel` | yes |  |  |  |  |  |
 
-### shipments.js (11 routes, 490 lines)
+### shipments.js (12 routes, 572 lines)
 
-Mounted at /api/shipments. Tables: Shipment, Order, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, WorkCenter.
+Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -403,19 +406,21 @@ Mounted at /api/shipments. Tables: Shipment, Order, Job, Invoice, AuditLog, Loca
 | `POST /api/shipments` | yes | 1 | yes |  | yes |  |
 | `PUT /api/shipments/:id` | yes | 1 |  |  |  |  |
 | `GET /api/shipments/:id/items` |  |  |  | yes |  |  |
-| `POST /api/shipments/:id/items` |  | 1 | yes |  |  |  |
-| `DELETE /api/shipments/:id/items/:itemId` |  | 15 | yes | yes | yes |  |
+| `POST /api/shipments/:id/items` | yes | 1 | yes |  |  |  |
+| `DELETE /api/shipments/:id/items/:itemId` | yes | 15 | yes | yes | yes |  |
 | `PUT /api/shipments/:id/dispatch` | yes |  |  |  |  |  |
 | `PUT /api/shipments/:id/deliver` | yes |  |  |  |  |  |
 | `PATCH /api/shipments/:id/status` | yes |  |  |  |  |  |
+| `GET /api/shipments/:id/documents` | yes |  |  |  |  |  |
 
-### invoices.js (7 routes, 64 lines)
+### invoices.js (8 routes, 69 lines)
 
 Mounted at /api/invoices. Tables: through a service or none.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/invoices` | yes |  |  |  |  |  |
+| `GET /api/invoices/aging` | yes |  |  |  |  |  |
 | `GET /api/invoices/:id` | yes |  |  |  |  |  |
 | `POST /api/invoices` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/payments` | yes |  |  |  |  |  |
@@ -423,18 +428,19 @@ Mounted at /api/invoices. Tables: through a service or none.
 | `POST /api/invoices/:id/refund` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/cancel` | yes |  |  |  |  |  |
 
-### returns.js (6 routes, 330 lines)
+### returns.js (7 routes, 383 lines)
 
-Mounted at /api/returns. Tables: Order, MaterialMovement, Inventory, InvoiceLine, Coil, QCHold, OrderLine.
+Mounted at /api/returns. Tables: Order, AuditLog, MaterialMovement, Inventory, InvoiceLine, Coil, QCHold, OrderLine, Invoice.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/returns` | yes |  |  |  |  |  |
-| `GET /api/returns/eligible` |  |  |  |  |  |  |
+| `GET /api/returns/eligible` | yes |  |  |  |  |  |
 | `GET /api/returns/:id` |  |  |  |  |  |  |
 | `POST /api/returns` | yes | 1 | yes | yes |  |  |
-| `POST /api/returns/:id/receive` | yes | 8 | yes |  |  |  |
-| `POST /api/returns/:id/cancel` |  | 1 |  |  |  |  |
+| `POST /api/returns/:id/receive` | yes | 9 | yes |  | yes |  |
+| `POST /api/returns/:id/credit` | yes | 1 | yes |  | yes |  |
+| `POST /api/returns/:id/cancel` | yes | 1 |  |  |  |  |
 
 ### taxRates.js (3 routes, 64 lines)
 
@@ -984,13 +990,12 @@ Mounted at /api/admin. Tables: through a service or none.
 | `POST /api/admin/seed-demo` |  |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
 | `GET /api/admin/retention` | yes |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 
-### dropTagRoutes.js (31 routes, 716 lines)
+### dropTagRoutes.js (33 routes, 555 lines)
 
 Mounted at /api/drop-tags. Tables: through a service or none.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `POST /api/drop-tags` |  |  |  |  |  |  |
 | `GET /api/drop-tags` | yes |  |  |  |  |  |
 | `GET /api/drop-tags/ready-to-print` | yes |  |  |  |  |  |
 | `GET /api/drop-tags/templates` | yes |  |  |  |  |  |
@@ -999,19 +1004,22 @@ Mounted at /api/drop-tags. Tables: through a service or none.
 | `PUT /api/drop-tags/templates/:id` |  |  |  |  |  |  |
 | `POST /api/drop-tags/templates/:id/preview` |  |  |  |  |  |  |
 | `POST /api/drop-tags/templates/seed` |  |  |  |  |  |  |
-| `GET /api/drop-tags/:id` |  |  |  |  |  |  |
+| `GET /api/drop-tags/:id` | yes |  |  |  |  |  |
 | `POST /api/drop-tags/validate` |  |  |  |  |  |  |
-| `POST /api/drop-tags/:id/validate` |  |  |  |  |  |  |
-| `POST /api/drop-tags/:id/print` |  |  |  |  |  |  |
-| `POST /api/drop-tags/:id/reprint` |  |  |  |  |  |  |
-| `POST /api/drop-tags/:id/apply` |  |  |  |  |  |  |
-| `POST /api/drop-tags/:id/void` |  |  |  |  |  |  |
-| `POST /api/drop-tags/packages` |  |  |  |  |  |  |
+| `POST /api/drop-tags` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/:id/validate` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/:id/print` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/:id/reprint` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/:id/apply` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/:id/void` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/packages` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/packages/:id/items` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/packages/:id/ready` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/packages/:id/seal` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/packages/:id/qc-release` | yes |  |  |  |  |  |
+| `POST /api/drop-tags/packages/:id/qc-hold` | yes |  |  |  |  |  |
 | `GET /api/drop-tags/packages/ready` | yes |  |  |  |  |  |
-| `POST /api/drop-tags/packages/:id/items` |  |  |  |  |  |  |
-| `POST /api/drop-tags/packages/:id/seal` |  |  |  |  |  |  |
-| `POST /api/drop-tags/packages/:id/qc-release` |  |  |  |  |  |  |
-| `POST /api/drop-tags/listings` |  |  |  |  |  |  |
+| `POST /api/drop-tags/listings` | yes |  |  |  |  |  |
 | `GET /api/drop-tags/listings` |  |  |  |  |  |  |
 | `GET /api/drop-tags/listings/:id` |  |  |  |  |  |  |
 | `POST /api/drop-tags/listings/:id/tags` |  |  |  |  |  |  |
@@ -1062,21 +1070,21 @@ Mounted at /api/qc. Tables: Job, JobInspection, Operator, WorkCenterType, AuditL
 | `POST /api/qc/inspections/:id/conditional` | yes |  |  |  |  |  |
 | `GET /api/qc/inspectors` | yes |  |  | yes |  |  |
 
-### materialTrackingRoutes.js (9 routes, 512 lines)
+### materialTrackingRoutes.js (9 routes, 487 lines)
 
-Mounted at /api/material-tracking. Tables: Job, Package, DropTag, TraceEvent, JobInspection.
+Mounted at /api/material-tracking. Tables: Job, Package, DropTag, TraceEvent, Coil, JobInspection.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/material-tracking/stats` | yes |  |  |  |  |  |
 | `GET /api/material-tracking/custody-log` | yes |  |  | yes |  |  |
-| `POST /api/material-tracking/custody-log` |  | 1 |  |  |  |  |
+| `POST /api/material-tracking/custody-log` | yes |  |  |  |  |  |
 | `GET /api/material-tracking/jobs/:jobId/tags` | yes |  |  | yes |  |  |
 | `GET /api/material-tracking/jobs/:jobId/packages` | yes |  |  | yes |  |  |
 | `GET /api/material-tracking/jobs/:jobId/timeline` |  |  |  | yes |  |  |
 | `GET /api/material-tracking/staging` | yes |  |  |  |  |  |
-| `PATCH /api/material-tracking/staging/:jobId/ship` |  | 1 | yes |  |  |  |
-| `POST /api/material-tracking/log-status-change` |  | 1 |  |  |  |  |
+| `PATCH /api/material-tracking/staging/:jobId/ship` | yes | 1 | yes |  |  |  |
+| `POST /api/material-tracking/log-status-change` |  |  |  |  |  |  |
 
 ### maintenanceOrders.js (9 routes, 250 lines)
 
@@ -1131,20 +1139,20 @@ Mounted at /api/ops-cockpit. Tables: Job, WorkCenter, Order, Coil, Shipment, Dis
 | `POST /api/ops-cockpit/recommendations/explain` |  | 1 |  |  | yes |  |
 | `GET /api/ops-cockpit/recommendations/history` | yes |  |  |  |  |  |
 
-### printQueue.js (8 routes, 182 lines)
+### printQueue.js (8 routes, 90 lines)
 
-Mounted at /api/print-queue. Tables: Job, Shipment.
+Mounted at /api/print-queue. Tables: Job.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/print-queue` | yes |  |  |  |  |  |
 | `GET /api/print-queue/history` | yes |  |  |  |  |  |
-| `GET /api/print-queue/:id/render` |  |  |  |  |  |  |
-| `POST /api/print-queue/:id/printed` |  |  |  |  |  |  |
-| `POST /api/print-queue/:id/skip` |  |  |  |  |  |  |
-| `POST /api/print-queue/trigger` |  |  |  |  |  |  |
+| `GET /api/print-queue/:id/render` | yes |  |  |  |  |  |
+| `POST /api/print-queue/:id/printed` | yes |  |  |  |  |  |
+| `POST /api/print-queue/:id/skip` | yes |  |  |  |  |  |
+| `POST /api/print-queue/trigger` | yes |  |  |  |  |  |
 | `POST /api/print-queue/:id/reprint` |  |  |  |  |  |  |
-| `POST /api/print-queue/trigger-shipment` |  |  |  |  |  |  |
+| `POST /api/print-queue/trigger-shipment` | yes |  |  |  |  |  |
 
 ### partner/partnerAuthRoutes.js (1 routes, 49 lines)
 

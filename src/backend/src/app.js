@@ -2,6 +2,7 @@
  * Express App - Separated from server startup for Vercel serverless compatibility
  * This file creates and configures the Express app WITHOUT calling app.listen()
  */
+import { stockCostGuard } from './lib/costView.js';
 import integrationRoutes, { scheduledRun } from './routes/integrations.js';
 import express from 'express';
 import cors from 'cors';
@@ -182,6 +183,8 @@ app.use('/api', safeErrors, pagingGuard);
 app.use('/api', apiGate);
 // Duplicate-request protection for requests that carry an Idempotency-Key (C-006).
 app.use('/api', requestKeys);
+// Stock cost leaves only to the roles that manage it, whatever route carries the stock item (N-020).
+app.use('/api', stockCostGuard);
 
 // API Routes
 app.use('/api/auth', authRoutes);

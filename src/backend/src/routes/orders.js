@@ -11,14 +11,16 @@
 import { listWindow, sendWindow } from '../lib/listing.js';
 import { recordBusinessEvent, kick } from '../services/webhookService.js';
 import { COMMITTED_STATUSES, HOLD_PLACED, statusAfterCreditCheck, recordCreditHold, openCreditHold, releaseCreditHold, creditHoldMessage } from '../lib/creditControl.js';
-import { MONEY_MANAGERS } from '../lib/roleAccess.js';
+import { MONEY_MANAGERS, COST_VIEWERS } from '../lib/roleAccess.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import { createNumbered, padded } from '../lib/numbering.js';
+import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
 import { orderMoveError, positiveQty } from '../lib/workflowRules.js';
 import { reservationProblem } from '../lib/reservationRules.js';
 
 const STALE_EDIT = 'This order was just changed by someone else. Reload and try again.';
+import { closeoutOf, openOrders, orderCost } from '../lib/orderCloseout.js';
+const CLOSEOUT_REASONS = ['TO_SHIP', 'ON_DOCK', 'ON_ROAD', 'SHIPMENT_PROBLEM', 'NOT_INVOICED', 'UNPAID', 'CREDIT_OWED', 'RETURN_OPEN', 'JOB_OPEN', 'STOCK_RESERVED', 'ON_HOLD'];
 const router = Router();
 
 const ORDER_TYPES = ['RFQ', 'QUOTE', 'SO', 'PO', 'RETURN'];
@@ -215,6 +217,42 @@ router.post('/:id/credit-release', async (req, res) => {
   }
 });
 
+// What stands between each order and closed (Phase 8, N-018). Oldest first; ?reason= narrows to one kind of open item.
+router.get('/closeout', async (req, res) => {
+  try {
+    const reason = req.query.reason ? String(req.query.reason).toUpperCase() : null;
+    if (reason && !CLOSEOUT_REASONS.includes(reason)) return res.status(400).json({ error: `reason must be one of: ${CLOSEOUT_REASONS.join(', ')}` });
+    res.json(await openOrders({ limit: req.query.limit, offset: req.query.offset, reason, locationId: req.query.locationId, customerId: req.query.customerId, search: typeof req.query.search === 'string' ? req.query.search.trim() : '' }));
+  } catch (error) {
+    console.error('Orders: closeout list failed:', error);
+    res.status(500).json({ error: 'Failed to list open orders' });
+  }
+});
+
+router.get('/:id/closeout', async (req, res) => {
+  try {
+    const position = await closeoutOf(req.params.id);
+    if (!position) return res.status(404).json({ error: 'Order not found' });
+    res.json(position);
+  } catch (error) {
+    console.error('Orders: closeout failed:', error);
+    res.status(500).json({ error: 'Failed to read the order closeout' });
+  }
+});
+
+// What the order brought in and what it cost (N-017). Cost is for the people who may see cost.
+router.get('/:id/cost', async (req, res) => {
+  try {
+    if (!COST_VIEWERS.has(req.user?.role)) return res.status(403).json({ error: 'Cost and margin are shown to managers, the inventory manager and buyers.' });
+    const cost = await orderCost(req.params.id);
+    if (!cost) return res.status(404).json({ error: 'Order not found' });
+    res.json(cost);
+  } catch (error) {
+    console.error('Orders: cost failed:', error);
+    res.status(500).json({ error: 'Failed to read the order cost' });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const order = await prisma.order.findUnique({
@@ -355,7 +393,9 @@ router.put('/:id', async (req, res) => {
       }
     }
 
-    const updated = await prisma.$transaction(async (tx) => {
+    // Run again when it overlaps another save (N-029): cancelling releases stock while a dispatch of the same
+    // order takes it, and the database stops one of the two. The second pass sees what the other did.
+    const updated = await retryOverlap(() => prisma.$transaction(async (tx) => {
       // Guard against two people changing the status at once.
       const changed = await tx.order.updateMany({ where: { id: order.id, status: order.status, ...(expected != null && { updatedAt: order.updatedAt }) }, data });
       if (!changed.count) return null;
@@ -374,10 +414,20 @@ router.put('/:id', async (req, res) => {
       if (moving && data.status === 'CANCELLED') {
         await releaseAllocations(tx, order.id);
         await tx.orderLine.updateMany({ where: { orderId: order.id }, data: { lineStatus: 'CANCELLED' } });
+        // Shipments still on the dock go with the order (Phase 8, N-006): nothing has left, and
+        // none of them could ever be dispatched. Each keeps a line in its history saying why.
+        const open = await tx.shipment.findMany({ where: { orderId: order.id, status: { in: ['PENDING', 'LOADING'] } }, select: { id: true, shipmentNumber: true, status: true } });
+        for (const sh of open) {
+          await tx.shipment.update({ where: { id: sh.id }, data: { status: 'CANCELLED' } });
+          await tx.auditLog.create({ data: {
+            category: 'WORKFLOW', eventType: 'SHIPMENT_STATUS_CHANGED', severity: 'INFO', action: 'UPDATE', userId: req.user?.id || null, resourceType: 'Shipment', resourceId: sh.id,
+            details: { shipmentNumber: sh.shipmentNumber, from: sh.status, to: 'CANCELLED', note: `Order ${order.orderNumber} was cancelled` },
+          } });
+        }
       }
       if (gate.creditHold) await recordCreditHold(tx, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
       return tx.order.findUnique({ where: { id: order.id }, include: { lines: true } });
-    });
+    }));
     if (!updated) return res.status(409).json({ error: STALE_EDIT, code: 'STALE_EDIT' });
     kick();
     res.json(gate.creditHold ? { ...updated, creditHold: gate.creditHold, warning: gate.creditHold.message } : updated);

@@ -118,7 +118,10 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
 
     // Delivered, with who signed.
     await page.getByRole('button', { name: 'Mark delivered' }).click();
-    await page.getByLabel('Signed for by').fill('R. Receiver');
+    // Phase 8 (N-004): the field is now "Received by", and the delivery cannot be saved while it is empty.
+    const deliverNow = page.getByRole('dialog').getByRole('button', { name: 'Mark delivered' });
+    check('shipment: a delivery cannot be saved with no name', await deliverNow.isDisabled());
+    await page.getByLabel('Received by').fill('R. Receiver');
     await page.getByRole('dialog').getByRole('button', { name: 'Mark delivered' }).click();
     await has(page, /On the road to/);
     const done = (await api('GET', `/api/shipments/${shipmentId}`, clerk)).body;

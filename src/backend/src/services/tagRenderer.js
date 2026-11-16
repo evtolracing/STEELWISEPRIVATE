@@ -62,7 +62,7 @@ function renderDTLTag(p) {
   <div class="header">
     <div>
       <div class="header-title">WORK ORDER — DTL TAG</div>
-      <div class="header-sub">SteelWise Service Center</div>
+      <div class="header-sub">${p.branchName || ''}</div>
     </div>
     <div style="font-size:18pt;font-weight:bold;">${p.jobNumber}</div>
   </div>
@@ -157,7 +157,7 @@ function renderBundleTag(p) {
   <div class="header">
     <div>
       <div class="header-title">BUNDLE TAG</div>
-      <div class="header-sub">SteelWise Service Center</div>
+      <div class="header-sub">${p.branchName || ''}</div>
     </div>
     <div style="font-size:18pt;font-weight:bold;">${p.jobNumber}</div>
   </div>
@@ -331,154 +331,155 @@ function renderShippingLabel(p) {
 </div>`);
 }
 
-// ── Bill of Lading (Letter/A4 format) ────────────────────────────────────────
-function renderBOL(p) {
-  return wrapHTML(`BOL – ${p.shipmentNumber}`, `
-<div class="tag-full">
-  <div class="header">
-    <div>
-      <div class="header-title">BILL OF LADING</div>
-      <div class="header-sub">SteelWise Service Center — ${p.shipFromAddress}</div>
-    </div>
-    <div style="font-size:20pt;font-weight:bold;">BOL #${p.bolNumber}</div>
-  </div>
-
+// ── Bill of lading and packing list (letter) ────────────────────────────────
+// Both are drawn from lib/shippingDocuments.js. A fact that is not on file prints as a blank
+// line to be written in by hand. Freight class and NMFC number are not kept in this system,
+// so their columns are left empty: nothing is printed there that nobody entered (Phase 8, N-014).
+const BLANK = '<span style="display:inline-block;min-width:1.4in;border-bottom:1px solid #000;">&nbsp;</span>';
+const or = (v) => (v === '' || v == null ? BLANK : v);
+const qty = (v) => (v === '' || v == null ? '' : Number(v).toLocaleString());
+const address = (a) => [a.address, [a.city, a.state].filter(Boolean).join(', '), a.postalCode].filter(Boolean).join('<br/>');
+const when = (d) => (d ? new Date(d).toLocaleDateString() : '');
+function stockLines(l) {
+  return (l.stock || []).map((x) => `${x.tag || ''}${x.heatNumber ? ` · heat ${x.heatNumber}` : ''}${x.grade ? ` · ${x.grade}` : ''} · ${qty(x.quantity)} ${x.unit || ''}${x.bin ? ` · bin ${x.bin}` : ''}`).join('<br/>');
+}
+function parties(p) {
+  const from = p.shipFrom || {}; const to = p.shipTo || {};
+  return `
   <div style="display:flex;gap:16px;margin-top:12px;">
     <div style="flex:1;border:1px solid #ccc;padding:8px;">
       <div class="cell-label">SHIP FROM</div>
-      <div style="font-weight:bold;">${p.shipFromName}</div>
-      <div>${p.shipFromAddress}</div>
+      <div style="font-weight:bold;">${or(from.name)}</div>
+      <div>${address(from) || BLANK}</div>
     </div>
     <div style="flex:1;border:1px solid #ccc;padding:8px;">
       <div class="cell-label">SHIP TO</div>
-      <div style="font-weight:bold;">${p.shipToName}</div>
-      <div>${p.shipToAddress}</div>
+      <div style="font-weight:bold;">${or(to.name)}</div>
+      <div>${address(to) || BLANK}</div>
     </div>
     <div style="flex:1;border:1px solid #ccc;padding:8px;">
       <div class="cell-label">CARRIER</div>
-      <div style="font-weight:bold;">${p.carrier}</div>
-      <div class="cell-label" style="margin-top:4px;">TRACKING #</div>
-      <div>${p.trackingNumber}</div>
+      <div style="font-weight:bold;">${or(p.shipment?.carrier)}</div>
+      <div class="cell-label" style="margin-top:4px;">TRUCK / DRIVER</div>
+      <div>${[p.shipment?.truckNumber, p.shipment?.driverName].filter(Boolean).join(' / ') || BLANK}</div>
       <div class="cell-label" style="margin-top:4px;">SHIP DATE</div>
-      <div>${p.shipDate}</div>
+      <div>${when(p.shipment?.shippedAt) || when(p.shipment?.scheduledDate) || BLANK}</div>
     </div>
   </div>
+  <div class="row" style="margin-top:8px;">
+    <div class="cell"><div class="cell-label">Order</div><div class="cell-value-sm">${p.order?.orderNumber || ''}</div></div>
+    <div class="cell"><div class="cell-label">Customer PO</div><div class="cell-value-sm">${p.order?.customerPo || ''}</div></div>
+    <div class="cell"><div class="cell-label">Freight terms</div><div class="cell-value-sm">${p.order?.freightTerms || ''}</div></div>
+    <div class="cell"><div class="cell-label">Sold by</div><div class="cell-value-sm">${p.order?.soldBy || ''}</div></div>
+  </div>`;
+}
+const draft = (p) => (p.stage === 'BEFORE_DISPATCH' ? '<div class="reprint-banner">NOT YET DISPATCHED — the stock listed is what is reserved</div>' : '');
+const reprint = (p) => (p.reprint ? '<div class="reprint-banner">REPRINT</div>' : '');
+const foot = (p) => `
+  <div class="footer" style="margin-top:12px;">
+    <span>Generated: ${new Date(p.printedAt || Date.now()).toLocaleString()}</span>
+    <span>Shipment: ${p.shipment?.shipmentNumber || ''}</span>
+    <span>SteelWise ERP</span>
+  </div>`;
 
+function renderBOL(p) {
+  const rows = (p.lines || []).map((l) => `
+        <tr>
+          <td>${l.description || ''}<div style="font-size:8pt;color:#333;">${stockLines(l)}</div></td>
+          <td>${qty(l.quantity)} ${l.unit || ''}</td>
+          <td>${qty(l.weightLb)}</td>
+          <td></td>
+          <td></td>
+        </tr>`).join('');
+  return wrapHTML(`BOL – ${p.shipment?.shipmentNumber || ''}`, `
+<div class="tag-full">
+  ${reprint(p)}${draft(p)}
+  <div class="header">
+    <div>
+      <div class="header-title">BILL OF LADING</div>
+      <div class="header-sub">${p.shipFrom?.name || ''}</div>
+    </div>
+    <div style="font-size:20pt;font-weight:bold;">BOL # ${p.shipment?.bolNumber || '<span style="font-weight:normal;font-size:10pt;">(not entered)</span>'}</div>
+  </div>
+  ${parties(p)}
   <div style="margin-top:12px;">
     <table class="bol-table">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th>Pieces</th>
-          <th>Weight (lbs)</th>
-          <th>Class</th>
-          <th>NMFC</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Description</th><th>Quantity</th><th>Weight (lbs)</th><th>Class</th><th>NMFC</th></tr></thead>
       <tbody>
-        <tr>
-          <td>Steel Products — See Packing List #${p.shipmentNumber}</td>
-          <td>${p.totalPieces || '—'}</td>
-          <td>${p.totalWeight ? Number(p.totalWeight).toLocaleString() : '—'}</td>
-          <td>60</td>
-          <td>123456</td>
-        </tr>
+        ${rows || '<tr><td colspan="5" style="text-align:center;color:#777;">Nothing is on this shipment</td></tr>'}
+        <tr><td style="text-align:right;font-weight:bold;">Total${p.totals?.packages ? ` · ${p.totals.packages} package${p.totals.packages === 1 ? '' : 's'}` : ''}</td><td></td><td style="font-weight:bold;">${qty(p.totals?.weightLb) || BLANK}</td><td></td><td></td></tr>
       </tbody>
     </table>
   </div>
-
-  ${p.specialInstructions ? `
+  ${p.shipment?.notes ? `
   <div style="border:1px solid #ccc;padding:8px;margin-top:8px;">
-    <div class="cell-label">Special Instructions</div>
-    <div>${p.specialInstructions}</div>
+    <div class="cell-label">Notes</div>
+    <div>${p.shipment.notes}</div>
   </div>` : ''}
-
   <div style="display:flex;gap:16px;margin-top:20px;">
-    <div style="flex:1;border-top:1px solid #000;padding-top:4px;">
-      <div class="cell-label">Shipper Signature / Date</div>
-      <div style="height:40px;"></div>
-    </div>
-    <div style="flex:1;border-top:1px solid #000;padding-top:4px;">
-      <div class="cell-label">Carrier Signature / Date</div>
-      <div style="height:40px;"></div>
-    </div>
-    <div style="flex:1;border-top:1px solid #000;padding-top:4px;">
-      <div class="cell-label">Consignee Signature / Date</div>
-      <div style="height:40px;"></div>
-    </div>
+    <div style="flex:1;border-top:1px solid #000;padding-top:4px;"><div class="cell-label">Shipper Signature / Date</div><div style="height:40px;"></div></div>
+    <div style="flex:1;border-top:1px solid #000;padding-top:4px;"><div class="cell-label">Carrier Signature / Date</div><div style="height:40px;"></div></div>
+    <div style="flex:1;border-top:1px solid #000;padding-top:4px;"><div class="cell-label">Consignee Signature / Date</div><div style="height:40px;"></div></div>
   </div>
-
-  <div class="footer" style="margin-top:12px;">
-    <span>Generated: ${new Date(p.printedAt).toLocaleString()}</span>
-    <span>Shipment: ${p.shipmentNumber}</span>
-    <span>SteelWise ERP</span>
-  </div>
+  ${foot(p)}
 </div>`);
 }
 
-// ── Packing List ──────────────────────────────────────────────────────────────
 function renderPackingList(p) {
-  const rows = (p.items || []).map((item) => `
+  const rows = (p.lines || []).map((l) => `
     <tr>
-      <td>${item.jobNumber}</td>
-      <td>${item.orderNumber}</td>
-      <td>${item.description}</td>
-      <td>${item.grade}</td>
-      <td>${item.pieces} ${item.unit}</td>
-      <td>${item.weight ? Number(item.weight).toLocaleString() : '—'}</td>
+      <td>${l.lineNumber ?? ''}</td>
+      <td>${l.description || ''}</td>
+      <td>${stockLines(l)}</td>
+      <td>${qty(l.quantity)} ${l.unit || ''}</td>
+      <td>${qty(l.weightLb)}</td>
+      <td>${l.quantityStillToShip > 0 ? `${qty(l.quantityStillToShip)} ${l.unit || ''}` : ''}</td>
     </tr>`).join('');
-
-  return wrapHTML(`Packing List – ${p.shipmentNumber}`, `
+  const pk = (p.packages || []).map((k) => `
+    <tr><td>${k.packageId}</td><td>${k.type || ''}</td><td>${k.lineNumber ?? ''}</td><td>${k.pieces || ''}</td><td>${qty(k.netWeightLb)}</td><td>${qty(k.grossWeightLb)}</td><td>${(k.tags || []).join(', ')}</td></tr>`).join('');
+  return wrapHTML(`Packing List – ${p.shipment?.shipmentNumber || ''}`, `
 <div class="tag-full">
+  ${reprint(p)}${draft(p)}
   <div class="header">
     <div>
-      <div class="header-title">PACKING LIST</div>
-      <div class="header-sub">SteelWise Service Center</div>
+      <div class="header-title">${p.stage === 'BEFORE_DISPATCH' ? 'PICK LIST / PACKING LIST' : 'PACKING LIST'}</div>
+      <div class="header-sub">${p.shipFrom?.name || ''}</div>
     </div>
-    <div style="font-size:18pt;font-weight:bold;">SHIP# ${p.shipmentNumber}</div>
+    <div style="font-size:18pt;font-weight:bold;">${p.shipment?.shipmentNumber || ''}</div>
   </div>
-
-  <div class="row" style="margin-top:8px;">
-    <div class="cell">
-      <div class="cell-label">Ship To</div>
-      <div class="cell-value-sm" style="font-weight:bold;">${p.shipToName}</div>
-    </div>
-    <div class="cell">
-      <div class="cell-label">Total Weight</div>
-      <div class="cell-value-sm">${p.totalWeight ? `${Number(p.totalWeight).toLocaleString()} lbs` : '—'}</div>
-    </div>
-    <div class="cell">
-      <div class="cell-label">Total Pieces</div>
-      <div class="cell-value-sm">${p.totalPieces || (p.items?.length ?? '—')}</div>
-    </div>
-  </div>
-
+  ${parties(p)}
   <table class="bol-table" style="margin-top:12px;">
-    <thead>
-      <tr>
-        <th>Job #</th>
-        <th>Order #</th>
-        <th>Description</th>
-        <th>Grade</th>
-        <th>Qty</th>
-        <th>Weight (lbs)</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Line</th><th>Description</th><th>Stock item, heat, grade</th><th>Quantity</th><th>Weight (lbs)</th><th>Still to ship</th></tr></thead>
     <tbody>
-      ${rows || '<tr><td colspan="6" style="text-align:center;color:#777;">No items</td></tr>'}
+      ${rows || '<tr><td colspan="6" style="text-align:center;color:#777;">Nothing is on this shipment</td></tr>'}
     </tbody>
   </table>
-
-  <div class="footer" style="margin-top:12px;">
-    <span>Generated: ${new Date(p.printedAt).toLocaleString()}</span>
-    <span>Shipment: ${p.shipmentNumber}</span>
-    <span>SteelWise ERP</span>
+  ${pk ? `
+  <table class="bol-table" style="margin-top:12px;">
+    <thead><tr><th>Package</th><th>Type</th><th>Line</th><th>Pieces</th><th>Net (lbs)</th><th>Gross (lbs)</th><th>Tags</th></tr></thead>
+    <tbody>${pk}</tbody>
+  </table>` : ''}
+  <div class="row" style="margin-top:8px;">
+    <div class="cell"><div class="cell-label">Total weight</div><div class="cell-value-sm">${qty(p.totals?.weightLb) ? `${qty(p.totals.weightLb)} lbs` : BLANK}</div></div>
+    <div class="cell"><div class="cell-label">Received by</div><div class="cell-value-sm">${p.shipment?.receivedBy || (p.shipment?.noSignatureReason ? `No signature: ${p.shipment.noSignatureReason}` : BLANK)}</div></div>
   </div>
+  ${foot(p)}
 </div>`);
+}
+
+/** Text from the records is shown as text: a customer or note cannot put markup on the page. */
+const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+function clean(v) {
+  if (v == null) return '';
+  if (typeof v === 'string') return esc(v);
+  if (Array.isArray(v)) return v.map(clean);
+  if (typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, clean(x)]));
+  return v;
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
-export function renderTagHTML(type, payload) {
+export function renderTagHTML(type, rawPayload) {
+  const payload = clean(rawPayload || {});
   switch (type) {
     case 'DTL_TAG':        return renderDTLTag(payload);
     case 'BUNDLE_TAG':     return renderBundleTag(payload);

@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-16T00:05:05.312Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-16T02:29:49.690Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -51,12 +51,12 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
 - Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
+- Pass: one shipment dispatched three times at once: counted once. statuses 409,200,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
 - Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
-- Pass: one return received three times at once: counted once, one credit. statuses 409,200,409; 1 credit memo(s); source coil on hand 2640 → 3630
+- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
 
 The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
@@ -76,17 +76,17 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-15T23:49:57.800Z. 617 of 617 routes swept.
+Run 2026-11-16T02:15:23.454Z. 625 of 625 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
-| No access without signing in | Pass | 577 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped) |
+| No access without signing in | Pass | 585 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped) |
 | Partner API needs a partner token | Pass | 60 calls, 0 let in |
 | Forged and invalid sign-ins are refused | Pass | 5 cases, 0 problems |
-| Customer logins are held to the store | Pass | 554 staff routes tried as a customer, 0 not refused |
+| Customer logins are held to the store | Pass | 562 staff routes tried as a customer, 0 not refused |
 | Customers and divisions cannot see each other | Pass | 31 checks, 0 problems |
 | Staff roles and departments | Pass | 18 checks, 0 problems |
-| Read routes do not crash on bad input | Pass | 825 reads, 0 server errors |
+| Read routes do not crash on bad input | Pass | 840 reads, 0 server errors |
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
 | Web checkout uses the system price, not the browser's | Pass | 4 checks, 0 problems |
@@ -103,10 +103,10 @@ Run 2026-11-15T23:49:57.800Z. 617 of 617 routes swept.
 
 ## Screen check
 
-Run 2026-11-16T00:02:09.704Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-16T02:29:02.870Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
-- Screens opened: 128
-- OK: 128
+- Screens opened: 130
+- OK: 130
 - Screens that made at least one failing API call: 10
 
 ### API calls that failed while screens loaded
@@ -129,7 +129,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-15T23:54:22.357Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-16T02:20:40.004Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 24
 - Failed: 0
@@ -163,7 +163,7 @@ Run 2026-11-15T23:54:22.357Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 
 ## Stock screens operated in a browser
 
-Run 2026-11-15T23:54:45.149Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-16T02:21:03.611Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 23
 - Failed: 0
@@ -196,7 +196,7 @@ Run 2026-11-15T23:54:45.149Z with `qa/sim/ui-inventory.cjs`: stock items, heats 
 
 ## Shop screens operated in a browser
 
-Run 2026-11-15T23:54:01.356Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
+Run 2026-11-16T02:20:19.000Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
 
 - Checks: 31
 - Failed: 0
@@ -237,9 +237,9 @@ Run 2026-11-15T23:54:01.356Z with `qa/sim/ui-shop.cjs`: the job, schedule, time 
 
 ## Shipping and invoice screens operated in a browser
 
-Run 2026-11-15T23:53:29.426Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
+Run 2026-11-16T02:19:46.823Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
 
-- Checks: 29
+- Checks: 30
 - Failed: 0
 
 | Check | Result |
@@ -257,6 +257,7 @@ Run 2026-11-15T23:53:29.426Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 | shipment: dispatch is saved, and the history names who dispatched | Pass |
 | shipment: the invoice raised by the dispatch is shown with its total | Pass |
 | shipment: once dispatched it cannot be cancelled or edited | Pass |
+| shipment: a delivery cannot be saved with no name | Pass |
 | shipment: delivery is saved with who signed for it | Pass |
 | shipment: after reloading it is still delivered with three history rows | Pass |
 | shipment screens: no script errors | Pass |
@@ -276,7 +277,7 @@ Run 2026-11-15T23:53:29.426Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 
 ## Sample notices and invented figures checked in a browser
 
-Run 2026-11-15T23:53:06.639Z with `qa/sim/ui-experience.cjs`.
+Run 2026-11-16T02:19:23.588Z with `qa/sim/ui-experience.cjs`.
 
 - Checks: 22
 - Failed: 0
@@ -308,11 +309,11 @@ Run 2026-11-15T23:53:06.639Z with `qa/sim/ui-experience.cjs`.
 
 ## Screen audit
 
-142 screens: 5 STATIC, 75 REAL, 58 SAMPLE, LABELLED, 4 MIXED. 0 show made-up data with no notice. Full list in `qa/screen-audit.md`.
+144 screens: 5 STATIC, 77 REAL, 58 SAMPLE, LABELLED, 4 MIXED. 0 show made-up data with no notice. Full list in `qa/screen-audit.md`.
 
 ## Screen-to-server contract
 
-272 distinct API calls are written in the screens; 66 have no matching server route. Full list in `qa/api-contract.md`.
+282 distinct API calls are written in the screens; 66 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

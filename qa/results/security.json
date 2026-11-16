@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-15T23:49:57.800Z",
- "endpointsInInventory": 617,
- "endpointsSwept": 617,
+ "at": "2026-11-16T02:15:23.454Z",
+ "endpointsInInventory": 625,
+ "endpointsSwept": 625,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "577 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
-   "tested": 577,
+   "summary": "585 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
+   "tested": 585,
    "findings": []
   },
   "Partner API needs a partner token": {
@@ -23,8 +23,8 @@
   },
   "Customer logins are held to the store": {
    "pass": true,
-   "summary": "554 staff routes tried as a customer, 0 not refused",
-   "tested": 554,
+   "summary": "562 staff routes tried as a customer, 0 not refused",
+   "tested": 562,
    "findings": []
   },
   "Customers and divisions cannot see each other": {
@@ -40,8 +40,8 @@
   },
   "Read routes do not crash on bad input": {
    "pass": true,
-   "summary": "825 reads, 0 server errors",
-   "tested": 825,
+   "summary": "840 reads, 0 server errors",
+   "tested": 840,
    "byFile": {},
    "findings": []
   },

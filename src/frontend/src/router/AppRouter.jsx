@@ -66,6 +66,7 @@ const PartsInventory = lazy(() => import('../pages/Maintenance/PartsInventory'))
 // Material Tracking (unified packaging + tags + staging + traceability)
 const MaterialTrackingDashboard = lazy(() => import('../pages/MaterialTracking/MaterialTrackingDashboard'))
 const MTPackagingQueue = lazy(() => import('../pages/MaterialTracking/PackagingQueue'))
+const MTPackagesPage = lazy(() => import('../pages/MaterialTracking/PackagesPage'))
 const MTTagManagement = lazy(() => import('../pages/MaterialTracking/TagManagement'))
 const MTStagingLoading = lazy(() => import('../pages/MaterialTracking/StagingLoading'))
 const MTTraceability = lazy(() => import('../pages/MaterialTracking/TraceabilityPage'))
@@ -81,6 +82,7 @@ const PODViewer = lazy(() => import('../pages/Freight/PODViewer'))
 // Sales & Pricing Pages
 const InvoicesPage = lazy(() => import('../pages/Orders/InvoicesPage'))
 const ReturnsPage = lazy(() => import('../pages/Orders/ReturnsPage'))
+const OrderCloseoutPage = lazy(() => import('../pages/Orders/OrderCloseoutPage'))
 const QuotesPage = lazy(() => import('../pages/Sales/QuotesPage'))
 const SalesDashboard = lazy(() => import('../pages/Sales/SalesDashboard'))
 
@@ -871,6 +873,15 @@ const router = createBrowserRouter([
         errorElement: <RouteErrorPage />,
       },
       {
+        path: 'material-tracking/packages',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MTPackagesPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
         path: 'material-tracking/tags',
         element: (
           <Suspense fallback={<PageLoader />}>
@@ -1157,6 +1168,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <InvoicesPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'orders/closeout',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderCloseoutPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

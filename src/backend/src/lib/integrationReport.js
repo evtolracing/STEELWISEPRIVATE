@@ -58,18 +58,29 @@ export async function shippedNotInvoiced(limit = 25) {
   return { count: n, shown: rows.length, orders: rows };
 }
 
+/** Returns that came back and whose credit memo could not be issued, until a manager settles each (Phase 8, N-016). */
+export async function creditsNotIssued(limit = 25) {
+  const rows = await prisma.auditLog.findMany({ where: { eventType: { in: ['CREDIT_NOT_ISSUED', 'CREDIT_NOT_ISSUED_SETTLED'] }, resourceType: 'Order' }, orderBy: { timestamp: 'desc' }, take: 2000, select: { eventType: true, resourceId: true, timestamp: true, details: true } });
+  const settled = new Set(rows.filter((r) => r.eventType === 'CREDIT_NOT_ISSUED_SETTLED').map((r) => r.resourceId));
+  const open = new Map();
+  for (const r of rows) if (r.eventType === 'CREDIT_NOT_ISSUED' && !settled.has(r.resourceId) && !open.has(r.resourceId)) open.set(r.resourceId, { returnId: r.resourceId, returnNumber: r.details?.returnNumber || null, since: r.timestamp, reason: r.details?.reason || null });
+  return { count: open.size, shown: Math.min(open.size, limit), returns: [...open.values()].slice(0, limit) };
+}
+
 export async function integrationReport() {
   const now = new Date();
-  const [queue, deadLetters, unbilled, stuckKeys, notRaised, lastRun] = await Promise.all([
+  const [queue, deadLetters, unbilled, stuckKeys, notRaised, lastRun, uncredited] = await Promise.all([
     webhookQueueStats(now),
     prisma.webhookDelivery.findMany({ where: { status: 'FAILED' }, orderBy: { createdAt: 'desc' }, take: 20, select: { id: true, eventType: true, eventId: true, attempts: true, httpStatus: true, errorMessage: true, createdAt: true, webhookId: true } }),
     shippedNotInvoiced(),
     prisma.requestKey.count({ where: { status: 'IN_PROGRESS', createdAt: { lt: new Date(now.getTime() - 5 * 60_000) } } }),
     prisma.auditLog.count({ where: { eventType: 'INVOICE_NOT_RAISED', timestamp: { gte: new Date(now.getTime() - 30 * 24 * 60 * 60_000) } } }),
     getSetting('tasks.lastRun').catch(() => null),
+    creditsNotIssued(),
   ]);
   const needsAction = [];
   if (unbilled.orders.length) needsAction.push({ what: 'Shipped but not invoiced', count: unbilled.count, do: 'Open each order and raise its invoice from the invoices page.' });
+  if (uncredited.count) needsAction.push({ what: 'Returns received without their credit', count: uncredited.count, do: 'A manager opens each return and issues the credit, or records how it was settled.' });
   if (queue.failed) needsAction.push({ what: 'Partner events that could not be delivered', count: queue.failed, do: 'Check the partner\'s address, then send each one again.' });
   if (queue.subscriptionsStopped) needsAction.push({ what: 'Partner subscriptions stopped after repeated failures', count: queue.subscriptionsStopped, do: 'Ask the partner to fix their address and turn the subscription back on.' });
   if (queue.waitingOver15Minutes) needsAction.push({ what: 'Partner events waiting more than 15 minutes', count: queue.waitingOver15Minutes, do: 'Press Run now. If this keeps happening, the scheduled run is not set up.' });
@@ -82,6 +93,7 @@ export async function integrationReport() {
     webhooks: { ...queue, recentFailed: deadLetters },
     shippedNotInvoiced: unbilled,
     invoicesNotRaisedAtDispatchLast30Days: notRaised,
+    returnsReceivedWithoutCredit: uncredited,
     requestsNeverAnswered: stuckKeys,
     scheduledRun: { setUp: Boolean(process.env.CRON_SECRET || process.env.TASKS_SECRET), lastRun: lastRun || null },
     needsAction,

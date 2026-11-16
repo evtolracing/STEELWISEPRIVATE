@@ -105,7 +105,7 @@ async function report(req, shipment, status, body) {
   }
 
   if (status === 'DELIVERED') {
-    const updated = await deliver(shipment.id, { podSignature: text(body.signedBy ?? body.podSignature, 'signedBy', 200) || undefined, podImageUrl: text(body.podImageUrl ?? body.imageUrl, 'podImageUrl', 2000) || undefined }, null, partnerNote(req, `delivered${location ? ` at ${location}` : ''}`));
+    const updated = await deliver(shipment.id, { podSignature: text(body.signedBy ?? body.podSignature, 'signedBy', 200) || undefined, podImageUrl: text(body.podImageUrl ?? body.imageUrl, 'podImageUrl', 2000) || undefined }, null, partnerNote(req, `delivered${location ? ` at ${location}` : ''}`), { reportedByCarrier: true });
     await track(prisma, req, shipment, status, details);
     return done({ status: updated.status });
   }

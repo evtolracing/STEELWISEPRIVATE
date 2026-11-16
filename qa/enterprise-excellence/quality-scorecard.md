@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -27,8 +27,8 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 | Platform infrastructure | 80 | 77% | 2 | 2 of 10 | No |
 | Sales and customer operations | 79 | 97% | 4 | 37 of 97 | No |
 | Inventory and purchasing | 77 | 97% | 3 | 47 of 62 | No |
-| Manufacturing and processing | 81 | 97% | 1 | 44 of 93 | No |
-| Logistics and financial operations | 79 | 97% | 2 | 31 of 40 | No |
+| Manufacturing and processing | 81 | 97% | 1 | 63 of 95 | No |
+| Logistics and financial operations | 85 | 97% | 2 | 35 of 41 | No |
 | Enterprise experience | 60 | 89% | 5 | 9 of 50 | No |
 
 No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.
@@ -71,10 +71,10 @@ The groups hide large differences. Classification and test reach per module:
 | Dispatch, work centers and shop-floor operations | IMPLEMENTED AND VERIFIED | 12 of 17 | L-030 |
 | Planning and optimization | PARTIALLY IMPLEMENTED | 3 of 3 | L-025 |
 | Quality inspections | IMPLEMENTED AND VERIFIED | 6 of 6 | L-023, L-028 |
-| Material tracking, packages and drop tags | IMPLEMENTED BUT NOT VERIFIED | 0 of 31 | F-011 |
+| Material tracking, packages and drop tags | IMPLEMENTED BUT NOT VERIFIED | 19 of 33 |  |
 | Maintenance and assets | PARTIALLY IMPLEMENTED | 6 of 9 | X-009, B-017 |
-| Shipping | IMPLEMENTED AND VERIFIED | 5 of 7 | F-011 |
-| Returns | IMPLEMENTED AND VERIFIED | 2 of 3 |  |
+| Shipping | IMPLEMENTED AND VERIFIED | 7 of 7 |  |
+| Returns | IMPLEMENTED AND VERIFIED | 4 of 4 |  |
 | Documents | IMPLEMENTED AND VERIFIED | 2 of 3 | B-021 |
 | Partner API | PARTIALLY IMPLEMENTED | 15 of 20 | H-014, B-019 |
 | Integrations and scheduled work | IMPLEMENTED AND VERIFIED | 2 of 2 | B-019, E-017 |
@@ -174,7 +174,7 @@ Modules: Jobs, job board and schedule; Coil work orders; Dispatch, work centers 
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
 | **Weighted over the 97% that has evidence** | | **81** | Target 95 |
 
-Changing routes with a success-path test: 44 of 93. Open findings against these modules: 9, of which P0 or P1: 1 (X-009).
+Changing routes with a success-path test: 63 of 95. Open findings against these modules: 8, of which P0 or P1: 1 (X-009).
 
 ### Logistics and financial operations
 
@@ -182,20 +182,20 @@ Modules: Shipping; Returns; Documents; Partner API; Integrations and scheduled w
 
 | Category | Weight | Score | Evidence and weaknesses |
 |---|---:|---:|---|
-| Functional correctness | 15% | 75 | There was no screen to ship from and the one on the menu was a sample (F-002); web orders carried no tax (F-001). Both fixed and operated in a browser. Freight planning is still samples (F-007) |
-| Data integrity | 15% | 92 | Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken (C-002). Was 82 (Web order totals saved; proof of delivery checked (F-005). The billing arithmetic was already sound: the cycles reconcile to zero problems) |
-| Reliability | 12% | 84 | Phase 4: a billing failure at dispatch is said, recorded and listed until closed (H-006); a carrier's repeated or late report changes nothing; dispatch and delivery carry request keys from the screen (H-009). Held at 84: nothing retries a failed invoice on its own. Was 75 (Concurrent dispatch, payment and return were already guarded and still pass. Missing shipments answer 404) |
-| Security | 12% | 78 | Credit terms no longer sent to the shipping desk (F-003); unsafe delivery links refused. Who may read invoices is undecided (F-009). Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open |
-| Operational efficiency | 10% | 68 | A shipment is created from the order number in one dialog that shows what is left; dispatch raises the invoice. No documents print from the screen (F-011) |
-| User experience | 10% | 72 | Plain status names, a confirmation before dispatch, refusals in the server's words, history with names |
-| Performance | 8% | 80 | Phase 3: shipment and invoice lists measured at 85 branches: 18 and 101 ms at the 95th percentile for a branch login, 267 ms for an all-branch login. Held at 80: local machine; a branch's invoices are found by scanning every invoice (16 ms now). Was null (The list is capped at 200 and searched on the server. Nothing timed) |
+| Functional correctness | 15% | 87 | Phase 8: 142 verified scenarios across release, packing, shipments, dispatch, delivery, invoices, payments, credits, returns, costing and closeout; the packaging chain completes for the first time (N-008); stock leaves only the dock it stands at and the holding branch ships (N-001, N-002); papers are built from records with nothing invented (N-014); an order's open items are answered in one place (N-018). Held at 87: no carriers, freight rating or tracking (N-026); no accounting or cost of goods (N-025); no rule for a lost load (N-027); freight planning screens are samples (U-035). Was 75. Was 75 (There was no screen to ship from and the one on the menu was a sample (F-002); web orders carried no tax (F-001). Both fixed and operated in a browser. Freight planning is still samples (F-007)) |
+| Data integrity | 15% | 93 | Phase 8: 7 new database checks; cost fixed on the stock movement at dispatch and unchanged by later edits (N-017); packing inputs read from the stock item (N-009); fixed tag states (N-010); custody records cannot be forged (N-011); a cancelled order keeps no live shipment (N-006); reconciliation of shipped, moved and invoiced quantities across every record of the run. Held at 93: no ledger to reconcile against; a package is not tied to one shipment; movements before file 14 carry no cost. Earlier: Phase 3: invoice identity and links enforced by the database; tax across part shipments to the cent; 11 financial checks at 0; a shipment cannot be billed unless stock left the books (G-019); invoice and credit memo numbers never skipped or repeated from the counter's start (twelve at once take twelve in a row). Held at 92: numbers issued earlier keep their gaps; carrier partner routes are broken . Was 82 (Web order totals saved; proof of delivery checked (F-005). The billing arithmetic was already sound: the cycles reconcile to zero problems) |
+| Reliability | 12% | 89 | Phase 8: 20 concurrency and recovery scenarios; every once-only rule raced; overlaps met by raw statements and deadlocks reported by the database client are run again (N-022, N-029); a packing step pressed twice happens once (N-013); a return whose credit fails is flagged until settled, once (N-016). Held at 89: one server and one database only; N-029 was found in a log, not by a failing check; nothing retries a failed invoice on its own. Earlier: Phase 4: a billing failure at dispatch is said, recorded and listed until closed (H-006); a carrier's repeated or late report changes nothing; dispatch and delivery carry request keys from the screen (H-009). Held at 84: nothing retries a failed invoice on its own. Was 75 (Concurrent dispatch, payment and return were already guarded and still pass. Missing shipments answer 404) |
+| Security | 12% | 88 | Phase 8: stock cost removed from every answer for roles outside cost viewers (N-020); print jobs per branch (N-015); shipment changes held to the dock they leave from (N-002); text on printed papers escaped (N-019); custody notes only in the writer's own name (N-011); 337 changing routes, 0 with no rule. Held at 88: who may read invoices is undecided (F-009); live roles NOT VERIFIED. Was 78. Was 78 (Credit terms no longer sent to the shipping desk (F-003); unsafe delivery links refused. Who may read invoices is undecided (F-009). Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open) |
+| Operational efficiency | 10% | 78 | Phase 8: the bill of lading and packing list print from the shipment in one button (F-011, U-036); one panel answers what is still open on an order, and one list shows every order not closed by reason (N-018); the Packing screen offers only the next valid step. Held at 78: a pick is a list, not a confirmed scan; no carrier booking; no real user timed. Was 68. Was 68 (A shipment is created from the order number in one dialog that shows what is left; dispatch raises the invoice. No documents print from the screen (F-011)) |
+| User experience | 10% | 77 | Phase 8: 45 browser checks on six screens including phone width; refusals in plain words naming the item and the branch (N-001), the missing name (N-004), the missing reason (N-003); blanks on papers are named so they can be written in by hand. Held at 77: two new screens have had no real user; accessibility beyond labels is Phase 9. Was 72. Was 72 (Plain status names, a confirmation before dispatch, refusals in the server's words, history with names) |
+| Performance | 8% | 84 | Phase 8: eighteen shipping, invoicing, closeout, returns and print calls at 85 branches (72,565 orders, 50,869 shipments, 37,625 invoices): 6 to 206 ms, all but one under 40 ms. Held at 84: local machine, the host NOT VERIFIED; the first page of orders not closed works out every open order before paging; packing not timed at scale. Was 80. Was null (The list is capped at 200 and searched on the server. Nothing timed) |
 | Integration quality | 6% | 78 | Phase 4: a carrier reports through the partner API under the same rules as the shipping desk (H-001); dispatch, delivery, exception and invoice raise durable events (H-002); an order shipped but not invoiced is reported (H-006). Held at 78: no carrier rating, label or tracking service and no card processor (H-015); web checkout takes no payment (H-013). Was 68 (Shipping, stock, order, jobs and invoice move together on dispatch (cycles). The store's tax estimate and the accepted order can disagree (F-008). No carrier connection) |
-| Maintainability | 5% | 70 | Two small screens replace four sample ones; one event writer each for shipments and money. No unit tests added: the checks are in the sweep |
+| Maintainability | 5% | 80 | Phase 8: three small libraries with pure rules (shipping papers, order closeout, order cost) and 23 unit tests; one reader for three papers; one guard for cost on every answer; one retry for every overlap form. Held at 80: the drop tag route file is large (33 addresses). Was 70. Was 70 (Two small screens replace four sample ones; one event writer each for shipments and money. No unit tests added: the checks are in the sweep) |
 | Observability | 4% | 82 | Every shipment step and every money action is in the audit log with the person and shown on the screen (F-004, F-006) |
 | Accessibility | 3% | NOT VERIFIED | NOT VERIFIED. Never tested. 301 icon-only buttons, 32 labels (B-015) |
-| **Weighted over the 97% that has evidence** | | **79** | Target 95 |
+| **Weighted over the 97% that has evidence** | | **85** | Target 95 |
 
-Changing routes with a success-path test: 31 of 40. Open findings against these modules: 9, of which P0 or P1: 2 (B-019, X-009).
+Changing routes with a success-path test: 35 of 41. Open findings against these modules: 8, of which P0 or P1: 2 (B-019, X-009).
 
 ### Enterprise experience
 

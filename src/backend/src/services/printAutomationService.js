@@ -1,423 +1,233 @@
 /**
- * Print Automation Service
- * Automatically queues tags and documents for printing based on job/shipment status changes.
+ * Print queue: the tags and papers waiting for a printer.
  *
- * Tags generated per trigger:
- *  - Job → SCHEDULED     → DTL (Detail/Work Order) tag
- *  - Job → IN_PROCESS    → DTL tag (if not already generated)
- *  - Job → PACKAGING     → Bundle/Drop Tag (auto-generates DropTag record)
- *  - Job → READY_TO_SHIP → Shipping Label
- *  - Job → SHIPPED       → nothing (already done)
- *  - Shipment created    → BOL + Packing List queued
+ * A print job belongs to the branch whose printer it is for (Phase 8, N-015). What it prints is
+ * built from the records at the moment it is queued, and only from what is on file: a fact that is
+ * not recorded prints as a blank to be written in by hand, never as "1 piece", a made-up number
+ * or an address that is not this branch's (N-014).
  */
-
 import prisma from '../lib/db.js';
 import crypto from 'crypto';
+import { acrossBranches } from '../lib/branchScope.js';
 
-// ── Queue (PrintQueueJob table; events also go to AuditLog) ─────────────────
 const iso = (d) => (d ? d.toISOString() : null);
-
-/** Row → API shape (dates as ISO strings, as before). */
 function toJob(row) {
   if (!row) return null;
   const job = {
-    id: row.id,
-    type: row.type,
-    label: row.label,
-    priority: row.priority,
-    status: row.status,
-    payload: row.payload,
-    createdAt: iso(row.createdAt),
-    printedAt: iso(row.printedAt),
-    skippedAt: iso(row.skippedAt),
+    id: row.id, type: row.type, label: row.label, priority: row.priority, status: row.status, payload: row.payload, locationId: row.locationId || null,
+    createdAt: iso(row.createdAt), printedAt: iso(row.printedAt), skippedAt: iso(row.skippedAt),
   };
   if (row.skipReason != null) job.skipReason = row.skipReason;
   return job;
 }
-
 async function findJob(printJobId) {
   return toJob(await prisma.printQueueJob.findUnique({ where: { id: printJobId } }));
 }
-
 function generatePrintJobId() {
-  return `PJ-${Date.now()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  return `PJ-${Date.now()}-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
 }
 
-/**
- * Add a print job to the queue and persist to AuditLog
- */
-async function enqueue(type, label, payload, priority = 'NORMAL') {
+/** Refusal with a status, for the route to pass on. */
+export class PrintRefusal extends Error {
+  constructor(status, message) { super(message); this.status = status; this.refused = true; }
+}
+
+async function enqueue(type, label, payload, priority = 'NORMAL', locationId = null) {
   const id = generatePrintJobId();
-  const row = await prisma.printQueueJob.create({
-    data: {
-      id,
-      type,            // DTL_TAG | BUNDLE_TAG | SHIPPING_LABEL | BOL | PACKING_LIST
-      label,           // Human-readable description e.g. "DTL Tag – JOB-00003"
-      priority,        // HIGH | NORMAL
-      status: 'PENDING',
-      jobId: payload.jobId || null,
-      payload,         // All data needed to render the tag/doc
-    },
+  // Queued for the branch the work is at, whoever's action caused it (a sales order entered at one
+  // branch can put a tag on another branch's printer).
+  const row = await acrossBranches(() => prisma.printQueueJob.create({
+    data: { id, type, label, priority, status: 'PENDING', jobId: payload.jobId || null, locationId: locationId || payload.locationId || null, payload },
+  }));
+  try {
+    await prisma.auditLog.create({
+      data: {
+        category: 'WORKFLOW', eventType: 'PRINT_JOB_QUEUED', severity: priority === 'HIGH' ? 'WARNING' : 'INFO',
+        resourceType: type, resourceId: payload.jobNumber || payload.shipmentId || id, action: 'ENQUEUE',
+        details: { printJobId: id, type, label, priority },
+      },
+    });
+  } catch (_) { /* non-blocking */ }
+  return toJob(row);
+}
+
+/**
+ * Settles a waiting print job once: printed, or skipped with a reason. A job that is already
+ * settled is refused, so a second press cannot turn "printed" into "skipped". Who did it is recorded.
+ */
+async function settle(printJobId, to, userId, reason) {
+  const before = await findJob(printJobId);
+  if (!before) throw new PrintRefusal(404, `Print job ${printJobId} not found`);
+  const done = await prisma.printQueueJob.updateMany({
+    where: { id: printJobId, status: 'PENDING' },
+    data: to === 'PRINTED' ? { status: 'PRINTED', printedAt: new Date() } : { status: 'SKIPPED', skippedAt: new Date(), skipReason: reason },
   });
-  const job = toJob(row);
-
-  // Persist to AuditLog so queue survives across nav
+  if (!done.count) throw new PrintRefusal(409, `This print job is already ${String(before.status).toLowerCase()}. Use Reprint for another copy.`);
+  const job = await findJob(printJobId);
   try {
     await prisma.auditLog.create({
       data: {
-        category: 'WORKFLOW',
-        eventType: 'PRINT_JOB_QUEUED',
-        severity: priority === 'HIGH' ? 'WARNING' : 'INFO',
-        resourceType: type,
-        resourceId: payload.jobNumber || payload.shipmentId || id,
-        action: 'ENQUEUE',
-        details: { printJobId: id, type, label, priority, payload },
+        category: 'WORKFLOW', eventType: to === 'PRINTED' ? 'PRINT_JOB_PRINTED' : 'PRINT_JOB_SKIPPED', severity: 'INFO', userId: userId || null,
+        resourceType: job.type, resourceId: job.payload?.jobNumber || job.payload?.shipmentId || printJobId, action: to,
+        details: { printJobId, type: job.type, label: job.label, ...(reason && { reason }) },
       },
     });
   } catch (_) { /* non-blocking */ }
-
-  console.log(`[PrintAutomation] Queued ${type}: ${label}`);
   return job;
 }
-
-/**
- * Mark a print job as printed (removes from active queue)
- */
-export async function markPrinted(printJobId) {
-  if (!(await findJob(printJobId))) throw new Error(`Print job ${printJobId} not found`);
-
-  // Kept for history, but no longer pending
-  const job = toJob(await prisma.printQueueJob.update({
-    where: { id: printJobId },
-    data: { status: 'PRINTED', printedAt: new Date() },
-  }));
-
-  try {
-    await prisma.auditLog.create({
-      data: {
-        category: 'WORKFLOW',
-        eventType: 'PRINT_JOB_PRINTED',
-        severity: 'INFO',
-        resourceType: job.type,
-        resourceId: job.payload.jobNumber || job.payload.shipmentId || printJobId,
-        action: 'PRINTED',
-        details: { printJobId, type: job.type, label: job.label },
-      },
-    });
-  } catch (_) { /* non-blocking */ }
-
-  return job;
+export const markPrinted = (printJobId, userId = null) => settle(printJobId, 'PRINTED', userId);
+export function markSkipped(printJobId, reason = '', userId = null) {
+  const why = String(reason || '').trim();
+  if (why.length < 3) throw new PrintRefusal(400, 'Say why this print job is skipped.');
+  return settle(printJobId, 'SKIPPED', userId, why.slice(0, 300));
 }
 
-/**
- * Mark a print job as skipped
- */
-export async function markSkipped(printJobId, reason = '') {
-  if (!(await findJob(printJobId))) throw new Error(`Print job ${printJobId} not found`);
-
-  const job = toJob(await prisma.printQueueJob.update({
-    where: { id: printJobId },
-    data: { status: 'SKIPPED', skippedAt: new Date(), skipReason: reason },
-  }));
-
-  try {
-    await prisma.auditLog.create({
-      data: {
-        category: 'WORKFLOW',
-        eventType: 'PRINT_JOB_SKIPPED',
-        severity: 'INFO',
-        resourceType: job.type,
-        resourceId: job.payload.jobNumber || job.payload.shipmentId || printJobId,
-        action: 'SKIPPED',
-        details: { printJobId, reason },
-      },
-    });
-  } catch (_) { /* non-blocking */ }
-
-  return job;
-}
-
-/**
- * Get all PENDING print jobs (for frontend display)
- */
+export const QUEUE_MAX = 500;
+/** Waiting jobs for the reader's branch, urgent first then oldest first, with the full count. */
 export async function getPendingQueue() {
-  const rows = await prisma.printQueueJob.findMany({
-    where: { status: 'PENDING' },
-    orderBy: { createdAt: 'asc' },
-    take: 1000,
-  });
-  return rows.map(toJob)
-    .sort((a, b) => {
-      const priorityOrder = { HIGH: 0, NORMAL: 1 };
-      return (priorityOrder[a.priority] ?? 2) - (priorityOrder[b.priority] ?? 2);
-    });
+  const where = { status: 'PENDING' };
+  const [rows, total] = await Promise.all([
+    prisma.printQueueJob.findMany({ where, orderBy: [{ priority: 'asc' }, { createdAt: 'asc' }], take: QUEUE_MAX }),
+    prisma.printQueueJob.count({ where }),
+  ]);
+  const queue = rows.map(toJob);
+  queue.total = total;
+  return queue;
 }
 
-/**
- * Get recent queue history (last 50, all statuses)
- */
 export async function getQueueHistory(limit = 50) {
-  const rows = await prisma.printQueueJob.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: Math.min(Math.max(limit, 1), 500),
-  });
+  const rows = await prisma.printQueueJob.findMany({ orderBy: { createdAt: 'desc' }, take: Math.min(Math.max(limit, 1), 500) });
   return rows.map(toJob);
 }
 
-/** One queue entry by id, any status. */
 export async function getPrintJob(printJobId) {
   return findJob(printJobId);
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// TRIGGER HANDLERS — called by jobs.js on status change
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/** The job as the tags need it: its order, customer, line, grade, branch and the heats of its material. */
+async function jobForPrint(job) {
+  const full = await prisma.job.findUnique({
+    where: { id: job.id },
+    include: { order: { include: { buyer: { select: { name: true } } } }, workCenter: { select: { name: true, code: true, locationId: true } }, orderLine: { include: { grade: { select: { code: true } } } } },
+  });
+  if (!full) return null;
+  const locationId = full.workCenter?.locationId || full.order?.locationId || null;
+  const [branch, workOrders] = await Promise.all([
+    locationId ? prisma.location.findUnique({ where: { id: locationId }, select: { id: true, name: true, code: true, addressLine1: true, city: true, state: true, postalCode: true } }) : null,
+    prisma.workOrder.findMany({ where: { OR: [{ jobId: full.id }, ...(full.workOrderId ? [{ id: full.workOrderId }] : [])] }, select: { sourceCoil: { select: { coilNumber: true, heat: { select: { heatNumber: true } } } } } }),
+  ]);
+  const heats = [...new Set(workOrders.map((w) => w.sourceCoil?.heat?.heatNumber).filter(Boolean))];
+  const tags = [...new Set(workOrders.map((w) => w.sourceCoil?.coilNumber).filter(Boolean))];
+  return { ...full, branch, heats, sourceTags: tags };
+}
 
-/**
- * Called when a job status changes. Determines what to auto-queue.
- * @param {object} job - Full Prisma job object with relations
- * @param {string} newStatus
- * @param {string} oldStatus
- */
-export async function onJobStatusChange(job, newStatus, oldStatus) {
+const KIND_FOR_STATUS = { SCHEDULED: 'DTL_TAG', IN_PROCESS: 'DTL_TAG', PACKAGING: 'BUNDLE_TAG', READY_TO_SHIP: 'SHIPPING_LABEL' };
+const KIND_LABEL = { DTL_TAG: 'DTL Tag', BUNDLE_TAG: 'Bundle Tag', SHIPPING_LABEL: 'Shipping Label' };
+
+/** Called when a job changes status: queues the tag that status needs, once. */
+export async function onJobStatusChange(job, newStatus) {
   try {
-    switch (newStatus) {
-
-      // ── DTL Tag: queue when job enters production ──────────────────
-      case 'SCHEDULED':
-      case 'IN_PROCESS': {
-        // Avoid duplicate: skip if we already queued a DTL for this job
-        const alreadyQueued = await prisma.printQueueJob.count({
-          where: { status: 'PENDING', type: 'DTL_TAG', jobId: job.id },
-        }) > 0;
-        if (alreadyQueued) break;
-
-        await enqueue(
-          'DTL_TAG',
-          `DTL Tag – ${job.jobNumber}`,
-          buildDTLPayload(job),
-          newStatus === 'IN_PROCESS' ? 'HIGH' : 'NORMAL'
-        );
-        break;
-      }
-
-      // ── Bundle Tag: queue when job enters packaging ─────────────────
-      case 'PACKAGING': {
-        await enqueue(
-          'BUNDLE_TAG',
-          `Bundle Tag – ${job.jobNumber}`,
-          buildBundlePayload(job),
-          'NORMAL'
-        );
-        break;
-      }
-
-      // ── Shipping Label: queue when job is complete/ready-to-ship ───
-      case 'READY_TO_SHIP': {
-        await enqueue(
-          'SHIPPING_LABEL',
-          `Shipping Label – ${job.jobNumber}`,
-          buildShippingLabelPayload(job),
-          'HIGH'
-        );
-        break;
-      }
-
-      default:
-        break;
-    }
+    const kind = KIND_FOR_STATUS[newStatus];
+    if (!kind) return null;
+    // One waiting tag of each kind per job: a second move into the same status does not queue a second.
+    if (await prisma.printQueueJob.count({ where: { status: 'PENDING', type: kind, jobId: job.id } })) return null;
+    const full = await jobForPrint(job);
+    if (!full) return null;
+    return await enqueue(kind, `${KIND_LABEL[kind]} – ${full.jobNumber}`, BUILDERS[kind](full), newStatus === 'IN_PROCESS' || kind === 'SHIPPING_LABEL' ? 'HIGH' : 'NORMAL', full.branch?.id || null);
   } catch (err) {
     console.error('[PrintAutomation] onJobStatusChange error:', err.message);
+    return null;
   }
 }
 
 /**
- * Called when a shipment record is created or confirmed.
- * @param {object} shipment - Prisma shipment object with relations
+ * Queues the bill of lading and the packing list of a shipment, built from the shipment itself
+ * (lib/shippingDocuments.js). One waiting copy of each per shipment. Returns the two print jobs.
  */
-export async function onShipmentCreated(shipment) {
-  try {
-    await Promise.all([
-      enqueue(
-        'BOL',
-        `Bill of Lading – ${shipment.shipmentNumber || shipment.id}`,
-        buildBOLPayload(shipment),
-        'HIGH'
-      ),
-      enqueue(
-        'PACKING_LIST',
-        `Packing List – ${shipment.shipmentNumber || shipment.id}`,
-        buildPackingListPayload(shipment),
-        'NORMAL'
-      ),
-    ]);
-  } catch (err) {
-    console.error('[PrintAutomation] onShipmentCreated error:', err.message);
+export async function queueShipmentPapers(shipmentId) {
+  const { shipmentDocuments } = await import('../lib/shippingDocuments.js');
+  const docs = await shipmentDocuments(shipmentId);
+  if (!docs) throw new PrintRefusal(404, 'Shipment not found');
+  const shipment = await prisma.shipment.findUnique({ where: { id: shipmentId }, select: { fromLocationId: true } });
+  const out = [];
+  for (const [type, name, priority] of [['BOL', 'Bill of Lading', 'HIGH'], ['PACKING_LIST', 'Packing List', 'NORMAL']]) {
+    const payload = { tagType: type, shipmentId, ...docs, printedAt: new Date().toISOString() };
+    const waiting = await prisma.printQueueJob.findFirst({ where: { status: 'PENDING', type, payload: { path: ['shipmentId'], equals: shipmentId } } });
+    // A paper still waiting is brought up to date, so it never prints what the shipment said earlier
+    // (a carrier typed since, or "not yet dispatched" on a shipment that has left).
+    out.push(waiting
+      ? toJob(await prisma.printQueueJob.update({ where: { id: waiting.id }, data: { payload: JSON.parse(JSON.stringify(payload)) } }))
+      : await enqueue(type, `${name} – ${docs.shipment.shipmentNumber}`, payload, priority, shipment?.fromLocationId || null));
   }
+  return out;
 }
 
-/**
- * Manual enqueue — always queues regardless of dedup.
- * Used for operator-initiated reprints.
- */
+/** Queues a tag for a job by hand, whatever its status. */
 export async function manualEnqueue(type, job) {
-  const builders = {
-    DTL_TAG:        () => buildDTLPayload(job),
-    BUNDLE_TAG:     () => buildBundlePayload(job),
-    SHIPPING_LABEL: () => buildShippingLabelPayload(job),
-  };
-  const builder = builders[type];
-  if (!builder) throw new Error(`Unknown tag type: ${type}`);
-
-  return enqueue(
-    type,
-    `${type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} – ${job.jobNumber} (Manual)`,
-    builder(),
-    'HIGH'
-  );
+  const builder = BUILDERS[type];
+  if (!builder) throw new PrintRefusal(400, `Unknown tag type: ${type}`);
+  const full = await jobForPrint(job);
+  if (!full) throw new PrintRefusal(404, 'Job not found');
+  return enqueue(type, `${KIND_LABEL[type]} – ${full.jobNumber} (Manual)`, builder(full), 'HIGH', full.branch?.id || null);
 }
 
-/**
- * Reprint from an existing history item — re-enqueues the same payload.
- */
+/** Another copy of something already queued or printed: the same content, marked as a reprint. */
 export async function reprintById(printJobId) {
   const original = await findJob(printJobId);
-  if (!original) throw new Error(`Print job ${printJobId} not found in history`);
-
-  return enqueue(
-    original.type,
-    original.label.replace(/ \(Manual\)| \(Reprint\)/g, '') + ' (Reprint)',
-    { ...original.payload, printedAt: new Date().toISOString() },
-    'HIGH'
-  );
+  if (!original) throw new PrintRefusal(404, `Print job ${printJobId} not found in history`);
+  return enqueue(original.type, original.label.replace(/ \(Manual\)| \(Reprint\)/g, '') + ' (Reprint)', { ...original.payload, printedAt: new Date().toISOString(), reprint: true }, 'HIGH', original.locationId);
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// PAYLOAD BUILDERS — assemble all data for each tag type
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+// What the tags print: only what is on file.
+const day = (d) => (d ? new Date(d).toLocaleDateString() : '');
+const n = (v) => (v == null ? null : Number(v));
+const addressOf = (b) => [b?.addressLine1, [b?.city, b?.state].filter(Boolean).join(', '), b?.postalCode].filter(Boolean).join(' · ');
+function common(job) {
+  return {
+    jobId: job.id, jobNumber: job.jobNumber, locationId: job.branch?.id || null,
+    branchName: job.branch?.name || '', branchCode: job.branch?.code || '',
+    customerName: job.order?.buyer?.name || '', orderNumber: job.order?.orderNumber || '', customerPO: job.order?.poReference || '',
+    heatNumber: job.heats.join(', '), coilNumber: job.sourceTags.join(', '),
+    grade: job.gradeOverride || job.orderLine?.grade?.code || '',
+    thickness: n(job.thicknessIn ?? job.orderLine?.thicknessIn), width: n(job.widthIn ?? job.orderLine?.widthIn), length: n(job.lengthIn ?? job.orderLine?.lengthIn),
+    weight: n(job.outputWeightLb),
+    quantity: n(job.orderLine?.qtyOrdered), unit: job.orderLine?.unit || '', pieces: null,
+    instructions: job.instructions || '', printedAt: new Date().toISOString(),
+  };
+}
 function buildDTLPayload(job) {
   return {
-    tagType: 'DTL_TAG',
-    jobId: job.id,
-    jobNumber: job.jobNumber,
-    customerName: job.order?.buyer?.name || job.order?.buyerName || 'N/A',
-    orderNumber: job.order?.orderNumber || 'N/A',
-    operationType: job.operationType || 'PROCESSING',
-    workCenter: job.workCenter?.name || job.workCenter?.code || 'N/A',
-    scheduledStart: job.scheduledStart ? new Date(job.scheduledStart).toLocaleDateString() : 'N/A',
-    scheduledEnd: job.scheduledEnd ? new Date(job.scheduledEnd).toLocaleDateString() : 'N/A',
-    priority: job.priority,
-    instructions: job.instructions || '',
-    coilNumber: job.coilId || 'N/A',
-    partNumber: job.partNumber || 'N/A',
-    quantity: job.quantity || 1,
-    unit: job.unit || 'EA',
-    thickness: job.thickness || null,
-    width: job.width || null,
-    length: job.length || null,
-    weight: job.weight || null,
-    grade: job.gradeOverride || 'N/A',
-    printedAt: new Date().toISOString(),
-    barcodeValue: `JOB:${job.jobNumber}|OP:${job.operationType || 'PROC'}|DUE:${job.scheduledEnd ? new Date(job.scheduledEnd).toLocaleDateString() : 'N/A'}`,
+    tagType: 'DTL_TAG', ...common(job),
+    operationType: job.operationType || '', workCenter: job.workCenter?.name || job.workCenter?.code || '',
+    scheduledStart: day(job.scheduledStart), scheduledEnd: day(job.scheduledEnd), priority: job.priority,
+    partNumber: job.orderLine?.description || '',
+    barcodeValue: `JOB:${job.jobNumber}`,
   };
 }
-
 function buildBundlePayload(job) {
   return {
-    tagType: 'BUNDLE_TAG',
-    jobId: job.id,
-    jobNumber: job.jobNumber,
-    customerName: job.order?.buyer?.name || 'N/A',
-    orderNumber: job.order?.orderNumber || 'N/A',
-    shipToName: job.order?.shipToName || job.order?.buyer?.name || 'N/A',
-    shipToCity: job.order?.shipToCity || 'N/A',
-    shipToAddress: job.order?.shipToAddress || '',
-    heatNumber: job.heatNumber || 'N/A',
-    coilNumber: job.coilId || 'N/A',
-    grade: job.gradeOverride || 'N/A',
-    thickness: job.thickness || null,
-    width: job.width || null,
-    length: job.length || null,
-    weight: job.weight || null,
-    pieces: job.quantity || 1,
-    unit: job.unit || 'EA',
-    requiredDate: job.scheduledEnd ? new Date(job.scheduledEnd).toLocaleDateString() : 'N/A',
-    instructions: job.instructions || '',
-    printedAt: new Date().toISOString(),
-    barcodeValue: `PKG:${job.jobNumber}|HEAT:${job.heatNumber || 'NA'}|CUST:${(job.order?.buyer?.name || 'NA').replace(/[^A-Z0-9]/gi, '')}`,
+    tagType: 'BUNDLE_TAG', ...common(job),
+    shipToName: job.order?.buyer?.name || '', shipToCity: [job.order?.shipToCity, job.order?.shipToState].filter(Boolean).join(', '), shipToAddress: job.order?.shipToAddress || '',
+    requiredDate: day(job.order?.requiredDate),
+    barcodeValue: `PKG:${job.jobNumber}`,
   };
 }
-
 function buildShippingLabelPayload(job) {
   return {
-    tagType: 'SHIPPING_LABEL',
-    jobId: job.id,
-    jobNumber: job.jobNumber,
-    orderNumber: job.order?.orderNumber || 'N/A',
-    shipFromName: 'SteelWise Service Center',
-    shipFromAddress: '1234 Industrial Pkwy, Chicago, IL 60601',
-    shipToName: job.order?.shipToName || job.order?.buyer?.name || 'N/A',
-    shipToAddress: job.order?.shipToAddress || 'N/A',
-    shipToCity: job.order?.shipToCity || 'N/A',
-    customerPO: job.order?.customerPO || 'N/A',
-    weight: job.weight || null,
-    pieces: job.quantity || 1,
-    unit: job.unit || 'EA',
-    grade: job.gradeOverride || 'N/A',
-    heatNumber: job.heatNumber || 'N/A',
-    carrier: '',         // Filled in when carrier is assigned
-    serviceLevel: '',
-    requiredDate: job.scheduledEnd ? new Date(job.scheduledEnd).toLocaleDateString() : 'N/A',
-    printedAt: new Date().toISOString(),
-    barcodeValue: `SHIP:${job.jobNumber}|ORD:${job.order?.orderNumber || 'NA'}|DUE:${job.scheduledEnd ? new Date(job.scheduledEnd).toLocaleDateString() : 'NA'}`,
+    tagType: 'SHIPPING_LABEL', ...common(job),
+    shipFromName: job.branch?.name || '', shipFromAddress: addressOf(job.branch),
+    shipToName: job.order?.buyer?.name || '', shipToAddress: job.order?.shipToAddress || '',
+    shipToCity: [job.order?.shipToCity, job.order?.shipToState, job.order?.shipToZip].filter(Boolean).join(', '),
+    carrier: job.shippingCarrier || '', serviceLevel: '',
+    requiredDate: day(job.order?.requiredDate),
+    barcodeValue: `SHIP:${job.jobNumber}|ORD:${job.order?.orderNumber || ''}`,
   };
 }
-
-function buildBOLPayload(shipment) {
-  return {
-    tagType: 'BOL',
-    shipmentId: shipment.id,
-    shipmentNumber: shipment.shipmentNumber || shipment.id,
-    bolNumber: shipment.bolNumber || `BOL-${Date.now()}`,
-    carrier: shipment.carrier || 'TBD',
-    trackingNumber: shipment.trackingNumber || 'TBD',
-    shipFromName: 'SteelWise Service Center',
-    shipFromAddress: '1234 Industrial Pkwy, Chicago, IL 60601',
-    shipToName: shipment.shipToName || 'N/A',
-    shipToAddress: shipment.shipToAddress || 'N/A',
-    shipDate: shipment.scheduledDate ? new Date(shipment.scheduledDate).toLocaleDateString() : new Date().toLocaleDateString(),
-    totalWeight: shipment.totalWeight || null,
-    totalPieces: shipment.totalPieces || null,
-    specialInstructions: shipment.specialInstructions || '',
-    printedAt: new Date().toISOString(),
-  };
-}
-
-function buildPackingListPayload(shipment) {
-  return {
-    tagType: 'PACKING_LIST',
-    shipmentId: shipment.id,
-    shipmentNumber: shipment.shipmentNumber || shipment.id,
-    shipToName: shipment.shipToName || 'N/A',
-    items: (shipment.jobs || []).map((j) => ({
-      jobNumber: j.jobNumber,
-      orderNumber: j.order?.orderNumber || 'N/A',
-      description: j.operationType || 'Processing',
-      grade: j.grade?.code || j.gradeId || 'N/A',
-      weight: j.weight || null,
-      pieces: j.quantity || 1,
-      unit: j.unit || 'EA',
-    })),
-    totalWeight: shipment.totalWeight || null,
-    totalPieces: shipment.totalPieces || null,
-    printedAt: new Date().toISOString(),
-  };
-}
+const BUILDERS = { DTL_TAG: buildDTLPayload, BUNDLE_TAG: buildBundlePayload, SHIPPING_LABEL: buildShippingLabelPayload };
 
 export default {
   onJobStatusChange,
-  onShipmentCreated,
+  queueShipmentPapers,
   markPrinted,
   markSkipped,
   getPendingQueue,

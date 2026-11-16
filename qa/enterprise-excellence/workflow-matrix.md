@@ -76,6 +76,26 @@ Inventory valuation is not a workflow in the code. Since owner decision 9 (2026-
 
 Not workflows in the code, recorded as such: bill of material and material requirements (L-024), calendar capacity (L-025), stock valuation and cost of goods (K-007), nonconformance and corrective action (L-023), outside processing and nesting (L-027), machine connection (L-030).
 
+### Phase 8 update (2026-11-16)
+
+Workflow 1 (customer to cash) and workflow 5 (return and credit) were walked from "ready to ship" to "closed" with 150 scenarios (`qa/sim/phase8-fulfillment.mjs`) and 45 browser checks (`qa/sim/ui-phase8.cjs`).
+
+| Step | Before Phase 8 | Now |
+|---|---|---|
+| Pick | No pick list | The shipment shows the reserved stock to pick, with heat and bin, and flags stock at another branch (N-001) |
+| Pack | Could not be completed through the product (N-008) | Open, pack, quality release, tag, seal, each checked, on a new Packing screen |
+| Papers | Invented content; no button (N-014, N-019) | Packing list and bill of lading drawn from the records, blanks for what is missing, opened from the shipment |
+| Ship across branches | The branch with the stock could not ship another branch's order (N-002) | It can; the selling branch sees it; only the dock changes it |
+| Dispatch | Sound, except under simultaneous load (N-022) and for closed accounts (N-005) | One step; overlap retried; closed account refused |
+| Deliver | No proof needed (N-004) | Receiver's name, or a reason |
+| Problem on the road | No reason (N-003) | Reason required. A lost load still has no rule (N-027) |
+| Invoice, payment, credit | Sound | Future payment date refused (N-007); typed credit exact to the cent (N-021); receivables by age |
+| Return | A missing credit was invisible (N-016) | Flagged until a manager settles it |
+| Cost of the sale | None (N-017) | Fixed at dispatch; order cost and margin for cost viewers |
+| Close | No such idea (N-018) | Closeout position per order; Orders Not Closed list |
+
+Not part of any workflow, because they do not exist: an accounting ledger (N-025), carrier rating and tracking (N-026), customer notices and invoice delivery (N-028).
+
 ## Job types found
 
 Order types in the schema: RFQ, QUOTE, SO (sales order), PO, RETURN. PO is never used. Sales channels that create a sales order: order entry, quote acceptance, web store, counter quick sale, counter session flow, partner API. The order hub creates its own orders that are not sales orders (B-009).

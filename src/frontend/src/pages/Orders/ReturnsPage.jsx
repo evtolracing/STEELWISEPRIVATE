@@ -97,6 +97,8 @@ export default function ReturnsPage() {
   const [notice, setNotice] = useState(null)
   const [creating, setCreating] = useState(false)
   const [busyId, setBusyId] = useState(null)
+  const [settling, setSettling] = useState(null)
+  const [how, setHow] = useState('')
 
   const load = useCallback(() => {
     client.get('/returns', { params: { limit: 100 } }).then((r) => { setRows(r.data?.data || []); setError(null) }).catch((e) => setError(errorText(e, 'Could not load returns')))
@@ -111,6 +113,17 @@ export default function ReturnsPage() {
         const credit = (r.data?.credits || []).reduce((s, c) => s + Math.abs(c.totalAmount), 0)
         setNotice(r.data?.warning || `${ret.returnNumber} received.${credit ? ` ${usd(credit)} credited to the customer.` : ' Nothing was invoiced for it, so no credit was issued.'}`)
       }
+      load()
+    } catch (e) { setError(errorText(e, 'That did not save')) } finally { setBusyId(null) }
+  }
+
+  // A return that came back without its credit: a manager issues it, or records how it was settled.
+  const settle = async (ret, how) => {
+    setBusyId(ret.id); setError(null); setNotice(null)
+    try {
+      const r = await client.post(`/returns/${ret.id}/credit`, how ? { settledAnotherWay: true, reason: how } : {})
+      setNotice(`${ret.returnNumber}: ${r.data?.settled || 'settled'}.`)
+      setSettling(null); setHow('')
       load()
     } catch (e) { setError(errorText(e, 'That did not save')) } finally { setBusyId(null) }
   }
@@ -146,6 +159,13 @@ export default function ReturnsPage() {
                 <TableCell align="right">{usd(ret.totalAmount)}</TableCell>
                 <TableCell><Chip size="small" label={(STATUS[ret.status] || [ret.status])[0]} color={(STATUS[ret.status] || [])[1] || 'default'} /></TableCell>
                 <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
+                  {ret.creditNotIssued && (
+                    <>
+                      <Chip size="small" color="error" label="Credit not issued" sx={{ mr: 1 }} />
+                      <Button size="small" variant="contained" disabled={busyId === ret.id} onClick={() => settle(ret, false)}>Issue credit</Button>
+                      <Button size="small" disabled={busyId === ret.id} onClick={() => setSettling(ret)} sx={{ ml: 1 }}>Settled another way</Button>
+                    </>
+                  )}
                   {ret.status === 'PENDING' && (
                     <>
                       <Button size="small" variant="contained" disabled={busyId === ret.id} onClick={() => act(ret, 'receive')}>Receive</Button>
@@ -159,6 +179,18 @@ export default function ReturnsPage() {
           </TableBody>
         </Table>
       </Paper>
+      {settling && (
+        <Dialog open onClose={() => setSettling(null)} maxWidth="xs" fullWidth>
+          <DialogTitle>{settling.returnNumber}: credit settled another way</DialogTitle>
+          <DialogContent>
+            <TextField fullWidth autoFocus multiline minRows={2} label="How it was settled" helperText="For example the number of the credit memo given by hand. It is kept on the return's record." value={how} onChange={(e) => setHow(e.target.value)} inputProps={{ maxLength: 300 }} sx={{ mt: 1 }} />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setSettling(null)}>Cancel</Button>
+            <Button variant="contained" disabled={busyId === settling.id || how.trim().length < 5} onClick={() => settle(settling, how.trim())}>Record</Button>
+          </DialogActions>
+        </Dialog>
+      )}
       {creating && <NewReturnDialog onClose={() => setCreating(false)} onSaved={() => { setCreating(false); load() }} />}
     </Box>
   )

@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 88561a3. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit b2e8c5d. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 50 |
 | Server route files | 75 |
-| API routes (each address counted; two route files are mounted twice) | 640 |
-| API routes that change data | 334 |
+| API routes (each address counted; two route files are mounted twice) | 648 |
+| API routes that change data | 337 |
 | Database tables in the schema | 161 |
 | Enumerations | 96 |
-| Migrations | 31 |
-| Screens (routes in the browser) | 142 |
-| Frontend source files | 393 (118,927 lines) |
-| Server route code | 25,209 lines |
+| Migrations | 32 |
+| Screens (routes in the browser) | 144 |
+| Frontend source files | 396 (119,494 lines) |
+| Server route code | 25,121 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -148,9 +148,9 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** IMPLEMENTED AND VERIFIED
 - **Basis:** Sweep "Order entry screen follows the order rules" (43 checks); browser suite (sales)
 - **Purpose:** The order entry screen: lines, price, processing, tax, credit check
-- **Screens:** 9 (8 real, 1 mixed): /intake, /place-order, /orders/invoices, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
+- **Screens:** 10 (9 real, 1 mixed): /intake, /place-order, /orders/invoices, /orders/closeout, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
 - **Server:** `src/backend/src/routes/intakeOrders.js`, `src/backend/src/routes/intakePricing.js`, `src/backend/src/routes/intakeProcessing.js`; served at /api/orders/intake, /api/pricing, /api/processing
-- **Routes:** 17, of which 7 change data. Returned a success in a test this session: 15 of 17; of the changing routes, 7 of 7
+- **Routes:** 17, of which 7 change data. Returned a success in a test this session: 16 of 17; of the changing routes, 7 of 7
 - **Tables:** Organization, Order, Location, Quote, Job, OrderLine, Product, PriceLevel, CustomerPricingTier, AuditLog, ProcessingOperation, ProcessingTemplate
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Customers, products, pricing, tax, credit
@@ -163,10 +163,10 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** IMPLEMENTED AND VERIFIED
 - **Basis:** Simulation: every job; race tests on reservation; unit tests on the move table
 - **Purpose:** The order record: confirm, hold, cancel, reserve stock
-- **Screens:** 7 (6 real, 1 mixed): /orders/invoices, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
+- **Screens:** 8 (7 real, 1 mixed): /orders/invoices, /orders/closeout, /orders/returns, /orders, /orders/intake, /orders/online-inbox, /orders/credit-holds, /orders/:id
 - **Server:** `src/backend/src/routes/orders.js`; served at /api/orders
-- **Routes:** 7, of which 4 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 4 of 4
-- **Tables:** Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, User
+- **Routes:** 10, of which 4 change data. Returned a success in a test this session: 10 of 10; of the changing routes, 4 of 4
+- **Tables:** Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, Shipment, User
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Order entry, quotes, web store, counter
 - **Feeds:** Jobs, shipments, invoices
@@ -525,14 +525,14 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** IMPLEMENTED BUT NOT VERIFIED
 - **Basis:** Screens open on real data. 0 of 30 write routes succeed in a test
 - **Purpose:** Custody log, packages, tags, staging, print queue
-- **Screens:** 6 (6 real): /material-tracking, /material-tracking/packaging, /material-tracking/tags, /material-tracking/staging, /material-tracking/traceability, /material-tracking/traceability/:jobId
+- **Screens:** 7 (7 real): /material-tracking, /material-tracking/packaging, /material-tracking/packages, /material-tracking/tags, /material-tracking/staging, /material-tracking/traceability, /material-tracking/traceability/:jobId
 - **Server:** `src/backend/src/routes/materialTrackingRoutes.js`, `src/backend/src/routes/dropTagRoutes.js`, `src/backend/src/routes/printQueue.js`; served at /api/drop-tags, /api/material-tracking, /api/print-queue
-- **Routes:** 48, of which 31 change data. Returned a success in a test this session: 11 of 48; of the changing routes, 0 of 31
-- **Tables:** Job, Package, DropTag, TraceEvent, JobInspection, Shipment
+- **Routes:** 50, of which 33 change data. Returned a success in a test this session: 32 of 50; of the changing routes, 19 of 33
+- **Tables:** Job, Package, DropTag, TraceEvent, Coil, JobInspection
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Jobs
 - **Feeds:** Shipping
-- **Findings:** F-011
+- **Findings:** none open
 - **Production concern:** Tag and package life cycle has never been run end to end
 
 ### Maintenance and assets
@@ -559,12 +559,12 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Create, dispatch and deliver a shipment; partial shipments; proof of delivery
 - **Screens:** 2 (2 real): /shipping, /shipping/:id
 - **Server:** `src/backend/src/routes/shipments.js`, `src/backend/src/routes/shippingV1.js`; served at /api/shipments, /api/v1/shipping, /api/v1/shipments
-- **Routes:** 15, of which 7 change data. Returned a success in a test this session: 12 of 15; of the changing routes, 5 of 7
-- **Tables:** Shipment, Order, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, WorkCenter
+- **Routes:** 16, of which 7 change data. Returned a success in a test this session: 15 of 16; of the changing routes, 7 of 7
+- **Tables:** Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders, jobs, stock
 - **Feeds:** Invoices, stock
-- **Findings:** F-011
+- **Findings:** none open
 - **Production concern:** Shipping documents and printing not examined; no carrier rates or freight cost
 
 ### Returns
@@ -574,8 +574,8 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Return against shipped quantity, receive, restock or scrap, credit
 - **Screens:** none
 - **Server:** `src/backend/src/routes/returns.js`; served at /api/returns
-- **Routes:** 6, of which 3 change data. Returned a success in a test this session: 3 of 6; of the changing routes, 2 of 3
-- **Tables:** Order, MaterialMovement, Inventory, InvoiceLine, Coil, QCHold, OrderLine
+- **Routes:** 7, of which 4 change data. Returned a success in a test this session: 6 of 7; of the changing routes, 4 of 4
+- **Tables:** Order, AuditLog, MaterialMovement, Inventory, InvoiceLine, Coil, QCHold, OrderLine, Invoice
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Shipping, invoices
 - **Feeds:** Stock, credits
@@ -650,7 +650,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Invoice on dispatch, payments, credit memos, refunds, cancel, every action recorded against a person
 - **Screens:** 1 (1 real): /orders/invoices
 - **Server:** `src/backend/src/routes/invoices.js`, `src/backend/src/services/billing.js`; served at /api/invoices
-- **Routes:** 7, of which 5 change data. Returned a success in a test this session: 7 of 7; of the changing routes, 5 of 5
+- **Routes:** 8, of which 5 change data. Returned a success in a test this session: 8 of 8; of the changing routes, 5 of 5
 - **Tables:** none directly in the route files (through a service, or none)
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Shipping, counter, returns
@@ -899,7 +899,7 @@ Finding B-014.
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
 | src/frontend/src/help/manualContent.js | 3542 | 0 |
-| src/frontend/src/router/AppRouter.jsx | 1549 | 0 |
+| src/frontend/src/router/AppRouter.jsx | 1569 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1335 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
@@ -926,10 +926,10 @@ Finding B-014.
 | src/backend/src/routes/opsCockpit.js | 873 | |
 | src/backend/src/routes/staff.js | 788 | |
 | src/backend/src/routes/bomV1.js | 734 | |
-| src/backend/src/routes/dropTagRoutes.js | 716 | |
 | src/backend/src/routes/users.js | 692 | |
 | src/backend/src/routes/operationsRoutes.js | 672 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
+| src/backend/src/routes/intakeOrders.js | 651 | |
 
 ## Other counts from the frontend
 
@@ -939,11 +939,11 @@ Finding B-014.
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
 | Icon-only buttons | 302 |
-| aria-label attributes | 48 |
+| aria-label attributes | 53 |
 | Browser alert or confirm calls | 25 in 15 files |
-| Timers started (setInterval, setTimeout) | 67 |
-| Timers cleared | 37 |
+| Timers started (setInterval, setTimeout) | 68 |
+| Timers cleared | 38 |
 | console.log calls | 18 |
-| Dialogs | 128 |
+| Dialogs | 134 |
 | Frontend unit test files | 0 |
 

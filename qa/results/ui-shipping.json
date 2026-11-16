@@ -1,7 +1,7 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-15T23:53:29.426Z",
- "checks": 29,
+ "at": "2026-11-16T02:19:46.823Z",
+ "checks": 30,
  "failed": 0,
  "results": [
   {
@@ -66,6 +66,11 @@
   },
   {
    "name": "shipment: once dispatched it cannot be cancelled or edited",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shipment: a delivery cannot be saved with no name",
    "ok": true,
    "detail": ""
   },

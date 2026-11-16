@@ -66,7 +66,9 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     return { ...o, lineName: name };
   };
   const shipment = async (o) => {
-    const s = await api('POST', '/api/shipments', { orderId: o.id, fromLocationId: branch.id, items: [{ orderLineId: o.lines[0].id, qtyShipped: 4 }] });
+    // Phase 8 (N-001): a shipment leaves from the branch where its reserved stock stands. This fixture used to
+    // ship from the first branch on file while the stock was at the order's branch, which is now refused.
+    const s = await api('POST', '/api/shipments', { orderId: o.id, fromLocationId: o.locationId || branch.id, items: [{ orderLineId: o.lines[0].id, qtyShipped: 4 }] });
     if (s.status !== 201) throw new Error(`could not create a shipment: ${s.status} ${JSON.stringify(s.body).slice(0, 200)}`);
     return s.body;
   };
@@ -280,7 +282,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     let lost = 0;
     await page.route(`**/api/shipments/${made.id}/deliver`, async (route) => { await route.fetch().catch(() => null); lost += 1; await route.abort('connectionreset'); });
     await page.getByRole('button', { name: 'Mark delivered' }).click();
-    await page.getByLabel('Signed for by').fill('R. Receiver');
+    await page.getByLabel('Received by').fill('R. Receiver');
     await page.getByRole('dialog').getByRole('button', { name: 'Mark delivered' }).click();
     const said = await has(page, /connection was lost|may have been saved/);
     const now = await one(made.id);

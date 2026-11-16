@@ -1,8 +1,8 @@
 {
- "at": "2026-11-15T23:52:23.435Z",
+ "at": "2026-11-16T02:18:36.087Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 162,
- "totalRows": 13842,
+ "totalRows": 17802,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -12,8 +12,6 @@
   "Division",
   "DocumentLink",
   "DowntimeRecord",
-  "DropTag",
-  "DropTagListing",
   "ForecastSnapshot",
   "InventoryAdjustment",
   "LabelTemplate",
@@ -25,8 +23,6 @@
   "MeterReading",
   "PMSchedule",
   "PMTemplate",
-  "Package",
-  "PackageItem",
   "PipelineRun",
   "PricingAnalytics",
   "PricingOverride",
@@ -80,7 +76,6 @@
   "StopWorkStep",
   "TagIdentifier",
   "TestResult",
-  "TraceEvent",
   "UserDivision",
   "UserRoleAssignment"
  ],
@@ -115,7 +110,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 3630
+   "rows": 4584
   },
   {
    "table": "BomOperation",
@@ -127,7 +122,7 @@
   },
   {
    "table": "Coil",
-   "rows": 749
+   "rows": 932
   },
   {
    "table": "CommodityPrice",
@@ -179,7 +174,7 @@
   },
   {
    "table": "DocumentCounter",
-   "rows": 2
+   "rows": 5
   },
   {
    "table": "DocumentLink",
@@ -191,11 +186,11 @@
   },
   {
    "table": "DropTag",
-   "rows": 0
+   "rows": 10
   },
   {
    "table": "DropTagListing",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "ExceptionEvent",
@@ -239,7 +234,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 749
+   "rows": 932
   },
   {
    "table": "InventoryAdjustment",
@@ -263,19 +258,19 @@
   },
   {
    "table": "Invoice",
-   "rows": 241
+   "rows": 396
   },
   {
    "table": "InvoiceLine",
-   "rows": 252
+   "rows": 408
   },
   {
    "table": "Job",
-   "rows": 459
+   "rows": 468
   },
   {
    "table": "JobInspection",
-   "rows": 208
+   "rows": 214
   },
   {
    "table": "LabelTemplate",
@@ -311,7 +306,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 871
+   "rows": 1204
   },
   {
    "table": "MeterReading",
@@ -331,19 +326,19 @@
   },
   {
    "table": "Order",
-   "rows": 826
+   "rows": 1030
   },
   {
    "table": "OrderLine",
-   "rows": 847
+   "rows": 1054
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 54
+   "rows": 111
   },
   {
    "table": "Organization",
-   "rows": 93
+   "rows": 102
   },
   {
    "table": "PMSchedule",
@@ -355,31 +350,31 @@
   },
   {
    "table": "Package",
-   "rows": 0
+   "rows": 16
   },
   {
    "table": "PackageItem",
-   "rows": 0
-  },
-  {
-   "table": "Partner",
-   "rows": 8
-  },
-  {
-   "table": "PartnerApiKey",
    "rows": 12
   },
   {
+   "table": "Partner",
+   "rows": 9
+  },
+  {
+   "table": "PartnerApiKey",
+   "rows": 14
+  },
+  {
    "table": "PartnerApiLog",
-   "rows": 148
+   "rows": 153
   },
   {
    "table": "PartnerWebhook",
-   "rows": 15
+   "rows": 16
   },
   {
    "table": "Payment",
-   "rows": 139
+   "rows": 206
   },
   {
    "table": "PipelineRun",
@@ -407,7 +402,7 @@
   },
   {
    "table": "PrintQueueJob",
-   "rows": 2
+   "rows": 14
   },
   {
    "table": "ProcessingOperation",
@@ -427,7 +422,7 @@
   },
   {
    "table": "QCHold",
-   "rows": 57
+   "rows": 60
   },
   {
    "table": "Quote",
@@ -463,7 +458,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 22
+   "rows": 24
   },
   {
    "table": "RfidScanEvent",
@@ -631,11 +626,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 260
+   "rows": 447
   },
   {
    "table": "ShipmentItem",
-   "rows": 229
+   "rows": 416
   },
   {
    "table": "ShipmentStop",
@@ -691,11 +686,11 @@
   },
   {
    "table": "TraceEvent",
-   "rows": 0
+   "rows": 83
   },
   {
    "table": "User",
-   "rows": 37
+   "rows": 43
   },
   {
    "table": "UserDivision",
@@ -711,7 +706,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 227
+   "rows": 1134
   },
   {
    "table": "WorkCenter",
@@ -727,14 +722,14 @@
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 55
+   "rows": 53
   },
   {
    "table": "_prisma_migrations",
-   "rows": 31
+   "rows": 32
   }
  ],
- "indexes": 595,
+ "indexes": 596,
  "views": [],
  "triggers": [],
  "jsonCols": [
@@ -905,7 +900,7 @@
  "constraintCounts": {
   "foreign key": 196,
   "primary key": 162,
-  "check": 31
+  "check": 32
  },
  "checkConstraints": [
   {
@@ -985,6 +980,12 @@
    "name": "MaterialMovement_qtyMoved_positive",
    "kind": "check",
    "def": "CHECK ((\"qtyMoved\" > (0)::numeric))"
+  },
+  {
+   "table": "MaterialMovement",
+   "name": "MaterialMovement_unitCost_not_negative",
+   "kind": "check",
+   "def": "CHECK (((\"unitCost\" IS NULL) OR (\"unitCost\" >= (0)::numeric)))"
   },
   {
    "table": "Order",
@@ -1107,6 +1108,7 @@
   "completed work orders whose pieces do not weigh what the work order says came out": 0,
   "pieces whose heat, grade or owner differs from the item they were cut from": 0,
   "invoice series whose counter is not the highest number on file": 0,
+  "package, tag or listing series whose counter is not the highest number on file": 0,
   "invoice numbers repeated": 0,
   "stock corrections with no note or no person": 0,
   "stock row and its item disagree about the branch": 0,
@@ -1160,8 +1162,15 @@
   "jobs with no order and no order line": 60,
   "stock items (coils) with no heat": 2,
   "stock items with no location": 0,
-  "shipments delivered with no proof of delivery name": 47,
+  "shipments delivered with no proof of delivery name": 51,
   "users with no home branch": 2,
-  "invoices and credit memos with no record of who raised them, outside the demo seed": 0
+  "invoices and credit memos with no record of who raised them, outside the demo seed": 0,
+  "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 48,
+  "dispatched shipments whose stock movements add up to more than the shipment carries": 0,
+  "shipments still on the dock for a cancelled order": 0,
+  "shipments on the road or delivered with no invoice (each is listed for billing in the integration report)": 9,
+  "packages with more than one live tag": 0,
+  "returns whose missing credit was settled more than once": 0,
+  "stock movements for a shipment with a cost that is negative": 0
  }
 }

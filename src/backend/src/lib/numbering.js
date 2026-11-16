@@ -34,12 +34,28 @@ export async function createNumbered({ count, format, create, attempts = 40 }) {
 export const padded = (prefix, width = 5) => (n) => `${prefix}-${String(n).padStart(width, '0')}`;
 
 /** Runs a transaction again when the database reports it overlapped another one. */
+/**
+ * True when the database says a transaction overlapped another one and should be run again.
+ * A statement sent as raw SQL reports this differently (P2010 carrying the database's own code:
+ * 40001 could not serialize, 40P01 deadlock) from one sent through the client (P2034). Both are
+ * the same event. Before Phase 8 only the second was recognised, so a document number taken at
+ * the same moment as another failed instead of waiting its turn (N-022). A third form, with no code,
+ * is recognised below (N-029).
+ */
+export function isOverlap(error) {
+  if (error?.code === 'P2034') return true;
+  if (error?.code === 'P2010' && ['40001', '40P01'].includes(String(error?.meta?.code || ''))) return true;
+  // A deadlock met by one of the client's own statements comes back with no code at all, only the
+  // database's words (N-029): an order cancelled at the moment its shipment was dispatched answered 500.
+  return error?.name === 'PrismaClientUnknownRequestError' && /code: "(40001|40P01)"/.test(String(error?.message || ''));
+}
+
 export async function retryOverlap(run, attempts = 6) {
   for (let i = 0; ; i++) {
     try {
       return await run();
     } catch (error) {
-      if (error?.code !== 'P2034' || i >= attempts - 1) throw error;
+      if (!isOverlap(error) || i >= attempts - 1) throw error;
       await new Promise((r) => setTimeout(r, 15 * (i + 1) + Math.random() * 20));
     }
   }

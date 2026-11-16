@@ -196,7 +196,7 @@ Formal accounting acceptance before production activation:
 
 ## Continuation point
 
-- Branch `claude/project-thread-25z3jd`, pull request to be opened from this branch (number in `phase-state.json`). Not merged; the owner says when.
+- Branch `claude/project-thread-25z3jd`, pull request 33. Not merged; the owner says when.
 - Database: file 16 is not applied to live. The owner applies it.
 - The ledger is off everywhere except the local QA database, where a synthetic approval is used by the tests.
 - Nothing is half-done in the code. Open work is the approvals and the handoffs above.

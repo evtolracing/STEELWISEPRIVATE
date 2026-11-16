@@ -2,7 +2,7 @@
 // Phase 9: the screens driven like a person would, in a real browser, against the QA server and a
 // database whose name contains "qa". A scenario is not passed because a page opens: each one does
 // something or reads something and checks it against the server, the database or the browser.
-//   node qa/sim/phase9-ui.cjs --app http://localhost:5199 --api http://localhost:3001 [--only 3,7] [--cat NAV]
+//   node qa/sim/phase9-ui.cjs --app http://localhost:5199 --api http://localhost:3001 [--only 3,7] [--cat NAV] [--match "text in the name"]
 // Categories: NAV navigation, layout and role access · FORM forms, dialogs, validation and actions ·
 // SALES customers, sales, quoting and order intake · STOCK purchasing, inventory and warehouse ·
 // MAKE manufacturing, scheduling and quality · SHIP shipping, billing and financial ·
@@ -17,6 +17,7 @@ const API = arg('api', 'http://localhost:3001');
 const OUT = arg('out', 'qa/results/phase9-ui.json');
 const ONLY = (arg('only', '') || '').split(',').filter(Boolean);
 const CAT = arg('cat', '');
+const MATCH = arg('match', ''); // run only scenarios whose name holds this text
 const PASSWORD = 'qa-password-1';
 
 (async () => {
@@ -92,6 +93,7 @@ const PASSWORD = 'qa-password-1';
     n += 1; const id = n;
     if (ONLY.length && !ONLY.includes(String(id))) return;
     if (CAT && CAT !== cat) return;
+    if (MATCH && !name.includes(MATCH)) return;
     const checks = []; const started = Date.now();
     const t = { check: (what, ok, detail = '') => { checks.push({ what, ok: Boolean(ok), detail: ok ? '' : String(detail).replace(/\s+/g, ' ').slice(0, 260) }); return Boolean(ok); }, na: (why) => { t.notApplicable = why; } };
     const before = contexts.length; let crashed = '';
@@ -112,7 +114,7 @@ const PASSWORD = 'qa-password-1';
   await browser.close();
   const byCat = {}; for (const r of results) { byCat[r.cat] = byCat[r.cat] || { pass: 0, fail: 0, na: 0 }; byCat[r.cat][r.status === 'PASS' ? 'pass' : r.status === 'FAIL' ? 'fail' : 'na'] += 1; }
   const tally = { scenarios: results.length, passed: results.filter((r) => r.status === 'PASS').length, failed: results.filter((r) => r.status === 'FAIL').length, notApplicable: results.filter((r) => r.status === 'NOT APPLICABLE').length, checks: results.reduce((s, r) => s + r.checks.length, 0) };
-  if (!ONLY.length && !CAT) fs.writeFileSync(OUT, JSON.stringify({ at: new Date().toISOString(), app: APP, api: API, tally, byCat, results }, null, 1));
+  if (!ONLY.length && !CAT && !MATCH) fs.writeFileSync(OUT, JSON.stringify({ at: new Date().toISOString(), app: APP, api: API, tally, byCat, results }, null, 1));
   console.log(`\nPhase 9 UI scenarios: ${tally.passed} of ${tally.scenarios} passed, ${tally.failed} failed, ${tally.notApplicable} not applicable, ${tally.checks} checks`);
   console.log(JSON.stringify(byCat));
   await prisma.$disconnect();

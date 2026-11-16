@@ -1,0 +1,206 @@
+// Phase 9.5: adds the W-series findings to findings.json and applies the Phase 9.5 notes to earlier
+// findings (phase-09-5-dispositions.json). Safe to run again: a finding already there is replaced
+// by the text below, nothing is ever removed.   node qa/tools/phase95-findings.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const FILE = path.join(root, 'qa/enterprise-excellence/findings.json');
+const reg = JSON.parse(fs.readFileSync(FILE, 'utf8'));
+const PHASE = 'Phase 9.5: financial ledger and accounting foundation';
+const RBD = 'REQUIRES BUSINESS DECISION'; const FIXED = 'VERIFIED FIXED'; const LATER = 'DEFERRED TO SPECIFIC PHASE';
+const SIM = 'qa/sim/phase95-ledger.mjs';
+
+// [id, severity, status, module, category, actual, expected, impact, statusNote, verification]
+const W = [
+  ['W-001', 'P1', RBD, 'Financial ledger', 'Accounting approval',
+    'The ledger is built and verified on test data and is switched off. The chart of accounts, the account mappings, the posting rules and sixteen accounting policies are proposals. No accountant has approved them.',
+    'An accountant approves the policies, the chart and the mappings; the owner records the approval; a dry run on a copy of live data is signed; then the books are started.',
+    'Until then nothing posts on the live system. Starting without approval would put unapproved accounting into permanent, uneditable entries.',
+    'The block is in the software: activation is refused while any account or mapping is unapproved, and needs the accountant\'s name, an approval date, a time zone and a dry run less than 7 days old. Decisions: qa/enterprise-excellence/phase-09-5-accounting-policy-decisions.md. Steps: phase-09-5-cutover-plan.md. Formal acceptance is Phase 12.',
+    `${SIM}: "Activation is refused while nothing is approved, and says exactly what is missing"; "A loaded but unapproved chart still blocks activation, account by account"; "Before activation, a sale, a payment, a receipt and a shipment post nothing"; mutations E1, E3.`],
+  ['W-002', 'P2', RBD, 'Financial ledger; stock transfers', 'Accounting policy',
+    'Whether the branches are one legal entity or several is not on record. A transfer between branches of different owning organisations is held at both ends and not posted.',
+    'The owner says how many legal entities there are; the accountant approves an intercompany rule or confirms none is needed.',
+    'Intercompany transfers stay as exceptions until decided. No intercompany revenue or balance is invented.',
+    'Policy decision 14. Owner and accountant.',
+    `${SIM}: "A transfer between branches of different owning organisations is not posted: it is held as intercompany with no approved rule".`],
+  ['W-003', 'P3', RBD, 'Financial ledger', 'Accounting policy',
+    'The books keep days. Which day an event falls on depends on the time zone chosen at activation. It is recorded then and there is no way to change it afterwards.',
+    'The owner and accountant choose the zone before activation.',
+    'A wrong choice puts late-evening events on the wrong day, and at a month end in the wrong month.',
+    'Activation refuses to run without a valid time zone. Changing it later would need an accountant\'s decision about days already posted, and is not built.',
+    `${SIM}: "Only the owner, a super administrator or the CFO can start the books; activation needs a name, a date, a time zone and a dry run"; unit tests of dayIn.`],
+  ['W-004', 'P3', RBD, 'Financial ledger', 'Accounting policy',
+    'Journal entry numbers come from a database sequence. They are unique and increasing, and a number is skipped wherever a save was rolled back.',
+    'The accountant confirms that gaps in journal numbers are acceptable, or asks for gapless numbering.',
+    'Some auditors expect an unbroken sequence. Gapless numbering would make every posting wait for the one before it.',
+    'Invoice numbers are gapless already and are not affected. Accountant.',
+    `${SIM}: "entry numbers are never used twice" in qa/sim/phase95-load.mjs; no test claims the sequence is unbroken.`],
+  ['W-005', 'P2', LATER, 'Financial ledger; cutover', 'Not verified on live-sized data',
+    'The cutover dry run and the activation were run on the QA database only. They have not been run on a copy of the live database, so the size of the opening balances, the number of items with no cost and how long business saves wait during activation are not known.',
+    'A dry run on a copy of live data, read and signed by the accountant, before activation.',
+    'Activation holds business saves while it runs. On a large database that wait is unknown.',
+    'Step 6 of phase-09-5-cutover-plan.md. Phase 12 (acceptance), with the owner, who makes the copy.',
+    'NOT VERIFIED on live-sized data. On QA: the set-up scenarios of the ledger run.'],
+  ['W-006', 'P2', RBD, 'Receiving; financial ledger', 'Missing fact',
+    'Stock can be received with no purchase order (the plain receive address and the upload). Such a receipt has no cost and no supplier, so no approved rule says what it is owed to. It is held, not posted.',
+    'The owner decides whether a receipt without a purchase order is allowed once the books are on; the accountant names the account for the other side where it is.',
+    'Each such receipt is an exception a finance user must clear by hand. On the QA data about a thousand items have no cost.',
+    'An accountant can post a held receipt again by naming the account, once the item has a cost. The rule never picks one.',
+    `${SIM}: "Stock received with no purchase order is held for the accountant: no entry, no zero value, the reason is named"; "The accountant can post a receipt with no purchase order by naming the account for the other side, once it has a cost"; "Naming an account that is not in the chart posts nothing and substitutes nothing".`],
+  ['W-007', 'P2', RBD, 'Counter stock; receiving', 'Missing feature',
+    'Stock sold by the piece at the counter has no receiving screen. Its receipt reaches the books only through the completeness check ("record what is missing"), posted by the CFO naming the other account.',
+    'A way to receive counter stock by the piece against a purchase order, or a decision that the manual path is acceptable.',
+    'Counter stock comes onto the books late and by hand.',
+    'Related to K-006. Owner.',
+    `${SIM}: the counter sale scenarios set up shelf stock through that recovery path and say so in ctx.mjs (shelfStockBooked).`],
+  ['W-008', 'P3', 'NOT APPLICABLE', 'Financial ledger', 'Deliberate rule',
+    'An account that is in the chart, in use and not approved blocks "start posting again", even when no posting rule uses it.',
+    'By design: every active account in the books carries an approval.',
+    'A finance user who adds an account while posting is stopped must have it approved, or switch it off, before posting resumes.',
+    'Deliberate. The blocker message names the account.',
+    `${SIM}: "Posting stopped and started again: business goes on while it is stopped, and what happened meanwhile is found and posted in order" (the scenario approves its own test account first).`],
+  ['W-009', 'P2', RBD, 'Financial ledger; purchasing', 'Accounting policy',
+    'A receipt credits Accounts Payable Clearing (goods received, not invoiced). Supplier invoices are not in the product, so nothing ever debits that account.',
+    'The accountant decides how the clearing account is relieved: from the accounting system by manual entry, or by building supplier invoices.',
+    'The account grows without limit and is not a true liability figure on its own.',
+    'Related to K-012 (supplier invoices not matched). Accountant.',
+    `${SIM}: "Stock received against a purchase order comes onto the books at the order's cost, against goods received not invoiced".`],
+  ['W-010', 'P2', RBD, 'Financial ledger; sales orders', 'Missing fact',
+    'An order line carries one price. Nothing marks processing (cutting) apart from material, so all line revenue posts to Product Sales Revenue and nothing posts to Processing Revenue.',
+    'The accountant says whether processing revenue must be separate; if so, order lines need a way to say which they are.',
+    'Revenue cannot be split between material and processing.',
+    'Account 4100 exists and no rule posts to it. Accountant, then a sales order change.',
+    `${SIM}: "An invoice raised at dispatch debits receivables and credits product sales for the same amount".`],
+  ['W-011', 'P2', RBD, 'Financial ledger; export', 'Not verified',
+    'The export produces one file layout whichever accounting product is chosen. No layout specific to QuickBooks or Xero was built, and no import into either was tested: no test company or current import specification was available.',
+    'The accountant names the product; its import format is read from its current documentation; a file is imported into a test company.',
+    'The file may need adapting before it loads anywhere. It says so in its second line.',
+    'Nothing is sent to any outside system. phase-09-5-accounting-export.md. Part of N-025.',
+    `${SIM}: "Export: nothing leaves without an approved account mapping, each entry is exported once, and the file defends against spreadsheet formulas". Import into QuickBooks or Xero: NOT VERIFIED.`],
+  ['W-012', 'P2', RBD, 'Counter quick sale; financial ledger', 'Missing fact',
+    'A counter sale of an item that has no stock record posts its revenue and no cost of goods, because there is no stock movement to cost.',
+    'Every item sold at the counter has a stock record, or the accountant accepts revenue without cost for those items.',
+    'Gross margin is overstated for such sales.',
+    'The same gap as J-012 and K-006 (free-text and untracked counter items). Owner.',
+    `${SIM}: "A counter sale posts the invoice, the payment and the cost of the pieces in one save" covers tracked items only.`],
+  ['W-013', 'P2', FIXED, 'Finance screen', 'Crash',
+    'On the Finance screen, changing from one report to another crashed the page: the new report\'s columns were drawn with the old report\'s rows for one frame.',
+    'Changing report shows the new report.',
+    'The reports tab was unusable after the first change.',
+    'Fixed: loaded data is kept with the address it came from and is not drawn for another address (financeShared.jsx useLoad).',
+    'qa/sim/phase95-ui.cjs scenario 7 switches through every report; it fails without the fix (seen before the fix).'],
+  ['W-014', 'P1', LATER, 'Financial ledger; database', 'Privilege',
+    'Posted entries are protected by database triggers. A database superuser, or the owner of the tables, can switch triggers off for a session (session_replication_role) or drop them. The QA reset does exactly that, on a local QA database only.',
+    'The application connects as a role that owns no ledger table and cannot disable triggers; superuser use is limited and logged.',
+    'Whoever holds that right on the live database can alter financial history without trace in the application.',
+    'Phase 10 (security). A hosting change, and the owner\'s. The QA helper refuses any database that is not local and named qa.',
+    `${SIM}: "A posted entry cannot be changed by direct SQL either: update, delete, added or moved lines and TRUNCATE are refused by the database" proves the triggers; nothing proves who can disable them on live.`],
+  ['W-015', 'P3', LATER, 'Financial ledger', 'Separation of duties',
+    'The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever.',
+    'Phase 10 confirms whether the rule may yield, or whether a second person is always required.',
+    'With one finance user, close and reopen are one person\'s decision.',
+    'Phase 10. Manual entries do not yield: a second finance user is always needed to post.',
+    `${SIM}: "Reopening a closed month needs a reason and a different person"; mutation E9.`],
+  ['W-016', 'P2', FIXED, 'Financial ledger; reports', 'Input handling',
+    'A revenue or margin report asked to group by "__proto__" or "constructor" reached an inherited property instead of being refused.',
+    'An unknown grouping is refused with 400.',
+    'A server error or a nonsense answer from a crafted address.',
+    'Fixed: the grouping must be an own key of the table.',
+    `${SIM}: "Garbage in: malformed, hostile and oversized requests are refused with a reason, never a server error, and change nothing"; mutation E12.`],
+  ['W-017', 'P2', FIXED, 'Financial ledger; posting rules', 'Input handling',
+    'Text that is not a number, given as an amount on a manual line or found as a cost, made the decimal library throw.',
+    'It is treated as not a number and refused with a reason.',
+    'A server error from a typing mistake.',
+    'Fixed: a safe parser in ledgerRules.js; an amount above the column\'s size and Infinity are refused too.',
+    'src/backend/test/ledgerRules.test.js; qa/tools/phase95-mutations.mjs unit mutations.'],
+  ['W-018', 'P3', FIXED, 'Financial ledger', 'Input handling',
+    'Recording an approval with an object where a list of codes belongs answered a server error.',
+    '400 with the reason.',
+    'A confusing error for a malformed request.',
+    'Fixed: the lists are validated.',
+    `${SIM}: "Garbage in" scenario.`],
+  ['W-019', 'P3', LATER, 'Financial ledger; audit', 'Audit coverage',
+    'Reading a report is logged with the reader. Reading the journal list and opening a single entry are not.',
+    'Phase 10 decides whether every read of financial detail is logged.',
+    'Who looked at a given entry cannot be told from the log.',
+    'Phase 10.',
+    `${SIM}: "Every change to the books is in the audit log with the person, and every report read is logged with the reader's role" covers reports and changes.`],
+  ['W-020', 'P1', LATER, 'Financial ledger; database', 'Recovery',
+    'Backup and restore of the ledger tables has not been exercised: that a restored journal still balances, keeps its triggers and its numbering, and agrees with the restored business records.',
+    'A restore test on a copy, with the reconciliation run afterwards.',
+    'An untested restore of financial records.',
+    'Phase 10.',
+    'NOT VERIFIED.'],
+  ['W-021', 'P1', FIXED, 'Invoices; financial ledger', 'Concurrency',
+    'With 16 dispatches in flight across 80 branches, 10 of 240 invoices were not raised: every invoice advances one counter row, concurrent saves collided, and those ten used up all 25 attempts. With the ledger stopped the same work raised all 240, slowly (95th percentile 1.95 s); the ledger\'s extra work in the same save was enough to tip it over.',
+    'Every dispatch raises its invoice.',
+    'A shipment that leaves with no invoice. The product records it and lists it for a person, so nothing was lost, but 4% of invoices needing a person is not acceptable at 80 branches.',
+    'Fixed: invoices of one numbering series take turns inside a server process (billing.js inTurn). The database rule is unchanged and still settles two server processes writing at once.',
+    'qa/sim/phase95-load.mjs: "every dispatch posted exactly one invoice entry and one cost-of-sale entry" failed before the fix (qa/results/phase95-load-before-fix.json: 230 of 240) and passes after (240 of 240). Comparison with the ledger stopped: qa/results/phase95-load-ledger-stopped.json.'],
+  ['W-022', 'P2', LATER, 'Invoices; hosting', 'Concurrency',
+    'The fix for W-021 works inside one server process. The live host can run several server processes at once; between processes the only guard is the database retry (25 attempts), which is what failed before.',
+    'Phase 11 tests invoicing with several server processes and settles it in the database if needed (for example by taking the counter with a lock before the save starts).',
+    'W-021 could recur on the live host under a burst of dispatches.',
+    'Phase 11 (scale). A dispatch whose invoice is not raised is still recorded and listed, as before.',
+    'NOT VERIFIED with more than one server process.'],
+  ['W-023', 'P2', LATER, 'Financial ledger', 'Scale not verified',
+    'The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year\'s volume (hundreds of thousands of entries) are not measured, and the host was not the live host.',
+    'Phase 11 measures a year\'s volume on a host like the live one.',
+    'The reconciliation reads every item and every line; its time will grow with volume.',
+    'Phase 11.',
+    'qa/results/phase95-load.json holds what was measured. Anything larger: NOT VERIFIED.'],
+  ['W-024', 'P3', FIXED, 'Financial ledger', 'Validation',
+    'A manual entry could be saved as a draft dated in a closed month. It could never be posted and blocked nothing, but it should not have been accepted.',
+    'A draft dated in a closed month is refused when it is written.',
+    'A dead draft a person would have to find and delete.',
+    'Fixed in draftEntry.',
+    `${SIM}: "Nothing can be written into a closed month: not by the screen, not by a second person, not by direct SQL".`],
+  ['W-025', 'P3', FIXED, 'Access control; financial ledger', 'Defence in depth',
+    'The 24 changing routes under /api/ledger were guarded in their route file only and had no department rule at the access gate, so the coverage check counted them as having none.',
+    'Every changing route is under a department rule.',
+    'One layer of protection instead of two.',
+    'Fixed: a rule for /api/ledger in lib/roleAccess.js. No department may change the ledger; the route file then narrows managers and leadership to the finance roles.',
+    'qa/tools/access-coverage.mjs: 0 changing routes with no rule (it exits 1 otherwise). Group 7 of the ledger scenarios passes with the rule in place.'],  ['W-026', 'P3', FIXED, 'Financial ledger', 'Error handling',
+    'On a database where file 16 has not been applied, every Finance address answered a bare server error (500).',
+    'Deploying the code before the database file is a known order of events (R-68). The screen should say what is missing.',
+    'A finance user would see an unexplained error between the code arriving and the owner applying file 16. No other part of the product was affected.',
+    'Fixed: the ledger routes recognise "the table does not exist" and answer 503 with "Database update 16 (financial ledger) has to be applied first".',
+    'Unit test "tablesMissing" in src/backend/test/ledgerRules.test.js. Tried by hand on a copy of the QA database with the ledger tables removed: the Finance addresses answered 503 with that message, and the Phase 8 scenarios passed 155 of 155 on the same copy.'],
+  ['W-027', 'P2', FIXED, 'Test suite; financial ledger', 'Regression',
+    'Two Phase 8 scenarios asserted that no ledger exists ("there is no journal, ledger, chart of accounts or accounting period table" and "there is no table for one"). With file 16 applied they failed: Phase 8 read 153 of 155 in the first full run of this phase.',
+    'A scenario states what must hold for the product, not that a table is absent.',
+    'The gate run was red for a reason that is not a fault in the product. The scenarios had recorded the gap N-025, which this phase fills.',
+    'Fixed in qa/sim/phase8-fulfillment.mjs. The first now ships a sale and checks that, with the ledger not started, the invoice writes no ledger event (and exactly one when it is started), and that no outside accounting system is connected. The second checks that a dispatch adds no debit to inventory for the item: shipping revalues nothing. Both still pass on a database without file 16.',
+    'qa/results/phase95-gate-run-1.txt shows the two failures; qa/results/phase95-gate-run-2.txt is the full run after the correction.'],
+];
+
+const today = '2026-11-16';
+for (const [id, severity, status, module, category, actual, expected, impact, statusNote, verification] of W) {
+  const row = { id, discovered: today, source: 'Phase 9.5 ledger build and scenarios', module, workflow: 'Financial ledger', severity, category, where: SIM, evidence: verification, expected, actual, cause: '', impact, dependencies: '', correction: '', requiredTests: '', phase: PHASE, status, statusNote, verification };
+  const i = reg.findings.findIndex((f) => f.id === id);
+  if (i > -1) reg.findings[i] = row; else reg.findings.push(row);
+}
+
+// Notes on earlier findings. Status is changed only where stated.
+const dispositions = {
+  'N-025': { status: RBD, statusNote: 'Phase 9.5: a double-entry ledger now exists inside the product (chart, approved mappings, immutable journal, periods, cutover, reconciliation, reports, a controlled export file). It is switched off. What remains for the owner and the accountant: approve the policies, chart and mappings (W-001), name the accounting product (W-011), and say how many legal entities there are (W-002). Nothing is posted to any outside system.', verification: 'qa/sim/phase95-ledger.mjs, 158 scenarios in seven groups; qa/enterprise-excellence/phase-09-5-report.md.' },
+  'K-012': { statusNote: 'Phase 9.5: a receipt now credits a clearing account for goods received and not invoiced. Supplier invoices are still not in the product, so nothing relieves it (W-009).' },
+  'K-007': { statusNote: 'Phase 9.5: the ledger reads each item\'s cost and never sets one. A movement of an item with no cost is held by name and never valued at zero; entering the cost posts it (phase-09-5-inventory-valuation.md).' },
+  'L-026': { statusNote: 'Phase 9.5: material and scrap are in the ledger at the source item\'s cost. Labor, machine time and overhead are not posted: no rate is on file and none was invented (policy decision 8, phase-09-5-manufacturing-costing.md).' },
+  'N-026': { statusNote: 'Phase 9.5: freight billed posts to freight revenue. No carrier cost exists to post, so freight expense is never posted to (tested).' },
+};
+const NOTE = 'Phase 9.5 notes on findings raised in earlier phases. Applied to findings.json by qa/tools/phase95-findings.mjs. A status is changed only where one is given.';
+fs.writeFileSync(path.join(root, 'qa/enterprise-excellence/phase-09-5-dispositions.json'), `${JSON.stringify({ note: NOTE, dispositions }, null, 1)}\n`);
+for (const [id, d] of Object.entries(dispositions)) {
+  const f = reg.findings.find((x) => x.id === id);
+  if (!f) { console.error(`missing ${id}`); process.exit(1); }
+  const mark = d.statusNote.slice(0, 40);
+  if (!String(f.statusNote || '').includes(mark)) f.statusNote = [f.statusNote, d.statusNote].filter(Boolean).join(' ');
+  if (d.status) f.status = d.status;
+  if (d.verification && !String(f.verification || '').includes(d.verification.slice(0, 30))) f.verification = [f.verification, d.verification].filter(Boolean).join(' ');
+}
+fs.writeFileSync(FILE, `${JSON.stringify(reg, null, 1)}\n`);
+console.log(`${W.length} W findings written; ${Object.keys(dispositions).length} earlier findings noted; ${reg.findings.length} findings in all`);

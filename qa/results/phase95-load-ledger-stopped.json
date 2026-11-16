@@ -1,0 +1,111 @@
+{
+ "ledger": "stopped (comparison run)",
+ "at": "2026-11-16T18:23:27.869Z",
+ "base": "http://localhost:3011",
+ "settings": {
+  "branches": 80,
+  "salesPerBranch": 3,
+  "requestsInFlight": 16,
+  "manualEntries": 2000
+ },
+ "machine": {
+  "cpus": 4,
+  "note": "One server process and one PostgreSQL on the same test container; not the production host."
+ },
+ "stage1": {
+  "what": "80 branches each receive two purchase-order receipts, ship and invoice 3 sales, take 3 payments, send and receive one transfer and make one stock adjustment; 16 branches work at the same moment",
+  "seconds": 15.4,
+  "entriesPosted": 0,
+  "linesPosted": 0,
+  "entriesPerSecond": 0,
+  "database": {
+   "deadlocks": 0,
+   "rolledBack": 1815,
+   "committed": 20813
+  }
+ },
+ "latencyMs": {
+  "trial balance while posting": {
+   "requests": 15,
+   "p50": 18.2,
+   "p95": 41,
+   "p99": 41,
+   "max": 41,
+   "mean": 19.8
+  },
+  "revenue by branch while posting": {
+   "requests": 15,
+   "p50": 18.1,
+   "p95": 40.2,
+   "p99": 40.2,
+   "max": 40.2,
+   "mean": 22.4
+  },
+  "receipt": {
+   "requests": 160,
+   "p50": 58,
+   "p95": 93.8,
+   "p99": 106.5,
+   "max": 107,
+   "mean": 61.6
+  },
+  "dispatch (invoice and cost of sale)": {
+   "requests": 240,
+   "p50": 264.7,
+   "p95": 1953,
+   "p99": 3513.3,
+   "max": 5324.2,
+   "mean": 545.4
+  },
+  "payment": {
+   "requests": 240,
+   "p50": 30.3,
+   "p95": 49.4,
+   "p99": 88,
+   "max": 100.7,
+   "mean": 32.5
+  },
+  "transfer sent": {
+   "requests": 80,
+   "p50": 60.5,
+   "p95": 101.6,
+   "p99": 109.7,
+   "max": 109.7,
+   "mean": 64.2
+  },
+  "transfer received": {
+   "requests": 80,
+   "p50": 50,
+   "p95": 67.2,
+   "p99": 76.5,
+   "max": 76.5,
+   "mean": 48.6
+  },
+  "stock count": {
+   "requests": 80,
+   "p50": 36.8,
+   "p95": 54.3,
+   "p99": 56.5,
+   "max": 56.5,
+   "mean": 37.5
+  }
+ },
+ "requests": {
+  "sent": 910,
+  "failed": 0,
+  "sentAgainAfterBusyAnswer": {},
+  "failures": []
+ },
+ "expected": {
+  "receipts": 160,
+  "dispatches": 240,
+  "payments": 240,
+  "transfersOut": 80,
+  "transfersIn": 80,
+  "counts": 80,
+  "manual": 0,
+  "salesValue": 100800,
+  "paidValue": 100800
+ },
+ "invoicesNotRaised": 0
+}

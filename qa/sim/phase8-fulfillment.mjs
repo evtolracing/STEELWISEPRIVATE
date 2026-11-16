@@ -1114,14 +1114,24 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
     ok('where the customer has a subscription, exactly one event is queued for the invoice; with none, none is', subs ? rows.length === 1 : rows.length === 0, `${subs} subscriptions, ${rows.length} events`);
     ok('nothing is sent to the customer by email: the code that raises invoices has no mail call', !/sendMail|nodemailer|sendgrid/i.test(fs.readFileSync('src/backend/src/services/billing.js', 'utf8')));
   });
-  await scenario(G4, 'there is no accounting system connected: nothing is posted to a ledger', async (ok) => {
+  await scenario(G4, 'no outside accounting system is connected, and the product\'s own ledger posts nothing until it is started', async (ok) => {
+    // Until Phase 9.5 this scenario recorded that no ledger existed (N-025). The product now has its own ledger (database file 16),
+    // which stays off until an accountant's approval is on file. The scenario holds on a database with or without file 16.
     const tables = (await prisma.$queryRawUnsafe(`select table_name from information_schema.tables where table_schema='public' and table_name ~* 'journal|ledger|glaccount|chartofaccount|accountingperiod|glposting'`)).map((t) => t.table_name);
-    ok('there is no journal, ledger, chart of accounts or accounting period table', tables.length === 0, tables.join());
+    const started = (await prisma.$queryRawUnsafe(`select value from "AppSetting" where key = 'ledger.activation'`).catch(() => []))[0];
+    const active = Boolean(started && JSON.parse(typeof started.value === 'string' ? started.value : JSON.stringify(started.value)).active);
+    const r = await shipped(100);
+    if (!tables.length) ok('this database has no ledger tables (file 16 not applied): the sale is invoiced all the same', Boolean(r.invoice && r.invoice.id));
+    else {
+      const events = await prisma.$queryRawUnsafe(`select status from "LedgerEvent" where "sourceType" = 'Invoice' and "sourceId" = $1`, r.invoice.id);
+      if (active) ok('the ledger has been started: the invoice has exactly one ledger event', events.length === 1, JSON.stringify(events));
+      else ok('the ledger has not been started: the invoice wrote no ledger event and no journal entry', events.length === 0, JSON.stringify(events));
+    }
     ok('no accounting connector is installed', !/quickbooks|intuit|xero|netsuite|sage|node-quickbooks/i.test(fs.readFileSync('src/backend/package.json', 'utf8')));
     const rep = await A.get('/api/admin/integrations', 'admin');
     const names = JSON.stringify(rep.body?.integrations || []);
     ok('the integrations report lists no accounting system', rep.status === 200 && !/quickbooks|xero|netsuite|\bsage\b|general ledger/i.test(names), (names.match(/"name":"[^"]+"/g) || []).join(' ').slice(0, 400));
-    ok('GL posting, period close, and sync retries are therefore NOT APPLICABLE; no account mapping was invented', true);
+    ok('nothing is sent to an outside accounting system: the ledger code makes no outbound call of any kind', !/\bfetch\(|axios|https?\.request|node:https?|nodemailer/.test(['src/backend/src/services/ledger.js', 'src/backend/src/services/ledgerReports.js', 'src/backend/src/services/ledgerCutover.js', 'src/backend/src/routes/ledger.js', 'src/backend/src/lib/ledgerRules.js'].map((f) => (fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : '')).join('')));
   }, NA);
   await scenario(G4, 'no card or bank payment is processed: a payment is a record a person types', async (ok) => {
     const cols = (await prisma.$queryRawUnsafe(`select table_name || '.' || column_name as c from information_schema.columns where table_schema='public' and column_name ~* 'cardnumber|cvv|cvc|pan$|routingnumber|bankaccount|stripe|paymenttoken'`)).map((x) => x.c);
@@ -1179,11 +1189,17 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
   });
   await scenario(G5, 'shipping does not change the value on the stock item', async (ok) => {
     const c = await B.received({ weightLb: 1000 }); await setCost(c, 0.37);
+    const hasJournal = (await prisma.$queryRawUnsafe(`select count(*)::int as n from information_schema.tables where table_schema='public' and table_name = 'JournalLine'`))[0].n === 1;
+    const debitsToStock = async () => (hasJournal ? (await prisma.$queryRawUnsafe(`select count(*)::int as n from "JournalLine" l join "LedgerAccount" a on a.id = l."accountId" where l."coilId" = $1 and l.debit > 0 and a.code like '12%'`, c))[0].n : 0);
+    const debitsBefore = await debitsToStock();
     const o = await B.order([B.line(400)]); await B.reserve(o, o.lines[0], c, 400); const s = await newShipment(o, [[o.lines[0], 400]]); await B.dispatch(s.body);
     const coil = await prisma.coil.findUnique({ where: { id: c } }); const inv = await stock(c);
     ok('the item still costs 0.37 a pound after 400 of it shipped', num(coil.unitCost) === 0.37);
     ok('only the quantity on hand moved: 600 left', num(inv.qtyOnHand) === 600);
-    ok('no revaluation, write-up or cost-of-goods entry was made anywhere: there is no table for one', (await prisma.$queryRawUnsafe(`select count(*)::int as n from information_schema.tables where table_schema='public' and table_name ~* 'valuation|cogs|costlayer|journal'`))[0].n === 0);
+    // Until Phase 9.5 this check was "there is no table for one". The ledger's journal now exists; what must hold is that
+    // shipping revalues nothing: dispatch adds no debit to inventory for the item (a relief of stock is a credit).
+    const writeUps = (await debitsToStock()) - debitsBefore;
+    ok('no revaluation or write-up of the item was made anywhere', writeUps === 0, `${writeUps} debit lines to inventory for the item`);
   });
   await scenario(G5, 'when a stock item has no cost on file, the margin is not shown and the gap is named', async (ok) => {
     const r = await shipped(300);

@@ -1,8 +1,8 @@
 # Findings register
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 3081208. Do not edit by hand: change the source and rerun.
 
-Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.
+Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register; G to N and V = Phases 3 to 9; W = Phase 9.5 financial ledger. The older registers in `qa/` are kept as history.
 
 Severity: P0 critical security, financial integrity, data corruption or outage risk. P1 essential workflow failure or significant operational risk. P2 functional, architectural, performance or maintainability deficiency. P3 minor.
 
@@ -11,20 +11,20 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 108 | 15 |
-| P2 | 156 | 44 |
-| P3 | 103 | 34 |
-| Total | 388 | 96 |
+| P1 | 112 | 18 |
+| P2 | 170 | 54 |
+| P3 | 112 | 38 |
+| Total | 415 | 113 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 291 |
-| DEFERRED TO SPECIFIC PHASE | 60 |
-| REQUIRES BUSINESS DECISION | 21 |
+| VERIFIED FIXED | 300 |
+| DEFERRED TO SPECIFIC PHASE | 67 |
+| REQUIRES BUSINESS DECISION | 31 |
 | IN PROGRESS | 6 |
 | ACCEPTED RISK WITH APPROVAL | 5 |
 | BLOCKED | 3 |
-| NOT APPLICABLE | 1 |
+| NOT APPLICABLE | 2 |
 | FIXED — NOT VERIFIED | 1 |
 
 ## Open findings, most severe first
@@ -47,6 +47,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | L-026 | P1 | IN PROGRESS | Production costing | No production cost exists. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | S-010 | P1 | ACCEPTED RISK WITH APPROVAL | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
+| W-001 | P1 | REQUIRES BUSINESS DECISION | Financial ledger | The ledger is built and verified on test data and is switched off. The chart of accounts, the account mappings, the posting rules and sixteen accounting policies are proposals. No accountant has approved them. | Phase 9.5: financial ledger and accounting foundation |
+| W-014 | P1 | DEFERRED TO SPECIFIC PHASE | Financial ledger; database | Posted entries are protected by database triggers. A database superuser, or the owner of the tables, can switch triggers off for a session (session_replication_role) or drop them. The QA reset does exactly that, on a loc | Phase 9.5: financial ledger and accounting foundation |
+| W-020 | P1 | DEFERRED TO SPECIFIC PHASE | Financial ledger; database | Backup and restore of the ledger tables has not been exercised: that a restored journal still balances, keeps its triggers and its numbering, and agrees with the restored business records. | Phase 9.5: financial ledger and accounting foundation |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
 | X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
 | B-012 | P2 | DEFERRED TO SPECIFIC PHASE | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
@@ -91,6 +94,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | V-027 | P2 | DEFERRED TO SPECIFIC PHASE | Order board, production board, schedule | Grows with the data. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-028 | P2 | DEFERRED TO SPECIFIC PHASE | Dispatch API | Readable across branches by asking. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-037 | P2 | DEFERRED TO SPECIFIC PHASE | Dashboards | Verified for the home dashboard's recent orders, the quality station counts, what customers owe by age and the time report. Not for the five dashboards named. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| W-002 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; stock transfers | Whether the branches are one legal entity or several is not on record. A transfer between branches of different owning organisations is held at both ends and not posted. | Phase 9.5: financial ledger and accounting foundation |
+| W-005 | P2 | DEFERRED TO SPECIFIC PHASE | Financial ledger; cutover | The cutover dry run and the activation were run on the QA database only. They have not been run on a copy of the live database, so the size of the opening balances, the number of items with no cost and how long business  | Phase 9.5: financial ledger and accounting foundation |
+| W-006 | P2 | REQUIRES BUSINESS DECISION | Receiving; financial ledger | Stock can be received with no purchase order (the plain receive address and the upload). Such a receipt has no cost and no supplier, so no approved rule says what it is owed to. It is held, not posted. | Phase 9.5: financial ledger and accounting foundation |
+| W-007 | P2 | REQUIRES BUSINESS DECISION | Counter stock; receiving | Stock sold by the piece at the counter has no receiving screen. Its receipt reaches the books only through the completeness check ("record what is missing"), posted by the CFO naming the other account. | Phase 9.5: financial ledger and accounting foundation |
+| W-009 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; purchasing | A receipt credits Accounts Payable Clearing (goods received, not invoiced). Supplier invoices are not in the product, so nothing ever debits that account. | Phase 9.5: financial ledger and accounting foundation |
+| W-010 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; sales orders | An order line carries one price. Nothing marks processing (cutting) apart from material, so all line revenue posts to Product Sales Revenue and nothing posts to Processing Revenue. | Phase 9.5: financial ledger and accounting foundation |
+| W-011 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; export | The export produces one file layout whichever accounting product is chosen. No layout specific to QuickBooks or Xero was built, and no import into either was tested: no test company or current import specification was av | Phase 9.5: financial ledger and accounting foundation |
+| W-012 | P2 | REQUIRES BUSINESS DECISION | Counter quick sale; financial ledger | A counter sale of an item that has no stock record posts its revenue and no cost of goods, because there is no stock movement to cost. | Phase 9.5: financial ledger and accounting foundation |
+| W-022 | P2 | DEFERRED TO SPECIFIC PHASE | Invoices; hosting | The fix for W-021 works inside one server process. The live host can run several server processes at once; between processes the only guard is the database retry (25 attempts), which is what failed before. | Phase 9.5: financial ledger and accounting foundation |
+| W-023 | P2 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries | Phase 9.5: financial ledger and accounting foundation |
 | X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
 | B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
@@ -127,6 +140,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | V-031 | P3 | ACCEPTED RISK WITH APPROVAL | Application shell | A fixed list. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-035 | P3 | DEFERRED TO SPECIFIC PHASE | Design system | A third of the files carry their own. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-036 | P3 | DEFERRED TO SPECIFIC PHASE | Tables and dialogs | Tables are built by hand per screen, so sorting, paging, an empty state and keyboard row opening exist on some and not on others. Phase 9 made the behaviours that matter for access the same everywhere (names, headings, k | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| W-003 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | The books keep days. Which day an event falls on depends on the time zone chosen at activation. It is recorded then and there is no way to change it afterwards. | Phase 9.5: financial ledger and accounting foundation |
+| W-004 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | Journal entry numbers come from a database sequence. They are unique and increasing, and a number is skipped wherever a save was rolled back. | Phase 9.5: financial ledger and accounting foundation |
+| W-015 | P3 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever. | Phase 9.5: financial ledger and accounting foundation |
+| W-019 | P3 | DEFERRED TO SPECIFIC PHASE | Financial ledger; audit | Reading a report is logged with the reader. Reading the journal list and opening a single entry are not. | Phase 9.5: financial ledger and accounting foundation |
 
 ## Every finding in full
 
@@ -3380,7 +3397,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: the instruction forbids changing costing rules without authorisation. Recommended: actual cost per item from the purchase order line at receipt (steel is bought and traced by the item), landed cost added when freight is known, pieces inherit cost by weight.
 - **Required tests:** Per the decision: receipt, cut, scrap, transfer and shipment each carry the value; the sum of item values equals the ledger.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): actual cost per item. A receipt against a purchase order line now records the item's cost per stocked unit from the line's price (per hundredweight, pound or ton for stock kept in pounds; each for stock kept in pieces). Pieces cut by a work order and pieces received from a parent carry the parent's cost. A price that cannot be turned into a unit cost (for example per foot for stock kept in pounds) leaves the cost empty. Still open: stock already on hand has no cost unless typed; landed cost (freight, duty) is not worked out; stock movements carry no value, so scrap, shortage and count variance have no amount; Inventory.avgCost is still never written; there is no valuation report. These belong to Phase 8 (accounting). Phase 8: shipment movements now carry the item's unit cost (N-017). A valuation report and a ledger are not built (N-025).
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): actual cost per item. A receipt against a purchase order line now records the item's cost per stocked unit from the line's price (per hundredweight, pound or ton for stock kept in pounds; each for stock kept in pieces). Pieces cut by a work order and pieces received from a parent carry the parent's cost. A price that cannot be turned into a unit cost (for example per foot for stock kept in pounds) leaves the cost empty. Still open: stock already on hand has no cost unless typed; landed cost (freight, duty) is not worked out; stock movements carry no value, so scrap, shortage and count variance have no amount; Inventory.avgCost is still never written; there is no valuation report. These belong to Phase 8 (accounting). Phase 8: shipment movements now carry the item's unit cost (N-017). A valuation report and a ledger are not built (N-025). Phase 9.5: the ledger reads each item's cost and never sets one. A movement of an item with no cost is held by name and never valued at zero; entering the cost posts it (phase-09-5-inventory-valuation.md).
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "an item's cost is taken from its purchase order line when it is received, and the pieces cut from it carry the same cost per pound"; qa/sim/phase6-inventory.mjs "receiving records the cost from the purchase order line". Mutation: 2 rules removed in turn, group 6 fails each time.
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
@@ -3471,6 +3488,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** An invoice for more than was received is flagged.
 - **Deferred: verification:** A scenario that receives short and invoices in full.
 - **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
+- **Status note:** Phase 9.5: a receipt now credits a clearing account for goods received and not invoiced. Supplier invoices are still not in the product, so nothing relieves it (W-009).
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
 ### K-013 · P3 · BLOCKED
@@ -3979,7 +3997,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made: the instruction forbids inventing cost rates or changing costing, and K-007 is still the owner's question.
 - **Required tests:** Per the decision.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): built as decided. A job's cost is the material its coil work orders used at actual cost per pound, plus the time clocked on its steps at the labor rate the owner enters for each kind of work center. No overhead. Shown to managers, the inventory manager and buyers only. Where a rate or a material cost is not on file the figure is left out and named as missing; nothing is assumed. Still to do by the owner: enter a labor rate for each kind of work center. Still not built: overhead, machine rates separate from labor, outside processing cost, and a cost report across jobs. Needs database update 13. Phase 8: the cost of what is sold is now fixed on the stock movement when it leaves (database file 14), and an order shows its cost and margin from actual item cost, job labor and scrap (N-017). Still not built: posting to a ledger, overhead, freight cost and stock valuation reports; these wait on the owner (N-025).
+- **Status note:** Owner's decision 9, 2026-11-15: (1) Cost: actual cost per item, taken from the purchase order line at receipt; pieces cut from an item carry its cost per pound; a job costs the material its work orders used plus the time on its steps at a rate the owner enters per kind of work center; no overhead; no rate is invented. (2) A coil work order can be raised for a job, and the job shows material used, made, scrap and yield. (3) Sending a job for rework adds a rework step that is started and clocked like any step. (4) Every job passes inspection before packing unless its routing is marked "no inspection". (5) A certification is required where the kind of work center is marked; one operator on two steps at once only where marked; clocks running longer than 12 hours are listed for the supervisor. (6) Each kind of work center can carry its own inspection checklist, entered by the owner; the standard list is used until then. Owner decision 9 (2026-11-15): built as decided. A job's cost is the material its coil work orders used at actual cost per pound, plus the time clocked on its steps at the labor rate the owner enters for each kind of work center. No overhead. Shown to managers, the inventory manager and buyers only. Where a rate or a material cost is not on file the figure is left out and named as missing; nothing is assumed. Still to do by the owner: enter a labor rate for each kind of work center. Still not built: overhead, machine rates separate from labor, outside processing cost, and a cost report across jobs. Needs database update 13. Phase 8: the cost of what is sold is now fixed on the stock movement when it leaves (database file 14), and an order shows its cost and margin from actual item cost, job labor and scrap (N-017). Still not built: posting to a ledger, overhead, freight cost and stock valuation reports; these wait on the owner (N-025). Phase 9.5: material and scrap are in the ledger at the source item's cost. Labor, machine time and overhead are not posted: no rate is on file and none was invented (policy decision 8, phase-09-5-manufacturing-costing.md).
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job's cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead"; src/backend/test/phase7Rules.test.js (unit cost from price, hours, adding up). Mutation: 3 rules removed in turn, group 6 fails each time.
 - **First recorded in:** Phase 7 manufacturing audit
 
@@ -4807,7 +4825,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not made. Built this phase: cost of sale per order (N-017) and receivables by age.
 - **Required tests:** None until decided.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** The owner decides: which accounting system, if any, the product posts to; the chart of accounts; when cost of goods is recognised (at shipment, at invoice or at delivery); whether overhead and freight cost are part of cost; the period-close rule. Nothing was assumed. Owner, 2026-11-15: asked for advice on an internal basic ledger for reports and AI queries, to connect to outside accounting software later, and said not to build yet. Advice given. Three answers are needed before a build: when cost of goods counts (recommended: at shipment), the chart of accounts, and the start date.
+- **Status note:** The owner decides: which accounting system, if any, the product posts to; the chart of accounts; when cost of goods is recognised (at shipment, at invoice or at delivery); whether overhead and freight cost are part of cost; the period-close rule. Nothing was assumed. Owner, 2026-11-15: asked for advice on an internal basic ledger for reports and AI queries, to connect to outside accounting software later, and said not to build yet. Advice given. Three answers are needed before a build: when cost of goods counts (recommended: at shipment), the chart of accounts, and the start date. Phase 9.5: a double-entry ledger now exists inside the product (chart, approved mappings, immutable journal, periods, cutover, reconciliation, reports, a controlled export file). It is switched off. What remains for the owner and the accountant: approve the policies, chart and mappings (W-001), name the accounting product (W-011), and say how many legal entities there are (W-002). Nothing is posted to any outside system.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs, 158 scenarios in seven groups; qa/enterprise-excellence/phase-09-5-report.md.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
 ### N-026 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -4830,7 +4849,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** None yet.
 - **Required tests:** None until a carrier is chosen.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10: tracking numbers typed by dispatch for now; a carrier is connected when a contract exists.
+- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10: tracking numbers typed by dispatch for now; a carrier is connected when a contract exists. Phase 9.5: freight billed posts to freight revenue. No carrier cost exists to post, so freight expense is never posted to (tested).
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
 ### N-027 · P2 · VERIFIED FIXED
@@ -6734,4 +6753,436 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Enterprise experience
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
+
+### W-001 · P1 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Accounting approval
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Activation is refused while nothing is approved, and says exactly what is missing"; "A loaded but unapproved chart still blocks activation, account by account"; "Before activation, a sale, a payment, a receipt and a shipment post nothing"; mutations E1, E3.
+- **Expected:** An accountant approves the policies, the chart and the mappings; the owner records the approval; a dry run on a copy of live data is signed; then the books are started.
+- **Actual:** The ledger is built and verified on test data and is switched off. The chart of accounts, the account mappings, the posting rules and sixteen accounting policies are proposals. No accountant has approved them.
+- **Operational impact:** Until then nothing posts on the live system. Starting without approval would put unapproved accounting into permanent, uneditable entries.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** The block is in the software: activation is refused while any account or mapping is unapproved, and needs the accountant's name, an approval date, a time zone and a dry run less than 7 days old. Decisions: qa/enterprise-excellence/phase-09-5-accounting-policy-decisions.md. Steps: phase-09-5-cutover-plan.md. Formal acceptance is Phase 12.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Activation is refused while nothing is approved, and says exactly what is missing"; "A loaded but unapproved chart still blocks activation, account by account"; "Before activation, a sale, a payment, a receipt and a shipment post nothing"; mutations E1, E3.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-002 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; stock transfers
+- **Workflow:** Financial ledger
+- **Category:** Accounting policy
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "A transfer between branches of different owning organisations is not posted: it is held as intercompany with no approved rule".
+- **Expected:** The owner says how many legal entities there are; the accountant approves an intercompany rule or confirms none is needed.
+- **Actual:** Whether the branches are one legal entity or several is not on record. A transfer between branches of different owning organisations is held at both ends and not posted.
+- **Operational impact:** Intercompany transfers stay as exceptions until decided. No intercompany revenue or balance is invented.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Policy decision 14. Owner and accountant.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "A transfer between branches of different owning organisations is not posted: it is held as intercompany with no approved rule".
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-003 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Accounting policy
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Only the owner, a super administrator or the CFO can start the books; activation needs a name, a date, a time zone and a dry run"; unit tests of dayIn.
+- **Expected:** The owner and accountant choose the zone before activation.
+- **Actual:** The books keep days. Which day an event falls on depends on the time zone chosen at activation. It is recorded then and there is no way to change it afterwards.
+- **Operational impact:** A wrong choice puts late-evening events on the wrong day, and at a month end in the wrong month.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Activation refuses to run without a valid time zone. Changing it later would need an accountant's decision about days already posted, and is not built.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Only the owner, a super administrator or the CFO can start the books; activation needs a name, a date, a time zone and a dry run"; unit tests of dayIn.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-004 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Accounting policy
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "entry numbers are never used twice" in qa/sim/phase95-load.mjs; no test claims the sequence is unbroken.
+- **Expected:** The accountant confirms that gaps in journal numbers are acceptable, or asks for gapless numbering.
+- **Actual:** Journal entry numbers come from a database sequence. They are unique and increasing, and a number is skipped wherever a save was rolled back.
+- **Operational impact:** Some auditors expect an unbroken sequence. Gapless numbering would make every posting wait for the one before it.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Invoice numbers are gapless already and are not affected. Accountant.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "entry numbers are never used twice" in qa/sim/phase95-load.mjs; no test claims the sequence is unbroken.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-005 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; cutover
+- **Workflow:** Financial ledger
+- **Category:** Not verified on live-sized data
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** NOT VERIFIED on live-sized data. On QA: the set-up scenarios of the ledger run.
+- **Expected:** A dry run on a copy of live data, read and signed by the accountant, before activation.
+- **Actual:** The cutover dry run and the activation were run on the QA database only. They have not been run on a copy of the live database, so the size of the opening balances, the number of items with no cost and how long business saves wait during activation are not known.
+- **Operational impact:** Activation holds business saves while it runs. On a large database that wait is unknown.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Step 6 of phase-09-5-cutover-plan.md. Phase 12 (acceptance), with the owner, who makes the copy.
+- **Verification evidence:** NOT VERIFIED on live-sized data. On QA: the set-up scenarios of the ledger run.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-006 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Receiving; financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Missing fact
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Stock received with no purchase order is held for the accountant: no entry, no zero value, the reason is named"; "The accountant can post a receipt with no purchase order by naming the account for the other side, once it has a cost"; "Naming an account that is not in the chart posts nothing and substitutes nothing".
+- **Expected:** The owner decides whether a receipt without a purchase order is allowed once the books are on; the accountant names the account for the other side where it is.
+- **Actual:** Stock can be received with no purchase order (the plain receive address and the upload). Such a receipt has no cost and no supplier, so no approved rule says what it is owed to. It is held, not posted.
+- **Operational impact:** Each such receipt is an exception a finance user must clear by hand. On the QA data about a thousand items have no cost.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** An accountant can post a held receipt again by naming the account, once the item has a cost. The rule never picks one.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Stock received with no purchase order is held for the accountant: no entry, no zero value, the reason is named"; "The accountant can post a receipt with no purchase order by naming the account for the other side, once it has a cost"; "Naming an account that is not in the chart posts nothing and substitutes nothing".
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-007 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Counter stock; receiving
+- **Workflow:** Financial ledger
+- **Category:** Missing feature
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: the counter sale scenarios set up shelf stock through that recovery path and say so in ctx.mjs (shelfStockBooked).
+- **Expected:** A way to receive counter stock by the piece against a purchase order, or a decision that the manual path is acceptable.
+- **Actual:** Stock sold by the piece at the counter has no receiving screen. Its receipt reaches the books only through the completeness check ("record what is missing"), posted by the CFO naming the other account.
+- **Operational impact:** Counter stock comes onto the books late and by hand.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Related to K-006. Owner.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: the counter sale scenarios set up shelf stock through that recovery path and say so in ctx.mjs (shelfStockBooked).
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-008 · P3 · NOT APPLICABLE
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Deliberate rule
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Posting stopped and started again: business goes on while it is stopped, and what happened meanwhile is found and posted in order" (the scenario approves its own test account first).
+- **Expected:** By design: every active account in the books carries an approval.
+- **Actual:** An account that is in the chart, in use and not approved blocks "start posting again", even when no posting rule uses it.
+- **Operational impact:** A finance user who adds an account while posting is stopped must have it approved, or switch it off, before posting resumes.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Deliberate. The blocker message names the account.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Posting stopped and started again: business goes on while it is stopped, and what happened meanwhile is found and posted in order" (the scenario approves its own test account first).
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-009 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; purchasing
+- **Workflow:** Financial ledger
+- **Category:** Accounting policy
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Stock received against a purchase order comes onto the books at the order's cost, against goods received not invoiced".
+- **Expected:** The accountant decides how the clearing account is relieved: from the accounting system by manual entry, or by building supplier invoices.
+- **Actual:** A receipt credits Accounts Payable Clearing (goods received, not invoiced). Supplier invoices are not in the product, so nothing ever debits that account.
+- **Operational impact:** The account grows without limit and is not a true liability figure on its own.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Related to K-012 (supplier invoices not matched). Accountant.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Stock received against a purchase order comes onto the books at the order's cost, against goods received not invoiced".
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-010 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; sales orders
+- **Workflow:** Financial ledger
+- **Category:** Missing fact
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "An invoice raised at dispatch debits receivables and credits product sales for the same amount".
+- **Expected:** The accountant says whether processing revenue must be separate; if so, order lines need a way to say which they are.
+- **Actual:** An order line carries one price. Nothing marks processing (cutting) apart from material, so all line revenue posts to Product Sales Revenue and nothing posts to Processing Revenue.
+- **Operational impact:** Revenue cannot be split between material and processing.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Account 4100 exists and no rule posts to it. Accountant, then a sales order change.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "An invoice raised at dispatch debits receivables and credits product sales for the same amount".
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-011 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; export
+- **Workflow:** Financial ledger
+- **Category:** Not verified
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Export: nothing leaves without an approved account mapping, each entry is exported once, and the file defends against spreadsheet formulas". Import into QuickBooks or Xero: NOT VERIFIED.
+- **Expected:** The accountant names the product; its import format is read from its current documentation; a file is imported into a test company.
+- **Actual:** The export produces one file layout whichever accounting product is chosen. No layout specific to QuickBooks or Xero was built, and no import into either was tested: no test company or current import specification was available.
+- **Operational impact:** The file may need adapting before it loads anywhere. It says so in its second line.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Nothing is sent to any outside system. phase-09-5-accounting-export.md. Part of N-025.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Export: nothing leaves without an approved account mapping, each entry is exported once, and the file defends against spreadsheet formulas". Import into QuickBooks or Xero: NOT VERIFIED.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-012 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-16
+- **Module:** Counter quick sale; financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Missing fact
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "A counter sale posts the invoice, the payment and the cost of the pieces in one save" covers tracked items only.
+- **Expected:** Every item sold at the counter has a stock record, or the accountant accepts revenue without cost for those items.
+- **Actual:** A counter sale of an item that has no stock record posts its revenue and no cost of goods, because there is no stock movement to cost.
+- **Operational impact:** Gross margin is overstated for such sales.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** The same gap as J-012 and K-006 (free-text and untracked counter items). Owner.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "A counter sale posts the invoice, the payment and the cost of the pieces in one save" covers tracked items only.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-013 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Finance screen
+- **Workflow:** Financial ledger
+- **Category:** Crash
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ui.cjs scenario 7 switches through every report; it fails without the fix (seen before the fix).
+- **Expected:** Changing report shows the new report.
+- **Actual:** On the Finance screen, changing from one report to another crashed the page: the new report's columns were drawn with the old report's rows for one frame.
+- **Operational impact:** The reports tab was unusable after the first change.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed: loaded data is kept with the address it came from and is not drawn for another address (financeShared.jsx useLoad).
+- **Verification evidence:** qa/sim/phase95-ui.cjs scenario 7 switches through every report; it fails without the fix (seen before the fix).
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-014 · P1 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; database
+- **Workflow:** Financial ledger
+- **Category:** Privilege
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "A posted entry cannot be changed by direct SQL either: update, delete, added or moved lines and TRUNCATE are refused by the database" proves the triggers; nothing proves who can disable them on live.
+- **Expected:** The application connects as a role that owns no ledger table and cannot disable triggers; superuser use is limited and logged.
+- **Actual:** Posted entries are protected by database triggers. A database superuser, or the owner of the tables, can switch triggers off for a session (session_replication_role) or drop them. The QA reset does exactly that, on a local QA database only.
+- **Operational impact:** Whoever holds that right on the live database can alter financial history without trace in the application.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Phase 10 (security). A hosting change, and the owner's. The QA helper refuses any database that is not local and named qa.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "A posted entry cannot be changed by direct SQL either: update, delete, added or moved lines and TRUNCATE are refused by the database" proves the triggers; nothing proves who can disable them on live.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-015 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Separation of duties
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Reopening a closed month needs a reason and a different person"; mutation E9.
+- **Expected:** Phase 10 confirms whether the rule may yield, or whether a second person is always required.
+- **Actual:** The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever.
+- **Operational impact:** With one finance user, close and reopen are one person's decision.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Phase 10. Manual entries do not yield: a second finance user is always needed to post.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Reopening a closed month needs a reason and a different person"; mutation E9.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-016 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; reports
+- **Workflow:** Financial ledger
+- **Category:** Input handling
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Garbage in: malformed, hostile and oversized requests are refused with a reason, never a server error, and change nothing"; mutation E12.
+- **Expected:** An unknown grouping is refused with 400.
+- **Actual:** A revenue or margin report asked to group by "__proto__" or "constructor" reached an inherited property instead of being refused.
+- **Operational impact:** A server error or a nonsense answer from a crafted address.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed: the grouping must be an own key of the table.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Garbage in: malformed, hostile and oversized requests are refused with a reason, never a server error, and change nothing"; mutation E12.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-017 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; posting rules
+- **Workflow:** Financial ledger
+- **Category:** Input handling
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** src/backend/test/ledgerRules.test.js; qa/tools/phase95-mutations.mjs unit mutations.
+- **Expected:** It is treated as not a number and refused with a reason.
+- **Actual:** Text that is not a number, given as an amount on a manual line or found as a cost, made the decimal library throw.
+- **Operational impact:** A server error from a typing mistake.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed: a safe parser in ledgerRules.js; an amount above the column's size and Infinity are refused too.
+- **Verification evidence:** src/backend/test/ledgerRules.test.js; qa/tools/phase95-mutations.mjs unit mutations.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-018 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Input handling
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Garbage in" scenario.
+- **Expected:** 400 with the reason.
+- **Actual:** Recording an approval with an object where a list of codes belongs answered a server error.
+- **Operational impact:** A confusing error for a malformed request.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed: the lists are validated.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Garbage in" scenario.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-019 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; audit
+- **Workflow:** Financial ledger
+- **Category:** Audit coverage
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Every change to the books is in the audit log with the person, and every report read is logged with the reader's role" covers reports and changes.
+- **Expected:** Phase 10 decides whether every read of financial detail is logged.
+- **Actual:** Reading a report is logged with the reader. Reading the journal list and opening a single entry are not.
+- **Operational impact:** Who looked at a given entry cannot be told from the log.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Phase 10.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Every change to the books is in the audit log with the person, and every report read is logged with the reader's role" covers reports and changes.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-020 · P1 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger; database
+- **Workflow:** Financial ledger
+- **Category:** Recovery
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** NOT VERIFIED.
+- **Expected:** A restore test on a copy, with the reconciliation run afterwards.
+- **Actual:** Backup and restore of the ledger tables has not been exercised: that a restored journal still balances, keeps its triggers and its numbering, and agrees with the restored business records.
+- **Operational impact:** An untested restore of financial records.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Phase 10.
+- **Verification evidence:** NOT VERIFIED.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-021 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Invoices; financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Concurrency
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-load.mjs: "every dispatch posted exactly one invoice entry and one cost-of-sale entry" failed before the fix (qa/results/phase95-load-before-fix.json: 230 of 240) and passes after (240 of 240). Comparison with the ledger stopped: qa/results/phase95-load-ledger-stopped.json.
+- **Expected:** Every dispatch raises its invoice.
+- **Actual:** With 16 dispatches in flight across 80 branches, 10 of 240 invoices were not raised: every invoice advances one counter row, concurrent saves collided, and those ten used up all 25 attempts. With the ledger stopped the same work raised all 240, slowly (95th percentile 1.95 s); the ledger's extra work in the same save was enough to tip it over.
+- **Operational impact:** A shipment that leaves with no invoice. The product records it and lists it for a person, so nothing was lost, but 4% of invoices needing a person is not acceptable at 80 branches.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed: invoices of one numbering series take turns inside a server process (billing.js inTurn). The database rule is unchanged and still settles two server processes writing at once.
+- **Verification evidence:** qa/sim/phase95-load.mjs: "every dispatch posted exactly one invoice entry and one cost-of-sale entry" failed before the fix (qa/results/phase95-load-before-fix.json: 230 of 240) and passes after (240 of 240). Comparison with the ledger stopped: qa/results/phase95-load-ledger-stopped.json.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-022 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Invoices; hosting
+- **Workflow:** Financial ledger
+- **Category:** Concurrency
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** NOT VERIFIED with more than one server process.
+- **Expected:** Phase 11 tests invoicing with several server processes and settles it in the database if needed (for example by taking the counter with a lock before the save starts).
+- **Actual:** The fix for W-021 works inside one server process. The live host can run several server processes at once; between processes the only guard is the database retry (25 attempts), which is what failed before.
+- **Operational impact:** W-021 could recur on the live host under a burst of dispatches.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Phase 11 (scale). A dispatch whose invoice is not raised is still recorded and listed, as before.
+- **Verification evidence:** NOT VERIFIED with more than one server process.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-023 · P2 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Scale not verified
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/results/phase95-load.json holds what was measured. Anything larger: NOT VERIFIED.
+- **Expected:** Phase 11 measures a year's volume on a host like the live one.
+- **Actual:** The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries) are not measured, and the host was not the live host.
+- **Operational impact:** The reconciliation reads every item and every line; its time will grow with volume.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Phase 11.
+- **Verification evidence:** qa/results/phase95-load.json holds what was measured. Anything larger: NOT VERIFIED.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-024 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Validation
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs: "Nothing can be written into a closed month: not by the screen, not by a second person, not by direct SQL".
+- **Expected:** A draft dated in a closed month is refused when it is written.
+- **Actual:** A manual entry could be saved as a draft dated in a closed month. It could never be posted and blocked nothing, but it should not have been accepted.
+- **Operational impact:** A dead draft a person would have to find and delete.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed in draftEntry.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Nothing can be written into a closed month: not by the screen, not by a second person, not by direct SQL".
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-025 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Access control; financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Defence in depth
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/tools/access-coverage.mjs: 0 changing routes with no rule (it exits 1 otherwise). Group 7 of the ledger scenarios passes with the rule in place.
+- **Expected:** Every changing route is under a department rule.
+- **Actual:** The 24 changing routes under /api/ledger were guarded in their route file only and had no department rule at the access gate, so the coverage check counted them as having none.
+- **Operational impact:** One layer of protection instead of two.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed: a rule for /api/ledger in lib/roleAccess.js. No department may change the ledger; the route file then narrows managers and leadership to the finance roles.
+- **Verification evidence:** qa/tools/access-coverage.mjs: 0 changing routes with no rule (it exits 1 otherwise). Group 7 of the ledger scenarios passes with the rule in place.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-026 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Error handling
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** Unit test "tablesMissing" in src/backend/test/ledgerRules.test.js. Tried by hand on a copy of the QA database with the ledger tables removed: the Finance addresses answered 503 with that message, and the Phase 8 scenarios passed 155 of 155 on the same copy.
+- **Expected:** Deploying the code before the database file is a known order of events (R-68). The screen should say what is missing.
+- **Actual:** On a database where file 16 has not been applied, every Finance address answered a bare server error (500).
+- **Operational impact:** A finance user would see an unexplained error between the code arriving and the owner applying file 16. No other part of the product was affected.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed: the ledger routes recognise "the table does not exist" and answer 503 with "Database update 16 (financial ledger) has to be applied first".
+- **Verification evidence:** Unit test "tablesMissing" in src/backend/test/ledgerRules.test.js. Tried by hand on a copy of the QA database with the ledger tables removed: the Finance addresses answered 503 with that message, and the Phase 8 scenarios passed 155 of 155 on the same copy.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### W-027 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-16
+- **Module:** Test suite; financial ledger
+- **Workflow:** Financial ledger
+- **Category:** Regression
+- **Source file or endpoint:** qa/sim/phase95-ledger.mjs
+- **Evidence:** qa/results/phase95-gate-run-1.txt shows the two failures; qa/results/phase95-gate-run-2.txt is the full run after the correction.
+- **Expected:** A scenario states what must hold for the product, not that a table is absent.
+- **Actual:** Two Phase 8 scenarios asserted that no ledger exists ("there is no journal, ledger, chart of accounts or accounting period table" and "there is no table for one"). With file 16 applied they failed: Phase 8 read 153 of 155 in the first full run of this phase.
+- **Operational impact:** The gate run was red for a reason that is not a fault in the product. The scenarios had recorded the gap N-025, which this phase fills.
+- **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
+- **Status note:** Fixed in qa/sim/phase8-fulfillment.mjs. The first now ships a sale and checks that, with the ledger not started, the invoice writes no ledger event (and exactly one when it is started), and that no outside accounting system is connected. The second checks that a dispatch adds no debit to inventory for the item: shipping revalues nothing. Both still pass on a database without file 16.
+- **Verification evidence:** qa/results/phase95-gate-run-1.txt shows the two failures; qa/results/phase95-gate-run-2.txt is the full run after the correction.
+- **First recorded in:** Phase 9.5 ledger build and scenarios
 

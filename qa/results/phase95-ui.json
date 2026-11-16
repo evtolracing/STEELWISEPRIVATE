@@ -1,0 +1,472 @@
+{
+  "ranAt": "2026-11-16T20:13:35.248Z",
+  "app": "http://localhost:5199",
+  "api": "http://localhost:3001",
+  "passed": 13,
+  "total": 13,
+  "checks": 69,
+  "results": [
+    {
+      "id": 1,
+      "name": "The CFO finds Finance on the menu and the overview says since when the books run",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "Ledger is on the menu",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the heading is Finance",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it says the books are posting, and since when",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it says this is a subledger, not a full set of accounts",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "all nine tabs are offered",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no page error and no server error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 3421
+    },
+    {
+      "id": 2,
+      "name": "A sales rep has no Finance on the menu and is turned away from its address",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "Ledger is not on the menu",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the Finance screen is not shown",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the server sent no ledger data",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 6304
+    },
+    {
+      "id": 3,
+      "name": "An operations manager, who opens every other area, does not get Finance",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the Finance screen is not shown",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "Ledger is not on the menu",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 6367
+    },
+    {
+      "id": 4,
+      "name": "The trial balance shown is the server's, balances, and an account opens to its lines and then to an entry",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "it says debits equal credits",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "receivables shows the server's debit total",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the account opens with its brought-forward and closing figures",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "a line opens its journal entry",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the entry shows a total line",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 2480
+    },
+    {
+      "id": 5,
+      "name": "A manual entry is saved as a draft, cannot be posted by its writer, and is posted by a second person",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the dialog says a draft is not in the books",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "Save is off until the entry balances",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the draft opens, marked as not in the books",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the database holds a balanced draft of 42.50",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the writer is told someone else must post it",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it is still a draft",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the second person sees it posted",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the database shows it posted by the second person",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "a posted entry offers Reverse and no edit or delete",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it is reversed by a new entry",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the database holds the reversal",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 8272
+    },
+    {
+      "id": 6,
+      "name": "An entry from a business record offers no reversal by hand and says how to undo it",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "it names its source record and rule version",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it says to undo the record itself",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no Reverse, Post or Delete button",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 3290
+    },
+    {
+      "id": 7,
+      "name": "Reports: gross margin is titled for what it is, and sales tax and receivables show the server's totals",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the title is gross margin on material",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it says it is not a profit and loss statement",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the words \"Profit and loss\" appear only in that warning",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "receivables shows the books beside the invoices",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "stock value names the method as proposed and not approved",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the monthly statement says it is not a P&L or balance sheet",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no server error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 4479
+    },
+    {
+      "id": 8,
+      "name": "Events that did not post are listed with their reasons, and settling one needs a note",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the first held event shows its reason",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the overview counted them",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "Settle is off until a note of some length is given",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "a short note is not enough",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "nothing changed",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 2294
+    },
+    {
+      "id": 9,
+      "name": "Months: a closed month shows who may reopen it, and reopening asks for a reason",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the months are listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the closed month says Closed and offers Reopen, not Close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "Reopen is off until a reason is given",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the month is still closed",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 2216
+    },
+    {
+      "id": 10,
+      "name": "The auditor reads everything and is offered no way to change anything",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "all nine tabs are offered",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no Check now button",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no New entry button",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no Close or Reopen button",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no Post again or Settle button",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no start, stop or dry run button",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is Download and no Make, Loaded or Withdraw",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no page error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 3400
+    },
+    {
+      "id": 11,
+      "name": "A branch manager gets the branch reports only and is told the view is of their branch",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "four tabs: overview, trial balance, reports, journal",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the overview says it is the branch view",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "receivables and sales tax are not offered",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the trial balance says it is limited to the branch",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no request was refused with a server error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 2829
+    },
+    {
+      "id": 12,
+      "name": "Export says plainly that nothing is connected or sent, and the accounts page shows every approval",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "it says no accounting system is connected and nothing is sent",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it says the layout is not validated for any accounting product",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "every account of the chart is listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "an approved account shows who approved it",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it says the books are running and offers to stop, with a reason asked",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "stopping is off until a reason is given",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the books are still running",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 2918
+    },
+    {
+      "id": 13,
+      "name": "On a phone the Finance screen has no sideways scroll and the tabs can be reached",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the heading shows",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the page is no wider than the screen",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the tab strip scrolls to the last tab",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 1638
+    }
+  ]
+}

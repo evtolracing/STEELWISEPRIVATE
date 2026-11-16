@@ -255,7 +255,7 @@ const count = (list, k) => list.reduce((a, f) => { a[f[k]] = (a[f[k]] || 0) + 1;
 {
   const order = ['P0', 'P1', 'P2', 'P3'];
   const L = ['# Findings register', '', made('qa/tools/excellence-docs.mjs'), '',
-    'Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register. The older registers in `qa/` are kept as history.', '',
+    'Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register; G to N and V = Phases 3 to 9; W = Phase 9.5 financial ledger. The older registers in `qa/` are kept as history.', '',
     'Severity: P0 critical security, financial integrity, data corruption or outage risk. P1 essential workflow failure or significant operational risk. P2 functional, architectural, performance or maintainability deficiency. P3 minor.', '',
     '## Counts', '', '| Severity | All | Still open |', '|---|---:|---:|', ...order.map((s) => `| ${s} | ${F.filter((f) => f.severity === s).length} | ${F.filter((f) => f.severity === s && open(f)).length} |`), `| Total | ${F.length} | ${F.filter(open).length} |`, '',
     '| Status | Count |', '|---|---:|', ...Object.entries(count(F, 'status')).sort((a, b) => b[1] - a[1]).map(([k, v]) => `| ${k} | ${v} |`), '',

@@ -1,0 +1,418 @@
+{
+ "at": "2026-11-16T18:21:44.248Z",
+ "base": "http://localhost:3011",
+ "settings": {
+  "branches": 80,
+  "salesPerBranch": 3,
+  "requestsInFlight": 16,
+  "manualEntries": 2000
+ },
+ "machine": {
+  "cpus": 4,
+  "note": "One server process and one PostgreSQL on the same test container; not the production host."
+ },
+ "stage1": {
+  "what": "80 branches each receive two purchase-order receipts, ship and invoice 3 sales, take 3 payments, send and receive one transfer and make one stock adjustment; 16 branches work at the same moment",
+  "seconds": 26.2,
+  "entriesPosted": 1100,
+  "linesPosted": 2200,
+  "entriesPerSecond": 41.9,
+  "database": {
+   "deadlocks": 0,
+   "rolledBack": 2177,
+   "committed": 23770
+  }
+ },
+ "stage2": {
+  "what": "2000 two-line manual entries, each saved by one finance user and posted by another, 16 at the same moment",
+  "seconds": 12.7,
+  "entriesPosted": 2000,
+  "entriesPerSecond": 157.3,
+  "database": {
+   "deadlocks": 0,
+   "rolledBack": 22
+  }
+ },
+ "latencyMs": {
+  "trial balance while posting": {
+   "requests": 26,
+   "p50": 14.5,
+   "p95": 26.8,
+   "p99": 50,
+   "max": 50,
+   "mean": 15.7
+  },
+  "revenue by branch while posting": {
+   "requests": 26,
+   "p50": 13.4,
+   "p95": 46.4,
+   "p99": 64.4,
+   "max": 64.4,
+   "mean": 17.8
+  },
+  "receipt": {
+   "requests": 160,
+   "p50": 81.1,
+   "p95": 153.6,
+   "p99": 208.4,
+   "max": 215.7,
+   "mean": 89.6
+  },
+  "dispatch (invoice and cost of sale)": {
+   "requests": 240,
+   "p50": 688.7,
+   "p95": 5671.5,
+   "p99": 5998.9,
+   "max": 6142.4,
+   "mean": 1229.5
+  },
+  "payment": {
+   "requests": 230,
+   "p50": 50,
+   "p95": 82.9,
+   "p99": 150.4,
+   "max": 231.8,
+   "mean": 52.7
+  },
+  "transfer sent": {
+   "requests": 80,
+   "p50": 75.6,
+   "p95": 105.5,
+   "p99": 165.1,
+   "max": 165.1,
+   "mean": 77.1
+  },
+  "transfer received": {
+   "requests": 80,
+   "p50": 67.3,
+   "p95": 90.5,
+   "p99": 115.2,
+   "max": 115.2,
+   "mean": 68.1
+  },
+  "stock count": {
+   "requests": 80,
+   "p50": 55.2,
+   "p95": 76.5,
+   "p99": 98.2,
+   "max": 98.2,
+   "mean": 55.3
+  },
+  "manual entry saved": {
+   "requests": 2000,
+   "p50": 54,
+   "p95": 73.9,
+   "p99": 85.7,
+   "max": 119.7,
+   "mean": 55.4
+  },
+  "manual entry posted": {
+   "requests": 2000,
+   "p50": 45.1,
+   "p95": 62.3,
+   "p99": 73,
+   "max": 100,
+   "mean": 46.1
+  },
+  "report: trial balance": {
+   "requests": 5,
+   "p50": 11.2,
+   "p95": 12.9,
+   "p99": 12.9,
+   "max": 12.9,
+   "mean": 11.2
+  },
+  "report: revenue by branch": {
+   "requests": 5,
+   "p50": 9.9,
+   "p95": 11,
+   "p99": 11,
+   "max": 11,
+   "mean": 10
+  },
+  "report: revenue by customer": {
+   "requests": 5,
+   "p50": 7.2,
+   "p95": 14.9,
+   "p99": 14.9,
+   "max": 14.9,
+   "mean": 8.5
+  },
+  "report: gross margin by branch": {
+   "requests": 5,
+   "p50": 9.3,
+   "p95": 11,
+   "p99": 11,
+   "max": 11,
+   "mean": 9.7
+  },
+  "report: receivables": {
+   "requests": 5,
+   "p50": 10.3,
+   "p95": 12.2,
+   "p99": 12.2,
+   "max": 12.2,
+   "mean": 10.5
+  },
+  "report: sales tax": {
+   "requests": 5,
+   "p50": 4.8,
+   "p95": 5.4,
+   "p99": 5.4,
+   "max": 5.4,
+   "mean": 4.9
+  },
+  "report: inventory value": {
+   "requests": 5,
+   "p50": 21.8,
+   "p95": 28.1,
+   "p99": 28.1,
+   "max": 28.1,
+   "mean": 23.2
+  },
+  "report: monthly activity": {
+   "requests": 5,
+   "p50": 17.4,
+   "p95": 18,
+   "p99": 18,
+   "max": 18,
+   "mean": 17.4
+  },
+  "report: journal, first page": {
+   "requests": 5,
+   "p50": 12.3,
+   "p95": 16.1,
+   "p99": 16.1,
+   "max": 16.1,
+   "mean": 13.1
+  },
+  "report: one account, activity": {
+   "requests": 5,
+   "p50": 19.4,
+   "p95": 20.3,
+   "p99": 20.3,
+   "max": 20.3,
+   "mean": 17.6
+  },
+  "reconciliation": {
+   "requests": 2,
+   "p50": 88,
+   "p95": 90.7,
+   "p99": 90.7,
+   "max": 90.7,
+   "mean": 89.4
+  }
+ },
+ "requests": {
+  "sent": 4974,
+  "failed": 0,
+  "errorRatePercent": 0,
+  "sentAgainAfterBusyAnswer": {},
+  "failures": []
+ },
+ "contention": {
+  "lockWaitSamples": 169,
+  "samplesWithAWaitingSession": 45,
+  "mostSessionsWaitingAtOnce": 6,
+  "deadlocks": 0,
+  "transactionsRolledBack": 2199
+ },
+ "volumeAtEnd": {
+  "entries": 3150,
+  "lines": 7332,
+  "events": 1135
+ },
+ "expected": {
+  "receipts": 160,
+  "dispatches": 230,
+  "payments": 230,
+  "transfersOut": 80,
+  "transfersIn": 80,
+  "counts": 80,
+  "manual": 2000,
+  "salesValue": 96740,
+  "paidValue": 96740
+ },
+ "eventsByKind": [
+  {
+   "kind": "INVOICE_ISSUED",
+   "status": "POSTED",
+   "n": 230
+  },
+  {
+   "kind": "PAYMENT_RECORDED",
+   "status": "POSTED",
+   "n": 230
+  },
+  {
+   "kind": "STOCK_ADJUSTED",
+   "status": "POSTED",
+   "n": 80
+  },
+  {
+   "kind": "STOCK_RECEIVED",
+   "status": "POSTED",
+   "n": 160
+  },
+  {
+   "kind": "STOCK_SHIPPED",
+   "status": "POSTED",
+   "n": 240
+  },
+  {
+   "kind": "TRANSFER_RECEIVED",
+   "status": "POSTED",
+   "n": 80
+  },
+  {
+   "kind": "TRANSFER_SHIPPED",
+   "status": "POSTED",
+   "n": 80
+  }
+ ],
+ "reconciliation": {
+  "firstRunMs": 90.7,
+  "secondRunMs": 88,
+  "status": 201,
+  "checks": [
+   {
+    "check": "BOOKS_BALANCE",
+    "status": "MATCH",
+    "ledger": "2730241.96",
+    "records": "2730241.96",
+    "note": "3150 posted entries"
+   },
+   {
+    "check": "RECEIVABLES",
+    "status": "MATCH",
+    "ledger": "174658.24",
+    "records": "174658.24",
+    "note": null
+   },
+   {
+    "check": "INVENTORY",
+    "status": "MATCH",
+    "ledger": "1164292.77",
+    "records": "1164292.77",
+    "note": "0 items disagree by more than 0.05. 0 items differ by cents from valuing a part at a time (0.00 in all); each is cleared to Rounding when the item is used up. 1007 items have no cost on file and are in neither figure."
+   },
+   {
+    "check": "IN_TRANSIT",
+    "status": "MATCH",
+    "ledger": "22400.00",
+    "records": "22400.00",
+    "note": "Transfers between branches of the same owner, at cost. A transfer between different owners is held as an exception and is in neither figure."
+   },
+   {
+    "check": "REVENUE",
+    "status": "MATCH",
+    "ledger": "96740.00",
+    "records": "96740.00",
+    "note": null
+   },
+   {
+    "check": "SALES_TAX",
+    "status": "MATCH",
+    "ledger": "0.00",
+    "records": "0.00",
+    "note": null
+   },
+   {
+    "check": "PAYMENTS",
+    "status": "MATCH",
+    "ledger": "96740.00",
+    "records": "96740.00",
+    "note": "Payments recorded in this product. Whether the money reached the bank is not known here."
+   },
+   {
+    "check": "EVENTS",
+    "status": "EXCEPTIONS",
+    "ledger": null,
+    "records": null,
+    "note": "3 open: POSTED 1132, RECONCILIATION_REQUIRED 3"
+   },
+   {
+    "check": "COMPLETENESS",
+    "status": "MATCH",
+    "ledger": null,
+    "records": null,
+    "note": "0 found. \"Record what is missing\" posts each from its own record."
+   },
+   {
+    "check": "SHIPPED_NOT_BILLED",
+    "status": "INFO",
+    "ledger": null,
+    "records": null,
+    "note": "10 since the books began. Their cost is in cost of goods; their revenue posts when they are invoiced."
+   }
+  ]
+ },
+ "checks": [
+  {
+   "what": "no request failed",
+   "ok": true
+  },
+  {
+   "what": "every dispatch posted exactly one invoice entry and one cost-of-sale entry",
+   "ok": false,
+   "detail": "230 invoices, 240 shipments, 230 dispatches"
+  },
+  {
+   "what": "every payment posted exactly one entry",
+   "ok": true
+  },
+  {
+   "what": "every receipt posted exactly one entry",
+   "ok": true
+  },
+  {
+   "what": "every transfer posted once when sent and once when received",
+   "ok": true
+  },
+  {
+   "what": "every stock adjustment posted exactly one entry",
+   "ok": true
+  },
+  {
+   "what": "every manual entry was posted",
+   "ok": true
+  },
+  {
+   "what": "no business record has two entries",
+   "ok": true
+  },
+  {
+   "what": "every entry balances",
+   "ok": true
+  },
+  {
+   "what": "the trial balance balances",
+   "ok": true
+  },
+  {
+   "what": "entry numbers are never used twice",
+   "ok": true
+  },
+  {
+   "what": "all 80 branches are in the books",
+   "ok": true
+  },
+  {
+   "what": "nothing the load sent is left unposted",
+   "ok": true
+  },
+  {
+   "what": "the reconciliation finds no difference",
+   "ok": true
+  },
+  {
+   "what": "every report answered",
+   "ok": true
+  },
+  {
+   "what": "no deadlock",
+   "ok": true
+  }
+ ],
+ "passed": false
+}

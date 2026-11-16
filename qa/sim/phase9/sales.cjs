@@ -150,6 +150,8 @@ module.exports = async (s) => {
     await page.locator('main tbody tr', { hasText: rows[0].rfqNumber }).first().click();
     const dialog = page.getByRole('dialog'); await dialog.waitFor();
     const db = await prisma.rFQ.findUnique({ where: { id: rows[0].id }, include: { lines: true, customer: true } });
+    // The dialog opens before its detail arrives: wait for the number, then read (a read made too early failed once in a full run under load).
+    await dialog.getByText(db.rfqNumber).first().waitFor({ timeout: 8000 }).catch(() => {});
     const body = await dialog.innerText();
     t.check('the number and the customer', body.includes(db.rfqNumber) && body.includes(db.customer.name), body.slice(0, 120));
     for (const l of db.lines.slice(0, 3)) t.check(`line ${l.lineNumber}: what and how much`, body.includes(String(l.description || l.materialCode)) && body.includes(String(Number(l.requestedQty))), `${l.description} ${Number(l.requestedQty)}`);

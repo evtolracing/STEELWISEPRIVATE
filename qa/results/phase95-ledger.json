@@ -1,0 +1,4970 @@
+{
+ "at": "2026-11-16T20:12:43.215Z",
+ "base": "http://localhost:3011",
+ "scenarios": 158,
+ "passed": 158,
+ "checks": 915,
+ "groups": {
+  "Periods, cutover and reporting": {
+   "scenarios": 24,
+   "passed": 24,
+   "checks": 206
+  },
+  "Sales, invoices and revenue": {
+   "scenarios": 25,
+   "passed": 25,
+   "checks": 143
+  },
+  "Payments, credits and refunds": {
+   "scenarios": 21,
+   "passed": 21,
+   "checks": 82
+  },
+  "Inventory valuation and adjustments": {
+   "scenarios": 27,
+   "passed": 27,
+   "checks": 104
+  },
+  "Manufacturing, work in progress and costing": {
+   "scenarios": 20,
+   "passed": 20,
+   "checks": 92
+  },
+  "Freight, transfers and location accounting": {
+   "scenarios": 21,
+   "passed": 21,
+   "checks": 96
+  },
+  "Concurrency, authorization and failure recovery": {
+   "scenarios": 20,
+   "passed": 20,
+   "checks": 192
+  }
+ },
+ "results": [
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Before activation, a sale, a payment, a receipt and a shipment post nothing",
+   "asserts": [
+    {
+     "what": "the status says not active",
+     "ok": true
+    },
+    {
+     "what": "the business records were saved",
+     "ok": true
+    },
+    {
+     "what": "no journal entry exists",
+     "ok": true
+    },
+    {
+     "what": "no ledger event exists",
+     "ok": true
+    },
+    {
+     "what": "no period exists",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Activation is refused while nothing is approved, and says exactly what is missing",
+   "asserts": [
+    {
+     "what": "refused with 409",
+     "ok": true
+    },
+    {
+     "what": "it names the chart",
+     "ok": true
+    },
+    {
+     "what": "the dry run lists the same blockers",
+     "ok": true
+    },
+    {
+     "what": "still not active",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 42
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "The proposed chart loads once, unapproved, and loading it again adds nothing",
+   "asserts": [
+    {
+     "what": "22 accounts and 17 mappings were written",
+     "ok": true
+    },
+    {
+     "what": "the second load adds nothing",
+     "ok": true
+    },
+    {
+     "what": "none is approved",
+     "ok": true
+    },
+    {
+     "what": "the proposed accounts are there",
+     "ok": true
+    },
+    {
+     "what": "the load is in the audit log",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 112
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "A loaded but unapproved chart still blocks activation, account by account",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "two accounts and one mapping approved",
+     "ok": true
+    },
+    {
+     "what": "a partly approved chart is still refused",
+     "ok": true
+    },
+    {
+     "what": "an approval needs the accountant's name",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 53
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "The accountant's approval is recorded with a name; a mapping that is changed loses its approval",
+   "asserts": [
+    {
+     "what": "the rest is approved",
+     "ok": true
+    },
+    {
+     "what": "no blocker is left",
+     "ok": true
+    },
+    {
+     "what": "changing a mapping removes its approval",
+     "ok": true
+    },
+    {
+     "what": "a mapping to an account that does not exist is refused",
+     "ok": true
+    },
+    {
+     "what": "an unknown posting purpose is refused",
+     "ok": true
+    },
+    {
+     "what": "who recorded the approval is in the audit log",
+     "ok": true
+    },
+    {
+     "what": "still nothing posted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 66
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Only the owner, a super administrator or the CFO can start the books; activation needs a name, a date, a time zone and a dry run",
+   "asserts": [
+    {
+     "what": "administrator is refused",
+     "ok": true
+    },
+    {
+     "what": "auditor is refused",
+     "ok": true
+    },
+    {
+     "what": "executive is refused",
+     "ok": true
+    },
+    {
+     "what": "manager is refused",
+     "ok": true
+    },
+    {
+     "what": "sales is refused",
+     "ok": true
+    },
+    {
+     "what": "no accountant name: refused",
+     "ok": true
+    },
+    {
+     "what": "no approval date: refused",
+     "ok": true
+    },
+    {
+     "what": "no time zone: refused",
+     "ok": true
+    },
+    {
+     "what": "no dry run: refused",
+     "ok": true
+    },
+    {
+     "what": "a made-up dry run: refused",
+     "ok": true
+    },
+    {
+     "what": "still not active",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 62
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "The cutover dry run shows the opening balances from the records and writes nothing to the books",
+   "asserts": [
+    {
+     "what": "answers",
+     "ok": true
+    },
+    {
+     "what": "net receivables equal the open invoices less credit owed back",
+     "ok": true
+    },
+    {
+     "what": "what is owed is shown apart from what is owed back",
+     "ok": true
+    },
+    {
+     "what": "stock value equals quantity times cost of the costed items",
+     "ok": true
+    },
+    {
+     "what": "items with no cost are listed, not valued at zero",
+     "ok": true
+    },
+    {
+     "what": "it says what it does not open",
+     "ok": true
+    },
+    {
+     "what": "nothing was posted",
+     "ok": true
+    },
+    {
+     "what": "an auditor cannot run it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 39
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Activation posts the opening balances from the records at that moment, balanced against opening equity",
+   "asserts": [
+    {
+     "what": "activated",
+     "ok": true
+    },
+    {
+     "what": "the books balance",
+     "ok": true
+    },
+    {
+     "what": "receivables equal the dry run",
+     "ok": true
+    },
+    {
+     "what": "stock equals the dry run, with in-transit stock moved to its own account",
+     "ok": true
+    },
+    {
+     "what": "the other side is opening equity",
+     "ok": true
+    },
+    {
+     "what": "no revenue, tax, cash or payables were opened",
+     "ok": true
+    },
+    {
+     "what": "every opening entry is posted and dated the cutover day",
+     "ok": true
+    },
+    {
+     "what": "the uncosted item is on no line",
+     "ok": true
+    },
+    {
+     "what": "the activation is in the audit log with the accountant's name",
+     "ok": true
+    },
+    {
+     "what": "a second activation is refused and posts nothing more",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 152
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Right after cutover the books agree with the records: the reconciliation finds no difference",
+   "asserts": [
+    {
+     "what": "ran",
+     "ok": true
+    },
+    {
+     "what": "BOOKS_BALANCE matches",
+     "ok": true
+    },
+    {
+     "what": "RECEIVABLES matches",
+     "ok": true
+    },
+    {
+     "what": "IN_TRANSIT matches",
+     "ok": true
+    },
+    {
+     "what": "REVENUE matches",
+     "ok": true
+    },
+    {
+     "what": "SALES_TAX matches",
+     "ok": true
+    },
+    {
+     "what": "PAYMENTS matches",
+     "ok": true
+    },
+    {
+     "what": "COMPLETENESS matches",
+     "ok": true
+    },
+    {
+     "what": "stock matches item by item",
+     "ok": true
+    },
+    {
+     "what": "the only open events are in-transit items with no cost, each held by name",
+     "ok": true
+    },
+    {
+     "what": "nothing else fails",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 37
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "An invoice raised at dispatch debits receivables and credits product sales for the same amount",
+   "asserts": [
+    {
+     "what": "the event is posted",
+     "ok": true
+    },
+    {
+     "what": "invoice: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "invoice: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "invoice: account 1100 moves by 650",
+     "ok": true
+    },
+    {
+     "what": "invoice: account 4000 moves by -650",
+     "ok": true
+    },
+    {
+     "what": "invoice: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the receivable line names the customer and the branch",
+     "ok": true
+    },
+    {
+     "what": "the entry names its source and the rule version",
+     "ok": true
+    },
+    {
+     "what": "it is dated the invoice day and in an open period",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 248
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Sales tax on an invoice is a liability tagged with the ship-to state, not revenue",
+   "asserts": [
+    {
+     "what": "invoice with tax: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "invoice with tax: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "invoice with tax: account 1100 moves by 530",
+     "ok": true
+    },
+    {
+     "what": "invoice with tax: account 2100 moves by -30",
+     "ok": true
+    },
+    {
+     "what": "invoice with tax: account 4000 moves by -500",
+     "ok": true
+    },
+    {
+     "what": "invoice with tax: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the tax line carries MI",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 253
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Freight billed is freight revenue; nothing is posted to freight expense",
+   "asserts": [
+    {
+     "what": "invoice with freight: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "invoice with freight: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "invoice with freight: account 1100 moves by 585",
+     "ok": true
+    },
+    {
+     "what": "invoice with freight: account 4000 moves by -500",
+     "ok": true
+    },
+    {
+     "what": "invoice with freight: account 4200 moves by -85",
+     "ok": true
+    },
+    {
+     "what": "invoice with freight: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "no line touches freight expense",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 227
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "The cost of what shipped is recognised at shipment, in its own entry, at the cost on the movement",
+   "asserts": [
+    {
+     "what": "the shipment event is posted",
+     "ok": true
+    },
+    {
+     "what": "shipment: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "shipment: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "shipment: account 1200 moves by -400",
+     "ok": true
+    },
+    {
+     "what": "shipment: account 5000 moves by 400",
+     "ok": true
+    },
+    {
+     "what": "shipment: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "it is a different entry from the invoice",
+     "ok": true
+    },
+    {
+     "what": "the cost line names the item",
+     "ok": true
+    },
+    {
+     "what": "the movement carries the same unit cost",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 222
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Two partial shipments each post their own cost and their own invoice; nothing is accrued for what has not shipped",
+   "asserts": [
+    {
+     "what": "both dispatched",
+     "ok": true
+    },
+    {
+     "what": "two invoices: 240.00 and 360.00",
+     "ok": true
+    },
+    {
+     "what": "revenue 600.00, receivables 600.00, cost 300.00 in all",
+     "ok": true
+    },
+    {
+     "what": "invoice INV-000385 has its own posted entry",
+     "ok": true
+    },
+    {
+     "what": "invoice INV-000386 has its own posted entry",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 385
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Tax shared across two invoices of one order adds up to the order's tax, to the cent, in the books",
+   "asserts": [
+    {
+     "what": "the invoices carry the order's tax exactly",
+     "ok": true
+    },
+    {
+     "what": "tax payable rose by exactly that",
+     "ok": true
+    },
+    {
+     "what": "receivables rose by the order total",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 321
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Freight is posted once, on the order's first invoice",
+   "asserts": [
+    {
+     "what": "first invoice: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "first invoice: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "first invoice: account 1100 moves by 145",
+     "ok": true
+    },
+    {
+     "what": "first invoice: account 4000 moves by -100",
+     "ok": true
+    },
+    {
+     "what": "first invoice: account 4200 moves by -45",
+     "ok": true
+    },
+    {
+     "what": "first invoice: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "second invoice: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "second invoice: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "second invoice: account 1100 moves by 200",
+     "ok": true
+    },
+    {
+     "what": "second invoice: account 4000 moves by -200",
+     "ok": true
+    },
+    {
+     "what": "second invoice: no other account is touched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 331
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Asking for the same shipment's invoice again creates no second entry",
+   "asserts": [
+    {
+     "what": "the second requests create no invoice",
+     "ok": true
+    },
+    {
+     "what": "one entry for the invoice",
+     "ok": true
+    },
+    {
+     "what": "one event for the invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 293
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Cancelling an unpaid invoice reverses its entry with a new entry; the original is untouched",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "a reversal entry exists and points at the original",
+     "ok": true
+    },
+    {
+     "what": "reversal: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "reversal: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "reversal: account 1100 moves by -265",
+     "ok": true
+    },
+    {
+     "what": "reversal: account 2100 moves by 15",
+     "ok": true
+    },
+    {
+     "what": "reversal: account 4000 moves by 250",
+     "ok": true
+    },
+    {
+     "what": "reversal: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the accounts moved back exactly",
+     "ok": true
+    },
+    {
+     "what": "the original entry is unchanged",
+     "ok": true
+    },
+    {
+     "what": "the event says reversed",
+     "ok": true
+    },
+    {
+     "what": "the reason is on the reversal",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 309
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "An invoice cannot be cancelled twice, and only one reversal ever exists",
+   "asserts": [
+    {
+     "what": "one succeeds",
+     "ok": true
+    },
+    {
+     "what": "exactly one reversal",
+     "ok": true
+    },
+    {
+     "what": "the books balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 329
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "After a cancelled invoice, billing the shipment again posts a new entry for the new invoice",
+   "asserts": [
+    {
+     "what": "a new invoice",
+     "ok": true
+    },
+    {
+     "what": "new invoice: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "new invoice: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "new invoice: account 1100 moves by 150",
+     "ok": true
+    },
+    {
+     "what": "new invoice: account 4000 moves by -150",
+     "ok": true
+    },
+    {
+     "what": "new invoice: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "net effect of cancel and rebill is one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 335
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "A counter sale posts the invoice, the payment and the cost of the pieces in one save",
+   "asserts": [
+    {
+     "what": "sold",
+     "ok": true
+    },
+    {
+     "what": "receivables end where they began",
+     "ok": true
+    },
+    {
+     "what": "cash clearing rose by the total",
+     "ok": true
+    },
+    {
+     "what": "revenue and tax equal the invoice",
+     "ok": true
+    },
+    {
+     "what": "cost of four pieces at 2.50 left stock",
+     "ok": true
+    },
+    {
+     "what": "three events are posted",
+     "ok": true
+    },
+    {
+     "what": "counter tax is tagged with the selling branch's state",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 175
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "The same counter sale sent three times at once is in the books once",
+   "asserts": [
+    {
+     "what": "one sale on file",
+     "ok": true
+    },
+    {
+     "what": "one invoice entry",
+     "ok": true
+    },
+    {
+     "what": "cost of two pieces left stock once",
+     "ok": true
+    },
+    {
+     "what": "cash rose once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 166
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Voiding a counter sale posts the credit, the refund and the stock coming back; every account returns to where it was except sales and returns",
+   "asserts": [
+    {
+     "what": "voided",
+     "ok": true
+    },
+    {
+     "what": "cash clearing fell by the total",
+     "ok": true
+    },
+    {
+     "what": "receivables end where they began",
+     "ok": true
+    },
+    {
+     "what": "sales returns took the subtotal; sales itself is not reduced",
+     "ok": true
+    },
+    {
+     "what": "tax payable fell by the tax",
+     "ok": true
+    },
+    {
+     "what": "the pieces are back in stock at cost",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 257
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "The revenue report by customer rises by exactly what was invoiced to that customer",
+   "asserts": [
+    {
+     "what": "net sales for the customer rose by 650.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 267
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Revenue is reported by product and by division when the order line names a product",
+   "asserts": [
+    {
+     "what": "dispatched",
+     "ok": true
+    },
+    {
+     "what": "the product's sales rose by 220.00",
+     "ok": true
+    },
+    {
+     "what": "the SUPPLIES division's sales rose by 220.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 269
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "The gross margin report shows sales less material cost, and says it is not a profit and loss statement",
+   "asserts": [
+    {
+     "what": "branch sales rose by 650.00 and material cost by 400.00",
+     "ok": true
+    },
+    {
+     "what": "the title is \"Gross margin on material\"",
+     "ok": true
+    },
+    {
+     "what": "it says it is not a profit and loss statement",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 262
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "The sales tax report by state rises by the tax invoiced to that state",
+   "asserts": [
+    {
+     "what": "Kentucky rose by 30.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 256
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "Material shipped with no cost on file: revenue posts, the cost is held and named, never posted at zero; entering the cost posts it",
+   "asserts": [
+    {
+     "what": "the invoice posted",
+     "ok": true
+    },
+    {
+     "what": "the cost event is held for reconciliation",
+     "ok": true
+    },
+    {
+     "what": "no zero-value entry was written",
+     "ok": true
+    },
+    {
+     "what": "the cost was saved",
+     "ok": true
+    },
+    {
+     "what": "the held shipment is now posted",
+     "ok": true
+    },
+    {
+     "what": "late cost: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "late cost: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "late cost: account 1200 moves by -380",
+     "ok": true
+    },
+    {
+     "what": "late cost: account 5000 moves by 380",
+     "ok": true
+    },
+    {
+     "what": "late cost: no other account is touched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 236
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "With no account mapped for product sales the invoice is saved, nothing is posted to another account, and the event fails with the reason",
+   "asserts": [
+    {
+     "what": "the invoice exists",
+     "ok": true
+    },
+    {
+     "what": "the event failed and says why",
+     "ok": true
+    },
+    {
+     "what": "receivables and revenue did not move at all",
+     "ok": true
+    },
+    {
+     "what": "the shipment's cost still posted (it needs no revenue account)",
+     "ok": true
+    },
+    {
+     "what": "mapped again but not approved: the retry still fails",
+     "ok": true
+    },
+    {
+     "what": "after approval the retry posts it",
+     "ok": true
+    },
+    {
+     "what": "retried invoice: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "retried invoice: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "retried invoice: account 1100 moves by 200",
+     "ok": true
+    },
+    {
+     "what": "retried invoice: account 4000 moves by -200",
+     "ok": true
+    },
+    {
+     "what": "retried invoice: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "a second retry is refused and posts nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 328
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "A lost load credited in full reduces receivables through sales returns; no stock comes back and the cost stays in cost of goods",
+   "asserts": [
+    {
+     "what": "recorded as lost",
+     "ok": true
+    },
+    {
+     "what": "receivables fell and sales returns rose by 400.00",
+     "ok": true
+    },
+    {
+     "what": "stock and cost of goods did not move",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 318
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "An invoice with three awkward prices balances to the cent and equals the invoice total",
+   "asserts": [
+    {
+     "what": "dispatched",
+     "ok": true
+    },
+    {
+     "what": "awkward invoice: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "awkward invoice: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "awkward invoice: account 1100 moves by 308",
+     "ok": true
+    },
+    {
+     "what": "awkward invoice: account 2100 moves by -18.12",
+     "ok": true
+    },
+    {
+     "what": "awkward invoice: account 4000 moves by -289.88",
+     "ok": true
+    },
+    {
+     "what": "awkward invoice: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "one revenue line per invoice line",
+     "ok": true
+    },
+    {
+     "what": "every amount is in whole cents",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 420
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "The receivables report shows, for one customer, the same balance as that customer's invoices",
+   "asserts": [
+    {
+     "what": "the customer is listed",
+     "ok": true
+    },
+    {
+     "what": "books and invoices agree for the customer",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 264
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "A shipment that leaves in one save and its invoice are two events: each can be found, and each is posted once",
+   "asserts": [
+    {
+     "what": "two events, two kinds",
+     "ok": true
+    },
+    {
+     "what": "both posted to different entries",
+     "ok": true
+    },
+    {
+     "what": "the entry can be found from the invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 222
+  },
+  {
+   "group": "Sales, invoices and revenue",
+   "name": "A credit memo for part of an invoice, by quantity, posts sales returns and its share of tax",
+   "asserts": [
+    {
+     "what": "credited",
+     "ok": true
+    },
+    {
+     "what": "returns 50.00, tax 3.00, receivables down 53.00",
+     "ok": true
+    },
+    {
+     "what": "product sales itself is not reduced",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 280
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A payment in full debits the clearing account and credits receivables for the customer",
+   "asserts": [
+    {
+     "what": "recorded",
+     "ok": true
+    },
+    {
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "payment: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "payment: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "payment: account 1000 moves by 650",
+     "ok": true
+    },
+    {
+     "what": "payment: account 1100 moves by -650",
+     "ok": true
+    },
+    {
+     "what": "payment: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the receivable line names the customer and the branch",
+     "ok": true
+    },
+    {
+     "what": "the entry says how it was paid",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 277
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "Two partial payments each post their own entry and together clear the invoice in the books",
+   "asserts": [
+    {
+     "what": "two payments, two posted events",
+     "ok": true
+    },
+    {
+     "what": "receivables fell by 500.00 and clearing rose by 500.00",
+     "ok": true
+    },
+    {
+     "what": "the invoice is paid",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 358
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A payment for more than is owed is refused and nothing is posted",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "no account moved",
+     "ok": true
+    },
+    {
+     "what": "no payment event exists for the invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 282
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A payment dated earlier in an open period is posted on the day it was received, not the day it was typed",
+   "asserts": [
+    {
+     "what": "recorded",
+     "ok": true
+    },
+    {
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "the entry is dated the payment day in the books' time zone",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 265
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A payment dated before the books began is posted on the day it is recorded, and the entry says so",
+   "asserts": [
+    {
+     "what": "recorded",
+     "ok": true
+    },
+    {
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "dated today, not 200 days ago",
+     "ok": true
+    },
+    {
+     "what": "the memo names the payment's own date",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 282
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A payment on an invoice from before the books began clears the opening receivable",
+   "asserts": [
+    {
+     "what": "recorded",
+     "ok": true
+    },
+    {
+     "what": "clearing up 636.00, receivables down 636.00",
+     "ok": true
+    },
+    {
+     "what": "no revenue or tax is posted again for the old invoice",
+     "ok": true
+    },
+    {
+     "what": "the old invoice itself has no ledger event",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 59
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A recorded payment sits in a clearing account; nothing in the books claims it reached the bank",
+   "asserts": [
+    {
+     "what": "the account is named a clearing account",
+     "ok": true
+    },
+    {
+     "what": "there is no bank account in the proposed chart",
+     "ok": true
+    },
+    {
+     "what": "the card payment went to the clearing account",
+     "ok": true
+    },
+    {
+     "what": "the reconciliation says the bank is not known here",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 286
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A money credit on an unpaid invoice posts sales returns against receivables; applying it moves no cash",
+   "asserts": [
+    {
+     "what": "credited",
+     "ok": true
+    },
+    {
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "credit memo: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "credit memo: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "credit memo: account 1100 moves by -80",
+     "ok": true
+    },
+    {
+     "what": "credit memo: account 4300 moves by 80",
+     "ok": true
+    },
+    {
+     "what": "credit memo: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the clearing account did not move",
+     "ok": true
+    },
+    {
+     "what": "the credit was applied on both documents",
+     "ok": true
+    },
+    {
+     "what": "the applications have no ledger events of their own",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 283
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A credit on an invoice already paid leaves a credit balance for the customer, shown apart, with no cash moved",
+   "asserts": [
+    {
+     "what": "credited",
+     "ok": true
+    },
+    {
+     "what": "receivables fell by 60.00 and cash did not move",
+     "ok": true
+    },
+    {
+     "what": "the report shows 60.00 more owed back to the customer",
+     "ok": true
+    },
+    {
+     "what": "books and invoices still agree for the customer",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 338
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A refund of credit owed back debits receivables and credits the clearing account",
+   "asserts": [
+    {
+     "what": "refunded",
+     "ok": true
+    },
+    {
+     "what": "posted as a refund",
+     "ok": true
+    },
+    {
+     "what": "refund: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "refund: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "refund: account 1000 moves by -60",
+     "ok": true
+    },
+    {
+     "what": "refund: account 1100 moves by 60",
+     "ok": true
+    },
+    {
+     "what": "refund: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "accounts moved by exactly that",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 40
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A refund for more than is owed back is refused and posts nothing",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 322
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "Two partial refunds of one credit memo post two entries that add up",
+   "asserts": [
+    {
+     "what": "receivables up 50.00, clearing down 50.00",
+     "ok": true
+    },
+    {
+     "what": "two refund events",
+     "ok": true
+    },
+    {
+     "what": "a third refund is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 365
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "The refund of a credit that was owed back before the books began clears the opening credit balance",
+   "asserts": [
+    {
+     "what": "refunded",
+     "ok": true
+    },
+    {
+     "what": "receivables up 120.00, clearing down 120.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 41
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "The same payment request sent three times with one request key is one payment and one entry",
+   "asserts": [
+    {
+     "what": "all three answered as created",
+     "ok": true
+    },
+    {
+     "what": "one payment row",
+     "ok": true
+    },
+    {
+     "what": "the books moved once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 378
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "Two payments at once that together exceed the invoice: one is refused, one is posted",
+   "asserts": [
+    {
+     "what": "exactly one was accepted",
+     "ok": true
+    },
+    {
+     "what": "the books moved by one payment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 291
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A credit for more than the invoice billed is refused and posts nothing",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 240
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A return put back in stock and credited: stock and cost of goods reverse at cost, receivables fall through sales returns",
+   "asserts": [
+    {
+     "what": "return opened",
+     "ok": true
+    },
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "200 lb at 0.40 came back: stock up 80.00, cost of goods down 80.00",
+     "ok": true
+    },
+    {
+     "what": "receivables fell by 160.00 through sales returns",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 355
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A return that is scrapped: it comes back at cost and is written off at once; stock ends where it was",
+   "asserts": [
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "cost of goods down 40.00 and scrap up 40.00",
+     "ok": true
+    },
+    {
+     "what": "stock value did not change",
+     "ok": true
+    },
+    {
+     "what": "both stock movements are posted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 372
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "A shop operator cannot record a payment, and nothing is posted",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 245
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "An invoice with a payment cannot be cancelled, and its entries stay as they are",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing moved",
+     "ok": true
+    },
+    {
+     "what": "no reversal exists",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 288
+  },
+  {
+   "group": "Payments, credits and refunds",
+   "name": "After payments, credits and refunds the receivables check finds no customer out of step",
+   "asserts": [
+    {
+     "what": "no customer differs",
+     "ok": true
+    },
+    {
+     "what": "the totals agree",
+     "ok": true
+    },
+    {
+     "what": "credit owed back is its own column",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 11
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Stock received against a purchase order comes onto the books at the order's cost, against goods received not invoiced",
+   "asserts": [
+    {
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "receipt: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "receipt: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "receipt: account 1200 moves by 2100",
+     "ok": true
+    },
+    {
+     "what": "receipt: account 2000 moves by -2100",
+     "ok": true
+    },
+    {
+     "what": "receipt: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the lines name the item, the branch and the supplier",
+     "ok": true
+    },
+    {
+     "what": "the item is worth quantity times cost in the books",
+     "ok": true
+    },
+    {
+     "what": "the memo names the purchase order",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 81
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Two receipts against one purchase order line each post their own entry",
+   "asserts": [
+    {
+     "what": "both received",
+     "ok": true
+    },
+    {
+     "what": "stock up 3,000.00 and payables clearing up 3,000.00",
+     "ok": true
+    },
+    {
+     "what": "item RC-MWJP9AKV-135 is booked at its own weight",
+     "ok": true
+    },
+    {
+     "what": "item RC-MWJP9AKV-136 is booked at its own weight",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 109
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Stock received with no purchase order is held for the accountant: no entry, no zero value, the reason is named",
+   "asserts": [
+    {
+     "what": "held for reconciliation",
+     "ok": true
+    },
+    {
+     "what": "nothing moved in the books",
+     "ok": true
+    },
+    {
+     "what": "no entry exists for it",
+     "ok": true
+    },
+    {
+     "what": "it shows in the exceptions report",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 52
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "The accountant can post a receipt with no purchase order by naming the account for the other side, once it has a cost",
+   "asserts": [
+    {
+     "what": "with no cost it stays held, not posted at zero",
+     "ok": true
+    },
+    {
+     "what": "entering the cost alone posts nothing (the receipt has no rule for its other side)",
+     "ok": true
+    },
+    {
+     "what": "the named retry posts it",
+     "ok": true
+    },
+    {
+     "what": "stock up 600.00 against the account the accountant named",
+     "ok": true
+    },
+    {
+     "what": "the entry says it was an accountant's choice",
+     "ok": true
+    },
+    {
+     "what": "the retry is in the audit log with the account named",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 105
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Naming an account that is not in the chart posts nothing and substitutes nothing",
+   "asserts": [
+    {
+     "what": "it failed and says the account is not in the chart",
+     "ok": true
+    },
+    {
+     "what": "nothing moved",
+     "ok": true
+    },
+    {
+     "what": "with a real account it posts",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 122
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "A count that finds more adds the value to stock against count variance",
+   "asserts": [
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "count up: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "count up: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "count up: account 1200 moves by 10",
+     "ok": true
+    },
+    {
+     "what": "count up: account 5310 moves by -10",
+     "ok": true
+    },
+    {
+     "what": "count up: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "books equal quantity times cost for the item",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 104
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "A count that finds less takes the value out of stock into count variance",
+   "asserts": [
+    {
+     "what": "count down: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "count down: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "count down: account 1200 moves by -24",
+     "ok": true
+    },
+    {
+     "what": "count down: account 5310 moves by 24",
+     "ok": true
+    },
+    {
+     "what": "count down: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "books equal quantity times cost for the item",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 111
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Damage written off goes to scrap and write-offs, not to count variance",
+   "asserts": [
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "scrap up 60.00, stock down 60.00, variance untouched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 96
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Scrap taken off a balance posts at the item's cost to scrap and write-offs",
+   "asserts": [
+    {
+     "what": "posted as scrap",
+     "ok": true
+    },
+    {
+     "what": "scrap: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "scrap: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "scrap: account 1200 moves by -44",
+     "ok": true
+    },
+    {
+     "what": "scrap: account 5300 moves by 44",
+     "ok": true
+    },
+    {
+     "what": "scrap: no other account is touched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 107
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Found stock and a typing correction both go through count variance, in the right direction",
+   "asserts": [
+    {
+     "what": "both saved",
+     "ok": true
+    },
+    {
+     "what": "net 30 lb at 0.40: stock up 12.00, variance down 12.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 138
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "A count on an item with no cost is held by name; the count itself is saved and nothing is valued at zero",
+   "asserts": [
+    {
+     "what": "the count was saved",
+     "ok": true
+    },
+    {
+     "what": "held, with the reason",
+     "ok": true
+    },
+    {
+     "what": "nothing moved in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 67
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "A count that confirms the balance writes no stock movement and no ledger event",
+   "asserts": [
+    {
+     "what": "confirmed",
+     "ok": true
+    },
+    {
+     "what": "no new event and no movement in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 86
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Raising the cost of stock on hand revalues it against inventory cost adjustments",
+   "asserts": [
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "stock up 60.00 against cost adjustments",
+     "ok": true
+    },
+    {
+     "what": "books equal quantity times the new cost",
+     "ok": true
+    },
+    {
+     "what": "the change is on record with both costs and who made it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 122
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Lowering the cost takes the difference out of stock; saving the same cost again posts nothing",
+   "asserts": [
+    {
+     "what": "stock down 90.00 against cost adjustments",
+     "ok": true
+    },
+    {
+     "what": "the same cost again moves nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 146
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "An item that had no cost at the opening balance comes onto the books against opening equity when its cost is entered",
+   "asserts": [
+    {
+     "what": "it was on no line before",
+     "ok": true
+    },
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "1,500 lb at 0.36: stock up 540.00 against opening equity",
+     "ok": true
+    },
+    {
+     "what": "the entry says it had no cost at the opening balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 65
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "A sales rep cannot change a cost, and nothing is posted",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "the cost is unchanged and nothing moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 86
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "A piece cut from an item moves value from the parent to the piece: stock in total does not change",
+   "asserts": [
+    {
+     "what": "recorded",
+     "ok": true
+    },
+    {
+     "what": "no account balance changed",
+     "ok": true
+    },
+    {
+     "what": "the piece is worth 160.00 and the parent 640.00",
+     "ok": true
+    },
+    {
+     "what": "one entry, for the piece; the parent's own movement has none",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 142
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "An item relieved in three parts ends at exactly zero in the books: the odd cent goes to Rounding",
+   "asserts": [
+    {
+     "what": "the item is empty in the records",
+     "ok": true
+    },
+    {
+     "what": "and worth exactly zero in the books",
+     "ok": true
+    },
+    {
+     "what": "stock fell by exactly what was received",
+     "ok": true
+    },
+    {
+     "what": "one cent was cleared to Rounding, in the open",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 188
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "The plain \"receive\" address, which names no purchase order, is held the same way",
+   "asserts": [
+    {
+     "what": "saved",
+     "ok": true
+    },
+    {
+     "what": "held: no purchase order",
+     "ok": true
+    },
+    {
+     "what": "nothing moved in the books",
+     "ok": true
+    },
+    {
+     "what": "the reconciliation names the item as out of step until it is settled",
+     "ok": true
+    },
+    {
+     "what": "posted by the accountant's choice",
+     "ok": true
+    },
+    {
+     "what": "the item agrees again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 173
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "An upload of stock with no purchase orders is held row by row; nothing is valued",
+   "asserts": [
+    {
+     "what": "uploaded",
+     "ok": true
+    },
+    {
+     "what": "every imported row has a held event",
+     "ok": true
+    },
+    {
+     "what": "nothing moved in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 75
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Stock received at another branch is booked to that branch",
+   "asserts": [
+    {
+     "what": "every line carries the second branch",
+     "ok": true
+    },
+    {
+     "what": "the valuation report has a row for that branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 85
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "An item whose cost is zero has no value: its movements are settled as \"nothing to post\", not as exceptions",
+   "asserts": [
+    {
+     "what": "settled with nothing to post",
+     "ok": true
+    },
+    {
+     "what": "nothing moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 89
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "The scrap report, read from the books, rises by exactly what was written off",
+   "asserts": [
+    {
+     "what": "up by 20.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 103
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Material shipped after its cost was changed leaves at the new cost, and the item ends at zero",
+   "asserts": [
+    {
+     "what": "shipment: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "shipment: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "shipment: account 1200 moves by -500",
+     "ok": true
+    },
+    {
+     "what": "shipment: account 5000 moves by 500",
+     "ok": true
+    },
+    {
+     "what": "shipment: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the item is worth zero in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 233
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "Three corrections of the same item at once are all posted, and the books equal quantity times cost",
+   "asserts": [
+    {
+     "what": "all three saved",
+     "ok": true
+    },
+    {
+     "what": "all three posted",
+     "ok": true
+    },
+    {
+     "what": "967 lb at 0.40 in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 138
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "A stock balance changed behind the product's back shows as a named difference; the reconciliation corrects nothing",
+   "asserts": [
+    {
+     "what": "the stock check reports a difference",
+     "ok": true
+    },
+    {
+     "what": "it names the item and the 40.00",
+     "ok": true
+    },
+    {
+     "what": "it posted nothing to make the difference go away",
+     "ok": true
+    },
+    {
+     "what": "with the records put right the item is no longer listed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 178
+  },
+  {
+   "group": "Inventory valuation and adjustments",
+   "name": "The inventory valuation report: every branch's books equal its stock records, to within the stated rounding",
+   "asserts": [
+    {
+     "what": "answers with a method that is named as proposed",
+     "ok": true
+    },
+    {
+     "what": "every item that disagrees has an open exception that explains it",
+     "ok": true
+    },
+    {
+     "what": "items with no cost are counted and left out",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 18
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A completed work order moves the source's value to the pieces as finished goods and expenses the scrap, in one balanced entry",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "work order: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "work order: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "work order: account 1200 moves by -800",
+     "ok": true
+    },
+    {
+     "what": "work order: account 1210 moves by 780",
+     "ok": true
+    },
+    {
+     "what": "work order: account 5300 moves by 20",
+     "ok": true
+    },
+    {
+     "what": "work order: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "one event covers the whole work order",
+     "ok": true
+    },
+    {
+     "what": "the accounts moved by exactly that",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 170
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Each piece is booked at its own weight times the source's cost, and what is left on the source keeps its value",
+   "asserts": [
+    {
+     "what": "three pieces",
+     "ok": true
+    },
+    {
+     "what": "piece of 411 lb is worth 152.07",
+     "ok": true
+    },
+    {
+     "what": "piece of 589 lb is worth 217.93",
+     "ok": true
+    },
+    {
+     "what": "piece of 333 lb is worth 123.21",
+     "ok": true
+    },
+    {
+     "what": "the 654 lb left on the source is worth 241.98",
+     "ok": true
+    },
+    {
+     "what": "each piece carries the source's cost per pound",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 138
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A source used up completely ends at exactly zero in the books",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "the source is empty in the records",
+     "ok": true
+    },
+    {
+     "what": "and exactly zero in the books",
+     "ok": true
+    },
+    {
+     "what": "the entry balances",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 151
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "No balance is carried in work in progress; with the setting on, the same work order is shown passing through it and still ends at zero",
+   "asserts": [
+    {
+     "what": "work in progress is zero before",
+     "ok": true
+    },
+    {
+     "what": "the owner turned the setting on",
+     "ok": true
+    },
+    {
+     "what": "the entry has a debit and a credit to work in progress of 400.00 each",
+     "ok": true
+    },
+    {
+     "what": "work in progress still ends at zero",
+     "ok": true
+    },
+    {
+     "what": "the other accounts move as without the setting",
+     "ok": true
+    },
+    {
+     "what": "the change of setting is in the audit log",
+     "ok": true
+    },
+    {
+     "what": "an administrator who is not the owner or CFO cannot change it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 198
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A work order on material with no cost completes on the floor and is held in the books, never posted at zero",
+   "asserts": [
+    {
+     "what": "completed on the floor",
+     "ok": true
+    },
+    {
+     "what": "held with the reason",
+     "ok": true
+    },
+    {
+     "what": "nothing moved in the books",
+     "ok": true
+    },
+    {
+     "what": "with a cost on the source but none on the pieces it stays held, naming a piece",
+     "ok": true
+    },
+    {
+     "what": "once the pieces carry the same cost it posts by itself",
+     "ok": true
+    },
+    {
+     "what": "late work order: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "late work order: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "late work order: account 1200 moves by -400",
+     "ok": true
+    },
+    {
+     "what": "late work order: account 1210 moves by 392",
+     "ok": true
+    },
+    {
+     "what": "late work order: account 5300 moves by 8",
+     "ok": true
+    },
+    {
+     "what": "late work order: no other account is touched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 254
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Labor and machine time are not posted: clocked work changes nothing in the books and processing cost stays at zero",
+   "asserts": [
+    {
+     "what": "the work order's entry has material and scrap lines only",
+     "ok": true
+    },
+    {
+     "what": "5100 Processing Cost of Goods Sold has never been posted to",
+     "ok": true
+    },
+    {
+     "what": "4100 Processing Revenue has never been posted to (lines are not marked as processing)",
+     "ok": true
+    },
+    {
+     "what": "no hourly rate was invented",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 151
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Completing the same work order three times at once posts one entry",
+   "asserts": [
+    {
+     "what": "one completion was accepted",
+     "ok": true
+    },
+    {
+     "what": "one entry",
+     "ok": true
+    },
+    {
+     "what": "the books moved once: 500 lb at 0.40",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 137
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A work order that only reports scrap expenses it and makes no finished goods",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "scrap up 48.00, stock down 48.00, no finished goods",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 123
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A finished piece that ships leaves finished goods, not raw material, at its cost",
+   "asserts": [
+    {
+     "what": "shipment of the piece: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "shipment of the piece: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "shipment of the piece: account 1210 moves by -240",
+     "ok": true
+    },
+    {
+     "what": "shipment of the piece: account 5000 moves by 240",
+     "ok": true
+    },
+    {
+     "what": "shipment of the piece: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the piece is worth zero in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 333
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A finished piece transferred to another branch stays finished goods there",
+   "asserts": [
+    {
+     "what": "shipped",
+     "ok": true
+    },
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "finished goods rose by 200.00 as in-transit fell",
+     "ok": true
+    },
+    {
+     "what": "the receiving line is at the second branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 237
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A remnant sold below cost posts the sale and the cost as they are: no write-down is invented",
+   "asserts": [
+    {
+     "what": "revenue 450.00 and cost 600.00",
+     "ok": true
+    },
+    {
+     "what": "nothing was posted to scrap, write-offs or cost adjustments",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 233
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A work order at the second branch is booked to that branch",
+   "asserts": [
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "every line is at the second branch",
+     "ok": true
+    },
+    {
+     "what": "the entry names the branch's owning organisation",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 147
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "When finished goods has no approved account the work order still completes; the event fails by name and posts after the mapping is restored",
+   "asserts": [
+    {
+     "what": "completed on the floor with its piece",
+     "ok": true
+    },
+    {
+     "what": "the event failed and names the missing mapping",
+     "ok": true
+    },
+    {
+     "what": "nothing was posted to raw material in its place",
+     "ok": true
+    },
+    {
+     "what": "the retry posts it",
+     "ok": true
+    },
+    {
+     "what": "retried work order: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "retried work order: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "retried work order: account 1200 moves by -120",
+     "ok": true
+    },
+    {
+     "what": "retried work order: account 1210 moves by 120",
+     "ok": true
+    },
+    {
+     "what": "retried work order: no other account is touched",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 204
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Scrap from work orders shows in the scrap report under its cause",
+   "asserts": [
+    {
+     "what": "work order scrap at the branch rose by 15.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 163
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A work order uses the source's cost at the moment it completes",
+   "asserts": [
+    {
+     "what": "work order after a cost change: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "work order after a cost change: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "work order after a cost change: account 1200 moves by -200",
+     "ok": true
+    },
+    {
+     "what": "work order after a cost change: account 1210 moves by 200",
+     "ok": true
+    },
+    {
+     "what": "work order after a cost change: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "600 lb left at 0.50",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 155
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Two work orders on one source, one after the other, leave the source at quantity times cost",
+   "asserts": [
+    {
+     "what": "1,175 lb left",
+     "ok": true
+    },
+    {
+     "what": "worth 481.75 in the books, give or take a cent of rounding",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 177
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Two work orders on one source completed at the same moment are both posted and the source still agrees",
+   "asserts": [
+    {
+     "what": "both completed",
+     "ok": true
+    },
+    {
+     "what": "both posted",
+     "ok": true
+    },
+    {
+     "what": "1,800 lb at 0.40 left in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 194
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "A work order cancelled before completion moves no stock and posts nothing",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "no event and no movement in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 101
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Job cost and the books agree on material: what the order's cost report says was used is what left the source in the journal",
+   "asserts": [
+    {
+     "what": "job opened",
+     "ok": true
+    },
+    {
+     "what": "completed",
+     "ok": true
+    },
+    {
+     "what": "925 lb at 0.40 left the source in the books",
+     "ok": true
+    },
+    {
+     "what": "the order's job cost shows the same material figure",
+     "ok": true
+    },
+    {
+     "what": "the job cost keeps labor apart, and none of it is in the journal",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 197
+  },
+  {
+   "group": "Manufacturing, work in progress and costing",
+   "name": "Scrap is expensed at cost with no recovery value: nothing is credited back for scrap metal",
+   "asserts": [
+    {
+     "what": "scrap is one debit of 80.00",
+     "ok": true
+    },
+    {
+     "what": "the scrap report says no recovery value is recorded",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 134
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer that leaves a branch moves the item's value from that branch's stock to in-transit; no sale is recorded",
+   "asserts": [
+    {
+     "what": "shipped",
+     "ok": true
+    },
+    {
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "transfer out: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "transfer out: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "transfer out: account 1200 moves by -400",
+     "ok": true
+    },
+    {
+     "what": "transfer out: account 1300 moves by 400",
+     "ok": true
+    },
+    {
+     "what": "transfer out: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the stock line is at the sending branch",
+     "ok": true
+    },
+    {
+     "what": "no revenue, returns or cost of goods moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 113
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "Receiving the transfer moves the value from in-transit to the receiving branch's stock",
+   "asserts": [
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "transfer in: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "transfer in: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "transfer in: account 1200 moves by 400",
+     "ok": true
+    },
+    {
+     "what": "transfer in: account 1300 moves by -400",
+     "ok": true
+    },
+    {
+     "what": "transfer in: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the stock line is at the receiving branch",
+     "ok": true
+    },
+    {
+     "what": "in-transit for the item is back to zero",
+     "ok": true
+    },
+    {
+     "what": "the item is still worth 400.00",
+     "ok": true
+    },
+    {
+     "what": "no revenue or cost of goods moved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 52
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "The branch valuation follows the transfer: the sender's books fall and the receiver's rise by the same amount",
+   "asserts": [
+    {
+     "what": "while on the truck it is in the sender's in-transit column",
+     "ok": true
+    },
+    {
+     "what": "after receipt the receiver holds it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 164
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer called back is reversed with a new entry and the item is back in the sender's stock",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "a reversal exists and points at the original",
+     "ok": true
+    },
+    {
+     "what": "reversal: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "reversal: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "reversal: account 1200 moves by 400",
+     "ok": true
+    },
+    {
+     "what": "reversal: account 1300 moves by -400",
+     "ok": true
+    },
+    {
+     "what": "reversal: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the event says reversed and the reason is kept",
+     "ok": true
+    },
+    {
+     "what": "the item is at the sender at full value",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 137
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer that arrives short: everything is received, then the confirmed shortage is written off at cost at the receiving branch",
+   "asserts": [
+    {
+     "what": "received short",
+     "ok": true
+    },
+    {
+     "what": "the whole quantity is in the receiver's books until it is settled",
+     "ok": true
+    },
+    {
+     "what": "settled",
+     "ok": true
+    },
+    {
+     "what": "100 lb at 0.40 written off: scrap up 40.00, stock down 40.00",
+     "ok": true
+    },
+    {
+     "what": "the write-off line is at the receiving branch",
+     "ok": true
+    },
+    {
+     "what": "the item is worth 900 lb at 0.40",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 183
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A shortage that turns out to be there posts nothing",
+   "asserts": [
+    {
+     "what": "settled as found",
+     "ok": true
+    },
+    {
+     "what": "nothing moved",
+     "ok": true
+    },
+    {
+     "what": "still worth 400.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 157
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer of material with no cost is held at both ends, then posts in order when the cost is entered",
+   "asserts": [
+    {
+     "what": "both ends are held, naming the missing cost",
+     "ok": true
+    },
+    {
+     "what": "both posted once the cost was entered",
+     "ok": true
+    },
+    {
+     "what": "in-transit nets to zero",
+     "ok": true
+    },
+    {
+     "what": "the shipment was posted before the receipt",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 175
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer between branches of different owning organisations is not posted: it is held as intercompany with no approved rule",
+   "asserts": [
+    {
+     "what": "the transfer itself was saved",
+     "ok": true
+    },
+    {
+     "what": "held, saying why",
+     "ok": true
+    },
+    {
+     "what": "nothing moved: no revenue, no due-to or due-from was invented",
+     "ok": true
+    },
+    {
+     "what": "called back; the held event is closed as never posted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 165
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer of three items posts one entry per item",
+   "asserts": [
+    {
+     "what": "three posted events",
+     "ok": true
+    },
+    {
+     "what": "in-transit rose by 620.00",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 350
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "The same item sent on two transfers at once goes on one, and is posted once",
+   "asserts": [
+    {
+     "what": "one transfer was accepted",
+     "ok": true
+    },
+    {
+     "what": "in-transit rose once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 132
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer received three times at once is received once and posted once",
+   "asserts": [
+    {
+     "what": "one receipt was accepted",
+     "ok": true
+    },
+    {
+     "what": "in-transit fell once",
+     "ok": true
+    },
+    {
+     "what": "the item is worth 200.00 at the receiver and nothing in transit",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 143
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "In-transit stock in the books equals the transfers still on the road",
+   "asserts": [
+    {
+     "what": "with a transfer on the road the check matches",
+     "ok": true
+    },
+    {
+     "what": "and after it is received",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 199
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer that was on the road when the books began is received like any other and clears its opening in-transit value",
+   "asserts": [
+    {
+     "what": "received",
+     "ok": true
+    },
+    {
+     "what": "in-transit down 700.00, stock up 700.00",
+     "ok": true
+    },
+    {
+     "what": "the item is at the second branch at full value",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 54
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "Freight billed carries the selling branch; freight expense has never been posted to, because no carrier cost is recorded",
+   "asserts": [
+    {
+     "what": "the freight line is 60.00 at the selling branch",
+     "ok": true
+    },
+    {
+     "what": "5200 Freight Expense has no lines at all",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 230
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A sale made and shipped at the second branch is booked to the second branch on every line",
+   "asserts": [
+    {
+     "what": "invoice: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "invoice: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "invoice: account 1100 moves by 420",
+     "ok": true
+    },
+    {
+     "what": "invoice: account 4000 moves by -420",
+     "ok": true
+    },
+    {
+     "what": "invoice: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "cost: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "cost: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "cost: account 1200 moves by -240",
+     "ok": true
+    },
+    {
+     "what": "cost: account 5000 moves by 240",
+     "ok": true
+    },
+    {
+     "what": "cost: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "every line of both entries is at the second branch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 206
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A branch manager reads the books of their own branch only",
+   "asserts": [
+    {
+     "what": "both may read the revenue report",
+     "ok": true
+    },
+    {
+     "what": "the second branch's manager sees exactly that branch's sales",
+     "ok": true
+    },
+    {
+     "what": "the first branch's manager sees none of the second branch's sales",
+     "ok": true
+    },
+    {
+     "what": "the first branch's manager cannot open the second branch's entry",
+     "ok": true
+    },
+    {
+     "what": "its own manager can",
+     "ok": true
+    },
+    {
+     "what": "a branch trial balance says it is limited and need not balance",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 52
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "The branches add up to the company: every posted line is in exactly one branch total or in \"no branch\"",
+   "asserts": [
+    {
+     "what": "debits by branch add up to the company's",
+     "ok": true
+    },
+    {
+     "what": "credits by branch add up to the company's",
+     "ok": true
+    },
+    {
+     "what": "the company balances",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 10
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "Every entry from a branch names the organisation that owns the branch",
+   "asserts": [
+    {
+     "what": "no entry names a different owner than its branch's",
+     "ok": true
+    },
+    {
+     "what": "entries with a branch exist",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "Material transferred to the second branch and sold there: the cost of the sale comes out of the second branch's stock",
+   "asserts": [
+    {
+     "what": "dispatched",
+     "ok": true
+    },
+    {
+     "what": "cost of the sale: an entry was posted",
+     "ok": true
+    },
+    {
+     "what": "cost of the sale: debits equal credits",
+     "ok": true
+    },
+    {
+     "what": "cost of the sale: account 1200 moves by -450",
+     "ok": true
+    },
+    {
+     "what": "cost of the sale: account 5000 moves by 450",
+     "ok": true
+    },
+    {
+     "what": "cost of the sale: no other account is touched",
+     "ok": true
+    },
+    {
+     "what": "the stock line is at the second branch",
+     "ok": true
+    },
+    {
+     "what": "the item ends at zero across both branches",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 291
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "A transfer already received cannot be called back, and no reversal is posted",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "nothing moved and no reversal exists",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 174
+  },
+  {
+   "group": "Freight, transfers and location accounting",
+   "name": "The gross margin report by branch separates the two branches' sales and costs",
+   "asserts": [
+    {
+     "what": "both branches have a row",
+     "ok": true
+    },
+    {
+     "what": "the second branch shows at least the sale made there",
+     "ok": true
+    },
+    {
+     "what": "the second branch's manager gets only that row",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 14
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "An invoice from before the books began is cancelled: nothing is posted, the books show the difference, and the accountant settles it with a named adjustment",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "nothing was posted",
+     "ok": true
+    },
+    {
+     "what": "an exception is held for the accountant, saying why",
+     "ok": true
+    },
+    {
+     "what": "the receivables check shows the 100.00 the books still carry",
+     "ok": true
+    },
+    {
+     "what": "an administrator cannot adjust a control account",
+     "ok": true
+    },
+    {
+     "what": "without the named permission the CFO's draft is refused too",
+     "ok": true
+    },
+    {
+     "what": "with it the draft is saved",
+     "ok": true
+    },
+    {
+     "what": "and a second person posts it",
+     "ok": true
+    },
+    {
+     "what": "settling needs a note",
+     "ok": true
+    },
+    {
+     "what": "settling cannot name an entry that is not posted",
+     "ok": true
+    },
+    {
+     "what": "settled, naming the entry",
+     "ok": true
+    },
+    {
+     "what": "receivables agree again",
+     "ok": true
+    },
+    {
+     "what": "a settled event cannot be posted afterwards",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 180
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Closing a month: the current month is refused, an open draft blocks it, then it closes and says who closed it",
+   "asserts": [
+    {
+     "what": "a draft dated last month is saved",
+     "ok": true
+    },
+    {
+     "what": "it is posted by a second person, dated last month",
+     "ok": true
+    },
+    {
+     "what": "the month still running cannot be closed",
+     "ok": true
+    },
+    {
+     "what": "an open draft blocks the close",
+     "ok": true
+    },
+    {
+     "what": "the draft is deleted",
+     "ok": true
+    },
+    {
+     "what": "an auditor and an executive cannot close",
+     "ok": true
+    },
+    {
+     "what": "a month that does not exist is refused",
+     "ok": true
+    },
+    {
+     "what": "closed",
+     "ok": true
+    },
+    {
+     "what": "closing twice is refused",
+     "ok": true
+    },
+    {
+     "what": "the close is in the audit log",
+     "ok": true
+    },
+    {
+     "what": "the period list shows it closed with its posted entries",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 91
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "A payment dated in the closed month is saved and held; it is never moved to another month without a person choosing the date",
+   "asserts": [
+    {
+     "what": "the payment itself was saved",
+     "ok": true
+    },
+    {
+     "what": "nothing was posted",
+     "ok": true
+    },
+    {
+     "what": "held: the period is closed",
+     "ok": true
+    },
+    {
+     "what": "the reconciliation shows the 60.00 not yet in the books",
+     "ok": true
+    },
+    {
+     "what": "posting it again without a date holds it again",
+     "ok": true
+    },
+    {
+     "what": "with a date chosen by the CFO it posts in the open month",
+     "ok": true
+    },
+    {
+     "what": "the entry is dated today and written by the retry service on the CFO's order",
+     "ok": true
+    },
+    {
+     "what": "the retry is in the audit log with the date chosen",
+     "ok": true
+    },
+    {
+     "what": "payments agree again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 402
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Nothing can be written into a closed month: not by the screen, not by a second person, not by direct SQL",
+   "asserts": [
+    {
+     "what": "a draft dated in the closed month is refused",
+     "ok": true
+    },
+    {
+     "what": "SQL can only write a draft",
+     "ok": true
+    },
+    {
+     "what": "the draft row goes in",
+     "ok": true
+    },
+    {
+     "what": "posting it by SQL is refused by the database",
+     "ok": true
+    },
+    {
+     "what": "and through the screen",
+     "ok": true
+    },
+    {
+     "what": "an entry of the closed month cannot be re-dated or moved by SQL",
+     "ok": true
+    },
+    {
+     "what": "an open-month entry cannot be moved into the closed month",
+     "ok": true
+    },
+    {
+     "what": "a reversal dated in the closed month is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 49
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Reopening a closed month needs a reason and a different person; afterwards it takes entries again and is closed again",
+   "asserts": [
+    {
+     "what": "no reason: refused",
+     "ok": true
+    },
+    {
+     "what": "the person who closed it cannot reopen it",
+     "ok": true
+    },
+    {
+     "what": "an auditor cannot",
+     "ok": true
+    },
+    {
+     "what": "still closed",
+     "ok": true
+    },
+    {
+     "what": "a second person reopens it, with the reason kept",
+     "ok": true
+    },
+    {
+     "what": "the reopening is in the audit log with the reason",
+     "ok": true
+    },
+    {
+     "what": "the month takes a reversal again",
+     "ok": true
+    },
+    {
+     "what": "an entry is reversed once",
+     "ok": true
+    },
+    {
+     "what": "not reopened twice",
+     "ok": true
+    },
+    {
+     "what": "closed again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 76
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "The trial balance is the sum of the posted lines, as of any day, and drafts are not in it",
+   "asserts": [
+    {
+     "what": "it balances",
+     "ok": true
+    },
+    {
+     "what": "1100 equals the posted lines",
+     "ok": true
+    },
+    {
+     "what": "1200 equals the posted lines",
+     "ok": true
+    },
+    {
+     "what": "2100 equals the posted lines",
+     "ok": true
+    },
+    {
+     "what": "4000 equals the posted lines",
+     "ok": true
+    },
+    {
+     "what": "5000 equals the posted lines",
+     "ok": true
+    },
+    {
+     "what": "as of a day last month it holds only what was dated by then",
+     "ok": true
+    },
+    {
+     "what": "a draft changes nothing",
+     "ok": true
+    },
+    {
+     "what": "a date that is not a date is refused",
+     "ok": true
+    },
+    {
+     "what": "a report that does not exist is not found",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 62
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "General ledger activity for an account: brought forward plus the period equals the closing balance, line by line to its entry",
+   "asserts": [
+    {
+     "what": "read",
+     "ok": true
+    },
+    {
+     "what": "brought forward plus debits less credits is the closing balance",
+     "ok": true
+    },
+    {
+     "what": "the closing balance is the trial balance's",
+     "ok": true
+    },
+    {
+     "what": "brought forward is what was posted before today",
+     "ok": true
+    },
+    {
+     "what": "each line names its entry",
+     "ok": true
+    },
+    {
+     "what": "an unknown account is not found",
+     "ok": true
+    },
+    {
+     "what": "the read is in the audit log",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 38
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Journal entry detail: an entry shows its lines, its source record, its rule version, who and when, and can be found from the source",
+   "asserts": [
+    {
+     "what": "read by the auditor",
+     "ok": true
+    },
+    {
+     "what": "it names the source invoice and the rule version",
+     "ok": true
+    },
+    {
+     "what": "the lines balance and carry the customer and branch",
+     "ok": true
+    },
+    {
+     "what": "it shows when it was posted, its period and currency",
+     "ok": true
+    },
+    {
+     "what": "found from the invoice",
+     "ok": true
+    },
+    {
+     "what": "found by its number",
+     "ok": true
+    },
+    {
+     "what": "a reversal links to the entry it reverses, and that entry links back",
+     "ok": true
+    },
+    {
+     "what": "an entry that does not exist is not found",
+     "ok": true
+    },
+    {
+     "what": "a sales rep cannot read entries",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 46
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "The monthly statement carries balance-sheet accounts forward, starts income and expense at zero, and does not call itself a P&L",
+   "asserts": [
+    {
+     "what": "receivables close at the trial balance figure",
+     "ok": true
+    },
+    {
+     "what": "opening plus the month is the closing, for an asset",
+     "ok": true
+    },
+    {
+     "what": "revenue opens the month at zero",
+     "ok": true
+    },
+    {
+     "what": "it says what it is not",
+     "ok": true
+    },
+    {
+     "what": "last month shows as closed",
+     "ok": true
+    },
+    {
+     "what": "a month with nothing says so",
+     "ok": true
+    },
+    {
+     "what": "a bad month is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 33
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Receivables in the books against the invoices: a record changed outside the product shows as a difference by customer, and nothing is \"fixed\"",
+   "asserts": [
+    {
+     "what": "they agree, customer by customer",
+     "ok": true
+    },
+    {
+     "what": "credit owed back is shown apart",
+     "ok": true
+    },
+    {
+     "what": "the check reports the 11.11 and names the customer",
+     "ok": true
+    },
+    {
+     "what": "the run is stored as failed",
+     "ok": true
+    },
+    {
+     "what": "no entry was made to close the gap",
+     "ok": true
+    },
+    {
+     "what": "with the record put back they agree",
+     "ok": true
+    },
+    {
+     "what": "an auditor reads the stored runs and cannot start one",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 377
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "A payment written to the database without its ledger event is found by the completeness check and posted from its own record",
+   "asserts": [
+    {
+     "what": "the check lists it",
+     "ok": true
+    },
+    {
+     "what": "an auditor cannot post it",
+     "ok": true
+    },
+    {
+     "what": "it is posted by the same rule as any payment",
+     "ok": true
+    },
+    {
+     "what": "running it again finds nothing",
+     "ok": true
+    },
+    {
+     "what": "the check is clear and the recovery is in the audit log",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 398
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Every report is cut from the same posted lines: revenue, margin, tax, stock and scrap agree with the trial balance",
+   "asserts": [
+    {
+     "what": "revenue by branch totals the trial balance's net sales",
+     "ok": true
+    },
+    {
+     "what": "revenue by division totals the trial balance's net sales",
+     "ok": true
+    },
+    {
+     "what": "revenue by customer totals the trial balance's net sales",
+     "ok": true
+    },
+    {
+     "what": "revenue by product totals the trial balance's net sales",
+     "ok": true
+    },
+    {
+     "what": "the margin report's sales are the same net sales",
+     "ok": true
+    },
+    {
+     "what": "its material cost is account 5000",
+     "ok": true
+    },
+    {
+     "what": "it is titled gross margin on material and says it is not a P&L",
+     "ok": true
+    },
+    {
+     "what": "sales tax by state totals account 2100",
+     "ok": true
+    },
+    {
+     "what": "stock by branch totals accounts 1200, 1210 and 1300",
+     "ok": true
+    },
+    {
+     "what": "it names the valuation method as proposed, not approved",
+     "ok": true
+    },
+    {
+     "what": "scrap totals account 5300",
+     "ok": true
+    },
+    {
+     "what": "a grouping that does not exist is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 70
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Export: nothing leaves without an approved account mapping, each entry is exported once, and the file defends against spreadsheet formulas",
+   "asserts": [
+    {
+     "what": "with no mapping nothing is exported and the missing accounts are named",
+     "ok": true
+    },
+    {
+     "what": "no batch was made",
+     "ok": true
+    },
+    {
+     "what": "a provider that is not known is refused",
+     "ok": true
+    },
+    {
+     "what": "an auditor cannot set a mapping",
+     "ok": true
+    },
+    {
+     "what": "the batch holds every posted entry",
+     "ok": true
+    },
+    {
+     "what": "the file says it is not validated for any accounting product",
+     "ok": true
+    },
+    {
+     "what": "every line carries the mapped external account",
+     "ok": true
+    },
+    {
+     "what": "debits equal credits in the file's total",
+     "ok": true
+    },
+    {
+     "what": "a memo that starts like a formula is neutralised",
+     "ok": true
+    },
+    {
+     "what": "the same dates again export nothing",
+     "ok": true
+    },
+    {
+     "what": "the database allows an entry in one batch per provider",
+     "ok": true
+    },
+    {
+     "what": "another provider has its own mapping and is refused until it is set",
+     "ok": true
+    },
+    {
+     "what": "the download is in the audit log",
+     "ok": true
+    },
+    {
+     "what": "the list says no accounting system is connected and nothing is sent",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 412
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "An export batch that failed keeps its entries; a withdrawn batch releases them; an acknowledged batch is final",
+   "asserts": [
+    {
+     "what": "failing needs a reason",
+     "ok": true
+    },
+    {
+     "what": "marked failed with the reason",
+     "ok": true
+    },
+    {
+     "what": "its entries are still held by it",
+     "ok": true
+    },
+    {
+     "what": "withdrawn",
+     "ok": true
+    },
+    {
+     "what": "a withdrawn batch cannot be acknowledged",
+     "ok": true
+    },
+    {
+     "what": "a new batch takes the same entries, with a new number",
+     "ok": true
+    },
+    {
+     "what": "acknowledging needs the accounting system's reference",
+     "ok": true
+    },
+    {
+     "what": "acknowledged with the reference",
+     "ok": true
+    },
+    {
+     "what": "an acknowledged batch cannot be withdrawn or failed",
+     "ok": true
+    },
+    {
+     "what": "the next batch holds only what was posted since",
+     "ok": true
+    },
+    {
+     "what": "two exports at once never share an entry",
+     "ok": true
+    },
+    {
+     "what": "each step is in the audit log",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 250
+  },
+  {
+   "group": "Periods, cutover and reporting",
+   "name": "Posting states mean one thing each: every event is in a known state, posted events have a posted entry, and held ones say why",
+   "asserts": [
+    {
+     "what": "only the documented states exist",
+     "ok": true
+    },
+    {
+     "what": "every posted event points at a posted entry",
+     "ok": true
+    },
+    {
+     "what": "every reversed event's entry has its reversal",
+     "ok": true
+    },
+    {
+     "what": "every event that did not post says why",
+     "ok": true
+    },
+    {
+     "what": "the exceptions report counts the open ones",
+     "ok": true
+    },
+    {
+     "what": "the status says since when and in which time zone the books run",
+     "ok": true
+    },
+    {
+     "what": "a dry run after the books began says they are active and posts nothing",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 44
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "People with no business in the books get nothing: sales, credit, inventory, shop floor, analyst, a customer, a supplier, and no login at all",
+   "asserts": [
+    {
+     "what": "sales reads nothing",
+     "ok": true
+    },
+    {
+     "what": "sales changes nothing",
+     "ok": true
+    },
+    {
+     "what": "credit reads nothing",
+     "ok": true
+    },
+    {
+     "what": "credit changes nothing",
+     "ok": true
+    },
+    {
+     "what": "invMgr reads nothing",
+     "ok": true
+    },
+    {
+     "what": "invMgr changes nothing",
+     "ok": true
+    },
+    {
+     "what": "operator reads nothing",
+     "ok": true
+    },
+    {
+     "what": "operator changes nothing",
+     "ok": true
+    },
+    {
+     "what": "analyst reads nothing",
+     "ok": true
+    },
+    {
+     "what": "analyst changes nothing",
+     "ok": true
+    },
+    {
+     "what": "customer reads nothing",
+     "ok": true
+    },
+    {
+     "what": "customer changes nothing",
+     "ok": true
+    },
+    {
+     "what": "supplier reads nothing",
+     "ok": true
+    },
+    {
+     "what": "supplier changes nothing",
+     "ok": true
+    },
+    {
+     "what": "with no login every address answers 401",
+     "ok": true
+    },
+    {
+     "what": "a made-up token is refused",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1082
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "The auditor and the executive read every report and can change nothing",
+   "asserts": [
+    {
+     "what": "auditor reads everything",
+     "ok": true
+    },
+    {
+     "what": "auditor changes nothing",
+     "ok": true
+    },
+    {
+     "what": "auditor is told so by the status",
+     "ok": true
+    },
+    {
+     "what": "exec reads everything",
+     "ok": true
+    },
+    {
+     "what": "exec changes nothing",
+     "ok": true
+    },
+    {
+     "what": "exec is told so by the status",
+     "ok": true
+    },
+    {
+     "what": "nothing changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 342
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "A branch manager is limited to the branch reports: no receivables, tax, exceptions, chart, periods, reconciliation or export, and no changes",
+   "asserts": [
+    {
+     "what": "the branch reports are readable",
+     "ok": true
+    },
+    {
+     "what": "company-wide reports are refused",
+     "ok": true
+    },
+    {
+     "what": "every change is refused",
+     "ok": true
+    },
+    {
+     "what": "the status tells a branch manager only what they need",
+     "ok": true
+    },
+    {
+     "what": "the stock report holds only the manager's branch and no item list of the company",
+     "ok": true
+    },
+    {
+     "what": "a draft with no branch line is not visible to a branch manager",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 258
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "An administrator keeps the books but cannot start, stop or reconfigure them; only the owner, a super administrator or the CFO can",
+   "asserts": [
+    {
+     "what": "activation, settings, stop and resume are refused",
+     "ok": true
+    },
+    {
+     "what": "an administrator can write a draft",
+     "ok": true
+    },
+    {
+     "what": "and cannot post their own",
+     "ok": true
+    },
+    {
+     "what": "the CFO posts it",
+     "ok": true
+    },
+    {
+     "what": "the status says who may do what",
+     "ok": true
+    },
+    {
+     "what": "the books are still running",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 56
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "A posted entry cannot be edited or deleted through the server: there is no edit address, and delete is refused",
+   "asserts": [
+    {
+     "what": "PUT answers 405 and says to reverse instead",
+     "ok": true
+    },
+    {
+     "what": "PATCH answers 405",
+     "ok": true
+    },
+    {
+     "what": "DELETE is refused, even for the owner",
+     "ok": true
+    },
+    {
+     "what": "posting it a second time is refused",
+     "ok": true
+    },
+    {
+     "what": "the entry is exactly as it was",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 51
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "A posted entry cannot be changed by direct SQL either: update, delete, added or moved lines and TRUNCATE are refused by the database",
+   "asserts": [
+    {
+     "what": "memo changed: refused",
+     "ok": true
+    },
+    {
+     "what": "put back to draft: refused",
+     "ok": true
+    },
+    {
+     "what": "total changed: refused",
+     "ok": true
+    },
+    {
+     "what": "entry deleted: refused",
+     "ok": true
+    },
+    {
+     "what": "line amount changed: refused",
+     "ok": true
+    },
+    {
+     "what": "line account changed: refused",
+     "ok": true
+    },
+    {
+     "what": "line deleted: refused",
+     "ok": true
+    },
+    {
+     "what": "line added: refused",
+     "ok": true
+    },
+    {
+     "what": "a draft's line cannot be moved onto a posted entry",
+     "ok": true
+    },
+    {
+     "what": "TRUNCATE of the lines is refused",
+     "ok": true
+    },
+    {
+     "what": "TRUNCATE of the entries is refused",
+     "ok": true
+    },
+    {
+     "what": "an account with lines cannot be deleted",
+     "ok": true
+    },
+    {
+     "what": "a period with entries cannot be deleted",
+     "ok": true
+    },
+    {
+     "what": "the entry is exactly as it was",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 42
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "The database itself refuses an entry that does not balance, has one line, is written as posted, or has a line on both sides",
+   "asserts": [
+    {
+     "what": "unbalanced: refused at posting",
+     "ok": true
+    },
+    {
+     "what": "one line: refused",
+     "ok": true
+    },
+    {
+     "what": "no lines: refused",
+     "ok": true
+    },
+    {
+     "what": "written as posted: refused",
+     "ok": true
+    },
+    {
+     "what": "a line with a debit and a credit: refused",
+     "ok": true
+    },
+    {
+     "what": "a negative amount: refused",
+     "ok": true
+    },
+    {
+     "what": "a line of zero: refused",
+     "ok": true
+    },
+    {
+     "what": "a kind that does not exist: refused",
+     "ok": true
+    },
+    {
+     "what": "a date outside the period: refused at posting",
+     "ok": true
+    },
+    {
+     "what": "a balanced two-line entry posts, and the database sets its total",
+     "ok": true
+    },
+    {
+     "what": "it is reversed through the server",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 43
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "Manual entries: the server refuses every malformed draft and saves none of them",
+   "asserts": [
+    {
+     "what": "one line: refused",
+     "ok": true
+    },
+    {
+     "what": "does not balance: refused",
+     "ok": true
+    },
+    {
+     "what": "a negative amount: refused",
+     "ok": true
+    },
+    {
+     "what": "both sides on a line: refused",
+     "ok": true
+    },
+    {
+     "what": "a fraction of a cent: refused",
+     "ok": true
+    },
+    {
+     "what": "an account not in the chart: refused",
+     "ok": true
+    },
+    {
+     "what": "no memo: refused",
+     "ok": true
+    },
+    {
+     "what": "no date: refused",
+     "ok": true
+    },
+    {
+     "what": "a date that is not a date: refused",
+     "ok": true
+    },
+    {
+     "what": "a date before the books began: refused",
+     "ok": true
+    },
+    {
+     "what": "an amount too large to hold: refused",
+     "ok": true
+    },
+    {
+     "what": "an infinite amount: refused",
+     "ok": true
+    },
+    {
+     "what": "not a number: refused",
+     "ok": true
+    },
+    {
+     "what": "lines that are not a list: refused",
+     "ok": true
+    },
+    {
+     "what": "more than 200 lines: refused",
+     "ok": true
+    },
+    {
+     "what": "a control account without the named permission: refused",
+     "ok": true
+    },
+    {
+     "what": "none was saved",
+     "ok": true
+    },
+    {
+     "what": "a new account can be added",
+     "ok": true
+    },
+    {
+     "what": "and cannot be used until the accountant approves it",
+     "ok": true
+    },
+    {
+     "what": "approval is recorded with the accountant's name",
+     "ok": true
+    },
+    {
+     "what": "then it can",
+     "ok": true
+    },
+    {
+     "what": "changing an account removes its approval",
+     "ok": true
+    },
+    {
+     "what": "and it is approved again, so nothing is left waiting",
+     "ok": true
+    },
+    {
+     "what": "an account with entries cannot change type",
+     "ok": true
+    },
+    {
+     "what": "an account a rule posts to cannot be switched off",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 137
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "Reversal by hand: a reason is needed, an event's entry is reversed by undoing the event, and a reversal is never reversed",
+   "asserts": [
+    {
+     "what": "no reason: refused",
+     "ok": true
+    },
+    {
+     "what": "an invoice's entry is not reversed by hand",
+     "ok": true
+    },
+    {
+     "what": "a draft is not reversed",
+     "ok": true
+    },
+    {
+     "what": "reversed: a new entry, the mirror image, linked to the first",
+     "ok": true
+    },
+    {
+     "what": "the first entry still stands, marked as reversed",
+     "ok": true
+    },
+    {
+     "what": "a reversal is not reversed",
+     "ok": true
+    },
+    {
+     "what": "the reversal is in the audit log with its reason",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 340
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "Five payments on one invoice at the same moment: each accepted payment is in the books once",
+   "asserts": [
+    {
+     "what": "payments were accepted",
+     "ok": true
+    },
+    {
+     "what": "cash rose by exactly the accepted payments",
+     "ok": true
+    },
+    {
+     "what": "one posted event per payment",
+     "ok": true
+    },
+    {
+     "what": "receivables agree",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 656
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "One draft posted by four requests at once is posted once; one entry reversed by four at once is reversed once",
+   "asserts": [
+    {
+     "what": "one post succeeded, three were refused",
+     "ok": true
+    },
+    {
+     "what": "the books moved once",
+     "ok": true
+    },
+    {
+     "what": "one posting is in the audit log",
+     "ok": true
+    },
+    {
+     "what": "one reversal was made",
+     "ok": true
+    },
+    {
+     "what": "the books moved back once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 86
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "A month closed while payments dated in it are being recorded: each lands before the close or is held, and none after",
+   "asserts": [
+    {
+     "what": "the month closed",
+     "ok": true
+    },
+    {
+     "what": "every payment was saved",
+     "ok": true
+    },
+    {
+     "what": "each is posted or held, none lost or failed",
+     "ok": true
+    },
+    {
+     "what": "held ones say the period is closed",
+     "ok": true
+    },
+    {
+     "what": "no entry was posted into the month after it closed",
+     "ok": true
+    },
+    {
+     "what": "the books balance",
+     "ok": true
+    },
+    {
+     "what": "the held ones post on a date the CFO chose, and payments agree",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2250
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "A posting rule whose mapping loses its approval stops posting: the payment is saved, the event fails with the reason, and posts once approved",
+   "asserts": [
+    {
+     "what": "changing a mapping removes its approval",
+     "ok": true
+    },
+    {
+     "what": "the payment was saved",
+     "ok": true
+    },
+    {
+     "what": "nothing was posted, to that account or any other",
+     "ok": true
+    },
+    {
+     "what": "the event failed and says the mapping is not approved",
+     "ok": true
+    },
+    {
+     "what": "the reconciliation lists it",
+     "ok": true
+    },
+    {
+     "what": "retrying while it is unapproved fails again",
+     "ok": true
+    },
+    {
+     "what": "putting it back does not restore the approval",
+     "ok": true
+    },
+    {
+     "what": "the accountant's approval is recorded again",
+     "ok": true
+    },
+    {
+     "what": "now it posts, to the approved account",
+     "ok": true
+    },
+    {
+     "what": "the mapping change is in the audit log",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 419
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "An account switched off underneath a rule: the invoice is still issued, its entry fails by name, and posts when the account is back",
+   "asserts": [
+    {
+     "what": "the invoice was issued",
+     "ok": true
+    },
+    {
+     "what": "its event failed, naming the account",
+     "ok": true
+    },
+    {
+     "what": "no part of the invoice was posted, and freight did not go to another account",
+     "ok": true
+    },
+    {
+     "what": "with the account back it posts in full",
+     "ok": true
+    },
+    {
+     "what": "posting it a third time is refused",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 318
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "Posting stopped and started again: business goes on while it is stopped, and what happened meanwhile is found and posted in order",
+   "asserts": [
+    {
+     "what": "stopping needs a reason",
+     "ok": true
+    },
+    {
+     "what": "stopped",
+     "ok": true
+    },
+    {
+     "what": "starting again needs a reason",
+     "ok": true
+    },
+    {
+     "what": "started again",
+     "ok": true
+    },
+    {
+     "what": "the sale and the payment went through while stopped",
+     "ok": true
+    },
+    {
+     "what": "nothing was posted while stopped, and no event was written",
+     "ok": true
+    },
+    {
+     "what": "the status said stopped, and what is posted stays",
+     "ok": true
+    },
+    {
+     "what": "no manual entry while stopped",
+     "ok": true
+    },
+    {
+     "what": "starting twice is refused",
+     "ok": true
+    },
+    {
+     "what": "the completeness check lists what happened meanwhile",
+     "ok": true
+    },
+    {
+     "what": "it is posted from the records",
+     "ok": true
+    },
+    {
+     "what": "the invoice was posted before its payment",
+     "ok": true
+    },
+    {
+     "what": "stop and start are in the audit log with their reasons",
+     "ok": true
+    },
+    {
+     "what": "nothing is left unrecorded",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 475
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "An event is recorded once whatever is tried: the database holds one event and one entry per business record",
+   "asserts": [
+    {
+     "what": "a second event row for the same invoice is refused by the database",
+     "ok": true
+    },
+    {
+     "what": "a second system entry for the same invoice is refused by the database",
+     "ok": true
+    },
+    {
+     "what": "retrying a posted event four times at once posts nothing",
+     "ok": true
+    },
+    {
+     "what": "record-missing finds nothing to add for it",
+     "ok": true
+    },
+    {
+     "what": "one entry exists for the invoice",
+     "ok": true
+    },
+    {
+     "what": "every entry number is used once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 283
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "Garbage in: malformed, hostile and oversized requests are refused with a reason, never a server error, and change nothing",
+   "asserts": [
+    {
+     "what": "every one is refused with a 4xx",
+     "ok": true
+    },
+    {
+     "what": "every refusal says why",
+     "ok": true
+    },
+    {
+     "what": "no refusal leaks a database or stack message",
+     "ok": true
+    },
+    {
+     "what": "odd paging is refused or tamed, never obeyed",
+     "ok": true
+    },
+    {
+     "what": "nothing changed and the tables are there",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 179
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "Every change to the books is in the audit log with the person, and every report read is logged with the reader's role",
+   "asserts": [
+    {
+     "what": "LEDGER_CUTOVER_DRY_RUN: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_ACTIVATED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_APPROVAL_RECORDED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_ENTRY_DRAFTED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_ENTRY_POSTED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_DRAFT_DELETED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_ENTRY_REVERSED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_EVENT_RETRIED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_MISSING_RECORDED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_MAPPING_CHANGED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_ACCOUNT_ADDED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_ACCOUNT_CHANGED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_DEACTIVATED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_RESUMED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "LEDGER_PERIOD_CLOSED: logged with a person",
+     "ok": true
+    },
+    {
+     "what": "report reads are logged with the role and the scope",
+     "ok": true
+    },
+    {
+     "what": "refused reads are not logged as reads",
+     "ok": true
+    },
+    {
+     "what": "every entry names the person or the service that wrote it",
+     "ok": true
+    },
+    {
+     "what": "no posted manual entry was written and posted by the same person",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 27
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "The assistant reads the ledger for the people who may, within their scope, and can change nothing; every read and refusal is logged",
+   "asserts": [
+    {
+     "what": "the CFO is answered",
+     "ok": true
+    },
+    {
+     "what": "the assistant was given company figures: the receivables in the books",
+     "ok": true
+    },
+    {
+     "what": "and the rules: read only, not a P&L, not the full accounts",
+     "ok": true
+    },
+    {
+     "what": "a branch manager's question is answered from their own branch only",
+     "ok": true
+    },
+    {
+     "what": "a sales rep's question carries no ledger figure, only the instruction to refuse",
+     "ok": true
+    },
+    {
+     "what": "asked to post, the assistant is given the same read-only figures and nothing else happens",
+     "ok": true
+    },
+    {
+     "what": "the reads are in the audit log with role and scope",
+     "ok": true
+    },
+    {
+     "what": "the refusal is in the audit log",
+     "ok": true
+    },
+    {
+     "what": "nothing in the books changed",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 97
+  },
+  {
+   "group": "Concurrency, authorization and failure recovery",
+   "name": "At the end of every scenario the books still balance and agree with the records; what does not agree is a held event with its reason",
+   "asserts": [
+    {
+     "what": "BOOKS_BALANCE matches",
+     "ok": true
+    },
+    {
+     "what": "RECEIVABLES matches",
+     "ok": true
+    },
+    {
+     "what": "IN_TRANSIT matches",
+     "ok": true
+    },
+    {
+     "what": "REVENUE matches",
+     "ok": true
+    },
+    {
+     "what": "SALES_TAX matches",
+     "ok": true
+    },
+    {
+     "what": "PAYMENTS matches",
+     "ok": true
+    },
+    {
+     "what": "COMPLETENESS matches",
+     "ok": true
+    },
+    {
+     "what": "stock agrees item by item, except items with a held event of their own",
+     "ok": true
+    },
+    {
+     "what": "every open event has a reason",
+     "ok": true
+    },
+    {
+     "what": "the trial balance balances",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 59
+  }
+ ]
+}

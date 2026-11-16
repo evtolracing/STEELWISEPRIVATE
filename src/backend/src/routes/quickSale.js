@@ -31,6 +31,7 @@ import { ci } from '../lib/dbText.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { money } from '../lib/billingRules.js';
 import { BillingError, creditInvoice, refundWithin, recordMoney, takeNumber, catchUp } from '../services/billing.js';
+import { recordMovement, record as recordLedger, reverseEvent as reverseLedger } from '../services/ledger.js';
 
 const router = Router();
 const METHODS = ['CASH', 'CARD', 'CHECK'];
@@ -148,7 +149,7 @@ async function takeShelfStock(tx, { sale, orderId, userId }) {
         data: { qtyOnHand: { decrement: take }, qtyAvailable: { decrement: take }, lastMovement: new Date() },
       });
       if (!moved.count) continue;
-      await tx.materialMovement.create({ data: { coilId: row.coilId, movementType: 'SHIP', fromLocationId: sale.branch.id, qtyMoved: take, unit: 'EA', orderId, reasonCode: SOLD, createdById: userId } });
+      await recordMovement(tx, await tx.materialMovement.create({ data: { coilId: row.coilId, movementType: 'SHIP', fromLocationId: sale.branch.id, qtyMoved: take, unit: 'EA', orderId, reasonCode: SOLD, createdById: userId } }), { userId });
       const now = await tx.inventory.findUnique({ where: { id: row.id }, select: { qtyOnHand: true } });
       if (num(now.qtyOnHand) <= 1e-9) await tx.coil.updateMany({ where: { id: row.coilId, status: 'AVAILABLE' }, data: { status: 'SHIPPED' } });
       left -= take;
@@ -158,12 +159,15 @@ async function takeShelfStock(tx, { sale, orderId, userId }) {
   return untracked;
 }
 
-async function returnShelfStock(tx, { orderId, userId }) {
+async function returnShelfStock(tx, { orderId, userId, dropped = false }) {
   const sold = await tx.materialMovement.findMany({ where: { orderId, movementType: 'SHIP', reasonCode: SOLD } });
   for (const m of sold) {
     await tx.inventory.update({ where: { coilId: m.coilId }, data: { qtyOnHand: { increment: m.qtyMoved }, qtyAvailable: { increment: m.qtyMoved }, lastMovement: new Date() } });
     await tx.coil.updateMany({ where: { id: m.coilId, status: 'SHIPPED' }, data: { status: 'AVAILABLE' } });
-    await tx.materialMovement.create({ data: { coilId: m.coilId, movementType: 'RECEIVE', toLocationId: m.fromLocationId, qtyMoved: m.qtyMoved, unit: m.unit, orderId, reasonCode: RETURNED, createdById: userId } });
+    const back = await tx.materialMovement.create({ data: { coilId: m.coilId, movementType: 'RECEIVE', toLocationId: m.fromLocationId, qtyMoved: m.qtyMoved, unit: m.unit, orderId, reasonCode: RETURNED, createdById: userId } });
+    // A sale that is kept and voided puts its cost back. A second copy of a sale that is dropped never happened: its entry is reversed.
+    if (dropped) await reverseLedger(tx, 'STOCK_SHIPPED', 'MaterialMovement', m.id, { reason: 'Second copy of the same counter sale, dropped', userId });
+    else await recordMovement(tx, back, { userId });
   }
   return sold.length;
 }
@@ -293,6 +297,8 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
           },
         });
         // The cashier is on record for the invoice and for the money taken, like every other invoice.
+        await recordLedger(tx, 'INVOICE_ISSUED', 'Invoice', invoice.id, { userId: req.user.id });
+        for (const p of await tx.payment.findMany({ where: { invoiceId: invoice.id }, select: { id: true } })) await recordLedger(tx, 'PAYMENT_RECORDED', 'Payment', p.id, { userId: req.user.id });
         await recordMoney(tx, { invoice, eventType: 'INVOICE_ISSUED', userId: req.user.id, details: { amount: sale.total, note: 'Counter quick sale' } });
         await recordMoney(tx, { invoice, eventType: 'PAYMENT_RECORDED', userId: req.user.id, details: { amount: sale.total, method, reference: reference || null } });
         untracked = await takeShelfStock(tx, { sale, orderId: created.id, userId: req.user.id });
@@ -312,7 +318,12 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
   const all = await prisma.order.findMany({ where: { poReference: `QS:${saleId}` }, orderBy: { createdAt: 'asc' }, select: { id: true } });
   if (all.length > 1 && all[0].id !== order.id) {
     const dropped = (await prisma.invoice.findMany({ where: { orderId: order.id }, select: { id: true } })).map((i) => i.id);
-    await prisma.$transaction(async (tx) => { await returnShelfStock(tx, { orderId: order.id, userId: req.user.id }); await tx.materialMovement.deleteMany({ where: { orderId: order.id } }); });
+    await prisma.$transaction(async (tx) => {
+      await returnShelfStock(tx, { orderId: order.id, userId: req.user.id, dropped: true });
+      await tx.materialMovement.deleteMany({ where: { orderId: order.id } });
+      for (const p of await tx.payment.findMany({ where: { invoiceId: { in: dropped } }, select: { id: true } })) await reverseLedger(tx, 'PAYMENT_RECORDED', 'Payment', p.id, { reason: 'Second copy of the same counter sale, dropped', userId: req.user.id });
+      for (const id of dropped) await reverseLedger(tx, 'INVOICE_ISSUED', 'Invoice', id, { reason: 'Second copy of the same counter sale, dropped', userId: req.user.id });
+    });
     await prisma.$transaction([
       prisma.auditLog.deleteMany({ where: { resourceType: 'Invoice', resourceId: { in: dropped }, category: 'FINANCIAL' } }),
       prisma.payment.deleteMany({ where: { invoice: { orderId: order.id } } }),

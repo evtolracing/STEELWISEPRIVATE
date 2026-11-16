@@ -1,5 +1,5 @@
 {
- "at": "2026-11-16T06:11:01.956Z",
+ "at": "2026-11-16T19:38:57.705Z",
  "identity": {
   "db": "steelwise_qa",
   "usr": "postgres",
@@ -9,23 +9,23 @@
   "max_connections": "100"
  },
  "counts": {
-  "tables": 162,
-  "columns": 2504,
-  "primaryKeys": 162,
-  "foreignKeys": 196,
-  "uniqueIndexes": 85,
-  "checks": 32,
-  "indexes": 596,
+  "tables": 172,
+  "columns": 2617,
+  "primaryKeys": 172,
+  "foreignKeys": 201,
+  "uniqueIndexes": 95,
+  "checks": 42,
+  "indexes": 632,
   "schemas": 1,
   "views": 0,
   "materializedViews": 0,
-  "triggers": 0,
-  "functions": 0,
-  "sequences": 1,
+  "triggers": 4,
+  "functions": 3,
+  "sequences": 2,
   "partitionedTables": 0,
   "policies": 0,
   "enums": 96,
-  "migrationsApplied": 33,
+  "migrationsApplied": 34,
   "migrationsFailed": 0
  },
  "other": {
@@ -34,15 +34,25 @@
   ],
   "views": [],
   "materializedViews": [],
-  "triggers": [],
-  "functions": [],
+  "triggers": [
+   "JournalEntry.JournalEntry_guard",
+   "JournalLine.JournalLine_guard",
+   "JournalEntry.JournalEntry_no_truncate",
+   "JournalLine.JournalLine_no_truncate"
+  ],
+  "functions": [
+   "ledger_entry_guard",
+   "ledger_line_guard",
+   "ledger_no_truncate"
+  ],
   "sequences": [
-   "SafetyAuditEvent_sequenceNumber_seq"
+   "SafetyAuditEvent_sequenceNumber_seq",
+   "JournalEntry_number_seq"
   ],
   "partitionedTables": [],
   "policies": [],
   "enums": 96,
-  "migrationsApplied": 33,
+  "migrationsApplied": 34,
   "migrationsFailed": 0
  },
  "tables": [
@@ -91,8 +101,8 @@
   {
    "name": "AuditLog",
    "rls": false,
-   "bytes": 2924544,
-   "rows": 4628
+   "bytes": 3088384,
+   "rows": 4636
   },
   {
    "name": "BomOperation",
@@ -109,8 +119,8 @@
   {
    "name": "Coil",
    "rls": false,
-   "bytes": 761856,
-   "rows": 937
+   "bytes": 745472,
+   "rows": 939
   },
   {
    "name": "CommodityPrice",
@@ -139,7 +149,7 @@
   {
    "name": "DemandSuggestionEvent",
    "rls": false,
-   "bytes": 434176,
+   "bytes": 425984,
    "rows": 1242
   },
   {
@@ -163,7 +173,7 @@
   {
    "name": "DispatchTimeLog",
    "rls": false,
-   "bytes": 196608,
+   "bytes": 180224,
    "rows": 151
   },
   {
@@ -277,8 +287,8 @@
   {
    "name": "Inventory",
    "rls": false,
-   "bytes": 483328,
-   "rows": 937
+   "bytes": 499712,
+   "rows": 939
   },
   {
    "name": "InventoryAdjustment",
@@ -313,31 +323,91 @@
   {
    "name": "Invoice",
    "rls": false,
-   "bytes": 458752,
-   "rows": 407
+   "bytes": 385024,
+   "rows": 409
   },
   {
    "name": "InvoiceLine",
    "rls": false,
-   "bytes": 434176,
-   "rows": 419
+   "bytes": 335872,
+   "rows": 421
   },
   {
    "name": "Job",
    "rls": false,
-   "bytes": 507904,
+   "bytes": 483328,
    "rows": 468
   },
   {
    "name": "JobInspection",
    "rls": false,
-   "bytes": 327680,
+   "bytes": 344064,
    "rows": 214
+  },
+  {
+   "name": "JournalEntry",
+   "rls": false,
+   "bytes": 81920,
+   "rows": 0
+  },
+  {
+   "name": "JournalLine",
+   "rls": false,
+   "bytes": 65536,
+   "rows": 0
   },
   {
    "name": "LabelTemplate",
    "rls": false,
    "bytes": 40960,
+   "rows": 0
+  },
+  {
+   "name": "LedgerAccount",
+   "rls": false,
+   "bytes": 24576,
+   "rows": 0
+  },
+  {
+   "name": "LedgerEvent",
+   "rls": false,
+   "bytes": 49152,
+   "rows": 0
+  },
+  {
+   "name": "LedgerExportBatch",
+   "rls": false,
+   "bytes": 32768,
+   "rows": 0
+  },
+  {
+   "name": "LedgerExportItem",
+   "rls": false,
+   "bytes": 32768,
+   "rows": 0
+  },
+  {
+   "name": "LedgerExternalAccount",
+   "rls": false,
+   "bytes": 24576,
+   "rows": 0
+  },
+  {
+   "name": "LedgerMapping",
+   "rls": false,
+   "bytes": 16384,
+   "rows": 0
+  },
+  {
+   "name": "LedgerPeriod",
+   "rls": false,
+   "bytes": 24576,
+   "rows": 0
+  },
+  {
+   "name": "LedgerReconciliation",
+   "rls": false,
+   "bytes": 24576,
    "rows": 0
   },
   {
@@ -385,8 +455,8 @@
   {
    "name": "MaterialMovement",
    "rls": false,
-   "bytes": 1040384,
-   "rows": 1207
+   "bytes": 1032192,
+   "rows": 1213
   },
   {
    "name": "MeterReading",
@@ -409,26 +479,26 @@
   {
    "name": "OperatorSkill",
    "rls": false,
-   "bytes": 114688,
+   "bytes": 106496,
    "rows": 58
   },
   {
    "name": "Order",
    "rls": false,
    "bytes": 696320,
-   "rows": 1036
+   "rows": 1037
   },
   {
    "name": "OrderLine",
    "rls": false,
-   "bytes": 729088,
-   "rows": 1060
+   "bytes": 663552,
+   "rows": 1061
   },
   {
    "name": "OrderLineAllocation",
    "rls": false,
-   "bytes": 163840,
-   "rows": 111
+   "bytes": 237568,
+   "rows": 112
   },
   {
    "name": "Organization",
@@ -475,13 +545,13 @@
   {
    "name": "PartnerApiLog",
    "rls": false,
-   "bytes": 204800,
+   "bytes": 196608,
    "rows": 153
   },
   {
    "name": "PartnerWebhook",
    "rls": false,
-   "bytes": 65536,
+   "bytes": 98304,
    "rows": 16
   },
   {
@@ -529,7 +599,7 @@
   {
    "name": "PrintQueueJob",
    "rls": false,
-   "bytes": 139264,
+   "bytes": 131072,
    "rows": 14
   },
   {
@@ -565,7 +635,7 @@
   {
    "name": "Quote",
    "rls": false,
-   "bytes": 180224,
+   "bytes": 155648,
    "rows": 57
   },
   {
@@ -577,7 +647,7 @@
   {
    "name": "QuoteLine",
    "rls": false,
-   "bytes": 122880,
+   "bytes": 131072,
    "rows": 41
   },
   {
@@ -589,7 +659,7 @@
   {
    "name": "RFQLine",
    "rls": false,
-   "bytes": 114688,
+   "bytes": 98304,
    "rows": 46
   },
   {
@@ -613,7 +683,7 @@
   {
    "name": "RequestKey",
    "rls": false,
-   "bytes": 188416,
+   "bytes": 163840,
    "rows": 24
   },
   {
@@ -865,14 +935,14 @@
   {
    "name": "Shipment",
    "rls": false,
-   "bytes": 385024,
-   "rows": 453
+   "bytes": 360448,
+   "rows": 454
   },
   {
    "name": "ShipmentItem",
    "rls": false,
-   "bytes": 434176,
-   "rows": 422
+   "bytes": 385024,
+   "rows": 423
   },
   {
    "name": "ShipmentStop",
@@ -901,7 +971,7 @@
   {
    "name": "StockTransfer",
    "rls": false,
-   "bytes": 188416,
+   "bytes": 196608,
    "rows": 63
   },
   {
@@ -955,7 +1025,7 @@
   {
    "name": "TraceEvent",
    "rls": false,
-   "bytes": 237568,
+   "bytes": 253952,
    "rows": 83
   },
   {
@@ -985,13 +1055,13 @@
   {
    "name": "WebhookDelivery",
    "rls": false,
-   "bytes": 1859584,
-   "rows": 1182
+   "bytes": 2359296,
+   "rows": 1198
   },
   {
    "name": "WorkCenter",
    "rls": false,
-   "bytes": 212992,
+   "bytes": 204800,
    "rows": 339
   },
   {
@@ -1009,14 +1079,14 @@
   {
    "name": "WorkOrderOutput",
    "rls": false,
-   "bytes": 114688,
-   "rows": 55
+   "bytes": 98304,
+   "rows": 56
   },
   {
    "name": "_prisma_migrations",
    "rls": false,
    "bytes": 32768,
-   "rows": 33
+   "rows": 34
   }
  ],
  "columns": [
@@ -8241,6 +8311,356 @@
    "s": null
   },
   {
+   "t": "JournalEntry",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "entryNumber",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "entryDate",
+   "type": "date",
+   "udt": "date",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "periodId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "status",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'DRAFT'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "kind",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "eventKind",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "sourceType",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "sourceId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "ruleVersion",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": true,
+   "def": null,
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "JournalEntry",
+   "c": "currency",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'USD'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "locationId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "legalEntityId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "memo",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "reversesEntryId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "totalDebit",
+   "type": "numeric",
+   "udt": "numeric",
+   "nullable": false,
+   "def": "0",
+   "p": 18,
+   "s": 2
+  },
+  {
+   "t": "JournalEntry",
+   "c": "createdById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "createdByService",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "postedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "postedById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalEntry",
+   "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "entryId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "lineNumber",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": false,
+   "def": null,
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "JournalLine",
+   "c": "accountId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "debit",
+   "type": "numeric",
+   "udt": "numeric",
+   "nullable": false,
+   "def": "0",
+   "p": 18,
+   "s": 2
+  },
+  {
+   "t": "JournalLine",
+   "c": "credit",
+   "type": "numeric",
+   "udt": "numeric",
+   "nullable": false,
+   "def": "0",
+   "p": 18,
+   "s": 2
+  },
+  {
+   "t": "JournalLine",
+   "c": "locationId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "division",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "customerId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "supplierId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "productId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "coilId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "jurisdiction",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "JournalLine",
+   "c": "memo",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
    "t": "LabelTemplate",
    "c": "id",
    "type": "text",
@@ -8405,6 +8825,786 @@
    "c": "updatedAt",
    "type": "timestamp without time zone",
    "udt": "timestamp",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "code",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "name",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "type",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "normalSide",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "isControl",
+   "type": "boolean",
+   "udt": "bool",
+   "nullable": false,
+   "def": "false",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "isActive",
+   "type": "boolean",
+   "udt": "bool",
+   "nullable": false,
+   "def": "true",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "description",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "approvedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "approvedBy",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerAccount",
+   "c": "updatedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "eventKind",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "sourceType",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "sourceId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "status",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'PENDING'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "reason",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "attempts",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": false,
+   "def": "0",
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "locationId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "occurredAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "journalEntryId",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerEvent",
+   "c": "updatedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "batchNumber",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "provider",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "fromDate",
+   "type": "date",
+   "udt": "date",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "toDate",
+   "type": "date",
+   "udt": "date",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "status",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'GENERATED'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "entryCount",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": false,
+   "def": null,
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "totalDebit",
+   "type": "numeric",
+   "udt": "numeric",
+   "nullable": false,
+   "def": null,
+   "p": 18,
+   "s": 2
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "checksum",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "content",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "error",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "externalReference",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "createdById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "acknowledgedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportBatch",
+   "c": "acknowledgedById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportItem",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportItem",
+   "c": "batchId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportItem",
+   "c": "provider",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExportItem",
+   "c": "entryId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "provider",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "accountCode",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "scope",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'*'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "externalAccount",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "externalName",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "updatedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "c": "updatedById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerMapping",
+   "c": "key",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerMapping",
+   "c": "accountCode",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerMapping",
+   "c": "description",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerMapping",
+   "c": "approvedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerMapping",
+   "c": "approvedBy",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerMapping",
+   "c": "updatedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "year",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": false,
+   "def": null,
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "month",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": false,
+   "def": null,
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "startsOn",
+   "type": "date",
+   "udt": "date",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "endsOn",
+   "type": "date",
+   "udt": "date",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "status",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": "'OPEN'::text",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "closedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "closedById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "reopenedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "reopenedById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "reopenReason",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "createdAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerPeriod",
+   "c": "updatedAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerReconciliation",
+   "c": "id",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerReconciliation",
+   "c": "ranAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerReconciliation",
+   "c": "ranById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerReconciliation",
+   "c": "asOf",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerReconciliation",
+   "c": "passed",
+   "type": "boolean",
+   "udt": "bool",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "LedgerReconciliation",
+   "c": "exceptions",
+   "type": "integer",
+   "udt": "int4",
+   "nullable": false,
+   "def": null,
+   "p": 32,
+   "s": 0
+  },
+  {
+   "t": "LedgerReconciliation",
+   "c": "checks",
+   "type": "jsonb",
+   "udt": "jsonb",
    "nullable": false,
    "def": null,
    "p": null,
@@ -27612,8 +28812,312 @@
    ]
   },
   {
+   "t": "JournalEntry",
+   "name": "JournalEntry_kind_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((kind = ANY (ARRAY['SYSTEM'::text, 'MANUAL'::text, 'REVERSAL'::text, 'OPENING'::text])))",
+   "cols": [
+    "kind"
+   ]
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_not_own_reversal",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK (((\"reversesEntryId\" IS NULL) OR (\"reversesEntryId\" <> id)))",
+   "cols": [
+    "reversesEntryId",
+    "id"
+   ]
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_periodId_fkey",
+   "kind": "f",
+   "ref": "LedgerPeriod",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"periodId\") REFERENCES \"LedgerPeriod\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "periodId"
+   ]
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_reversesEntryId_fkey",
+   "kind": "f",
+   "ref": "JournalEntry",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"reversesEntryId\") REFERENCES \"JournalEntry\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "reversesEntryId"
+   ]
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_status_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((status = ANY (ARRAY['DRAFT'::text, 'POSTED'::text])))",
+   "cols": [
+    "status"
+   ]
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_accountId_fkey",
+   "kind": "f",
+   "ref": "LedgerAccount",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"accountId\") REFERENCES \"LedgerAccount\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "accountId"
+   ]
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_entryId_fkey",
+   "kind": "f",
+   "ref": "JournalEntry",
+   "ondelete": "c",
+   "valid": true,
+   "def": "FOREIGN KEY (\"entryId\") REFERENCES \"JournalEntry\"(id) ON UPDATE CASCADE ON DELETE CASCADE",
+   "cols": [
+    "entryId"
+   ]
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_one_side",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK (((debit >= (0)::numeric) AND (credit >= (0)::numeric) AND ((debit = (0)::numeric) <> (credit = (0)::numeric))))",
+   "cols": [
+    "debit",
+    "credit"
+   ]
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
    "t": "LabelTemplate",
    "name": "LabelTemplate_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "LedgerAccount",
+   "name": "LedgerAccount_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "LedgerAccount",
+   "name": "LedgerAccount_side_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((\"normalSide\" = ANY (ARRAY['DEBIT'::text, 'CREDIT'::text])))",
+   "cols": [
+    "normalSide"
+   ]
+  },
+  {
+   "t": "LedgerAccount",
+   "name": "LedgerAccount_type_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((type = ANY (ARRAY['ASSET'::text, 'LIABILITY'::text, 'EQUITY'::text, 'REVENUE'::text, 'CONTRA_REVENUE'::text, 'EXPENSE'::text])))",
+   "cols": [
+    "type"
+   ]
+  },
+  {
+   "t": "LedgerEvent",
+   "name": "LedgerEvent_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "LedgerEvent",
+   "name": "LedgerEvent_status_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((status = ANY (ARRAY['PENDING'::text, 'POSTED'::text, 'FAILED'::text, 'REVERSED'::text, 'RECONCILIATION_REQUIRED'::text, 'NOT_POSTED'::text])))",
+   "cols": [
+    "status"
+   ]
+  },
+  {
+   "t": "LedgerExportBatch",
+   "name": "LedgerExportBatch_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "LedgerExportBatch",
+   "name": "LedgerExportBatch_status_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((status = ANY (ARRAY['GENERATED'::text, 'ACKNOWLEDGED'::text, 'FAILED'::text, 'VOID'::text])))",
+   "cols": [
+    "status"
+   ]
+  },
+  {
+   "t": "LedgerExportItem",
+   "name": "LedgerExportItem_batchId_fkey",
+   "kind": "f",
+   "ref": "LedgerExportBatch",
+   "ondelete": "c",
+   "valid": true,
+   "def": "FOREIGN KEY (\"batchId\") REFERENCES \"LedgerExportBatch\"(id) ON UPDATE CASCADE ON DELETE CASCADE",
+   "cols": [
+    "batchId"
+   ]
+  },
+  {
+   "t": "LedgerExportItem",
+   "name": "LedgerExportItem_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "name": "LedgerExternalAccount_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "LedgerMapping",
+   "name": "LedgerMapping_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (key)",
+   "cols": [
+    "key"
+   ]
+  },
+  {
+   "t": "LedgerPeriod",
+   "name": "LedgerPeriod_month_valid",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((((month >= 1) AND (month <= 12)) AND (\"startsOn\" <= \"endsOn\")))",
+   "cols": [
+    "month",
+    "startsOn",
+    "endsOn"
+   ]
+  },
+  {
+   "t": "LedgerPeriod",
+   "name": "LedgerPeriod_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (id)",
+   "cols": [
+    "id"
+   ]
+  },
+  {
+   "t": "LedgerPeriod",
+   "name": "LedgerPeriod_status_known",
+   "kind": "c",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "CHECK ((status = ANY (ARRAY['OPEN'::text, 'CLOSED'::text])))",
+   "cols": [
+    "status"
+   ]
+  },
+  {
+   "t": "LedgerReconciliation",
+   "name": "LedgerReconciliation_pkey",
    "kind": "p",
    "ref": null,
    "ondelete": " ",
@@ -31052,7 +32556,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"AuditLog_pkey\" ON public.\"AuditLog\" USING btree (id)",
-   "bytes": 344064,
+   "bytes": 368640,
    "cols": [
     "id"
    ],
@@ -31064,7 +32568,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_resourceType_resourceId_idx\" ON public.\"AuditLog\" USING btree (\"resourceType\", \"resourceId\")",
-   "bytes": 262144,
+   "bytes": 286720,
    "cols": [
     "resourceType",
     "resourceId"
@@ -31090,7 +32594,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_userId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"userId\", \"timestamp\")",
-   "bytes": 483328,
+   "bytes": 540672,
    "cols": [
     "userId",
     "timestamp"
@@ -31420,7 +32924,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"DemandSuggestionEvent_pkey\" ON public.\"DemandSuggestionEvent\" USING btree (id)",
-   "bytes": 114688,
+   "bytes": 106496,
    "cols": [
     "id"
    ],
@@ -32581,7 +34085,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Invoice_orderId_idx\" ON public.\"Invoice\" USING btree (\"orderId\")",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "orderId"
    ],
@@ -32605,7 +34109,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Invoice_shipmentId_idx\" ON public.\"Invoice\" USING btree (\"shipmentId\")",
-   "bytes": 40960,
+   "bytes": 49152,
    "cols": [
     "shipmentId"
    ],
@@ -32689,7 +34193,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Job_orderId_idx\" ON public.\"Job\" USING btree (\"orderId\")",
-   "bytes": 57344,
+   "bytes": 49152,
    "cols": [
     "orderId"
    ],
@@ -32713,7 +34217,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Job_pkey\" ON public.\"Job\" USING btree (id)",
-   "bytes": 73728,
+   "bytes": 65536,
    "cols": [
     "id"
    ],
@@ -32816,6 +34320,205 @@
    "partial": false
   },
   {
+   "t": "JournalEntry",
+   "name": "JournalEntry_entryDate_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalEntry_entryDate_idx\" ON public.\"JournalEntry\" USING btree (\"entryDate\")",
+   "bytes": 8192,
+   "cols": [
+    "entryDate"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_entryNumber_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"JournalEntry_entryNumber_key\" ON public.\"JournalEntry\" USING btree (\"entryNumber\")",
+   "bytes": 8192,
+   "cols": [
+    "entryNumber"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_locationId_entryDate_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalEntry_locationId_entryDate_idx\" ON public.\"JournalEntry\" USING btree (\"locationId\", \"entryDate\")",
+   "bytes": 8192,
+   "cols": [
+    "locationId",
+    "entryDate"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_one_per_event",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"JournalEntry_one_per_event\" ON public.\"JournalEntry\" USING btree (\"eventKind\", \"sourceType\", \"sourceId\") WHERE (kind = 'SYSTEM'::text)",
+   "bytes": 8192,
+   "cols": [
+    "eventKind",
+    "sourceType",
+    "sourceId"
+   ],
+   "partial": true
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_periodId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalEntry_periodId_idx\" ON public.\"JournalEntry\" USING btree (\"periodId\")",
+   "bytes": 8192,
+   "cols": [
+    "periodId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"JournalEntry_pkey\" ON public.\"JournalEntry\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_reversesEntryId_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"JournalEntry_reversesEntryId_key\" ON public.\"JournalEntry\" USING btree (\"reversesEntryId\")",
+   "bytes": 8192,
+   "cols": [
+    "reversesEntryId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_sourceType_sourceId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalEntry_sourceType_sourceId_idx\" ON public.\"JournalEntry\" USING btree (\"sourceType\", \"sourceId\")",
+   "bytes": 8192,
+   "cols": [
+    "sourceType",
+    "sourceId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalEntry",
+   "name": "JournalEntry_status_kind_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalEntry_status_kind_idx\" ON public.\"JournalEntry\" USING btree (status, kind)",
+   "bytes": 8192,
+   "cols": [
+    "status",
+    "kind"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_accountId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalLine_accountId_idx\" ON public.\"JournalLine\" USING btree (\"accountId\")",
+   "bytes": 8192,
+   "cols": [
+    "accountId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_coilId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalLine_coilId_idx\" ON public.\"JournalLine\" USING btree (\"coilId\")",
+   "bytes": 8192,
+   "cols": [
+    "coilId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_customerId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalLine_customerId_idx\" ON public.\"JournalLine\" USING btree (\"customerId\")",
+   "bytes": 8192,
+   "cols": [
+    "customerId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_entryId_lineNumber_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"JournalLine_entryId_lineNumber_key\" ON public.\"JournalLine\" USING btree (\"entryId\", \"lineNumber\")",
+   "bytes": 8192,
+   "cols": [
+    "entryId",
+    "lineNumber"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_locationId_accountId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalLine_locationId_accountId_idx\" ON public.\"JournalLine\" USING btree (\"locationId\", \"accountId\")",
+   "bytes": 8192,
+   "cols": [
+    "locationId",
+    "accountId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"JournalLine_pkey\" ON public.\"JournalLine\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "JournalLine",
+   "name": "JournalLine_productId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"JournalLine_productId_idx\" ON public.\"JournalLine\" USING btree (\"productId\")",
+   "bytes": 8192,
+   "cols": [
+    "productId"
+   ],
+   "partial": false
+  },
+  {
    "t": "LabelTemplate",
    "name": "LabelTemplate_code_key",
    "uniq": true,
@@ -32860,6 +34563,255 @@
    "bytes": 8192,
    "cols": [
     "templateType"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerAccount",
+   "name": "LedgerAccount_code_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"LedgerAccount_code_key\" ON public.\"LedgerAccount\" USING btree (code)",
+   "bytes": 8192,
+   "cols": [
+    "code"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerAccount",
+   "name": "LedgerAccount_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerAccount_pkey\" ON public.\"LedgerAccount\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerEvent",
+   "name": "LedgerEvent_eventKind_sourceType_sourceId_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"LedgerEvent_eventKind_sourceType_sourceId_key\" ON public.\"LedgerEvent\" USING btree (\"eventKind\", \"sourceType\", \"sourceId\")",
+   "bytes": 8192,
+   "cols": [
+    "eventKind",
+    "sourceType",
+    "sourceId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerEvent",
+   "name": "LedgerEvent_locationId_status_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"LedgerEvent_locationId_status_idx\" ON public.\"LedgerEvent\" USING btree (\"locationId\", status)",
+   "bytes": 8192,
+   "cols": [
+    "locationId",
+    "status"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerEvent",
+   "name": "LedgerEvent_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerEvent_pkey\" ON public.\"LedgerEvent\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerEvent",
+   "name": "LedgerEvent_sourceType_sourceId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"LedgerEvent_sourceType_sourceId_idx\" ON public.\"LedgerEvent\" USING btree (\"sourceType\", \"sourceId\")",
+   "bytes": 8192,
+   "cols": [
+    "sourceType",
+    "sourceId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerEvent",
+   "name": "LedgerEvent_status_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"LedgerEvent_status_idx\" ON public.\"LedgerEvent\" USING btree (status)",
+   "bytes": 8192,
+   "cols": [
+    "status"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExportBatch",
+   "name": "LedgerExportBatch_batchNumber_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"LedgerExportBatch_batchNumber_key\" ON public.\"LedgerExportBatch\" USING btree (\"batchNumber\")",
+   "bytes": 8192,
+   "cols": [
+    "batchNumber"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExportBatch",
+   "name": "LedgerExportBatch_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerExportBatch_pkey\" ON public.\"LedgerExportBatch\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExportBatch",
+   "name": "LedgerExportBatch_provider_status_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"LedgerExportBatch_provider_status_idx\" ON public.\"LedgerExportBatch\" USING btree (provider, status)",
+   "bytes": 8192,
+   "cols": [
+    "provider",
+    "status"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExportItem",
+   "name": "LedgerExportItem_batchId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"LedgerExportItem_batchId_idx\" ON public.\"LedgerExportItem\" USING btree (\"batchId\")",
+   "bytes": 8192,
+   "cols": [
+    "batchId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExportItem",
+   "name": "LedgerExportItem_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerExportItem_pkey\" ON public.\"LedgerExportItem\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExportItem",
+   "name": "LedgerExportItem_provider_entryId_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"LedgerExportItem_provider_entryId_key\" ON public.\"LedgerExportItem\" USING btree (provider, \"entryId\")",
+   "bytes": 8192,
+   "cols": [
+    "provider",
+    "entryId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "name": "LedgerExternalAccount_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerExternalAccount_pkey\" ON public.\"LedgerExternalAccount\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerExternalAccount",
+   "name": "LedgerExternalAccount_provider_accountCode_scope_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"LedgerExternalAccount_provider_accountCode_scope_key\" ON public.\"LedgerExternalAccount\" USING btree (provider, \"accountCode\", scope)",
+   "bytes": 8192,
+   "cols": [
+    "provider",
+    "accountCode",
+    "scope"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerMapping",
+   "name": "LedgerMapping_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerMapping_pkey\" ON public.\"LedgerMapping\" USING btree (key)",
+   "bytes": 8192,
+   "cols": [
+    "key"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerPeriod",
+   "name": "LedgerPeriod_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerPeriod_pkey\" ON public.\"LedgerPeriod\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerPeriod",
+   "name": "LedgerPeriod_year_month_key",
+   "uniq": true,
+   "pk": false,
+   "def": "CREATE UNIQUE INDEX \"LedgerPeriod_year_month_key\" ON public.\"LedgerPeriod\" USING btree (year, month)",
+   "bytes": 8192,
+   "cols": [
+    "year",
+    "month"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerReconciliation",
+   "name": "LedgerReconciliation_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"LedgerReconciliation_pkey\" ON public.\"LedgerReconciliation\" USING btree (id)",
+   "bytes": 8192,
+   "cols": [
+    "id"
+   ],
+   "partial": false
+  },
+  {
+   "t": "LedgerReconciliation",
+   "name": "LedgerReconciliation_ranAt_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"LedgerReconciliation_ranAt_idx\" ON public.\"LedgerReconciliation\" USING btree (\"ranAt\")",
+   "bytes": 8192,
+   "cols": [
+    "ranAt"
    ],
    "partial": false
   },
@@ -33207,7 +35159,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"MaterialMovement_createdById_idx\" ON public.\"MaterialMovement\" USING btree (\"createdById\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "createdById"
    ],
@@ -33255,7 +35207,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"MaterialMovement_pkey\" ON public.\"MaterialMovement\" USING btree (id)",
-   "bytes": 90112,
+   "bytes": 106496,
    "cols": [
     "id"
    ],
@@ -33534,7 +35486,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)",
-   "bytes": 106496,
+   "bytes": 131072,
    "cols": [
     "id"
    ],
@@ -33642,7 +35594,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"OrderLineAllocation_orderLineId_idx\" ON public.\"OrderLineAllocation\" USING btree (\"orderLineId\")",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "orderLineId"
    ],
@@ -36921,7 +38873,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Shipment_pkey\" ON public.\"Shipment\" USING btree (id)",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "id"
    ],
@@ -37770,7 +39722,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_eventId_idx\" ON public.\"WebhookDelivery\" USING btree (\"eventId\")",
-   "bytes": 73728,
+   "bytes": 81920,
    "cols": [
     "eventId"
    ],
@@ -37782,7 +39734,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (\"nextRetryAt\")",
-   "bytes": 73728,
+   "bytes": 98304,
    "cols": [
     "nextRetryAt"
    ],
@@ -37794,7 +39746,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_pkey\" ON public.\"WebhookDelivery\" USING btree (id)",
-   "bytes": 139264,
+   "bytes": 172032,
    "cols": [
     "id"
    ],
@@ -37806,7 +39758,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_idx\" ON public.\"WebhookDelivery\" USING btree (status)",
-   "bytes": 16384,
+   "bytes": 32768,
    "cols": [
     "status"
    ],
@@ -37818,7 +39770,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (status, \"nextRetryAt\")",
-   "bytes": 90112,
+   "bytes": 114688,
    "cols": [
     "status",
     "nextRetryAt"
@@ -37831,7 +39783,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_webhookId_eventId_key\" ON public.\"WebhookDelivery\" USING btree (\"webhookId\", \"eventId\")",
-   "bytes": 270336,
+   "bytes": 319488,
    "cols": [
     "webhookId",
     "eventId"
@@ -38052,7 +40004,7 @@
    "column": "tenantId",
    "nullable": true,
    "target": null,
-   "rows": 4628,
+   "rows": 4636,
    "set": 2,
    "orphans": null
   },
@@ -38061,7 +40013,7 @@
    "column": "targetUserId",
    "nullable": true,
    "target": "User",
-   "rows": 4628,
+   "rows": 4636,
    "set": 0,
    "orphans": null
   },
@@ -38070,8 +40022,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 4628,
-   "set": 4628,
+   "rows": 4636,
+   "set": 4636,
    "orphans": null
   },
   {
@@ -38079,7 +40031,7 @@
    "column": "sessionId",
    "nullable": true,
    "target": null,
-   "rows": 4628,
+   "rows": 4636,
    "set": 0,
    "orphans": null
   },
@@ -38088,7 +40040,7 @@
    "column": "correlationId",
    "nullable": true,
    "target": null,
-   "rows": 4628,
+   "rows": 4636,
    "set": 0,
    "orphans": null
   },
@@ -38426,6 +40378,96 @@
    "orphans": null
   },
   {
+   "table": "JournalEntry",
+   "column": "sourceId",
+   "nullable": true,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalEntry",
+   "column": "locationId",
+   "nullable": true,
+   "target": "Location",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalEntry",
+   "column": "legalEntityId",
+   "nullable": true,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalEntry",
+   "column": "createdById",
+   "nullable": true,
+   "target": "User",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalEntry",
+   "column": "postedById",
+   "nullable": true,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalLine",
+   "column": "locationId",
+   "nullable": true,
+   "target": "Location",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalLine",
+   "column": "customerId",
+   "nullable": true,
+   "target": "Organization",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalLine",
+   "column": "supplierId",
+   "nullable": true,
+   "target": "Organization",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalLine",
+   "column": "productId",
+   "nullable": true,
+   "target": "Product",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "JournalLine",
+   "column": "coilId",
+   "nullable": true,
+   "target": "Coil",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
    "table": "LabelTemplate",
    "column": "tenantId",
    "nullable": true,
@@ -38439,6 +40481,96 @@
    "column": "customerId",
    "nullable": true,
    "target": "Organization",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerEvent",
+   "column": "sourceId",
+   "nullable": false,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerEvent",
+   "column": "locationId",
+   "nullable": true,
+   "target": "Location",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerEvent",
+   "column": "journalEntryId",
+   "nullable": true,
+   "target": "JournalEntry",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerExportBatch",
+   "column": "createdById",
+   "nullable": true,
+   "target": "User",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerExportBatch",
+   "column": "acknowledgedById",
+   "nullable": true,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerExportItem",
+   "column": "entryId",
+   "nullable": false,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerExternalAccount",
+   "column": "updatedById",
+   "nullable": true,
+   "target": "User",
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerPeriod",
+   "column": "closedById",
+   "nullable": true,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerPeriod",
+   "column": "reopenedById",
+   "nullable": true,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
+   "table": "LedgerReconciliation",
+   "column": "ranById",
+   "nullable": true,
+   "target": null,
    "rows": 0,
    "set": null,
    "orphans": null
@@ -39862,7 +41994,7 @@
    "nullable": true,
    "target": null,
    "rows": 63,
-   "set": 37,
+   "set": 36,
    "orphans": null
   },
   {
@@ -39871,7 +42003,7 @@
    "nullable": true,
    "target": null,
    "rows": 63,
-   "set": 25,
+   "set": 26,
    "orphans": null
   },
   {
@@ -40005,14 +42137,14 @@
    "column": "eventId",
    "nullable": false,
    "target": null,
-   "rows": 1182,
-   "set": 1182,
+   "rows": 1198,
+   "set": 1198,
    "orphans": null
   }
  ],
  "audit": {
-  "referenceColumnsWithNoForeignKey": 221,
-  "ofWhichTargetKnown": 80,
+  "referenceColumnsWithNoForeignKey": 241,
+  "ofWhichTargetKnown": 91,
   "ofWhichHaveOrphans": [
    "DispatchTimeLog.jobId → Job: 151 of 151",
    "DispatchTimeLog.operatorId → User: 151 of 151",
@@ -40091,6 +42223,11 @@
    },
    {
     "column": "LabelTemplate.code",
+    "unique": true,
+    "duplicates": null
+   },
+   {
+    "column": "LedgerAccount.code",
     "unique": true,
     "duplicates": null
    },
@@ -40191,8 +42328,8 @@
   ],
   "foreignKeysNotValidated": [],
   "foreignKeyDeleteRules": {
-   "cascade": 39,
-   "restrict": 83,
+   "cascade": 41,
+   "restrict": 86,
    "set null": 74
   },
   "cascadesIntoMoneyOrStock": [
@@ -40210,7 +42347,17 @@
    "DowntimeRecord",
    "ForecastSnapshot",
    "InventoryAdjustment",
+   "JournalEntry",
+   "JournalLine",
    "LabelTemplate",
+   "LedgerAccount",
+   "LedgerEvent",
+   "LedgerExportBatch",
+   "LedgerExportItem",
+   "LedgerExternalAccount",
+   "LedgerMapping",
+   "LedgerPeriod",
+   "LedgerReconciliation",
    "MaintenanceAttachment",
    "MaintenanceAuditLog",
    "MaintenanceOrderLabor",
@@ -40280,6 +42427,9 @@
    "IntakeJob.locationId",
    "IntakeOrder.locationId",
    "InventoryUnit.locationId",
+   "JournalEntry.locationId",
+   "JournalLine.locationId",
+   "LedgerEvent.locationId",
    "PricingAnalytics.locationId",
    "PricingRecommendation.locationId",
    "PrintQueueJob.locationId",

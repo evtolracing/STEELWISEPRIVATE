@@ -7,7 +7,7 @@
 # written, because it sends empty bodies and would count as "success" where it should not.
 set -uo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"; cd "$root"
-LOGS="${1:-$root/qa/results/gate-logs}"; mkdir -p "$LOGS"
+LOGS="${1:-$root/qa/results/gate-logs}"; mkdir -p "$LOGS"; LOGS="$(cd "$LOGS" && pwd)"   # absolute: a later step writes to it from another directory
 export DATABASE_URL="${QA_DATABASE_URL:-postgresql://postgres:password@localhost:5432/steelwise_qa}"
 export DIRECT_URL="$DATABASE_URL" LOG_REQUESTS=on
 case "$DATABASE_URL" in *localhost*qa*|*127.0.0.1*qa*) ;; *) echo "Refusing: not a local QA database"; exit 1;; esac
@@ -38,6 +38,10 @@ for t in ui-experience ui-shipping ui-shop ui-sales ui-inventory ui-integration 
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8
 echo "== every screen measured at three sizes"; node qa/sim/ui-audit.cjs --out qa/results/ui-audit.json > "$LOGS/ui-audit.log" 2>&1; node qa/tools/ui-audit-gate.cjs qa/results/ui-audit.json
+# Phase 9.5 runs last of the scenarios: it starts the QA ledger, and everything above is checked with the ledger never started, as it is on the live system until the accountant approves.
+echo "== phase 9.5 ledger scenarios"; node qa/sim/phase95-ledger.mjs --base http://localhost:3011 2>&1 | grep -v "^\s*at " | tail -12
+echo "== phase 9.5 UI scenarios"; node qa/sim/phase95-ui.cjs 2>&1 | grep "✗\|Phase 9.5 UI"
+echo "== phase 9.5 load, 80 branches"; node qa/sim/phase95-load.mjs --base http://localhost:3011 2>&1 | grep "✗\|stage 1\|Phase 9.5 load"
 echo "== calls the tests made"; node qa/tools/exercised.mjs "$LOGS/server-3011.log" "$LOGS/server-3001.log" | sed -n '/"distinct"/,$p'
 echo "== baseline probe"; node qa/tools/discover.mjs > /dev/null; node qa/sim/baseline-probe.mjs --base http://localhost:3011 --max-crash 0 2>&1 | tail -12
 echo "== department rule coverage"; node qa/tools/access-coverage.mjs

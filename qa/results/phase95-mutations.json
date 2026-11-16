@@ -1,0 +1,272 @@
+{
+  "ranAt": "2026-11-16T18:17:09.844Z",
+  "held": 26,
+  "total": 26,
+  "results": [
+    {
+      "id": "E1",
+      "what": "nothing posts while the ledger is not active",
+      "kind": "sim",
+      "held": true,
+      "check": "post nothing",
+      "failed": [
+        "✗ [Periods, cutover and reporting] Before activation, a sale, a payment, a receipt and a shipment post nothing",
+        "✗ [Periods, cutover and reporting] The cutover dry run shows the opening balances from the records and writes nothing to the books",
+        "✗ [Periods, cutover and reporting] Right after cutover the books agree with the records: the reconciliation finds no difference"
+      ]
+    },
+    {
+      "id": "E2",
+      "what": "the writer of a draft cannot post it",
+      "kind": "sim",
+      "held": true,
+      "check": "An administrator keeps the books",
+      "failed": [
+        "✗ [Concurrency, authorization and failure recovery] An administrator keeps the books but cannot start, stop or reconfigure them; only the owner, a super adminis"
+      ]
+    },
+    {
+      "id": "E3",
+      "what": "an unapproved mapping posts nothing",
+      "kind": "sim",
+      "held": true,
+      "check": "loses its approval",
+      "failed": [
+        "✗ [Concurrency, authorization and failure recovery] A posting rule whose mapping loses its approval stops posting: the payment is saved, the event fails with th"
+      ]
+    },
+    {
+      "id": "E4",
+      "what": "a branch manager cannot open another branch's entry",
+      "kind": "sim",
+      "held": true,
+      "check": "A branch manager reads the books of their own branch only",
+      "failed": [
+        "✗ [Freight, transfers and location accounting] A branch manager reads the books of their own branch only"
+      ]
+    },
+    {
+      "id": "E5",
+      "what": "an entry from a business record is not reversed by hand",
+      "kind": "sim",
+      "held": true,
+      "check": "Reversal by hand",
+      "failed": [
+        "✗ [Concurrency, authorization and failure recovery] Reversal by hand: a reason is needed, an event's entry is reversed by undoing the event, and a reversal is n"
+      ]
+    },
+    {
+      "id": "E6",
+      "what": "only the finance roles write a draft",
+      "kind": "sim",
+      "held": true,
+      "check": "People with no business in the books",
+      "failed": [
+        "✗ [Concurrency, authorization and failure recovery] People with no business in the books get nothing: sales, credit, inventory, shop floor, analyst, a customer,"
+      ]
+    },
+    {
+      "id": "E7",
+      "what": "an export is refused while an account has no external mapping",
+      "kind": "sim",
+      "held": true,
+      "check": "Export: nothing leaves",
+      "failed": [
+        "✗ [Periods, cutover and reporting] Export: nothing leaves without an approved account mapping, each entry is exported once, and the file defends against spreads"
+      ]
+    },
+    {
+      "id": "E8",
+      "what": "an open draft blocks the close of its month",
+      "kind": "sim",
+      "held": true,
+      "check": "Closing a month",
+      "failed": [
+        "✗ [Periods, cutover and reporting] Closing a month: the current month is refused, an open draft blocks it, then it closes and says who closed it"
+      ]
+    },
+    {
+      "id": "E9",
+      "what": "the person who closed a month cannot reopen it",
+      "kind": "sim",
+      "held": true,
+      "check": "Reopening a closed month",
+      "failed": [
+        "✗ [Periods, cutover and reporting] Reopening a closed month needs a reason and a different person; afterwards it takes entries again and is closed again"
+      ]
+    },
+    {
+      "id": "E10",
+      "what": "a control account needs the named permission",
+      "kind": "sim",
+      "held": true,
+      "check": "Manual entries: the server refuses",
+      "failed": [
+        "✗ [Concurrency, authorization and failure recovery] Manual entries: the server refuses every malformed draft and saves none of them"
+      ]
+    },
+    {
+      "id": "E11",
+      "what": "the assistant gives no ledger figure to a person who may not read it",
+      "kind": "sim",
+      "held": true,
+      "check": "The assistant reads the ledger",
+      "failed": [
+        "✗ [Concurrency, authorization and failure recovery] The assistant reads the ledger for the people who may, within their scope, and can change nothing; every rea"
+      ]
+    },
+    {
+      "id": "E12",
+      "what": "a report grouped by an unknown key is refused",
+      "kind": "sim",
+      "held": true,
+      "check": "Garbage in",
+      "failed": [
+        "✗ [Concurrency, authorization and failure recovery] Garbage in: malformed, hostile and oversized requests are refused with a reason, never a server error, and c"
+      ]
+    },
+    {
+      "id": "U1",
+      "what": "stock with no cost is held, not valued at zero",
+      "kind": "unit",
+      "held": true,
+      "check": "stock with no cost is held",
+      "failed": [
+        "not ok 10 - stock with no cost is held and never valued at zero; a cost of exactly zero posts nothing"
+      ]
+    },
+    {
+      "id": "U2",
+      "what": "a transfer between different owners is held",
+      "kind": "unit",
+      "held": true,
+      "check": "different owners has no approved rule",
+      "failed": [
+        "not ok 18 - a transfer between different owners has no approved rule and is held, both ways"
+      ]
+    },
+    {
+      "id": "U3",
+      "what": "a receipt with no purchase order is held",
+      "kind": "unit",
+      "held": true,
+      "check": "receipt with no purchase order is held",
+      "failed": [
+        "not ok 9 - a receipt with no purchase order is held; an accountant may name the other account; the rule never picks one"
+      ]
+    },
+    {
+      "id": "U4",
+      "what": "an entry must balance",
+      "kind": "unit",
+      "held": true,
+      "check": "totals: an entry is good only",
+      "failed": [
+        "not ok 2 - totals: an entry is good only with two or more lines, equal sides and more than zero",
+        "not ok 21 - a manual entry is refused unless it has two lines, one side per line, whole cents, an account and equal sides"
+      ]
+    },
+    {
+      "id": "U5",
+      "what": "only cents are taken as rounding",
+      "kind": "unit",
+      "held": true,
+      "check": "an item relieved in parts ends at zero",
+      "failed": [
+        "not ok 12 - an item relieved in parts ends at zero: the last movement takes the cents left, and only cents"
+      ]
+    },
+    {
+      "id": "U6",
+      "what": "a credit memo goes to returns and allowances",
+      "kind": "unit",
+      "held": true,
+      "check": "a credit memo is the invoice the other way round",
+      "failed": [
+        "not ok 6 - a credit memo is the invoice the other way round, against returns and allowances, not revenue"
+      ]
+    },
+    {
+      "id": "U7",
+      "what": "a credit applied to an invoice is not a payment",
+      "kind": "unit",
+      "held": true,
+      "check": "a payment moves receivables to cash clearing",
+      "failed": [
+        "not ok 7 - a payment moves receivables to cash clearing; a credit applied is not a payment; a refund is the reverse"
+      ]
+    },
+    {
+      "id": "U8",
+      "what": "a manual line cannot carry a fraction of a cent",
+      "kind": "unit",
+      "held": true,
+      "check": "a manual entry is refused unless",
+      "failed": [
+        "not ok 21 - a manual entry is refused unless it has two lines, one side per line, whole cents, an account and equal sides"
+      ]
+    },
+    {
+      "id": "U9",
+      "what": "a piece whose cost differs from its source is held",
+      "kind": "unit",
+      "held": true,
+      "check": "a work order balances whatever the rounding",
+      "failed": [
+        "not ok 16 - a work order balances whatever the rounding, and a piece whose own cost is missing or different is held"
+      ]
+    },
+    {
+      "id": "U10",
+      "what": "a day is counted in the books' time zone",
+      "kind": "unit",
+      "held": true,
+      "check": "a month is the calendar month",
+      "failed": [
+        "not ok 22 - a month is the calendar month; a day is counted in the time zone the books are kept in"
+      ]
+    },
+    {
+      "id": "U11",
+      "what": "sales tax carries its state",
+      "kind": "unit",
+      "held": true,
+      "check": "an invoice debits receivables for the total",
+      "failed": [
+        "not ok 4 - an invoice debits receivables for the total and credits revenue by line, freight and tax by state",
+        "not ok 20 - a reversal is the same lines with the sides swapped"
+      ]
+    },
+    {
+      "id": "U12",
+      "what": "a first cost on an opening item goes to opening equity",
+      "kind": "unit",
+      "held": true,
+      "check": "a cost change revalues what is on hand",
+      "failed": [
+        "not ok 19 - a cost change revalues what is on hand; a first cost on an opening item comes on against opening equity"
+      ]
+    },
+    {
+      "id": "U13",
+      "what": "a manual line has a largest amount",
+      "kind": "unit",
+      "held": true,
+      "check": "a manual entry is refused unless",
+      "failed": [
+        "not ok 21 - a manual entry is refused unless it has two lines, one side per line, whole cents, an account and equal sides"
+      ]
+    },
+    {
+      "id": "U14",
+      "what": "work order scrap is expensed",
+      "kind": "unit",
+      "held": true,
+      "check": "a work order moves the source",
+      "failed": [
+        "not ok 14 - a work order moves the source's cost to its pieces and expenses the scrap; no labor or machine cost is posted",
+        "not ok 15 - through work in progress the same entry passes the material through that account and leaves nothing in it"
+      ]
+    }
+  ]
+}

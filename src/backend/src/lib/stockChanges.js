@@ -13,6 +13,7 @@
  * work orders: each takes only what is free at the moment it completes.
  */
 import { STAFF_GROUPS } from './roleAccess.js';
+import { recordMovement, record as recordLedger } from '../services/ledger.js';
 
 export const ADJUST_REASONS = ['COUNT', 'DAMAGE', 'SCRAP', 'FOUND', 'CORRECTION'];
 /** Who may correct a stock balance: branch and company managers, and the inventory manager. */
@@ -154,6 +155,8 @@ export async function completeWorkOrder(tx, wo, { out, scrap, pieces }, userId) 
     await tx.workOrderOutput.create({ data: { workOrderId: wo.id, outputCoilId: piece.id, sequence: i + 1, targetWidth: p.widthIn ?? null, actualWidth: p.widthIn ?? null, actualWeight: p.weightLb } });
     made.push({ id: piece.id, coilNumber: piece.coilNumber, weightLb: p.weightLb, reservedLb: reserved });
   }
+  // One entry for the whole work order: the source's value moves to the pieces and to scrap.
+  await recordLedger(tx, 'WORK_ORDER_COMPLETED', 'WorkOrder', wo.id, { userId });
   await setStatusAfter(tx, source.id, bal.onHand - used);
   return { source: { id: source.id, coilNumber: source.coilNumber, onHandBefore: bal.onHand, onHandAfter: round4(bal.onHand - used) }, pieces: made, usedLb: used };
 }
@@ -190,6 +193,7 @@ export async function adjustStock(tx, { coilId, countedQty, change, reason, note
     },
   });
   await tx.auditLog.create({ data: { category: 'WORKFLOW', eventType: 'STOCK_ADJUSTED', action: 'UPDATE', userId, resourceType: 'Coil', resourceId: coilId, details } });
+  await recordMovement(tx, movement, { userId });
   await setStatusAfter(tx, coilId, after);
   return { coilNumber: coil.coilNumber, onHandBefore: bal.onHand, onHandAfter: after, change: delta, movement };
 }

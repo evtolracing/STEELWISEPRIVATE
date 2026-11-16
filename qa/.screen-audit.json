@@ -1,8 +1,8 @@
 {
- "screens": 145,
+ "screens": 146,
  "tally": {
   "STATIC": 6,
-  "REAL": 77,
+  "REAL": 78,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
  },
@@ -88,7 +88,7 @@
   },
   {
    "route": "work-orders",
-   "onMenu": false,
+   "onMenu": true,
    "verdict": "REAL",
    "file": "pages/WorkOrders/WorkOrderListPage.jsx"
   },
@@ -433,6 +433,12 @@
    "onMenu": true,
    "verdict": "REAL",
    "file": "pages/ReceivingPage.jsx"
+  },
+  {
+   "route": "finance",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Finance/FinancePage.jsx"
   },
   {
    "route": "transfers",

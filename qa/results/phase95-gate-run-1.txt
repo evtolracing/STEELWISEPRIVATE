@@ -1,0 +1,328 @@
+== rebuild
+rebuilt
+== simulation
+concurrency ✓ three full payments at once on one invoice: taken once — statuses 409,201,409; paid 6630 of 6630
+concurrency ✓ one return received three times at once: counted once, one credit — statuses 200,409,409; 1 credit memo(s); source coil on hand 6800 → 9350
+reconciliation ✓ 323 stock items, 59 orders, 0 problems (plus 52 in demo seed data)
+concurrency ✓ three full payments at once on one invoice: taken once — statuses 409,201,409; paid 4680 of 4680
+concurrency ✓ one return received three times at once: counted once, one credit — statuses 200,409,409; 1 credit memo(s); source coil on hand 4800 → 6600
+reconciliation ✓ 323 stock items, 118 orders, 0 problems (plus 52 in demo seed data)
+concurrency ✓ three full payments at once on one invoice: taken once — statuses 409,201,409; paid 2574 of 2574
+concurrency ✓ one return received three times at once: counted once, one credit — statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
+reconciliation ✓ 323 stock items, 177 orders, 0 problems (plus 52 in demo seed data)
+== database checks after the simulation
+ "checks": {
+  "stock balance: on hand = available + allocated + on hold + in transit": 0,
+  "stock: any quantity below zero": 0,
+  "stock reserved differs from the reservations on file for the item": 0,
+  "reservations on stock items that have no stock row": 0,
+  "order line reserved more than is left to ship": 0,
+  "reservations left on cancelled or completed orders": 0,
+  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 0,
+  "completed work orders whose output and scrap are not matched by movements on the source item": 0,
+  "completed work orders whose pieces do not weigh what the work order says came out": 0,
+  "pieces whose heat, grade or owner differs from the item they were cut from": 0,
+  "invoice series whose counter is not the highest number on file": 0,
+  "package, tag or listing series whose counter is not the highest number on file": 0,
+  "invoice numbers repeated": 0,
+  "stock corrections with no note or no person": 0,
+  "stock row and its item disagree about the branch": 0,
+  "transfers whose two branches are the same, or missing": 0,
+  "stock in transit that is not on an open transfer, or an open transfer whose stock is not in transit": 0,
+  "stock on an open transfer that is not at the sending branch": 0,
+  "an item on more than one open transfer": 0,
+  "received transfers with no TRANSFER movement for an item on them": 0,
+  "transfer lines received more than shipped, or a good line not received whole": 0,
+  "purchase order lines (by weight) whose received quantity differs from the receipts booked against them": 0,
+  "receipts booked against a line that is not on a purchase order": 0,
+  "last transfer of an item did not end where the item now is": 0,
+  "time entries that end before they start": 0,
+  "time entries still running on a step that is finished": 0,
+  "time entries still running on a job that is cancelled, shipped or completed": 0,
+  "steps with more than one clock running": 0,
+  "time entries with no operator or no work center": 0,
+  "finished steps with no start or no end time": 0,
+  "steps running on a work center of another kind, or at another branch, than the step calls for": 0,
+  "jobs with more than one open inspection": 0,
+  "inspections decided with no result or no completion time, or still open with a result": 0,
+  "jobs past inspection (packaging, ready to ship, shipped, completed) whose latest decided inspection failed, outside rows written directly as fixtures": 0,
+  "jobs past production with a planned step unfinished, outside rows written directly as fixtures": 0,
+  "jobs whose plan is at a branch other than their work center": 0,
+  "rework steps not tied to a rework inspection of the same job, or two rework steps for one inspection (owner decision 9)": 0,
+  "coil work orders raised for a job but for a different order line than the job (owner decision 9)": 0,
+  "stock items with a cost below zero": 0,
+  "operators clocked on while recorded as inactive": 0,
+  "work orders on quality hold or cancelled that moved stock": 0,
+  "shipped stock movements with no shipment": 0,
+  "dispatched shipment items whose quantity is not fully covered by stock movements: every shipment must come off reserved stock (G-019, refused since the owner decision of 2026-11-13)": 0,
+  "stock items cut from a parent that lost the parent heat": 0,
+  "amounts kept with digits beyond what was entered (floating-point residue)": 0,
+  "invoice subtotal differs from its lines": 2,
+  "order subtotal differs from its lines (orders that are not draft)": 0,
+  "order lines invoiced more than shipped": 0,
+  "tax invoiced on an order is more than the order tax": 0,
+  "credit memos larger than the invoice they credit": 0,
+  "two live invoices for the same shipment": 0,
+  "quotes or requests whose branch does not exist": 0,
+  "orders with no branch": 59,
+  "order lines shipped more than ordered": 0,
+  "order line shipped quantity differs from its dispatched shipment items": 47,
+  "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 3,
+  "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
+  "invoices paid more than their total": 0,
+  "invoice total differs from subtotal + tax + freight": 0,
+  "invoice paid amount differs from its payments": 1,
+  "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
+  "jobs with no order and no order line": 31,
+  "stock items (coils) with no heat": 0,
+  "stock items with no location": 0,
+  "shipments delivered with no proof of delivery name": 47,
+  "users with no home branch": 2,
+  "invoices and credit memos with no record of who raised them, outside the demo seed": 0,
+  "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 47,
+  "dispatched shipments whose stock movements add up to more than the shipment carries": 0,
+  "shipments still on the dock for a cancelled order": 0,
+  "shipments on the road or delivered with no invoice (each is listed for billing in the integration report)": 4,
+  "packages with more than one live tag": 0,
+  "returns whose missing credit was settled more than once": 0,
+  "stock movements for a shipment with a cost that is negative": 0
+ }
+}
+== sweep
+✓ No access without signing in: 621 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)
+✓ Partner API needs a partner token: 60 calls, 0 let in
+✓ Forged and invalid sign-ins are refused: 5 cases, 0 problems
+✓ Customer logins are held to the store: 598 staff routes tried as a customer, 0 not refused
+✓ Customers and divisions cannot see each other: 31 checks, 0 problems
+✓ Staff roles and departments: 18 checks, 0 problems
+✓ Read routes do not crash on bad input: 873 reads, 0 server errors
+✓ Core write routes reject bad input cleanly: 38 bad requests, 0 not answered with a 4xx
+✓ Documents: upload, list, download, delete: 11 checks, 0 problems
+✓ Web checkout uses the system price, not the browser's: 4 checks, 0 problems
+✓ Platform safeguards: bounded lists, tracing, real figures, database rules: 33 checks, 0 problems
+✓ Error replies do not expose internals: 0 replies exposed internal detail
+✓ One customer, one price in every sales channel: 47 checks, 0 problems
+✓ Order entry screen follows the order rules: 45 checks, 0 problems
+✓ Stock items: lists, cost, edits, holds: 29 checks, 0 problems
+✓ Credit hold: over the limit waits for a manager: 22 checks, 0 problems
+✓ Heats, products and grades: checked input, right people, prices recorded: 47 checks, 0 problems
+✓ Receiving: a receipt is real stock, and an upload says what it saved: 32 checks, 0 problems
+✓ Shop floor records: who moved a job, and work orders that follow the rules: 50 checks, 0 problems
+✓ Shipping and money records: web order tax, shipments and who did what: 40 checks, 0 problems
+
+ALL SECTIONS PASS qa/results/security.json
+== branch boundary
+✓ Branch boundary: 39 checks, 0 problems
+== phase 2 integrity
+✓ Phase 2 integrity: 82 checks, 0 problems
+== phase 3 database scenarios
+✓ Phase 3 database scenarios: 74 of 74 pass, 612 checks; Inventory receiving and adjustments 10/10; Reservations and material consumption 9/9; Work orders, scrap and remnants 11/11; Interbranch transfers 9/9; Orders, invoicing and financial records 10/10; Concurrency, retries and failure recovery 18/18; Stock corrections, invoice numbers and retention 7/7
+== phase 4 integration scenarios
+✓ Phase 4 integration scenarios: 66 of 66 pass, 555 checks; Internal API contracts and validation 11/11; Cross-module workflow communication 10/10; Event processing and background jobs 13/13; Webhooks and external service failures 11/11; Idempotency, retries and concurrency 10/10; Security, isolation and recovery 11/11
+== phase 5 sales scenarios
+✓ Phase 5 sales scenarios: 76 of 76 pass, 387 checks; CRM, customers and requests for quote 10/10; Product configuration and pricing 15/15; Quoting, approvals and conversion 15/15; Sales orders and fulfilment hand-off 10/10; Counter sales (POS) 11/11; Web shop and customer portal 10/10; Exceptions, security and recovery 5/5
+== phase 6 inventory scenarios
+✓ Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; Purchasing and replenishment 16/16; Receiving and putaway 16/16; Reservations, allocation and picking 15/15; Consumption, remnants and scrap 15/15; Interbranch transfers 17/17; Returns, counts and adjustments 10/10; Concurrency, security and recovery 17/17
+== phase 7 manufacturing scenarios
+✓ Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; Work order creation and routing 15/15; BOMs, material requirements and allocation 17/17; Capacity planning and scheduling 22/22; Shop-floor execution and labor and machine tracking 23/23; Quality control and nonconformance 25/25; Scrap, remnants, rework and costing 17/17; Cross-location production, concurrency and recovery 22/22
+== phase 8 fulfilment scenarios
+✗ [Invoicing, payments and accounting sync] there is no accounting system connected: nothing is posted to a ledger
+    - there is no journal, ledger, chart of accounts or accounting period table — LedgerMapping,LedgerExternalAccount,LedgerReconciliation,LedgerExportItem,LedgerAccount,LedgerPeriod,LedgerEvent,JournalEntry,JournalLine,LedgerExportBatch
+✗ [Costing, reconciliation and closeout] shipping does not change the value on the stock item
+    - no revaluation, write-up or cost-of-goods entry was made anywhere: there is no table for one
+✗ Phase 8 fulfilment scenarios: 153 of 155 pass, 518 checks; Finished goods release, picking and packaging 20/20; Shipment creation, partial shipments and backorders 25/25; Dispatch, carriers, freight and delivery 28/28; Invoicing, payments and accounting sync 24/25; Costing, reconciliation and closeout 19/20; Returns, credits, refunds and adjustments 15/15; Concurrency, security, exceptions and recovery 22/22
+== database checks after the scenarios
+ "checks": {
+  "stock balance: on hand = available + allocated + on hold + in transit": 0,
+  "stock: any quantity below zero": 0,
+  "stock reserved differs from the reservations on file for the item": 0,
+  "reservations on stock items that have no stock row": 0,
+  "order line reserved more than is left to ship": 0,
+  "reservations left on cancelled or completed orders": 0,
+  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 0,
+  "completed work orders whose output and scrap are not matched by movements on the source item": 0,
+  "completed work orders whose pieces do not weigh what the work order says came out": 0,
+  "pieces whose heat, grade or owner differs from the item they were cut from": 0,
+  "invoice series whose counter is not the highest number on file": 0,
+  "package, tag or listing series whose counter is not the highest number on file": 0,
+  "invoice numbers repeated": 0,
+  "stock corrections with no note or no person": 0,
+  "stock row and its item disagree about the branch": 0,
+  "transfers whose two branches are the same, or missing": 0,
+  "stock in transit that is not on an open transfer, or an open transfer whose stock is not in transit": 0,
+  "stock on an open transfer that is not at the sending branch": 0,
+  "an item on more than one open transfer": 0,
+  "received transfers with no TRANSFER movement for an item on them": 0,
+  "transfer lines received more than shipped, or a good line not received whole": 0,
+  "purchase order lines (by weight) whose received quantity differs from the receipts booked against them": 0,
+  "receipts booked against a line that is not on a purchase order": 0,
+  "last transfer of an item did not end where the item now is": 0,
+  "time entries that end before they start": 0,
+  "time entries still running on a step that is finished": 0,
+  "time entries still running on a job that is cancelled, shipped or completed": 0,
+  "steps with more than one clock running": 0,
+  "time entries with no operator or no work center": 0,
+  "finished steps with no start or no end time": 0,
+  "steps running on a work center of another kind, or at another branch, than the step calls for": 0,
+  "jobs with more than one open inspection": 0,
+  "inspections decided with no result or no completion time, or still open with a result": 0,
+  "jobs past inspection (packaging, ready to ship, shipped, completed) whose latest decided inspection failed, outside rows written directly as fixtures": 0,
+  "jobs past production with a planned step unfinished, outside rows written directly as fixtures": 0,
+  "jobs whose plan is at a branch other than their work center": 0,
+  "rework steps not tied to a rework inspection of the same job, or two rework steps for one inspection (owner decision 9)": 0,
+  "coil work orders raised for a job but for a different order line than the job (owner decision 9)": 0,
+  "stock items with a cost below zero": 0,
+  "operators clocked on while recorded as inactive": 0,
+  "work orders on quality hold or cancelled that moved stock": 0,
+  "shipped stock movements with no shipment": 0,
+  "dispatched shipment items whose quantity is not fully covered by stock movements: every shipment must come off reserved stock (G-019, refused since the owner decision of 2026-11-13)": 0,
+  "stock items cut from a parent that lost the parent heat": 0,
+  "amounts kept with digits beyond what was entered (floating-point residue)": 0,
+  "invoice subtotal differs from its lines": 2,
+  "order subtotal differs from its lines (orders that are not draft)": 0,
+  "order lines invoiced more than shipped": 0,
+  "tax invoiced on an order is more than the order tax": 0,
+  "credit memos larger than the invoice they credit": 0,
+  "two live invoices for the same shipment": 0,
+  "quotes or requests whose branch does not exist": 0,
+  "orders with no branch": 62,
+  "order lines shipped more than ordered": 0,
+  "order line shipped quantity differs from its dispatched shipment items": 47,
+  "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 6,
+  "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
+  "invoices paid more than their total": 0,
+  "invoice total differs from subtotal + tax + freight": 0,
+  "invoice paid amount differs from its payments": 1,
+  "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
+  "jobs with no order and no order line": 60,
+  "stock items (coils) with no heat": 2,
+  "stock items with no location": 0,
+  "shipments delivered with no proof of delivery name": 51,
+  "users with no home branch": 2,
+  "invoices and credit memos with no record of who raised them, outside the demo seed": 0,
+  "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 48,
+  "dispatched shipments whose stock movements add up to more than the shipment carries": 0,
+  "shipments still on the dock for a cancelled order": 0,
+  "shipments on the road or delivered with no invoice (each is listed for billing in the integration report)": 9,
+  "packages with more than one live tag": 0,
+  "returns whose missing credit was settled more than once": 0,
+  "stock movements for a shipment with a cost that is negative": 0
+ }
+}
+== schema inventory
+   "TraceEvent.locationId"
+  ]
+ }
+}
+== unit
+# tests 232
+# pass 232
+# fail 0
+== ui-experience
+22 checks, 0 failed → qa/results/ui-experience.json
+== ui-shipping
+30 checks, 0 failed → qa/results/ui-shipping.json
+== ui-shop
+31 checks, 0 failed → qa/results/ui-shop.json
+== ui-sales
+24 checks, 0 failed → qa/results/ui-sales.json
+== ui-inventory
+23 checks, 0 failed → qa/results/ui-inventory.json
+== ui-integration
+33 checks, 0 failed
+== ui-phase5
+14 checks, 0 failed → qa/results/ui-phase5.json
+== ui-phase6
+14 checks, 0 failed → qa/results/ui-phase6.json
+== ui-phase7
+39 checks, 0 failed → qa/results/ui-phase7.json
+== ui-phase8
+56 checks, 0 failed → qa/results/ui-phase8.json
+== phase 9 UI scenarios
+✗ 102 SALES opening an RFQ shows what the customer asked for, as stored  — the number and the customer: RFQ Close
+Phase 9 UI scenarios: 231 of 232 passed, 1 failed, 0 not applicable, 1093 checks
+== every screen opens
+  GET /api/coils/:id → 404  ← /units/:id
+  GET /api/work-orders/:id → 404  ← /work-orders/:id
+  GET /api/qc/inspections/:id → 404  ← /qc/inspect/:id
+  GET /api/jobs/:id → 404  ← /jobs/:id
+  GET /api/jobs/:id/history → 404  ← /jobs/:id
+  GET /api/orders/intake/:id → 404  ← /orders/:id
+  GET /api/ecom/catalog/:id → 404  ← /shop/products/:id
+  GET /api/ecom/my-orders/:id → 404  ← /shop/orders/:id
+== every screen measured at three sizes
+✓ controlsWithNoName: 0 (ceiling 0)
+✓ fieldsWithNoLabel: 0 (ceiling 0)
+✓ hardToReadTexts: 17 (ceiling 17)
+✓ screensWithNoMainHeading: 0 (ceiling 0)
+✓ screensWithSeveralMainHeadings: 0 (ceiling 0)
+✓ screensWiderThanTheWindow: 0 (ceiling 0)
+✓ smallTargetsOnAPhone: 3 (ceiling 3)
+✓ screensWithAPageError: 0 (ceiling 0)
+✓ screensSharingATitle: 32 (ceiling 32)
+155 screens measured; 0 counts over the ceiling
+== phase 9.5 ledger scenarios
+✓ Phase 9.5 ledger: 158 of 158 pass, 915 checks; Periods, cutover and reporting 24/24; Sales, invoices and revenue 25/25; Payments, credits and refunds 21/21; Inventory valuation and adjustments 27/27; Manufacturing, work in progress and costing 20/20; Freight, transfers and location accounting 21/21; Concurrency, authorization and failure recovery 20/20
+== phase 9.5 UI scenarios
+✓ Phase 9.5 UI: 13 of 13 pass, 69 checks
+== phase 9.5 load, 80 branches
+stage 1: 1120 entries in 25.9s (43.2/s); stage 2: 2000 in 13.5s (148.2/s)
+✓ Phase 9.5 load: 16 of 16 checks pass
+== calls the tests made
+ "distinct": 2791,
+ "serverErrors": [
+  "POST /api/ai/assistant 502 x3",
+  "POST /api/ai/tts/speak 504 x1",
+  "POST /api/ai/tts/speak 502 x6",
+  "POST /api/ai/tts/speak 503 x4",
+  "POST /api/inventory/transfers/:id/receive 500 x1",
+  "POST /api/inventory/transfers 500 x1",
+  "POST /api/invoices 500 x1",
+  "POST /api/pos/quick-sale/email-receipt 501 x4",
+  "POST /api/quotes/:id/accept 500 x1",
+  "GET /api/v1/partner/supplier/asn 501 x2",
+  "POST /api/v1/partner/supplier/asn 501 x1",
+  "POST /api/v1/partner/supplier/documents 501 x1",
+  "GET /api/v1/partner/supplier/scars 501 x1",
+  "GET /api/v1/partner/supplier/scorecard 501 x1"
+ ],
+ "slowest": [
+  "3412ms POST /api/ai/assistant",
+  "1912ms PUT /api/shipments/:id/dispatch",
+  "1505ms POST /api/ai/tts/speak",
+  "1209ms POST /api/assets/seed-from-work-centers",
+  "1054ms PUT /api/shipments/:id/dispatch",
+  "1035ms PUT /api/orders/:id",
+  "513ms POST /api/coils/:id/hold",
+  "499ms GET /api/metrics/compression/filters"
+ ]
+}
+== baseline probe
+✓ Read-only roles cannot change anything: 624 write calls as auditor and data analyst, 0 not refused
+✓ A second address follows the same department rules: 4 checks, 0 problems
+✓ Write routes sent an empty body do not crash: 317 write routes, 0 answered with a server error (allowed: 0), 4 saved a record from nothing
+✓ Branch to branch access (reported, not judged): a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0
+
+ALL SECTIONS PASS qa/results/baseline-probe.json
+== department rule coverage
+362 changing routes: 278 under a department rule, 12 guarded in the route file, 72 covered another way, 0 with no rule
+== screen audit
+{"STATIC":6,"REAL":78,"SAMPLE, LABELLED":58,"MIXED":4}
+0 screens show made-up data with no notice (allowed: 0)
+== lint, frontend
+LINT-OK
+== screen ratchets
+phase 9 (each must be 0; pages with no title found, ceiling 2): {"iconButtonsWithNoName":0,"fieldsWithNoName":0,"pagesMissingAMainHeading":0,"pagesWhereNoTitleCouldBeFound":1,"sampleButtonsWithNoActionAndNoNotice":0,"clickOnlyRowsAndCards":0,"browserPopUpBoxes":0}
+effects that read a value they do not list: 38 (ceiling 38); screens that invent a record when the server fails: 0 (ceiling 0)
+== lint, whole repository
+✖ 1572 problems (0 errors, 1572 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+== build
+✓ built in 16.71s
+== documents
+endpoints 661, mounts 82, routes 140, models 171, enums 96, mock services 4
+{"modules":51,"unclaimedRouteFiles":[],"unclaimedScreens":[],"findings":413,"open":113}
+== ALL DONE

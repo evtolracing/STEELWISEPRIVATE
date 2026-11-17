@@ -12,6 +12,7 @@ import { outsideFailure } from '../lib/outbound.js';
 import express from 'express';
 import prisma from '../lib/db.js';
 import { aiProvider } from '../services/ai/AIProviderService.js';
+import { ledgerForAssistant, LEDGER_QUESTION } from '../services/ledgerAssistant.js';
 
 const router = express.Router();
 
@@ -31,6 +32,8 @@ const DB_QUERY_PATTERNS = [
   { pattern: /\b(documents?|mtrs?|certs?|certificates?)\b/i, type: 'documents' },
   { pattern: /\b(users?|team|employees?|operators?)\b/i, type: 'users' },
   { pattern: /\b(dashboard|summary|overview|kpi|stats|status)\b/i, type: 'dashboard' },
+  // Phase 9.5: the financial ledger, read-only, limited by the person's role, and logged (services/ledgerAssistant.js)
+  { pattern: LEDGER_QUESTION, type: 'ledger' },
 ];
 
 /**
@@ -49,7 +52,7 @@ function detectQueryType(message) {
 /**
  * Query database based on detected types
  */
-async function queryDatabase(types, userMessage) {
+async function queryDatabase(types, userMessage, user) {
   const results = {};
 
   for (const type of types) {
@@ -247,6 +250,10 @@ async function queryDatabase(types, userMessage) {
           });
           break;
 
+        case 'ledger':
+          results.financialLedger = await ledgerForAssistant(user);
+          break;
+
         case 'dashboard':
           results.dashboardStats = {
             jobs: {
@@ -310,7 +317,7 @@ router.post('/', async (req, res) => {
 
     if (queryTypes.length > 0) {
       console.log(`🔍 AI Assistant: querying DB for types: [${queryTypes.join(', ')}]`);
-      const dbData = await queryDatabase(queryTypes, lastUserMsg);
+      const dbData = await queryDatabase(queryTypes, lastUserMsg, req.user);
       if (Object.keys(dbData).length > 0) {
         dbContext = `\n\n--- LIVE DATABASE RESULTS ---\n${JSON.stringify(dbData, null, 2)}\n--- END DATABASE RESULTS ---\n`;
       }
@@ -381,7 +388,7 @@ router.post('/stream', async (req, res) => {
 
     if (queryTypes.length > 0) {
       console.log(`🔍 AI Assistant (stream): querying DB for [${queryTypes.join(', ')}]`);
-      const dbData = await queryDatabase(queryTypes, lastUserMsg);
+      const dbData = await queryDatabase(queryTypes, lastUserMsg, req.user);
       if (Object.keys(dbData).length > 0) {
         dbContext = `\n\n--- LIVE DATABASE RESULTS ---\n${JSON.stringify(dbData, null, 2)}\n--- END DATABASE RESULTS ---\n`;
       }

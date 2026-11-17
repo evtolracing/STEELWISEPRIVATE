@@ -111,6 +111,15 @@ What Phase 5 adds to, or changes in, the list:
 | R-64 | An operator reads another branch's work centre names | V-028: two dispatch routes answer across branches when asked directly. No screen asks. Names and types only | Unlikely | Low | No | Phase 10: apply the branch scope to both routes and add them to the branch boundary suite | Engineering |
 | R-65 | The new search loads the server at scale | V-001, V-019: each pause in typing asks up to five lists with a text match (orders, customers, stock, heats, shipments), 5 rows each. Not measured against 85-branch data | Possible | Medium: slow search; a text match on a large table with no index for it | No | Phase 11: time the five searches at scale and add indexes or a minimum length if needed. The search waits 250 ms after typing stops and drops stale answers | Engineering |
 | R-66 | The shell behaves differently on a device that was not tested | Every browser check ran in one engine (Chromium) at emulated sizes. Safari on an iPad, a touch terminal on the floor and a real phone are NOT VERIFIED | Possible | Medium on the shop floor, where the terminals are | No | Try the shop floor, shipping and receiving screens on one real terminal and one tablet before the first branch uses them | Owner, with one branch |
+| R-67 | The ledger is started on the live system before an accountant has approved it | W-001: the chart, the mappings, the posting rules and 16 policies are proposals. Posted entries are permanent | Unlikely: activation is refused while anything is unapproved and needs the accountant's name, a date, a time zone and a dry run | High: unapproved accounting in permanent entries | No: the ledger is off and the product runs as before | Do not record an approval that has not been given. Formal acceptance in Phase 12 | Owner and accountant |
+| R-68 | The code of Phase 9.5 is deployed before database file 16 | Tried on a copy of the QA database with the ledger tables removed: the Phase 8 fulfilment scenarios pass 155 of 155 on the new code, because every business save first reads one settings row that already exists and goes no further. The Finance screen and `/api/ledger` answer "Database update 16 has to be applied first" | Possible | Low: only the Finance screen is unavailable, and says why | No | Apply file 16, then `verify-6-to-16.sql`, before or right after the deploy | Owner |
+| R-69 | Posted financial history is altered at the database | W-014: the immutability rules are triggers. A database superuser or the table owner can switch them off. Who holds that right on the live database was not examined | Unknown | High | No while the ledger is off | Phase 10: a separate application role that owns no ledger table | Owner (hosting), Phase 10 |
+| R-70 | Invoices are not raised when many trucks leave at the same moment | W-021 fixed inside one server process; W-022: between several server processes only the database retry remains, which is what failed in the load check (10 of 240) | Possible on a busy day at 80 branches | Medium: the shipment still leaves and is listed for a person to invoice | No | Phase 11: test with several server processes; settle the counter in the database if needed | Phase 11 |
+| R-71 | Opening balances are wrong because live data was not looked at first | W-005: the dry run has only been run on QA data. Items with no cost are left out, not valued | Likely to need work: the QA data alone has about a thousand items with no cost | Medium: corrected by entries against opening equity, never by editing | No | Dry run on a copy of live data; the accountant signs it | Owner and accountant, Phase 12 |
+| R-72 | The ledger's reports are read as the company's accounts | They cover invoices, payments, stock and work orders only. Payroll, rent, supplier bills, bank, labor and overhead are not in them. Each report and the assistant say so | Possible | Medium | No | Tell the people given the Finance screen what it is and is not | Owner |
+| R-73 | The export file does not load into the accountant's product | W-011: one generic layout; QuickBooks and Xero import NOT VERIFIED | Likely to need adapting | Low: the file says so and nothing is sent anywhere | No | The accountant names the product; build and test its layout then | Owner and accountant |
+| R-74 | The ledger slows or the reconciliation takes long at a year's volume | W-023: measured at about 3,000 entries on one container. Not measured larger | Unknown | Medium | No | Phase 11 | Phase 11 |
+| R-75 | A restore from backup leaves the books and the records out of step | W-020: restore of the ledger tables not exercised | Unknown | High | No while the ledger is off | Phase 10: restore test with a reconciliation afterwards | Phase 10 |
 
 ## Earlier risks changed by Phase 4
 
@@ -162,6 +171,14 @@ What Phase 6 adds to, or changes in, the list:
 6. R-03 is reduced again: the second stock list is read-only.
 
 
+### Phase 9.5 update (2026-11-16)
+
+1. Phase 9.5 adds a financial ledger and switches nothing on. With the ledger off, which is how it ships, no business save writes to it and the product behaves as it did after Phase 9. That was checked by running every earlier check with the ledger never started (`phase-09-5-regression-results.md`).
+2. Closed in code and verified: invoices not raised when 16 shipments were dispatched at once (W-021, found by the 80-branch load check); a crash on the new Finance screen (W-013); three input-handling faults in the new code (W-016 to W-018).
+3. New risks R-67 to R-75 are about starting the books before they are approved, the order of deploy and database file 16, and items handed to Phases 10, 11 and 12.
+4. Database file 16 adds ten tables and changes no existing table or row. Nothing was run against the live database or the host, and no outside accounting system was contacted.
+5. Engineering completion and readiness to switch the ledger on are different things. The first is reached on test data. The second waits for the accountant (R-67) and for Phases 10 to 12.
+
 ### Phase 9 update (2026-11-16)
 
 1. Closed in code and verified in a browser: a double click that cancelled a shipment just dispatched (V-022); an order page that showed a total worked out from an invented tax rate (V-020); forms on sample screens that announced a save that never happened (V-008); a search, a help button and a bell that did nothing or showed invented notices (V-001 to V-003); 613 controls and 280 fields a screen reader could not name (V-006); 87 rows that opened only with a mouse (V-012).
@@ -176,6 +193,8 @@ What Phase 6 adds to, or changes in, the list:
 3. Nothing in Phase 8 was run against the live database or the host. No carrier, printer, scanner, mail or payment service was contacted.
 
 ## Rollback
+
+Phase 9.5 adds ten tables, one sequence, three functions and four triggers (file 16). It changes and deletes nothing that existed. With the ledger never started, the Phase 9 code and the Phase 9.5 code behave the same for every business save, so the pull request can be reverted without touching the database; the empty tables stay and do no harm. Once the ledger has been started on a system, reverting the code would leave business saves unrecorded in the books: stop posting first, and on return the completeness check finds what was missed.
 
 Phase 8 adds three optional columns (file 14): cost on a stock movement, the reason a delivery has no name, the branch of a print job. It deletes and rewrites nothing. The Phase 7 code runs on the new schema and ignores the columns, so the pull request can be reverted without touching the database. Costs and reasons written in the meantime stay on file and do no harm.
 

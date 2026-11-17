@@ -657,6 +657,146 @@
    "file": "src/backend/src/routes/invoices.js"
   },
   {
+   "ep": "GET /api/ledger/status",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/chart",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/chart/load-proposed",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "PUT /api/ledger/accounts/:code",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "PUT /api/ledger/mappings/:key",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/approvals",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/reports/:name",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/entries",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/entries/:id",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/entries",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/entries/:id/post",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/entries/:id/reverse",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "DELETE /api/ledger/entries/:id",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "PUT /api/ledger/entries/:id",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "PATCH /api/ledger/entries/:id",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/periods",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/periods/:year/:month/close",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/periods/:year/:month/reopen",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/events/record-missing",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/events/:id/retry",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/events/:id/resolve",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/reconciliations",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/reconciliations",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/reconciliations/:id",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/cutover/dry-run",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/activate",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "PUT /api/ledger/settings",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/deactivate",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/resume",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/external-accounts/:provider",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "PUT /api/ledger/external-accounts/:provider/:code",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/exports",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/exports",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "GET /api/ledger/exports/:id/file",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/exports/:id/settle",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
    "ep": "GET /api/returns",
    "file": "src/backend/src/routes/returns.js"
   },
@@ -3471,6 +3611,66 @@
    "fields": 11,
    "fks": 2,
    "status": null
+  },
+  {
+   "name": "LedgerAccount",
+   "fields": 13,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "LedgerMapping",
+   "fields": 6,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "LedgerPeriod",
+   "fields": 14,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "LedgerEvent",
+   "fields": 12,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "JournalEntry",
+   "fields": 25,
+   "fks": 2,
+   "status": "String"
+  },
+  {
+   "name": "JournalLine",
+   "fields": 16,
+   "fks": 2,
+   "status": null
+  },
+  {
+   "name": "LedgerExternalAccount",
+   "fields": 8,
+   "fks": 0,
+   "status": null
+  },
+  {
+   "name": "LedgerExportBatch",
+   "fields": 17,
+   "fks": 0,
+   "status": "String"
+  },
+  {
+   "name": "LedgerExportItem",
+   "fields": 5,
+   "fks": 1,
+   "status": null
+  },
+  {
+   "name": "LedgerReconciliation",
+   "fields": 7,
+   "fks": 0,
+   "status": null
   }
  ],
  "enums": {
@@ -4331,6 +4531,7 @@
   "schedule",
   "jobs/:id",
   "receiving",
+  "finance",
   "transfers",
   "purchase-orders",
   "material-tracking",

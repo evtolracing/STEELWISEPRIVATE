@@ -1,0 +1,22 @@
+{
+ "note": "Phase 9.5 notes on findings raised in earlier phases. Applied to findings.json by qa/tools/phase95-findings.mjs. A status is changed only where one is given.",
+ "dispositions": {
+  "N-025": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 9.5: a double-entry ledger now exists inside the product (chart, approved mappings, immutable journal, periods, cutover, reconciliation, reports, a controlled export file). It is switched off. What remains for the owner and the accountant: approve the policies, chart and mappings (W-001), name the accounting product (W-011), and say how many legal entities there are (W-002). Nothing is posted to any outside system.",
+   "verification": "qa/sim/phase95-ledger.mjs, 158 scenarios in seven groups; qa/enterprise-excellence/phase-09-5-report.md."
+  },
+  "K-012": {
+   "statusNote": "Phase 9.5: a receipt now credits a clearing account for goods received and not invoiced. Supplier invoices are still not in the product, so nothing relieves it (W-009)."
+  },
+  "K-007": {
+   "statusNote": "Phase 9.5: the ledger reads each item's cost and never sets one. A movement of an item with no cost is held by name and never valued at zero; entering the cost posts it (phase-09-5-inventory-valuation.md)."
+  },
+  "L-026": {
+   "statusNote": "Phase 9.5: material and scrap are in the ledger at the source item's cost. Labor, machine time and overhead are not posted: no rate is on file and none was invented (policy decision 8, phase-09-5-manufacturing-costing.md)."
+  },
+  "N-026": {
+   "statusNote": "Phase 9.5: freight billed posts to freight revenue. No carrier cost exists to post, so freight expense is never posted to (tested)."
+  }
+ }
+}

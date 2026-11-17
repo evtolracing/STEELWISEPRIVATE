@@ -31,6 +31,7 @@ import { moveJobsWhere } from '../lib/jobHistory.js';
 import { recordBusinessEvent, kick } from '../services/webhookService.js';
 import { acrossBranches, currentScope } from '../lib/branchScope.js';
 import { shipmentDocuments } from '../lib/shippingDocuments.js';
+import { recordMovement } from '../services/ledger.js';
 const router = Router();
 
 const EDIT_FIELDS = ['carrierId', 'carrierName', 'truckNumber', 'driverName', 'driverPhone', 'scheduledDate', 'totalWeightLb', 'bolNumber', 'notes'];
@@ -339,7 +340,7 @@ async function consumeReserved(tx, shipment, item, userId) {
     if (take + 1e-9 >= num(a.qtyAllocated)) await tx.orderLineAllocation.delete({ where: { id: a.id } });
     else await tx.orderLineAllocation.update({ where: { id: a.id }, data: { qtyAllocated: { decrement: take } } });
     const inv = await tx.inventory.findUnique({ where: { coilId: a.coilId }, select: { qtyOnHand: true, locationId: true, unit: true } });
-    await tx.materialMovement.create({
+    const shipMove = await tx.materialMovement.create({
       data: {
         coilId: a.coilId, movementType: 'SHIP', fromLocationId: inv.locationId, qtyMoved: take, unit: inv.unit,
         orderId: shipment.orderId, shipmentId: shipment.id, createdById: userId,
@@ -347,6 +348,7 @@ async function consumeReserved(tx, shipment, item, userId) {
         orderLineId: item.orderLineId, unitCost: held?.unitCost ?? null,
       },
     });
+    await recordMovement(tx, shipMove, { userId });
     if (num(inv.qtyOnHand) <= 1e-9) await tx.coil.update({ where: { id: a.coilId }, data: { status: 'SHIPPED' } });
     else if (!(await tx.orderLineAllocation.count({ where: { coilId: a.coilId } }))) {
       await tx.coil.updateMany({ where: { id: a.coilId, status: 'ALLOCATED' }, data: { status: 'AVAILABLE' } });

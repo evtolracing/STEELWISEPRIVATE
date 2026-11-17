@@ -1,5 +1,5 @@
 {
- "total": 283,
+ "total": 304,
  "missing": [
   {
    "call": "GET /api/admin/integrations",
@@ -83,6 +83,12 @@
    "call": "PATCH /api/fabrication-work-orders/:x/status",
    "files": [
     "src/frontend/src/api/fabrication.js"
+   ]
+  },
+  {
+   "call": "POST /api/ledger/:x",
+   "files": [
+    "src/frontend/src/pages/Finance/FinanceControl.jsx"
    ]
   },
   {

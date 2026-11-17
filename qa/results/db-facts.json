@@ -1,8 +1,8 @@
 {
- "at": "2026-11-16T06:11:01.439Z",
+ "at": "2026-11-16T19:38:57.160Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
- "tables": 162,
- "totalRows": 17965,
+ "tables": 172,
+ "totalRows": 18010,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -14,7 +14,17 @@
   "DowntimeRecord",
   "ForecastSnapshot",
   "InventoryAdjustment",
+  "JournalEntry",
+  "JournalLine",
   "LabelTemplate",
+  "LedgerAccount",
+  "LedgerEvent",
+  "LedgerExportBatch",
+  "LedgerExportItem",
+  "LedgerExternalAccount",
+  "LedgerMapping",
+  "LedgerPeriod",
+  "LedgerReconciliation",
   "MaintenanceAttachment",
   "MaintenanceAuditLog",
   "MaintenanceOrderLabor",
@@ -110,7 +120,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 4628
+   "rows": 4636
   },
   {
    "table": "BomOperation",
@@ -122,7 +132,7 @@
   },
   {
    "table": "Coil",
-   "rows": 937
+   "rows": 939
   },
   {
    "table": "CommodityPrice",
@@ -234,7 +244,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 937
+   "rows": 939
   },
   {
    "table": "InventoryAdjustment",
@@ -258,11 +268,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 407
+   "rows": 409
   },
   {
    "table": "InvoiceLine",
-   "rows": 419
+   "rows": 421
   },
   {
    "table": "Job",
@@ -273,7 +283,47 @@
    "rows": 214
   },
   {
+   "table": "JournalEntry",
+   "rows": 0
+  },
+  {
+   "table": "JournalLine",
+   "rows": 0
+  },
+  {
    "table": "LabelTemplate",
+   "rows": 0
+  },
+  {
+   "table": "LedgerAccount",
+   "rows": 0
+  },
+  {
+   "table": "LedgerEvent",
+   "rows": 0
+  },
+  {
+   "table": "LedgerExportBatch",
+   "rows": 0
+  },
+  {
+   "table": "LedgerExportItem",
+   "rows": 0
+  },
+  {
+   "table": "LedgerExternalAccount",
+   "rows": 0
+  },
+  {
+   "table": "LedgerMapping",
+   "rows": 0
+  },
+  {
+   "table": "LedgerPeriod",
+   "rows": 0
+  },
+  {
+   "table": "LedgerReconciliation",
    "rows": 0
   },
   {
@@ -306,7 +356,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 1207
+   "rows": 1213
   },
   {
    "table": "MeterReading",
@@ -326,15 +376,15 @@
   },
   {
    "table": "Order",
-   "rows": 1036
+   "rows": 1037
   },
   {
    "table": "OrderLine",
-   "rows": 1060
+   "rows": 1061
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 111
+   "rows": 112
   },
   {
    "table": "Organization",
@@ -626,11 +676,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 453
+   "rows": 454
   },
   {
    "table": "ShipmentItem",
-   "rows": 422
+   "rows": 423
   },
   {
    "table": "ShipmentStop",
@@ -706,7 +756,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 1182
+   "rows": 1198
   },
   {
    "table": "WorkCenter",
@@ -722,16 +772,21 @@
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 55
+   "rows": 56
   },
   {
    "table": "_prisma_migrations",
-   "rows": 33
+   "rows": 34
   }
  ],
- "indexes": 596,
+ "indexes": 632,
  "views": [],
- "triggers": [],
+ "triggers": [
+  "\"JournalEntry\".JournalEntry_guard",
+  "\"JournalLine\".JournalLine_guard",
+  "\"JournalEntry\".JournalEntry_no_truncate",
+  "\"JournalLine\".JournalLine_no_truncate"
+ ],
  "jsonCols": [
   "AppSetting.value",
   "ApprovalRequest.requestData",
@@ -771,6 +826,7 @@
   "JobInspection.defects",
   "JobInspection.dimensionalChecks",
   "LabelTemplate.barcodePosition",
+  "LedgerReconciliation.checks",
   "MaintenanceAuditLog.changedFields",
   "MaintenanceAuditLog.newState",
   "MaintenanceAuditLog.previousState",
@@ -898,9 +954,9 @@
  ],
  "fkNoIndex": [],
  "constraintCounts": {
-  "foreign key": 196,
-  "primary key": 162,
-  "check": 32
+  "foreign key": 201,
+  "primary key": 172,
+  "check": 42
  },
  "checkConstraints": [
   {
@@ -974,6 +1030,66 @@
    "name": "Job_weights_not_negative",
    "kind": "check",
    "def": "CHECK ((((\"inputWeightLb\" IS NULL) OR (\"inputWeightLb\" >= (0)::numeric)) AND ((\"outputWeightLb\" IS NULL) OR (\"outputWeightLb\" >= (0)::numeric)) AND ((\"scrapWeightLb\" IS NULL) OR (\"scrapWeightLb\" >= (0"
+  },
+  {
+   "table": "JournalEntry",
+   "name": "JournalEntry_kind_known",
+   "kind": "check",
+   "def": "CHECK ((kind = ANY (ARRAY['SYSTEM'::text, 'MANUAL'::text, 'REVERSAL'::text, 'OPENING'::text])))"
+  },
+  {
+   "table": "JournalEntry",
+   "name": "JournalEntry_not_own_reversal",
+   "kind": "check",
+   "def": "CHECK (((\"reversesEntryId\" IS NULL) OR (\"reversesEntryId\" <> id)))"
+  },
+  {
+   "table": "JournalEntry",
+   "name": "JournalEntry_status_known",
+   "kind": "check",
+   "def": "CHECK ((status = ANY (ARRAY['DRAFT'::text, 'POSTED'::text])))"
+  },
+  {
+   "table": "JournalLine",
+   "name": "JournalLine_one_side",
+   "kind": "check",
+   "def": "CHECK (((debit >= (0)::numeric) AND (credit >= (0)::numeric) AND ((debit = (0)::numeric) <> (credit = (0)::numeric))))"
+  },
+  {
+   "table": "LedgerAccount",
+   "name": "LedgerAccount_side_known",
+   "kind": "check",
+   "def": "CHECK ((\"normalSide\" = ANY (ARRAY['DEBIT'::text, 'CREDIT'::text])))"
+  },
+  {
+   "table": "LedgerAccount",
+   "name": "LedgerAccount_type_known",
+   "kind": "check",
+   "def": "CHECK ((type = ANY (ARRAY['ASSET'::text, 'LIABILITY'::text, 'EQUITY'::text, 'REVENUE'::text, 'CONTRA_REVENUE'::text, 'EXPENSE'::text])))"
+  },
+  {
+   "table": "LedgerEvent",
+   "name": "LedgerEvent_status_known",
+   "kind": "check",
+   "def": "CHECK ((status = ANY (ARRAY['PENDING'::text, 'POSTED'::text, 'FAILED'::text, 'REVERSED'::text, 'RECONCILIATION_REQUIRED'::text, 'NOT_POSTED'::text])))"
+  },
+  {
+   "table": "LedgerExportBatch",
+   "name": "LedgerExportBatch_status_known",
+   "kind": "check",
+   "def": "CHECK ((status = ANY (ARRAY['GENERATED'::text, 'ACKNOWLEDGED'::text, 'FAILED'::text, 'VOID'::text])))"
+  },
+  {
+   "table": "LedgerPeriod",
+   "name": "LedgerPeriod_month_valid",
+   "kind": "check",
+   "def": "CHECK ((((month >= 1) AND (month <= 12)) AND (\"startsOn\" <= \"endsOn\")))"
+  },
+  {
+   "table": "LedgerPeriod",
+   "name": "LedgerPeriod_status_known",
+   "kind": "check",
+   "def": "CHECK ((status = ANY (ARRAY['OPEN'::text, 'CLOSED'::text])))"
   },
   {
    "table": "MaterialMovement",

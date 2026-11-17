@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 31cea3e. Do not edit by hand: change the source and rerun.
 
-649 routes in 75 route files, served at 76 mount points. 338 change data.
+684 routes in 76 route files, served at 77 mount points. 362 change data.
 
 ## What the columns mean
 
@@ -15,13 +15,13 @@ Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 421 of 649 |
-| Changing routes that returned a success in a test | 177 of 338 |
+| Routes that returned a success in a test | 454 of 684 |
+| Changing routes that returned a success in a test | 199 of 362 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
-| Handlers with no try/catch of their own | 196 (many use a shared wrapper) |
-| Routes that use raw SQL | 7 |
-| Calls the screens make that have no server route | 66 |
+| Handlers with no try/catch of their own | 231 (many use a shared wrapper) |
+| Routes that use raw SQL | 8 |
+| Calls the screens make that have no server route | 67 |
 
 ## Reply shapes
 
@@ -46,22 +46,22 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/grades` | grades.js:25 |
 | `GET /api/products` | products.js:40 |
 | `GET /api/heats/:heatNumber/trace` | heats.js:131 |
-| `GET /api/coils/:id/history` | coils.js:113 |
-| `GET /api/inventory/locations` | inventory.js:274 |
+| `GET /api/coils/:id/history` | coils.js:114 |
+| `GET /api/inventory/locations` | inventory.js:278 |
 | `GET /api/processing-recipes` | processingRecipes.js:67 |
 | `GET /api/processing-recipes/routing-templates` | processingRecipes.js:81 |
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
 | `GET /api/processing/operations` | intakeProcessing.js:20 |
 | `GET /api/processing/templates` | intakeProcessing.js:43 |
-| `GET /api/shipments/shippable` | shipments.js:153 |
-| `GET /api/shipments/:id/items` | shipments.js:256 |
+| `GET /api/shipments/shippable` | shipments.js:154 |
+| `GET /api/shipments/:id/items` | shipments.js:257 |
 | `GET /api/tax-rates` | taxRates.js:8 |
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:8 |
 | `GET /api/work-centers/:id/schedule` | workCenters.js:128 |
 | `GET /api/jobs/sla-risk` | jobs.js:218 |
 | `GET /api/documents/entity/:entityType/:entityId` | documents.js:155 |
-| `GET /api/pos/quick-sale/daily-stats` | quickSale.js:301 |
+| `GET /api/pos/quick-sale/daily-stats` | quickSale.js:312 |
 | `GET /api/v1/bom/recipes` | bomV1.js:126 |
 | `GET /api/v1/analytics/ops-forecast` | analyticsV1.js:12 |
 | `GET /api/v1/analytics/rfq-funnel` | analyticsV1.js:126 |
@@ -166,9 +166,9 @@ Mounted at /api/heats. Tables: Heat, Organization, MaterialMovement.
 | `PUT /api/heats/:id` | yes | 1 |  |  |  |  |
 | `GET /api/heats/:heatNumber/trace` | yes |  |  | yes |  |  |
 
-### coils.js (8 routes, 262 lines)
+### coils.js (8 routes, 284 lines)
 
-Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User.
+Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory, AuditLog.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -177,11 +177,11 @@ Mounted at /api/coils. Tables: Coil, MaterialMovement, QCHold, OrderLineAllocati
 | `GET /api/coils/:id` | yes |  |  |  |  |  |
 | `GET /api/coils/:id/history` | yes |  |  | yes |  |  |
 | `POST /api/coils` |  | 1 |  |  |  |  |
-| `PUT /api/coils/:id` | yes | 1 |  |  |  |  |
+| `PUT /api/coils/:id` | yes | 3 | yes |  | yes |  |
 | `POST /api/coils/:id/hold` | yes |  | yes |  |  |  |
 | `POST /api/coils/:id/release` | yes |  | yes |  |  |  |
 
-### inventory.js (17 routes, 417 lines)
+### inventory.js (17 routes, 421 lines)
 
 Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement, StockTransfer.
 
@@ -394,7 +394,7 @@ Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, Job, OrderLine, 
 | `PUT /api/work-orders/:id/release-hold` | yes |  |  |  |  |  |
 | `PUT /api/work-orders/:id/cancel` | yes |  |  |  |  |  |
 
-### shipments.js (13 routes, 615 lines)
+### shipments.js (13 routes, 617 lines)
 
 Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter.
 
@@ -429,7 +429,49 @@ Mounted at /api/invoices. Tables: through a service or none.
 | `POST /api/invoices/:id/refund` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/cancel` | yes |  |  |  |  |  |
 
-### returns.js (7 routes, 383 lines)
+### ledger.js (35 routes, 189 lines)
+
+Mounted at /api/ledger. Tables: LedgerPeriod, JournalEntry.
+
+| Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
+|---|:-:|---:|:-:|:-:|:-:|---|
+| `GET /api/ledger/status` | yes |  |  |  |  |  |
+| `GET /api/ledger/chart` | yes |  |  |  |  |  |
+| `POST /api/ledger/chart/load-proposed` | yes |  |  |  |  |  |
+| `PUT /api/ledger/accounts/:code` | yes |  |  |  |  |  |
+| `PUT /api/ledger/mappings/:key` | yes |  |  |  |  |  |
+| `POST /api/ledger/approvals` | yes |  |  |  |  |  |
+| `GET /api/ledger/reports/:name` | yes |  |  |  |  |  |
+| `GET /api/ledger/entries` | yes |  |  |  |  |  |
+| `GET /api/ledger/entries/:id` | yes |  |  |  |  |  |
+| `POST /api/ledger/entries` | yes |  |  |  |  |  |
+| `POST /api/ledger/entries/:id/post` | yes |  |  |  |  |  |
+| `POST /api/ledger/entries/:id/reverse` | yes |  |  |  |  |  |
+| `DELETE /api/ledger/entries/:id` | yes |  |  |  |  |  |
+| `PUT /api/ledger/entries/:id` |  |  |  |  |  |  |
+| `PATCH /api/ledger/entries/:id` |  |  |  |  |  |  |
+| `GET /api/ledger/periods` | yes |  |  |  |  |  |
+| `POST /api/ledger/periods/:year/:month/close` | yes |  |  |  |  |  |
+| `POST /api/ledger/periods/:year/:month/reopen` | yes |  |  |  |  |  |
+| `POST /api/ledger/events/record-missing` | yes |  |  |  |  |  |
+| `POST /api/ledger/events/:id/retry` | yes |  |  |  |  |  |
+| `POST /api/ledger/events/:id/resolve` | yes |  |  |  |  |  |
+| `POST /api/ledger/reconciliations` | yes |  |  |  |  |  |
+| `GET /api/ledger/reconciliations` | yes |  |  |  |  |  |
+| `GET /api/ledger/reconciliations/:id` | yes |  |  |  |  |  |
+| `POST /api/ledger/cutover/dry-run` | yes |  |  |  |  |  |
+| `POST /api/ledger/activate` | yes |  |  |  |  |  |
+| `PUT /api/ledger/settings` | yes |  |  |  |  |  |
+| `POST /api/ledger/deactivate` | yes |  |  |  |  |  |
+| `POST /api/ledger/resume` | yes |  |  |  |  |  |
+| `GET /api/ledger/external-accounts/:provider` | yes |  |  |  |  |  |
+| `PUT /api/ledger/external-accounts/:provider/:code` | yes |  |  |  |  |  |
+| `GET /api/ledger/exports` | yes |  |  |  |  |  |
+| `POST /api/ledger/exports` | yes |  |  |  |  |  |
+| `GET /api/ledger/exports/:id/file` | yes |  |  |  |  |  |
+| `POST /api/ledger/exports/:id/settle` | yes |  |  |  |  |  |
+
+### returns.js (7 routes, 384 lines)
 
 Mounted at /api/returns. Tables: Order, AuditLog, MaterialMovement, Inventory, InvoiceLine, Coil, QCHold, OrderLine, Invoice.
 
@@ -597,9 +639,9 @@ Mounted at /api/documents. Tables: Document, DocumentLink, DocumentBlob, Heat.
 | `POST /api/documents/upload-multiple` |  |  |  |  |  |  |
 | `DELETE /api/documents/:id` | yes | 3 | yes |  |  |  |
 
-### quickSale.js (10 routes, 389 lines)
+### quickSale.js (10 routes, 400 lines)
 
-Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovement, AuditLog, Payment, InvoiceLine.
+Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, Payment, MaterialMovement, AuditLog, InvoiceLine.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -607,7 +649,7 @@ Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, MaterialMovemen
 | `GET /api/pos/quick-sale/lookup` |  |  |  |  |  |  |
 | `POST /api/pos/quick-sale/lookup` |  |  |  |  |  |  |
 | `POST /api/pos/quick-sale/price` | yes |  |  |  |  |  |
-| `POST /api/pos/quick-sale/process-payment` | yes | 7 | yes |  | yes |  |
+| `POST /api/pos/quick-sale/process-payment` | yes | 7 | yes | yes | yes |  |
 | `GET /api/pos/quick-sale/daily-stats` | yes |  |  | yes |  |  |
 | `GET /api/pos/quick-sale/:saleId/receipt` | yes |  |  |  |  |  |
 | `POST /api/pos/quick-sale/:saleId/void` | yes | 1 |  |  |  |  |
@@ -704,7 +746,7 @@ Mounted at /api/ai/tts. Tables: through a service or none.
 | `GET /api/ai/tts/test` | yes |  |  |  |  |  |
 | `POST /api/ai/tts/speak` | yes |  |  |  |  |  |
 
-### aiAssistant.js (2 routes, 430 lines)
+### aiAssistant.js (2 routes, 437 lines)
 
 Mounted at /api/ai/assistant. Tables: through a service or none.
 

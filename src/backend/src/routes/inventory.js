@@ -11,6 +11,7 @@ import { TEMPLATE_FORMS, MAX_UPLOAD_ROWS } from '../lib/receivingRules.js';
 import { adjustStock, ADJUST_REASONS, STOCK_ADJUSTERS } from '../lib/stockChanges.js';
 import { retryOverlap, createNumbered, padded } from '../lib/numbering.js';
 import { readShipment, shipTransfer, receiveTransfer, cancelTransfer, settleShortage, TRANSFER_INCLUDE } from '../lib/transfers.js';
+import { recordMovement } from '../services/ledger.js';
 
 /** Cost goes only to the roles that manage it. */
 const withoutCost = (req, row) => {
@@ -102,16 +103,19 @@ router.post('/receive', async (req, res) => {
     if (coil.inventory && coil.inventory.locationId !== locationId) {
       return res.status(409).json({ error: 'This item is stocked at another location. Transfer it first, or receive it where it is.' });
     }
-    const [inventory, movement] = await prisma.$transaction([
-      prisma.inventory.upsert({
+    const [inventory, movement] = await prisma.$transaction(async (tx) => {
+      const balance = await tx.inventory.upsert({
         where: { coilId },
         create: { coilId, locationId, qtyOnHand: qty, qtyAvailable: qty },
         update: { qtyOnHand: { increment: qty }, qtyAvailable: { increment: qty }, lastMovement: new Date() },
-      }),
-      prisma.materialMovement.create({
+      });
+      const received = await tx.materialMovement.create({
         data: { coilId, toLocationId: locationId, movementType: 'RECEIVE', qtyMoved: qty, createdById: req.user.id },
-      }),
-    ]);
+      });
+      // No purchase order is named here, so the books hold it for the accountant; nothing is guessed.
+      await recordMovement(tx, received, { userId: req.user.id });
+      return [balance, received];
+    });
     res.status(201).json({ inventory, movement });
   } catch (error) {
     console.error('Inventory: receive failed:', error);

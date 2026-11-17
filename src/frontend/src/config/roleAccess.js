@@ -24,6 +24,7 @@ export const SECTION_PATHS = {
   contractors: ['contractors'],
   executive: ['executive'],
   admin: ['admin'],
+  finance: ['finance'],
 }
 
 
@@ -55,6 +56,13 @@ const GROUP_SECTIONS = {
   integration: ['admin'],
   customer: ['ecommerce'],
   partner: [],
+}
+
+// Areas opened by role alone, whatever the group: the financial ledger is for the finance roles, the
+// executive role and the auditor, and for a branch manager (own branch reports). The server decides
+// the same way in src/backend/src/routes/ledger.js.
+const ROLE_ONLY_SECTIONS = {
+  finance: ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'CFO', 'EXECUTIVE', 'AUDITOR', 'BRANCH_MANAGER'],
 }
 
 // A few roles get one extra area on top of their group.
@@ -94,8 +102,9 @@ export function sectionForPath(pathname) {
 
 export function canAccessPath(role, pathname) {
   const allowed = sectionsFor(role)
-  if (allowed.includes('*')) return true
   const section = sectionForPath(pathname)
+  if (section && ROLE_ONLY_SECTIONS[section]) return ROLE_ONLY_SECTIONS[section].includes(role)
+  if (allowed.includes('*')) return true
   if (section) return allowed.includes(section)
   // Pages outside any section (dashboards, safety, training, help) are open to
   // staff. Customers and partners only get help.

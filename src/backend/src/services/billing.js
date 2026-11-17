@@ -17,6 +17,7 @@ import prisma from '../lib/db.js';
 import { currentScope } from '../lib/branchScope.js';
 import { retryOverlap } from '../lib/numbering.js';
 import { recordBusinessEvent, kick } from './webhookService.js';
+import * as ledger from './ledger.js';
 import {
   money, lineAmount, chargesFor, dueDateFor, invoiceStatusFor, balanceOf, paymentError, PAYMENT_METHODS,
 } from '../lib/billingRules.js';
@@ -130,6 +131,7 @@ async function buildInvoice(tx, order, wanted, { shipmentId, notes, next }) {
     include: INCLUDE,
   });
   // The customer's own system is told in the same save, so an invoice cannot exist without its event.
+  await ledger.record(tx, 'INVOICE_ISSUED', 'Invoice', invoice.id);
   await recordBusinessEvent(tx, 'invoice.issued', invoice.id, { invoiceId: invoice.id, invoiceNumber, orderId: order.id, orderNumber: order.orderNumber, totalAmount: total, dueDate: invoice.dueDate }, { customerOrgId: order.buyerId });
   return invoice;
 }
@@ -163,11 +165,29 @@ export async function catchUp(series = 'INV') {
      WHERE "series" = ${series}`;
 }
 
+/**
+ * Documents of one series are written one after another within this server process. Every one of
+ * them advances the same counter row, so two written at the same moment can never both succeed:
+ * the database refuses one and it is run again. With many branches dispatching at once that
+ * became a pile-up (measured in qa/sim/phase95-load.mjs: 16 dispatches at a time, 10 of 240
+ * invoices used up all 25 attempts and were not raised). Taking turns removes the collisions
+ * inside one process. The database rule stays as it is and still settles two server processes
+ * writing at once, by the same retry as before.
+ */
+const turns = new Map();
+function inTurn(series, run) {
+  const mine = (turns.get(series) || Promise.resolve()).then(run, run);
+  const settled = mine.catch(() => {});
+  turns.set(series, settled);
+  settled.then(() => { if (turns.get(series) === settled) turns.delete(series); });
+  return mine;
+}
+
 /** Runs `create(tx, next)` in one serializable transaction. `next()` gives the document its number. */
 async function numbered(series, create) {
   for (let i = 0; ; i++) {
     try {
-      return await retryOverlap(() => prisma.$transaction((tx) => create(tx, () => takeNumber(tx, series)), SERIALIZABLE), 25);
+      return await inTurn(series, () => retryOverlap(() => prisma.$transaction((tx) => create(tx, () => takeNumber(tx, series)), SERIALIZABLE), 25));
     } catch (error) {
       const taken = error?.code === 'P2002' && String(error?.meta?.target || '').includes('invoiceNumber');
       if (!taken || i >= 2) throw error;
@@ -212,8 +232,10 @@ export async function invoiceOrder(orderId, { notes } = {}, userId = null) {
   return toApi(invoice);
 }
 
-async function applyPayment(tx, invoice, amount, data) {
-  await tx.payment.create({ data: { ...data, invoiceId: invoice.id, amount } });
+async function applyPayment(tx, invoice, amount, data, userId = null) {
+  const payment = await tx.payment.create({ data: { ...data, invoiceId: invoice.id, amount } });
+  // A credit applied to an invoice moves no money: the credit memo's own entry already reduced what is owed.
+  if (data.paymentMethod !== 'CREDIT') await ledger.record(tx, amount < 0 ? 'REFUND_RECORDED' : 'PAYMENT_RECORDED', 'Payment', payment.id, { userId });
   const paid = money(num(invoice.paidAmount) + amount);
   return tx.invoice.update({
     where: { id: invoice.id },
@@ -243,7 +265,7 @@ export async function recordPayment(invoiceId, body = {}, userId = null) {
     return applyPayment(tx, invoice, amount, {
       paymentMethod: method, referenceNumber: reference,
       notes: body.notes ? String(body.notes) : null, ...(paymentDate && { paymentDate }),
-    });
+    }, userId);
   }, SERIALIZABLE));
   return toApi(updated);
 }
@@ -336,6 +358,7 @@ export async function creditInvoice(invoiceId, body = {}, userId = null, steps =
       await applyPayment(tx, invoice, applied, { paymentMethod: 'CREDIT', referenceNumber: invoiceNumber, notes: reason });
     }
     // On the invoice it reduces and on the credit memo itself, so either screen shows who issued it.
+    await ledger.record(tx, 'CREDIT_ISSUED', 'Invoice', credit.id, { userId });
     await recordMoney(tx, { invoice, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoiceNumber, note: reason } });
     await recordMoney(tx, { invoice: credit, eventType: 'CREDIT_ISSUED', userId, details: { amount: total, reference: invoice.invoiceNumber, note: reason } });
     if (steps.after) return (await steps.after(tx, credit)) || credit;
@@ -367,7 +390,7 @@ export async function refundWithin(tx, creditId, body = {}, userId = null) {
   await recordMoney(tx, { invoice: credit, eventType: 'REFUND_RECORDED', userId, details: { amount, method, reference, note: body.notes ? String(body.notes) : null } });
   return applyPayment(tx, credit, -amount, {
     paymentMethod: method, referenceNumber: reference, notes: body.notes ? String(body.notes) : 'Refund',
-  });
+  }, userId);
 }
 
 export async function cancelInvoice(invoiceId, body = {}, userId = null) {
@@ -379,6 +402,7 @@ export async function cancelInvoice(invoiceId, body = {}, userId = null) {
     if (invoice.payments.length) refuse(409, 'This invoice has payments or credits on it. Issue a credit memo instead of cancelling.');
     const note = body.reason ? `Cancelled: ${String(body.reason)}` : 'Cancelled';
     await recordMoney(tx, { invoice, eventType: 'INVOICE_CANCELLED', userId, details: { amount: num(invoice.totalAmount), note: body.reason ? String(body.reason) : null } });
+    await ledger.reverseEvent(tx, 'INVOICE_ISSUED', 'Invoice', invoice.id, { reason: note, userId });
     return tx.invoice.update({
       where: { id: invoiceId },
       data: { status: 'CANCELLED', notes: [invoice.notes, note].filter(Boolean).join(' · ') },

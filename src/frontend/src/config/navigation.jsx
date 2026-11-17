@@ -292,6 +292,12 @@ export const navSections = [
     ],
   },
   {
+    title: 'Finance',
+    items: [
+      { path: '/finance', label: 'Ledger', icon: InvoicesIcon },
+    ],
+  },
+  {
     title: 'Administration',
     items: [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },

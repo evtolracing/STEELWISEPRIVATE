@@ -78,6 +78,8 @@ const MANAGER_ONLY = [
 ];
 // First match wins. [test, groups allowed, what to tell everyone else]
 const WRITE_RULES = [
+  // Phase 9.5: the financial ledger. No department may change it; managers and leadership pass here and the route then narrows them to the CFO, the owner and administrators.
+  [(p) => under(p, '/api/ledger'), [], 'The financial ledger', 'the CFO'],
   [(p) => /^\/api\/orders\/[^/]+\/allocate$/.test(p), ['sales', 'warehouse', 'production'], 'Reserving stock for an order'],
   [(p) => /^\/api\/returns\/[^/]+\/receive$/.test(p), ['sales', 'warehouse', 'production'], 'Receiving a return'],
   [(p) => under(p, '/api/pos'), ['sales', 'warehouse'], 'Counter sales'],

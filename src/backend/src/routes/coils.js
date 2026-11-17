@@ -19,6 +19,7 @@ import { ci } from '../lib/dbText.js';
 import { COST_VIEWERS } from '../lib/roleAccess.js';
 import { unitPrice } from '../services/intakeCatalogService.js';
 import { HOLD_TYPES, placeHold, releaseHold } from '../lib/holds.js';
+import { record as recordLedger, retryItemEvents } from '../services/ledger.js';
 
 const router = Router();
 
@@ -231,7 +232,28 @@ router.put('/:id', handle('save the stock item', async (req, res) => {
   if (!before) refuse(404, 'Stock item not found');
   const data = editable(req.body || {}, req);
   if (!Object.keys(data).length) refuse(400, 'Nothing to change. Status, quantity and location change through hold, receiving and transfer.');
-  const coil = await prisma.coil.update({ where: { id: before.id }, data, include: { heat: true, grade: true, location: true, product: true } });
+  let firstCost = false;
+  const coil = await prisma.$transaction(async (tx) => {
+    // The item is locked so the cost on file and the quantity it is applied to are read together.
+    await tx.$queryRaw`SELECT "id" FROM "Coil" WHERE "id" = ${before.id} FOR UPDATE`;
+    const was = await tx.coil.findUnique({ where: { id: before.id }, select: { unitCost: true, coilNumber: true, inventory: { select: { qtyOnHand: true, unit: true } } } });
+    const saved = await tx.coil.update({ where: { id: before.id }, data, include: { heat: true, grade: true, location: true, product: true } });
+    const from = was.unitCost == null ? null : String(was.unitCost);
+    const to = saved.unitCost == null ? null : String(saved.unitCost);
+    if (data.unitCost !== undefined && Number(from ?? NaN) !== Number(to ?? NaN) && !(from == null && to == null)) {
+      // The balance row carries the same cost (it is what the stock reports read).
+      await tx.inventory.updateMany({ where: { coilId: before.id }, data: { unitCost: saved.unitCost } });
+      const change = await tx.auditLog.create({ data: {
+        category: 'FINANCIAL', eventType: 'STOCK_COST_CHANGED', severity: 'INFO', action: 'UPDATE', userId: req.user.id, resourceType: 'Coil', resourceId: before.id,
+        details: { coilNumber: was.coilNumber, from, to, qtyOnHand: was.inventory ? String(was.inventory.qtyOnHand) : '0', unit: was.inventory?.unit || null },
+      } });
+      await recordLedger(tx, 'COST_CHANGED', 'AuditLog', change.id, { userId: req.user.id });
+    }
+    if (from == null && to != null) firstCost = true;
+    return saved;
+  });
+  // A first cost: what the books were holding for want of one is posted now. A failure here leaves the events held, to be retried from the Finance screen.
+  if (firstCost) await retryItemEvents(before.id, req.user.id).catch((e) => console.error('Ledger: retry after first cost failed:', e));
   res.json(present(coil, req));
 }));
 

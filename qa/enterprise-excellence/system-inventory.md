@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 143cdcf. Do not edit by hand: change the source and rerun.
+Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 31cea3e. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -8,16 +8,16 @@ Every figure here is counted from the code or measured in a test run. The module
 
 | Item | Count |
 |---|---:|
-| Modules | 50 |
-| Server route files | 75 |
-| API routes (each address counted; two route files are mounted twice) | 649 |
-| API routes that change data | 338 |
-| Database tables in the schema | 161 |
+| Modules | 51 |
+| Server route files | 76 |
+| API routes (each address counted; two route files are mounted twice) | 684 |
+| API routes that change data | 362 |
+| Database tables in the schema | 171 |
 | Enumerations | 96 |
-| Migrations | 33 |
-| Screens (routes in the browser) | 145 |
-| Frontend source files | 405 (120,277 lines) |
-| Server route code | 25,171 lines |
+| Migrations | 34 |
+| Screens (routes in the browser) | 146 |
+| Frontend source files | 409 (121,085 lines) |
+| Server route code | 25,407 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -27,7 +27,7 @@ Every figure here is counted from the code or measured in a test run. The module
 
 | Classification | Modules |
 |---|---:|
-| IMPLEMENTED AND VERIFIED | 27 |
+| IMPLEMENTED AND VERIFIED | 28 |
 | PARTIALLY IMPLEMENTED | 9 |
 | IMPLEMENTED BUT NOT VERIFIED | 6 |
 | PLACEHOLDER OR MOCK | 5 |
@@ -209,7 +209,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 1 (1 real): /pos/retail
 - **Server:** `src/backend/src/routes/quickSale.js`; served at /api/pos/quick-sale
 - **Routes:** 10, of which 6 change data. Returned a success in a test this session: 6 of 10; of the changing routes, 3 of 6
-- **Tables:** Product, Order, Invoice, MaterialMovement, AuditLog, Payment, InvoiceLine
+- **Tables:** Product, Order, Invoice, Payment, MaterialMovement, AuditLog, InvoiceLine
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, pricing, tax
 - **Feeds:** Invoices, payments
@@ -361,7 +361,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 4 (3 real, 1 static): /inventory, /units, /units/:id, /inventory/*
 - **Server:** `src/backend/src/routes/coils.js`, `src/backend/src/routes/inventory.js`; served at /api/coils, /api/inventory
 - **Routes:** 25, of which 13 change data. Returned a success in a test this session: 23 of 25; of the changing routes, 12 of 13
-- **Tables:** Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory, StockTransfer
+- **Tables:** Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory, AuditLog, StockTransfer
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, receiving
 - **Feeds:** Reservation, shipping, returns
@@ -658,6 +658,21 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Findings:** B-019
 - **Production concern:** No statements, no ageing, no overdue by date, no export to accounting
 
+### Financial ledger
+
+- **Status:** IMPLEMENTED AND VERIFIED
+- **Basis:** qa/sim/phase95-ledger.mjs (158 scenarios in seven groups); qa/sim/phase95-ui.cjs (13); qa/sim/phase95-load.mjs (80 branches, measured); 24 unit tests; qa/tools/phase95-mutations.mjs (26 rules removed, 26 caught)
+- **Purpose:** Double-entry books behind sales, payments, stock, work orders and transfers: chart of accounts, approved posting rules, immutable journal, periods, cutover, reconciliation, reports and export. Switched off until an accountant approves
+- **Screens:** 1 (1 real): /finance
+- **Server:** `src/backend/src/routes/ledger.js`, `src/backend/src/services/ledger.js`, `src/backend/src/services/ledgerCutover.js`, `src/backend/src/services/ledgerReports.js`, `src/backend/src/services/ledgerAssistant.js`, `src/backend/src/lib/ledgerRules.js`; served at /api/ledger
+- **Routes:** 35, of which 24 change data. Returned a success in a test this session: 33 of 35; of the changing routes, 22 of 24
+- **Tables:** LedgerPeriod, JournalEntry
+- **Who may change it:** see permissions-matrix.md
+- **Depends on:** Invoices and payments, stock, receiving, transfers, work orders, shipping
+- **Feeds:** Reports, export to an accounting system, the assistant
+- **Findings:** W-001 to W-027
+- **Production concern:** Verified as engineering only. Not active on the live system: the chart, the posting rules and 16 policy decisions need an accountant's approval, and the cutover needs a dry run on a copy of live data (W-001)
+
 ### Sales tax
 
 - **Status:** IMPLEMENTED AND VERIFIED
@@ -899,7 +914,7 @@ Finding B-014.
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
 | src/frontend/src/help/manualContent.js | 3542 | 0 |
-| src/frontend/src/router/AppRouter.jsx | 1574 | 0 |
+| src/frontend/src/router/AppRouter.jsx | 1581 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1337 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
@@ -938,12 +953,12 @@ Finding B-014.
 | Files over 600 lines | 66 |
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
-| Icon-only buttons | 300 |
-| aria-label attributes | 264 |
+| Icon-only buttons | 301 |
+| aria-label attributes | 265 |
 | Browser alert or confirm calls | 0 in 0 files |
 | Timers started (setInterval, setTimeout) | 70 |
 | Timers cleared | 41 |
 | console.log calls | 17 |
-| Dialogs | 137 |
+| Dialogs | 141 |
 | Frontend unit test files | 0 |
 

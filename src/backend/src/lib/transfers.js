@@ -17,6 +17,7 @@
  */
 import { acrossBranches, currentScope } from './branchScope.js';
 import { placeHold, releaseHold } from './holds.js';
+import { recordMovement, record as recordLedger, reverseEvent as reverseLedger } from '../services/ledger.js';
 
 export const RECEIPT_CONDITIONS = ['GOOD', 'SHORT', 'DAMAGED', 'NOT_RECEIVED'];
 export const MAX_TRANSFER_ITEMS = 100;
@@ -124,6 +125,7 @@ export async function shipTransfer(tx, { transferNumber, shipment, userId }) {
     category: 'WORKFLOW', eventType: 'STOCK_TRANSFER_SHIPPED', action: 'CREATE', userId, resourceType: 'StockTransfer', resourceId: transfer.id,
     details: { transferNumber, from, to: shipment.toLocationId, items: lines.map((l) => ({ coilId: l.coilId, qty: l.qtyShipped, unit: l.unit })) },
   } });
+  for (const line of transfer.lines) await recordLedger(tx, 'TRANSFER_SHIPPED', 'StockTransferLine', line.id, { userId });
   return transfer;
 }
 
@@ -153,10 +155,11 @@ export async function receiveTransfer(tx, { transferId, body, userId }) {
       if (!bal || bal.status !== 'IN_TRANSIT') refuse(409, 'An item on this transfer is no longer in transit. Reload and try again.');
       await tx.inventory.update({ where: { coilId: a.coilId }, data: { locationId: transfer.toLocationId, qtyAvailable: { increment: bal.inTransit }, qtyInTransit: 0, status: 'ACTIVE', lastMovement: new Date() } });
       await tx.coil.update({ where: { id: a.coilId }, data: { locationId: transfer.toLocationId } });
-      await tx.materialMovement.create({ data: {
+      const arrived = await tx.materialMovement.create({ data: {
         coilId: a.coilId, movementType: 'TRANSFER', fromLocationId: transfer.fromLocationId, toLocationId: transfer.toLocationId,
         qtyMoved: a.qtyShipped, unit: bal.unit || 'LB', reasonCode: 'TRANSFER_RECEIVED', notes: `Transfer ${transfer.transferNumber}`, createdById: userId,
       } });
+      await recordMovement(tx, arrived, { userId });
       if (a.condition !== 'GOOD') {
         const coil = await tx.coil.findUnique({ where: { id: a.coilId }, select: { status: true } });
         const missing = r4(a.qtyShipped - a.qtyReceived);
@@ -191,6 +194,7 @@ export async function cancelTransfer(tx, { transferId, reason, userId }) {
     const bal = await lockBalance(tx, line.coilId);
     if (!bal || bal.status !== 'IN_TRANSIT') refuse(409, 'An item on this transfer is no longer in transit. Reload and try again.');
     await tx.inventory.update({ where: { coilId: line.coilId }, data: { qtyAvailable: { increment: bal.inTransit }, qtyInTransit: 0, status: 'ACTIVE', lastMovement: new Date() } });
+    await reverseLedger(tx, 'TRANSFER_SHIPPED', 'StockTransferLine', line.id, { reason: `Transfer ${transfer.transferNumber} cancelled: ${why}`, userId });
   }
   await tx.auditLog.create({ data: {
     category: 'WORKFLOW', eventType: 'STOCK_TRANSFER_CANCELLED', action: 'UPDATE', userId, resourceType: 'StockTransfer', resourceId: transfer.id,
@@ -224,10 +228,11 @@ export async function settleShortage(tx, { transferId, coilId, decision, notes, 
   if (decision === 'CONFIRM_SHORT') {
     if (missing > bal.onHold + EPS) refuse(409, `Only ${r4(bal.onHold)} ${bal.unit} of this item is on hold; ${r4(bal.reserved)} is reserved for an order. Release the reservation first, then confirm the shortage.`);
     await tx.inventory.update({ where: { coilId }, data: { qtyOnHand: { decrement: missing }, qtyOnHold: { decrement: missing }, lastMovement: new Date() } });
-    await tx.materialMovement.create({ data: {
+    const short = await tx.materialMovement.create({ data: {
       coilId, movementType: 'ADJUST', fromLocationId: bal.locationId, qtyMoved: missing, unit: bal.unit, reasonCode: 'TRANSFER_SHORT_DOWN',
       notes: `Transfer ${line.transfer.transferNumber}: ${missing} ${bal.unit} did not arrive. ${note}`, createdById: userId,
     } });
+    await recordMovement(tx, short, { userId });
   }
   const after = await tx.inventory.findUnique({ where: { coilId }, select: { qtyOnHand: true } });
   if (num(after.qtyOnHand) <= EPS) {

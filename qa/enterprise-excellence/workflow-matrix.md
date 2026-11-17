@@ -113,6 +113,24 @@ Phase 9 changed no workflow rule. It walked the screens of each workflow in a br
 | 7. Exception management | An unknown address showed the dashboard; a session that ended dropped the person at home; a server failure could crash a list (V-014, V-005, V-023) | Page not found; back to the same page after sign-in; an error with Retry |
 | All | Rows opened only with a mouse; controls and fields with no name; confirmations in the browser's own box | Keyboard throughout the paths the scenarios walk; names on every control; the application's own dialogs |
 
+### Phase 9.5 update (2026-11-16)
+
+Phase 9.5 changed no workflow step. It added a financial ledger that is told about each step that moves money or stock value, in the same save. **The ledger is switched off on the live system until an accountant approves it**, so on the live system every workflow below behaves exactly as before. With the ledger on (QA database only), by workflow:
+
+| Workflow | What the ledger records | Where it stops | Verified by |
+|---|---|---|---|
+| 1. Customer to cash | Cost of goods at shipment; receivable, revenue, freight revenue and tax at invoice; payment; credit; refund; invoice cancel as a reversal | No bank record: payments sit in a clearing account. No deposit record | `qa/sim/phase95-ledger.mjs` groups "Sales, invoices and revenue" (25) and "Payments, credits and refunds" (21) |
+| 2. Procure to stock | Receipt against a purchase order at the order's cost, against goods received not invoiced | A receipt with no purchase order is held (W-006). Supplier invoices are not in the product (W-009) | same, "Inventory valuation and adjustments" (27) |
+| 3. Make to order, coil work order | One entry per completed work order: source down, pieces up as finished goods, scrap expensed | Labor and machine time are not posted (policy decision 8) | same, "Manufacturing, work in progress and costing" (20) |
+| 4. Branch transfer | Sent: stock to in transit. Received: in transit to the receiving branch. Shortage written off. Call back as a reversal | A transfer between branches of different owners is held (W-002) | same, "Freight, transfers and location accounting" (21) |
+| 5. Return and credit | Credit memo; material back at the cost it left at; scrap written off | | same, groups 2 and 3 |
+| Counter sale | Invoice, payment and cost of the pieces in one save; a void puts all three back | An item with no stock record posts revenue and no cost (W-012); counter stock has no receiving screen (W-007) | same, group 1 |
+| Count and correct | Count variance, damage and scrap by reason; cost change on stock on hand | A reason with no approved rule is held | same, group 3 |
+| New: keep the books | Chart, approvals, manual entry by two people, month close and reopen, reconciliation, export file | Nothing is sent to an outside accounting system (W-011) | same, groups "Periods, cutover and reporting" (24) and "Concurrency, authorization and failure recovery" (20); `qa/sim/phase95-ui.cjs` (13) |
+| New: start the books | Dry run, activation with opening balances from the records, stop and resume | Not done on live. Needs the accountant (W-001) and a dry run on a copy of live data (W-005) | same, set-up scenarios |
+
+Customer to cash no longer stops at "no accounting export after payment": a controlled export file exists. It still stops short of a connection to an accounting product.
+
 ## Job types found
 
 Order types in the schema: RFQ, QUOTE, SO (sales order), PO, RETURN. PO is never used. Sales channels that create a sales order: order entry, quote acceptance, web store, counter quick sale, counter session flow, partner API. The order hub creates its own orders that are not sales orders (B-009).

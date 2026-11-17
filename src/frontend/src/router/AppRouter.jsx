@@ -106,6 +106,7 @@ const SchedulePage = lazy(() => import('../pages/SchedulePage'))
 const JobDetailPage = lazy(() => import('../pages/JobDetailPage'))
 const ReceivingPage = lazy(() => import('../pages/ReceivingPage'))
 const TransfersPage = lazy(() => import('../pages/Transfers/TransfersPage'))
+const FinancePage = lazy(() => import('../pages/Finance/FinancePage'))
 const PurchaseOrdersPage = lazy(() => import('../pages/Purchasing/PurchaseOrdersPage'))
 const TimeTrackingPage = lazy(() => import('../pages/TimeTrackingPage'))
 
@@ -844,6 +845,12 @@ const router = createBrowserRouter([
             <ReceivingPage />
           </Suspense>
         ),
+        errorElement: <RouteErrorPage />,
+      },
+      // Phase 9.5: the financial ledger
+      {
+        path: 'finance',
+        element: (<Suspense fallback={<PageLoader />}><FinancePage /></Suspense>),
         errorElement: <RouteErrorPage />,
       },
       // Phase 6: transfers between branches, and purchase orders

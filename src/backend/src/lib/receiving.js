@@ -12,6 +12,7 @@ import { readReceipt } from './receivingRules.js';
 import { takeFromParent } from './stockChanges.js';
 import { placeHold } from './holds.js';
 import { unitCostFromPrice } from './costing.js';
+import { recordMovement } from '../services/ledger.js';
 
 const refuse = (message, status = 400) => Object.assign(new Error(message), { refuse: true, status });
 
@@ -178,6 +179,7 @@ export async function receiveStock({ input, templateType = null, user, source = 
           notes: [po && `PO ${po.po.orderNumber} line ${po.line.lineNumber}: ${po.qtyInLineUnit} ${po.line.unit}`, !po && receipt.poReference && `PO ${receipt.poReference}`, found.lotNote, receipt.notes].filter(Boolean).join('. ') || null,
         },
       });
+      await recordMovement(tx, movement, { userId: user.id });
       let hold = null;
       if (po) {
         await tx.orderLine.update({ where: { id: po.line.id }, data: { qtyReceived: po.receivedAfter, lineStatus: po.receivedAfter + 1e-6 >= po.ordered ? 'COMPLETE' : 'PARTIAL' } });

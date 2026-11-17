@@ -26,6 +26,7 @@ import { creditInvoice, BillingError } from '../services/billing.js';
 import { placeHold } from '../lib/holds.js';
 import { unitKey } from '../lib/reservationRules.js';
 import { CREDIT_NOT_ISSUED, CREDIT_ISSUED_LATER } from '../lib/orderCloseout.js';
+import { recordMovement } from '../services/ledger.js';
 
 const router = Router();
 // RESTOCK: back on the shelf. INSPECT: back on the books but held until inspected (Phase 6). SCRAP: not restocked.
@@ -272,10 +273,10 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
             where: { coilId },
             data: { qtyOnHand: { increment: qty }, qtyAvailable: { increment: qty }, lastMovement: new Date() },
           });
-          await tx.materialMovement.create({
+          await recordMovement(tx, await tx.materialMovement.create({
             // It comes back at the cost it carries (Phase 8, N-017), so the cost of the sale falls by what returned.
             data: { coilId, movementType: 'RECEIVE', toLocationId: inv.locationId, qtyMoved: qty, unit: inv.unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id, unitCost: stock.coil.unitCost ?? null },
-          });
+          }), { userId: req.user.id });
           await tx.coil.updateMany({ where: { id: coilId, status: { in: ['SHIPPED', 'CONSUMED'] } }, data: { status: 'AVAILABLE' } });
           // INSPECT: back on the books, but held until someone has looked at it (Phase 6).
           if (disposition === 'INSPECT') {
@@ -297,12 +298,12 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
             const at = await tx.inventory.findUnique({ where: { coilId }, select: { locationId: true, unit: true, coil: { select: { unitCost: true } } } });
             const unitCost = at?.coil?.unitCost ?? null;
             const unit = at?.unit || line.unit;
-            await tx.materialMovement.create({
+            await recordMovement(tx, await tx.materialMovement.create({
               data: { coilId, movementType: 'RECEIVE', toLocationId: at?.locationId || null, qtyMoved: qty, unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: `${found.orderNumber}: returned for scrap`, createdById: req.user.id, unitCost },
-            });
-            await tx.materialMovement.create({
+            }), { userId: req.user.id });
+            await recordMovement(tx, await tx.materialMovement.create({
               data: { coilId, movementType: 'SCRAP', fromLocationId: at?.locationId || null, qtyMoved: qty, unit, orderId: found.id, reasonCode: 'CUSTOMER_RETURN', notes: found.orderNumber, createdById: req.user.id, unitCost },
-            });
+            }), { userId: req.user.id });
           }
         }
       }

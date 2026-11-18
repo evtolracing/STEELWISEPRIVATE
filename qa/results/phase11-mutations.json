@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-11-18T18:29:53.319Z",
+  "ranAt": "2026-11-18T20:02:14.385Z",
   "held": 13,
   "total": 13,
   "results": [
@@ -42,7 +42,8 @@
       "check": "Z-003: a document number is handed out by the counter",
       "failed": [
         "not ok 1 - Z-003: a document number is handed out by the counter, and the table is counted only the first time",
-        "not ok 2 - Z-003: eighty saves at the same moment each get their own number with no save refused"
+        "not ok 2 - Z-003: eighty saves at the same moment each get their own number with no save refused",
+        "not ok 3 - Z-003: numbers already on older documents are stepped past, and the series stays past them"
       ]
     },
     {
@@ -62,7 +63,7 @@
       "held": true,
       "check": "Z-005",
       "failed": [
-        "not ok 13 - Z-005: a save that overlapped others on every try is \"busy, try again\" (409), never a server error"
+        "not ok 14 - Z-005: a save that overlapped others on every try is \"busy, try again\" (409), never a server error"
       ]
     },
     {
@@ -72,8 +73,8 @@
       "held": true,
       "check": "Z-007: requests that other server copies already counted",
       "failed": [
-        "not ok 14 - Z-007: a partner limit is counted in the shared table, in one statement for the second, the minute and the hour",
-        "not ok 15 - Z-007: requests that other server copies already counted use up the same limit"
+        "not ok 15 - Z-007: a partner limit is counted in the shared table, in one statement for the second, the minute and the hour",
+        "not ok 16 - Z-007: requests that other server copies already counted use up the same limit"
       ]
     },
     {
@@ -103,7 +104,8 @@
       "held": true,
       "check": "Z-009: a route that answered 500",
       "failed": [
-        "not ok 19 - Z-009: a route that answered 500 for want of a connection is answered 503 with a time to retry"
+        "not ok 21 - Z-009: a route that answered 500 for want of a connection is answered 503 with a time to retry",
+        "not ok 22 - Z-011: a transaction that fails for want of a connection is noted for the reply, and other failures are not"
       ]
     },
     {

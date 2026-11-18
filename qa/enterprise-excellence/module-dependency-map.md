@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 3953a52. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -125,6 +125,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/quoteRules.js | customerRoutes.js, quotes.js, rfqs.js, salesDashboard.js | 4 |
 | lib/outbound.js | ai.js, aiAssistant.js, tts.js | 3 |
 | services/ai/AIProviderService.js | ai.js, aiAssistant.js, opsCockpit.js | 3 |
+| lib/passwords.js | auth.js, adminRoutes.js, users.js | 3 |
 | lib/customerPricing.js | ecom.js, intakePricing.js, quickSale.js | 3 |
 | lib/lineSpecs.js | intakeOrders.js, quotes.js, rfqs.js | 3 |
 | lib/userAdminRules.js | auth.js, users.js | 2 |

@@ -108,3 +108,21 @@ Updated at the end of Phase 2 (2026-11-13). The full review is `phase-02-archite
 8. Five handlers still save in several steps (down from 16; each dispositioned in `phase-02-transaction-safety.md`).
 
 Closed in Phase 2: no branch boundary (B-003); sixteen areas with no department rule (B-004); a branch manager able to become super admin (C-001); shop-floor records going wrong under simultaneous use (C-005).
+
+## Phase 11 update (2026-11-18)
+
+Phase 11 added no service and no dependency. What changed in the map:
+
+| Part | Before | Now |
+|---|---|---|
+| Rate limit | Counted per function instance (E-014) | The sign-in limit per address and the partner limits are counted in the database table `RateWindow`, one limit for all server copies (database update 18). The general ceiling per address is still per copy (Z-010). Falls back to per copy if the table is missing |
+| Document numbers | Each save read its table for the highest number | One counter row per series in `DocumentCounter` (Z-001, Z-003) |
+| Invoices across server copies | Took turns inside one process only | Take turns in the database: a short table lock on `DocumentCounter` first (Z-002) |
+| Password checks | Ran on the request thread, any number at once | Two at a time per server copy (`src/backend/src/lib/passwords.js`, Z-004) |
+| Database unreachable | Answered 500 | Answered 503 with a time to retry, for queries and transactions (`requestContext.js`, `db.js`, `safeErrors.js`; Z-009, Z-011) |
+| Duplicate-request protection | Ran the request unprotected if the key could not be claimed | Refuses the request (Z-013) |
+| Shutdown | Waited for idle connections | Closes idle connections while draining (Z-008) |
+
+Test-only parts, not deployed: a front door that runs several server copies behind one address and can kill, stop, delay or cut them (`qa/tools/qa-cluster.mjs`, `qa/tools/phase11-cluster.sh`); the enterprise day (`qa/sim/phase11-enterprise.mjs`); the scenarios (`qa/sim/phase11-scenarios.mjs`).
+
+Still true and now measured: every server copy keeps its own database connection pool; the product has no queue service and no worker process (partner events wait in a table and the scheduled run sends them); nothing runs on a schedule unless the host calls the scheduled address (B-019).

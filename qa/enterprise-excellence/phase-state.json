@@ -10,6 +10,28 @@
   },
   "testsExecuted": [
     {
+      "test": "Phase 11: one working day of the 80-branch model through the real server on three server copies, five cycles (qa/sim/phase11-enterprise.mjs); 500 traced customer jobs and 2,000 completed transactions required",
+      "result": "Final cycle: 545 of 545 jobs traced end to end, 5,191 transactions completed, 0 failed, every category above its minimum; trial balance balances and the reconciliation is clean; 0 deadlocks; dispatch P95 4617 ms (proposed limit 2,000)",
+      "before": "Baseline cycle: 3,269 database transactions rolled back and dispatch P95 7250 ms; final: 204 rolled back"
+    },
+    {
+      "test": "Phase 11: failure, security and concurrency scenarios on three server copies, database read back (qa/sim/phase11-scenarios.mjs), 300 required with eight minimums",
+      "result": "320 of 320, 1,383 checks; Sales, inventory and purchasing concurrency 48/48; Manufacturing, scheduling and quality 40/40; Shipping, logistics and invoicing 35/35; Ledger posting and reconciliation 63/63; Tenant, branch, RBAC and AI security 41/41; Integrations, events and background jobs 39/39; Failure injection and recovery 36/36; Reporting, frontend and deployment 18/18",
+      "before": "None: every earlier phase ran one server process"
+    },
+    {
+      "test": "Phase 11: a whole day with six failures injected (a copy killed, every database connection cut, a polite restart, the invoice counter held, answers delayed, outside services down)",
+      "result": "545 of 545 jobs, 0 failed transactions, 20 resends, books clean, every copy back up"
+    },
+    {
+      "test": "Phase 11: proof by removal (qa/tools/phase11-mutations.mjs)",
+      "result": "13 of 13 removals caught by the named check; source restored after each"
+    },
+    {
+      "test": "Phase 11: full gate of every earlier phase on the Phase 11 code (qa/tools/run-gates.sh)",
+      "result": "Every earlier phase passes on the Phase 11 code on a rebuilt database (Phases 2 to 9.5 in full, unit tests 268 of 268, lint 0 errors, build). Phase 10 passed 276 of 277 once its restore server was started, and the one miss passes alone. Phase 11 in gate order passed 320 of 320 on its third run, after eight checks that made wrong assumptions about what earlier phases leave behind were corrected in the tests"
+    },
+    {
       "test": "Phase 10: security, financial integrity, reliability and recovery scenarios through the real server, database read back (qa/sim/phase10-security.mjs), 250 required with nine minimums",
       "result": "277 of 277; Authentication, sessions and roles 36/36; Tenant, division and branch isolation 31/31; API, database and document security 40/40; Ledger security and posting integrity 41/41; Inventory-to-ledger and receivables reconciliation 30/30; Integrations, events and background jobs 26/26; Concurrency and failure recovery 26/26; Backup, restore, deployment and rollback 26/26; Observability, alerting and infrastructure 21/21",
       "before": "None: Phases 1 to 9.5 had security checks per phase but no session ending, lockout, least-privilege database role, alerts or restore test"
@@ -178,33 +200,40 @@
     }
   ],
   "unverifiedAreas": [
+    "Phase 11 scale: one machine carried the database, three server copies and the load. Server copies on separate machines, the live database and its pooler are NOT VERIFIED",
+    "Phase 11 volume: one simulated day built on assumptions, not on real volumes of the business. A year of data is NOT VERIFIED (W-023)",
+    "Phase 11 thresholds: proposed, not approved. Dispatch is above the proposal with 32 or more customer jobs in flight (Z-006)",
+    "Phase 11 AI: the AI service was a stand-in; what a real model answers is NOT VERIFIED",
     "Live database role: on QA the server runs as steelwise_runtime and cannot alter the books or history. The live server still connects as the owner until the owner applies file 17 and switches DATABASE_URL (Y-008, Y-009, W-014)",
     "Alerts: raised and delivered to a QA stub only. No live receiver is set (E-017); the scheduled run must be set on the host (B-019)",
     "Backups: an isolated restore was proven on QA (W-020). The host's own backups have never been restored (E-015); recovery objectives are proposals, not approved",
     "Deployment: database rollback tested on a copy; a Vercel promote or rollback NOT VERIFIED",
-    "Scale: one server process. Turn-taking for money and invoice numbers holds inside one process only (W-022, Y-020); several processes are Phase 11",
     "Outside services: every partner, carrier, AI and accounting service was a stub",
     "Accounting: no accountant has reviewed any policy, account, mapping or posting rule. The tests prove the software does what its documents say, not that the documents are the right accounting (W-001)",
     "Live data: the ledger has never run on the live database or a copy of it. Opening balances, the number of items with no cost and how long activation holds business saves are unknown (W-005)",
     "External accounting: nothing is connected. Import of the export file into QuickBooks or Xero is NOT VERIFIED (W-011)"
   ],
   "currentBlockers": [
+    "Owner: approve or change the proposed performance thresholds (phase-11-workload-profile.md); without approved thresholds Phase 11 cannot be VERIFIED COMPLETE",
+    "Owner: decide Z-006, the wait at the dock at peak (phase-11-capacity-recommendations.md)",
     "Owner: apply SQL Editor file 17 before merging the Phase 10 pull request; deploying first stops every sign-in (Y-022 makes the answer say so)",
     "Owner: Y-008 and W-014 take effect on live only after DATABASE_URL points at steelwise_runtime",
     "Owner and accountant: W-001. The ledger is switched off and the software refuses to start it until every account and mapping is approved under the accountant's name. Production posting is blocked by design",
     "Owner and accountant, questions raised by the build: W-002 legal entities, W-003 time zone, W-004 gaps in journal numbers, W-006 and W-007 and W-012 receipts and counter stock with no cost, W-009 payables clearing, W-010 processing revenue, W-011 which accounting product"
   ],
   "nextActions": [
+    "Owner: apply /mnt/project-files/database-updates/18-20261118150000_shared_rate_limits.sql in the SQL editor, then verify-6-to-18.sql; every row OK or APPLIED. Safe before or after the code",
+    "Owner: say when to merge the Phase 11 pull request",
+    "Owner: approve the thresholds and decide Z-006",
+    "Owner: issue the Phase 12 prompt. Its handoff is in phase-11-report.md. Phase 12 has not been started",
     "Owner: apply /mnt/project-files/database-updates/17-20261118090000_security_hardening.sql in the SQL editor, then verify-6-to-17.sql; every row OK or APPLIED",
-    "Owner: then say when to merge the Phase 10 pull request",
     "Owner, when ready: give steelwise_runtime a password, put it in DATABASE_URL (pooler user steelwise_runtime.<project ref>), keep DIRECT_URL, redeploy",
     "Owner: set ALERT_WEBHOOK_URL and the scheduled run; restore one host backup into a new project once",
-    "Owner: issue the Phase 11 prompt. Its handoff is in phase-10-report.md. Phase 11 has not been started",
     "Still from Phase 9.5: SQL 16 applied? Accountant approval before the ledger is started on live (W-001)"
   ],
-  "lastCompletedCheckpoint": "Phase 10 implemented and verified by tool on a local machine: 23 findings Y-001 to Y-023 (21 VERIFIED FIXED, 2 FIXED — NOT VERIFIED until the owner applies file 17 and switches DATABASE_URL to steelwise_runtime); 277 of 277 Phase 10 scenarios with every category minimum met; 30 of 30 fixes proven by removal; full gate on the finished code: every earlier phase passes (Phases 3 to 8 74/66/76/106/141/155, Phase 9 browser 232, Phase 9.5 158 and 13), unit 245 of 245, 80-branch load 16 of 16, lint 0 errors, build made; Phase 10 in gate order 277 of 277. Not verified: anything on the live system, the host's backups, a Vercel promote, a live alert channel, several server processes.",
-  "currentPhase": 10,
-  "findingPrefix": "Y-",
+  "lastCompletedCheckpoint": "Phase 11 implemented and measured on a local machine: 14 findings Z-001 to Z-014 (10 VERIFIED FIXED including every P1, 2 REQUIRES BUSINESS DECISION, 2 DEFERRED to Phase 12); E-014 and W-022 closed; five enterprise cycles on three server copies, final cycle 545 jobs and 5,191 transactions with the books reconciled; 320 of 320 scenarios; 13 of 13 fixes proven by removal. Status IMPLEMENTED — VERIFICATION INCOMPLETE: no threshold is approved and dispatch is above the proposal at peak. Database update 18 is for the owner to apply.",
+  "currentPhase": 11,
+  "findingPrefix": "Z-",
   "phase2BaselineCommit": "0ad7857",
   "scoreAdjustments": [
     {
@@ -458,6 +487,30 @@
       "category": "Security",
       "score": 84,
       "evidence": "Phase 10: tokens end at once on password change, reset, switch-off and sign-out (Y-001); per-login pause after ten wrong passwords (Y-002); upload path escape, files served by address and mismatched content closed (Y-004 to Y-006); register follows the Users rules (Y-013); partner administration reads need an administrator (Y-019); every QA suite runs the server as a role that cannot change history or the books; 277 scenarios and removal checks (phase-10-quality-scorecard.md). Held at 84: the live server still connects as the database owner until file 17 and the DATABASE_URL switch (Y-008); the per-address limit counts per instance (E-014); no second factor"
+    },
+    {
+      "group": "Platform infrastructure",
+      "category": "Reliability",
+      "score": 88,
+      "evidence": "Phase 11: twenty kinds of failure injected on three server copies and recovered; a database interruption answers \"try again\" (Z-009, Z-011); a keyed request is never run without its key (Z-013); polite stop under 3 s (Z-008). Held at 88: the database server itself was never failed; one machine"
+    },
+    {
+      "group": "Platform infrastructure",
+      "category": "Performance",
+      "score": 80,
+      "evidence": "Phase 11: password checks take turns (Z-004); request limits in one table for all copies (Z-007, E-014); about 90 requests a second with ordinary requests well inside the proposed limits. Held at 80: no approved threshold; one small machine; a year of data not measured"
+    },
+    {
+      "group": "Logistics and financial operations",
+      "category": "Performance",
+      "score": 76,
+      "evidence": "Phase 11: invoice and document numbers by counter, invoices take turns in the database (Z-001 to Z-003); rollbacks cut by more than nine tenths. Held at 76: dispatch is above the proposed 2 s at the 95th percentile with 32 or more customer jobs in flight (Z-006, owner decision)"
+    },
+    {
+      "group": "Logistics and financial operations",
+      "category": "Data integrity",
+      "score": 92,
+      "evidence": "Phase 11: five days of 545 customer jobs on three server copies, every invariant and every reconciliation check at zero, also after a day of injected failures; no difference adjusted away. Held at 92: test books; one day of volume"
     }
   ],
   "pullRequest": 34,
@@ -475,5 +528,6 @@
   "phase8BaselineCommit": "b2e8c5d",
   "phase9BaselineCommit": "da3e6d0",
   "phase95BaselineCommit": "3081208",
-  "phase10BaselineCommit": "60ce6d2"
+  "phase10BaselineCommit": "60ce6d2",
+  "phase11BaselineCommit": "fdbece6"
 }

@@ -1,8 +1,8 @@
 {
- "at": "2026-11-18T18:22:37.044Z",
+ "at": "2026-11-18T20:04:20.083Z",
  "database": "postgresql://localhost:5432/steelwise_qa_p11",
  "tables": 173,
- "totalRows": 30531,
+ "totalRows": 30557,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -136,7 +136,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 5644
+   "rows": 5643
   },
   {
    "table": "BomOperation",
@@ -148,7 +148,7 @@
   },
   {
    "table": "Coil",
-   "rows": 867
+   "rows": 870
   },
   {
    "table": "CommodityPrice",
@@ -260,7 +260,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 867
+   "rows": 870
   },
   {
    "table": "InventoryAdjustment",
@@ -300,11 +300,11 @@
   },
   {
    "table": "JournalEntry",
-   "rows": 2686
+   "rows": 2689
   },
   {
    "table": "JournalLine",
-   "rows": 5498
+   "rows": 5504
   },
   {
    "table": "LabelTemplate",
@@ -316,7 +316,7 @@
   },
   {
    "table": "LedgerEvent",
-   "rows": 2484
+   "rows": 2487
   },
   {
    "table": "LedgerExportBatch",
@@ -372,7 +372,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 1334
+   "rows": 1337
   },
   {
    "table": "MeterReading",
@@ -392,11 +392,11 @@
   },
   {
    "table": "Order",
-   "rows": 1078
+   "rows": 1081
   },
   {
    "table": "OrderLine",
-   "rows": 1078
+   "rows": 1081
   },
   {
    "table": "OrderLineAllocation",

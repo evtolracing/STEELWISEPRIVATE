@@ -1,0 +1,5 @@
+ledger: already active; receipts with no purchase order left held by earlier suites: 0, posted by the CFO naming 2000: 0, still held for want of a cost: 0, nothing to post: 0
+✗ [Inventory-to-ledger and receivables reconciliation] Stock changed outside the product shows as a difference, raises an alert, and is not corrected by an entry
+    - the scheduled run raised it — 200
+✗ Phase 10 security: 276 of 277 pass, 885 checks; Authentication, sessions and roles 36/36; Tenant, division and branch isolation 31/31; API, database and document security 40/40; Ledger security and posting integrity 41/41; Inventory-to-ledger and receivables reconciliation 29/30; Integrations, events and background jobs 26/26; Concurrency and failure recovery 26/26; Backup, restore, deployment and rollback 26/26; Observability, alerting and infrastructure 21/21
+✗ minimum not met: Inventory-to-ledger and receivables reconciliation has 29 passing of the 30 required

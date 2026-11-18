@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 3953a52. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -12,12 +12,12 @@ Every figure here is counted from the code or measured in a test run. The module
 | Server route files | 76 |
 | API routes (each address counted; two route files are mounted twice) | 686 |
 | API routes that change data | 363 |
-| Database tables in the schema | 171 |
+| Database tables in the schema | 172 |
 | Enumerations | 96 |
-| Migrations | 35 |
+| Migrations | 36 |
 | Screens (routes in the browser) | 146 |
 | Frontend source files | 409 (121,101 lines) |
-| Server route code | 25,629 lines |
+| Server route code | 25,632 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -702,7 +702,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** None
 - **Feeds:** Every module
-- **Findings:** E-014, E-017
+- **Findings:** E-017
 - **Production concern:** Rate limit counts per server instance; no alerting
 
 ### AI assistant and voice

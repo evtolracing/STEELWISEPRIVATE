@@ -27,6 +27,18 @@ export const GROUPS11 = Object.values(G11);
 const PICK = arg('group', ''); const MATCH = arg('match', '');
 export const wants = (group) => !PICK || PICK.split(',').some((n) => GROUPS11[Number(n) - 1] === group);
 
+// Ledger events already held when this run began. Earlier phases leave some by design when they share the
+// database (the full gate): for example a transfer of an item with no cost, which the product holds by name
+// until a cost is entered (W-007). They are counted here once, named in the result file, and not held
+// against Phase 11. On a rebuilt database there are none and every check below is exact.
+const NOT_POSTED = ['FAILED', 'RECONCILIATION_REQUIRED', 'PENDING'];
+const heldAtStart = new Set((await prisma.ledgerEvent.findMany({ where: { status: { in: NOT_POSTED } }, select: { id: true } })).map((e) => e.id));
+export const heldBefore = heldAtStart.size;
+/** Events failed, pending or held that were not already so when the run began. */
+export const openEvents = async () => (await prisma.ledgerEvent.findMany({ where: { status: { in: NOT_POSTED } }, select: { id: true } })).filter((e) => !heldAtStart.has(e.id)).length;
+/** A reconciliation passed; or it failed on the EVENTS check alone and every open event was held before the run began. */
+export const passedButForHeldBefore = async (r) => r?.passed === true || (heldBefore > 0 && JSON.stringify(r?.failing) === '["EVENTS"]' && (await openEvents()) === 0);
+
 /**
  * One scenario with the record Phase 11 asks for. `m` holds what is known before it runs:
  *   init initial conditions    expect expected result     biz business state     db database state
@@ -37,7 +49,8 @@ export async function S(group, name, m, fn) {
   if (!wants(group)) return null;
   if (MATCH && !MATCH.split('|').some((x) => name.includes(x))) return null;
   if (process.env.P11_TRACE) console.error(`… ${new Date().toISOString().slice(11, 19)} ${name}`);
-  const sc = await record(group, name, fn);
+  // A check that passes keeps what was measured (a time, a count), so the result file holds the figure and not only "ok".
+  const sc = await record(group, name, (ok, x) => fn((what, cond, detail) => { const r = ok(what, cond, detail); if (r && detail != null && String(detail).trim() !== '') x.asserts.at(-1).measured = String(detail).slice(0, 200); return r; }, x));
   const failed = sc.asserts.filter((a) => !a.ok);
   sc.record = {
     initialConditions: m.init || 'The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place',

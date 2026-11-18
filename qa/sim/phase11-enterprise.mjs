@@ -53,7 +53,6 @@ const before = (await sql(`SELECT (SELECT count(*)::int FROM "JournalEntry" WHER
   report.signIn = { people: E.everyone.length, failed, seconds: +((performance.now() - t) / 1000).toFixed(1), atATime: 24, ...summary(ms) };
   say(`signed in ${E.everyone.length - failed} of ${E.everyone.length} people in ${report.signIn.seconds}s (p95 ${report.signIn.p95} ms)`);
 }
-const setup = { id: 'SETUP', type: 'setup', branch: 'HQ', steps: [], ids: {}, n: 0 };
 const mkJob = (type, b, n, extra = {}) => ({ id: `C${CYCLE}-${type}-${String(n).padStart(4, '0')}`, n, type, kind: JOB_TYPES[type] || type, branch: b?.code || 'HQ', tier: b?.tier || null, steps: [], ids: {}, ...extra });
 
 // ── 2. counter stock, then the opening receipts of every branch ─────────────────────────────
@@ -256,12 +255,12 @@ report.verdict = {
   responseTimesWithinProposedLimits: report.thresholds.latencyMisses.length === 0,
 };
 fs.writeFileSync(OUT, `${JSON.stringify(report, null, 1)}\n`);
-if (!PROBE) fs.writeFileSync(OUT.replace(/\.json$/, '-jobs.json'), `${JSON.stringify({ cycle: CYCLE, at: report.at, jobs: jobs.map(({ n, ...j }) => j) })}\n`);
+if (!PROBE) fs.writeFileSync(OUT.replace(/\.json$/, '-jobs.json'), `${JSON.stringify({ cycle: CYCLE, at: report.at, jobs: jobs.map(({ n: _n, ...j }) => j) })}\n`);
 
 console.log(`\nPhase 11 cycle ${CYCLE} (${LABEL}): ${report.serverCopies} server cop${report.serverCopies === 1 ? 'y' : 'ies'}, ${report.seconds}s, ${X.gauge.requests} requests, peak ${X.gauge.peak} in flight`);
 console.log(`  customer jobs: ${report.jobs.completed}/${report.jobs.planned} completed, ${report.jobs.tracedEndToEnd} traced end to end; ${Object.entries(jobsByType).map(([t, v]) => `${t} ${v.traced}/${v.planned}`).join(', ')}`);
 console.log(`  transactions: attempted ${txTotals.attempted}, completed ${txTotals.completed}, failed ${txTotals.failed}, retried ${txTotals.retried}, recovered ${txTotals.recovered}, reconciled ${txTotals.reconciled}`);
-for (const [k, c] of Object.entries(report.transactions.byCategory)) console.log(`   ${c.meetsMinimum ? '✓' : '✗'} ${c.name.padEnd(46)} min ${String(c.minimum).padStart(3)}  completed ${String(c.completed).padStart(4)}  failed ${String(c.failed).padStart(3)}  reconciled ${String(c.reconciled).padStart(4)}`);
+for (const c of Object.values(report.transactions.byCategory)) console.log(`   ${c.meetsMinimum ? '✓' : '✗'} ${c.name.padEnd(46)} min ${String(c.minimum).padStart(3)}  completed ${String(c.completed).padStart(4)}  failed ${String(c.failed).padStart(3)}  reconciled ${String(c.reconciled).padStart(4)}`);
 if (Object.keys(recon.missing).length) console.log(`  ✗ counted but not found: ${Object.entries(recon.missing).map(([k, v]) => `${k} ${v.length}`).join('; ')}`);
 if (Object.keys(recon.notChecked).length) console.log(`  ✗ no database check for: ${JSON.stringify(recon.notChecked)}`);
 for (const [k, v] of invBad) console.log(`  ✗ ${k}: ${v}`);

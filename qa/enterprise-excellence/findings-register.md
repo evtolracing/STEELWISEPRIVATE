@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 3953a52. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register; G to N and V = Phases 3 to 9; W = Phase 9.5 financial ledger. The older registers in `qa/` are kept as history.
 
@@ -11,16 +11,16 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 119 | 18 |
-| P2 | 181 | 54 |
-| P3 | 117 | 37 |
-| Total | 438 | 112 |
+| P1 | 128 | 17 |
+| P2 | 183 | 54 |
+| P3 | 120 | 40 |
+| Total | 452 | 114 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 324 |
+| VERIFIED FIXED | 336 |
 | DEFERRED TO SPECIFIC PHASE | 63 |
-| REQUIRES BUSINESS DECISION | 31 |
+| REQUIRES BUSINESS DECISION | 33 |
 | IN PROGRESS | 6 |
 | FIXED — NOT VERIFIED | 5 |
 | ACCEPTED RISK WITH APPROVAL | 4 |
@@ -38,7 +38,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-016 | P1 | DEFERRED TO SPECIFIC PHASE | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
 | B-019 | P1 | BLOCKED | Platform | Everything happens only when someone opens a screen or presses a button. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
-| E-014 | P1 | DEFERRED TO SPECIFIC PHASE | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
 | E-015 | P1 | FIXED — NOT VERIFIED | Platform | No evidence that a backup has ever been restored | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
 | I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
@@ -101,11 +100,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | W-010 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; sales orders | An order line carries one price. Nothing marks processing (cutting) apart from material, so all line revenue posts to Product Sales Revenue and nothing posts to Processing Revenue. | Phase 9.5: financial ledger and accounting foundation |
 | W-011 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; export | The export produces one file layout whichever accounting product is chosen. No layout specific to QuickBooks or Xero was built, and no import into either was tested: no test company or current import specification was av | Phase 9.5: financial ledger and accounting foundation |
 | W-012 | P2 | REQUIRES BUSINESS DECISION | Counter quick sale; financial ledger | A counter sale of an item that has no stock record posts its revenue and no cost of goods, because there is no stock movement to cost. | Phase 9.5: financial ledger and accounting foundation |
-| W-022 | P2 | DEFERRED TO SPECIFIC PHASE | Invoices; hosting | The fix for W-021 works inside one server process. The live host can run several server processes at once; between processes the only guard is the database retry (25 attempts), which is what failed before. | Phase 9.5: financial ledger and accounting foundation |
 | W-023 | P2 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries | Phase 9.5: financial ledger and accounting foundation |
 | X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
 | Y-009 | P2 | FIXED — NOT VERIFIED | Database | The application's connection could create and drop tables and functions in the public schema. | Phase 10: security, financial integrity, reliability and recovery |
+| Z-006 | P2 | REQUIRES BUSINESS DECISION | Shipping and invoicing | Invoices are written one at a time for the whole company, because invoice numbers must never be skipped or repeated (owner decision of 2026-11-13). Measured on a 4-processor machine that also ran the database and the loa | Phase 11: 80-location enterprise stress simulation |
 | B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
 | B-022 | P3 | DEFERRED TO SPECIFIC PHASE | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
 | B-024 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | The 39 effect warnings are the ones that can be defects: an effect that reads a value it does not list can show stale data. They have not been read one by one. | Phase 2: architecture and code quality |
@@ -143,6 +142,9 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | W-003 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | The books keep days. Which day an event falls on depends on the time zone chosen at activation. It is recorded then and there is no way to change it afterwards. | Phase 9.5: financial ledger and accounting foundation |
 | W-004 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | Journal entry numbers come from a database sequence. They are unique and increasing, and a number is skipped wherever a save was rolled back. | Phase 9.5: financial ledger and accounting foundation |
 | W-015 | P3 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever. | Phase 9.5: financial ledger and accounting foundation |
+| Z-010 | P3 | REQUIRES BUSINESS DECISION | Platform | The general ceiling on requests per address still counts per server copy. Counting it in the database would add a write to every request of every user. | Phase 11: 80-location enterprise stress simulation |
+| Z-012 | P3 | DEFERRED TO SPECIFIC PHASE | Shipping and invoicing | When the answer to a dispatch is lost because its server copy died after saving the dispatch and before billing, sending the dispatch again answers "already IN_TRANSIT" (409). The truck left once and nothing is wrong in  | Phase 11: 80-location enterprise stress simulation |
+| Z-014 | P3 | DEFERRED TO SPECIFIC PHASE | Platform | A request key claimed by a server copy that then died blocks the repeat of that request for 60 seconds ("still being processed"), after which the repeat takes the claim over and runs. | Phase 11: 80-location enterprise stress simulation |
 
 ## Every finding in full
 
@@ -538,7 +540,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Choose the provider and the host schedule; then build each timed function.
 - **Required tests:** Per function.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** Phase 4: the scheduled work now exists as one address, GET or POST /api/internal/tasks/run, protected by a secret (CRON_SECRET). It sends waiting partner events and clears old request keys, is safe to call from several places at once, and records when it last ran; the Integrations screen shows that time and has a "Run now" button. Blocked on two host settings that are the owner's: (1) set CRON_SECRET to a long random value; (2) add a schedule that calls the address every 5 minutes with "Authorization: Bearer <CRON_SECRET>". It was not added to vercel.json because a schedule the plan does not allow can fail the deployment. Until then nothing is lost: events are sent right after each action, and a failed one waits for "Run now". Phase 10: the scheduled run now also runs the system checks and raises their alerts, and a late run is itself a failing check. It still needs a scheduler on the host (owner).
+- **Status note:** Phase 4: the scheduled work now exists as one address, GET or POST /api/internal/tasks/run, protected by a secret (CRON_SECRET). It sends waiting partner events and clears old request keys, is safe to call from several places at once, and records when it last ran; the Integrations screen shows that time and has a "Run now" button. Blocked on two host settings that are the owner's: (1) set CRON_SECRET to a long random value; (2) add a schedule that calls the address every 5 minutes with "Authorization: Bearer <CRON_SECRET>". It was not added to vercel.json because a schedule the plan does not allow can fail the deployment. Until then nothing is lost: events are sent right after each action, and a failed one waits for "Run now". Phase 10: the scheduled run now also runs the system checks and raises their alerts, and a late run is itself a failing check. It still needs a scheduler on the host (owner). Phase 11: the scheduled run was exercised on several server copies at once and while a copy was killed; six runs started at the same moment on different copies sent each waiting event once, and the run now also removes old request-limit windows. It still needs a scheduler on the host (owner).
 - **Verification evidence:** qa/sim/phase4-integration.mjs: "the scheduled run needs its secret, does the periodic work and records that it ran", "five delivery runs at the same moment send each event once". The host schedule itself is NOT VERIFIED.
 - **First recorded in:** Phase 1 discovery
 
@@ -1625,7 +1627,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep section "Error replies do not expose internals": 0 replies exposed internal detail, this session.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-014 · P1 · DEFERRED TO SPECIFIC PHASE
+### E-014 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -1642,7 +1644,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The limit holds across server instances.
 - **Deferred: verification:** A burst test against two instances.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: needs a shared store, which is a new service Phase 4: the same per-instance limit applies to the partner request limit and to the new breaker for outside services (H-012). Phase 10: the per-address limit still counts per server instance. Password guessing is now stopped per login in the database (Y-002), which holds across instances. Several instances are measured in Phase 11.
+- **Status note:** Open: needs a shared store, which is a new service Phase 4: the same per-instance limit applies to the partner request limit and to the new breaker for outside services (H-012). Phase 10: the per-address limit still counts per server instance. Password guessing is now stopped per login in the database (Y-002), which holds across instances. Several instances are measured in Phase 11. Phase 11: the sign-in limit per address and the partner limits are now counted in the database, one limit for all server copies (database update 18 (src/backend/prisma/upgrades/sql-editor/20261118150000_shared_rate_limits.sql)). Measured on three copies with a limit of ten: before, 30 of 60 wrong sign-ins from one address reached the password check; after, 10 of 60. The general ceiling per address still counts per copy by decision (Z-010). Live only after the owner applies update 18; until then the server counts per copy as before and says so in its log.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "E-014" (two tests); qa/sim/phase11/rate-limit-copies.mjs with qa/results/phase11-rate-limit-before.json and -after.json; qa/tools/phase11-mutations.mjs E-014 holds.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-015 · P1 · FIXED — NOT VERIFIED
@@ -1741,7 +1744,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A sweep section with two tenants.
 - **Required tests:** Sweep section proving a login from one tenant cannot read another's rows on every route that carries a tenant id
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited. Phase 10: 31 isolation scenarios (customer accounts, divisions, branches, partners, the assistant) pass. A table-by-table audit of every tenant id column was not made: Phase 11.
+- **Status note:** Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited. Phase 10: 31 isolation scenarios (customer accounts, divisions, branches, partners, the assistant) pass. A table-by-table audit of every tenant id column was not made: Phase 11. Phase 11: 41 isolation scenarios under load pass (branches of four sizes, customer accounts, partners, the assistant, with other branches working at the same moment). A table-by-table audit of every tenant id column is still not made: Phase 12.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-020 · P2 · VERIFIED FIXED
@@ -6352,6 +6355,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/tools/frontend-performance.cjs against scale data.
 - **Required tests:** Measured load at 85-branch scale.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 11: the lists were read at the volume of the enterprise day while it ran and stayed within the proposed limit; GET /api/jobs is still unbounded and grows with the data. Unchanged: Phase 12.
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-028 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -6548,6 +6552,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A browser scenario per dashboard.
 - **Required tests:** A run with known totals, compared tile by tile.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 11: revenue by branch against revenue by customer, the stock value report against the books, and the receivables report read by twelve people at once were compared under load (group 8). The five dashboards named are still not compared figure by figure: Phase 12.
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-038 · P2 · VERIFIED FIXED
@@ -7091,7 +7096,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase95-load.mjs: "every dispatch posted exactly one invoice entry and one cost-of-sale entry" failed before the fix (qa/results/phase95-load-before-fix.json: 230 of 240) and passes after (240 of 240). Comparison with the ledger stopped: qa/results/phase95-load-ledger-stopped.json.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
-### W-022 · P2 · DEFERRED TO SPECIFIC PHASE
+### W-022 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-16
 - **Module:** Invoices; hosting
@@ -7103,8 +7108,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** The fix for W-021 works inside one server process. The live host can run several server processes at once; between processes the only guard is the database retry (25 attempts), which is what failed before.
 - **Operational impact:** W-021 could recur on the live host under a burst of dispatches.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 11 (scale). A dispatch whose invoice is not raised is still recorded and listed, as before.
-- **Verification evidence:** NOT VERIFIED with more than one server process.
+- **Status note:** Phase 11 (scale). A dispatch whose invoice is not raised is still recorded and listed, as before. Phase 11: invoices now take turns in the database, across server copies (Z-002). Five enterprise days on three copies and one on four: every dispatch raised its invoice or was closed by billing after an injected crash; invoice numbers unbroken and never repeated.
+- **Verification evidence:** NOT VERIFIED with more than one server process. qa/sim/phase11-enterprise.mjs cycles 1 to 5; qa/sim/phase11-scenarios.mjs groups 1, 3 and 7.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
 ### W-023 · P2 · DEFERRED TO SPECIFIC PHASE
@@ -7119,7 +7124,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries) are not measured, and the host was not the live host.
 - **Operational impact:** The reconciliation reads every item and every line; its time will grow with volume.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 11.
+- **Status note:** Phase 11. Phase 11: measured at the volume of the enterprise day (about 2,700 journal entries, 5,500 lines, 80 branches): reconciliation run p95 under 0.4 s, trial balance and branch reports within the proposed limit of 800 ms while the day's work ran. A year's volume (hundreds of thousands of entries) and the live host are still not measured: Phase 12.
 - **Verification evidence:** qa/results/phase95-load.json holds what was measured. Anything larger: NOT VERIFIED.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
@@ -7561,7 +7566,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Fixed: the check "shipped goods invoiced" (alert SHIPPED_NOT_INVOICED, after SHIPPED_NOT_INVOICED_MINUTES, 15 by default). The two-save design is unchanged: making billing part of the dispatch save would change what happens when billing is refused, which is a business decision (H-006).
 - **Required tests:** qa/sim/phase10-security.mjs "The server killed in the middle of twenty dispatches leaves no half-saved sale ..." (each one listed, raised once, books agree), "Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert"; qa/tools/phase10-mutations.mjs Y-021 holds.
 - **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
-- **Status note:** Fixed: the check "shipped goods invoiced" (alert SHIPPED_NOT_INVOICED, after SHIPPED_NOT_INVOICED_MINUTES, 15 by default). The two-save design is unchanged: making billing part of the dispatch save would change what happens when billing is refused, which is a business decision (H-006).
+- **Status note:** Fixed: the check "shipped goods invoiced" (alert SHIPPED_NOT_INVOICED, after SHIPPED_NOT_INVOICED_MINUTES, 15 by default). The two-save design is unchanged: making billing part of the dispatch save would change what happens when billing is refused, which is a business decision (H-006). Phase 11: seen again across server copies. A copy killed during dispatches left 2 to 4 of 480 shipments without an invoice in the failure-and-recovery day; each was listed and closed by billing the shipment (Z-012 proposes that a repeated dispatch bills).
 - **Verification evidence:** qa/sim/phase10-security.mjs "The server killed in the middle of twenty dispatches leaves no half-saved sale ..." (each one listed, raised once, books agree), "Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert"; qa/tools/phase10-mutations.mjs Y-021 holds.
 - **First recorded in:** Phase 10 baseline probe, threat model and scenarios
 
@@ -7600,4 +7605,256 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Fixed: clientErrorAnswer() answers the errors Express and the body parser mark as the caller's (body too large 413, body not JSON 400, undecodable address 400 BAD_ADDRESS); everything else stays a logged 500.
 - **Verification evidence:** src/backend/test/securityRules.test.js "Y-023"; qa/sim/phase10-security.mjs "An address that cannot be decoded is the caller's error ..."; qa/tools/phase10-mutations.mjs Y-023 and Y-023s hold.
 - **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Z-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Invoices
+- **Workflow:** Invoices
+- **Category:** Performance under load
+- **Source file or endpoint:** src/backend/src/services/billing.js (takeNumber)
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-001" (two tests); qa/sim/phase11-scenarios.mjs groups 1 and 3 (numbers unbroken across server copies); qa/sim/phase11-enterprise.mjs cycles 2 to 5; qa/tools/phase11-mutations.mjs Z-001 holds.
+- **Expected:** A number is one statement on the counter row. The invoice table is read only for the very first invoice of a series.
+- **Actual:** Every invoice number was taken by reading the highest number in the whole invoice table inside the serializable save. Each invoice cost more as the table grew, and every other invoice written meanwhile counted as an overlap and was run again. Baseline day on three server copies: 3,269 database transactions rolled back, a dispatch took 7.2 s at the 95th percentile.
+- **Operational impact:** Dispatch slowed with every invoice ever written; under load most of the database work was thrown away and repeated.
+- **Recommended correction:** Fixed: the number comes from DocumentCounter in one UPDATE; the first invoice of a series starts after the highest number already written. Same day after the fixes Z-001 to Z-003: 220 to 230 transactions rolled back, invoice numbers still unbroken and never repeated.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-001" (two tests); qa/sim/phase11-scenarios.mjs groups 1 and 3 (numbers unbroken across server copies); qa/sim/phase11-enterprise.mjs cycles 2 to 5; qa/tools/phase11-mutations.mjs Z-001 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: the number comes from DocumentCounter in one UPDATE; the first invoice of a series starts after the highest number already written. Same day after the fixes Z-001 to Z-003: 220 to 230 transactions rolled back, invoice numbers still unbroken and never repeated.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-001" (two tests); qa/sim/phase11-scenarios.mjs groups 1 and 3 (numbers unbroken across server copies); qa/sim/phase11-enterprise.mjs cycles 2 to 5; qa/tools/phase11-mutations.mjs Z-001 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-002 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Invoices
+- **Workflow:** Invoices
+- **Category:** Concurrency across server copies
+- **Source file or endpoint:** src/backend/src/services/billing.js (waitForSeries, inSeries)
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-002"; qa/sim/phase11-scenarios.mjs group 1 and group 7 ("Eight shipments are dispatched while the invoice numbers are held for three seconds", "The invoice numbers stay held for longer than a request may wait", "Twelve invoices are being numbered when a server copy is killed"); qa/tools/phase11-mutations.mjs Z-002 holds.
+- **Expected:** Invoices take turns in the database itself, so the order holds whichever server copy each request reaches, and a save waits its turn before it has read anything.
+- **Actual:** W-021 made invoices take turns inside one server process. With several server copies the only guard between copies was the database retry: on three copies invoices overlapped, were retried up to 25 times, and at the baseline that was most of the 3,269 rolled back transactions (W-022).
+- **Operational impact:** On a host that runs several copies (every hosted function instance is one) invoices were slow and could run out of retries.
+- **Recommended correction:** Fixed: a numbered save first takes a short table lock on DocumentCounter (SHARE UPDATE EXCLUSIVE, which does not block reads or ordinary row changes), then reads and writes. A wait longer than the request limit answers "busy, try again" (409), never a server error.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-002"; qa/sim/phase11-scenarios.mjs group 1 and group 7 ("Eight shipments are dispatched while the invoice numbers are held for three seconds", "The invoice numbers stay held for longer than a request may wait", "Twelve invoices are being numbered when a server copy is killed"); qa/tools/phase11-mutations.mjs Z-002 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: a numbered save first takes a short table lock on DocumentCounter (SHARE UPDATE EXCLUSIVE, which does not block reads or ordinary row changes), then reads and writes. A wait longer than the request limit answers "busy, try again" (409), never a server error.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-002"; qa/sim/phase11-scenarios.mjs group 1 and group 7 ("Eight shipments are dispatched while the invoice numbers are held for three seconds", "The invoice numbers stay held for longer than a request may wait", "Twelve invoices are being numbered when a server copy is killed"); qa/tools/phase11-mutations.mjs Z-002 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-003 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Orders, quotes, shipments, work orders, purchase orders, transfers
+- **Workflow:** Orders, quotes, shipments, work orders, purchase orders, transfers
+- **Category:** Performance under load
+- **Source file or endpoint:** src/backend/src/lib/numbering.js (createNumbered, createFromCounter)
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-003" (six tests, including eighty saves at the same moment); qa/sim/phase11-scenarios.mjs group 1; qa/tools/phase11-mutations.mjs Z-003 holds.
+- **Expected:** A document number is handed out by its counter row; the table is counted once, the first time a series is used.
+- **Actual:** Every other numbered document counted its table to find the next number and retried on a clash. Eighty branches saving at once clashed repeatedly; some saves used up their retries.
+- **Operational impact:** Order entry and receiving slowed and occasionally failed at the busiest moments.
+- **Recommended correction:** Fixed: one counter per kind of document (and per year for dated series), stepping past numbers already on older documents. If the counter cannot be read the save is numbered the old way and not lost.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-003" (six tests, including eighty saves at the same moment); qa/sim/phase11-scenarios.mjs group 1; qa/tools/phase11-mutations.mjs Z-003 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: one counter per kind of document (and per year for dated series), stepping past numbers already on older documents. If the counter cannot be read the save is numbered the old way and not lost.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-003" (six tests, including eighty saves at the same moment); qa/sim/phase11-scenarios.mjs group 1; qa/tools/phase11-mutations.mjs Z-003 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-004 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication
+- **Workflow:** Authentication
+- **Category:** Availability under load
+- **Source file or endpoint:** src/backend/src/lib/passwords.js; src/backend/src/routes/auth.js; src/backend/src/middleware/partnerAuth.js
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-004" (four tests); qa/sim/phase11-scenarios.mjs group 7 "Sixty people sign in at once right after every copy has restarted"; qa/sim/phase11-enterprise.mjs sign-in of every employee; qa/tools/phase11-mutations.mjs Z-004 holds.
+- **Expected:** A morning burst of sign-ins does not stop the server answering everyone else.
+- **Actual:** A password check is deliberately slow processor work and ran on the thread that answers everything else. Twenty-four people signing in at the same moment on one server process left the health check unanswered for over 1.5 seconds, and 768 requests were turned away as "no server".
+- **Operational impact:** At shift start every screen and every save on that server copy stalled; a host that checks health could have restarted a healthy copy.
+- **Recommended correction:** Fixed: password and key checks take turns, two at a time (PASSWORD_CHECKS_AT_ONCE). Nobody is refused; a sign-in in a burst waits a little longer.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-004" (four tests); qa/sim/phase11-scenarios.mjs group 7 "Sixty people sign in at once right after every copy has restarted"; qa/sim/phase11-enterprise.mjs sign-in of every employee; qa/tools/phase11-mutations.mjs Z-004 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: password and key checks take turns, two at a time (PASSWORD_CHECKS_AT_ONCE). Nobody is refused; a sign-in in a burst waits a little longer.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-004" (four tests); qa/sim/phase11-scenarios.mjs group 7 "Sixty people sign in at once right after every copy has restarted"; qa/sim/phase11-enterprise.mjs sign-in of every employee; qa/tools/phase11-mutations.mjs Z-004 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-005 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Orders, returns, invoices
+- **Workflow:** Orders, returns, invoices
+- **Category:** Error handling under load
+- **Source file or endpoint:** src/backend/src/lib/numbering.js (retryOverlap, Busy); src/backend/src/routes/returns.js
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-005"; qa/sim/phase11-enterprise.mjs cycles 2 to 5 (returns 60 of 60); qa/tools/phase11-mutations.mjs Z-005 holds.
+- **Expected:** A save that could not get its turn answers "busy, try again" (409), which the screens already resend; it is never a server error.
+- **Actual:** A save that overlapped others on every retry ended as a server error (500). In the correction cycle 2 of 545 customer jobs failed this way on "return received and credited".
+- **Operational impact:** A customer return appeared to fail with an unexplained error at the busiest moment.
+- **Recommended correction:** Fixed: an overlap that survives every retry is answered 409 with code BUSY; receiving a return retries 12 times. After the fix: 545 of 545 jobs and 0 failed transactions in cycles 2, 3 and 5.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-005"; qa/sim/phase11-enterprise.mjs cycles 2 to 5 (returns 60 of 60); qa/tools/phase11-mutations.mjs Z-005 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: an overlap that survives every retry is answered 409 with code BUSY; receiving a return retries 12 times. After the fix: 545 of 545 jobs and 0 failed transactions in cycles 2, 3 and 5.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-005"; qa/sim/phase11-enterprise.mjs cycles 2 to 5 (returns 60 of 60); qa/tools/phase11-mutations.mjs Z-005 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-006 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-18
+- **Module:** Shipping and invoicing
+- **Workflow:** Shipping and invoicing
+- **Category:** Capacity
+- **Source file or endpoint:** src/backend/src/services/billing.js; qa/enterprise-excellence/phase-11-capacity-recommendations.md
+- **Evidence:** qa/sim/phase11-enterprise.mjs cycles 1 to 5 and the one-copy and four-copy runs (qa/results/phase11-capacity-*.json); qa/results/phase11-invoice-capacity-3.json.
+- **Expected:** The owner approves a limit for dispatch at peak, and if the measured figure is not enough chooses between a number series per branch, a shorter invoice save, or a larger database server.
+- **Actual:** Invoices are written one at a time for the whole company, because invoice numbers must never be skipped or repeated (owner decision of 2026-11-13). Measured on a 4-processor machine that also ran the database and the load: an invoice alone takes about 92 ms, the ceiling is 21 to 28 invoices a second, and in the full mixed day a dispatch met the proposed limit (2 s at the 95th percentile) with 8 and 16 jobs in flight and missed it with 32 (about 3.5 s) and 48 (about 5 s). One, three and four server copies gave the same figures: more server copies do not help.
+- **Operational impact:** At the very busiest moment (dozens of trucks dispatched in the same second across the company) a dock waits several seconds for its paperwork. Nothing is lost or numbered wrongly.
+- **Recommended correction:** Not changed: every option that raises the ceiling changes either how invoices are numbered (the owner's and the accountant's decision) or the hardware (the owner's). The measurements and the options are in phase-11-capacity-recommendations.md.
+- **Required tests:** qa/sim/phase11-enterprise.mjs cycles 1 to 5 and the one-copy and four-copy runs (qa/results/phase11-capacity-*.json); qa/results/phase11-invoice-capacity-3.json.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Not changed: every option that raises the ceiling changes either how invoices are numbered (the owner's and the accountant's decision) or the hardware (the owner's). The measurements and the options are in phase-11-capacity-recommendations.md.
+- **Verification evidence:** qa/sim/phase11-enterprise.mjs cycles 1 to 5 and the one-copy and four-copy runs (qa/results/phase11-capacity-*.json); qa/results/phase11-invoice-capacity-3.json.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-007 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Partner API
+- **Workflow:** Partner API
+- **Category:** Rate limiting across server copies
+- **Source file or endpoint:** src/backend/src/middleware/partnerRateLimit.js; src/backend/src/lib/rateWindow.js
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-007" (three tests); qa/sim/phase11-scenarios.mjs group 6 "A partner's request limit is one limit across all server copies"; qa/tools/phase11-mutations.mjs Z-007 and Z-007s hold.
+- **Expected:** One limit per partner, whichever copies answer.
+- **Actual:** A partner's request limits (per second, minute and hour) were counted in the memory of each server copy, so a partner got its limit once per copy.
+- **Operational impact:** A partner allowed five requests a minute could make five per server copy; on a host with many instances the limit meant little.
+- **Recommended correction:** Fixed: the counts are kept in the RateWindow table (database update 18 (src/backend/prisma/upgrades/sql-editor/20261118150000_shared_rate_limits.sql)), one statement per request for all three windows. If the table cannot be reached the limit still holds per copy and no request fails; the server says so once in its log.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-007" (three tests); qa/sim/phase11-scenarios.mjs group 6 "A partner's request limit is one limit across all server copies"; qa/tools/phase11-mutations.mjs Z-007 and Z-007s hold.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: the counts are kept in the RateWindow table (database update 18 (src/backend/prisma/upgrades/sql-editor/20261118150000_shared_rate_limits.sql)), one statement per request for all three windows. If the table cannot be reached the limit still holds per copy and no request fails; the server says so once in its log.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-007" (three tests); qa/sim/phase11-scenarios.mjs group 6 "A partner's request limit is one limit across all server copies"; qa/tools/phase11-mutations.mjs Z-007 and Z-007s hold.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-008 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Deployment
+- **Workflow:** Deployment
+- **Category:** Graceful shutdown
+- **Source file or endpoint:** src/backend/src/server.js
+- **Evidence:** qa/sim/phase11-scenarios.mjs group 7 "A server copy is stopped politely (SIGTERM) while thirty payments arrive" and the rolling restart scenario; qa/tools/phase11-mutations.mjs Z-008 holds.
+- **Expected:** A stopped copy finishes the requests it has and leaves within three seconds.
+- **Actual:** A server copy asked to stop politely (as every deployment does) waited for idle keep-alive connections to close by themselves: under load it took about 6 seconds to leave.
+- **Operational impact:** Slow rolling restarts; a host that waits only a few seconds would have killed the copy with work in hand.
+- **Recommended correction:** Fixed: idle connections are closed while the copy drains. Measured exit under thirty payments in flight: under 3 seconds, every payment the client was told about saved once.
+- **Required tests:** qa/sim/phase11-scenarios.mjs group 7 "A server copy is stopped politely (SIGTERM) while thirty payments arrive" and the rolling restart scenario; qa/tools/phase11-mutations.mjs Z-008 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: idle connections are closed while the copy drains. Measured exit under thirty payments in flight: under 3 seconds, every payment the client was told about saved once.
+- **Verification evidence:** qa/sim/phase11-scenarios.mjs group 7 "A server copy is stopped politely (SIGTERM) while thirty payments arrive" and the rolling restart scenario; qa/tools/phase11-mutations.mjs Z-008 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-009 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Platform
+- **Workflow:** Platform
+- **Category:** Error handling when the database is unreachable
+- **Source file or endpoint:** src/backend/src/lib/requestContext.js (isNoConnection); src/backend/src/middleware/safeErrors.js (busyDatabase); src/backend/src/lib/db.js
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-009" (two tests); qa/sim/phase11-scenarios.mjs group 7 "Almost every database connection is taken by something else", "Every database connection of the servers is cut while thirty requests are in flight"; qa/tools/phase11-mutations.mjs Z-009 and Z-009s hold.
+- **Expected:** A request that failed only for want of a database connection answers 503 with code DATABASE_BUSY and a time to retry; a caller's own mistake and a real fault are left as they are.
+- **Actual:** When no database connection was free, or the connection was cut, routes answered "server error" (500) with no hint that sending again would work.
+- **Operational impact:** During a database restart or connection exhaustion every screen showed unexplained errors, and monitoring could not tell an outage from a defect.
+- **Recommended correction:** Fixed for queries. The same case inside a transaction is Z-011.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-009" (two tests); qa/sim/phase11-scenarios.mjs group 7 "Almost every database connection is taken by something else", "Every database connection of the servers is cut while thirty requests are in flight"; qa/tools/phase11-mutations.mjs Z-009 and Z-009s hold.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed for queries. The same case inside a transaction is Z-011.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-009" (two tests); qa/sim/phase11-scenarios.mjs group 7 "Almost every database connection is taken by something else", "Every database connection of the servers is cut while thirty requests are in flight"; qa/tools/phase11-mutations.mjs Z-009 and Z-009s hold.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-010 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-18
+- **Module:** Platform
+- **Workflow:** Platform
+- **Category:** Rate limiting across server copies
+- **Source file or endpoint:** src/backend/src/app.js (general /api limiter)
+- **Evidence:** Read from the code; the shared limits are verified under E-014 and Z-007.
+- **Expected:** The owner accepts the per-copy general ceiling (the sign-in and partner limits, which are the security limits, are shared), or asks for a shared one with its cost.
+- **Actual:** The general ceiling on requests per address still counts per server copy. Counting it in the database would add a write to every request of every user.
+- **Operational impact:** An address sending a very large number of ordinary requests gets the general ceiling once per server copy. Sign-in guessing and partner limits are not affected.
+- **Recommended correction:** Left as it is, with the reason written in the code. Recorded for the owner's decision.
+- **Required tests:** Read from the code; the shared limits are verified under E-014 and Z-007.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Left as it is, with the reason written in the code. Recorded for the owner's decision.
+- **Verification evidence:** Read from the code; the shared limits are verified under E-014 and Z-007.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-011 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Platform
+- **Workflow:** Platform
+- **Category:** Error handling when the database is unreachable
+- **Source file or endpoint:** src/backend/src/lib/db.js (withTransactionNote, noteLostConnection)
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-011"; qa/sim/phase11-enterprise.mjs cycle 4 (qa/results/phase11-cycle-4-first-run.json shows the 500, phase11-cycle-4.json none); qa/tools/phase11-mutations.mjs Z-011 holds.
+- **Expected:** A transaction that lost its connection answers 503 with a time to retry, like a query.
+- **Actual:** A transaction that failed when it was opened or committed on a connection the database had closed was still answered 500: the note that turns the reply into "try again" was taken only on single queries. Found in the first failure-and-recovery run: with every server connection cut, one "order confirmed" answered 500.
+- **Operational impact:** One unexplained server error per request caught in the middle of a database restart.
+- **Recommended correction:** Fixed: transactions are noted too. The failure-and-recovery run after the fix had no 500.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-011"; qa/sim/phase11-enterprise.mjs cycle 4 (qa/results/phase11-cycle-4-first-run.json shows the 500, phase11-cycle-4.json none); qa/tools/phase11-mutations.mjs Z-011 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: transactions are noted too. The failure-and-recovery run after the fix had no 500.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-011"; qa/sim/phase11-enterprise.mjs cycle 4 (qa/results/phase11-cycle-4-first-run.json shows the 500, phase11-cycle-4.json none); qa/tools/phase11-mutations.mjs Z-011 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-012 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-18
+- **Module:** Shipping and invoicing
+- **Workflow:** Shipping and invoicing
+- **Category:** Recovery
+- **Source file or endpoint:** src/backend/src/routes/shipments.js (dispatch)
+- **Evidence:** qa/sim/phase11-enterprise.mjs cycle 4 (recoveredByBillingAgain); qa/sim/phase11-scenarios.mjs group 7 "A server copy is killed in the middle of twenty dispatches".
+- **Expected:** A dispatch sent again for a shipment that left without its invoice raises the invoice and answers with it, so the dock needs no second step.
+- **Actual:** When the answer to a dispatch is lost because its server copy died after saving the dispatch and before billing, sending the dispatch again answers "already IN_TRANSIT" (409). The truck left once and nothing is wrong in the records, but the invoice is raised only when the office bills the shipment from the list of shipments without an invoice (H-006, Y-021). In the failure-and-recovery run this happened to 2 to 4 of 480 dispatches and each was closed by that path.
+- **Operational impact:** A few minutes of delay on a handful of invoices after a server crash; the gap is listed and alerted (Y-021), never silent.
+- **Recommended correction:** Not changed in Phase 11. Phase 12: decide with the owner whether a repeated dispatch should bill.
+- **Required tests:** qa/sim/phase11-enterprise.mjs cycle 4 (recoveredByBillingAgain); qa/sim/phase11-scenarios.mjs group 7 "A server copy is killed in the middle of twenty dispatches".
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Not changed in Phase 11. Phase 12: decide with the owner whether a repeated dispatch should bill.
+- **Verification evidence:** qa/sim/phase11-enterprise.mjs cycle 4 (recoveredByBillingAgain); qa/sim/phase11-scenarios.mjs group 7 "A server copy is killed in the middle of twenty dispatches".
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-013 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Platform
+- **Workflow:** Platform
+- **Category:** Duplicate-request protection
+- **Source file or endpoint:** src/backend/src/middleware/requestKeys.js
+- **Evidence:** src/backend/test/enterpriseScale.test.js "Z-013"; qa/sim/phase11-scenarios.mjs group 7 "The network drops after eight payments were sent, and the same payments are sent again"; qa/tools/phase11-mutations.mjs Z-013 holds.
+- **Expected:** A request that carries a key is never run unless the key is claimed. If the key cannot be claimed nothing is done and the caller is told to send it again (503, DATABASE_BUSY).
+- **Actual:** When the request key of a changing request could not be claimed (no database connection at that instant) the request was run anyway, without its protection. If its answer was then lost, the retry claimed the key afresh and ran a second time. Found in the failure group run straight after the failure-and-recovery day: of eight payments sent with keys through a dropped network right after every server connection had been cut, one invoice received two payments.
+- **Operational impact:** A payment, receipt or dispatch could be taken twice in the seconds after a database interruption, exactly when clients retry most.
+- **Recommended correction:** Fixed: the request is refused with 503 and a time to retry; nothing is done. The failure group then passed 36 of 36 on the same database.
+- **Required tests:** src/backend/test/enterpriseScale.test.js "Z-013"; qa/sim/phase11-scenarios.mjs group 7 "The network drops after eight payments were sent, and the same payments are sent again"; qa/tools/phase11-mutations.mjs Z-013 holds.
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Fixed: the request is refused with 503 and a time to retry; nothing is done. The failure group then passed 36 of 36 on the same database.
+- **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-013"; qa/sim/phase11-scenarios.mjs group 7 "The network drops after eight payments were sent, and the same payments are sent again"; qa/tools/phase11-mutations.mjs Z-013 holds.
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### Z-014 · P3 · DEFERRED TO SPECIFIC PHASE
+
+- **Discovered:** 2026-11-18
+- **Module:** Platform
+- **Workflow:** Platform
+- **Category:** Duplicate-request protection
+- **Source file or endpoint:** src/backend/src/middleware/requestKeys.js (STALE_MS)
+- **Evidence:** qa/sim/phase11-scenarios.mjs group 6 and group 7 (a keyed request whose copy was killed is answered once after the claim runs out).
+- **Expected:** The wait is as short as is safe.
+- **Actual:** A request key claimed by a server copy that then died blocks the repeat of that request for 60 seconds ("still being processed"), after which the repeat takes the claim over and runs.
+- **Operational impact:** A clerk whose save was lost in a server crash waits up to a minute before the same save goes through. Nothing is saved twice.
+- **Recommended correction:** Not changed: a shorter wait risks running a slow first attempt twice. Phase 12: review the figure with production timings.
+- **Required tests:** qa/sim/phase11-scenarios.mjs group 6 and group 7 (a keyed request whose copy was killed is answered once after the claim runs out).
+- **Assigned phase:** Phase 11: 80-location enterprise stress simulation
+- **Status note:** Not changed: a shorter wait risks running a slow first attempt twice. Phase 12: review the figure with production timings.
+- **Verification evidence:** qa/sim/phase11-scenarios.mjs group 6 and group 7 (a keyed request whose copy was killed is answered once after the claim runs out).
+- **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
 

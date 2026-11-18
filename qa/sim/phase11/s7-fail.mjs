@@ -2,6 +2,7 @@
 // network drops or delays answers, the database blocks, connections run out, sessions expire, outside
 // services go away. After each: nothing half-saved, a client that retries ends with one result, and the
 // books agree. Local QA only; needs the multi-copy front door (qa/tools/qa-cluster.mjs).
+import http from 'node:http';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 export default async function run(c) {
@@ -147,10 +148,17 @@ export default async function run(c) {
   await S(G, 'A server copy is stopped politely (SIGTERM) while thirty payments arrive', { expect: 'no payment is taken twice; every payment the client was told about is saved; the rest are taken when sent again', fin: 'each invoice has one payment of 10.00', rec }, async (ok) => {
     const sales = []; for (let i = 0; i < 30; i++) sales.push(await sold(bS, 100 + i));
     const pay = (s) => send(P.csr(bS), 'POST', `/api/invoices/${s.invoice.id}/payments`, { amount: 10, paymentMethod: 'CHECK', referenceNumber: tag('P11T') });
+    // A browser or a load balancer keeps its connections open between requests. Such connections go straight to
+    // copy 2 here and carry reads while the stop arrives; each then sits idle. A copy that waits for idle
+    // connections to close by themselves does not leave for seconds (Z-008).
+    const idle = new http.Agent({ keepAlive: true }); const port2 = (await cluster.state()).workers.find((w) => w.n === 2).port; const reader = P.manager(bS);
+    const direct = () => new Promise((done) => { http.get({ host: '127.0.0.1', port: port2, path: '/api/orders?limit=100', agent: idle, headers: { authorization: `Bearer ${reader.token}` } }, (r) => { r.resume(); r.on('end', done); }).on('error', done); });
+    (async () => { for (let i = 0; i < 14; i++) { for (let k = 0; k < 4; k++) direct(); await sleep(8); } })();
     const sends = sales.map(pay); await sleep(15); const t0 = Date.now(); await down(2, 'term');
     const gone = await until(async () => !(await cluster.state()).workers.find((w) => w.n === 2).pid, { ms: 12000, every: 50 }); const exitMs = Date.now() - t0;
     const rs = await Promise.all(sends);
     ok('the stopped copy finished its requests and left within three seconds (Z-008)', Boolean(gone) && exitMs < 3000, `${exitMs} ms`);
+    idle.destroy();
     ok('no answer was a 500', !rs.some((r) => r.status === 500), outcome(rs));
     let untold = 0;
     for (const [i, s] of sales.entries()) { const k = await prisma.payment.count({ where: { invoiceId: s.invoice.id } }); if (rs[i].status === 201 && k !== 1) ok(`payment ${i} the client was told about is saved once`, false, k); if (rs[i].status !== 201 && k === 1) untold += 1; }
@@ -516,7 +524,7 @@ export default async function run(c) {
     for (const [what, table, col] of [['invoice', 'Invoice', 'invoiceNumber'], ['order', 'Order', 'orderNumber'], ['shipment', 'Shipment', 'shipmentNumber'], ['journal entry', 'JournalEntry', 'entryNumber']]) ok(`no ${what} number is used twice`, (await q(`SELECT count(*)::int AS n FROM (SELECT "${col}" FROM "${table}" WHERE "${col}" IS NOT NULL GROUP BY "${col}" HAVING count(*) > 1) x`)) === 0);
     ok('every posted entry balances', (await unbalancedPosted()) === 0);
     const r = await agrees(ok, 'the whole enterprise');
-    ok('the reconciliation passed as a whole', r.passed === true, JSON.stringify(r.failing));
+    ok('the reconciliation passed as a whole', await c.passedButForHeldBefore(r), `${JSON.stringify(r.failing ?? [])}; ${c.heldBefore} events held before this run began`);
   });
 
   await S(G, 'After every failure, every server copy is up, ready and serving', { expect: 'the front door lists every copy as up; each answers its own readiness check; each has served requests since it last started', rec: 'the cluster is back to full strength without a hand on it' }, async (ok) => {

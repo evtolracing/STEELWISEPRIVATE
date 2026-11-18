@@ -273,7 +273,7 @@ export default async function run(c) {
       ok('at most ten in any case', passed <= 10, passed);
       ok('a refusal says when to try again', rs.filter((r) => r.status === 429).every((r) => Number(r.headers.get('retry-after')) >= 1 && r.body?.error?.code === 'RATE_LIMIT_EXCEEDED'));
       ok('more than one server copy took part when several run', c.copies < 2 || new Set(rs.map((r) => r.headers?.get('x-qa-instance'))).size > 1);
-      const rows = await prisma.$queryRawUnsafe('SELECT "count" FROM "RateWindow" WHERE "key" = $1 ORDER BY "windowStart" DESC LIMIT 2', `partner:${Pr.id}:minute`);
+      const rows = await prisma.$queryRawUnsafe('SELECT "count" FROM "RateWindow" WHERE "key" = $1 AND "windowStart" >= $2 ORDER BY "windowStart" DESC LIMIT 2', `partner:${Pr.id}:minute`, new Date(Date.now() - 120000)); // this run's minute, or two if it straddled one; not an earlier run's
       ok('the shared count holds all thirty', rows.reduce((a2, r) => a2 + Number(r.count), 0) === 30, JSON.stringify(rows));
     } finally { await prisma.partner.update({ where: { id: Pr.id }, data: { burstLimit: 100000, rateLimitPerMin: 1000000, rateLimitPerHour: 10000000 } }); }
   });

@@ -17,7 +17,10 @@ const PORT = Number(arg('port', '3110'));
 const N = Number(arg('workers', '3'));
 const LOG = arg('log', '/tmp/qa-cluster');
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const agent = new http.Agent({ keepAlive: true, maxSockets: 256 });
+// One connection per request. A kept-alive connection can be closed by a server copy at the same instant the
+// front door reuses it; the request is then lost before the copy ever saw it and would be reported as
+// "the application stopped" although nothing stopped (seen once in about 50,000 requests in the full gate).
+const agent = new http.Agent({ keepAlive: false, maxSockets: 256 });
 
 const workers = Array.from({ length: N }, (_, i) => ({ n: i + 1, port: PORT + 1 + i, proc: null, up: false, misses: 0, served: 0, startedAt: null, exits: 0 }));
 const mode = { delayMs: 0, cutAfterSend: 0, only: '' };

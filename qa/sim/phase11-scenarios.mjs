@@ -20,6 +20,7 @@ await c.stopStub();
 const failed = finish('Phase 11 scenarios', OUT, fs);
 const report = JSON.parse(fs.readFileSync(OUT, 'utf8'));
 report.serverCopies = c.copies;
+report.ledgerEventsHeldBeforeTheRun = c.heldBefore;
 report.minimums = Object.fromEntries(Object.entries(c.MIN11).map(([k, min]) => { const g = report.groups[c.G11[k]] || { scenarios: 0, passed: 0 }; return [c.G11[k], { minimum: min, ran: g.scenarios, passed: g.passed, met: g.passed >= min }]; }));
 report.totalMinimum = { minimum: 300, passed: report.passed, met: report.passed >= 300 };
 fs.writeFileSync(OUT, `${JSON.stringify(report, null, 1)}\n`);

@@ -1,6 +1,6 @@
 # Production risk register
 
-Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) Phase 5 and Phase 6 (both 2026-11-15), Phase 8 and Phase 9 (both 2026-11-16), Phase 9.5 (2026-11-16) and Phase 10 (2026-11-18). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
+Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) Phase 5 and Phase 6 (both 2026-11-15), Phase 8 and Phase 9 (both 2026-11-16), Phase 9.5 (2026-11-16), Phase 10 and Phase 11 (both 2026-11-18). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
 
 Likelihood and impact are a judgement from the evidence named in the row. "Blocks go-live" means the product should not carry real work for more than one branch until the risk is closed or the owner accepts it in writing.
 
@@ -173,6 +173,21 @@ What Phase 6 adds to, or changes in, the list:
 5. **Transfers already under way at go-live**: the old one-step transfer left nothing in transit, so no data needs converting. Staff need to be told that a transfer must now be received at the destination before the stock can be sold there.
 6. R-03 is reduced again: the second stock list is read-only.
 
+
+### Phase 11 update (2026-11-18)
+
+Phase 11 ran the 80-branch model as a working day on three server copies, five times, and injected failures (`phase-11-report.md`). Local QA database, synthetic data, stand-ins for every outside service. What changed in this register:
+
+- **R-13 and R-33, request limits do not hold across server instances: closed for the sign-in and partner limits** (E-014, Z-007), once database update 18 is applied. They are counted in one table for all copies; measured on three copies, 10 of 60 wrong sign-ins reached the password check where 30 did before. The general ceiling per address is still per copy by decision (Z-010, owner).
+- **Invoices could collide across server processes (W-022, handed over by Phase 9.5 and Phase 10): closed** (Z-001, Z-002). Invoices take turns in the database. Five days on three copies and one on four: every invoice number in a row, none repeated.
+- **New R-79, the dock waits for its paperwork at the busiest instant** (Z-006). Invoices are written one at a time for the whole company because numbers must never be skipped. Measured on a 4-processor machine: within 2 s at the 95th percentile up to 16 customer jobs in flight, about 3.5 s at 32 and 5 s at 48. Likelihood: only at an instant when dozens of trucks are dispatched in the same second. Impact: seconds of waiting; nothing lost. Owner's decision.
+- **New R-80, a payment could be taken twice right after a database interruption** (Z-013): **closed.** A request that carries a key is no longer run when the key cannot be claimed. Found by failure injection, fixed, proven by removal.
+- **New R-81, a database interruption looked like a defect** (Z-009, Z-011): **closed.** A request that failed for want of a connection answers 503 with a time to retry, not 500.
+- **New R-82, the measured capacity is one small machine's.** One, three and four server copies gave the same figures because they shared four processors with the database. What separate machines, the live database and its pooler give is not measured. A year of data is not measured (W-023).
+- **New R-83, no performance threshold is approved.** The thresholds in `phase-11-workload-profile.md` are a proposal. Until the owner approves them nothing can be called "within limits".
+- **R-18 nobody is told when the system fails: unchanged.** Alerts were stored and delivered to the stand-in during every failure; no live receiver is set (E-017).
+- **R-11 data loss with no proven way back: unchanged.** The database server itself was never failed in this phase; the host's backups are still unrestored (E-015).
+- Database update 18 adds one table (`RateWindow`) and changes no existing table or row. The previous code runs on the new schema, and the new code runs without it (it counts per copy and says so in its log), so the order of deploy and update does not matter.
 
 ### Phase 10 update (2026-11-18)
 

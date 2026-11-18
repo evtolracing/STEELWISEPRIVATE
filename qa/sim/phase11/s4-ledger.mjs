@@ -248,7 +248,7 @@ export default async function run(c) {
     const before = await prisma.journalEntry.count();
     const rs = await all(4, () => cfo.post('/api/ledger/reconciliations'));
     ok('all four ran', rs.every((r) => r.status === 201), statuses(rs));
-    ok('all four passed', rs.every((r) => r.body.passed === true), JSON.stringify(rs.find((r) => !r.body.passed)?.body?.failing));
+    ok('all four passed', (await Promise.all(rs.map((r) => c.passedButForHeldBefore(r.body)))).every(Boolean), `${JSON.stringify(rs.find((r) => !r.body.passed)?.body?.failing ?? 'all clean')}; ${c.heldBefore} events held before this run began`);
     ok('the same figures in each', new Set(rs.map((r) => r.body.checks.map((x) => `${x.key}:${x.ledger}:${x.records}`).join('|'))).size === 1);
     ok('no entry was made', (await prisma.journalEntry.count()) === before);
   });
@@ -341,7 +341,7 @@ export default async function run(c) {
     const rev = await cfo.get('/api/ledger/reports/revenue?by=branch'); const mon = await cfo.get(`/api/ledger/reports/monthly?year=${new Date().getUTCFullYear()}&month=${new Date().getUTCMonth() + 1}`);
     ok('every report answered', [rec, invr, exc, rev, mon].every((x) => x.status === 200), [rec, invr, exc, rev, mon].map((x) => x.status).join(','));
     ok('receivables on the report equal the reconciliation', near(rec.body.totals.ledger, r.of('RECEIVABLES').ledger) && near(rec.body.totals.records, r.of('RECEIVABLES').records), `${JSON.stringify(rec.body.totals)} vs ${r.of('RECEIVABLES').ledger}`);
-    ok('the exceptions list is empty', exc.body.open === 0, exc.body.open);
+    ok('the exceptions list holds nothing from this run', exc.body.open <= c.heldBefore && (await c.openEvents()) === 0, `${exc.body.open} open, ${c.heldBefore} held before this run began`);
     const net = rev.body.rows.reduce((a, x) => a + Number(x.net), 0);
     ok('revenue is reported branch by branch and is positive', rev.body.rows.length >= 5 && net > 0, `${rev.body.rows.length} rows, ${net}`);
   });

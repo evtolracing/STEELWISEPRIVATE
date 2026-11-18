@@ -89,6 +89,7 @@ import opsCockpitRoutes from './routes/opsCockpit.js';
 import printQueueRoutes from './routes/printQueue.js';
 import prisma from './lib/db.js';
 import config from './config/index.js';
+import { clientErrorAnswer } from './lib/errorAnswer.js';
 
 dotenv.config();
 
@@ -318,12 +319,8 @@ app.use('/api/v1/admin/partners', partnerAdminRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
-  if (err.type === 'entity.too.large') {
-    return res.status(413).json({ error: 'Request body too large' });
-  }
-  if (err.type === 'entity.parse.failed') {
-    return res.status(400).json({ error: 'Invalid JSON body' });
-  }
+  const known = clientErrorAnswer(err, req.id);
+  if (known) return res.status(known.status).json(known.body);
   console.error(JSON.stringify({ t: new Date().toISOString(), level: 'error', msg: 'unhandled', id: req.id, method: req.method, path: (req.originalUrl || '').split('?')[0] }), err.stack || err);
   if (res.headersSent) return next(err);
   res.status(500).json({ error: 'Internal server error', requestId: req.id });

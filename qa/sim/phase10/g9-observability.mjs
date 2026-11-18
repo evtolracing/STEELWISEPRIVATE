@@ -139,10 +139,13 @@ export default async function obs(ctx) {
     ok('integrations changes refused', (await sales.post('/api/admin/integrations/run', {})).status === 403);
   });
 
-  await S(g, 'An unhandled error inside a route is answered with a plain sentence and logged with the request id', m('500 with a sentence; the id in the log'), async (ok) => {
+  await S(g, 'An address that cannot be decoded is the caller\'s error: 400 with a plain sentence and the request id, never a server error (Y-023)', m('400 BAD_ADDRESS with the id; no internals', { audit: 'The request line in the log carries the same id and status 400' }), async (ok) => {
     const id = `qa-p10-err-${Date.now()}`;
     const r = await http1('GET', `/api/ledger/entries/${'%'.repeat(3)}`, { token: cfo.token, headers: { 'x-request-id': id } });
-    ok('answered without internals', r.status >= 400 && !/stack|node_modules|prisma/i.test(r.raw), `${r.status} ${r.raw.slice(0, 120)}`);
+    let body = {}; try { body = JSON.parse(r.raw); } catch { /* not JSON */ }
+    ok('answered 400, not a server error', r.status === 400, `${r.status} ${r.raw.slice(0, 160)}`);
+    ok('a plain sentence with the code and the request id', body.code === 'BAD_ADDRESS' && body.requestId === id && typeof body.error === 'string', r.raw.slice(0, 200));
+    ok('without internals', !/stack|node_modules|prisma|URIError/i.test(r.raw));
   });
 
   await S(g, 'Journal reads by an auditor are in the audit trail with the reader and what was read', m('READ rows for journal', { audit: 'AuditLog rows' }), async (ok) => {

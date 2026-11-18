@@ -97,6 +97,26 @@ export async function ensureLedger() {
   if (r.status !== 200) throw new Error(`activate ${r.status} ${base.err(r)}`);
   return 'started for this run';
 }
+/**
+ * Earlier suites (Phase 9.5) leave goods received with no purchase order held by name, as the product
+ * intends: the books carry no value for them until a finance person names the other side. Phase 10
+ * measures from books that agree, so it settles those through the product's own path (the CFO posts
+ * each again naming accounts payable, 2000), never by writing an entry itself. Returns what it settled.
+ */
+export async function settleHeldReceipts() {
+  const held = await base.prisma.ledgerEvent.findMany({ where: { eventKind: 'STOCK_RECEIVED', status: 'RECONCILIATION_REQUIRED', reason: { contains: 'no purchase order' } } });
+  const out = { held: held.length, posted: 0, noCost: 0, nothingToPost: [], refused: [] };
+  for (const e of held) {
+    const r = await base.cfo.post(`/api/ledger/events/${e.id}/retry`, { offsetAccountCode: '2000' });
+    // An item with no cost stays held by name: it is in neither figure, so it cannot put the books out of step.
+    if (r.status === 200 && r.body?.status === 'POSTED') out.posted += 1;
+    else if (r.status === 200 && r.body?.status === 'RECONCILIATION_REQUIRED' && /No cost is on file/.test(r.body?.reason || '')) out.noCost += 1;
+    // NOT_POSTED is the engine's own answer when there is correctly nothing to post; its reason is kept.
+    else if (r.status === 200 && r.body?.status === 'NOT_POSTED') out.nothingToPost.push(String(r.body?.reason || '').slice(0, 120));
+    else out.refused.push(`${e.id} ${r.status} ${r.body?.status || base.err(r)}`);
+  }
+  return out;
+}
 export const reconcile = async (who = base.cfo) => { const r = await who.post('/api/ledger/reconciliations'); return { ...r.body, status: r.status, of: (k) => (r.body?.checks || []).find((c) => c.key === k) }; };
 export const unbalancedPosted = async () => Number((await base.prisma.$queryRawUnsafe(`SELECT count(*)::int AS n FROM (SELECT e.id FROM "JournalEntry" e JOIN "JournalLine" l ON l."entryId" = e.id WHERE e.status IN ('POSTED','REVERSED') GROUP BY e.id HAVING sum(l.debit) <> sum(l.credit) OR sum(l.debit) <> max(e."totalDebit")) x`))[0].n);
 export const alertsOf = (kind, since) => base.prisma.auditLog.findMany({ where: { category: 'SYSTEM', eventType: 'ALERT', resourceId: { startsWith: `${kind}:` }, ...(since && { timestamp: { gte: since } }) }, orderBy: { timestamp: 'desc' } });

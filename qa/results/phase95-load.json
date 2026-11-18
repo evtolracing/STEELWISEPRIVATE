@@ -1,6 +1,6 @@
 {
  "ledger": "posting",
- "at": "2026-11-18T05:57:51.891Z",
+ "at": "2026-11-18T09:19:36.900Z",
  "base": "http://localhost:3011",
  "settings": {
   "branches": 80,
@@ -14,213 +14,213 @@
  },
  "stage1": {
   "what": "80 branches each receive two purchase-order receipts, ship and invoice 3 sales, take 3 payments, send and receive one transfer and make one stock adjustment; 16 branches work at the same moment",
-  "seconds": 26.6,
+  "seconds": 30.9,
   "entriesPosted": 1120,
   "linesPosted": 2240,
-  "entriesPerSecond": 42.2,
+  "entriesPerSecond": 36.2,
   "database": {
    "deadlocks": 0,
-   "rolledBack": 804,
-   "committed": 31595
+   "rolledBack": 695,
+   "committed": 31719
   }
  },
  "stage2": {
   "what": "2000 two-line manual entries, each saved by one finance user and posted by another, 16 at the same moment",
-  "seconds": 14.3,
+  "seconds": 16.1,
   "entriesPosted": 2000,
-  "entriesPerSecond": 140.1,
+  "entriesPerSecond": 124,
   "database": {
    "deadlocks": 0,
-   "rolledBack": 16
+   "rolledBack": 18
   }
  },
  "latencyMs": {
   "trial balance while posting": {
-   "requests": 26,
-   "p50": 15.8,
-   "p95": 40,
-   "p99": 44.1,
-   "max": 44.1,
-   "mean": 20
+   "requests": 30,
+   "p50": 18.1,
+   "p95": 63.6,
+   "p99": 86,
+   "max": 86,
+   "mean": 25.7
   },
   "revenue by branch while posting": {
-   "requests": 26,
-   "p50": 16.3,
-   "p95": 39.3,
-   "p99": 48.7,
-   "max": 48.7,
-   "mean": 19.5
+   "requests": 30,
+   "p50": 16.7,
+   "p95": 61.8,
+   "p99": 70.1,
+   "max": 70.1,
+   "mean": 23.7
   },
   "receipt": {
    "requests": 160,
-   "p50": 110.8,
-   "p95": 198.8,
-   "p99": 263.4,
-   "max": 282.3,
-   "mean": 122.5
+   "p50": 138.3,
+   "p95": 251,
+   "p99": 292.8,
+   "max": 306.7,
+   "mean": 146.7
   },
   "dispatch (invoice and cost of sale)": {
    "requests": 240,
-   "p50": 1140.6,
-   "p95": 1769,
-   "p99": 1883.6,
-   "max": 2013.6,
-   "mean": 1158.2
+   "p50": 1281.9,
+   "p95": 1860.4,
+   "p99": 1986.7,
+   "max": 2123.4,
+   "mean": 1305.4
   },
   "payment": {
    "requests": 240,
-   "p50": 61.9,
-   "p95": 106.8,
-   "p99": 254.7,
-   "max": 305.8,
-   "mean": 68.6
+   "p50": 74.7,
+   "p95": 142.9,
+   "p99": 181.9,
+   "max": 359.6,
+   "mean": 82.5
   },
   "transfer sent": {
    "requests": 80,
-   "p50": 127.2,
-   "p95": 225.1,
-   "p99": 415.5,
-   "max": 415.5,
-   "mean": 137.7
+   "p50": 132,
+   "p95": 323.1,
+   "p99": 560.9,
+   "max": 560.9,
+   "mean": 164.9
   },
   "transfer received": {
    "requests": 80,
-   "p50": 94.6,
-   "p95": 128.1,
-   "p99": 178.6,
-   "max": 178.6,
-   "mean": 92.2
+   "p50": 107.5,
+   "p95": 195.8,
+   "p99": 252.1,
+   "max": 252.1,
+   "mean": 116.3
   },
   "stock count": {
    "requests": 80,
-   "p50": 77.6,
-   "p95": 121.8,
-   "p99": 143.8,
-   "max": 143.8,
-   "mean": 81.1
+   "p50": 91.4,
+   "p95": 181.7,
+   "p99": 244.9,
+   "max": 244.9,
+   "mean": 98.4
   },
   "manual entry saved": {
    "requests": 2000,
-   "p50": 60.8,
-   "p95": 82.5,
-   "p99": 95.5,
-   "max": 109.2,
-   "mean": 62.2
+   "p50": 68.3,
+   "p95": 94.8,
+   "p99": 109.4,
+   "max": 143.1,
+   "mean": 70.3
   },
   "manual entry posted": {
    "requests": 2000,
-   "p50": 50.1,
-   "p95": 71.4,
-   "p99": 80.6,
-   "max": 96.6,
-   "mean": 51.8
+   "p50": 56.6,
+   "p95": 81.7,
+   "p99": 92.9,
+   "max": 134.6,
+   "mean": 58.6
   },
   "report: trial balance": {
    "requests": 5,
-   "p50": 10.9,
-   "p95": 14.3,
-   "p99": 14.3,
-   "max": 14.3,
-   "mean": 11.6
+   "p50": 10.3,
+   "p95": 15.2,
+   "p99": 15.2,
+   "max": 15.2,
+   "mean": 11.1
   },
   "report: revenue by branch": {
    "requests": 5,
-   "p50": 10.1,
-   "p95": 12.3,
-   "p99": 12.3,
-   "max": 12.3,
-   "mean": 10.6
+   "p50": 8.1,
+   "p95": 9.3,
+   "p99": 9.3,
+   "max": 9.3,
+   "mean": 8.3
   },
   "report: revenue by customer": {
    "requests": 5,
-   "p50": 9.2,
-   "p95": 9.6,
-   "p99": 9.6,
-   "max": 9.6,
-   "mean": 8.9
+   "p50": 7.4,
+   "p95": 8,
+   "p99": 8,
+   "max": 8,
+   "mean": 7.4
   },
   "report: gross margin by branch": {
    "requests": 5,
-   "p50": 12.3,
-   "p95": 16.2,
-   "p99": 16.2,
-   "max": 16.2,
-   "mean": 13
-  },
-  "report: receivables": {
-   "requests": 5,
-   "p50": 10.7,
+   "p50": 10.8,
    "p95": 12.8,
    "p99": 12.8,
    "max": 12.8,
-   "mean": 10.9
+   "mean": 11.1
+  },
+  "report: receivables": {
+   "requests": 5,
+   "p50": 12.7,
+   "p95": 14.1,
+   "p99": 14.1,
+   "max": 14.1,
+   "mean": 12.2
   },
   "report: sales tax": {
    "requests": 5,
-   "p50": 5.4,
-   "p95": 6.2,
-   "p99": 6.2,
-   "max": 6.2,
-   "mean": 5.5
+   "p50": 7.2,
+   "p95": 8,
+   "p99": 8,
+   "max": 8,
+   "mean": 7.4
   },
   "report: inventory value": {
    "requests": 5,
-   "p50": 24.1,
-   "p95": 27.6,
-   "p99": 27.6,
-   "max": 27.6,
-   "mean": 24.3
+   "p50": 24.8,
+   "p95": 34.4,
+   "p99": 34.4,
+   "max": 34.4,
+   "mean": 25.6
   },
   "report: monthly activity": {
    "requests": 5,
-   "p50": 17.9,
-   "p95": 19.3,
-   "p99": 19.3,
-   "max": 19.3,
-   "mean": 18
+   "p50": 17.1,
+   "p95": 20.5,
+   "p99": 20.5,
+   "max": 20.5,
+   "mean": 17.8
   },
   "report: journal, first page": {
    "requests": 5,
-   "p50": 13.5,
-   "p95": 14.6,
-   "p99": 14.6,
-   "max": 14.6,
-   "mean": 13.4
+   "p50": 13.6,
+   "p95": 20.8,
+   "p99": 20.8,
+   "max": 20.8,
+   "mean": 15
   },
   "report: one account, activity": {
    "requests": 5,
-   "p50": 15.7,
-   "p95": 16.9,
-   "p99": 16.9,
-   "max": 16.9,
-   "mean": 15.6
+   "p50": 14.7,
+   "p95": 18.5,
+   "p99": 18.5,
+   "max": 18.5,
+   "mean": 15.4
   },
   "reconciliation": {
    "requests": 2,
-   "p50": 77.6,
-   "p95": 106.5,
-   "p99": 106.5,
-   "max": 106.5,
-   "mean": 92.1
+   "p50": 64.3,
+   "p95": 70.3,
+   "p99": 70.3,
+   "max": 70.3,
+   "mean": 67.3
   }
  },
  "requests": {
-  "sent": 4984,
+  "sent": 4992,
   "failed": 0,
   "errorRatePercent": 0,
   "sentAgainAfterBusyAnswer": {},
   "failures": []
  },
  "contention": {
-  "lockWaitSamples": 177,
-  "samplesWithAWaitingSession": 33,
+  "lockWaitSamples": 201,
+  "samplesWithAWaitingSession": 27,
   "mostSessionsWaitingAtOnce": 3,
   "deadlocks": 0,
-  "transactionsRolledBack": 820
+  "transactionsRolledBack": 713
  },
  "volumeAtEnd": {
   "entries": 3207,
-  "lines": 6674,
+  "lines": 6689,
   "events": 1123
  },
  "expected": {
@@ -272,29 +272,29 @@
   }
  ],
  "reconciliation": {
-  "firstRunMs": 106.5,
-  "secondRunMs": 77.6,
+  "firstRunMs": 64.3,
+  "secondRunMs": 70.3,
   "status": 201,
   "checks": [
    {
     "check": "BOOKS_BALANCE",
     "status": "MATCH",
-    "ledger": "2271078.50",
-    "records": "2271078.50",
+    "ledger": "2274396.50",
+    "records": "2274396.50",
     "note": "3207 posted entries"
    },
    {
     "check": "RECEIVABLES",
     "status": "MATCH",
-    "ledger": "89098.38",
-    "records": "89098.38",
+    "ledger": "89556.88",
+    "records": "89556.88",
     "note": null
    },
    {
     "check": "INVENTORY",
     "status": "MATCH",
-    "ledger": "808054.17",
-    "records": "808054.17",
+    "ledger": "810863.67",
+    "records": "810863.67",
     "note": "0 items disagree by more than 0.05. 0 items differ by cents from valuing a part at a time (0.00 in all); each is cleared to Rounding when the item is used up. 944 items have no cost on file and are in neither figure."
    },
    {

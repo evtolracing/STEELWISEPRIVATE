@@ -1,8 +1,8 @@
 # Database inventory
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 60ce6d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
-Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-18 05:20 UTC); they describe test data, not the live database, which was not touched.
+Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-18 08:42 UTC); they describe test data, not the live database, which was not touched.
 
 ## Totals
 
@@ -11,7 +11,7 @@ Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are re
 | Tables | 171 |
 | Tables no server code reads or writes | 53 |
 | Tables empty after a full test run | 84 of 172 |
-| Rows in the QA database | 17,997 |
+| Rows in the QA database | 17,993 |
 | Indexes | 632 |
 | Foreign keys | 201 |
 | Foreign keys with no index | 0 |
@@ -249,12 +249,12 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | Grade | 17 | 0 | 1 | 0 |  |  |  | 9 | lineSpecs, receiving, aiAssistant, coils, … | lineSpecs, grades, index, supabaseSeed |
 | Product | 20 | 1 | 1 | 1 |  |  |  | 17 | receiving, aiAssistant, coils, intakeOrders, … | intakePricing, products, index, ecomService |
 | Heat | 15 | 4 | 1 | 4 | HeatStatus |  |  | 18 | receiving, aiAssistant, coils, heats, … | documents, heats, index, supabaseSeed |
-| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 938 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
+| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 937 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
 | Location | 19 | 2 | 1 | 2 |  |  | yes | 85 | orderTax, receiving, coils, compressionMetrics, … | dispatchRoutes, index, supabaseSeed |
-| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 938 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
-| MaterialMovement | 16 | 8 | 0 | 8 |  | yes |  | 1211 | orderCloseout, receiving, shippingDocuments, coils, … | receiving, stockChanges, transfers, inventory, … |
+| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 937 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
+| MaterialMovement | 16 | 8 | 0 | 8 |  | yes |  | 1210 | orderCloseout, receiving, shippingDocuments, coils, … | receiving, stockChanges, transfers, inventory, … |
 | TestResult | 16 | 4 | 0 | 4 |  |  |  | 0 | (with its parent) | (with its parent) |
-| QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 58 | coils, dashboard, opsCockpit | holds, transfers, returns |
+| QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 59 | coils, dashboard, opsCockpit | holds, transfers, returns |
 | RFQ | 14 | 2 | 1 | 2 | RFQStatus | yes |  | 61 | aiAssistant, analyticsV1, documents, customerRoutes, … | documents, quotes, rfqs, index |
 | RFQLine | 12 | 1 | 0 | 1 |  |  |  | 46 | (with its parent) | (with its parent) |
 | Quote | 23 | 4 | 2 | 3 | QuoteStatus | yes |  | 57 | aiAssistant, analyticsV1, documents, intakeOrders, … | documents, quotes, rfqs, index |
@@ -273,7 +273,7 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | OrderLine | 36 | 4 | 0 | 4 |  |  |  | 1061 | orderCloseout, receiving, jobs, orders, … | receiving, intakeOrders, orders, purchaseOrders, … |
 | OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 111 | holds, orderCloseout, shippingDocuments, stockChanges, … | stockChanges, orders, shipments |
 | WorkOrder | 20 | 4 | 1 | 4 | WOStatus |  |  | 70 | costing, documents, workOrders, ledger, … | documents, workOrders |
-| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 56 | ledger | stockChanges |
+| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 54 | ledger | stockChanges |
 | Shipment | 22 | 3 | 1 | 3 | ShipmentStatus | yes |  | 454 | orderCloseout, shippingDocuments, aiAssistant, dashboard, … | documents, orders, shipments, index |
 | ShipmentItem | 6 | 2 | 0 | 2 |  |  |  | 423 | orderCloseout, shipments | shipments, index |
 | ShipmentStop | 12 | 1 | 0 | 1 |  |  |  | 0 | (with its parent) | (with its parent) |

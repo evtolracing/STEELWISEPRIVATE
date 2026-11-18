@@ -1,19 +1,19 @@
 {
- "at": "2026-11-18T05:57:45.078Z",
+ "at": "2026-11-18T09:27:40.353Z",
  "base": "http://localhost:3011",
- "scenarios": 266,
- "passed": 206,
- "checks": 760,
+ "scenarios": 277,
+ "passed": 277,
+ "checks": 889,
  "groups": {
   "Authentication, sessions and roles": {
    "scenarios": 36,
-   "passed": 29,
+   "passed": 36,
    "checks": 104
   },
   "Tenant, division and branch isolation": {
-   "scenarios": 28,
-   "passed": 26,
-   "checks": 77
+   "scenarios": 31,
+   "passed": 31,
+   "checks": 84
   },
   "API, database and document security": {
    "scenarios": 40,
@@ -26,29 +26,29 @@
    "checks": 104
   },
   "Inventory-to-ledger and receivables reconciliation": {
-   "scenarios": 27,
-   "passed": 7,
-   "checks": 148
+   "scenarios": 30,
+   "passed": 30,
+   "checks": 171
   },
   "Integrations, events and background jobs": {
-   "scenarios": 23,
-   "passed": 20,
-   "checks": 62
+   "scenarios": 26,
+   "passed": 26,
+   "checks": 75
   },
   "Concurrency and failure recovery": {
    "scenarios": 26,
-   "passed": 8,
-   "checks": 83
+   "passed": 26,
+   "checks": 147
   },
   "Backup, restore, deployment and rollback": {
-   "scenarios": 25,
-   "passed": 24,
-   "checks": 64
+   "scenarios": 26,
+   "passed": 26,
+   "checks": 69
   },
   "Observability, alerting and infrastructure": {
-   "scenarios": 20,
-   "passed": 11,
-   "checks": 47
+   "scenarios": 21,
+   "passed": 21,
+   "checks": 64
   }
  },
  "results": [
@@ -82,7 +82,7 @@
     }
    ],
    "pass": true,
-   "ms": 698,
+   "ms": 674,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The login itself",
@@ -114,7 +114,7 @@
     }
    ],
    "pass": true,
-   "ms": 430,
+   "ms": 356,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator over a staff login",
@@ -150,7 +150,7 @@
     }
    ],
    "pass": true,
-   "ms": 347,
+   "ms": 325,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator over a staff login",
@@ -182,7 +182,7 @@
     }
    ],
    "pass": true,
-   "ms": 228,
+   "ms": 204,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator",
@@ -226,7 +226,7 @@
     }
    ],
    "pass": true,
-   "ms": 437,
+   "ms": 335,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The login itself",
@@ -262,7 +262,7 @@
     }
    ],
    "pass": true,
-   "ms": 1257,
+   "ms": 1140,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Anyone who knows the address",
@@ -290,7 +290,7 @@
     }
    ],
    "pass": true,
-   "ms": 1270,
+   "ms": 1163,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "An attacker rotating addresses",
@@ -322,7 +322,7 @@
     }
    ],
    "pass": true,
-   "ms": 1203,
+   "ms": 1102,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The person",
@@ -350,7 +350,7 @@
     }
    ],
    "pass": true,
-   "ms": 290,
+   "ms": 252,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The person",
@@ -374,7 +374,7 @@
     }
    ],
    "pass": true,
-   "ms": 409,
+   "ms": 327,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator",
@@ -402,7 +402,7 @@
     }
    ],
    "pass": true,
-   "ms": 499,
+   "ms": 385,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -426,7 +426,7 @@
     }
    ],
    "pass": true,
-   "ms": 1177,
+   "ms": 1163,
    "record": {
     "initialState": "A throwaway login",
     "authorizedScope": "Anyone",
@@ -450,7 +450,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An attacker with a crafted token",
@@ -498,7 +498,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 6,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An attacker with a crafted token",
@@ -546,7 +546,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An attacker with a crafted token",
@@ -570,7 +570,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An attacker with a crafted token",
@@ -638,8 +638,7 @@
    "asserts": [
     {
      "what": "me says sales rep",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "administration is refused",
@@ -647,17 +646,16 @@
     },
     {
      "what": "the books are refused",
-     "ok": false,
-     "detail": ""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 5,
+   "pass": true,
+   "ms": 42,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A sales rep holding a token that claims SUPER_ADMIN",
     "expected": "Treated as a sales rep",
-    "actual": "NOT as expected: me says sales rep; the books are refused",
+    "actual": "as expected (3 checks)",
     "securityOutcome": "Changing a claim gains nothing",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -680,7 +678,7 @@
     }
    ],
    "pass": true,
-   "ms": 232,
+   "ms": 218,
    "record": {
     "initialState": "A fresh CFO login",
     "authorizedScope": "Administrator changes a role",
@@ -708,7 +706,7 @@
     }
    ],
    "pass": true,
-   "ms": 397,
+   "ms": 352,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A former employee",
@@ -788,7 +786,7 @@
     }
    ],
    "pass": true,
-   "ms": 415,
+   "ms": 346,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The login itself",
@@ -812,8 +810,7 @@
     },
     {
      "what": "administrator making a super administrator: refused",
-     "ok": false,
-     "detail": "400 Some of the values in this request are missing or not valid."
+     "ok": true
     },
     {
      "what": "sales rep: refused",
@@ -824,13 +821,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 111,
+   "pass": true,
+   "ms": 17,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Not signed in; an administrator; a sales rep",
     "expected": "401; 403; 403",
-    "actual": "NOT as expected: administrator making a super administrator: refused (400 Some of the values in this request are missing or not valid.)",
+    "actual": "as expected (4 checks)",
     "securityOutcome": "Nobody can make themselves a login or a higher one",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -845,8 +842,7 @@
    "asserts": [
     {
      "what": "another organization: refused",
-     "ok": false,
-     "detail": "201 "
+     "ok": true
     },
     {
      "what": "a customer role: refused",
@@ -854,8 +850,7 @@
     },
     {
      "what": "nothing made so far",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "no names: refused",
@@ -863,26 +858,24 @@
     },
     {
      "what": "in the owner's own company",
-     "ok": false,
-     "detail": "400 Some of the values in this request are missing or not valid."
+     "ok": true
     },
     {
      "what": "recorded",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "the same address twice: refused, not a server error",
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 510,
+   "pass": true,
+   "ms": 130,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Tenant owner",
     "expected": "403 other organization; 400 customer role; 201 own company",
-    "actual": "NOT as expected: another organization: refused (201 ); nothing made so far; in the owner's own company (400 Some of the values in this request are missing or not valid.); recorded",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Register keeps the Users screen rules (Y-013)",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -913,7 +906,7 @@
     }
    ],
    "pass": true,
-   "ms": 25,
+   "ms": 26,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Branch manager",
@@ -941,7 +934,7 @@
     }
    ],
    "pass": true,
-   "ms": 214,
+   "ms": 180,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator",
@@ -969,7 +962,7 @@
     }
    ],
    "pass": true,
-   "ms": 242,
+   "ms": 193,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator sending extra fields",
@@ -993,7 +986,7 @@
     }
    ],
    "pass": true,
-   "ms": 332,
+   "ms": 292,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator and the person",
@@ -1017,26 +1010,24 @@
     },
     {
      "what": "but not the sign-in guards",
-     "ok": false,
-     "detail": "id,email,firstName,lastName,role,organizationId,homeLocationId,customerId,title,phone,avatarUrl,lastLoginAt,mfaEnabled,isActive,tokensValidAfter,failedLoginCount,lockedUntil,createdAt,updatedAt,organization,homeLocation,userRoles,userLocations,userDivisions"
+     "ok": true
     },
     {
      "what": "nor in the list",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "an administrator sees them",
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 223,
+   "pass": true,
+   "ms": 208,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep and administrator",
     "expected": "No count, pause or cut-off for the sales rep; present for the administrator",
-    "actual": "NOT as expected: but not the sign-in guards (id,email,firstName,lastName,role,organizationId,homeLocationId,customerId,title,phone,avatarUrl,lastLoginAt,mfaEnabled,i); nor in the list",
+    "actual": "as expected (4 checks)",
     "securityOutcome": "Sign-in guard state is for login managers (Y-015)",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -1059,8 +1050,7 @@
     },
     {
      "what": "/api/v1/admin/partners",
-     "ok": false,
-     "detail": "200"
+     "ok": true
     },
     {
      "what": "/api/admin/integrations",
@@ -1071,13 +1061,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 25,
+   "pass": true,
+   "ms": 26,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep",
     "expected": "403 on each",
-    "actual": "NOT as expected: /api/v1/admin/partners (200)",
+    "actual": "as expected (5 checks)",
     "securityOutcome": "Role checks are at the server, not the menu",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -1144,21 +1134,20 @@
    "asserts": [
     {
      "what": "works while active",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "refused once switched off",
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 218,
+   "pass": true,
+   "ms": 174,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An old token with no session mark",
     "expected": "401",
-    "actual": "NOT as expected: works while active",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "Tokens issued before the fix also end on deactivation",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -1181,17 +1170,16 @@
     },
     {
      "what": "one pause recorded",
-     "ok": false,
-     "detail": ""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 2054,
+   "pass": true,
+   "ms": 1829,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "A burst of guesses",
     "expected": "Paused; all 401",
-    "actual": "NOT as expected: one pause recorded",
+    "actual": "as expected (3 checks)",
     "securityOutcome": "The count is atomic in the database",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -1214,7 +1202,7 @@
     }
    ],
    "pass": true,
-   "ms": 36,
+   "ms": 16,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1242,7 +1230,7 @@
     }
    ],
    "pass": true,
-   "ms": 23,
+   "ms": 17,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1270,7 +1258,7 @@
     }
    ],
    "pass": true,
-   "ms": 25,
+   "ms": 19,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1294,17 +1282,16 @@
     },
     {
      "what": "other branch: refused",
-     "ok": false,
-     "detail": "200 {\"data\":[{\"id\":\"7761d3e2-7756-43a4-b9d0-1712581cab1a\",\"documentType\":\"OTHER\",\"documentNumber\":null,\"title\":null,\"fileNam"
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 25,
+   "pass": true,
+   "ms": 12,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
     "expected": "403 or 404 for QA-L02, 200 for QA-L01",
-    "actual": "NOT as expected: other branch: refused (200 {\"data\":[{\"id\":\"7761d3e2-7756-43a4-b9d0-1712581cab1a\",\"documentType\":\"OTHER\",\"documentNumber\":null,\"title\":null,\"fil)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "The branch boundary holds at the server",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -1323,17 +1310,16 @@
     },
     {
      "what": "other branch: refused",
-     "ok": false,
-     "detail": "200 %PDF-1.4 qa phase 10 order paper"
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 25,
+   "pass": true,
+   "ms": 15,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
     "expected": "403 or 404 for QA-L02, 200 for QA-L01",
-    "actual": "NOT as expected: other branch: refused (200 %PDF-1.4 qa phase 10 order paper)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "The branch boundary holds at the server",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -1356,7 +1342,7 @@
     }
    ],
    "pass": true,
-   "ms": 37,
+   "ms": 17,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1392,7 +1378,7 @@
     }
    ],
    "pass": true,
-   "ms": 69,
+   "ms": 33,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Sales reps by branch",
@@ -1424,7 +1410,7 @@
     }
    ],
    "pass": true,
-   "ms": 40,
+   "ms": 17,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1456,7 +1442,7 @@
     }
    ],
    "pass": true,
-   "ms": 36,
+   "ms": 17,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1488,7 +1474,7 @@
     }
    ],
    "pass": true,
-   "ms": 40,
+   "ms": 23,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1512,7 +1498,7 @@
     }
    ],
    "pass": true,
-   "ms": 12,
+   "ms": 7,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1544,7 +1530,7 @@
     }
    ],
    "pass": true,
-   "ms": 49,
+   "ms": 30,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1580,7 +1566,7 @@
     }
    ],
    "pass": true,
-   "ms": 81,
+   "ms": 39,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 sending branch=QA-L01",
@@ -1612,7 +1598,7 @@
     }
    ],
    "pass": true,
-   "ms": 33,
+   "ms": 13,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Branch manager",
@@ -1652,7 +1638,7 @@
     }
    ],
    "pass": true,
-   "ms": 138,
+   "ms": 63,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer B login",
@@ -1688,7 +1674,7 @@
     }
    ],
    "pass": true,
-   "ms": 293,
+   "ms": 60,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Both customer logins",
@@ -1716,7 +1702,7 @@
     }
    ],
    "pass": true,
-   "ms": 158,
+   "ms": 35,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer B export",
@@ -1748,7 +1734,7 @@
     }
    ],
    "pass": true,
-   "ms": 13,
+   "ms": 12,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer B",
@@ -1784,7 +1770,7 @@
     }
    ],
    "pass": true,
-   "ms": 36,
+   "ms": 31,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Login on QA-C01-D1",
@@ -1824,7 +1810,7 @@
     }
    ],
    "pass": true,
-   "ms": 18,
+   "ms": 19,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer A",
@@ -1912,7 +1898,7 @@
     }
    ],
    "pass": true,
-   "ms": 234,
+   "ms": 175,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner with rfq:read only",
@@ -1944,7 +1930,7 @@
     }
    ],
    "pass": true,
-   "ms": 22,
+   "ms": 26,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep and QA-L02 manager asking about the books",
@@ -1968,7 +1954,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 4,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Customer B uploading against customer A's order",
@@ -1996,7 +1982,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 7,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -2024,7 +2010,7 @@
     }
    ],
    "pass": true,
-   "ms": 11,
+   "ms": 10,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -2033,6 +2019,94 @@
     "securityOutcome": "Branch boundary on money",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "No payment, no entry",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Tenant, division and branch isolation"
+   }
+  },
+  {
+   "group": "Tenant, division and branch isolation",
+   "name": "A QA-L02 manager cannot attach a document to a QA-L01 order (Y-016)",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "no document saved",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 10,
+   "record": {
+    "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
+    "authorizedScope": "Branch manager of QA-L02 uploading against the QA-L01 order",
+    "expected": "404, no document saved",
+    "actual": "as expected (2 checks)",
+    "securityOutcome": "Branch boundary on uploads",
+    "databaseOutcome": "No new document row",
+    "financialOutcome": "none",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Tenant, division and branch isolation"
+   }
+  },
+  {
+   "group": "Tenant, division and branch isolation",
+   "name": "A QA-L02 manager cannot cancel or credit a QA-L01 invoice",
+   "asserts": [
+    {
+     "what": "cancel refused",
+     "ok": true
+    },
+    {
+     "what": "credit refused",
+     "ok": true
+    },
+    {
+     "what": "invoice unchanged",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 18,
+   "record": {
+    "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
+    "authorizedScope": "Branch manager of QA-L02",
+    "expected": "403 or 404 for both; invoice unchanged",
+    "actual": "as expected (3 checks)",
+    "securityOutcome": "Branch boundary on money",
+    "databaseOutcome": "no change outside the scenario",
+    "financialOutcome": "No credit, no reversal",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Tenant, division and branch isolation"
+   }
+  },
+  {
+   "group": "Tenant, division and branch isolation",
+   "name": "A QA-L02 manager cannot delete the QA-L01 order's document (Y-016)",
+   "asserts": [
+    {
+     "what": "refused",
+     "ok": true
+    },
+    {
+     "what": "still there",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 10,
+   "record": {
+    "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
+    "authorizedScope": "Branch manager of QA-L02",
+    "expected": "404; the document and its file remain",
+    "actual": "as expected (2 checks)",
+    "securityOutcome": "Branch boundary on deletes",
+    "databaseOutcome": "Document row unchanged",
+    "financialOutcome": "none",
     "recoveryBehaviour": "n/a",
     "auditEvidence": "n/a",
     "regressionCoverage": "qa/sim/phase10-security.mjs, Tenant, division and branch isolation"
@@ -2084,7 +2158,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 15,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2112,7 +2186,7 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 6,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2168,7 +2242,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 7,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2196,7 +2270,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 6,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2224,7 +2298,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 7,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2252,7 +2326,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2280,7 +2354,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 7,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2308,7 +2382,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 7,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2336,7 +2410,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2368,7 +2442,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 11,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator with a crafted record kind",
@@ -2396,7 +2470,7 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 9,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator",
@@ -2428,7 +2502,7 @@
     }
    ],
    "pass": true,
-   "ms": 15,
+   "ms": 21,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone with the address",
@@ -2456,7 +2530,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 13,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator",
@@ -2516,7 +2590,7 @@
     }
    ],
    "pass": true,
-   "ms": 63,
+   "ms": 49,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -2544,7 +2618,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -2572,7 +2646,7 @@
     }
    ],
    "pass": true,
-   "ms": 568,
+   "ms": 523,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Signed-in administrator",
@@ -2632,7 +2706,7 @@
     }
    ],
    "pass": true,
-   "ms": 60,
+   "ms": 51,
    "record": {
     "initialState": "A second server process started with NODE_ENV=production and no secrets",
     "authorizedScope": "Deployment",
@@ -2660,7 +2734,7 @@
     }
    ],
    "pass": true,
-   "ms": 62,
+   "ms": 61,
    "record": {
     "initialState": "A configuration loaded with NODE_ENV=production and CORS_ORIGIN set",
     "authorizedScope": "Deployment",
@@ -2684,7 +2758,7 @@
     }
    ],
    "pass": true,
-   "ms": 22,
+   "ms": 16,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2828,7 +2902,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2876,7 +2950,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2924,7 +2998,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2948,7 +3022,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2996,7 +3070,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3020,7 +3094,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3088,7 +3162,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3140,7 +3214,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 10,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Signed-in administrator sending a value the database rejects",
@@ -3172,7 +3246,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 9,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3204,7 +3278,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 7,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3236,7 +3310,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 7,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3364,7 +3438,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 6,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3396,7 +3470,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3484,7 +3558,7 @@
     }
    ],
    "pass": true,
-   "ms": 33,
+   "ms": 43,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -3516,7 +3590,7 @@
     }
    ],
    "pass": true,
-   "ms": 41,
+   "ms": 64,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "a sales rep",
@@ -3548,7 +3622,7 @@
     }
    ],
    "pass": true,
-   "ms": 38,
+   "ms": 48,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "an auditor",
@@ -3580,7 +3654,7 @@
     }
    ],
    "pass": true,
-   "ms": 42,
+   "ms": 46,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "an executive",
@@ -3612,7 +3686,7 @@
     }
    ],
    "pass": true,
-   "ms": 46,
+   "ms": 56,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "a branch manager",
@@ -3644,7 +3718,7 @@
     }
    ],
    "pass": true,
-   "ms": 38,
+   "ms": 43,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -3672,7 +3746,7 @@
     }
    ],
    "pass": true,
-   "ms": 42,
+   "ms": 40,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -3708,7 +3782,7 @@
     }
    ],
    "pass": true,
-   "ms": 71,
+   "ms": 74,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO reverses a manual entry",
@@ -3740,7 +3814,7 @@
     }
    ],
    "pass": true,
-   "ms": 11,
+   "ms": 17,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -3768,7 +3842,7 @@
     }
    ],
    "pass": true,
-   "ms": 30,
+   "ms": 36,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Two finance people at once",
@@ -3824,7 +3898,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 4,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -3852,7 +3926,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -3880,7 +3954,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -3936,7 +4010,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 4,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -3964,7 +4038,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -3992,7 +4066,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 4,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -4020,7 +4094,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -4048,7 +4122,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 7,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -4080,7 +4154,7 @@
     }
    ],
    "pass": true,
-   "ms": 12,
+   "ms": 17,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The whole QA journal",
@@ -4156,7 +4230,7 @@
     }
    ],
    "pass": true,
-   "ms": 147,
+   "ms": 45,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The ledger engine",
@@ -4180,7 +4254,7 @@
     }
    ],
    "pass": true,
-   "ms": 18,
+   "ms": 19,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Auditor reading entries",
@@ -4220,7 +4294,7 @@
     }
    ],
    "pass": true,
-   "ms": 63,
+   "ms": 70,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO asking the assistant to post, reverse and delete",
@@ -4248,7 +4322,7 @@
     }
    ],
    "pass": true,
-   "ms": 27,
+   "ms": 22,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO asking about receivables",
@@ -4284,7 +4358,7 @@
     }
    ],
    "pass": true,
-   "ms": 15,
+   "ms": 16,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator, auditor, sales rep",
@@ -4316,7 +4390,7 @@
     }
    ],
    "pass": true,
-   "ms": 212,
+   "ms": 198,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A partner API token",
@@ -4348,7 +4422,7 @@
     }
    ],
    "pass": true,
-   "ms": 12,
+   "ms": 15,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep, branch manager",
@@ -4376,7 +4450,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The export routes",
@@ -4395,6 +4469,10 @@
    "name": "Before this group the books agree with the stock and invoice records",
    "asserts": [
     {
+     "what": "every receipt left held by an earlier suite was posted through the product, stays held because it has no cost, or has correctly nothing to post",
+     "ok": true
+    },
+    {
      "what": "start: reconciliation ran",
      "ok": true
     },
@@ -4404,8 +4482,7 @@
     },
     {
      "what": "start: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "start: RECEIVABLES agrees",
@@ -4416,13 +4493,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 56,
+   "pass": true,
+   "ms": 54,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "All checks MATCH",
-    "actual": "NOT as expected: start: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4449,8 +4526,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4461,13 +4537,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 166,
+   "pass": true,
+   "ms": 161,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A receipt posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4498,8 +4574,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4510,13 +4585,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 125,
+   "pass": true,
+   "ms": 141,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A receipt at a far branch posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4547,8 +4622,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4559,13 +4633,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 130,
+   "pass": true,
+   "ms": 131,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A receipt at a far branch posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4596,8 +4670,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4608,13 +4681,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 121,
+   "pass": true,
+   "ms": 135,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A receipt at a far branch posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4645,8 +4718,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4657,13 +4729,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 317,
+   "pass": true,
+   "ms": 354,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A shipment and its invoice posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4690,8 +4762,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4702,13 +4773,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 113,
+   "pass": true,
+   "ms": 96,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A payment posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4731,7 +4802,7 @@
     }
    ],
    "pass": true,
-   "ms": 32,
+   "ms": 30,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4767,8 +4838,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4779,13 +4849,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 118,
+   "pass": true,
+   "ms": 120,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A credit memo posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4816,8 +4886,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4828,13 +4897,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 442,
+   "pass": true,
+   "ms": 498,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "Payment and refund posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4865,8 +4934,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4877,13 +4945,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 195,
+   "pass": true,
+   "ms": 191,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A count adjustment posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4910,8 +4978,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -4922,13 +4989,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 184,
+   "pass": true,
+   "ms": 186,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A damage adjustment posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -4955,8 +5022,7 @@
     },
     {
      "what": "on the road: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "on the road: RECEIVABLES agrees",
@@ -4980,8 +5046,7 @@
     },
     {
      "what": "received: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "received: RECEIVABLES agrees",
@@ -4996,13 +5061,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 268,
+   "pass": true,
+   "ms": 234,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A transfer posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: on the road: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg); received: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (13 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5029,8 +5094,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -5041,13 +5105,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 217,
+   "pass": true,
+   "ms": 209,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A work order posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5078,8 +5142,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -5090,13 +5153,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 179,
+   "pass": true,
+   "ms": 175,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "A cost change posts the expected entry and the books still agree with the records",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5127,8 +5190,7 @@
     },
     {
      "what": "after: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES agrees",
@@ -5139,13 +5201,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 295,
+   "pass": true,
+   "ms": 364,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "Ten entries, no duplicates",
-    "actual": "NOT as expected: after: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5164,17 +5226,16 @@
     },
     {
      "what": "the report agrees with the records",
-     "ok": false,
-     "detail": "-1580.00"
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 29,
+   "pass": true,
+   "ms": 33,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "Equal",
-    "actual": "NOT as expected: the report agrees with the records (-1580.00)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5197,7 +5258,7 @@
     }
    ],
    "pass": true,
-   "ms": 18,
+   "ms": 20,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5225,7 +5286,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 11,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5245,8 +5306,7 @@
    "asserts": [
     {
      "what": "reported",
-     "ok": false,
-     "detail": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",\"ledger\":\"115929.17\",\"records\":\"117514.17\",\"difference\":\"-1585.00\",\"note\":\"4 ite"
+     "ok": true
     },
     {
      "what": "stored as failed",
@@ -5270,8 +5330,7 @@
     },
     {
      "what": "put back: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "put back: RECEIVABLES agrees",
@@ -5282,13 +5341,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 205,
+   "pass": true,
+   "ms": 199,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "INVENTORY DIFFERENCE; alert; no new entry; MATCH once put back",
-    "actual": "NOT as expected: reported ({\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",); put back: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (9 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5319,8 +5378,7 @@
     },
     {
      "what": "put back: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "put back: RECEIVABLES agrees",
@@ -5331,13 +5389,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 348,
+   "pass": true,
+   "ms": 360,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "RECEIVABLES DIFFERENCE naming the customer; MATCH once put back",
-    "actual": "NOT as expected: put back: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5360,7 +5418,7 @@
     }
    ],
    "pass": true,
-   "ms": 97,
+   "ms": 114,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5408,7 +5466,7 @@
     }
    ],
    "pass": true,
-   "ms": 90,
+   "ms": 75,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5436,7 +5494,7 @@
     }
    ],
    "pass": true,
-   "ms": 223,
+   "ms": 212,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5456,17 +5514,16 @@
    "asserts": [
     {
      "what": "none",
-     "ok": false,
-     "detail": "[{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"uncosted\":false,\"withinRounding\":false},{\"coilId\":\"6daa135f-b1aa-44b5-afb6-47beb265369b\",\"number\":\"RC-MWLPIH68-63\",\"branch\":\"QA-L01\",\"ledger\":\""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 19,
+   "pass": true,
+   "ms": 18,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "No item outside rounding",
-    "actual": "NOT as expected: none ([{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"recor)",
+    "actual": "as expected (1 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5489,12 +5546,160 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "Listed on the exceptions report",
     "actual": "as expected (2 checks)",
+    "securityOutcome": "Postings come from business records only",
+    "databaseOutcome": "Business rows and their journal entry in one transaction",
+    "financialOutcome": "Test entries on the QA ledger only",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "Ledger event and reconciliation run stored",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Inventory-to-ledger and receivables reconciliation"
+   }
+  },
+  {
+   "group": "Inventory-to-ledger and receivables reconciliation",
+   "name": "A counter sale: stock down, revenue and cash posted, the books agree",
+   "asserts": [
+    {
+     "what": "sold",
+     "ok": true
+    },
+    {
+     "what": "two pieces taken",
+     "ok": true
+    },
+    {
+     "what": "after the sale: reconciliation ran",
+     "ok": true
+    },
+    {
+     "what": "after the sale: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "after the sale: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "after the sale: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "after the sale: every posted entry balances",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 234,
+   "record": {
+    "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
+    "authorizedScope": "Staff doing the business step; CFO reconciling",
+    "expected": "One sale entry; MATCH",
+    "actual": "as expected (7 checks)",
+    "securityOutcome": "Postings come from business records only",
+    "databaseOutcome": "Business rows and their journal entry in one transaction",
+    "financialOutcome": "Test entries on the QA ledger only",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "Ledger event and reconciliation run stored",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Inventory-to-ledger and receivables reconciliation"
+   }
+  },
+  {
+   "group": "Inventory-to-ledger and receivables reconciliation",
+   "name": "An invoice cancelled before any payment: receivables back to where they were, the books agree",
+   "asserts": [
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "the issue entry is reversed",
+     "ok": true
+    },
+    {
+     "what": "after the cancel: reconciliation ran",
+     "ok": true
+    },
+    {
+     "what": "after the cancel: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "after the cancel: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "after the cancel: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "after the cancel: every posted entry balances",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 368,
+   "record": {
+    "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
+    "authorizedScope": "Staff doing the business step; CFO reconciling",
+    "expected": "The issue reversed; MATCH",
+    "actual": "as expected (7 checks)",
+    "securityOutcome": "Postings come from business records only",
+    "databaseOutcome": "Business rows and their journal entry in one transaction",
+    "financialOutcome": "Test entries on the QA ledger only",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "Ledger event and reconciliation run stored",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Inventory-to-ledger and receivables reconciliation"
+   }
+  },
+  {
+   "group": "Inventory-to-ledger and receivables reconciliation",
+   "name": "A credit larger than what is still owed leaves credit owed back, shown apart, and the books agree",
+   "asserts": [
+    {
+     "what": "paid in full",
+     "ok": true
+    },
+    {
+     "what": "credited",
+     "ok": true
+    },
+    {
+     "what": "20.00 owed back on the memo",
+     "ok": true
+    },
+    {
+     "what": "after the credit: reconciliation ran",
+     "ok": true
+    },
+    {
+     "what": "after the credit: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "after the credit: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "after the credit: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "after the credit: every posted entry balances",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 395,
+   "record": {
+    "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
+    "authorizedScope": "Staff doing the business step; CFO reconciling",
+    "expected": "Owed back 20.00; MATCH",
+    "actual": "as expected (8 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5517,8 +5722,7 @@
     },
     {
      "what": "end: INVENTORY agrees",
-     "ok": false,
-     "detail": "DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledger\":\"-400.00\",\"records\":\"400.00\",\"difference\":\"-800.00\",\"unc"
+     "ok": true
     },
     {
      "what": "end: RECEIVABLES agrees",
@@ -5529,13 +5733,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 45,
+   "pass": true,
+   "ms": 40,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
     "expected": "All MATCH",
-    "actual": "NOT as expected: end: INVENTORY agrees (DIFFERENCE -1580.00 [{\"coilId\":\"df9d7e36-13ce-4ba5-b093-32d638b484dc\",\"number\":\"RC-MWLPIH68-167\",\"branch\":\"QA-L01\",\"ledg)",
+    "actual": "as expected (5 checks)",
     "securityOutcome": "Postings come from business records only",
     "databaseOutcome": "Business rows and their journal entry in one transaction",
     "financialOutcome": "Test entries on the QA ledger only",
@@ -5562,7 +5766,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 0,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5590,7 +5794,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5638,7 +5842,7 @@
     }
    ],
    "pass": true,
-   "ms": 430,
+   "ms": 413,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5698,7 +5902,7 @@
     }
    ],
    "pass": true,
-   "ms": 46,
+   "ms": 31,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Webhook address rules with NODE_ENV=production",
@@ -5725,9 +5929,8 @@
      "ok": true
     },
     {
-     "what": "an alert was raised",
-     "ok": false,
-     "detail": ""
+     "what": "an alert was raised, or the one raised in the last 15 minutes is still open",
+     "ok": true
     },
     {
      "what": "replayed once fixed",
@@ -5742,13 +5945,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 4541,
+   "pass": true,
+   "ms": 497,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
     "expected": "FAILED after five tries; WEBHOOK_DEAD_LETTER alert",
-    "actual": "NOT as expected: an alert was raised",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "Partners get only their own events, signed",
     "databaseOutcome": "One WebhookDelivery row per event",
     "financialOutcome": "none",
@@ -5767,7 +5970,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5807,7 +6010,7 @@
     }
    ],
    "pass": true,
-   "ms": 26,
+   "ms": 31,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone calling the scheduler address",
@@ -5839,7 +6042,7 @@
     }
    ],
    "pass": true,
-   "ms": 34,
+   "ms": 40,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Scheduler",
@@ -5863,7 +6066,7 @@
     }
    ],
    "pass": true,
-   "ms": 789,
+   "ms": 792,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5883,27 +6086,24 @@
    "asserts": [
     {
      "what": "sent",
-     "ok": false,
-     "detail": "0 alert calls"
+     "ok": true
     },
     {
      "what": "kind and severity",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "nothing secret",
-     "ok": false,
-     "detail": ""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 6183,
+   "pass": true,
+   "ms": 1154,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The alert channel (local stand-in)",
     "expected": "One POST per new alert",
-    "actual": "NOT as expected: sent (0 alert calls); kind and severity; nothing secret",
+    "actual": "as expected (3 checks)",
     "securityOutcome": "Alerts reach a person; no secret in them",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -5926,7 +6126,7 @@
     }
    ],
    "pass": true,
-   "ms": 1314,
+   "ms": 1187,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Alert channel answering 500",
@@ -5950,7 +6150,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 19,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A storm of the same failure",
@@ -5986,7 +6186,7 @@
     }
    ],
    "pass": true,
-   "ms": 26,
+   "ms": 33,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator, sales rep, customer",
@@ -6022,7 +6222,7 @@
     }
    ],
    "pass": true,
-   "ms": 105,
+   "ms": 140,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO and a second CFO posting a held receipt, naming the account",
@@ -6078,7 +6278,7 @@
     }
    ],
    "pass": true,
-   "ms": 284,
+   "ms": 378,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO; the AI stand-in answering 503",
@@ -6102,7 +6302,7 @@
     }
    ],
    "pass": true,
-   "ms": 3497,
+   "ms": 3335,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO; the AI stand-in answering after 5 s with a 1.5 s limit",
@@ -6134,17 +6334,16 @@
     },
     {
      "what": "recorded as revoked by the administrator",
-     "ok": false,
-     "detail": ""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 261,
+   "pass": true,
+   "ms": 232,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator revoking a key",
     "expected": "The live token 401 KEY_REVOKED",
-    "actual": "NOT as expected: recorded as revoked by the administrator",
+    "actual": "as expected (4 checks)",
     "securityOutcome": "Revocation is immediate",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -6167,7 +6366,7 @@
     }
    ],
    "pass": true,
-   "ms": 408,
+   "ms": 400,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone with a client id",
@@ -6215,7 +6414,7 @@
     }
    ],
    "pass": true,
-   "ms": 232,
+   "ms": 214,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A partner with a burst limit of 5",
@@ -6225,6 +6424,118 @@
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
     "recoveryBehaviour": "The partner waits for the window",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Integrations, events and background jobs"
+   }
+  },
+  {
+   "group": "Integrations, events and background jobs",
+   "name": "A partner listing its webhooks never sees a secret again after creation",
+   "asserts": [
+    {
+     "what": "listed",
+     "ok": true
+    },
+    {
+     "what": "no secret in any row",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 7,
+   "record": {
+    "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
+    "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
+    "expected": "No secret in the list",
+    "actual": "as expected (2 checks)",
+    "securityOutcome": "A webhook secret is shown once",
+    "databaseOutcome": "One WebhookDelivery row per event",
+    "financialOutcome": "none",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Integrations, events and background jobs"
+   }
+  },
+  {
+   "group": "Integrations, events and background jobs",
+   "name": "An accounting export is a file: making one sends nothing to any outside address",
+   "asserts": [
+    {
+     "what": "mapped",
+     "ok": true
+    },
+    {
+     "what": "a batch was made",
+     "ok": true
+    },
+    {
+     "what": "no accounting system is connected",
+     "ok": true
+    },
+    {
+     "what": "no outside call was made",
+     "ok": true
+    },
+    {
+     "what": "the file reads back with its checksum",
+     "ok": true
+    },
+    {
+     "what": "the file carries no secret",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 404,
+   "record": {
+    "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
+    "authorizedScope": "CFO exporting for XERO with every account mapped",
+    "expected": "A batch and a file; no outside call",
+    "actual": "as expected (6 checks)",
+    "securityOutcome": "No real accounting transaction is sent during testing",
+    "databaseOutcome": "One LedgerExportBatch",
+    "financialOutcome": "An export batch on the QA database only",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Integrations, events and background jobs"
+   }
+  },
+  {
+   "group": "Integrations, events and background jobs",
+   "name": "Only finance makes or settles an accounting export; a sales login cannot even read one",
+   "asserts": [
+    {
+     "what": "an auditor cannot make one",
+     "ok": true
+    },
+    {
+     "what": "a sales login cannot list them",
+     "ok": true
+    },
+    {
+     "what": "a sales login cannot read a file",
+     "ok": true
+    },
+    {
+     "what": "a sales login cannot settle one",
+     "ok": true
+    },
+    {
+     "what": "nothing was made",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 21,
+   "record": {
+    "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
+    "authorizedScope": "Sales rep and auditor",
+    "expected": "403 to make; 403 to read for sales",
+    "actual": "as expected (5 checks)",
+    "securityOutcome": "Exports are finance actions",
+    "databaseOutcome": "no change outside the scenario",
+    "financialOutcome": "Nothing made",
+    "recoveryBehaviour": "n/a",
     "auditEvidence": "n/a",
     "regressionCoverage": "qa/sim/phase10-security.mjs, Integrations, events and background jobs"
    }
@@ -6279,8 +6590,7 @@
     },
     {
      "what": "after: INVENTORY",
-     "ok": false,
-     "detail": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",\"ledger\":\"116889.17\",\"records\":\"118469.1"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES",
@@ -6291,13 +6601,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 1348,
+   "pass": true,
+   "ms": 764,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
     "expected": "Paid at most 100.00; receivables agree",
-    "actual": "NOT as expected: after: INVENTORY ({\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6324,8 +6634,7 @@
     },
     {
      "what": "after: INVENTORY",
-     "ok": false,
-     "detail": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",\"ledger\":\"117089.17\",\"records\":\"118669.1"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES",
@@ -6336,13 +6645,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 880,
+   "pass": true,
+   "ms": 460,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
     "expected": "Total credit at most the invoice",
-    "actual": "NOT as expected: after: INVENTORY ({\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6373,8 +6682,7 @@
     },
     {
      "what": "after: INVENTORY",
-     "ok": false,
-     "detail": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",\"ledger\":\"117089.17\",\"records\":\"118669.1"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES",
@@ -6385,13 +6693,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 462,
+   "pass": true,
+   "ms": 241,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
     "expected": "One invoice",
-    "actual": "NOT as expected: after: INVENTORY ({\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6422,8 +6730,7 @@
     },
     {
      "what": "after: INVENTORY",
-     "ok": false,
-     "detail": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",\"ledger\":\"117289.17\",\"records\":\"118869.1"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES",
@@ -6434,13 +6741,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 372,
+   "pass": true,
+   "ms": 214,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
     "expected": "Received once, stock counted once",
-    "actual": "NOT as expected: after: INVENTORY ({\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6463,7 +6770,7 @@
     }
    ],
    "pass": true,
-   "ms": 127,
+   "ms": 129,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6495,7 +6802,7 @@
     }
    ],
    "pass": true,
-   "ms": 125,
+   "ms": 123,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6519,7 +6826,7 @@
     }
    ],
    "pass": true,
-   "ms": 28,
+   "ms": 26,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6547,7 +6854,7 @@
     }
    ],
    "pass": true,
-   "ms": 44,
+   "ms": 42,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6571,7 +6878,7 @@
     }
    ],
    "pass": true,
-   "ms": 38,
+   "ms": 37,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6611,8 +6918,7 @@
     },
     {
      "what": "after: INVENTORY",
-     "ok": false,
-     "detail": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",\"ledger\":\"121289.17\",\"records\":\"122869.1"
+     "ok": true
     },
     {
      "what": "after: RECEIVABLES",
@@ -6623,13 +6929,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 1759,
+   "pass": true,
+   "ms": 2023,
    "record": {
     "initialState": "80 QA branches",
     "authorizedScope": "All 80 branches receiving at the same moment",
     "expected": "80 entries; MATCH",
-    "actual": "NOT as expected: after: INVENTORY ({\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"DIFFERENCE\",)",
+    "actual": "as expected (8 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6652,7 +6958,7 @@
     }
    ],
    "pass": true,
-   "ms": 10914,
+   "ms": 9262,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6680,7 +6986,7 @@
     }
    ],
    "pass": true,
-   "ms": 34,
+   "ms": 28,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6707,37 +7013,93 @@
      "ok": true
     },
     {
-     "what": "no half-saved shipment",
-     "ok": false,
-     "detail": "8 of 20"
+     "what": "the kill fell in the middle of the batch: some dispatched, not all",
+     "ok": true
+    },
+    {
+     "what": "no half-saved dispatch: shipment, stock movement and invoice agree",
+     "ok": true
+    },
+    {
+     "what": "each of the 6 shipped without an invoice is listed for a person",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "a shipment billed before the kill, raised again after it, answers the same invoice",
+     "ok": true
     },
     {
      "what": "after restart: BOOKS_BALANCE",
-     "ok": false,
-     "detail": "{}"
+     "ok": true
     },
     {
      "what": "after restart: INVENTORY",
-     "ok": false,
-     "detail": "{}"
+     "ok": true
     },
     {
      "what": "after restart: RECEIVABLES",
-     "ok": false,
-     "detail": "{}"
+     "ok": true
     },
     {
      "what": "after restart: balanced",
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 3320,
+   "pass": true,
+   "ms": 3919,
    "record": {
     "initialState": "Twenty shipments ready",
     "authorizedScope": "kill -9 of the QA server while dispatches run",
     "expected": "Each shipment either fully dispatched with invoice and entry, or not dispatched; MATCH",
-    "actual": "NOT as expected: no half-saved shipment (8 of 20); after restart: BOOKS_BALANCE ({}); after restart: INVENTORY ({}); after restart: RECEIVABLES ({})",
+    "actual": "as expected (22 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Transactions either committed whole or not at all",
     "financialOutcome": "Test data on the QA database only",
@@ -6756,17 +7118,16 @@
     },
     {
      "what": "a signed-in read works",
-     "ok": false,
-     "detail": ""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 96,
+   "pass": true,
+   "ms": 4631,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "pg_terminate_backend on the server's connections",
     "expected": "Requests answer again within seconds",
-    "actual": "NOT as expected: a signed-in read works",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6801,7 +7162,7 @@
     }
    ],
    "pass": true,
-   "ms": 1340,
+   "ms": 818,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A second server pointed at a database that does not answer",
@@ -6820,18 +7181,21 @@
    "name": "A payment waiting on a row another session holds completes once the lock is released, and is counted once",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async readyToShip (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:151:28)\n    at async shipped (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:162:13)\n    at asy"
+     "what": "answered",
+     "ok": true
+    },
+    {
+     "what": "paid once",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 4,
+   "pass": true,
+   "ms": 2398,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A database session holding the invoice row for 2 s",
     "expected": "Paid once",
-    "actual": "NOT as expected: scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6845,18 +7209,21 @@
    "name": "A counter sale sent twice with the same sale id is charged once",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: record missing 401 Invalid token\n    at Module.shelfStockBooked (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:223:35)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/g7-concurrency.mjs:195:19\n    at async scenario (file:///home/user/STEELWISEPRIVATE/qa/sim/phase4-lib.mjs:33:9)\n    at async S (file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/ctx.mjs:49:14)\n    at async conc (file"
+     "what": "no server error",
+     "ok": true
+    },
+    {
+     "what": "one piece taken",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 27,
+   "pass": true,
+   "ms": 244,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
     "expected": "One sale",
-    "actual": "NOT as expected: scenario ran to the end (Error: record missing 401 Invalid token\n    at Module.shelfStockBooked (file:///home/user/STEELWISEPRIVATE/qa/sim/phase9)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6870,18 +7237,37 @@
    "name": "Two count adjustments of one coil at once leave the stock equal to its movements",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/g7-concurrency.mjs:204:15\n    at async scenario (file:///home/user/STEELWISEPRIVATE/qa/sim/phase4-lib.mjs:33:9)\n    at async S "
+     "what": "both changes kept: on hand 975",
+     "ok": true
+    },
+    {
+     "what": "two movements",
+     "ok": true
+    },
+    {
+     "what": "after: BOOKS_BALANCE",
+     "ok": true
+    },
+    {
+     "what": "after: INVENTORY",
+     "ok": true
+    },
+    {
+     "what": "after: RECEIVABLES",
+     "ok": true
+    },
+    {
+     "what": "after: balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 3,
+   "pass": true,
+   "ms": 246,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
     "expected": "On hand equals the sum of movements",
-    "actual": "NOT as expected: scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6896,27 +7282,56 @@
    "asserts": [
     {
      "what": "stopped",
-     "ok": false,
-     "detail": "401 Invalid token"
+     "ok": true
     },
     {
      "what": "resumed",
-     "ok": false,
-     "detail": "401 Invalid token"
+     "ok": true
     },
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async readyToShip (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:151:28)\n    at async shipped (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:162:13)\n    at asy"
+     "what": "nothing posted while stopped",
+     "ok": true
+    },
+    {
+     "what": "the gap is visible, not silent",
+     "ok": true
+    },
+    {
+     "what": "record what is missing",
+     "ok": true
+    },
+    {
+     "what": "a second run finds nothing new",
+     "ok": true
+    },
+    {
+     "what": "posted once",
+     "ok": true
+    },
+    {
+     "what": "after: BOOKS_BALANCE",
+     "ok": true
+    },
+    {
+     "what": "after: INVENTORY",
+     "ok": true
+    },
+    {
+     "what": "after: RECEIVABLES",
+     "ok": true
+    },
+    {
+     "what": "after: balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 7,
+   "pass": true,
+   "ms": 488,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Owner stops and resumes posting; CFO records what is missing",
     "expected": "A visible gap after resume; one entry after record-missing; MATCH",
-    "actual": "NOT as expected: stopped (401 Invalid token); resumed (401 Invalid token); scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (11 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -6931,8 +7346,7 @@
    "asserts": [
     {
      "what": "posted",
-     "ok": false,
-     "detail": "401 Invalid token"
+     "ok": true
     },
     {
      "what": "no server error",
@@ -6940,26 +7354,24 @@
     },
     {
      "what": "one reversal",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "one request succeeded",
-     "ok": false,
-     "detail": "401,401"
+     "ok": true
     },
     {
      "what": "balanced",
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 14,
+   "pass": true,
+   "ms": 66,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO and a second CFO reverse the same posted entry at once",
     "expected": "One reversal; the other refused",
-    "actual": "NOT as expected: posted (401 Invalid token); one reversal; one request succeeded (401,401)",
+    "actual": "as expected (5 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test entry only; net zero",
@@ -6977,18 +7389,29 @@
      "ok": true
     },
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "PrismaClientValidationError: \nInvalid `prisma.journalEntry.findUnique()` invocation:\n\n{\n  where: {\n    id: undefined,\n?   entryNumber?: String,\n?   reversesEntryId?: String,\n?   AND?: JournalEntryWhereInput | JournalEntryWhereInput[],\n?   OR?: JournalEntryWhereInput[],\n?   NOT?: JournalEntryWhereInput | JournalEntryWhereInput[],\n?   entryDate?: DateTimeFilter | DateTime,\n?   periodId?: StringFilter | String,\n?   status?: StringFilter | String,\n?   kind?: StringFilter | String,\n?   eventKind?: St"
+     "what": "posted",
+     "ok": true
+    },
+    {
+     "what": "still two lines, nothing doubled",
+     "ok": true
+    },
+    {
+     "what": "posted by exactly one request",
+     "ok": true
+    },
+    {
+     "what": "balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 8,
+   "pass": true,
+   "ms": 47,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Two CFO sessions post the same draft at once",
     "expected": "Posted once; one posting audit",
-    "actual": "NOT as expected: scenario ran to the end (PrismaClientValidationError: \nInvalid `prisma.journalEntry.findUnique()` invocation:\n\n{\n  where: {\n    id: undefined,\n? )",
+    "actual": "as expected (5 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test entry only",
@@ -7002,18 +7425,41 @@
    "name": "Two removals at once that together exceed the stock never leave it below zero",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/g7-concurrency.mjs:261:15\n    at async scenario (file:///home/user/STEELWISEPRIVATE/qa/sim/phase4-lib.mjs:33:9)\n    at async S "
+     "what": "no server error",
+     "ok": true
+    },
+    {
+     "what": "never below zero",
+     "ok": true
+    },
+    {
+     "what": "on hand equals what was moved",
+     "ok": true
+    },
+    {
+     "what": "after: BOOKS_BALANCE",
+     "ok": true
+    },
+    {
+     "what": "after: INVENTORY",
+     "ok": true
+    },
+    {
+     "what": "after: RECEIVABLES",
+     "ok": true
+    },
+    {
+     "what": "after: balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 1,
+   "pass": true,
+   "ms": 199,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Two adjustments of -60 lb on a 100 lb coil at the same moment",
     "expected": "On hand never negative; on hand equals movements",
-    "actual": "NOT as expected: scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -7028,27 +7474,52 @@
    "asserts": [
     {
      "what": "stopped",
-     "ok": false,
-     "detail": "401 Invalid token"
+     "ok": true
     },
     {
      "what": "resumed",
-     "ok": false,
-     "detail": "401 Invalid token"
+     "ok": true
     },
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async readyToShip (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:151:28)\n    at async shipped (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:162:13)\n    at asy"
+     "what": "no server error",
+     "ok": true
+    },
+    {
+     "what": "shipment 1 posted once",
+     "ok": true
+    },
+    {
+     "what": "shipment 2 posted once",
+     "ok": true
+    },
+    {
+     "what": "shipment 3 posted once",
+     "ok": true
+    },
+    {
+     "what": "after: BOOKS_BALANCE",
+     "ok": true
+    },
+    {
+     "what": "after: INVENTORY",
+     "ok": true
+    },
+    {
+     "what": "after: RECEIVABLES",
+     "ok": true
+    },
+    {
+     "what": "after: balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 6,
+   "pass": true,
+   "ms": 994,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Books stopped, three shipments, resume, two CFO sessions record what is missing at once",
     "expected": "Each event posted once",
-    "actual": "NOT as expected: stopped (401 Invalid token); resumed (401 Invalid token); scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (10 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -7062,18 +7533,41 @@
    "name": "Payments and a credit memo at the same moment never settle more than the invoice",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async readyToShip (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:151:28)\n    at async shipped (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:162:13)\n    at asy"
+     "what": "no server error",
+     "ok": true
+    },
+    {
+     "what": "paid plus credited at most 50.00",
+     "ok": true
+    },
+    {
+     "what": "paid never above the total",
+     "ok": true
+    },
+    {
+     "what": "after: BOOKS_BALANCE",
+     "ok": true
+    },
+    {
+     "what": "after: INVENTORY",
+     "ok": true
+    },
+    {
+     "what": "after: RECEIVABLES",
+     "ok": true
+    },
+    {
+     "what": "after: balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 2,
+   "pass": true,
+   "ms": 574,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Ten payments of 10.00 and a 30.00 credit on a 50.00 invoice at once",
     "expected": "Paid plus credited at most the total",
-    "actual": "NOT as expected: scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -7087,18 +7581,41 @@
    "name": "Twenty payments of 5.00 at once on one invoice are all recorded and none answers with a server error",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async readyToShip (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:151:28)\n    at async shipped (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:162:13)\n    at asy"
+     "what": "no server error",
+     "ok": true
+    },
+    {
+     "what": "all twenty recorded",
+     "ok": true
+    },
+    {
+     "what": "paid 100.00",
+     "ok": true
+    },
+    {
+     "what": "after: BOOKS_BALANCE",
+     "ok": true
+    },
+    {
+     "what": "after: INVENTORY",
+     "ok": true
+    },
+    {
+     "what": "after: RECEIVABLES",
+     "ok": true
+    },
+    {
+     "what": "after: balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 2,
+   "pass": true,
+   "ms": 937,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Twenty CSR payments within a few milliseconds on one 200.00 invoice",
     "expected": "All twenty recorded; no 500",
-    "actual": "NOT as expected: scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (7 checks)",
     "securityOutcome": "Busy is not an error (Y-020)",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -7116,18 +7633,41 @@
      "ok": true
     },
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async readyToShip (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:151:28)\n    at async shipped (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:162:13)\n    at asy"
+     "what": "requests either answered or were cut off, none answered with a server error",
+     "ok": true
+    },
+    {
+     "what": "the paid amount equals the saved payments",
+     "ok": true
+    },
+    {
+     "what": "every saved payment has its entry",
+     "ok": true
+    },
+    {
+     "what": "after: BOOKS_BALANCE",
+     "ok": true
+    },
+    {
+     "what": "after: INVENTORY",
+     "ok": true
+    },
+    {
+     "what": "after: RECEIVABLES",
+     "ok": true
+    },
+    {
+     "what": "after: balanced",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 1021,
+   "pass": true,
+   "ms": 1886,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A second server on 3015 stopped with SIGTERM during twenty payments",
     "expected": "Every answered request is whole; books agree after restart",
-    "actual": "NOT as expected: scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (8 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Rows and their journal entries stay consistent",
     "financialOutcome": "Test data on the QA database only",
@@ -7162,7 +7702,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7190,7 +7730,7 @@
     }
    ],
    "pass": true,
-   "ms": 1011,
+   "ms": 857,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7226,7 +7766,7 @@
     }
    ],
    "pass": true,
-   "ms": 2385,
+   "ms": 2182,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7510,7 +8050,7 @@
     }
    ],
    "pass": true,
-   "ms": 44,
+   "ms": 41,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7538,7 +8078,7 @@
     }
    ],
    "pass": true,
-   "ms": 39,
+   "ms": 43,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7570,7 +8110,7 @@
     }
    ],
    "pass": true,
-   "ms": 52,
+   "ms": 40,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7598,7 +8138,7 @@
     }
    ],
    "pass": true,
-   "ms": 56,
+   "ms": 36,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7622,7 +8162,7 @@
     }
    ],
    "pass": true,
-   "ms": 45,
+   "ms": 32,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7654,21 +8194,60 @@
     },
     {
      "what": "the reconciliation agrees",
-     "ok": false,
-     "detail": "[[\"BOOKS_BALANCE\",\"MATCH\"],[\"RECEIVABLES\",\"MATCH\"],[\"INVENTORY\",\"DIFFERENCE\"],[\"IN_TRANSIT\",\"MATCH\"],[\"REVENUE\",\"MATCH\"],[\"SALES_TAX\",\"MATCH\"],[\"PAYMENTS\",\"MATCH\"],[\"EVENTS\",\"EXCEPTIONS\"],[\"COMPLETENESS\",\"EXCEPTIONS\"],[\"SHIPPED_NOT_BILLED\",\"INFO\"]]"
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 1367,
+   "pass": true,
+   "ms": 1305,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "A QA server on port 3014 pointed at the restore",
     "expected": "Server on the restore answers; trial balance as in the backup; reconciliation MATCH",
-    "actual": "NOT as expected: the reconciliation agrees ([[\"BOOKS_BALANCE\",\"MATCH\"],[\"RECEIVABLES\",\"MATCH\"],[\"INVENTORY\",\"DIFFERENCE\"],[\"IN_TRANSIT\",\"MATCH\"],[\"REVENUE\",\"MATCH\"])",
+    "actual": "as expected (4 checks)",
     "securityOutcome": "Production is never touched; the restore target is checked before anything is written",
     "databaseOutcome": "Only the restore target changes",
     "financialOutcome": "none",
     "recoveryBehaviour": "The restored system is usable, not only loaded",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Backup, restore, deployment and rollback"
+   }
+  },
+  {
+   "group": "Backup, restore, deployment and rollback",
+   "name": "The finished code on a database without update 17 says which update is missing instead of failing sign-in with a server error (Y-022)",
+   "asserts": [
+    {
+     "what": "copy made",
+     "ok": true
+    },
+    {
+     "what": "update 17 rolled back on the copy",
+     "ok": true
+    },
+    {
+     "what": "the server answers",
+     "ok": true
+    },
+    {
+     "what": "sign-in says update 17 is needed",
+     "ok": true
+    },
+    {
+     "what": "health still answers",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1618,
+   "record": {
+    "initialState": "The QA database after the earlier groups, with an active test ledger",
+    "authorizedScope": "A copy of the restore with update 17 rolled back, and a server on port 3016",
+    "expected": "Sign-in 503 DATABASE_UPDATE_REQUIRED; health 200",
+    "actual": "as expected (5 checks)",
+    "securityOutcome": "Production is never touched; the restore target is checked before anything is written",
+    "databaseOutcome": "Only the restore target changes",
+    "financialOutcome": "none",
+    "recoveryBehaviour": "Apply update 17, or promote the previous deployment",
     "auditEvidence": "n/a",
     "regressionCoverage": "qa/sim/phase10-security.mjs, Backup, restore, deployment and rollback"
    }
@@ -7687,7 +8266,7 @@
     }
    ],
    "pass": true,
-   "ms": 68,
+   "ms": 1100,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -7719,7 +8298,7 @@
     }
    ],
    "pass": true,
-   "ms": 3842,
+   "ms": 4130,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "An empty database on the restore server",
@@ -7763,7 +8342,7 @@
     }
    ],
    "pass": true,
-   "ms": 1509,
+   "ms": 1569,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "Copy of the restore",
@@ -7791,7 +8370,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 0,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The host build (scripts/build.cjs, vercel.json)",
@@ -7819,7 +8398,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 13,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "GET /api/health",
@@ -7847,7 +8426,7 @@
     }
    ],
    "pass": true,
-   "ms": 63,
+   "ms": 68,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Tracked files",
@@ -7879,7 +8458,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": ".github/workflows",
@@ -7906,18 +8485,25 @@
      "ok": true
     },
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "TypeError: Headers.append: \"bad id with spaces\r\nx: y\" is an invalid header value.\n    at node:internal/deps/undici/undici:15456:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async http1 (file:///home/user/STEELWISEPRIVATE/qa/sim/phase4-lib.mjs:51:15)\n    at async file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/g9-observability.mjs:19:15\n    at async scenario (file:///home/user/STEELWISEPRIVATE/qa/sim/phase4-lib.mjs:33:9)\n    at async S (file:///ho"
+     "what": "a malformed id is replaced, not echoed (bad id with )",
+     "ok": true
+    },
+    {
+     "what": "a malformed id is replaced, not echoed (<script>x</s)",
+     "ok": true
+    },
+    {
+     "what": "a malformed id is replaced, not echoed (xxxxxxxxxxxx)",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 7,
+   "pass": true,
+   "ms": 13,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "x-request-id on every answer; a caller id is echoed",
-    "actual": "NOT as expected: scenario ran to the end (TypeError: Headers.append: \"bad id with spaces\r\nx: y\" is an invalid header value.\n    at node:internal/deps/undici/undic)",
+    "actual": "as expected (5 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -7944,7 +8530,7 @@
     }
    ],
    "pass": true,
-   "ms": 419,
+   "ms": 414,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -7976,7 +8562,7 @@
     }
    ],
    "pass": true,
-   "ms": 26,
+   "ms": 24,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8004,7 +8590,7 @@
     }
    ],
    "pass": true,
-   "ms": 43,
+   "ms": 37,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8032,7 +8618,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8052,57 +8638,48 @@
    "asserts": [
     {
      "what": "database",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "stock balances add up",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "posted journal entries balance",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "ledger postings that failed",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "ledger events waiting for a person",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "last reconciliation found no difference",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "partner events delivered",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "scheduled run on time",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "logins paused now",
-     "ok": false,
-     "detail": ""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 2,
+   "pass": true,
+   "ms": 20,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "Each named check present",
-    "actual": "NOT as expected: database; stock balances add up; posted journal entries balance; ledger postings that failed; ledger events waiting for a person; last reconciliation found no difference; partner events delivered; scheduled run on time; logins paused now",
+    "actual": "as expected (9 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8116,18 +8693,21 @@
    "name": "A paused login shows in the checks with a count, and clears when the pause ends",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "TypeError: Cannot read properties of undefined (reading 'find')\n    at file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/g9-observability.mjs:64:61\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async scenario (file:///home/user/STEELWISEPRIVATE/qa/sim/phase4-lib.mjs:33:9)\n    at async S (file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/ctx.mjs:49:14)\n    at async obs (file:///home/user/STEELWISEPRIVATE/qa/sim/phase10/g9-observability.mjs:63:3)\n    at "
+     "what": "counted",
+     "ok": true
+    },
+    {
+     "what": "cleared",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 2,
+   "pass": true,
+   "ms": 1192,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "logins paused now fails with 1, then passes",
-    "actual": "NOT as expected: scenario ran to the end (TypeError: Cannot read properties of undefined (reading 'find')\n    at file:///home/user/STEELWISEPRIVATE/qa/sim/phase10)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8141,18 +8721,21 @@
    "name": "A ledger posting that fails is raised as an alert with the event, and the check lists it",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "PrismaClientValidationError: \nInvalid `prisma.ledgerMapping.update()` invocation:\n\n{\n  where: {\n    id: undefined,\n?   key?: String,\n?   AND?: LedgerMappingWhereInput | LedgerMappingWhereInput[],\n?   OR?: LedgerMappingWhereInput[],\n?   NOT?: LedgerMappingWhereInput | LedgerMappingWhereInput[],\n?   accountCode?: StringNullableFilter | String | Null,\n?   description?: StringNullableFilter | String | Null,\n?   approvedAt?: DateTimeNullableFilter | DateTime | Null,\n?   approvedBy?: StringNullableFil"
+     "what": "the failure is visible: an alert or a held event",
+     "ok": true
+    },
+    {
+     "what": "the checks name it",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 3,
+   "pass": true,
+   "ms": 197,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "LEDGER_POSTING_FAILED alert; check fails",
-    "actual": "NOT as expected: scenario ran to the end (PrismaClientValidationError: \nInvalid `prisma.ledgerMapping.update()` invocation:\n\n{\n  where: {\n    id: undefined,\n?   k)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "Test ledger",
@@ -8167,8 +8750,7 @@
    "asserts": [
     {
      "what": "some alerts",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "newest first",
@@ -8179,13 +8761,13 @@
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 2,
+   "pass": true,
+   "ms": 18,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "Ordered list with fields",
-    "actual": "NOT as expected: some alerts",
+    "actual": "as expected (3 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8199,25 +8781,37 @@
    "name": "Sign-in events are in the audit trail: a pause, a password change and sign-out everywhere",
    "asserts": [
     {
-     "what": "LOGIN_LOCKED",
+     "what": "password changed",
      "ok": true
     },
     {
-     "what": "PASSWORD_CHANGED",
+     "what": "signed in with the new one",
      "ok": true
     },
     {
-     "what": "SIGNED_OUT_EVERYWHERE",
+     "what": "signed out everywhere",
+     "ok": true
+    },
+    {
+     "what": "PASSWORD_CHANGED recorded for this login, with its time",
+     "ok": true
+    },
+    {
+     "what": "SIGNED_OUT_EVERYWHERE recorded for this login, with its time",
+     "ok": true
+    },
+    {
+     "what": "LOGIN_LOCKED recorded for this login, with its time",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 1451,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "AUTH rows",
-    "actual": "as expected (3 checks)",
+    "actual": "as expected (6 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8268,7 +8862,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 0,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8292,7 +8886,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 4,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8312,22 +8906,20 @@
    "asserts": [
     {
      "what": "checks",
-     "ok": false,
-     "detail": ""
+     "ok": true
     },
     {
      "what": "integrations changes refused",
-     "ok": false,
-     "detail": ""
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 3,
+   "pass": true,
+   "ms": 10,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "403 on checks and integrations",
-    "actual": "NOT as expected: checks; integrations changes refused",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8338,25 +8930,33 @@
   },
   {
    "group": "Observability, alerting and infrastructure",
-   "name": "An unhandled error inside a route is answered with a plain sentence and logged with the request id",
+   "name": "An address that cannot be decoded is the caller's error: 400 with a plain sentence and the request id, never a server error (Y-023)",
    "asserts": [
     {
-     "what": "answered without internals",
+     "what": "answered 400, not a server error",
+     "ok": true
+    },
+    {
+     "what": "a plain sentence with the code and the request id",
+     "ok": true
+    },
+    {
+     "what": "without internals",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
-    "expected": "500 with a sentence; the id in the log",
-    "actual": "as expected (1 checks)",
+    "expected": "400 BAD_ADDRESS with the id; no internals",
+    "actual": "as expected (3 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
     "recoveryBehaviour": "n/a",
-    "auditEvidence": "n/a",
+    "auditEvidence": "The request line in the log carries the same id and status 400",
     "regressionCoverage": "qa/sim/phase10-security.mjs, Observability, alerting and infrastructure"
    }
   },
@@ -8366,17 +8966,16 @@
    "asserts": [
     {
      "what": "recorded",
-     "ok": false,
-     "detail": "0"
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 4087,
+   "pass": true,
+   "ms": 12,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "READ rows for journal",
-    "actual": "NOT as expected: recorded (0)",
+    "actual": "as expected (1 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8391,21 +8990,20 @@
    "asserts": [
     {
      "what": "listed",
-     "ok": false,
-     "detail": "401"
+     "ok": true
     },
     {
      "what": "each has a time",
      "ok": true
     }
    ],
-   "pass": false,
-   "ms": 3,
+   "pass": true,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "A run carries its time",
-    "actual": "NOT as expected: listed (401)",
+    "actual": "as expected (2 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8447,18 +9045,17 @@
    "name": "Background posting failures do not slow or fail the sale that triggered them",
    "asserts": [
     {
-     "what": "scenario ran to the end",
-     "ok": false,
-     "detail": "Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:130:31)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async costed (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:137:14)\n    at async readyToShip (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:151:28)\n    at async Module.shipped (file:///home/user/STEELWISEPRIVATE/qa/sim/phase95/ctx.mjs:162:13)\n   "
+     "what": "the sale was quick",
+     "ok": true
     }
    ],
-   "pass": false,
-   "ms": 3,
+   "pass": true,
+   "ms": 257,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
     "expected": "The sale answers 200 even when its alert cannot be sent",
-    "actual": "NOT as expected: scenario ran to the end (Error: purchase order 401 {\"error\":\"Invalid token\"}\n    at purchaseOrder (file:///home/user/STEELWISEPRIVATE/qa/sim/phas)",
+    "actual": "as expected (1 checks)",
     "securityOutcome": "Operations can see what happened without exposing secrets",
     "databaseOutcome": "no change outside the scenario",
     "financialOutcome": "none",
@@ -8498,20 +9095,72 @@
     "auditEvidence": "n/a",
     "regressionCoverage": "qa/sim/phase10-security.mjs, Observability, alerting and infrastructure"
    }
+  },
+  {
+   "group": "Observability, alerting and infrastructure",
+   "name": "Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert (Y-021)",
+   "asserts": [
+    {
+     "what": "the check exists",
+     "ok": true
+    },
+    {
+     "what": "billed at dispatch",
+     "ok": true
+    },
+    {
+     "what": "cancelled",
+     "ok": true
+    },
+    {
+     "what": "the check fails and counts it",
+     "ok": true
+    },
+    {
+     "what": "the scheduled run ran",
+     "ok": true
+    },
+    {
+     "what": "the alert is stored",
+     "ok": true
+    },
+    {
+     "what": "raised again",
+     "ok": true
+    },
+    {
+     "what": "and the count goes back down",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 399,
+   "record": {
+    "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
+    "authorizedScope": "The running QA server",
+    "expected": "shipped goods invoiced fails with the order counted; the scheduled run stores SHIPPED_NOT_INVOICED",
+    "actual": "as expected (8 checks)",
+    "securityOutcome": "Operations can see what happened without exposing secrets",
+    "databaseOutcome": "no change outside the scenario",
+    "financialOutcome": "none",
+    "recoveryBehaviour": "n/a",
+    "auditEvidence": "n/a",
+    "regressionCoverage": "qa/sim/phase10-security.mjs, Observability, alerting and infrastructure"
+   }
   }
  ],
  "minimum": {
   "Authentication, sessions and roles": {
    "required": 30,
    "ran": 36,
-   "passed": 29,
-   "met": false
+   "passed": 36,
+   "met": true
   },
   "Tenant, division and branch isolation": {
    "required": 30,
-   "ran": 28,
-   "passed": 26,
-   "met": false
+   "ran": 31,
+   "passed": 31,
+   "met": true
   },
   "API, database and document security": {
    "required": 30,
@@ -8527,57 +9176,57 @@
   },
   "Inventory-to-ledger and receivables reconciliation": {
    "required": 30,
-   "ran": 27,
-   "passed": 7,
-   "met": false
+   "ran": 30,
+   "passed": 30,
+   "met": true
   },
   "Integrations, events and background jobs": {
    "required": 25,
-   "ran": 23,
-   "passed": 20,
-   "met": false
+   "ran": 26,
+   "passed": 26,
+   "met": true
   },
   "Concurrency and failure recovery": {
    "required": 25,
    "ran": 26,
-   "passed": 8,
-   "met": false
+   "passed": 26,
+   "met": true
   },
   "Backup, restore, deployment and rollback": {
    "required": 20,
-   "ran": 25,
-   "passed": 24,
+   "ran": 26,
+   "passed": 26,
    "met": true
   },
   "Observability, alerting and infrastructure": {
    "required": 20,
-   "ran": 20,
-   "passed": 11,
-   "met": false
+   "ran": 21,
+   "passed": 21,
+   "met": true
   }
  },
  "restore": {
-  "at": "2026-11-18T05:57:29.926Z",
+  "at": "2026-11-18T09:27:23.213Z",
   "source": "local QA database steelwise_qa",
   "target": "separate PostgreSQL 16 server on port 5433, database steelwise_qa_restore",
   "backup": {
-   "startedAt": "2026-11-18T05:57:30.571Z",
-   "seconds": 0.4,
-   "bytes": 2380030,
+   "startedAt": "2026-11-18T09:27:23.795Z",
+   "seconds": 0.3,
+   "bytes": 1333897,
    "format": "pg_dump custom format, compression 6"
   },
   "restore": {
-   "seconds": 1.8,
+   "seconds": 1.3,
    "exitCode": 0,
    "errors": 0
   },
   "recoveryPoint": {
    "definition": "the start of pg_dump (one consistent snapshot)",
    "writtenAfterStartAndLost": 1,
-   "seconds": 0.4
+   "seconds": 0.3
   },
   "freshMigrations": {
-   "seconds": 1.8
+   "seconds": 1.9
   }
  }
 }

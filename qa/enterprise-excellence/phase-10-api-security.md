@@ -9,6 +9,7 @@ Group 3 of the Phase 10 suite (`qa/sim/phase10/g3-api.mjs`, 40 scenarios) and th
 | Security headers | On every answer; the server does not name what it runs | "Security headers are on every answer ..." |
 | Body size | 5 MB limit; a 6 MB body is refused without being read into memory | "A body larger than the 5 MB limit is refused ..." |
 | Broken JSON | 400, no stack trace | "Broken JSON is answered with 400 ..." |
+| Undecodable address | A path whose `%` signs do not decode is answered 400 `BAD_ADDRESS` with the request id; before Y-023 it was a 500 logged as a fault | "An address that cannot be decoded is the caller's error ..." |
 | Injection | Search text that looks like SQL or a template is text everywhere | "Search text that looks like SQL ..." |
 | Prototype pollution | A body with `__proto__` changes nothing | "A body that tries to change object prototypes ..." |
 | Database errors | Never reach the caller | "An error from the database does not reach the caller" |

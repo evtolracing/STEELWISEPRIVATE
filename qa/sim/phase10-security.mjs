@@ -23,8 +23,9 @@ const MINIMUM = { [ctx.G10.auth]: 30, [ctx.G10.iso]: 30, [ctx.G10.api]: 30, [ctx
 
 await startStub();
 const ledgerState = await ctx.ensureLedger();
-console.log(`ledger: ${ledgerState}`);
-const state = { ledgerState };
+const settled = await ctx.settleHeldReceipts();
+console.log(`ledger: ${ledgerState}; receipts with no purchase order left held by earlier suites: ${settled.held}, posted by the CFO naming 2000: ${settled.posted}, still held for want of a cost: ${settled.noCost}, nothing to post: ${settled.nothingToPost.length}`);
+const state = { ledgerState, settled };
 
 const PICK = ctx.arg('group', '');
 for (const [i, group] of [auth, isolation, api, ledger, recon, integ, conc, recovery, obs].entries()) {

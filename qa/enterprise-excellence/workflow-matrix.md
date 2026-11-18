@@ -131,6 +131,22 @@ Phase 9.5 changed no workflow step. It added a financial ledger that is told abo
 
 Customer to cash no longer stops at "no accounting export after payment": a controlled export file exists. It still stops short of a connection to an accounting product.
 
+### Phase 10 update (2026-11-18)
+
+Phase 10 changed no workflow step. It hardened what surrounds the steps: who may take them, what survives a failure in the middle of one, and what is raised when one goes wrong.
+
+| Workflow | What changed around it | Verified by |
+|---|---|---|
+| 1. Customer to cash | Payments, refunds, credits and cancels on one invoice take turns, so twenty at once are all taken (Y-020). A dispatch whose invoice was never raised (server stopped between the two saves, H-006) is listed and alerted after 15 minutes (Y-021) | `qa/sim/phase10-security.mjs` groups 5, 7 and 9 |
+| 2. Procure to stock | No change to the step. Documents attached to a purchase order or receipt follow the record's branch (Y-016) | group 2 |
+| 3. Make to order | No change | group 5 (work order reconciles) |
+| 4. Branch transfer | No change | group 5 |
+| 5. Return and credit | A credit larger than what is owed reconciles; cancels and credits take turns with payments (Y-020) | groups 5 and 7 |
+| Counter sale | Dropping a duplicate counter sale no longer deletes its financial history; it adds a line (Y-011) | group 4 |
+| Sign in and work | A token ends at once on password change, reset, switch-off or sign-out everywhere (Y-001); ten wrong passwords pause the login (Y-002) | group 1 |
+| Partners | Partner administration reads need an administrator (Y-019); a revoked key stops at once | groups 1 and 6 |
+| Operations (new) | Ten system checks and eleven alert kinds; scheduled run failures raise an alert (Y-010) | group 9 |
+
 ## Job types found
 
 Order types in the schema: RFQ, QUOTE, SO (sales order), PO, RETURN. PO is never used. Sales channels that create a sales order: order entry, quote acceptance, web store, counter quick sale, counter session flow, partner API. The order hub creates its own orders that are not sales orders (B-009).

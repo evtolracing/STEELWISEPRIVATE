@@ -157,3 +157,18 @@ test('Y-022: a database without the columns of update 17 is recognised, and noth
   assert.equal(missingUpdate17(new Error('x')), false);
   assert.match(UPDATE_17.error, /update 17/);
 });
+
+test('Y-023: an address whose % signs do not decode is the caller\'s error (400 with the request id), not a server error', async () => {
+  const { clientErrorAnswer } = await import('../src/lib/errorAnswer.js');
+  let decodeError;
+  try { decodeURIComponent('%%%'); } catch (e) { decodeError = e; }
+  Object.assign(decodeError, { status: 400, statusCode: 400 }); // as Express marks it when a route parameter fails to decode
+  const a = clientErrorAnswer(decodeError, 'req-1');
+  assert.equal(a?.status, 400);
+  assert.equal(a.body.requestId, 'req-1');
+  assert.equal(a.body.code, 'BAD_ADDRESS');
+  assert.equal(clientErrorAnswer(Object.assign(new Error('x'), { type: 'entity.parse.failed' }))?.status, 400);
+  assert.equal(clientErrorAnswer(Object.assign(new Error('x'), { type: 'entity.too.large' }))?.status, 413);
+  assert.equal(clientErrorAnswer(new Error('a real fault')), null, 'anything else stays a server error');
+  assert.equal(clientErrorAnswer(new URIError('no status')), null, 'a URIError Express did not mark stays a server error');
+});

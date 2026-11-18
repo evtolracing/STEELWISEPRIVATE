@@ -2,6 +2,7 @@
 // recovery), the scheduled run (its secret, its record), alerts sent to the stand-in channel, ledger
 // events that wait and are retried, and outside services that fail or hang.
 export default async function integ(ctx) {
+  const DEDUPE_MINUTES = 15; // src/backend/src/lib/alerts.js DEDUPE_MINUTES
   const { S, G10, prisma, A, B, err, http1, hitsOf, clearHits, setMode, until, subscribe, runTasks, makeDue, deliveriesOf, hmac, TASKS_SECRET, alertsOf, cfo, cfo2, admin2, sales, as } = ctx;
   const g = G10.integ;
   const custB = await prisma.organization.findFirst({ where: { code: 'QA-C02' } });
@@ -62,7 +63,12 @@ export default async function integ(ctx) {
     ok('failed after five', row?.status === 'FAILED' && row.attempts === 5, `${row?.status} ${row?.attempts}`);
     const chk = (await ctx.checksAs(admin2)).body;
     ok('the check fails', chk.checks.find((c) => c.key === 'partner events delivered')?.ok === false);
-    ok('an alert was raised', Boolean(await until(async () => (await alertsOf('WEBHOOK_DEAD_LETTER', since)).length > 0, { ms: 4000 })));
+    // The alert is stored once per 15 minutes (DEDUPE_MINUTES). Earlier suites leave failed deliveries, so in a
+    // full run the first scheduled run of this suite may already have raised it; then that alert is the open one.
+    const quiet = new Date(since.getTime() - DEDUPE_MINUTES * 60_000);
+    const raised = await until(async () => (await alertsOf('WEBHOOK_DEAD_LETTER', quiet)).length > 0, { ms: 4000 });
+    const fresh = (await alertsOf('WEBHOOK_DEAD_LETTER', since)).length > 0;
+    ok('an alert was raised, or the one raised in the last 15 minutes is still open', Boolean(raised), fresh ? 'raised now' : 'absorbed by the open alert');
     setMode(dead.name, { status: 200 });
     const rp = await A.post(`/api/admin/integrations/deliveries/${row.id}/replay`, {});
     ok('replayed once fixed', rp.status < 300, `${rp.status} ${err(rp)}`);

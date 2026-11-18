@@ -1,12 +1,12 @@
 {
   "programVersion": "1.0",
   "program": "Enterprise Excellence Program",
-  "currentPhase": 9.5,
+  "currentPhase": 10,
   "phaseStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
-  "updated": "2026-11-18T05:59:30.278Z",
+  "updated": "2026-11-18T09:36:36.150Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "60ce6d232ac05e81a982d8237cdcee02f659f04f",
+    "commit": "d44825df486d3b5a867a961a65ba42418b08b475",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 33,
     "merged": false,
@@ -44,32 +44,57 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 112,
-    "P2": 170,
-    "P3": 112,
+    "P1": 119,
+    "P2": 181,
+    "P3": 117,
     "P0": 20,
     "P4": 1
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 300,
+    "VERIFIED FIXED": 324,
     "IN PROGRESS": 6,
-    "DEFERRED TO SPECIFIC PHASE": 67,
+    "DEFERRED TO SPECIFIC PHASE": 63,
     "BLOCKED": 3,
     "NOT APPLICABLE": 2,
     "REQUIRES BUSINESS DECISION": 31,
-    "ACCEPTED RISK WITH APPROVAL": 5,
-    "FIXED — NOT VERIFIED": 1
+    "FIXED — NOT VERIFIED": 5,
+    "ACCEPTED RISK WITH APPROVAL": 4
   },
   "openFindingsBySeverity": {
     "P1": 18,
     "P2": 54,
-    "P3": 38,
+    "P3": 37,
     "P4": 1,
     "P0": 2
   },
-  "findingsTotal": 415,
-  "findingsAddedThisPhase": 27,
+  "findingsTotal": 438,
+  "findingsAddedThisPhase": 23,
   "testsExecuted": [
+    {
+      "test": "Phase 10: security, financial integrity, reliability and recovery scenarios through the real server, database read back (qa/sim/phase10-security.mjs), 250 required with nine minimums",
+      "result": "277 of 277; Authentication, sessions and roles 36/36; Tenant, division and branch isolation 31/31; API, database and document security 40/40; Ledger security and posting integrity 41/41; Inventory-to-ledger and receivables reconciliation 30/30; Integrations, events and background jobs 26/26; Concurrency and failure recovery 26/26; Backup, restore, deployment and rollback 26/26; Observability, alerting and infrastructure 21/21",
+      "before": "None: Phases 1 to 9.5 had security checks per phase but no session ending, lockout, least-privilege database role, alerts or restore test"
+    },
+    {
+      "test": "Phase 10: proof by removal (qa/tools/phase10-mutations.mjs)",
+      "result": "30 of 30 removals caught by the named test; source restored after each"
+    },
+    {
+      "test": "Phase 10: backend unit tests",
+      "result": "245 of 245 (12 Phase 10 security tests in src/backend/test/securityRules.test.js), in the full gate on the finished code"
+    },
+    {
+      "test": "Phase 10: isolated restore (group 8, qa/results/phase10-restore.json)",
+      "result": "pg_dump of the QA database restored into a separate PostgreSQL 16 server: 0 errors; books, guards, numbering identical; restored application signs in and reconciles clean"
+    },
+    {
+      "test": "Phase 10: database file 17 and its rollback, each run twice on a copy",
+      "result": "Second runs change nothing; migrate diff clean; verify-6-to-17.sql all OK on the copy"
+    },
+    {
+      "test": "Phase 10: full gate on a rebuilt database, finished code (qa/results/phase10-gate-run-3.txt)",
+      "result": "full gate on the finished code: every earlier phase passes (Phases 3 to 8 74/66/76/106/141/155, Phase 9 browser 232, Phase 9.5 158 and 13), unit 245 of 245, 80-branch load 16 of 16, lint 0 errors, build made; Phase 10 in gate order 277 of 277"
+    },
     {
       "test": "Phase 9.5: ledger scenarios through the real server, journal read back from the database (qa/sim/phase95-ledger.mjs), 150 required",
       "result": "158 of 158, 915 checks, in seven groups: periods, cutover and reporting 24; sales, invoices and revenue 25; payments, credits and refunds 21; inventory valuation and adjustments 27; manufacturing and costing 20; freight, transfers and location accounting 21; concurrency, authorization and failure recovery 20",
@@ -232,6 +257,7 @@
     "B-011",
     "B-015",
     "B-018",
+    "B-021",
     "B-023",
     "B-025",
     "C-001",
@@ -321,7 +347,7 @@
   "scoreSummary": [
     {
       "group": "Platform infrastructure",
-      "weighted": 80,
+      "weighted": 82,
       "evidenceShare": 90,
       "openP0P1": 2
     },
@@ -357,36 +383,29 @@
     }
   ],
   "unverifiedAreas": [
+    "Live database role: on QA the server runs as steelwise_runtime and cannot alter the books or history. The live server still connects as the owner until the owner applies file 17 and switches DATABASE_URL (Y-008, Y-009, W-014)",
+    "Alerts: raised and delivered to a QA stub only. No live receiver is set (E-017); the scheduled run must be set on the host (B-019)",
+    "Backups: an isolated restore was proven on QA (W-020). The host's own backups have never been restored (E-015); recovery objectives are proposals, not approved",
+    "Deployment: database rollback tested on a copy; a Vercel promote or rollback NOT VERIFIED",
+    "Scale: one server process. Turn-taking for money and invoice numbers holds inside one process only (W-022, Y-020); several processes are Phase 11",
+    "Outside services: every partner, carrier, AI and accounting service was a stub",
     "Accounting: no accountant has reviewed any policy, account, mapping or posting rule. The tests prove the software does what its documents say, not that the documents are the right accounting (W-001)",
     "Live data: the ledger has never run on the live database or a copy of it. Opening balances, the number of items with no cost and how long activation holds business saves are unknown (W-005)",
-    "External accounting: nothing is connected. Import of the export file into QuickBooks or Xero is NOT VERIFIED (W-011)",
-    "Scale: one container, one server process, about 3,000 journal entries. Several server processes (W-022) and a year of volume (W-023) are NOT VERIFIED",
-    "Recovery: backup and restore with the ledger tables (W-020) and the triggers against a database superuser (W-014) are NOT VERIFIED",
-    "The Finance screen: one browser engine, no finance user",
-    "Database file 16 is not applied to live: the owner applies it (verify-6-to-16.sql)",
-    "Real devices: every size was a browser window on a local machine. No phone, tablet, shop terminal, glove, scanner or printer was used",
-    "Assistive technology: no screen reader user, no switch or voice control. Phase 9 does not certify WCAG 2.2 AA; it measured names, labels, contrast, headings, focus and keyboard reach by tool",
-    "Real users: no member of staff has used the new search, the role start pages or the dialogs; no time per task is claimed",
-    "Not every control was pressed: 24,586 controls were measured for a name, reach and an action; the scenarios press and verify the controls of the main workflows (phase-09-interaction-audit.md)",
-    "Five dashboards are not reconciled tile by tile to the records (V-037, Phase 11). 58 sample screens remain samples under a notice (owner decision 4)",
-    "Front-end speed on the host, on a real network and at 85-branch data: NOT VERIFIED (V-027)",
-    "Earlier unverified areas unchanged: printers, scales and scanners (K-013), machines (L-030), cycle counts and reorder rules (K-008, K-010, K-011), card payment (H-015), backup and restore (E-015), host pool (G-015), more than one server at once"
+    "External accounting: nothing is connected. Import of the export file into QuickBooks or Xero is NOT VERIFIED (W-011)"
   ],
   "currentBlockers": [
+    "Owner: apply SQL Editor file 17 before merging the Phase 10 pull request; deploying first stops every sign-in (Y-022 makes the answer say so)",
+    "Owner: Y-008 and W-014 take effect on live only after DATABASE_URL points at steelwise_runtime",
     "Owner and accountant: W-001. The ledger is switched off and the software refuses to start it until every account and mapping is approved under the accountant's name. Production posting is blocked by design",
-    "Owner: SQL Editor file 16 must be applied (the code is safe without it: only the Finance screen is unavailable and says why, R-68)",
-    "Owner and accountant, questions raised by the build: W-002 legal entities, W-003 time zone, W-004 gaps in journal numbers, W-006 and W-007 and W-012 receipts and counter stock with no cost, W-009 payables clearing, W-010 processing revenue, W-011 which accounting product",
-    "Handed on with a named phase: W-014, W-015, W-019, W-020 (Phase 10); W-022, W-023 (Phase 11); W-005 and formal accounting acceptance (Phase 12)",
-    "Owner: V-030 (duplicate an order), from Phase 9",
-    "Deferred from Phase 9 with a named phase: V-028 (Phase 10), V-027 and V-037 (Phase 11), V-011, V-018, V-029, V-035, V-036 (Phase 12)",
-    "Still open from earlier phases: K-008, K-010, K-011, K-009, K-006 with S-009 and J-012, J-008 and S-020, H-011, H-015, B-019, E-015, K-013, L-023 to L-027, L-030"
+    "Owner and accountant, questions raised by the build: W-002 legal entities, W-003 time zone, W-004 gaps in journal numbers, W-006 and W-007 and W-012 receipts and counter stock with no cost, W-009 payables clearing, W-010 processing revenue, W-011 which accounting product"
   ],
   "nextActions": [
-    "Owner: apply SQL Editor file 16 (/mnt/project-files/database-updates/16-20261117090000_financial_ledger.sql), run verify-6-to-16.sql, then say when to merge the Phase 9.5 pull request",
-    "Owner: give phase-09-5-accounting-policy-decisions.md and phase-09-5-chart-of-accounts.md to the accountant. Nothing posts until the accountant's approval is recorded",
-    "Owner: answer the questions in phase-09-5-report.md, \"Decisions that are the owner's\"",
-    "Owner: issue the Phase 10 prompt (security, reliability, recovery). Its ledger handoff is in phase-09-5-report.md. Phase 10 has not been started",
-    "Do not start the ledger on live before Phase 12 acceptance"
+    "Owner: apply /mnt/project-files/database-updates/17-20261118090000_security_hardening.sql in the SQL editor, then verify-6-to-17.sql; every row OK or APPLIED",
+    "Owner: then say when to merge the Phase 10 pull request",
+    "Owner, when ready: give steelwise_runtime a password, put it in DATABASE_URL (pooler user steelwise_runtime.<project ref>), keep DIRECT_URL, redeploy",
+    "Owner: set ALERT_WEBHOOK_URL and the scheduled run; restore one host backup into a new project once",
+    "Owner: issue the Phase 11 prompt. Its handoff is in phase-10-report.md. Phase 11 has not been started",
+    "Still from Phase 9.5: SQL 16 applied? Accountant approval before the ledger is started on live (W-001)"
   ],
-  "lastCompletedCheckpoint": "Phase 9.5 implemented and verified by tool on a local machine: a double-entry ledger wired into every money and stock save, switched off, with 27 findings (9 VERIFIED FIXED, 10 for the owner and accountant, 7 deferred to a named phase, 1 not applicable); 158 of 158 ledger scenarios, 13 of 13 browser scenarios, 26 rules proven by removal, load at 80 branches 16 of 16, full regression of Phases 2 to 9 with no failure on the finished code. Engineering is complete; production posting is blocked until an accountant approves (W-001). Not verified: any accountant's review, live data, an external accounting product, several server processes, backup and restore."
+  "lastCompletedCheckpoint": "Phase 10 implemented and verified by tool on a local machine: 23 findings Y-001 to Y-023 (21 VERIFIED FIXED, 2 FIXED — NOT VERIFIED until the owner applies file 17 and switches DATABASE_URL to steelwise_runtime); 277 of 277 Phase 10 scenarios with every category minimum met; 30 of 30 fixes proven by removal; full gate on the finished code: every earlier phase passes (Phases 3 to 8 74/66/76/106/141/155, Phase 9 browser 232, Phase 9.5 158 and 13), unit 245 of 245, 80-branch load 16 of 16, lint 0 errors, build made; Phase 10 in gate order 277 of 277. Not verified: anything on the live system, the host's backups, a Vercel promote, a live alert channel, several server processes."
 }

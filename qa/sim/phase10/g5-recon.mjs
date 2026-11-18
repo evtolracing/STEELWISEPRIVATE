@@ -1,7 +1,7 @@
 // Group 5: inventory-to-ledger and receivables reconciliation. After each kind of business event the
 // books are reconciled against the stock and invoice records; a record changed outside the product must
 // show as a difference, raise an alert, and never be "fixed" by an entry nobody made.
-export default async function recon(ctx) {
+export default async function recon(ctx, state = {}) {
   const { S, G10, prisma, cfo, bm2, err, reconcile, unbalancedPosted, movement, costed, shipped, pay, creditMemo, refund, transfer, receiveTransfer, adjust, setCost, startedWorkOrder, completeWorkOrder, A, L1, L2, alertsOf, runTasks } = ctx;
   const g = G10.recon;
   const fin = 'Test entries on the QA ledger only';
@@ -16,7 +16,12 @@ export default async function recon(ctx) {
   };
   const m = (what, expect) => ({ scope: 'Staff doing the business step; CFO reconciling', expect: expect || `${what} posts the expected entry and the books still agree with the records`, sec: 'Postings come from business records only', fin, db: 'Business rows and their journal entry in one transaction', audit: 'Ledger event and reconciliation run stored' });
 
-  await S(g, 'Before this group the books agree with the stock and invoice records', m('Nothing', 'All checks MATCH'), async (ok) => { await agrees(ok, 'start'); });
+  await S(g, 'Before this group the books agree with the stock and invoice records', m('Nothing', 'All checks MATCH'), async (ok) => {
+    // Receipts with no purchase order that earlier suites left held were posted by the CFO at start-up (ctx.settleHeldReceipts).
+    const st = state.settled || { held: 0, posted: 0, refused: [] };
+    ok('every receipt left held by an earlier suite was posted through the product, stays held because it has no cost, or has correctly nothing to post', st.refused.length === 0 && st.posted + st.noCost + (st.nothingToPost?.length || 0) === st.held, JSON.stringify(st));
+    await agrees(ok, 'start');
+  });
 
   await S(g, 'Stock received against a purchase order: stock up at cost, the books agree', m('A receipt'), async (ok) => {
     const mv = await movement(() => costed(2000, 0.5));

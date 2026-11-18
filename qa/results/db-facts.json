@@ -1,8 +1,8 @@
 {
- "at": "2026-11-18T06:23:09.597Z",
+ "at": "2026-11-18T08:42:04.545Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 172,
- "totalRows": 17973,
+ "totalRows": 17993,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -120,7 +120,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 4633
+   "rows": 4638
   },
   {
    "table": "BomOperation",
@@ -132,7 +132,7 @@
   },
   {
    "table": "Coil",
-   "rows": 934
+   "rows": 937
   },
   {
    "table": "CommodityPrice",
@@ -244,7 +244,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 934
+   "rows": 937
   },
   {
    "table": "InventoryAdjustment",
@@ -356,7 +356,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 1198
+   "rows": 1210
   },
   {
    "table": "MeterReading",
@@ -472,7 +472,7 @@
   },
   {
    "table": "QCHold",
-   "rows": 61
+   "rows": 59
   },
   {
    "table": "Quote",
@@ -772,7 +772,7 @@
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 55
+   "rows": 54
   },
   {
    "table": "_prisma_migrations",

@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 60ce6d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
 686 routes in 76 route files, served at 77 mount points. 363 change data.
 
@@ -98,7 +98,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 ## Every route, by route file
 
-### auth.js (5 routes, 202 lines)
+### auth.js (5 routes, 203 lines)
 
 Mounted at /api/auth. Tables: User, AuditLog.
 
@@ -415,7 +415,7 @@ Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, S
 | `PATCH /api/shipments/:id/status` | yes |  |  |  |  |  |
 | `GET /api/shipments/:id/documents` | yes |  |  |  |  |  |
 
-### invoices.js (8 routes, 74 lines)
+### invoices.js (8 routes, 82 lines)
 
 Mounted at /api/invoices. Tables: through a service or none.
 
@@ -1013,7 +1013,7 @@ Mounted at /api/admin/online-settings. Tables: through a service or none.
 | `GET /api/admin/online-settings/processes` | yes |  |  |  |  |  |
 | `PUT /api/admin/online-settings/processes` |  |  |  |  |  |  |
 
-### integrations.js (5 routes, 86 lines)
+### integrations.js (5 routes, 91 lines)
 
 Mounted at /api/admin/integrations. Tables: WebhookDelivery.
 

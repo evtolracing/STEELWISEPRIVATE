@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 60ce6d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -17,7 +17,7 @@ Every figure here is counted from the code or measured in a test run. The module
 | Migrations | 35 |
 | Screens (routes in the browser) | 146 |
 | Frontend source files | 409 (121,101 lines) |
-| Server route code | 25,615 lines |
+| Server route code | 25,629 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -594,7 +594,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Heats, shipments
 - **Feeds:** Customer account pages, partner API
-- **Findings:** B-021
+- **Findings:** none open
 - **Production concern:** Any staff login can delete a document
 
 ### Partner API

@@ -1,7 +1,7 @@
 {
-  "ranAt": "2026-11-18T06:26:05.764Z",
-  "held": 27,
-  "total": 27,
+  "ranAt": "2026-11-18T09:36:02.224Z",
+  "held": 30,
+  "total": 30,
   "results": [
     {
       "id": "Y-001",
@@ -271,6 +271,36 @@
       "check": "fifteen minutes fail the checks",
       "failed": [
         "✗ [Observability, alerting and infrastructure] Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert (Y-021"
+      ]
+    },
+    {
+      "id": "Y-022",
+      "what": "sign-in on a database without update 17 names the update",
+      "kind": "sim",
+      "held": true,
+      "check": "without update 17 says which update is missing",
+      "failed": [
+        "✗ [Backup, restore, deployment and rollback] The finished code on a database without update 17 says which update is missing instead of failing sign-in with a se"
+      ]
+    },
+    {
+      "id": "Y-023",
+      "what": "an address that cannot be decoded is the caller's error",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-023",
+      "failed": [
+        "not ok 12 - Y-023: an address whose % signs do not decode is the caller's error (400 with the request id), not a server error"
+      ]
+    },
+    {
+      "id": "Y-023s",
+      "what": "the server answers an undecodable address 400, not 500",
+      "kind": "sim",
+      "held": true,
+      "check": "cannot be decoded",
+      "failed": [
+        "✗ [Observability, alerting and infrastructure] An address that cannot be decoded is the caller's error: 400 with a plain sentence and the request id, never a se"
       ]
     }
   ]

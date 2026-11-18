@@ -9814,11 +9814,11 @@
    "cause": "",
    "impact": "Money and stock problems could sit unseen.",
    "dependencies": "",
-   "correction": "Fixed: eleven checks (with Y-021), alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner's to set; with none set alerts are logged and listed only.",
+   "correction": "Fixed: ten system checks (with Y-021), eleven alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner's to set; with none set alerts are logged and listed only.",
    "requiredTests": "src/backend/test/securityRules.test.js \"Y-010\"; qa/sim/phase10-security.mjs group 9 (21 scenarios) and the alert scenarios of group 6; qa/tools/phase10-mutations.mjs Y-010 holds.",
    "phase": "Phase 10: security, financial integrity, reliability and recovery",
    "status": "VERIFIED FIXED",
-   "statusNote": "Fixed: eleven checks (with Y-021), alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner's to set; with none set alerts are logged and listed only.",
+   "statusNote": "Fixed: ten system checks (with Y-021), eleven alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner's to set; with none set alerts are logged and listed only.",
    "verification": "src/backend/test/securityRules.test.js \"Y-010\"; qa/sim/phase10-security.mjs group 9 (21 scenarios) and the alert scenarios of group 6; qa/tools/phase10-mutations.mjs Y-010 holds."
   },
   {
@@ -10084,6 +10084,28 @@
    "status": "VERIFIED FIXED",
    "statusNote": "Fixed: sign-in and every signed-in request answer 503 DATABASE_UPDATE_REQUIRED \"Database update 17 (security hardening) has to be applied first.\" The order to follow is in phase-10-deployment-safety.md: apply file 17 first.",
    "verification": "src/backend/test/securityRules.test.js \"Y-022\"; qa/sim/phase10-security.mjs \"The finished code on a database without update 17 says which update is missing ...\"; qa/tools/phase10-mutations.mjs Y-022 holds."
+  },
+  {
+   "id": "Y-023",
+   "discovered": "2026-11-18",
+   "source": "Phase 10 baseline probe, threat model and scenarios",
+   "module": "Platform",
+   "workflow": "Platform",
+   "severity": "P3",
+   "category": "Error handling",
+   "where": "src/backend/src/app.js; src/backend/src/lib/errorAnswer.js",
+   "evidence": "src/backend/test/securityRules.test.js \"Y-023\"; qa/sim/phase10-security.mjs \"An address that cannot be decoded is the caller's error ...\"; qa/tools/phase10-mutations.mjs Y-023 and Y-023s hold.",
+   "expected": "A malformed address is the caller's error: 400 with a sentence and the request id, and it does not count as a server fault.",
+   "actual": "An address whose % signs do not decode (GET /api/ledger/entries/%%%) answered 500 \"Internal server error\" and was logged as an unhandled fault. Express marks this error 400; the error handler ignored the mark. Seen in the full gate run's list of server errors.",
+   "cause": "",
+   "impact": "A false server error in the logs and in any error-rate alert; anyone could raise them at will.",
+   "dependencies": "",
+   "correction": "Fixed: clientErrorAnswer() answers the errors Express and the body parser mark as the caller's (body too large 413, body not JSON 400, undecodable address 400 BAD_ADDRESS); everything else stays a logged 500.",
+   "requiredTests": "src/backend/test/securityRules.test.js \"Y-023\"; qa/sim/phase10-security.mjs \"An address that cannot be decoded is the caller's error ...\"; qa/tools/phase10-mutations.mjs Y-023 and Y-023s hold.",
+   "phase": "Phase 10: security, financial integrity, reliability and recovery",
+   "status": "VERIFIED FIXED",
+   "statusNote": "Fixed: clientErrorAnswer() answers the errors Express and the body parser mark as the caller's (body too large 413, body not JSON 400, undecodable address 400 BAD_ADDRESS); everything else stays a logged 500.",
+   "verification": "src/backend/test/securityRules.test.js \"Y-023\"; qa/sim/phase10-security.mjs \"An address that cannot be decoded is the caller's error ...\"; qa/tools/phase10-mutations.mjs Y-023 and Y-023s hold."
   }
  ]
 }

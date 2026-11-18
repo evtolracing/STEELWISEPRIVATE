@@ -1,12 +1,12 @@
 # Testing gap analysis
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 60ce6d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
 ## What exists
 
 | Kind | Where | Size | Runs on GitHub |
 |---|---|---|:-:|
-| Unit tests | src/backend/test (28 files) | 241 tests | yes |
+| Unit tests | src/backend/test (28 files) | 245 tests | yes |
 | Order-to-cash simulation with database checks and reconciliation | qa/sim/run.mjs | 50 jobs per cycle, 3 cycles per gate run | no |
 | Security and safeguards sweep | qa/sim/security.mjs | 20 sections | no |
 | Baseline probe (Phase 1) | qa/sim/baseline-probe.mjs | 4 sections over every write route | no |

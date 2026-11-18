@@ -73,7 +73,7 @@ const Y = [
     'Nothing raised an alert: a failed ledger posting, an unbalanced attempt, a reconciliation difference, a broken stock balance, dead partner events, a late scheduled run and paused logins were visible only to someone who looked. Readiness said only whether the process answered (E-017).',
     'Each condition has a named check; the scheduled run raises an alert for each failing check, stored once per 15 minutes and sent to an alert address when one is set; readiness says which checks fail by name.',
     'Money and stock problems could sit unseen.',
-    'Fixed: eleven checks (with Y-021), alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner\'s to set; with none set alerts are logged and listed only.',
+    'Fixed: ten system checks (with Y-021), eleven alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner\'s to set; with none set alerts are logged and listed only.',
     `${UNIT} "Y-010"; ${SIM} group 9 (21 scenarios) and the alert scenarios of group 6; ${MUT} Y-010 holds.`],
   ['Y-011', 'P1', FIXED, 'Audit', 'History integrity', 'src/backend/src/routes/overrides.js; src/backend/src/routes/quickSale.js; file 17',
     'Two places changed history rows: revoking an order override rewrote the override\'s own history line, and dropping a duplicate counter sale deleted the financial history of the dropped invoice.',
@@ -147,6 +147,12 @@ const Y = [
     'A deployment in the wrong order would have looked like an outage with no explanation.',
     'Fixed: sign-in and every signed-in request answer 503 DATABASE_UPDATE_REQUIRED "Database update 17 (security hardening) has to be applied first." The order to follow is in phase-10-deployment-safety.md: apply file 17 first.',
     `${UNIT} "Y-022"; ${SIM} "The finished code on a database without update 17 says which update is missing ..."; ${MUT} Y-022 holds.`],
+  ['Y-023', 'P3', FIXED, 'Platform', 'Error handling', 'src/backend/src/app.js; src/backend/src/lib/errorAnswer.js',
+    'An address whose % signs do not decode (GET /api/ledger/entries/%%%) answered 500 "Internal server error" and was logged as an unhandled fault. Express marks this error 400; the error handler ignored the mark. Seen in the full gate run\'s list of server errors.',
+    'A malformed address is the caller\'s error: 400 with a sentence and the request id, and it does not count as a server fault.',
+    'A false server error in the logs and in any error-rate alert; anyone could raise them at will.',
+    'Fixed: clientErrorAnswer() answers the errors Express and the body parser mark as the caller\'s (body too large 413, body not JSON 400, undecodable address 400 BAD_ADDRESS); everything else stays a logged 500.',
+    `${UNIT} "Y-023"; ${SIM} "An address that cannot be decoded is the caller's error ..."; ${MUT} Y-023 and Y-023s hold.`],
 ];
 
 const today = '2026-11-18';

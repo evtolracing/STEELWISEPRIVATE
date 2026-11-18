@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 60ce6d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register; G to N and V = Phases 3 to 9; W = Phase 9.5 financial ledger. The older registers in `qa/` are kept as history.
 
@@ -11,21 +11,21 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 112 | 18 |
-| P2 | 170 | 54 |
-| P3 | 112 | 38 |
-| Total | 415 | 113 |
+| P1 | 119 | 18 |
+| P2 | 181 | 54 |
+| P3 | 117 | 37 |
+| Total | 438 | 112 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 300 |
-| DEFERRED TO SPECIFIC PHASE | 67 |
+| VERIFIED FIXED | 324 |
+| DEFERRED TO SPECIFIC PHASE | 63 |
 | REQUIRES BUSINESS DECISION | 31 |
 | IN PROGRESS | 6 |
-| ACCEPTED RISK WITH APPROVAL | 5 |
+| FIXED — NOT VERIFIED | 5 |
+| ACCEPTED RISK WITH APPROVAL | 4 |
 | BLOCKED | 3 |
 | NOT APPLICABLE | 2 |
-| FIXED — NOT VERIFIED | 1 |
 
 ## Open findings, most severe first
 
@@ -39,7 +39,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | B-019 | P1 | BLOCKED | Platform | Everything happens only when someone opens a screen or presses a button. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
 | E-014 | P1 | DEFERRED TO SPECIFIC PHASE | Platform | The request rate limit counts per server instance | Phase 2: architecture and code quality |
-| E-015 | P1 | ACCEPTED RISK WITH APPROVAL | Platform | No evidence that a backup has ever been restored | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| E-015 | P1 | FIXED — NOT VERIFIED | Platform | No evidence that a backup has ever been restored | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
 | I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
 | I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
@@ -48,14 +48,13 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | S-010 | P1 | ACCEPTED RISK WITH APPROVAL | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | W-001 | P1 | REQUIRES BUSINESS DECISION | Financial ledger | The ledger is built and verified on test data and is switched off. The chart of accounts, the account mappings, the posting rules and sixteen accounting policies are proposals. No accountant has approved them. | Phase 9.5: financial ledger and accounting foundation |
-| W-014 | P1 | DEFERRED TO SPECIFIC PHASE | Financial ledger; database | Posted entries are protected by database triggers. A database superuser, or the owner of the tables, can switch triggers off for a session (session_replication_role) or drop them. The QA reset does exactly that, on a loc | Phase 9.5: financial ledger and accounting foundation |
-| W-020 | P1 | DEFERRED TO SPECIFIC PHASE | Financial ledger; database | Backup and restore of the ledger tables has not been exercised: that a restored journal still balances, keeps its triggers and its numbering, and agrees with the restored business records. | Phase 9.5: financial ledger and accounting foundation |
+| W-014 | P1 | FIXED — NOT VERIFIED | Financial ledger; database | Posted entries are protected by database triggers. A database superuser, or the owner of the tables, can switch triggers off for a session (session_replication_role) or drop them. The QA reset does exactly that, on a loc | Phase 9.5: financial ledger and accounting foundation |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
 | X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
+| Y-008 | P1 | FIXED — NOT VERIFIED | Database | The application connects as the database owner (a superuser on QA, the table owner on the host). That role can switch off the journal guards for a session, drop them, rewrite history and rewrite the record of applied upd | Phase 10: security, financial integrity, reliability and recovery |
 | B-012 | P2 | DEFERRED TO SPECIFIC PHASE | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
 | B-014 | P2 | DEFERRED TO SPECIFIC PHASE | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
 | B-017 | P2 | DEFERRED TO SPECIFIC PHASE | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
-| B-021 | P2 | DEFERRED TO SPECIFIC PHASE | Documents | On a disk host the file is also reachable by its address alone. | Security and multi-location phase |
 | C-009 | P2 | DEFERRED TO SPECIFIC PHASE | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | C-013 | P2 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | Any text shaped like a recommendation moves jobs. | Manufacturing and processing |
 | D-020 | P2 | DEFERRED TO SPECIFIC PHASE |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
@@ -106,6 +105,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | W-023 | P2 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries | Phase 9.5: financial ledger and accounting foundation |
 | X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
+| Y-009 | P2 | FIXED — NOT VERIFIED | Database | The application's connection could create and drop tables and functions in the public schema. | Phase 10: security, financial integrity, reliability and recovery |
 | B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
 | B-022 | P3 | DEFERRED TO SPECIFIC PHASE | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
 | B-024 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | The 39 effect warnings are the ones that can be defects: an effect that reads a value it does not list can show stale data. They have not been read one by one. | Phase 2: architecture and code quality |
@@ -143,7 +143,6 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | W-003 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | The books keep days. Which day an event falls on depends on the time zone chosen at activation. It is recorded then and there is no way to change it afterwards. | Phase 9.5: financial ledger and accounting foundation |
 | W-004 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | Journal entry numbers come from a database sequence. They are unique and increasing, and a number is skipped wherever a save was rolled back. | Phase 9.5: financial ledger and accounting foundation |
 | W-015 | P3 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever. | Phase 9.5: financial ledger and accounting foundation |
-| W-019 | P3 | DEFERRED TO SPECIFIC PHASE | Financial ledger; audit | Reading a report is logged with the reader. Reading the journal list and opening a single entry are not. | Phase 9.5: financial ledger and accounting foundation |
 
 ## Every finding in full
 
@@ -539,7 +538,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Choose the provider and the host schedule; then build each timed function.
 - **Required tests:** Per function.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** Phase 4: the scheduled work now exists as one address, GET or POST /api/internal/tasks/run, protected by a secret (CRON_SECRET). It sends waiting partner events and clears old request keys, is safe to call from several places at once, and records when it last ran; the Integrations screen shows that time and has a "Run now" button. Blocked on two host settings that are the owner's: (1) set CRON_SECRET to a long random value; (2) add a schedule that calls the address every 5 minutes with "Authorization: Bearer <CRON_SECRET>". It was not added to vercel.json because a schedule the plan does not allow can fail the deployment. Until then nothing is lost: events are sent right after each action, and a failed one waits for "Run now".
+- **Status note:** Phase 4: the scheduled work now exists as one address, GET or POST /api/internal/tasks/run, protected by a secret (CRON_SECRET). It sends waiting partner events and clears old request keys, is safe to call from several places at once, and records when it last ran; the Integrations screen shows that time and has a "Run now" button. Blocked on two host settings that are the owner's: (1) set CRON_SECRET to a long random value; (2) add a schedule that calls the address every 5 minutes with "Authorization: Bearer <CRON_SECRET>". It was not added to vercel.json because a schedule the plan does not allow can fail the deployment. Until then nothing is lost: events are sent right after each action, and a failed one waits for "Run now". Phase 10: the scheduled run now also runs the system checks and raises their alerts, and a late run is itself a failing check. It still needs a scheduler on the host (owner).
 - **Verification evidence:** qa/sim/phase4-integration.mjs: "the scheduled run needs its secret, does the periodic work and records that it ran", "five delivery runs at the same moment send each event once". The host schedule itself is NOT VERIFIED.
 - **First recorded in:** Phase 1 discovery
 
@@ -562,7 +561,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Read prisma/schema.prisma, enum UserRole.
 - **First recorded in:** Phase 1 discovery
 
-### B-021 · P2 · DEFERRED TO SPECIFIC PHASE
+### B-021 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Documents
@@ -583,7 +582,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Sweep: /uploads/… answers 401 or 404 with no token.
 - **Required tests:** Sweep: /uploads/… answers 401 or 404 with no token.
 - **Assigned phase:** Security and multi-location phase
-- **Status note:** NOT VERIFIED by a probe
+- **Status note:** NOT VERIFIED by a probe Phase 10 (Y-005): the static /uploads route is removed; files are read through the signed-in download only.
+- **Verification evidence:** qa/sim/phase10-security.mjs "An uploaded file cannot be fetched by its address, only through the signed-in download".
 - **First recorded in:** Phase 1 discovery
 
 ### B-022 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -842,7 +842,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/sim/branch-boundary.mjs extended to each record type.
 - **Required tests:** One read and one change refused per added model.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 3: quotes, requests for quotation and their lines now carry a branch and are held to it (G-012, verified). Drop tags are held through their order and packages through their order or the branch they stand at (unit-tested in test/branchScope.test.js; not exercised through the API: FIXED, NOT VERIFIED end to end). Documents are shared by design: a mill certificate follows the material from branch to branch. What remains: the second stock list and order hub (B-009), a home branch on every live staff login, and making Order.locationId required (G-018).
+- **Status note:** Phase 3: quotes, requests for quotation and their lines now carry a branch and are held to it (G-012, verified). Drop tags are held through their order and packages through their order or the branch they stand at (unit-tested in test/branchScope.test.js; not exercised through the API: FIXED, NOT VERIFIED end to end). Documents are shared by design: a mill certificate follows the material from branch to branch. What remains: the second stock list and order hub (B-009), a home branch on every live staff login, and making Order.locationId required (G-018). Phase 10: documents now follow the branch of the record they belong to (Y-016).
 - **First recorded in:** Phase 2 architecture review
 
 ### C-010 · P2 · VERIFIED FIXED
@@ -1603,7 +1603,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** `npm audit --omit=dev` reports 0 in both packages and the full suite passes
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Fixed in part Audited again in Phase 2 (13 November). Server: 1 moderate (uuid; the affected functions are not used, only v4 is). Screens: 1 high and 3 moderate (vite and esbuild, which run only on a developer machine; react-router, an open redirect through a crafted link). None is critical. Every fix is a major-version upgrade (uuid 14, vite 8, react-router-dom 7), which needs the owner's approval.
+- **Status note:** Fixed in part Audited again in Phase 2 (13 November). Server: 1 moderate (uuid; the affected functions are not used, only v4 is). Screens: 1 high and 3 moderate (vite and esbuild, which run only on a developer machine; react-router, an open redirect through a crafted link). None is critical. Every fix is a major-version upgrade (uuid 14, vite 8, react-router-dom 7), which needs the owner's approval. Phase 10: no critical vulnerability in production dependencies (npm audit --omit=dev --audit-level=critical exits 0 for backend and frontend), and CI now fails on a critical one. The remaining high and moderate findings (vite, react-router, uuid) need major upgrades, which were not made: the owner decides when.
 - **Verification evidence:** npm audit in src/backend and src/frontend, this session.
 - **First recorded in:** qa/engineering-quality-findings.md
 
@@ -1642,10 +1642,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The limit holds across server instances.
 - **Deferred: verification:** A burst test against two instances.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: needs a shared store, which is a new service Phase 4: the same per-instance limit applies to the partner request limit and to the new breaker for outside services (H-012).
+- **Status note:** Open: needs a shared store, which is a new service Phase 4: the same per-instance limit applies to the partner request limit and to the new breaker for outside services (H-012). Phase 10: the per-address limit still counts per server instance. Password guessing is now stopped per login in the database (Y-002), which holds across instances. Several instances are measured in Phase 11.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-015 · P1 · ACCEPTED RISK WITH APPROVAL
+### E-015 · P1 · FIXED — NOT VERIFIED
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -1659,7 +1659,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Blocked by a dependency
 - **Required tests:** One restore into a scratch database, timed, with the reconciliation run on the restored copy
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Open: needs the owner (see `production-readiness-checklist.md`) Owner, 2026-11-13: "backups later". Until a backup is confirmed and a restore has been tested, a loss or corruption of the live database may not be recoverable. This stays a production blocker in the risk register (R-08) and is raised again at each phase gate.
+- **Status note:** Open: needs the owner (see `production-readiness-checklist.md`) Owner, 2026-11-13: "backups later". Until a backup is confirmed and a restore has been tested, a loss or corruption of the live database may not be recoverable. This stays a production blocker in the risk register (R-08) and is raised again at each phase gate. Phase 10: a backup of the QA database was restored into a separate server and verified (W-020). The live host's backups have still never been restored; the procedure is in phase-10-restore-test.md and phase-10-disaster-recovery.md for the owner.
 - **Verification evidence:** None. No backup was confirmed and no restore was run.
 - **First recorded in:** qa/engineering-quality-findings.md
 
@@ -1695,7 +1695,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Requires a business decision
 - **Required tests:** A forced server error raises an alert
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: needs a provider choice Phase 4: an Integrations screen and report now show failed and waiting events, outside-service failures, orders shipped but not invoiced, requests never answered and when the scheduled work last ran; failures are written as structured log lines with the request id. Nothing is sent to anyone: there is still no alert and no error tracker. That remains the owner's choice of service.
+- **Status note:** Open: needs a provider choice Phase 4: an Integrations screen and report now show failed and waiting events, outside-service failures, orders shipped but not invoiced, requests never answered and when the scheduled work last ran; failures are written as structured log lines with the request id. Nothing is sent to anyone: there is still no alert and no error tracker. That remains the owner's choice of service. Phase 10: alerts now exist (Y-010) and are sent to ALERT_WEBHOOK_URL when set. Which service receives them (email, chat, paging) is the owner's choice; none is set on the host.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-018 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -1741,7 +1741,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A sweep section with two tenants.
 - **Required tests:** Sweep section proving a login from one tenant cannot read another's rows on every route that carries a tenant id
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited.
+- **Status note:** Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited. Phase 10: 31 isolation scenarios (customer accounts, divisions, branches, partners, the assistant) pass. A table-by-table audit of every tenant id column was not made: Phase 11.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-020 · P2 · VERIFIED FIXED
@@ -6374,6 +6374,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/sim/branch-boundary.mjs gains the two routes.
 - **Required tests:** An operator asks for another branch: refused or empty.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 10: unchanged. The dispatch board lists are not in the Phase 10 isolation scenarios.
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-029 · P3 · DEFERRED TO SPECIFIC PHASE
@@ -6962,7 +6963,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase95-ui.cjs scenario 7 switches through every report; it fails without the fix (seen before the fix).
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
-### W-014 · P1 · DEFERRED TO SPECIFIC PHASE
+### W-014 · P1 · FIXED — NOT VERIFIED
 
 - **Discovered:** 2026-11-16
 - **Module:** Financial ledger; database
@@ -6974,7 +6975,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** Posted entries are protected by database triggers. A database superuser, or the owner of the tables, can switch triggers off for a session (session_replication_role) or drop them. The QA reset does exactly that, on a local QA database only.
 - **Operational impact:** Whoever holds that right on the live database can alter financial history without trace in the application.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 10 (security). A hosting change, and the owner's. The QA helper refuses any database that is not local and named qa.
+- **Status note:** Phase 10 (security). A hosting change, and the owner's. The QA helper refuses any database that is not local and named qa. Phase 10: the application now runs as steelwise_runtime in every QA suite; that role cannot switch off or drop the journal guards, set session_replication_role, or change history (Y-008). Live: after the owner applies file 17 and points DATABASE_URL at the role.
 - **Verification evidence:** qa/sim/phase95-ledger.mjs: "A posted entry cannot be changed by direct SQL either: update, delete, added or moved lines and TRUNCATE are refused by the database" proves the triggers; nothing proves who can disable them on live.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
@@ -6990,7 +6991,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever.
 - **Operational impact:** With one finance user, close and reopen are one person's decision.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 10. Manual entries do not yield: a second finance user is always needed to post.
+- **Status note:** Phase 10. Manual entries do not yield: a second finance user is always needed to post. Phase 10: reviewed, unchanged. Reopening a month still yields when only one finance user exists; manual entries never yield. Whether a second person is always required is the accountant's decision with W-001.
 - **Verification evidence:** qa/sim/phase95-ledger.mjs: "Reopening a closed month needs a reason and a different person"; mutation E9.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
@@ -7042,7 +7043,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase95-ledger.mjs: "Garbage in" scenario.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
-### W-019 · P3 · DEFERRED TO SPECIFIC PHASE
+### W-019 · P3 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-16
 - **Module:** Financial ledger; audit
@@ -7054,11 +7055,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** Reading a report is logged with the reader. Reading the journal list and opening a single entry are not.
 - **Operational impact:** Who looked at a given entry cannot be told from the log.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 10.
-- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Every change to the books is in the audit log with the person, and every report read is logged with the reader's role" covers reports and changes.
+- **Status note:** Phase 10. Phase 10: reading the journal list and opening an entry are now logged with the reader, the filter and the scope.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs: "Every change to the books is in the audit log with the person, and every report read is logged with the reader's role" covers reports and changes. qa/sim/phase10-security.mjs "Journal reads by an auditor are in the audit trail with the reader and what was read".
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
-### W-020 · P1 · DEFERRED TO SPECIFIC PHASE
+### W-020 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-16
 - **Module:** Financial ledger; database
@@ -7070,8 +7071,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** Backup and restore of the ledger tables has not been exercised: that a restored journal still balances, keeps its triggers and its numbering, and agrees with the restored business records.
 - **Operational impact:** An untested restore of financial records.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 10.
-- **Verification evidence:** NOT VERIFIED.
+- **Status note:** Phase 10. Phase 10: an actual backup and restore into a separate PostgreSQL server: the journal balances, keeps its four guards and its numbering, and the restored application signs in and reconciles with no difference. Live backups (the host's) are not exercised: E-015.
+- **Verification evidence:** NOT VERIFIED. qa/sim/phase10-security.mjs group 8 (25 scenarios); qa/results/phase10-restore.json.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
 ### W-021 · P1 · VERIFIED FIXED
@@ -7185,4 +7186,418 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Fixed in qa/sim/phase8-fulfillment.mjs. The first now ships a sale and checks that, with the ledger not started, the invoice writes no ledger event (and exactly one when it is started), and that no outside accounting system is connected. The second checks that a dispatch adds no debit to inventory for the item: shipping revalues nothing. Both still pass on a database without file 16.
 - **Verification evidence:** qa/results/phase95-gate-run-1.txt shows the two failures; qa/results/phase95-gate-run-2.txt is the full run after the correction.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
+
+### Y-001 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication
+- **Workflow:** Authentication
+- **Category:** Session security
+- **Source file or endpoint:** src/backend/src/middleware/auth.js; src/backend/src/routes/auth.js; src/backend/src/routes/users.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-001"; qa/sim/phase10-security.mjs group 1 (seven session scenarios); qa/tools/phase10-mutations.mjs Y-001 and Y-001s hold.
+- **Expected:** Changing or resetting a password, switching a login off and "sign out everywhere" end every earlier sign-in at once.
+- **Actual:** A sign-in token kept working for its full life after the password was changed, after an administrator reset it, after the login was switched off and after sign-out. Measured at the baseline: the old token answered 200 after a password change and after a reset.
+- **Operational impact:** A stolen or shared token could not be cut off; a leaver kept access until the token expired.
+- **Recommended correction:** Fixed: each user has tokensValidAfter (file 17); a token carries a session mark and is refused once the mark moves. A password change answers a fresh token for the device that made it. A new route POST /api/auth/logout-all, and the profile menu calls it.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-001"; qa/sim/phase10-security.mjs group 1 (seven session scenarios); qa/tools/phase10-mutations.mjs Y-001 and Y-001s hold.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: each user has tokensValidAfter (file 17); a token carries a session mark and is refused once the mark moves. A password change answers a fresh token for the device that made it. A new route POST /api/auth/logout-all, and the profile menu calls it.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-001"; qa/sim/phase10-security.mjs group 1 (seven session scenarios); qa/tools/phase10-mutations.mjs Y-001 and Y-001s hold.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-002 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication
+- **Workflow:** Authentication
+- **Category:** Brute force
+- **Source file or endpoint:** src/backend/src/routes/auth.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-002"; qa/sim/phase10-security.mjs "Ten wrong passwords in a row pause the login", "Twenty wrong passwords at once pause the login and none gets through"; qa/tools/phase10-mutations.mjs Y-002 and Y-002s hold.
+- **Expected:** Ten wrong passwords in a row pause the login for 15 minutes whatever address they come from, the pause is recorded and raises an alert, and a burst at the same moment records one pause.
+- **Actual:** Nothing limited wrong passwords for one login: 30 wrong passwords from 30 addresses all answered 401 and the next right one would have worked. The per-address limit does not stop guesses spread over addresses.
+- **Operational impact:** Password guessing against one known address.
+- **Recommended correction:** Fixed: failedLoginCount and lockedUntil (file 17). The pause is taken with a conditional update so twenty wrong passwords at once record one pause and one alert (first version recorded several). The answer during a pause is the same sentence as a wrong password. An administrator can lift a pause.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-002"; qa/sim/phase10-security.mjs "Ten wrong passwords in a row pause the login", "Twenty wrong passwords at once pause the login and none gets through"; qa/tools/phase10-mutations.mjs Y-002 and Y-002s hold.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: failedLoginCount and lockedUntil (file 17). The pause is taken with a conditional update so twenty wrong passwords at once record one pause and one alert (first version recorded several). The answer during a pause is the same sentence as a wrong password. An administrator can lift a pause.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-002"; qa/sim/phase10-security.mjs "Ten wrong passwords in a row pause the login", "Twenty wrong passwords at once pause the login and none gets through"; qa/tools/phase10-mutations.mjs Y-002 and Y-002s hold.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-003 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication
+- **Workflow:** Authentication
+- **Category:** Account enumeration
+- **Source file or endpoint:** src/backend/src/routes/auth.js
+- **Evidence:** qa/sim/phase10-security.mjs "A wrong password for an address with no login takes about as long as for one with a login"; qa/tools/phase10-mutations.mjs Y-003 holds.
+- **Expected:** Every refusal takes about the same time and says the same sentence.
+- **Actual:** A wrong password for an address with no login answered in about 4 ms and for an address with a login in about 91 ms, so timing told which addresses have logins.
+- **Operational impact:** An attacker could list which email addresses have logins before guessing passwords.
+- **Recommended correction:** Fixed: an address with no login is compared against a hash nobody has, and every refusal answers one sentence.
+- **Required tests:** qa/sim/phase10-security.mjs "A wrong password for an address with no login takes about as long as for one with a login"; qa/tools/phase10-mutations.mjs Y-003 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: an address with no login is compared against a hash nobody has, and every refusal answers one sentence.
+- **Verification evidence:** qa/sim/phase10-security.mjs "A wrong password for an address with no login takes about as long as for one with a login"; qa/tools/phase10-mutations.mjs Y-003 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-004 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Documents
+- **Workflow:** Documents
+- **Category:** Path traversal
+- **Source file or endpoint:** src/backend/src/routes/documents.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-004"; qa/sim/phase10-security.mjs "An upload that names a folder outside the uploads folder is written inside it"; qa/tools/phase10-mutations.mjs Y-004 holds.
+- **Expected:** An upload is always written inside the uploads folder.
+- **Actual:** An upload whose entity type was "../../../qa-p10-escape" was written outside the uploads folder (measured: a file appeared in the repository root).
+- **Operational impact:** A signed-in user could write files anywhere the server process may write.
+- **Recommended correction:** Fixed: the folder is plain letters and underscores only, anything else is "general".
+- **Required tests:** src/backend/test/securityRules.test.js "Y-004"; qa/sim/phase10-security.mjs "An upload that names a folder outside the uploads folder is written inside it"; qa/tools/phase10-mutations.mjs Y-004 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: the folder is plain letters and underscores only, anything else is "general".
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-004"; qa/sim/phase10-security.mjs "An upload that names a folder outside the uploads folder is written inside it"; qa/tools/phase10-mutations.mjs Y-004 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-005 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Documents
+- **Workflow:** Documents
+- **Category:** Stored script
+- **Source file or endpoint:** src/backend/src/app.js; src/backend/src/routes/documents.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-005"; qa/sim/phase10-security.mjs "A stored file keeps the extension of its accepted type", "An uploaded file cannot be fetched by its address"; qa/tools/phase10-mutations.mjs Y-005 holds.
+- **Expected:** A stored file keeps the extension of its accepted type and is read only through the signed-in download.
+- **Actual:** A file stored under the name the sender chose (.html) was served by its address with no sign-in, as text/html, on a disk host. Measured: 200 text/html for /uploads/general/...html.
+- **Operational impact:** Anyone with the address could read a document, and an uploaded page could run script in the site's origin.
+- **Recommended correction:** Fixed: the static /uploads route is removed; the stored name takes the extension of the accepted type. Closes B-021.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-005"; qa/sim/phase10-security.mjs "A stored file keeps the extension of its accepted type", "An uploaded file cannot be fetched by its address"; qa/tools/phase10-mutations.mjs Y-005 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: the static /uploads route is removed; the stored name takes the extension of the accepted type. Closes B-021.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-005"; qa/sim/phase10-security.mjs "A stored file keeps the extension of its accepted type", "An uploaded file cannot be fetched by its address"; qa/tools/phase10-mutations.mjs Y-005 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-006 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Documents
+- **Workflow:** Documents
+- **Category:** Content validation
+- **Source file or endpoint:** src/backend/src/routes/documents.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-006"; qa/sim/phase10-security.mjs group 3 "An upload of ... is refused" scenarios; qa/tools/phase10-mutations.mjs Y-006 holds.
+- **Expected:** The first bytes must match the declared type for PDF, images, Office files and text.
+- **Actual:** A file declared as a PDF whose bytes were a Windows program was accepted (201).
+- **Operational impact:** Disguised files in the document store.
+- **Recommended correction:** Fixed: contentMismatch() checks the signature of each accepted type before anything is stored.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-006"; qa/sim/phase10-security.mjs group 3 "An upload of ... is refused" scenarios; qa/tools/phase10-mutations.mjs Y-006 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: contentMismatch() checks the signature of each accepted type before anything is stored.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-006"; qa/sim/phase10-security.mjs group 3 "An upload of ... is refused" scenarios; qa/tools/phase10-mutations.mjs Y-006 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-007 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication
+- **Workflow:** Authentication
+- **Category:** Token verification
+- **Source file or endpoint:** src/backend/src/middleware/auth.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-007"; qa/sim/phase10-security.mjs "The server refuses ..." forged-token scenarios; qa/tools/phase10-mutations.mjs Y-007 holds.
+- **Expected:** Only HS256 is accepted; an unsigned token or one signed another way is refused.
+- **Actual:** Token verification did not name the accepted algorithm.
+- **Operational impact:** Defence in depth against algorithm confusion.
+- **Recommended correction:** Fixed: verifyUserToken pins HS256.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-007"; qa/sim/phase10-security.mjs "The server refuses ..." forged-token scenarios; qa/tools/phase10-mutations.mjs Y-007 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: verifyUserToken pins HS256.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-007"; qa/sim/phase10-security.mjs "The server refuses ..." forged-token scenarios; qa/tools/phase10-mutations.mjs Y-007 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-008 · P1 · FIXED — NOT VERIFIED
+
+- **Discovered:** 2026-11-18
+- **Module:** Database
+- **Workflow:** Database
+- **Category:** Least privilege
+- **Source file or endpoint:** src/backend/prisma/migrations/20261118090000_security_hardening/migration.sql
+- **Evidence:** qa/sim/phase10-security.mjs group 3 "The application's database role cannot ..." (14 scenarios); restore test "The application role has the same rights in the restored database"; qa/tools/phase10-mutations.mjs Y-008, Y-009, Y-011 hold.
+- **Expected:** The application runs as a role that can read and write business rows only: no owner rights, no trigger control, history insert-only, the update record read-only.
+- **Actual:** The application connects as the database owner (a superuser on QA, the table owner on the host). That role can switch off the journal guards for a session, drop them, rewrite history and rewrite the record of applied updates (W-014).
+- **Operational impact:** Anyone who took over the server process could change posted books and erase the trace.
+- **Recommended correction:** database update 17 (src/backend/prisma/upgrades/sql-editor/20261118090000_security_hardening.sql) adds steelwise_runtime (NOLOGIN until the owner gives it a password), grants it business rows, takes UPDATE, DELETE and TRUNCATE on AuditLog and writes on _prisma_migrations away. Verified on QA: every suite ran with the server as steelwise_runtime. On the live database it takes effect only after the owner applies file 17 and points DATABASE_URL at the role: until then NOT VERIFIED there.
+- **Required tests:** qa/sim/phase10-security.mjs group 3 "The application's database role cannot ..." (14 scenarios); restore test "The application role has the same rights in the restored database"; qa/tools/phase10-mutations.mjs Y-008, Y-009, Y-011 hold.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** database update 17 (src/backend/prisma/upgrades/sql-editor/20261118090000_security_hardening.sql) adds steelwise_runtime (NOLOGIN until the owner gives it a password), grants it business rows, takes UPDATE, DELETE and TRUNCATE on AuditLog and writes on _prisma_migrations away. Verified on QA: every suite ran with the server as steelwise_runtime. On the live database it takes effect only after the owner applies file 17 and points DATABASE_URL at the role: until then NOT VERIFIED there.
+- **Verification evidence:** qa/sim/phase10-security.mjs group 3 "The application's database role cannot ..." (14 scenarios); restore test "The application role has the same rights in the restored database"; qa/tools/phase10-mutations.mjs Y-008, Y-009, Y-011 hold.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-009 · P2 · FIXED — NOT VERIFIED
+
+- **Discovered:** 2026-11-18
+- **Module:** Database
+- **Workflow:** Database
+- **Category:** Least privilege
+- **Source file or endpoint:** file 17
+- **Evidence:** qa/sim/phase10-security.mjs "The application's database role cannot make a table / make a function / drop a table / change a column"; qa/tools/phase10-mutations.mjs Y-009 holds.
+- **Expected:** Schema changes come only from the owner applying a database update.
+- **Actual:** The application's connection could create and drop tables and functions in the public schema.
+- **Operational impact:** A compromised server could plant a function or drop a table.
+- **Recommended correction:** Fixed in file 17 with Y-008: the runtime role has no CREATE on the schema and owns nothing. Same live condition as Y-008.
+- **Required tests:** qa/sim/phase10-security.mjs "The application's database role cannot make a table / make a function / drop a table / change a column"; qa/tools/phase10-mutations.mjs Y-009 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed in file 17 with Y-008: the runtime role has no CREATE on the schema and owns nothing. Same live condition as Y-008.
+- **Verification evidence:** qa/sim/phase10-security.mjs "The application's database role cannot make a table / make a function / drop a table / change a column"; qa/tools/phase10-mutations.mjs Y-009 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-010 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Operations
+- **Workflow:** Operations
+- **Category:** Alerting
+- **Source file or endpoint:** src/backend/src/lib/alerts.js; src/backend/src/lib/opsChecks.js; src/backend/src/routes/integrations.js; src/backend/src/app.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-010"; qa/sim/phase10-security.mjs group 9 (21 scenarios) and the alert scenarios of group 6; qa/tools/phase10-mutations.mjs Y-010 holds.
+- **Expected:** Each condition has a named check; the scheduled run raises an alert for each failing check, stored once per 15 minutes and sent to an alert address when one is set; readiness says which checks fail by name.
+- **Actual:** Nothing raised an alert: a failed ledger posting, an unbalanced attempt, a reconciliation difference, a broken stock balance, dead partner events, a late scheduled run and paused logins were visible only to someone who looked. Readiness said only whether the process answered (E-017).
+- **Operational impact:** Money and stock problems could sit unseen.
+- **Recommended correction:** Fixed: ten system checks (with Y-021), eleven alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner's to set; with none set alerts are logged and listed only.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-010"; qa/sim/phase10-security.mjs group 9 (21 scenarios) and the alert scenarios of group 6; qa/tools/phase10-mutations.mjs Y-010 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: ten system checks (with Y-021), eleven alert kinds with a severity, GET /api/admin/integrations/checks for administrators, /api/health/live and /api/health/ready. The alert address (ALERT_WEBHOOK_URL) is the owner's to set; with none set alerts are logged and listed only.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-010"; qa/sim/phase10-security.mjs group 9 (21 scenarios) and the alert scenarios of group 6; qa/tools/phase10-mutations.mjs Y-010 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-011 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Audit
+- **Workflow:** Audit
+- **Category:** History integrity
+- **Source file or endpoint:** src/backend/src/routes/overrides.js; src/backend/src/routes/quickSale.js; file 17
+- **Evidence:** qa/sim/phase10-security.mjs "The audit trail of overrides keeps the original row when an override is revoked"; "The application's database role cannot change a history row / delete history / empty the history"; qa/tools/phase10-mutations.mjs Y-011 holds.
+- **Expected:** A history line is never changed or deleted; a later event is a new line.
+- **Actual:** Two places changed history rows: revoking an order override rewrote the override's own history line, and dropping a duplicate counter sale deleted the financial history of the dropped invoice.
+- **Operational impact:** The audit trail could not be trusted to show what was first recorded.
+- **Recommended correction:** Fixed: a revoke is its own line and the override reads as revoked from it; a dropped duplicate sale writes a DUPLICATE_SALE_DROPPED line and deletes nothing. File 17 makes AuditLog insert-only for the application role.
+- **Required tests:** qa/sim/phase10-security.mjs "The audit trail of overrides keeps the original row when an override is revoked"; "The application's database role cannot change a history row / delete history / empty the history"; qa/tools/phase10-mutations.mjs Y-011 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: a revoke is its own line and the override reads as revoked from it; a dropped duplicate sale writes a DUPLICATE_SALE_DROPPED line and deletes nothing. File 17 makes AuditLog insert-only for the application role.
+- **Verification evidence:** qa/sim/phase10-security.mjs "The audit trail of overrides keeps the original row when an override is revoked"; "The application's database role cannot change a history row / delete history / empty the history"; qa/tools/phase10-mutations.mjs Y-011 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-012 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Test suite
+- **Workflow:** Test suite
+- **Category:** Test order dependence
+- **Source file or endpoint:** qa/sim/phase95/g6-books.mjs
+- **Evidence:** qa/sim/phase95-ledger.mjs 158 of 158 with the server as steelwise_runtime; the scenario passes alone.
+- **Expected:** A scenario sets up what it checks.
+- **Actual:** The Phase 9.5 scenario "credit owed back is shown apart" relied on credit owed back left by an earlier scenario, and failed when run alone or after a different order (also failing on main).
+- **Operational impact:** A false failure in the gate.
+- **Recommended correction:** Fixed: it raises its own paid invoice with a 25.00 credit and checks the change.
+- **Required tests:** qa/sim/phase95-ledger.mjs 158 of 158 with the server as steelwise_runtime; the scenario passes alone.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: it raises its own paid invoice with a 25.00 credit and checks the change.
+- **Verification evidence:** qa/sim/phase95-ledger.mjs 158 of 158 with the server as steelwise_runtime; the scenario passes alone.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-013 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication
+- **Workflow:** Authentication
+- **Category:** Privilege escalation
+- **Source file or endpoint:** src/backend/src/routes/auth.js
+- **Evidence:** qa/sim/phase10-security.mjs "Registering a login is closed once the first login exists ...", "The owner registering a login cannot place it in another organization ..."; qa/tools/phase10-mutations.mjs Y-013 and Y-013b hold.
+- **Expected:** Register by a signed-in person follows the same rules as the Users screen: the caller's own organization, no customer roles, no role above what the caller may grant; first and last name required; an audit line.
+- **Actual:** POST /api/auth/register, used by a signed-in administrator, skipped the Users screen's rules: it took the organization from the request body, could make customer roles without their account and roles the caller may not grant, and wrote no audit line.
+- **Operational impact:** An administrator could make a login in another company, or a login of a higher role.
+- **Recommended correction:** Fixed in createUser.
+- **Required tests:** qa/sim/phase10-security.mjs "Registering a login is closed once the first login exists ...", "The owner registering a login cannot place it in another organization ..."; qa/tools/phase10-mutations.mjs Y-013 and Y-013b hold.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed in createUser.
+- **Verification evidence:** qa/sim/phase10-security.mjs "Registering a login is closed once the first login exists ...", "The owner registering a login cannot place it in another organization ..."; qa/tools/phase10-mutations.mjs Y-013 and Y-013b hold.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-014 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Operations
+- **Workflow:** Operations
+- **Category:** Denial of service
+- **Source file or endpoint:** src/backend/src/app.js
+- **Evidence:** qa/sim/phase10-security.mjs "The public readiness answer is kept for 30 seconds"; qa/tools/phase10-mutations.mjs Y-014 holds.
+- **Expected:** The answer is kept for 30 seconds; a flood of calls is not a flood of database work.
+- **Actual:** The public readiness address ran the full system checks (whole-table reads) on every call, with no sign-in.
+- **Operational impact:** Anyone could load the database by calling one address.
+- **Recommended correction:** Fixed: readiness() keeps its answer for READY_CACHE_MS (30 s by default).
+- **Required tests:** qa/sim/phase10-security.mjs "The public readiness answer is kept for 30 seconds"; qa/tools/phase10-mutations.mjs Y-014 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: readiness() keeps its answer for READY_CACHE_MS (30 s by default).
+- **Verification evidence:** qa/sim/phase10-security.mjs "The public readiness answer is kept for 30 seconds"; qa/tools/phase10-mutations.mjs Y-014 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-015 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Users
+- **Workflow:** Users
+- **Category:** Information exposure
+- **Source file or endpoint:** src/backend/src/routes/users.js
+- **Evidence:** qa/sim/phase10-security.mjs "A colleague looking up logins sees names and roles, not who is being guessed at"; qa/tools/phase10-mutations.mjs Y-015 holds.
+- **Expected:** Only those who manage logins, and the person themselves, see them.
+- **Actual:** The new guard fields (failed count, pause time, session mark) were in the user list answer for every colleague.
+- **Operational impact:** A colleague could see who is being guessed at.
+- **Recommended correction:** Fixed: forViewer() strips them for others.
+- **Required tests:** qa/sim/phase10-security.mjs "A colleague looking up logins sees names and roles, not who is being guessed at"; qa/tools/phase10-mutations.mjs Y-015 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: forViewer() strips them for others.
+- **Verification evidence:** qa/sim/phase10-security.mjs "A colleague looking up logins sees names and roles, not who is being guessed at"; qa/tools/phase10-mutations.mjs Y-015 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-016 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Documents
+- **Workflow:** Documents
+- **Category:** Branch isolation
+- **Source file or endpoint:** src/backend/src/routes/documents.js
+- **Evidence:** qa/sim/phase10-security.mjs group 2 document scenarios (list, download, attach, delete); qa/tools/phase10-mutations.mjs Y-016 and Y-016b hold.
+- **Expected:** A document linked to a branch record is visible only where that record is.
+- **Actual:** Documents ignored the branch boundary: a manager of another branch could list, open, download, delete and attach documents on records of a branch they do not hold.
+- **Operational impact:** Order papers, certificates and invoices of one branch readable at every branch.
+- **Recommended correction:** Fixed: each document route checks the linked record through the branch-scoped client; uploads against a record outside the caller's branches are refused 404.
+- **Required tests:** qa/sim/phase10-security.mjs group 2 document scenarios (list, download, attach, delete); qa/tools/phase10-mutations.mjs Y-016 and Y-016b hold.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: each document route checks the linked record through the branch-scoped client; uploads against a record outside the caller's branches are refused 404.
+- **Verification evidence:** qa/sim/phase10-security.mjs group 2 document scenarios (list, download, attach, delete); qa/tools/phase10-mutations.mjs Y-016 and Y-016b hold.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-017 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Partner API
+- **Workflow:** Partner API
+- **Category:** Audit attribution
+- **Source file or endpoint:** src/backend/src/routes/partner/adminRoutes.js
+- **Evidence:** qa/sim/phase10-security.mjs "A revoked partner key stops working at once"; qa/tools/phase10-mutations.mjs Y-017 holds.
+- **Expected:** It records the signed-in person.
+- **Actual:** A revoked partner key recorded "revoked by" from a request header the caller writes.
+- **Operational impact:** The record of who revoked a key could be forged.
+- **Recommended correction:** Fixed.
+- **Required tests:** qa/sim/phase10-security.mjs "A revoked partner key stops working at once"; qa/tools/phase10-mutations.mjs Y-017 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed.
+- **Verification evidence:** qa/sim/phase10-security.mjs "A revoked partner key stops working at once"; qa/tools/phase10-mutations.mjs Y-017 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-018 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication
+- **Workflow:** Authentication
+- **Category:** Error handling
+- **Source file or endpoint:** src/backend/src/middleware/auth.js
+- **Evidence:** qa/sim/phase10-security.mjs "The server refuses a token with no user in it"; qa/tools/phase10-mutations.mjs Y-018 holds.
+- **Expected:** 401.
+- **Actual:** A validly signed token with no user id in it caused a server error (500).
+- **Operational impact:** A crafted token produced a server error and a stack trace in the log.
+- **Recommended correction:** Fixed: a token without a text userId is refused.
+- **Required tests:** qa/sim/phase10-security.mjs "The server refuses a token with no user in it"; qa/tools/phase10-mutations.mjs Y-018 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: a token without a text userId is refused.
+- **Verification evidence:** qa/sim/phase10-security.mjs "The server refuses a token with no user in it"; qa/tools/phase10-mutations.mjs Y-018 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-019 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Partner API
+- **Workflow:** Partner API
+- **Category:** Authorization
+- **Source file or endpoint:** src/backend/src/routes/partner/adminRoutes.js
+- **Evidence:** qa/sim/phase10-security.mjs "A sales rep is refused the administration, the books and the system checks"; qa/tools/phase10-mutations.mjs Y-019 holds.
+- **Expected:** Partner administration, reads included, is for administrators.
+- **Actual:** Reads under /api/v1/admin/partners (partners, keys, webhooks, deliveries) were open to any signed-in staff login; only writes needed an administrator.
+- **Operational impact:** Any staff login could see every partner and its key names and delivery history.
+- **Recommended correction:** Fixed: the router requires an administrator role.
+- **Required tests:** qa/sim/phase10-security.mjs "A sales rep is refused the administration, the books and the system checks"; qa/tools/phase10-mutations.mjs Y-019 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: the router requires an administrator role.
+- **Verification evidence:** qa/sim/phase10-security.mjs "A sales rep is refused the administration, the books and the system checks"; qa/tools/phase10-mutations.mjs Y-019 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-020 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Billing
+- **Workflow:** Billing
+- **Category:** Concurrency
+- **Source file or endpoint:** src/backend/src/services/billing.js; src/backend/src/routes/invoices.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-020", "Y-020b"; qa/sim/phase10-security.mjs "Twenty payments of 5.00 at once on one invoice are all recorded"; qa/tools/phase10-mutations.mjs Y-020, Y-020s (the defect as it was: no turns, 6 attempts), Y-020b hold.
+- **Expected:** Money recorded on one invoice takes turns; if two server processes still overlap after every retry, the caller is told "busy, try again" (409), never 500.
+- **Actual:** Twenty payments on one invoice at the same moment: some used up every retry of the serializable transaction and answered 500 (seen in the Phase 10 SIGTERM scenario: 500,201,201,201,500,...). Nothing was half-saved; the caller was shown a server error.
+- **Operational impact:** Busy counters and partner integrations saw server errors on payments.
+- **Recommended correction:** Fixed: payments, refunds, credits and cancels on one invoice take turns inside a process (moneyTurn), with 12 attempts; an overlap that survives them answers 409 BUSY. Several server processes are not tested (Phase 11).
+- **Required tests:** src/backend/test/securityRules.test.js "Y-020", "Y-020b"; qa/sim/phase10-security.mjs "Twenty payments of 5.00 at once on one invoice are all recorded"; qa/tools/phase10-mutations.mjs Y-020, Y-020s (the defect as it was: no turns, 6 attempts), Y-020b hold.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: payments, refunds, credits and cancels on one invoice take turns inside a process (moneyTurn), with 12 attempts; an overlap that survives them answers 409 BUSY. Several server processes are not tested (Phase 11).
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-020", "Y-020b"; qa/sim/phase10-security.mjs "Twenty payments of 5.00 at once on one invoice are all recorded"; qa/tools/phase10-mutations.mjs Y-020, Y-020s (the defect as it was: no turns, 6 attempts), Y-020b hold.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-021 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Shipping and billing
+- **Workflow:** Shipping and billing
+- **Category:** Failure recovery
+- **Source file or endpoint:** src/backend/src/lib/opsChecks.js; src/backend/src/lib/alerts.js
+- **Evidence:** qa/sim/phase10-security.mjs "The server killed in the middle of twenty dispatches leaves no half-saved sale ..." (each one listed, raised once, books agree), "Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert"; qa/tools/phase10-mutations.mjs Y-021 holds.
+- **Expected:** No dispatch is ever half saved; a shipment left without its invoice is listed at once, fails a check after 15 minutes and raises an alert, and its invoice can be raised once from the shipment.
+- **Actual:** Dispatch and billing are two saves by design (H-006). A server killed between them (kill -9 during twenty dispatches) left 9 shipments dispatched, with stock and movement saved, and no invoice. The integrations report listed them, but no check failed and no alert was raised.
+- **Operational impact:** Revenue not billed until someone happened to open the report.
+- **Recommended correction:** Fixed: the check "shipped goods invoiced" (alert SHIPPED_NOT_INVOICED, after SHIPPED_NOT_INVOICED_MINUTES, 15 by default). The two-save design is unchanged: making billing part of the dispatch save would change what happens when billing is refused, which is a business decision (H-006).
+- **Required tests:** qa/sim/phase10-security.mjs "The server killed in the middle of twenty dispatches leaves no half-saved sale ..." (each one listed, raised once, books agree), "Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert"; qa/tools/phase10-mutations.mjs Y-021 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: the check "shipped goods invoiced" (alert SHIPPED_NOT_INVOICED, after SHIPPED_NOT_INVOICED_MINUTES, 15 by default). The two-save design is unchanged: making billing part of the dispatch save would change what happens when billing is refused, which is a business decision (H-006).
+- **Verification evidence:** qa/sim/phase10-security.mjs "The server killed in the middle of twenty dispatches leaves no half-saved sale ..." (each one listed, raised once, books agree), "Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert"; qa/tools/phase10-mutations.mjs Y-021 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-022 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Authentication; deployment
+- **Workflow:** Authentication; deployment
+- **Category:** Deployment order
+- **Source file or endpoint:** src/backend/src/middleware/auth.js; src/backend/src/routes/auth.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-022"; qa/sim/phase10-security.mjs "The finished code on a database without update 17 says which update is missing ..."; qa/tools/phase10-mutations.mjs Y-022 holds.
+- **Expected:** If the code reaches the host before the owner applies update 17, the answer says which update is missing, as Phase 9.5 did for the ledger (W-026); health keeps answering.
+- **Actual:** The finished Phase 10 code reads three sign-in columns that database update 17 adds. Run on a database without update 17 (a copy of the restore with 17 rolled back), every sign-in answered a bare 500 "Login failed".
+- **Operational impact:** A deployment in the wrong order would have looked like an outage with no explanation.
+- **Recommended correction:** Fixed: sign-in and every signed-in request answer 503 DATABASE_UPDATE_REQUIRED "Database update 17 (security hardening) has to be applied first." The order to follow is in phase-10-deployment-safety.md: apply file 17 first.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-022"; qa/sim/phase10-security.mjs "The finished code on a database without update 17 says which update is missing ..."; qa/tools/phase10-mutations.mjs Y-022 holds.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: sign-in and every signed-in request answer 503 DATABASE_UPDATE_REQUIRED "Database update 17 (security hardening) has to be applied first." The order to follow is in phase-10-deployment-safety.md: apply file 17 first.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-022"; qa/sim/phase10-security.mjs "The finished code on a database without update 17 says which update is missing ..."; qa/tools/phase10-mutations.mjs Y-022 holds.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
+
+### Y-023 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-18
+- **Module:** Platform
+- **Workflow:** Platform
+- **Category:** Error handling
+- **Source file or endpoint:** src/backend/src/app.js; src/backend/src/lib/errorAnswer.js
+- **Evidence:** src/backend/test/securityRules.test.js "Y-023"; qa/sim/phase10-security.mjs "An address that cannot be decoded is the caller's error ..."; qa/tools/phase10-mutations.mjs Y-023 and Y-023s hold.
+- **Expected:** A malformed address is the caller's error: 400 with a sentence and the request id, and it does not count as a server fault.
+- **Actual:** An address whose % signs do not decode (GET /api/ledger/entries/%%%) answered 500 "Internal server error" and was logged as an unhandled fault. Express marks this error 400; the error handler ignored the mark. Seen in the full gate run's list of server errors.
+- **Operational impact:** A false server error in the logs and in any error-rate alert; anyone could raise them at will.
+- **Recommended correction:** Fixed: clientErrorAnswer() answers the errors Express and the body parser mark as the caller's (body too large 413, body not JSON 400, undecodable address 400 BAD_ADDRESS); everything else stays a logged 500.
+- **Required tests:** src/backend/test/securityRules.test.js "Y-023"; qa/sim/phase10-security.mjs "An address that cannot be decoded is the caller's error ..."; qa/tools/phase10-mutations.mjs Y-023 and Y-023s hold.
+- **Assigned phase:** Phase 10: security, financial integrity, reliability and recovery
+- **Status note:** Fixed: clientErrorAnswer() answers the errors Express and the body parser mark as the caller's (body too large 413, body not JSON 400, undecodable address 400 BAD_ADDRESS); everything else stays a logged 500.
+- **Verification evidence:** src/backend/test/securityRules.test.js "Y-023"; qa/sim/phase10-security.mjs "An address that cannot be decoded is the caller's error ..."; qa/tools/phase10-mutations.mjs Y-023 and Y-023s hold.
+- **First recorded in:** Phase 10 baseline probe, threat model and scenarios
 

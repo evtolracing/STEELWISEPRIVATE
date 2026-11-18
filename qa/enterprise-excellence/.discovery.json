@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-18T05:59:30.117Z",
+ "generated": "2026-11-18T09:36:36.011Z",
  "commit": "ref: refs/heads/claude/project-thread-25z3jd",
  "schema": {
   "models": [
@@ -8589,7 +8589,7 @@
     "mock": 0
    },
    "src/backend/src/routes/auth.js": {
-    "lines": 202,
+    "lines": 203,
     "routers": [
      "router"
     ],
@@ -8599,7 +8599,7 @@
       "method": "POST",
       "path": "/login",
       "line": 39,
-      "lines": 97,
+      "lines": 98,
       "guards": [],
       "models": [
        "User",
@@ -8624,7 +8624,7 @@
       "router": "router",
       "method": "POST",
       "path": "/register",
-      "line": 135,
+      "line": 136,
       "lines": 15,
       "guards": [],
       "models": [
@@ -8649,7 +8649,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/password",
-      "line": 149,
+      "line": 150,
       "lines": 27,
       "guards": [
        "authenticate"
@@ -8677,7 +8677,7 @@
       "router": "router",
       "method": "POST",
       "path": "/logout-all",
-      "line": 175,
+      "line": 176,
       "lines": 14,
       "guards": [
        "authenticate"
@@ -8705,7 +8705,7 @@
       "router": "router",
       "method": "GET",
       "path": "/me",
-      "line": 188,
+      "line": 189,
       "lines": 7,
       "guards": [
        "authenticate"
@@ -13019,7 +13019,7 @@
     "mock": 0
    },
    "src/backend/src/routes/integrations.js": {
-    "lines": 86,
+    "lines": 91,
     "routers": [
      "router"
     ],
@@ -13123,7 +13123,7 @@
       "method": "POST",
       "path": "/run",
       "line": 59,
-      "lines": 17,
+      "lines": 22,
       "guards": [],
       "models": [],
       "writes": 0,
@@ -14020,7 +14020,7 @@
     "mock": 0
    },
    "src/backend/src/routes/invoices.js": {
-    "lines": 74,
+    "lines": 82,
     "routers": [
      "router"
     ],
@@ -14029,7 +14029,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 25,
+      "line": 30,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14052,7 +14052,7 @@
       "router": "router",
       "method": "GET",
       "path": "/aging",
-      "line": 29,
+      "line": 34,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14075,7 +14075,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 33,
+      "line": 38,
       "lines": 7,
       "guards": [],
       "models": [],
@@ -14098,7 +14098,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 39,
+      "line": 44,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -14121,7 +14121,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/payments",
-      "line": 46,
+      "line": 51,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14144,7 +14144,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/credit",
-      "line": 50,
+      "line": 55,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14167,7 +14167,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/refund",
-      "line": 54,
+      "line": 59,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14190,7 +14190,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/cancel",
-      "line": 58,
+      "line": 63,
       "lines": 6,
       "guards": [],
       "models": [],
@@ -25203,7 +25203,7 @@
     "method": "POST",
     "path": "/login",
     "line": 39,
-    "lines": 97,
+    "lines": 98,
     "guards": [],
     "models": [
      "User",
@@ -25228,8 +25228,8 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 484,
-     "refused": 101,
+     "ok": 511,
+     "refused": 123,
      "error": 0
     }
    },
@@ -25237,7 +25237,7 @@
     "router": "router",
     "method": "POST",
     "path": "/register",
-    "line": 135,
+    "line": 136,
     "lines": 15,
     "guards": [],
     "models": [
@@ -25271,7 +25271,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/password",
-    "line": 149,
+    "line": 150,
     "lines": 27,
     "guards": [
      "authenticate"
@@ -25299,7 +25299,7 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 1,
+     "ok": 2,
      "refused": 4,
      "error": 0
     }
@@ -25308,7 +25308,7 @@
     "router": "router",
     "method": "POST",
     "path": "/logout-all",
-    "line": 175,
+    "line": 176,
     "lines": 14,
     "guards": [
      "authenticate"
@@ -25336,8 +25336,8 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 1,
-     "refused": 1,
+     "ok": 2,
+     "refused": 2,
      "error": 0
     }
    },
@@ -25345,7 +25345,7 @@
     "router": "router",
     "method": "GET",
     "path": "/me",
-    "line": 188,
+    "line": 189,
     "lines": 7,
     "guards": [
      "authenticate"
@@ -25370,8 +25370,8 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 2198,
-     "refused": 22,
+     "ok": 2201,
+     "refused": 20,
      "error": 0
     }
    },
@@ -25406,8 +25406,8 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 33,
-     "refused": 6,
+     "ok": 34,
+     "refused": 5,
      "error": 0
     }
    },
@@ -25481,7 +25481,7 @@
     "mount": "/api/users",
     "exercised": {
      "ok": 1,
-     "refused": 14,
+     "refused": 15,
      "error": 0
     }
    },
@@ -26631,8 +26631,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 46,
-     "refused": 24,
+     "ok": 47,
+     "refused": 23,
      "error": 0
     }
    },
@@ -26937,7 +26937,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 63,
+     "ok": 144,
      "refused": 12,
      "error": 1
     }
@@ -26971,7 +26971,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 54,
+     "ok": 134,
      "refused": 17,
      "error": 1
     }
@@ -27071,7 +27071,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 64,
+     "ok": 149,
      "refused": 59,
      "error": 0
     }
@@ -27137,8 +27137,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 857,
-     "refused": 73,
+     "ok": 1040,
+     "refused": 72,
      "error": 0
     }
    },
@@ -29367,7 +29367,7 @@
     "file": "src/backend/src/routes/intakePricing.js",
     "mount": "/api/pricing",
     "exercised": {
-     "ok": 50,
+     "ok": 51,
      "refused": 3,
      "error": 0
     }
@@ -29876,7 +29876,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 994,
+     "ok": 1250,
      "refused": 63,
      "error": 0
     }
@@ -29913,7 +29913,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 879,
+     "ok": 1135,
      "refused": 31,
      "error": 0
     }
@@ -29952,7 +29952,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 593,
+     "ok": 849,
      "refused": 64,
      "error": 0
     }
@@ -30090,7 +30090,7 @@
     "file": "src/backend/src/routes/purchaseOrders.js",
     "mount": "/api/purchase-orders",
     "exercised": {
-     "ok": 253,
+     "ok": 433,
      "refused": 6,
      "error": 0
     }
@@ -30297,8 +30297,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 70,
-     "refused": 48,
+     "ok": 68,
+     "refused": 50,
      "error": 0
     }
    },
@@ -30395,8 +30395,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 6,
-     "refused": 6,
+     "ok": 7,
+     "refused": 5,
      "error": 0
     }
    },
@@ -30429,7 +30429,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 132,
+     "ok": 133,
      "refused": 6,
      "error": 0
     }
@@ -30534,7 +30534,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 541,
+     "ok": 797,
      "refused": 118,
      "error": 0
     }
@@ -30714,7 +30714,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 430,
+     "ok": 686,
      "refused": 71,
      "error": 0
     }
@@ -30851,7 +30851,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 25,
+    "line": 30,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30883,7 +30883,7 @@
     "router": "router",
     "method": "GET",
     "path": "/aging",
-    "line": 29,
+    "line": 34,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30915,7 +30915,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 33,
+    "line": 38,
     "lines": 7,
     "guards": [],
     "models": [],
@@ -30947,7 +30947,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 39,
+    "line": 44,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -30970,7 +30970,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 9,
+     "ok": 16,
      "refused": 88,
      "error": 1
     }
@@ -30979,7 +30979,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/payments",
-    "line": 46,
+    "line": 51,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -31002,8 +31002,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 167,
-     "refused": 191,
+     "ok": 436,
+     "refused": 196,
      "error": 0
     }
    },
@@ -31011,7 +31011,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/credit",
-    "line": 50,
+    "line": 55,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -31034,8 +31034,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 31,
-     "refused": 30,
+     "ok": 34,
+     "refused": 31,
      "error": 0
     }
    },
@@ -31043,7 +31043,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/refund",
-    "line": 54,
+    "line": 59,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -31075,7 +31075,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/cancel",
-    "line": 58,
+    "line": 63,
     "lines": 6,
     "guards": [],
     "models": [],
@@ -31098,8 +31098,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 8,
-     "refused": 13,
+     "ok": 10,
+     "refused": 14,
      "error": 0
     }
    },
@@ -31130,7 +31130,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 47,
+     "ok": 49,
      "refused": 14,
      "error": 0
     }
@@ -31162,7 +31162,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 12,
+     "ok": 15,
      "refused": 12,
      "error": 0
     }
@@ -31194,7 +31194,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 2,
+     "ok": 4,
      "refused": 12,
      "error": 0
     }
@@ -31258,8 +31258,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 8,
-     "refused": 16,
+     "ok": 10,
+     "refused": 18,
      "error": 0
     }
    },
@@ -31290,8 +31290,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 8,
-     "refused": 15,
+     "ok": 11,
+     "refused": 16,
      "error": 0
     }
    },
@@ -31322,7 +31322,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 314,
+     "ok": 422,
      "refused": 55,
      "error": 0
     }
@@ -31354,7 +31354,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 33,
+     "ok": 38,
      "refused": 19,
      "error": 0
     }
@@ -31387,7 +31387,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 17,
-     "refused": 11,
+     "refused": 12,
      "error": 0
     }
    },
@@ -31418,7 +31418,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 29,
+     "ok": 2031,
      "refused": 52,
      "error": 0
     }
@@ -31450,8 +31450,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 19,
-     "refused": 23,
+     "ok": 2021,
+     "refused": 24,
      "error": 0
     }
    },
@@ -31482,8 +31482,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 6,
-     "refused": 29,
+     "ok": 7,
+     "refused": 30,
      "error": 0
     }
    },
@@ -31709,7 +31709,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 9,
+     "ok": 15,
      "refused": 13,
      "error": 0
     }
@@ -31741,7 +31741,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 25,
+     "ok": 36,
      "refused": 21,
      "error": 0
     }
@@ -31805,7 +31805,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 48,
+     "ok": 63,
      "refused": 14,
      "error": 0
     }
@@ -31837,7 +31837,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 35,
+     "ok": 36,
      "refused": 12,
      "error": 0
     }
@@ -31901,8 +31901,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 5,
-     "refused": 13,
+     "ok": 9,
+     "refused": 14,
      "error": 0
     }
    },
@@ -31933,8 +31933,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 1,
-     "refused": 28,
+     "ok": 2,
+     "refused": 42,
      "error": 0
     }
    },
@@ -31997,7 +31997,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 1,
+     "ok": 3,
      "refused": 18,
      "error": 0
     }
@@ -32029,7 +32029,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 1,
+     "ok": 3,
      "refused": 15,
      "error": 0
     }
@@ -32061,7 +32061,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 7,
+     "ok": 8,
      "refused": 14,
      "error": 0
     }
@@ -32093,7 +32093,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 22,
+     "ok": 45,
      "refused": 16,
      "error": 0
     }
@@ -32125,8 +32125,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 9,
-     "refused": 15,
+     "ok": 10,
+     "refused": 16,
      "error": 0
     }
    },
@@ -32157,8 +32157,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 4,
-     "refused": 22,
+     "ok": 5,
+     "refused": 23,
      "error": 0
     }
    },
@@ -32189,8 +32189,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 1,
-     "refused": 6,
+     "ok": 2,
+     "refused": 7,
      "error": 0
     }
    },
@@ -32222,7 +32222,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 3,
-     "refused": 17,
+     "refused": 18,
      "error": 0
     }
    },
@@ -33735,7 +33735,7 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 163,
+     "ok": 162,
      "refused": 7,
      "error": 0
     }
@@ -33840,8 +33840,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 411,
-     "refused": 14,
+     "ok": 410,
+     "refused": 15,
      "error": 0
     }
    },
@@ -34015,8 +34015,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 531,
-     "refused": 198,
+     "ok": 530,
+     "refused": 199,
      "error": 0
     }
    },
@@ -34081,8 +34081,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 1,
-     "refused": 15,
+     "ok": 2,
+     "refused": 14,
      "error": 0
     }
    },
@@ -34455,8 +34455,8 @@
     "file": "src/backend/src/routes/documents.js",
     "mount": "/api/documents",
     "exercised": {
-     "ok": 5,
-     "refused": 9,
+     "ok": 4,
+     "refused": 10,
      "error": 0
     }
    },
@@ -34490,7 +34490,7 @@
     "mount": "/api/documents",
     "exercised": {
      "ok": 6,
-     "refused": 14,
+     "refused": 15,
      "error": 0
     }
    },
@@ -34560,7 +34560,7 @@
     "mount": "/api/documents",
     "exercised": {
      "ok": 1,
-     "refused": 3,
+     "refused": 4,
      "error": 0
     }
    },
@@ -34727,7 +34727,7 @@
     "file": "src/backend/src/routes/quickSale.js",
     "mount": "/api/pos/quick-sale",
     "exercised": {
-     "ok": 40,
+     "ok": 43,
      "refused": 18,
      "error": 0
     }
@@ -40147,8 +40147,8 @@
     "file": "src/backend/src/routes/operationsRoutes.js",
     "mount": "/api/v1/operations",
     "exercised": {
-     "ok": 5,
-     "refused": 7,
+     "ok": 4,
+     "refused": 8,
      "error": 0
     }
    },
@@ -42851,7 +42851,7 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 26,
+     "ok": 27,
      "refused": 13,
      "error": 0
     }
@@ -42883,8 +42883,8 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 4,
-     "refused": 4,
+     "ok": 14,
+     "refused": 5,
      "error": 0
     }
    },
@@ -42959,7 +42959,7 @@
     "method": "POST",
     "path": "/run",
     "line": 59,
-    "lines": 17,
+    "lines": 22,
     "guards": [],
     "models": [],
     "writes": 0,
@@ -42982,7 +42982,7 @@
     "mount": "/api/admin/integrations",
     "exercised": {
      "ok": 2,
-     "refused": 1,
+     "refused": 2,
      "error": 0
     }
    },
@@ -47532,7 +47532,7 @@
     "file": "src/backend/src/routes/partner/webhookRoutes.js",
     "mount": "/api/v1/partner/webhooks",
     "exercised": {
-     "ok": 3,
+     "ok": 4,
      "refused": 0,
      "error": 0
     }
@@ -47772,8 +47772,8 @@
     "file": "src/backend/src/routes/partner/adminRoutes.js",
     "mount": "/api/v1/admin/partners",
     "exercised": {
-     "ok": 10,
-     "refused": 6,
+     "ok": 9,
+     "refused": 7,
      "error": 0
     }
    },
@@ -48108,6 +48108,7 @@
     "READY_CACHE_MS",
     "SCHEDULE_LATE_MINUTES",
     "SEED_ON_START",
+    "SHIPPED_NOT_INVOICED_MINUTES",
     "SLOW_REQUEST_MS",
     "SPEECH_TIMEOUT_MS",
     "SUPABASE_KEY",
@@ -57403,7 +57404,7 @@
    },
    {
     "file": "src/backend/test/securityRules.test.js",
-    "tests": 8,
+    "tests": 12,
     "importsDb": false,
     "mocks": 0
    },
@@ -57465,7 +57466,7 @@
    },
    {
     "file": "qa/sim/phase10/ctx.mjs",
-    "lines": 112,
+    "lines": 134,
     "checks": 0
    },
    {
@@ -57475,7 +57476,7 @@
    },
    {
     "file": "qa/sim/phase10/g2-isolation.mjs",
-    "lines": 187,
+    "lines": 213,
     "checks": 0
    },
    {
@@ -57490,32 +57491,32 @@
    },
    {
     "file": "qa/sim/phase10/g5-recon.mjs",
-    "lines": 219,
+    "lines": 252,
     "checks": 0
    },
    {
     "file": "qa/sim/phase10/g6-integrations.mjs",
-    "lines": 227,
+    "lines": 268,
     "checks": 0
    },
    {
     "file": "qa/sim/phase10/g7-concurrency.mjs",
-    "lines": 326,
+    "lines": 354,
     "checks": 0
    },
    {
     "file": "qa/sim/phase10/g8-recovery.mjs",
-    "lines": 208,
+    "lines": 230,
     "checks": 0
    },
    {
     "file": "qa/sim/phase10/g9-observability.mjs",
-    "lines": 174,
+    "lines": 216,
     "checks": 0
    },
    {
     "file": "qa/sim/phase10-security.mjs",
-    "lines": 50,
+    "lines": 51,
     "checks": 0
    },
    {
@@ -57530,7 +57531,7 @@
    },
    {
     "file": "qa/sim/phase4-integration.mjs",
-    "lines": 1365,
+    "lines": 1368,
     "checks": 0
    },
    {
@@ -59043,17 +59044,17 @@
   ]
  },
  "exercised": {
-  "at": "2026-11-18T05:58:34.476Z",
+  "at": "2026-11-18T09:20:25.575Z",
   "sources": [
    {
     "file": "server-3011.log",
-    "requests": 15132
+    "requests": 21850
    },
    {
     "file": "server-3001.log",
-    "requests": 8338
+    "requests": 8339
    }
   ],
-  "distinct": 2812
+  "distinct": 2843
  }
 }

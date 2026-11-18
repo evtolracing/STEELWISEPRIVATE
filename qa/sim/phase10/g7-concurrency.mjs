@@ -138,7 +138,9 @@ export default async function conc(ctx) {
     const pid = await pidOn(HOME);
     ok('server found', Boolean(pid));
     const sends = ready.map((r) => B.dispatch(r.shipment).catch(() => null));
-    await sleep(150);
+    // Kill once the first dispatch has been saved, so the kill falls in the middle of the batch, not before it.
+    const ids = ready.map((r) => r.shipment.id);
+    for (let i = 0; i < 100; i += 1) { if (await prisma.materialMovement.count({ where: { shipmentId: { in: ids }, movementType: 'SHIP' } })) break; await sleep(20); }
     process.kill(Number(pid), 'SIGKILL');
     await Promise.allSettled(sends);
     ok('restarted', await startServer(HOME));
@@ -155,6 +157,8 @@ export default async function conc(ctx) {
       if (dispatched !== (mv === 1) || inv > 1 || (!dispatched && inv > 0)) half += 1;
       if (dispatched && inv === 0) unbilled.push(r);
     }
+    const shippedN = (await prisma.materialMovement.count({ where: { shipmentId: { in: ids }, movementType: 'SHIP' } }));
+    ok('the kill fell in the middle of the batch: some dispatched, not all', shippedN > 0 && shippedN < 20, `${shippedN} of 20 dispatched, ${unbilled.length} of them without an invoice`);
     ok('no half-saved dispatch: shipment, stock movement and invoice agree', half === 0, `${half} of 20`);
     if (unbilled.length) {
       const rep = await A.get('/api/admin/integrations', 'admin');
@@ -163,8 +167,18 @@ export default async function conc(ctx) {
       for (const r of unbilled) {
         const raised = await A.post('/api/invoices', { shipmentId: r.shipment.id }, 'admin');
         ok('its invoice is raised from the shipment', raised.status === 201, `${raised.status} ${err(raised)}`);
-        ok('and only once', (await A.post('/api/invoices', { shipmentId: r.shipment.id }, 'admin')).status >= 400 && (await prisma.invoice.count({ where: { orderId: r.order.id, kind: 'INVOICE' } })) === 1);
+        // Billing a shipment again is idempotent by design (invoiceShipment): it answers the invoice already raised.
+        const again = await A.post('/api/invoices', { shipmentId: r.shipment.id }, 'admin');
+        const live = await prisma.invoice.count({ where: { shipmentId: r.shipment.id, kind: 'INVOICE', status: { not: 'CANCELLED' } } });
+        ok('and only once: raising it again answers the same invoice', again.body?.id === raised.body?.id && live === 1, `${again.status} same=${again.body?.id === raised.body?.id} live=${live}`);
       }
+    }
+    // Whether or not the kill fell between dispatch and billing, a shipment billed before the kill is never billed twice after it.
+    const billed = await prisma.invoice.findFirst({ where: { shipmentId: { in: ready.map((r) => r.shipment.id) }, kind: 'INVOICE', status: { not: 'CANCELLED' } } });
+    if (billed) {
+      const again = await A.post('/api/invoices', { shipmentId: billed.shipmentId }, 'admin');
+      const live = await prisma.invoice.count({ where: { shipmentId: billed.shipmentId, kind: 'INVOICE', status: { not: 'CANCELLED' } } });
+      ok('a shipment billed before the kill, raised again after it, answers the same invoice', again.body?.id === billed.id && live === 1, `${again.status} same=${again.body?.id === billed.id} live=${live}`);
     }
     await agreeAll(ok, 'after restart');
   });

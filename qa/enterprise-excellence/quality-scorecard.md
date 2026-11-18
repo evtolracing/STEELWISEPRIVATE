@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 60ce6d2. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -24,7 +24,7 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 
 | Module group | Weighted score | Share of the weights that has evidence | Open P0 or P1 | Changing routes with a success-path test | Meets the gate |
 |---|---:|---:|---:|---|:-:|
-| Platform infrastructure | 80 | 90% | 2 | 2 of 10 | No |
+| Platform infrastructure | 82 | 90% | 2 | 2 of 10 | No |
 | Sales and customer operations | 80 | 100% | 4 | 37 of 97 | No |
 | Inventory and purchasing | 77 | 100% | 3 | 47 of 62 | No |
 | Manufacturing and processing | 82 | 100% | 1 | 63 of 95 | No |
@@ -75,7 +75,7 @@ The groups hide large differences. Classification and test reach per module:
 | Maintenance and assets | PARTIALLY IMPLEMENTED | 6 of 9 | X-009, B-017 |
 | Shipping | IMPLEMENTED AND VERIFIED | 8 of 8 |  |
 | Returns | IMPLEMENTED AND VERIFIED | 4 of 4 |  |
-| Documents | IMPLEMENTED AND VERIFIED | 2 of 3 | B-021 |
+| Documents | IMPLEMENTED AND VERIFIED | 2 of 3 |  |
 | Partner API | PARTIALLY IMPLEMENTED | 15 of 20 | H-014, B-019 |
 | Integrations and scheduled work | IMPLEMENTED AND VERIFIED | 2 of 2 | B-019, E-017 |
 | Freight and logistics planning | PLACEHOLDER OR MOCK | n/a | X-009 |
@@ -101,16 +101,16 @@ Modules: Request safeguards; AI assistant and voice; Help manual; Background wor
 |---|---:|---:|---|
 | Functional correctness | 15% | 85 | 150 of 150 jobs before and after; job-list second path removed (E-002); invented analytics removed (E-006) |
 | Data integrity | 15% | 86 | Phase 3: 188 foreign keys (15 added on money, stock and work references), 24 value checks (15 added), every decimal written exactly (G-001), all proven by refused writes and a residue check of 0. Held at 86: 217 reference columns still have no key (G-003), the two JSON stores remain (B-009). Was 75 (0 to 8 value checks; reconciliation clean. Balance identity still code-only (E-020)) |
-| Reliability | 12% | 80 | Phase 4: a retry after a lost answer or a dropped connection gets the first result (H-004); one partner can no longer receive another's answer (H-003); a burst of 80 events is sent within a second (H-019). Held at 80: no restore has been tested (E-015), the host pool is unverified (G-015), the schedule that carries out retries is not set on the host (B-019). Was 62 (Job list failed under 20 simultaneous requests, now passes. Clean exit and shutdown. No restore test, no staging (E-015)) |
-| Security | 12% | 78 | Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 80 |
+| Reliability | 12% | 84 | Phase 10: an actual backup restored into a separate server with the books, guards and numbering identical and the restored application reconciling clean (W-020); kill -9 and SIGTERM mid-save leave no half-saved save (Y-020, Y-021); a dropped database connection and lock waits recover. Held at 84: the host's backups never restored (E-015); one server process; the scheduler on the host unverified (B-019). Was 62 (Job list failed under 20 simultaneous requests, now passes. Clean exit and shutdown. No restore test, no staging (E-015)) |
+| Security | 12% | 84 | Phase 10: tokens end at once on password change, reset, switch-off and sign-out (Y-001); per-login pause after ten wrong passwords (Y-002); upload path escape, files served by address and mismatched content closed (Y-004 to Y-006); register follows the Users rules (Y-013); partner administration reads need an administrator (Y-019); every QA suite runs the server as a role that cannot change history or the books; 277 scenarios and removal checks (phase-10-quality-scorecard.md). Held at 84: the live server still connects as the database owner until file 17 and the DATABASE_URL switch (Y-008); the per-address limit counts per instance (E-014); no second factor. Was 78 (Phase 2: the branch boundary is enforced on the server for 15 record types (37 checks) and every changing route falls under a department rule (coverage check, 0 without). Capped at 78 by judgement while C-009 (records with no branch column) and E-014 (request limit per instance) are open. Was 80) |
 | Operational efficiency | 10% | NOT VERIFIED | No evidence gathered |
 | User experience | 10% | 80 | Phase 9: every screen of the group opened at three sizes with 0 page errors and 0 sideways scroll; one search, page titles, a skip link, role start pages, the application's own dialogs, session expiry returning to the same page; 43 navigation scenarios, one for each role among them. Held at 80: no real user, device or host took part; 94 files set colours of their own (V-035). Was null (No evidence gathered) |
 | Performance | 8% | 82 | Phase 3: measured on an 85-branch copy (72,240 orders, 100,233 stock items): every branch list within 500 ms; 400 requests at once with 0 failures. Held at 82: local machine only; stock search and job count grow with the company (G-013); 244 KB order list reply (G-014). Was 80 (7 routes over target to 0; 104 MB reply to 1.2 MB. Operations cockpit answers in about 1 s at volume, was no reply (E-023)) |
 | Integration quality | 6% | 76 | Phase 4: every call to an outside service has a time limit, bounded tries, a breaker and a plain failure answer (H-005); events to partners are saved with the change, retried, stopped after five tries and replayable (H-002); reply shapes are pinned by contract tests; a database refusal is a 409, not a 500 (H-017). Held at 76: list shapes still differ (E-021); the host schedule is not set (B-019); email, cards, carriers, tax and accounting are not connected (H-015); the breaker and limits count per instance (H-012). Was 62 (155 of 352 screen calls have no route (D-020), unchanged; reply shapes inconsistent (E-021)) |
 | Maintainability | 5% | 65 | Phase 2: the branch boundary, the department table and the login rules each live in one tested file; a coverage check fails the gates when a changing route has no rule. Held at 65: most rules still live in route handlers (B-014) and 1,524 lint warnings remain. Was 57 (47 unit tests on every pull request; no lint (E-016); large files (E-018)) |
-| Observability | 4% | 70 | Phase 4: an Integrations screen and report show failed and waiting events, outside-service failures, orders shipped but not invoiced and when scheduled work last ran; failures are structured log lines with a request id and no secret (tested). Held at 70: nothing alerts anyone (E-017). Was 60 (Request id and log line added; no alerting (E-017)) |
+| Observability | 4% | 78 | Phase 10: ten system checks and eleven alert kinds with severities, raised once per condition, stored in history and sent to ALERT_WEBHOOK_URL (Y-010, Y-021); liveness, cached readiness (Y-014) and health naming the deployed commit; caller errors no longer logged as faults (Y-023); tested against a stub in group 9. Held at 78: no live receiver is set (E-017); logs only in the host console. Was 60 (Request id and log line added; no alerting (E-017)) |
 | Accessibility | 3% | 72 | Phase 9, measured by tool on every screen: controls with no name 613 to 0, fields with no label 280 to 0, one main heading, a visible focus ring, a skip link, announcements, reduced motion; 87 rows and cards open from the keyboard. Held at 72: not a WCAG certificate; no screen reader, switch or voice user; focus return after a dialog verified on the main dialogs only (V-029). Was null (No evidence gathered) |
-| **Weighted over the 90% that has evidence** | | **80** | Target 95 |
+| **Weighted over the 90% that has evidence** | | **82** | Target 95 |
 
 Changing routes with a success-path test: 2 of 10. Open findings against these modules: 8, of which P0 or P1: 2 (B-019, E-014).
 
@@ -196,7 +196,7 @@ Modules: Shipping; Returns; Documents; Partner API; Integrations and scheduled w
 | Accessibility | 3% | 68 | Phase 9, measured by tool on every screen of the group: 0 controls with no name, 0 fields with no label, one main heading, text contrast corrected in the theme, rows open from the keyboard, forms say what is required and what is wrong. Held at 68: not a WCAG certificate; no screen reader, switch or voice user; no real device. Was null (New screens use labelled tables and controls. No keyboard or contrast audit was run) |
 | **Weighted over the 100% that has evidence** | | **86** | Target 95 |
 
-Changing routes with a success-path test: 58 of 66. Open findings against these modules: 7, of which P0 or P1: 2 (B-019, X-009).
+Changing routes with a success-path test: 58 of 66. Open findings against these modules: 6, of which P0 or P1: 2 (B-019, X-009).
 
 ### Enterprise experience
 

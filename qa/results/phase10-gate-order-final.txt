@@ -1,0 +1,7 @@
+== 9.5 ledger
+✓ Phase 9.5 ledger: 158 of 158 pass, 915 checks; Periods, cutover and reporting 24/24; Sales, invoices and revenue 25/25; Payments, credits and refunds 21/21; Inventory valuation and adjustments 27/27; Manufacturing, work in progress and costing 20/20; Freight, transfers and location accounting 21/21; Concurrency, authorization and failure recovery 20/20
+== 9.5 ui
+✓ Phase 9.5 UI: 13 of 13 pass, 69 checks
+== phase 10
+ledger: already active; receipts with no purchase order left held by earlier suites: 8, posted by the CFO naming 2000: 3, still held for want of a cost: 4, nothing to post: 1
+✓ Phase 10 security: 277 of 277 pass, 889 checks; Authentication, sessions and roles 36/36; Tenant, division and branch isolation 31/31; API, database and document security 40/40; Ledger security and posting integrity 41/41; Inventory-to-ledger and receivables reconciliation 30/30; Integrations, events and background jobs 26/26; Concurrency and failure recovery 26/26; Backup, restore, deployment and rollback 26/26; Observability, alerting and infrastructure 21/21

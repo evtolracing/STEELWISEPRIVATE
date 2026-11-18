@@ -1,6 +1,6 @@
 // Group 5: customer, branch, role and AI boundaries while the enterprise is busy and several server copies answer.
 export default async function run(c) {
-  const { S, G11, SELLING, TIERS, E, branch, P, hq, lot, order, onDock, sold, all, statuses, count, inv, n, prisma, err, tag, forge, as, person, signIn, admin2, QA_PASSWORD, clearHits, hitsOf, D, C, today, http1 } = c;
+  const { S, G11, SELLING, TIERS, E, branch, P, hq, onDock, sold, all, statuses, inv, n, prisma, err, tag, forge, as, person, signIn, admin2, QA_PASSWORD, clearHits, hitsOf, D, C, today, http1 } = c;
   const G = G11.sec;
   const hidden = (r) => [403, 404].includes(r.status);
   const cfo = hq('CFO', 0); const auditor = hq('AUDITOR', 0);

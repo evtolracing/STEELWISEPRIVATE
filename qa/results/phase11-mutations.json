@@ -1,7 +1,7 @@
 {
-  "ranAt": "2026-11-18T17:57:04.629Z",
-  "held": 11,
-  "total": 11,
+  "ranAt": "2026-11-18T18:29:53.319Z",
+  "held": 13,
+  "total": 13,
   "results": [
     {
       "id": "E-014",
@@ -114,6 +114,26 @@
       "check": "Almost every database connection is taken",
       "failed": [
         "✗ [Failure injection and recovery] Almost every database connection is taken by something else"
+      ]
+    },
+    {
+      "id": "Z-011",
+      "what": "a transaction that lost its connection is answered 503, not 500",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-011",
+      "failed": [
+        "not ok 22 - Z-011: a transaction that fails for want of a connection is noted for the reply, and other failures are not"
+      ]
+    },
+    {
+      "id": "Z-013",
+      "what": "a keyed request is not run when its key cannot be claimed",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-013",
+      "failed": [
+        "not ok 23 - Z-013: when the request key cannot be claimed the request is not run, and the caller is told to send it again"
       ]
     }
   ]

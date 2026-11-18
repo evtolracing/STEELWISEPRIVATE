@@ -141,9 +141,14 @@ export function makeEngine(E, { probe = false, rnd } = {}) {
   async function ship(job, b, order, line, qty, { deliver = true } = {}) {
     const who = P.shipper(b) || P.stock(b);
     const s = await act(job, { kind: 'shipment put together', who, url: '/api/shipments', body: { orderId: order.id, fromLocationId: b.id, carrierName: ['Own Truck', 'P11 Synthetic Freight', 'Customer pickup'][job.n % 3], items: [{ orderLineId: line.id, qtyShipped: qty, weightLb: qty }] }, expect: (r) => r.status === 201 });
-    const d = await act(job, { cat: 'shipping', kind: 'shipment dispatched', who, m: 'PUT', url: `/api/shipments/${s.body.id}/dispatch`, body: {}, expect: (r) => r.status === 200, ref: () => s.body.id });
+    // Only this job dispatches this shipment. When the answer to the dispatch was lost (the server copy died
+    // after saving it) the dock sends it again and is told "already IN_TRANSIT": the truck did leave, once.
+    // The database check of every counted transaction still reads the shipment back, and the missing
+    // invoice is raised below by the product's own recovery and counted as one.
+    const dispatched = (r) => r.status === 200 || (r.status === 409 && /already IN_TRANSIT/.test(err(r)));
+    const d = await act(job, { cat: 'shipping', kind: 'shipment dispatched', who, m: 'PUT', url: `/api/shipments/${s.body.id}/dispatch`, body: {}, expect: dispatched, ref: () => s.body.id });
     (job.ids.shipments ||= []).push(s.body.id);
-    let invoice = d.body.invoice || null;
+    let invoice = d.body?.invoice || null;
     // The dispatch answer names the invoice; the amounts are read the way the invoice screen reads them.
     if (invoice && invoice.totalAmount == null) invoice = (await act(job, { kind: 'invoice opened', who: P.csr(b) || P.manager(b), m: 'GET', url: `/api/invoices/${invoice.id}`, expect: (r) => r.status === 200 && r.body?.totalAmount != null })).body;
     if (!invoice) {

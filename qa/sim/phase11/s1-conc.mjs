@@ -1,6 +1,6 @@
 // Group 1: sales, inventory and purchasing under people working at the same moment, at every kind of branch.
 export default async function run(c) {
-  const { S, G11, SELLING, branch, P, lot, order, all, statuses, count, inv, n, prisma, ok2, err, tag, job, X, E } = c;
+  const { S, G11, SELLING, branch, P, lot, order, all, statuses, count, inv, n, prisma, ok2, err, tag, job, E } = c;
   const G = G11.conc;
   let k = 0;
   for (const tier of SELLING) {

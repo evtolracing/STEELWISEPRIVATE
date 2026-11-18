@@ -40,10 +40,26 @@ const withBadFilterNote = (client) => client.$extends({
   },
 });
 
+/**
+ * A transaction can fail outside any single query: when it is opened or committed on a connection the
+ * database has closed, or when no connection comes free. The query hook above never sees that, so the
+ * request was answered "server error" (Phase 11, Z-011: found with every server connection cut while
+ * orders were being confirmed). It is noted here too, and the reply becomes "try again" (503).
+ */
+export function noteLostConnection(error, store = requestContext.getStore()) {
+  if (store && isNoConnection(error)) store.noConnection = true;
+  return error;
+}
+export const withTransactionNote = (client) => client.$extends({
+  client: {
+    $transaction: (...args) => client.$transaction(...args).catch((error) => { throw noteLostConnection(error); }),
+  },
+});
+
 export const prisma = isDatabaseConfigured
-  ? (globalForPrisma.prisma || withBadFilterNote(new PrismaClient({
+  ? (globalForPrisma.prisma || withTransactionNote(withBadFilterNote(new PrismaClient({
       log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-    })))
+    }))))
   : null;
 
 if (process.env.NODE_ENV !== 'production' && prisma) {

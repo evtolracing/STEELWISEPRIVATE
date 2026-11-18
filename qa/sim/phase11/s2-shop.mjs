@@ -1,6 +1,6 @@
 // Group 2: manufacturing, scheduling and quality at the processing branches, with people acting at the same moment.
 export default async function run(c) {
-  const { S, G11, branch, P, lot, order, all, statuses, count, inv, n, prisma, ok2, err, job, X, E, TIERS } = c;
+  const { S, G11, branch, P, lot, order, all, statuses, count, inv, n, prisma, ok2, err, E, TIERS } = c;
   const G = G11.shop;
   /** An order with reserved stock and a job routed in two steps. */
   async function shopJob(b, qty = 600) {

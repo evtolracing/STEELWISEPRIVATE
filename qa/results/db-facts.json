@@ -1,8 +1,8 @@
 {
- "at": "2026-11-18T17:03:36.104Z",
+ "at": "2026-11-18T18:22:37.044Z",
  "database": "postgresql://localhost:5432/steelwise_qa_p11",
- "tables": 172,
- "totalRows": 29638,
+ "tables": 173,
+ "totalRows": 30531,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -136,7 +136,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 5627
+   "rows": 5644
   },
   {
    "table": "BomOperation",
@@ -148,7 +148,7 @@
   },
   {
    "table": "Coil",
-   "rows": 868
+   "rows": 867
   },
   {
    "table": "CommodityPrice",
@@ -260,7 +260,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 868
+   "rows": 867
   },
   {
    "table": "InventoryAdjustment",
@@ -284,11 +284,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 610
+   "rows": 612
   },
   {
    "table": "InvoiceLine",
-   "rows": 608
+   "rows": 610
   },
   {
    "table": "Job",
@@ -300,11 +300,11 @@
   },
   {
    "table": "JournalEntry",
-   "rows": 2679
+   "rows": 2686
   },
   {
    "table": "JournalLine",
-   "rows": 5484
+   "rows": 5498
   },
   {
    "table": "LabelTemplate",
@@ -316,7 +316,7 @@
   },
   {
    "table": "LedgerEvent",
-   "rows": 2477
+   "rows": 2484
   },
   {
    "table": "LedgerExportBatch",
@@ -372,7 +372,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 1331
+   "rows": 1334
   },
   {
    "table": "MeterReading",
@@ -392,11 +392,11 @@
   },
   {
    "table": "Order",
-   "rows": 1079
+   "rows": 1078
   },
   {
    "table": "OrderLine",
-   "rows": 1079
+   "rows": 1078
   },
   {
    "table": "OrderLineAllocation",
@@ -440,7 +440,7 @@
   },
   {
    "table": "Payment",
-   "rows": 608
+   "rows": 610
   },
   {
    "table": "PipelineRun",
@@ -513,6 +513,10 @@
   {
    "table": "RFQSource",
    "rows": 0
+  },
+  {
+   "table": "RateWindow",
+   "rows": 842
   },
   {
    "table": "RecipeRoutingTemplate",
@@ -792,10 +796,10 @@
   },
   {
    "table": "_prisma_migrations",
-   "rows": 35
+   "rows": 36
   }
  ],
- "indexes": 632,
+ "indexes": 634,
  "views": [],
  "triggers": [
   "\"JournalEntry\".JournalEntry_guard",
@@ -971,7 +975,7 @@
  "fkNoIndex": [],
  "constraintCounts": {
   "foreign key": 201,
-  "primary key": 172,
+  "primary key": 173,
   "check": 42
  },
  "checkConstraints": [

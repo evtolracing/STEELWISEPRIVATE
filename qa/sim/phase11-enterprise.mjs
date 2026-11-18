@@ -11,11 +11,11 @@ import os from 'node:os';
 import { execFileSync } from 'node:child_process';
 import * as ctx from './phase10/ctx.mjs';
 import { rng } from './lib.mjs';
-import { build, signIn, TIERS, HEAD_OFFICE } from './phase11/model.mjs';
+import { build, signIn, TIERS } from './phase11/model.mjs';
 import { THRESHOLDS, STATUS as THRESHOLD_STATUS, judge } from './phase11/thresholds.mjs';
 import { makeEngine, pool, summary, CATEGORIES, MINIMUMS, JOB_TYPES, StepFailed } from './phase11/engine.mjs';
 
-const { prisma, arg, near, ok2, err, sleep } = ctx;
+const { prisma, arg, near, ok2, sleep } = ctx;
 const CYCLE = arg('cycle', '0'); const LABEL = arg('label', 'Run');
 const PROBE = process.argv.includes('--probe');
 const CHAOS = process.argv.includes('--chaos'); // failures are injected while the work runs (cycle 4)
@@ -105,9 +105,9 @@ const readers = PROBE ? [] : [
 ];
 
 // ── 4b. with --chaos: failures injected while the work runs ─────────────────────────────────
-// One fault about every ten seconds, in turn: a copy restarted politely (as a deployment does), the
-// invoice numbers held by another session, answers delayed at the front door, the outside services
-// down; and, once each, a copy killed outright and every database connection of the servers cut.
+// One fault about every five seconds: first, once each, a copy killed outright and every database
+// connection of the servers cut; then in turn a copy restarted politely (as a deployment does), the
+// invoice numbers held by another session, answers delayed at the front door, the outside services down.
 const chaos = { events: [] };
 if (CHAOS && cluster) {
   const control = (pathPart, body) => fetch(`${ctx.BASE}/__cluster/${pathPart}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) }).then((r) => r.json()).catch(() => null);
@@ -115,21 +115,21 @@ if (CHAOS && cluster) {
   const back = async (n) => { for (let i = 0; i < 160; i++) { const st = await state(); const w = st?.workers.find((x) => x.n === n); if (w && !w.pid) await control(`start/${n}`); if (w?.pid && w.up) return true; await sleep(250); } return false; };
   const copies = cluster.workers.length; let turn = 0; let killed = false; let cut = false;
   const faults = [
+    async () => { if (killed) return null; killed = true; const n = 1 + ((turn + 1) % copies); await control(`kill/${n}`); return { what: `copy ${n} killed (kill -9)`, backUp: await back(n) }; },
+    async () => { if (cut) return null; cut = true; await prisma.$executeRawUnsafe('SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND usename = \'steelwise_runtime\'').catch(() => {}); return { what: 'every database connection of the servers cut' }; },
     async () => { const n = 1 + (turn % copies); await control(`term/${n}`); return { what: `copy ${n} restarted politely`, backUp: await back(n) }; },
     async () => { const cl = new ctx.pg.Client({ connectionString: ctx.OWNER_URL }); await cl.connect(); await cl.query('BEGIN'); await cl.query('LOCK TABLE "DocumentCounter" IN SHARE UPDATE EXCLUSIVE MODE'); await sleep(2000); await cl.query('COMMIT'); await cl.end(); return { what: 'invoice numbers held by another session for 2 s' }; },
     async () => { await control('mode', { delayMs: 400 }); await sleep(4000); await control('mode', {}); return { what: 'every answer delayed 400 ms for 4 s' }; },
     async () => { ctx.setMode('ai', { status: 503 }); ctx.setMode('alerts', { status: 503 }); await sleep(8000); ctx.setMode('ai', { status: 200 }); ctx.setMode('alerts', { status: 200 }); return { what: 'AI service and alert channel down for 8 s' }; },
-    async () => { if (killed) return null; killed = true; const n = 1 + ((turn + 1) % copies); await control(`kill/${n}`); return { what: `copy ${n} killed (kill -9)`, backUp: await back(n) }; },
-    async () => { if (cut) return null; cut = true; await prisma.$executeRawUnsafe('SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND usename = \'steelwise_runtime\'').catch(() => {}); return { what: 'every database connection of the servers cut' }; },
   ];
   readers.push((async () => {
-    await sleep(6000);
+    await sleep(4000);
     while (reading) {
       const t = performance.now(); const at = new Date().toISOString().slice(11, 19); const level = X.gauge.level;
       const e = await faults[turn % faults.length]().catch((err) => ({ what: 'a fault could not be injected', error: String(err?.message || err).slice(0, 120) }));
       turn += 1;
       if (e) { chaos.events.push({ at, duringLevel: level, ...e, ms: Math.round(performance.now() - t) }); say(`  fault: ${e.what}${e.backUp === false ? ' (DID NOT COME BACK)' : ''}`); }
-      for (let i = 0; i < 40 && reading; i++) await sleep(250);
+      for (let i = 0; i < 20 && reading; i++) await sleep(250);
     }
   })());
 }

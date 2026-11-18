@@ -247,3 +247,40 @@ test('Z-009: a route that answered 500 for want of a connection is answered 503 
   assert.equal(sent.headers['Retry-After'], '2');
   assert.ok(!/prisma|connection slots|FATAL/i.test(JSON.stringify(sent.body)), 'no internals');
 });
+
+// ── Z-011: a transaction that lost its connection is "try again" too ───────────────────────────
+test('Z-011: a transaction that fails for want of a connection is noted for the reply, and other failures are not', async () => {
+  const { withTransactionNote } = await import('../src/lib/db.js');
+  const { requestContext } = await import('../src/lib/requestContext.js');
+  let failWith = null;
+  const fake = { $transaction: async (work) => { if (failWith) throw failWith; return work; }, $extends(ext) { return { $transaction: ext.client.$transaction }; } };
+  const client = withTransactionNote(fake);
+  const run = async (error) => { const store = {}; failWith = error; const out = await requestContext.run(store, () => client.$transaction('work').catch((e) => e)); return { store, out }; };
+  const closed = Object.assign(new Error('Server has closed the connection.'), { code: 'P1017' });
+  const lost = await run(closed);
+  assert.equal(lost.out, closed, 'the caller still gets the error itself');
+  assert.equal(lost.store.noConnection, true);
+  assert.equal(busyDatabase(500, lost.store)?.status, 503);
+  const other = await run(Object.assign(new Error('Unique constraint failed'), { code: 'P2002' }));
+  assert.equal(other.store.noConnection, undefined);
+  const fine = await run(null);
+  assert.equal(fine.out, 'work'); assert.equal(fine.store.noConnection, undefined);
+});
+
+// ── Z-013: a keyed request is never run without its key ────────────────────────────────────────
+test('Z-013: when the request key cannot be claimed the request is not run, and the caller is told to send it again', async () => {
+  const { requestKeys, useKeyStore } = await import('../src/middleware/requestKeys.js');
+  const call = async (createError) => {
+    const out = { ran: false, headers: {} };
+    const res = { set(k, v) { out.headers[k] = v; return res; }, status(c) { out.status = c; return res; }, json(b) { out.body = b; return res; }, on() {}, statusCode: 200 };
+    const req = { method: 'POST', originalUrl: '/api/invoices/1/payments', body: { amount: 12 }, user: { id: 'u1' }, id: 'r1', get: (h) => (h === 'Idempotency-Key' ? 'key-12345678' : undefined) };
+    useKeyStore({ requestKey: { create: async () => { if (createError) throw createError; return { id: 'k1' }; }, deleteMany: async () => ({}) } });
+    try { await requestKeys(req, res, () => { out.ran = true; }); } finally { useKeyStore(null); }
+    return out;
+  };
+  const lost = await call(Object.assign(new Error('Server has closed the connection.'), { code: 'P1017' }));
+  assert.equal(lost.ran, false, 'the payment must not be taken without its key');
+  assert.deepEqual({ status: lost.status, code: lost.body.code, retry: lost.headers['Retry-After'] }, { status: 503, code: 'DATABASE_BUSY', retry: '2' });
+  const fine = await call(null);
+  assert.equal(fine.ran, true);
+});

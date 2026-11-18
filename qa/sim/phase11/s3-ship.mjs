@@ -1,6 +1,6 @@
 // Group 3: shipping, logistics and invoicing with people acting at the same moment, at every kind of selling branch.
 export default async function run(c) {
-  const { S, G11, SELLING, branch, P, onDock, sold, all, statuses, count, inv, n, prisma, ok2, err, TIERS, lot, order } = c;
+  const { S, G11, SELLING, branch, P, onDock, sold, all, statuses, count, inv, n, prisma, err, TIERS, lot, order } = c;
   const G = G11.ship;
   let k = 5;
   for (const tier of SELLING) {

@@ -1,0 +1,1424 @@
+{
+ "at": "2026-11-18T18:33:51.064Z",
+ "base": "http://localhost:3110",
+ "scenarios": 36,
+ "passed": 36,
+ "checks": 158,
+ "groups": {
+  "Failure injection and recovery": {
+   "scenarios": 36,
+   "passed": 36,
+   "checks": 158
+  }
+ },
+ "results": [
+  {
+   "group": "Failure injection and recovery",
+   "name": "A server copy is killed in the middle of twenty dispatches",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "nothing is half-saved",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "each shipment left once with one invoice",
+     "ok": true
+    },
+    {
+     "what": "afterwards: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: IN_TRANSIT agrees",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 5676,
+   "record": {
+    "initialConditions": "Twenty shipments wait on the dock; kill -9 of copy 1 once the first has been saved",
+    "expected": "every shipment either left whole or did not leave; after the copy is back and the dock sends again, each has left once with one invoice; the books agree",
+    "actual": "as expected (8 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no half-saved dispatch",
+    "financialState": "each sale billed once",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "People keep reading while a server copy is killed",
+   "asserts": [
+    {
+     "what": "all ninety answered 200",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1118,
+   "record": {
+    "initialConditions": "Ninety reads in three waves; copy 2 is killed during the second",
+    "expected": "every read is answered: the front door hands a read to another copy",
+    "actual": "as expected (2 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "reads are not lost with a copy",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The front door takes a dead copy out and puts it back when it answers again",
+   "asserts": [
+    {
+     "what": "everything is answered by the other copies",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "it serves again",
+     "ok": true
+    },
+    {
+     "what": "the old sign-in works on the restarted copy itself",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1313,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "no request goes to the dead copy; after the restart it serves again, and a sign-in made before the crash still works on it",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "sign-ins are not kept in a copy's memory, so nobody is signed out by a restart",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A server copy is killed while twelve payments carrying request keys are being taken",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "each invoice has exactly one payment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 64872,
+   "record": {
+    "initialConditions": "Each payment carries its own request key; copy 1 is killed as they arrive",
+    "expected": "a payment whose copy died is not taken twice: sending it again with the same key is held while the first attempt could still be alive, then taken once",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "each invoice is paid once",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "a claim left by a dead copy is taken over after one minute (requestKeys STALE_MS)",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A server copy is killed while thirty journal entries are being posted",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "no posted entry is out of balance",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "all thirty are posted, each with its own number",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1217,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "every entry is a draft or posted whole; after sending again each is posted once with its own number",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no unbalanced or half-posted entry",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A server copy is killed while six coil work orders are being completed",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "each made two pieces of 1,485 lb, once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2011,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "each work order is completed once; its pieces are made once and the weight adds up",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "two output items per work order; 1485 + 1485 + 30 scrap = 3000",
+    "financialState": "work in progress is cleared once",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A server copy is killed while eight transfers are being received",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "all eight are received",
+     "ok": true
+    },
+    {
+     "what": "all eight items are at the receiving branch",
+     "ok": true
+    },
+    {
+     "what": "afterwards: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: IN_TRANSIT agrees",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2325,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "each transfer is received once; nothing is left on the road in the books or in the records",
+    "actual": "as expected (8 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "in transit agrees",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A server copy is stopped politely (SIGTERM) while thirty payments arrive",
+   "asserts": [
+    {
+     "what": "the stopped copy finished its requests and left within three seconds (Z-008)",
+     "ok": true
+    },
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "each invoice has exactly one payment",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 8996,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "no payment is taken twice; every payment the client was told about is saved; the rest are taken when sent again",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "each invoice has one payment of 10.00",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Every server copy is restarted in turn while forty-five sales go out",
+   "asserts": [
+    {
+     "what": "every copy came back",
+     "ok": true
+    },
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "each of the forty-five left once with one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 14581,
+   "record": {
+    "initialConditions": "A rolling restart, as a deployment does: copy 1, then 2, then 3, each after the one before is back",
+    "expected": "every sale goes out once with one invoice; no answer is a 500",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "forty-five invoices, one each",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "a deployment does not need the business to stop",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Every server copy is down at once, then all are started",
+   "asserts": [
+    {
+     "what": "503 with a plain sentence",
+     "ok": true
+    },
+    {
+     "what": "all copies came back",
+     "ok": true
+    },
+    {
+     "what": "a person signs in",
+     "ok": true
+    },
+    {
+     "what": "a sale goes through",
+     "ok": true
+    },
+    {
+     "what": "after the restart: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "after the restart: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "after the restart: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "after the restart: IN_TRANSIT agrees",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2355,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "the front door says plainly that nothing is running (503); after the start people sign in, a sale goes through and the books agree",
+    "actual": "as expected (8 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "the refusal carries no internals",
+    "recoveryResult": "recovery after a full restart needs no repair",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The code is running before database update 18 is applied",
+   "asserts": [
+    {
+     "what": "sign-in works on every copy",
+     "ok": true
+    },
+    {
+     "what": "the partner API works on every copy",
+     "ok": true
+    },
+    {
+     "what": "with the table back the shared count is used again at once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 641,
+   "record": {
+    "initialConditions": "The RateWindow table is taken away from the QA database for a moment, as on a host where the new code is deployed first",
+    "expected": "sign-in and the partner API keep working; the limits are counted per copy as before; no request fails because of the limiter",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "the table is put back unchanged",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "applying update 18 switches to the shared count with no restart",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A deployment given a wrong database address reports that it is not ready",
+   "asserts": [
+    {
+     "what": "it started",
+     "ok": true
+    },
+    {
+     "what": "ready 503",
+     "ok": true
+    },
+    {
+     "what": "health 503",
+     "ok": true
+    },
+    {
+     "what": "sign-in fails cleanly",
+     "ok": true
+    },
+    {
+     "what": "the running copies still answer",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1136,
+   "record": {
+    "initialConditions": "A separate copy on port 3140 pointed at a database that does not answer",
+    "expected": "ready 503 and health 503, live 200; sign-in fails without internals; the running copies are not affected",
+    "actual": "as expected (5 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "no connection string or stack in the answer",
+    "recoveryResult": "a host that checks readiness never sends it traffic; the previous deployment keeps serving",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Three requests pay one invoice in full while another session holds its row for two seconds",
+   "asserts": [
+    {
+     "what": "one taken, none a server error",
+     "ok": true
+    },
+    {
+     "what": "paid once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2394,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "they wait; one is taken when the row is free; the others are refused",
+    "actual": "as expected (2 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "paid once",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "a slow database makes people wait, it does not corrupt",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Eight shipments are dispatched while the invoice numbers are held for three seconds",
+   "asserts": [
+    {
+     "what": "all eight left",
+     "ok": true
+    },
+    {
+     "what": "eight numbers in a row",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 4611,
+   "record": {
+    "initialConditions": "Another session holds the document counter, as a long-running statement would",
+    "expected": "the eight wait, then all leave, with eight numbers in a row",
+    "actual": "as expected (2 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "eight invoices",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "waiting, not failing",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The invoice numbers stay held for longer than a request may wait",
+   "asserts": [
+    {
+     "what": "no answer is a 500",
+     "ok": true
+    },
+    {
+     "what": "nothing is half-saved",
+     "ok": true
+    },
+    {
+     "what": "each left once with one invoice in the end",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 23644,
+   "record": {
+    "initialConditions": "The document counter is held for 23 seconds; a request gives up after 20",
+    "expected": "the dock is told to try again (not a 500); the goods that left are listed as waiting for their invoice; when the hold ends they are billed once",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no sale is billed twice and none is lost",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the unbilled shipment is closed by billing it; the system check lists it meanwhile",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Almost every database connection is taken by something else",
+   "asserts": [
+    {
+     "what": "reads were answered, or told to try again",
+     "ok": true
+    },
+    {
+     "what": "a change that found no connection is told to try again (503), never a 500",
+     "ok": true
+    },
+    {
+     "what": "nothing is half-saved",
+     "ok": true
+    },
+    {
+     "what": "every shipment left once with one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1851,
+   "record": {
+    "initialConditions": "Idle sessions are opened until only a few connections are left for the application",
+    "expected": "forty requests are answered with what is left: slower, not broken",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no half-saved change",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "requests queue for a connection; when the sessions go away the speed returns",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Every database connection of the servers is cut while thirty requests are in flight",
+   "asserts": [
+    {
+     "what": "no answer leaked internals",
+     "ok": true
+    },
+    {
+     "what": "the servers answer again by themselves",
+     "ok": true
+    },
+    {
+     "what": "nothing is half-saved",
+     "ok": true
+    },
+    {
+     "what": "every shipment left once with one invoice after sending again",
+     "ok": true
+    },
+    {
+     "what": "afterwards: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "afterwards: IN_TRANSIT agrees",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 8358,
+   "record": {
+    "initialConditions": "pg_terminate_backend on the application's sessions",
+    "expected": "the servers reconnect by themselves within seconds; nothing is half-saved; a failed request succeeds when sent again",
+    "actual": "as expected (8 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "automatic reconnect; no restart",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The network drops after eight payments were sent, and the same payments are sent again",
+   "asserts": [
+    {
+     "what": "the client got no answer",
+     "ok": true
+    },
+    {
+     "what": "each repeat is answered as taken",
+     "ok": true
+    },
+    {
+     "what": "most repeats were answered from the first attempt",
+     "ok": true
+    },
+    {
+     "what": "one payment each",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2968,
+   "record": {
+    "initialConditions": "The connection is cut 5 ms after each request leaves; each carries a request key",
+    "expected": "no answer reaches the client; the repeat with the same key gets the first answer; one payment each",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "paid once",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "request keys make a blind retry safe",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The network drops after six dispatches were sent, and the dock sends them again",
+   "asserts": [
+    {
+     "what": "the dock got no answer",
+     "ok": true
+    },
+    {
+     "what": "no repeat is a server error",
+     "ok": true
+    },
+    {
+     "what": "each left once with one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2541,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "each shipment leaves once with one invoice, however many times it was sent",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "six invoices",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "dispatch can be sent again safely",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The network drops after six orders were sent with request keys, and they are sent again",
+   "asserts": [
+    {
+     "what": "the seller got no answer",
+     "ok": true
+    },
+    {
+     "what": "each repeat is answered with the order",
+     "ok": true
+    },
+    {
+     "what": "one order each",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 835,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "six orders, not twelve",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "one Order per purchase order reference",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "request keys make a blind retry safe",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Answers to dispatch arrive 2.5 seconds late; the dock gives up after one second and sends again",
+   "asserts": [
+    {
+     "what": "the first attempts timed out at the client",
+     "ok": true
+    },
+    {
+     "what": "the repeats were answered without a server error",
+     "ok": true
+    },
+    {
+     "what": "each left once with one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 4302,
+   "record": {
+    "initialConditions": "The front door holds every dispatch answer for 2.5 seconds",
+    "expected": "the work was done the first time; the repeat is told so; one invoice each",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "five invoices",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "an impatient repeat does not ship or bill twice",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Answers to posting arrive late and an impatient accountant clicks Post twice",
+   "asserts": [
+    {
+     "what": "five posts went through and five were refused",
+     "ok": true
+    },
+    {
+     "what": "each is posted once with its own number",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1757,
+   "record": {
+    "initialConditions": "The front door holds every posting answer for 1.5 seconds; the second click follows 200 ms after the first",
+    "expected": "each entry is posted once",
+    "actual": "as expected (2 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "five entries, five numbers",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "no failure was injected",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A sign-in that has run out is refused by every copy and changes nothing",
+   "asserts": [
+    {
+     "what": "every read is refused",
+     "ok": true
+    },
+    {
+     "what": "every write is refused",
+     "ok": true
+    },
+    {
+     "what": "nothing was saved",
+     "ok": true
+    },
+    {
+     "what": "signing in again works",
+     "ok": true
+    },
+    {
+     "what": "and the new sign-in reads",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 127,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "401 for twelve reads and six writes; nothing saved; after signing in again the same write goes through",
+    "actual": "as expected (5 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "an expired session cannot act",
+    "recoveryResult": "the person signs in again and carries on",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "A sign-in runs out in the middle of a job and the job is finished after signing in again",
+   "asserts": [
+    {
+     "what": "refused with 401",
+     "ok": true
+    },
+    {
+     "what": "nothing was reserved",
+     "ok": true
+    },
+    {
+     "what": "after signing in again the step succeeds",
+     "ok": true
+    },
+    {
+     "what": "the sale completes with one invoice",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 356,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "the step sent with the expired sign-in is refused and reserves nothing; after a new sign-in the same step succeeds and the sale completes",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no reservation from the refused step",
+    "financialState": "one invoice",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the job carries on from the step that was refused",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The partner address, the AI service and the alert channel are all down while twelve sales go out",
+   "asserts": [
+    {
+     "what": "all twelve left and were billed",
+     "ok": true
+    },
+    {
+     "what": "twelve events wait",
+     "ok": true
+    },
+    {
+     "what": "each event was delivered once after the address came back",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 6078,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "all twelve sales go out and are billed; the events wait; when the addresses return each event is delivered once",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "twelve invoices",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the business does not depend on any outside service answering",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Six orders reserve the same 1,000 lb at the same moment while a server copy is killed",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "no more than 900 lb is reserved",
+     "ok": true
+    },
+    {
+     "what": "the item agrees with its reservations",
+     "ok": true
+    },
+    {
+     "what": "every reservation the client was told about exists",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1088,
+   "record": {
+    "initialConditions": "Six orders of 300 lb each against one item of 1,000 lb",
+    "expected": "at most three are reserved; the item's reserved pounds equal the reservations that exist",
+    "actual": "as expected (5 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "Inventory.qtyAllocated = sum of OrderLineAllocation",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Six deliveries are each confirmed three times at the same moment while a server copy is killed",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "all six are delivered",
+     "ok": true
+    },
+    {
+     "what": "one invoice each",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2828,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "each is delivered once in the end; still one invoice each",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "Shipment DELIVERED",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Twelve invoices are being numbered when a server copy is killed",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "each left once with one invoice",
+     "ok": true
+    },
+    {
+     "what": "no number twice",
+     "ok": true
+    },
+    {
+     "what": "no number skipped between the first and the last of these invoices",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 3469,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "no invoice number is used twice and none is skipped, across the whole company, although some saves were lost with the copy",
+    "actual": "as expected (5 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "the invoice series stays gapless",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "a lost save gives its number back, because the number and the invoice are one save",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Thirty entries are being posted by two people when a server copy is restarted",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "all thirty posted, thirty numbers",
+     "ok": true
+    },
+    {
+     "what": "no entry number is used twice in the journal",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1169,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "each entry is posted once; entry numbers are not repeated",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no double posting",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "An accounting export is being made when a server copy is killed",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "every batch holds exactly the entries it counts",
+     "ok": true
+    },
+    {
+     "what": "no entry is in two batches",
+     "ok": true
+    },
+    {
+     "what": "the entry is in exactly one batch",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1358,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "the batch is whole or absent: its count equals its items, and no entry is in two batches; the next export carries what is left",
+    "actual": "as expected (5 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no entry exported twice or dropped",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the export is made again; nothing was sent anywhere",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "The books are being reconciled when a server copy is killed",
+   "asserts": [
+    {
+     "what": "no answer was a 500",
+     "ok": true
+    },
+    {
+     "what": "the copy came back",
+     "ok": true
+    },
+    {
+     "what": "every stored run has all its checks",
+     "ok": true
+    },
+    {
+     "what": "no entry was made",
+     "ok": true
+    },
+    {
+     "what": "sent again: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "sent again: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "sent again: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "sent again: IN_TRANSIT agrees",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1084,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "every run that was stored is complete; a run sent again agrees",
+    "actual": "as expected (8 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no entry is made by a reconciliation, finished or not",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the copy is started again; a client that sends again gets one result; nothing needs repair by hand",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Every server copy is killed while the scheduled run is sending partner events",
+   "asserts": [
+    {
+     "what": "all copies came back",
+     "ok": true
+    },
+    {
+     "what": "all three were delivered",
+     "ok": true
+    },
+    {
+     "what": "the partner saw three different events, and any repeat carries a known id",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 10190,
+   "record": {
+    "initialConditions": "Three events wait; the partner answers slowly so the run is in flight when the copies die",
+    "expected": "no event is lost: after the restart a run delivers each one; a copy the partner may already have received carries the same id",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "three deliveries DELIVERED",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the next scheduled run picks up what the dead run left",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "After every failure, no business record was saved without its posting",
+   "asserts": [
+    {
+     "what": "nothing is missing from the books",
+     "ok": true
+    },
+    {
+     "what": "no event is failed, pending or held",
+     "ok": true
+    },
+    {
+     "what": "no shipment that left is unbilled",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 95,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "the search for unposted records finds nothing; no event is failed, pending or held; no shipment that left is unbilled",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "business records and the books were saved together or not at all",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "no failure was injected",
+    "auditEvidence": "LedgerEvent for every business event",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "After every failure, the enterprise's records still hold their rules",
+   "asserts": [
+    {
+     "what": "no negative stock",
+     "ok": true
+    },
+    {
+     "what": "nothing reserved beyond what is on hand",
+     "ok": true
+    },
+    {
+     "what": "reserved pounds equal the reservations",
+     "ok": true
+    },
+    {
+     "what": "no invoice number is used twice",
+     "ok": true
+    },
+    {
+     "what": "no order number is used twice",
+     "ok": true
+    },
+    {
+     "what": "no shipment number is used twice",
+     "ok": true
+    },
+    {
+     "what": "no journal entry number is used twice",
+     "ok": true
+    },
+    {
+     "what": "every posted entry balances",
+     "ok": true
+    },
+    {
+     "what": "the whole enterprise: BOOKS_BALANCE agrees",
+     "ok": true
+    },
+    {
+     "what": "the whole enterprise: INVENTORY agrees",
+     "ok": true
+    },
+    {
+     "what": "the whole enterprise: RECEIVABLES agrees",
+     "ok": true
+    },
+    {
+     "what": "the whole enterprise: IN_TRANSIT agrees",
+     "ok": true
+    },
+    {
+     "what": "the reconciliation passed as a whole",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 233,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "no negative stock, no stock reserved beyond what is on hand, no repeated document number, every posted entry balanced, and the books agree with the records",
+    "actual": "as expected (13 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "counts of zero",
+    "financialState": "reconciliation agrees on every figure",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "no failure was injected",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "After every failure, every server copy is up, ready and serving",
+   "asserts": [
+    {
+     "what": "every copy is up",
+     "ok": true
+    },
+    {
+     "what": "each answers ready",
+     "ok": true
+    },
+    {
+     "what": "each serves",
+     "ok": true
+    },
+    {
+     "what": "the copies were stopped many times during this group and are whole",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 175,
+   "record": {
+    "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
+    "expected": "the front door lists every copy as up; each answers its own readiness check; each has served requests since it last started",
+    "actual": "as expected (4 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "the cluster is back to full strength without a hand on it",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  },
+  {
+   "group": "Failure injection and recovery",
+   "name": "Sixty people sign in at once right after every copy has restarted",
+   "asserts": [
+    {
+     "what": "all copies came back",
+     "ok": true
+    },
+    {
+     "what": "all sixty signed in",
+     "ok": true
+    },
+    {
+     "what": "the slowest within 2.5 seconds",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 3224,
+   "record": {
+    "initialConditions": "All copies restarted a moment ago: nothing is warm",
+    "expected": "all sixty are signed in; the slowest within the proposed limit of 2.5 seconds",
+    "actual": "as expected (3 checks)",
+    "businessState": "as the checks state",
+    "databaseState": "no change outside the scenario",
+    "financialState": "no financial effect",
+    "securityResult": "not a security scenario",
+    "recoveryResult": "a restart at the start of a shift does not lock people out",
+    "auditEvidence": "the records named in the checks",
+    "regressionResult": "pass; kept in qa/sim/phase11-scenarios.mjs, Failure injection and recovery"
+   }
+  }
+ ],
+ "serverCopies": 3,
+ "minimums": {
+  "Sales, inventory and purchasing concurrency": {
+   "minimum": 45,
+   "ran": 0,
+   "passed": 0,
+   "met": false
+  },
+  "Manufacturing, scheduling and quality": {
+   "minimum": 40,
+   "ran": 0,
+   "passed": 0,
+   "met": false
+  },
+  "Shipping, logistics and invoicing": {
+   "minimum": 35,
+   "ran": 0,
+   "passed": 0,
+   "met": false
+  },
+  "Ledger posting and reconciliation": {
+   "minimum": 60,
+   "ran": 0,
+   "passed": 0,
+   "met": false
+  },
+  "Tenant, branch, RBAC and AI security": {
+   "minimum": 35,
+   "ran": 0,
+   "passed": 0,
+   "met": false
+  },
+  "Integrations, events and background jobs": {
+   "minimum": 35,
+   "ran": 0,
+   "passed": 0,
+   "met": false
+  },
+  "Failure injection and recovery": {
+   "minimum": 35,
+   "ran": 36,
+   "passed": 36,
+   "met": true
+  },
+  "Reporting, frontend and deployment": {
+   "minimum": 15,
+   "ran": 0,
+   "passed": 0,
+   "met": false
+  }
+ },
+ "totalMinimum": {
+  "minimum": 300,
+  "passed": 36,
+  "met": false
+ }
+}

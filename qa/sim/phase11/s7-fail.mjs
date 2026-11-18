@@ -5,7 +5,7 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 export default async function run(c) {
-  const { S, G11, TIERS, E, X, branch, P, hq, lot, order, onDock, sold, job, all, statuses, count, inv, n, prisma, err, tag, http1, sleep, until, cluster, forge, as, signIn, QA_PASSWORD, D, C, today, reconcile, unbalancedPosted, hitsOf, clearHits, setMode, subscribe, runTasks, makeDue, deliveriesOf, partnerOf, pg, OWNER_URL, root, PRICE_OF } = c;
+  const { S, G11, E, branch, P, hq, lot, order, onDock, sold, all, statuses, count, inv, n, prisma, err, tag, http1, sleep, until, cluster, forge, as, signIn, QA_PASSWORD, D, C, today, reconcile, unbalancedPosted, hitsOf, clearHits, setMode, subscribe, runTasks, makeDue, deliveriesOf, partnerOf, pg, OWNER_URL, root } = c;
   const G = G11.fail;
   const cfo = hq('CFO', 0); const cfo2 = hq('CFO', 1);
   const total = (await cluster.state())?.workers.length || 0;
@@ -455,6 +455,8 @@ export default async function run(c) {
   });
 
   await S(G, 'An accounting export is being made when a server copy is killed', { expect: 'the batch is whole or absent: its count equals its items, and no entry is in two batches; the next export carries what is left', fin: 'no entry exported twice or dropped', rec: 'the export is made again; nothing was sent anywhere' }, async (ok) => {
+    // The export needs every account mapped (the ledger group does this when it runs first).
+    for (const a of ((await cfo.get('/api/ledger/external-accounts/GENERIC')).body.accounts || []).filter((x) => !x.externalAccount)) await cfo.put(`/api/ledger/external-accounts/GENERIC/${a.code}`, { externalAccount: `EXT-${a.code}` });
     const d = await cfo.post('/api/ledger/entries', { entryDate: today(), memo: 'P11 failure: export during a crash', lines: [D('5200', 6), C('2200', 6)] }); await cfo2.post(`/api/ledger/entries/${d.body.id}/post`);
     const sends = all(3, () => send(cfo, 'POST', '/api/ledger/exports', { provider: 'GENERIC', from: today(), to: today() }));
     await sleep(15); await down(2); const rs = await sends;

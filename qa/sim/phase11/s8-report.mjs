@@ -1,3 +1,4 @@
+/* global localStorage, document */
 // Group 8: reports, dashboards, the screens and deployment facts at the data volume of the 80-branch run.
 // The API parts read through the multi-copy front door; the screens are opened in a real browser
 // (--app, a Vite server whose /api goes to a QA server on the same database).
@@ -6,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 export default async function run(c) {
-  const { S, G11, E, branch, P, hq, onDock, all, statuses, prisma, err, arg, http1, sleep, reconcile, today, root, near } = c;
+  const { S, G11, branch, P, hq, onDock, all, statuses, prisma, err, arg, http1, reconcile, root, near } = c;
   const G = G11.report;
   const READ = { p95: 800 }; const SCREEN_MS = 3000; // proposed limits (qa/sim/phase11/thresholds.mjs; the screen limit is proposed here), pending the owner's approval
   const cfo = hq('CFO', 0); const exec = hq('EXECUTIVE', 0); const auditor = hq('AUDITOR', 0);

@@ -19,7 +19,7 @@ if (!/(localhost|127\.0\.0\.1).*qa/.test(DB)) { console.error('Refusing: DATABAS
 const DBNAME = DB.split('/').pop().split('?')[0];
 
 const BILLING = B('services/billing.js'); const NUM = B('lib/numbering.js'); const PW = B('lib/passwords.js'); const RATE = B('lib/rateWindow.js');
-const APP = B('app.js'); const SAFE = B('middleware/safeErrors.js'); const SERVER = B('server.js'); const PRL = B('middleware/partnerRateLimit.js'); const CTX = B('lib/requestContext.js');
+const APP = B('app.js'); const SAFE = B('middleware/safeErrors.js'); const SERVER = B('server.js');
 // [id, what the fix does, kind, file, text, replacement, the check that must fail, group]
 const M = [
   ['Z-001', 'an invoice number comes from the counter, not from a read of every invoice', 'unit', BILLING, 'if (!rows.length) {\n    rows = await tx.$queryRaw`\n      INSERT INTO "DocumentCounter"', 'if (true) {\n    rows = await tx.$queryRaw`\n      INSERT INTO "DocumentCounter"', 'Z-001: taking an invoice number does not read'],
@@ -33,6 +33,8 @@ const M = [
   ['Z-008', 'a politely stopped copy closes idle connections and leaves quickly', 'sim', SERVER, 'const closeIdle = setInterval(() => server.closeIdleConnections?.(), 50);', 'const closeIdle = setInterval(() => {}, 50);', 'stopped politely (SIGTERM) while thirty payments arrive', 7],
   ['Z-009', 'a 500 for want of a database connection is answered 503 with a time to retry', 'unit', SAFE, 'return statusCode === 500 && store?.noConnection ? BUSY_DATABASE : null;', 'return null;', 'Z-009: a route that answered 500'],
   ['Z-009s', 'with the database connections used up a change is told to try again, never 500', 'sim', SAFE, 'return statusCode === 500 && store?.noConnection ? BUSY_DATABASE : null;', 'return null;', 'Almost every database connection is taken', 7],
+  ['Z-011', 'a transaction that lost its connection is answered 503, not 500', 'unit', B('lib/db.js'), '.catch((error) => { throw noteLostConnection(error); })', '', 'Z-011'],
+  ['Z-013', 'a keyed request is not run when its key cannot be claimed', 'unit', B('middleware/requestKeys.js'), "      res.set('Retry-After', String(BUSY_DATABASE.retryAfterSeconds));\n      return res.status(BUSY_DATABASE.status)", "      return next(); res.status(BUSY_DATABASE.status)", 'Z-013'],
 ];
 
 const cluster = () => { const r = spawnSync('bash', [path.join(root, 'qa/tools/phase11-cluster.sh'), '3'], { encoding: 'utf8', env: { ...process.env, P11_DB: DBNAME } }); if (r.status !== 0) throw new Error(`the server copies did not start: ${r.stdout}${r.stderr}`); };

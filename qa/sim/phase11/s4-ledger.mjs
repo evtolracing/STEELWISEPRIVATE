@@ -3,7 +3,7 @@
 // books must agree with the stock and invoice records; and a difference is named, never adjusted away.
 // Test entries on the QA ledger only.
 export default async function run(c) {
-  const { S, G11, SELLING, TIERS, E, X, branch, P, hq, lot, order, onDock, sold, job, all, statuses, count, inv, n, prisma, err, near, today, D, C, nets, posted, eventOf, expectEntry, reconcile, unbalancedPosted, asRuntimeRolledBack, denied, moveOf, COST_OF, tag, sleep } = c;
+  const { S, G11, SELLING, TIERS, E, X, branch, P, hq, lot, onDock, sold, job, all, statuses, count, prisma, err, near, today, D, C, nets, posted, eventOf, expectEntry, reconcile, unbalancedPosted, asRuntimeRolledBack, moveOf, tag, sleep } = c;
   const G = G11.ledger;
   const cfo = hq('CFO', 0); const cfo2 = hq('CFO', 1); const auditor = hq('AUDITOR', 0);
   const fin = 'Test entries on the QA ledger only';

@@ -1,7 +1,7 @@
 import { userChangeDenial } from '../lib/userAdminRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import bcrypt from 'bcryptjs';
+import { hashPassword } from '../lib/passwords.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { ci } from '../lib/dbText.js';
 import { CUSTOMER_ROLES } from '../lib/customerScope.js';
@@ -189,7 +189,7 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
       return res.status(400).json({ error: 'Email already registered' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await hashPassword(password, 10);
 
     // The login and the record of who created it are saved together (B-010).
     const user = await prisma.$transaction(async (tx) => {
@@ -468,7 +468,7 @@ router.post('/:id/reset-password', authenticate, requireRole('SUPER_ADMIN', 'TEN
 
     const refusal = userChangeDenial(req.user, existingUser, {});
     if (refusal) return res.status(403).json({ error: refusal });
-    const passwordHash = await bcrypt.hash(newPassword, 10);
+    const passwordHash = await hashPassword(newPassword, 10);
     // The change and its audit record are one step (B-010).
     await prisma.$transaction([
       // Every sign-in of this login ends: whoever held it must sign in with the new password (Y-001).

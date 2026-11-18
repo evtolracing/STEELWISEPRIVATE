@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import bcrypt from 'bcryptjs';
+import { checkPassword, hashPassword } from '../lib/passwords.js';
 import { authenticate, requireRole, signUserToken, missingUpdate17, UPDATE_17 } from '../middleware/auth.js';
 import { raiseAlertLater } from '../lib/alerts.js';
 import { userChangeDenial } from '../lib/userAdminRules.js';
@@ -53,10 +54,10 @@ router.post('/login', async (req, res) => {
     const now = new Date();
     if (user?.lockedUntil && user.lockedUntil > now) {
       // Paused: the password is not even compared. The same answer as a wrong password.
-      await bcrypt.compare(password, NO_LOGIN_HASH);
+      await checkPassword(password, NO_LOGIN_HASH);
       return res.status(401).json({ error: REFUSED });
     }
-    const matches = await bcrypt.compare(password, user?.passwordHash || NO_LOGIN_HASH);
+    const matches = await checkPassword(password, user?.passwordHash || NO_LOGIN_HASH);
     if (!user || !user.passwordHash || !matches) {
       if (user) {
         const failed = await prisma.user.update({ where: { id: user.id }, data: { failedLoginCount: { increment: 1 } }, select: { failedLoginCount: true } });
@@ -114,7 +115,7 @@ async function createUser(req, res) {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await hashPassword(password, 10);
 
     const user = await prisma.user.create({
       data: {
@@ -163,13 +164,13 @@ router.put('/password', authenticate, async (req, res, next) => {
     }
 
     const user = await prisma.user.findUnique({ where: { id: req.user.id } });
-    if (!user?.passwordHash || !await bcrypt.compare(currentPassword, user.passwordHash)) {
+    if (!user?.passwordHash || !await checkPassword(currentPassword, user.passwordHash)) {
       return res.status(401).json({ error: 'Current password is incorrect' });
     }
 
     // Every other sign-in of this login ends (Y-001); this one carries on with the new token.
     const updated = await prisma.$transaction(async (tx) => {
-      const u = await tx.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(newPassword, 10), tokensValidAfter: new Date() } });
+      const u = await tx.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(newPassword, 10), tokensValidAfter: new Date() } });
       await tx.auditLog.create({ data: { tenantId: user.organizationId, category: 'AUTH', eventType: 'PASSWORD_CHANGED', severity: 'INFO', action: 'UPDATE', userId: user.id, resourceType: 'User', resourceId: user.id, details: { otherSessionsEnded: true } } });
       return u;
     });

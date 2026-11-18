@@ -57,5 +57,6 @@ test('retryOverlap retries overlaps only', async () => {
   let n = 0;
   assert.equal(await retryOverlap(async () => { if (++n < 3) throw overlap(); return 'ok'; }), 'ok');
   await assert.rejects(() => retryOverlap(async () => { throw new Error('other'); }), /other/);
-  await assert.rejects(() => retryOverlap(async () => { throw overlap(); }, 2), /overlap/);
+  // Phase 11 (Z-005): when every try overlapped, the caller is told "busy, try again"; the database's own error is kept as the cause.
+  await assert.rejects(() => retryOverlap(async () => { throw overlap(); }, 2), (e) => e.status === 409 && e.code === 'BUSY' && /overlap/.test(e.cause.message));
 });

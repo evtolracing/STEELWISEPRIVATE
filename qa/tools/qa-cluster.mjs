@@ -19,7 +19,7 @@ const LOG = arg('log', '/tmp/qa-cluster');
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const agent = new http.Agent({ keepAlive: true, maxSockets: 256 });
 
-const workers = Array.from({ length: N }, (_, i) => ({ n: i + 1, port: PORT + 1 + i, proc: null, up: false, served: 0, startedAt: null, exits: 0 }));
+const workers = Array.from({ length: N }, (_, i) => ({ n: i + 1, port: PORT + 1 + i, proc: null, up: false, misses: 0, served: 0, startedAt: null, exits: 0 }));
 const mode = { delayMs: 0, cutAfterSend: 0, only: '' };
 const counters = { requests: 0, noWorker: 0, upstreamErrors: 0, cut: 0, delayed: 0 };
 
@@ -32,7 +32,10 @@ function start(w) {
 }
 async function probe(w) {
   if (!w.proc) { w.up = false; return; }
-  try { const r = await fetch(`http://127.0.0.1:${w.port}/api/health/live`, { signal: AbortSignal.timeout(1500) }); w.up = r.status === 200; } catch { w.up = false; }
+  // Like a host's health check: a copy is taken out after three checks in a row went unanswered, and put back by one good answer.
+  let good = false;
+  try { const r = await fetch(`http://127.0.0.1:${w.port}/api/health/live`, { signal: AbortSignal.timeout(1500) }); good = r.status === 200; } catch { good = false; }
+  if (good) { w.misses = 0; w.up = true; } else { w.misses += 1; w.missedChecks = (w.missedChecks || 0) + 1; if (w.misses >= 3) w.up = false; }
 }
 setInterval(() => workers.forEach(probe), 300).unref();
 

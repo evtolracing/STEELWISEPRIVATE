@@ -90,8 +90,13 @@ import printQueueRoutes from './routes/printQueue.js';
 import prisma from './lib/db.js';
 import config from './config/index.js';
 import { clientErrorAnswer } from './lib/errorAnswer.js';
+import { useSeriesCounter } from './lib/numbering.js';
+import { dbSeriesCounter } from './lib/seriesCounter.js';
 
 dotenv.config();
+
+// Document numbers come from the database counter, not from counting rows (Phase 11, Z-003).
+useSeriesCounter(dbSeriesCounter);
 
 const app = express();
 export { prisma };

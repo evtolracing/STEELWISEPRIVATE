@@ -31,7 +31,7 @@ export const summary = (a) => ({ requests: a.length, p50: pct(a, 50), p95: pct(a
 export async function pool(items, n, fn) { let i = 0; await Promise.all(Array.from({ length: Math.max(1, Math.min(n, items.length)) }, async () => { while (i < items.length) { const k = i++; await fn(items[k], k); } })); }
 
 export function makeEngine(E, { probe = false, rnd } = {}) {
-  const lat = {}; const reads = {};
+  const lat = {}; const reads = {}; const latByLevel = {};
   const tx = Object.fromEntries(Object.keys(CATEGORIES).map((k) => [k, { attempted: 0, completed: 0, failed: 0, retried: 0, recovered: 0, reconciled: 0, kinds: {} }]));
   const log = [];           // completed transactions: { cat, kind, ref, job }
   const failures = [];      // { kind, status, error, job, branch }
@@ -70,7 +70,7 @@ export function makeEngine(E, { probe = false, rnd } = {}) {
     }
     const { r, ms, inst } = out;
     const good = !!expect(r);
-    (lat[kind] ||= []).push(ms);
+    (lat[kind] ||= []).push(ms); ((latByLevel[gauge.level] ||= {})[kind] ||= []).push(ms);
     job.steps.push({ step: kind, role: who.role, status: r.status, ms: +ms.toFixed(1), ...(retries && { retries }), ...(inst && { copy: Number(inst) }), ...(!good && { error: err(r).slice(0, 160) }) });
     if (probe) console.log(`   ${good ? '·' : '✗'} ${job.type} ${kind} [${who.role}] ${r.status} ${good ? JSON.stringify(r.body).slice(0, 150) : err(r).slice(0, 200)}`);
     if (cat) {
@@ -364,5 +364,5 @@ export function makeEngine(E, { probe = false, rnd } = {}) {
     return { missing, notChecked };
   }
 
-  return { act, read, send, P, lat, reads, tx, log, failures, statuses, instances, gauge, receiveLot, lotFor, placeOrder, reserve, ship, takePayment, settle, stockSale, processedSale, webOrder, counterSale, partialShipment, returnAndCredit, transferBetween, countAdjustment, coilWorkOrder, manualEntry, reconciliationRun, reconcileLog, signIn };
+  return { act, read, send, P, lat, latByLevel, reads, tx, log, failures, statuses, instances, gauge, receiveLot, lotFor, placeOrder, reserve, ship, takePayment, settle, stockSale, processedSale, webOrder, counterSale, partialShipment, returnAndCredit, transferBetween, countAdjustment, coilWorkOrder, manualEntry, reconciliationRun, reconcileLog, signIn };
 }

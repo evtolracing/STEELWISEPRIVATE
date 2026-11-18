@@ -97,7 +97,7 @@ let reading = true; const tasks = { runs: 0, failed: 0 };
 const someManager = () => { const b = E.branches[rnd.int(0, E.branches.length - 1)]; return [X.P.manager(b), b]; };
 const readers = PROBE ? [] : [
   (async () => { while (reading) { await X.read('finance: trial balance', X.P.cfo(0), '/api/ledger/reports/trial-balance'); await X.read('finance: receivables', X.P.cfo(1), '/api/ledger/reports/receivables'); await X.read('finance: revenue by branch', X.P.cfo(0), '/api/ledger/reports/revenue?by=branch'); await sleep(1000); } })(),
-  (async () => { while (reading) { await X.read('executive: dashboard', X.P.exec(0), '/api/executive/dashboard'); await X.read('executive: inventory value', X.P.cfo(1), '/api/ledger/reports/inventory'); await sleep(1500); } })(),
+  (async () => { while (reading) { await X.read('executive: cockpit', X.P.exec(0), '/api/executive/cockpit'); await X.read('executive: company dashboard', X.P.exec(1), '/api/dashboard'); await X.read('executive: KPIs', X.P.exec(0), '/api/dashboard/kpis'); await X.read('operations: cockpit', X.P.exec(1), '/api/ops-cockpit'); await X.read('sales: dashboard', X.P.exec(0), '/api/sales-dashboard'); await X.read('executive: inventory value', X.P.cfo(1), '/api/ledger/reports/inventory'); await sleep(1500); } })(),
   (async () => { while (reading) { const [m, b] = someManager(); if (m) { await X.read('branch manager: orders list', m, '/api/orders?limit=50'); await X.read('branch manager: stock list', m, `/api/inventory?locationId=${b.id}&limit=50`); await X.read('branch manager: shipments list', m, '/api/shipments?limit=50'); await X.read('branch manager: invoices list', m, '/api/invoices?limit=50'); } await sleep(700); } })(),
   (async () => { while (reading) { const r = await ctx.runTasks().catch(() => ({ status: 0 })); tasks.runs += 1; if (!ok2(r)) tasks.failed += 1; await sleep(5000); } })(),
 ];
@@ -114,7 +114,7 @@ for (let li = 0; li < LEVELS.length; li++) {
     wk.job.ms = Math.round(performance.now() - t0);
   });
   const sec = (performance.now() - t) / 1000; const L = X.gauge.byLevel[X.gauge.level] || { ms: [], peakInFlight: 0 };
-  levels.push({ jobsInFlight: LEVELS[li], workItems: slice.length, completed: slice.filter((x) => x.job.done).length, seconds: +sec.toFixed(1), requests: X.gauge.requests - req0, requestsPerSecond: +((X.gauge.requests - req0) / sec).toFixed(1), peakRequestsInFlight: L.peakInFlight, latencyMs: summary(L.ms) });
+  levels.push({ dispatchMs: summary((X.latByLevel[X.gauge.level] || {})['shipment dispatched'] || []), jobsInFlight: LEVELS[li], workItems: slice.length, completed: slice.filter((x) => x.job.done).length, seconds: +sec.toFixed(1), requests: X.gauge.requests - req0, requestsPerSecond: +((X.gauge.requests - req0) / sec).toFixed(1), peakRequestsInFlight: L.peakInFlight, latencyMs: summary(L.ms) });
   say(`level ${LEVELS[li]}: ${slice.filter((x) => x.job.done).length}/${slice.length} work items in ${sec.toFixed(1)}s, ${levels.at(-1).requestsPerSecond} req/s, p95 ${levels.at(-1).latencyMs.p95} ms`);
 }
 reading = false; await Promise.all(readers);

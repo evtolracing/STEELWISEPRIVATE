@@ -1,6 +1,6 @@
 # Production risk register
 
-Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) Phase 5 and Phase 6 (both 2026-11-15), Phase 8 and Phase 9 (both 2026-11-16). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
+Written by hand in Phase 1 and updated at the end of Phase 2, Phase 3 and Phase 4 (all 2026-11-13) Phase 5 and Phase 6 (both 2026-11-15), Phase 8 and Phase 9 (both 2026-11-16), Phase 9.5 (2026-11-16) and Phase 10 (2026-11-18). It answers one question: what stands between this code and running about 80 branches on it. Each risk points at the findings behind it (`findings-register.md`). Nothing here was measured on the live system; the live database and the host were not touched.
 
 Likelihood and impact are a judgement from the evidence named in the row. "Blocks go-live" means the product should not carry real work for more than one branch until the risk is closed or the owner accepts it in writing.
 
@@ -60,7 +60,7 @@ What Phase 5 adds to, or changes in, the list:
 | R-14 | Slow or failing screens at 80-branch volume | B-012 (58 lists with no limit), E-023, 96 of 158 tables empty in the test data so most lists were never seen full | Likely as data grows | Medium | No for a first branch | Paging on the 58 lists; a volume test with a stated environment | Performance phase |
 | R-15 | **Three** database updates are waiting (files 6, 7 and 8) | The owner reports files 1 to 5 applied. Phase 3 adds `reference_integrity`, `request_keys` and `quote_branch`, each run twice on an 85-branch copy. The merged Phase 3 code needs them: without them quotes, requests and any request carrying a key fail | Certain if the code is merged first | High: the merged code expects them. Without the fifth, order entry fails | Yes, before merge | The owner applies them in order | Owner |
 | R-16 | Card payments and receipts | D-033, D-034: no card processor, no email. An approval code is typed by hand | Certain at the counter | Medium | Owner's call | A processor and an email provider, or a written statement that they stay manual | Owner decision |
-| R-17 | Uploaded files may be readable without signing in | B-021: `/uploads` is served before the sign-in gate in the local server. NOT VERIFIED on the host, where files are in the database | Unknown | Medium | No until verified | A probe check on both paths | Security phase |
+| R-17 | Uploaded files may be readable without signing in | B-021: `/uploads` is served before the sign-in gate in the local server. NOT VERIFIED on the host, where files are in the database | Unknown | Medium | No until verified | A probe check on both paths | Security phase  **Closed in Phase 10** (B-021, Y-005). |
 | R-18 | Nobody is told when the system fails | E-017: one log line per request, no alerting, no error tracker | Certain | Medium | No for a pilot | Alerts on server errors and failed sign-ins on the host | Observability phase, owner (host) |
 | R-19 | Staff with disabilities, tablets on the floor | B-015: 301 icon buttons, 32 with a label; no keyboard, screen-reader or tablet check has been run | Certain for some users | Medium | No | The user-experience phase (Phase 9) | Phase 9 |
 | R-20 | Staff trained from a manual that describes sample screens as working | X-010, M-018 | Likely | Low to medium | No | The manual read against each screen after the build-or-remove decisions | After R-04 |
@@ -119,7 +119,10 @@ What Phase 5 adds to, or changes in, the list:
 | R-72 | The ledger's reports are read as the company's accounts | They cover invoices, payments, stock and work orders only. Payroll, rent, supplier bills, bank, labor and overhead are not in them. Each report and the assistant say so | Possible | Medium | No | Tell the people given the Finance screen what it is and is not | Owner |
 | R-73 | The export file does not load into the accountant's product | W-011: one generic layout; QuickBooks and Xero import NOT VERIFIED | Likely to need adapting | Low: the file says so and nothing is sent anywhere | No | The accountant names the product; build and test its layout then | Owner and accountant |
 | R-74 | The ledger slows or the reconciliation takes long at a year's volume | W-023: measured at about 3,000 entries on one container. Not measured larger | Unknown | Medium | No | Phase 11 | Phase 11 |
-| R-75 | A restore from backup leaves the books and the records out of step | W-020: restore of the ledger tables not exercised | Unknown | High | No while the ledger is off | Phase 10: restore test with a reconciliation afterwards | Phase 10 |
+| R-75 | A restore from backup leaves the books and the records out of step | W-020: restore of the ledger tables not exercised | Unknown | High | No while the ledger is off | Phase 10: restore test with a reconciliation afterwards | Phase 10 **Phase 10: exercised on QA.** The restored journal balances, keeps its guards and numbering, and reconciles with the restored records (W-020 VERIFIED FIXED). |
+| R-76 | The application's own database connection can change posted books and erase history | W-014, Y-008, Y-009, Y-011. QA: closed by file 17 and the role steelwise_runtime; every gate suite ran as that role | Unlikely without a break-in | High: books and history could not be trusted | Yes, for the ledger | Owner applies file 17 and switches DATABASE_URL to the role | Owner |
+| R-77 | A stolen token cannot be cut off; passwords can be guessed without limit | Y-001, Y-002, Y-003: closed in code; needs file 17 | Likely under attack | High | Yes | Apply file 17 | Owner |
+| R-78 | Code deployed before file 17 stops every sign-in | Y-022: the answer names the update; measured on a copy without it | Possible (ordering) | High while it lasts, minutes to fix | No | Apply file 17 first, then merge | Owner |
 
 ## Earlier risks changed by Phase 4
 
@@ -170,6 +173,20 @@ What Phase 6 adds to, or changes in, the list:
 5. **Transfers already under way at go-live**: the old one-step transfer left nothing in transit, so no data needs converting. Staff need to be told that a transfer must now be received at the destination before the stock can be sold there.
 6. R-03 is reduced again: the second stock list is read-only.
 
+
+### Phase 10 update (2026-11-18)
+
+Phase 10 attacked the product and recovered it, on the local QA database with synthetic data (`phase-10-report.md`). What changed in this register:
+
+- **R-11 data loss with no proven way back: reduced, not closed.** An actual backup was restored into a separate server and verified (books, stock, receivables, guards, numbering, the application running on it). The host's own backups have still never been restored (E-015, FIXED — NOT VERIFIED). Recovery objectives are proposed in `phase-10-disaster-recovery.md` and are not approved.
+- **R-17 uploaded files readable without signing in: closed** (B-021, Y-005): the static route is gone; an upload can no longer leave its folder or carry a page (Y-004, Y-006).
+- **R-18 nobody is told when the system fails: reduced.** Eleven checks, alert kinds with severities, and an alert address the owner sets (Y-010, Y-021). Until `ALERT_WEBHOOK_URL` and the scheduler are set on the host, alerts are in the log and on the checks page only.
+- **R-12 a known vulnerability is used: reduced.** No critical or high in production dependencies; CI fails on a critical one. Three moderates need major upgrades (E-011).
+- **New R-76, the application's own database connection could change posted books and erase history** (W-014, Y-008): closed on QA by database update 17 and its least-privilege role. Open on the live system until the owner applies file 17 and points `DATABASE_URL` at the role. Blocks go-live of the ledger: yes.
+- **New R-77, sign-ins could not be ended and guessing was unlimited** (Y-001, Y-002, Y-003): closed, once file 17 is applied.
+- **New R-78, deployment before file 17 stops every sign-in** (Y-022): the answer now names the update; the order is in `phase-10-deployment-safety.md`. Likelihood: the owner's ordering only.
+- **R-75 a restore leaves the books and records out of step: closed on QA** (W-020).
+- Unchanged: R-13 (per-instance request limits, E-014), R-06 (no scheduler on the host, B-019).
 
 ### Phase 9.5 update (2026-11-16)
 

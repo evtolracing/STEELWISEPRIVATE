@@ -51,9 +51,24 @@ function toApi(row) {
 
 const withUser = { user: { select: { email: true, firstName: true, lastName: true, role: true } } };
 
+// An override's history line is never changed (Y-011). A revoke is its own line, and an override reads as
+// revoked when such a line names it.
+async function revocations(rows) {
+  const ids = new Set(rows.map((r) => r.id));
+  if (!ids.size) return new Map();
+  const found = await prisma.auditLog.findMany({ where: { eventType: 'ORDER_OVERRIDE_REVOKED', resourceId: { in: [...new Set(rows.map((r) => r.resourceId).filter(Boolean))] } }, include: withUser, orderBy: { timestamp: 'asc' } });
+  const out = new Map();
+  for (const r of found) if (ids.has(r.details?.overrideId) && !out.has(r.details.overrideId)) out.set(r.details.overrideId, r);
+  return out;
+}
+function withRevoke(row, rev) {
+  if (!rev) return row;
+  return { ...row, details: { ...row.details, status: 'REVOKED', revokedBy: rev.user?.email || rev.userId, revokedAt: rev.timestamp.toISOString(), revokeReason: rev.details?.reason || null } };
+}
 async function load(where, take = 500) {
   const rows = await prisma.auditLog.findMany({ where: { eventType: EVENT, ...where }, include: withUser, orderBy: { timestamp: 'desc' }, take });
-  return rows.map(toApi);
+  const revoked = await revocations(rows);
+  return rows.map((r) => toApi(withRevoke(r, revoked.get(r.id))));
 }
 
 router.post('/', async (req, res) => {
@@ -150,20 +165,13 @@ router.get('/stats', managersOnly, async (req, res) => {
 
 router.post('/:id/revoke', managersOnly, async (req, res) => {
   try {
-    const row = await prisma.auditLog.findFirst({ where: { id: req.params.id, eventType: EVENT } });
+    const row = await prisma.auditLog.findFirst({ where: { id: req.params.id, eventType: EVENT }, include: withUser });
     if (!row) return res.status(404).json({ error: 'Override not found' });
-    if (row.details?.status === 'REVOKED') return res.status(409).json({ error: 'This override was already revoked' });
-    const now = new Date();
+    if ((await revocations([row])).has(row.id)) return res.status(409).json({ error: 'This override was already revoked' });
     const reason = text(req.body?.reason, 500) || 'Revoked by manager';
-    const [updated] = await prisma.$transaction([
-      prisma.auditLog.update({
-        where: { id: row.id },
-        data: { details: { ...row.details, status: 'REVOKED', revokedBy: req.user.email || req.user.id, revokedAt: now.toISOString(), revokeReason: reason } },
-        include: withUser,
-      }),
-      // The revoke is its own entry too, so the history shows both events.
-      prisma.auditLog.create({ data: { category: 'WORKFLOW', eventType: 'ORDER_OVERRIDE_REVOKED', severity: 'WARNING', action: 'REVOKE', userId: req.user.id, resourceType: 'Order', resourceId: row.resourceId, details: { overrideId: row.id, reason } } }),
-    ]);
+    // The revoke is its own history line; the override's line is left as it was written.
+    const rev = await prisma.auditLog.create({ data: { category: 'WORKFLOW', eventType: 'ORDER_OVERRIDE_REVOKED', severity: 'WARNING', action: 'REVOKE', userId: req.user.id, resourceType: 'Order', resourceId: row.resourceId, details: { overrideId: row.id, reason } }, include: withUser });
+    const updated = withRevoke(row, rev);
     res.json({ data: toApi(updated) });
   } catch (error) {
     console.error('Overrides: revoke failed:', error);

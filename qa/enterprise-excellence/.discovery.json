@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-16T20:18:12.768Z",
+ "generated": "2026-11-18T05:59:30.117Z",
  "commit": "ref: refs/heads/claude/project-thread-25z3jd",
  "schema": {
   "models": [
@@ -77,7 +77,7 @@
    {
     "name": "User",
     "table": "User",
-    "fields": 17,
+    "fields": 20,
     "fk": [
      {
       "field": "organizationId",
@@ -7219,12 +7219,22 @@
     "alters": 15,
     "checks": 10,
     "indexes": 26
+   },
+   {
+    "name": "20261118090000_security_hardening",
+    "lines": 42,
+    "creates": 0,
+    "drops": 0,
+    "alters": 3,
+    "checks": 0,
+    "indexes": 0
    }
   ],
   "sqlEditor": [
    "src/backend/prisma/upgrades/001_lists_to_json.sql",
    "src/backend/prisma/upgrades/checks/check-before-phase-8.sql",
    "src/backend/prisma/upgrades/checks/verify-6-to-15.sql",
+   "src/backend/prisma/upgrades/rollback/20261118090000_security_hardening.down.sql",
    "src/backend/prisma/upgrades/sql-editor/20261110221503_customer_addresses_and_executive.sql",
    "src/backend/prisma/upgrades/sql-editor/20261111010902_orderhub_intake.sql",
    "src/backend/prisma/upgrades/sql-editor/20261111012618_pos_sessions.sql",
@@ -7257,6 +7267,7 @@
    "src/backend/prisma/upgrades/sql-editor/20261116200000_fulfilment_costing.sql",
    "src/backend/prisma/upgrades/sql-editor/20261116230000_shipment_lost.sql",
    "src/backend/prisma/upgrades/sql-editor/20261117090000_financial_ledger.sql",
+   "src/backend/prisma/upgrades/sql-editor/20261118090000_security_hardening.sql",
    "src/backend/prisma/upgrades/sql-editor/fix-rls-app-access.sql",
    "src/backend/prisma/upgrades/supabase-sql-editor-upgrade.sql"
   ],
@@ -7352,6 +7363,9 @@
    "InvoiceLine",
    "Invoice",
    "Job",
+   "JournalEntry",
+   "JournalLine",
+   "LedgerEvent",
    "Shipment",
    "OrderLineAllocation",
    "Organization",
@@ -7372,11 +7386,8 @@
    "SET",
    "Package",
    "LedgerPeriod",
-   "JournalLine",
-   "JournalEntry",
    "LedgerAccount",
    "LedgerMapping",
-   "LedgerEvent",
    "WorkOrderOutput",
    "Product",
    "booked",
@@ -8578,7 +8589,7 @@
     "mock": 0
    },
    "src/backend/src/routes/auth.js": {
-    "lines": 127,
+    "lines": 202,
     "routers": [
      "router"
     ],
@@ -8587,32 +8598,33 @@
       "router": "router",
       "method": "POST",
       "path": "/login",
-      "line": 23,
-      "lines": 55,
+      "line": 39,
+      "lines": 97,
       "guards": [],
       "models": [
-       "User"
+       "User",
+       "AuditLog"
       ],
-      "writes": 1,
-      "transaction": false,
+      "writes": 6,
+      "transaction": true,
       "findMany": 0,
       "bounded": 0,
       "listsNoTake": 0,
       "validates": true,
       "tryCatch": true,
       "raw": false,
-      "usesUser": false,
+      "usesUser": true,
       "scopesOrg": false,
       "scopesLocation": false,
       "scopesCustomer": false,
-      "audit": false,
+      "audit": true,
       "inMemory": false
      },
      {
       "router": "router",
       "method": "POST",
       "path": "/register",
-      "line": 77,
+      "line": 135,
       "lines": 15,
       "guards": [],
       "models": [
@@ -8637,16 +8649,17 @@
       "router": "router",
       "method": "PUT",
       "path": "/password",
-      "line": 91,
+      "line": 149,
       "lines": 27,
       "guards": [
        "authenticate"
       ],
       "models": [
-       "User"
+       "User",
+       "AuditLog"
       ],
-      "writes": 1,
-      "transaction": false,
+      "writes": 2,
+      "transaction": true,
       "findMany": 0,
       "bounded": 0,
       "listsNoTake": 0,
@@ -8657,14 +8670,42 @@
       "scopesOrg": false,
       "scopesLocation": false,
       "scopesCustomer": false,
-      "audit": false,
+      "audit": true,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "POST",
+      "path": "/logout-all",
+      "line": 175,
+      "lines": 14,
+      "guards": [
+       "authenticate"
+      ],
+      "models": [
+       "User",
+       "AuditLog"
+      ],
+      "writes": 2,
+      "transaction": true,
+      "findMany": 0,
+      "bounded": 0,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": true,
+      "scopesOrg": true,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": true,
       "inMemory": false
      },
      {
       "router": "router",
       "method": "GET",
       "path": "/me",
-      "line": 117,
+      "line": 188,
       "lines": 7,
       "guards": [
        "authenticate"
@@ -8688,7 +8729,10 @@
     ],
     "imports": [
      "src/backend/src/lib/db.js",
-     "src/backend/src/middleware/auth.js"
+     "src/backend/src/middleware/auth.js",
+     "src/backend/src/lib/alerts.js",
+     "src/backend/src/lib/userAdminRules.js",
+     "src/backend/src/lib/customerScope.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -10252,7 +10296,7 @@
     "mock": 1
    },
    "src/backend/src/routes/documents.js": {
-    "lines": 260,
+    "lines": 346,
     "routers": [
      "router"
     ],
@@ -10261,8 +10305,8 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 130,
-      "lines": 26,
+      "line": 196,
+      "lines": 27,
       "guards": [],
       "models": [
        "Document"
@@ -10286,8 +10330,8 @@
       "router": "router",
       "method": "GET",
       "path": "/entity/:entityType/:entityId",
-      "line": 155,
-      "lines": 12,
+      "line": 222,
+      "lines": 13,
       "guards": [],
       "models": [
        "DocumentLink"
@@ -10311,7 +10355,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 166,
+      "line": 234,
       "lines": 15,
       "guards": [],
       "models": [
@@ -10336,7 +10380,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/download",
-      "line": 180,
+      "line": 248,
       "lines": 21,
       "guards": [],
       "models": [
@@ -10362,8 +10406,8 @@
       "router": "router",
       "method": "POST",
       "path": "/upload",
-      "line": 200,
-      "lines": 15,
+      "line": 268,
+      "lines": 18,
       "guards": [
        "upload.single('file')"
       ],
@@ -10387,8 +10431,8 @@
       "router": "router",
       "method": "POST",
       "path": "/upload-multiple",
-      "line": 214,
-      "lines": 16,
+      "line": 285,
+      "lines": 21,
       "guards": [
        "upload.array('files',10)"
       ],
@@ -10412,7 +10456,7 @@
       "router": "router",
       "method": "DELETE",
       "path": "/:id",
-      "line": 229,
+      "line": 305,
       "lines": 20,
       "guards": [],
       "models": [
@@ -10437,7 +10481,8 @@
      }
     ],
     "imports": [
-     "src/backend/src/lib/db.js"
+     "src/backend/src/lib/db.js",
+     "src/backend/src/lib/branchScope.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -12974,7 +13019,7 @@
     "mock": 0
    },
    "src/backend/src/routes/integrations.js": {
-    "lines": 76,
+    "lines": 86,
     "routers": [
      "router"
     ],
@@ -12984,7 +13029,7 @@
       "method": "GET",
       "path": "/",
       "line": 18,
-      "lines": 6,
+      "lines": 7,
       "guards": [],
       "models": [],
       "writes": 0,
@@ -13005,8 +13050,31 @@
      {
       "router": "router",
       "method": "GET",
+      "path": "/checks",
+      "line": 24,
+      "lines": 9,
+      "guards": [],
+      "models": [],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 0,
+      "bounded": 1,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": true,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "GET",
       "path": "/deliveries",
-      "line": 23,
+      "line": 32,
       "lines": 20,
       "guards": [],
       "models": [
@@ -13031,7 +13099,7 @@
       "router": "router",
       "method": "POST",
       "path": "/deliveries/:id/replay",
-      "line": 42,
+      "line": 51,
       "lines": 9,
       "guards": [],
       "models": [],
@@ -13054,7 +13122,7 @@
       "router": "router",
       "method": "POST",
       "path": "/run",
-      "line": 50,
+      "line": 59,
       "lines": 17,
       "guards": [],
       "models": [],
@@ -13952,7 +14020,7 @@
     "mock": 0
    },
    "src/backend/src/routes/invoices.js": {
-    "lines": 69,
+    "lines": 74,
     "routers": [
      "router"
     ],
@@ -13961,7 +14029,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 20,
+      "line": 25,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -13984,7 +14052,7 @@
       "router": "router",
       "method": "GET",
       "path": "/aging",
-      "line": 24,
+      "line": 29,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14007,7 +14075,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 28,
+      "line": 33,
       "lines": 7,
       "guards": [],
       "models": [],
@@ -14030,7 +14098,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 34,
+      "line": 39,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -14053,7 +14121,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/payments",
-      "line": 41,
+      "line": 46,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14076,7 +14144,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/credit",
-      "line": 45,
+      "line": 50,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14099,7 +14167,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/refund",
-      "line": 49,
+      "line": 54,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -14122,7 +14190,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/cancel",
-      "line": 53,
+      "line": 58,
       "lines": 6,
       "guards": [],
       "models": [],
@@ -14143,7 +14211,8 @@
      }
     ],
     "imports": [
-     "src/backend/src/services/billing.js"
+     "src/backend/src/services/billing.js",
+     "src/backend/src/lib/numbering.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": false,
@@ -14629,7 +14698,7 @@
     "mock": 0
    },
    "src/backend/src/routes/ledger.js": {
-    "lines": 189,
+    "lines": 194,
     "routers": [
      "router"
     ],
@@ -14800,7 +14869,7 @@
       "method": "GET",
       "path": "/entries",
       "line": 92,
-      "lines": 7,
+      "lines": 10,
       "guards": [],
       "models": [],
       "writes": 0,
@@ -14822,8 +14891,8 @@
       "router": "router",
       "method": "GET",
       "path": "/entries/:id",
-      "line": 98,
-      "lines": 6,
+      "line": 101,
+      "lines": 8,
       "guards": [],
       "models": [],
       "writes": 0,
@@ -14845,7 +14914,7 @@
       "router": "router",
       "method": "POST",
       "path": "/entries",
-      "line": 103,
+      "line": 108,
       "lines": 9,
       "guards": [],
       "models": [],
@@ -14868,7 +14937,7 @@
       "router": "router",
       "method": "POST",
       "path": "/entries/:id/post",
-      "line": 111,
+      "line": 116,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -14891,7 +14960,7 @@
       "router": "router",
       "method": "POST",
       "path": "/entries/:id/reverse",
-      "line": 112,
+      "line": 117,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -14914,7 +14983,7 @@
       "router": "router",
       "method": "DELETE",
       "path": "/entries/:id",
-      "line": 113,
+      "line": 118,
       "lines": 3,
       "guards": [],
       "models": [],
@@ -14937,7 +15006,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/entries/:id",
-      "line": 115,
+      "line": 120,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -14960,7 +15029,7 @@
       "router": "router",
       "method": "PATCH",
       "path": "/entries/:id",
-      "line": 116,
+      "line": 121,
       "lines": 3,
       "guards": [],
       "models": [],
@@ -14983,7 +15052,7 @@
       "router": "router",
       "method": "GET",
       "path": "/periods",
-      "line": 118,
+      "line": 123,
       "lines": 8,
       "guards": [],
       "models": [
@@ -15009,7 +15078,7 @@
       "router": "router",
       "method": "POST",
       "path": "/periods/:year/:month/close",
-      "line": 125,
+      "line": 130,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15032,7 +15101,7 @@
       "router": "router",
       "method": "POST",
       "path": "/periods/:year/:month/reopen",
-      "line": 126,
+      "line": 131,
       "lines": 3,
       "guards": [],
       "models": [],
@@ -15055,7 +15124,7 @@
       "router": "router",
       "method": "POST",
       "path": "/events/record-missing",
-      "line": 128,
+      "line": 133,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15078,7 +15147,7 @@
       "router": "router",
       "method": "POST",
       "path": "/events/:id/retry",
-      "line": 129,
+      "line": 134,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15101,7 +15170,7 @@
       "router": "router",
       "method": "POST",
       "path": "/events/:id/resolve",
-      "line": 130,
+      "line": 135,
       "lines": 3,
       "guards": [],
       "models": [],
@@ -15124,7 +15193,7 @@
       "router": "router",
       "method": "POST",
       "path": "/reconciliations",
-      "line": 132,
+      "line": 137,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15147,7 +15216,7 @@
       "router": "router",
       "method": "GET",
       "path": "/reconciliations",
-      "line": 133,
+      "line": 138,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15170,7 +15239,7 @@
       "router": "router",
       "method": "GET",
       "path": "/reconciliations/:id",
-      "line": 134,
+      "line": 139,
       "lines": 3,
       "guards": [],
       "models": [],
@@ -15193,7 +15262,7 @@
       "router": "router",
       "method": "POST",
       "path": "/cutover/dry-run",
-      "line": 136,
+      "line": 141,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15216,7 +15285,7 @@
       "router": "router",
       "method": "POST",
       "path": "/activate",
-      "line": 137,
+      "line": 142,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15239,7 +15308,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/settings",
-      "line": 138,
+      "line": 143,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15262,7 +15331,7 @@
       "router": "router",
       "method": "POST",
       "path": "/deactivate",
-      "line": 139,
+      "line": 144,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15285,7 +15354,7 @@
       "router": "router",
       "method": "POST",
       "path": "/resume",
-      "line": 140,
+      "line": 145,
       "lines": 3,
       "guards": [],
       "models": [],
@@ -15308,7 +15377,7 @@
       "router": "router",
       "method": "GET",
       "path": "/external-accounts/:provider",
-      "line": 142,
+      "line": 147,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15331,7 +15400,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/external-accounts/:provider/:code",
-      "line": 143,
+      "line": 148,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15354,7 +15423,7 @@
       "router": "router",
       "method": "GET",
       "path": "/exports",
-      "line": 144,
+      "line": 149,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15377,7 +15446,7 @@
       "router": "router",
       "method": "POST",
       "path": "/exports",
-      "line": 145,
+      "line": 150,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -15400,7 +15469,7 @@
       "router": "router",
       "method": "GET",
       "path": "/exports/:id/file",
-      "line": 146,
+      "line": 151,
       "lines": 6,
       "guards": [],
       "models": [],
@@ -15423,7 +15492,7 @@
       "router": "router",
       "method": "POST",
       "path": "/exports/:id/settle",
-      "line": 151,
+      "line": 156,
       "lines": 4,
       "guards": [],
       "models": [],
@@ -17452,7 +17521,7 @@
     "mock": 0
    },
    "src/backend/src/routes/overrides.js": {
-    "lines": 175,
+    "lines": 183,
     "routers": [
      "router"
     ],
@@ -17461,7 +17530,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 47,
+      "line": 61,
       "lines": 27,
       "guards": [],
       "models": [
@@ -17486,7 +17555,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 73,
+      "line": 87,
       "lines": 12,
       "guards": [],
       "models": [],
@@ -17509,7 +17578,7 @@
       "router": "router",
       "method": "GET",
       "path": "/count",
-      "line": 84,
+      "line": 98,
       "lines": 16,
       "guards": [],
       "models": [],
@@ -17532,7 +17601,7 @@
       "router": "router",
       "method": "GET",
       "path": "/audit",
-      "line": 99,
+      "line": 113,
       "lines": 22,
       "guards": [],
       "models": [],
@@ -17555,7 +17624,7 @@
       "router": "router",
       "method": "GET",
       "path": "/stats",
-      "line": 120,
+      "line": 134,
       "lines": 20,
       "guards": [],
       "models": [],
@@ -17578,14 +17647,14 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/revoke",
-      "line": 139,
-      "lines": 25,
+      "line": 153,
+      "lines": 18,
       "guards": [],
       "models": [
        "AuditLog"
       ],
-      "writes": 2,
-      "transaction": true,
+      "writes": 1,
+      "transaction": false,
       "findMany": 0,
       "bounded": 0,
       "listsNoTake": 0,
@@ -17610,7 +17679,7 @@
     "mock": 0
    },
    "src/backend/src/routes/partner/adminRoutes.js": {
-    "lines": 433,
+    "lines": 437,
     "routers": [
      "router"
     ],
@@ -17619,7 +17688,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 12,
+      "line": 16,
       "lines": 50,
       "guards": [],
       "models": [
@@ -17644,7 +17713,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 61,
+      "line": 65,
       "lines": 49,
       "guards": [],
       "models": [
@@ -17670,7 +17739,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 109,
+      "line": 113,
       "lines": 40,
       "guards": [],
       "models": [
@@ -17695,7 +17764,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 148,
+      "line": 152,
       "lines": 37,
       "guards": [],
       "models": [
@@ -17720,7 +17789,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/keys",
-      "line": 184,
+      "line": 188,
       "lines": 60,
       "guards": [],
       "models": [
@@ -17746,7 +17815,7 @@
       "router": "router",
       "method": "DELETE",
       "path": "/:id/keys/:keyId",
-      "line": 243,
+      "line": 247,
       "lines": 31,
       "guards": [],
       "models": [
@@ -17760,7 +17829,7 @@
       "validates": false,
       "tryCatch": true,
       "raw": false,
-      "usesUser": false,
+      "usesUser": true,
       "scopesOrg": false,
       "scopesLocation": false,
       "scopesCustomer": false,
@@ -17771,7 +17840,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/usage",
-      "line": 273,
+      "line": 277,
       "lines": 61,
       "guards": [],
       "models": [
@@ -17797,7 +17866,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/logs",
-      "line": 333,
+      "line": 337,
       "lines": 43,
       "guards": [],
       "models": [
@@ -17822,7 +17891,7 @@
       "router": "router",
       "method": "GET",
       "path": "/dashboard/summary",
-      "line": 375,
+      "line": 379,
       "lines": 33,
       "guards": [],
       "models": [
@@ -17847,7 +17916,8 @@
     ],
     "imports": [
      "src/backend/src/lib/db.js",
-     "src/backend/src/middleware/partnerAuth.js"
+     "src/backend/src/middleware/partnerAuth.js",
+     "src/backend/src/middleware/auth.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -21729,7 +21799,7 @@
     "mock": 0
    },
    "src/backend/src/routes/quickSale.js": {
-    "lines": 400,
+    "lines": 401,
     "routers": [
      "router"
     ],
@@ -21833,7 +21903,7 @@
       "method": "POST",
       "path": "/process-payment",
       "line": 208,
-      "lines": 105,
+      "lines": 106,
       "guards": [],
       "models": [
        "Order",
@@ -21861,7 +21931,7 @@
       "router": "router",
       "method": "GET",
       "path": "/daily-stats",
-      "line": 312,
+      "line": 313,
       "lines": 20,
       "guards": [],
       "models": [
@@ -21886,7 +21956,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:saleId/receipt",
-      "line": 331,
+      "line": 332,
       "lines": 7,
       "guards": [],
       "models": [],
@@ -21909,7 +21979,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:saleId/void",
-      "line": 337,
+      "line": 338,
       "lines": 33,
       "guards": [],
       "models": [
@@ -21935,7 +22005,7 @@
       "router": "router",
       "method": "POST",
       "path": "/email-receipt",
-      "line": 369,
+      "line": 370,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -21958,7 +22028,7 @@
       "router": "router",
       "method": "POST",
       "path": "/sms-receipt",
-      "line": 370,
+      "line": 371,
       "lines": 4,
       "guards": [],
       "models": [],
@@ -24360,7 +24430,7 @@
     "mock": 1
    },
    "src/backend/src/routes/users.js": {
-    "lines": 692,
+    "lines": 706,
     "routers": [
      "router"
     ],
@@ -24369,7 +24439,7 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 21,
+      "line": 29,
       "lines": 83,
       "guards": [
        "authenticate"
@@ -24396,8 +24466,8 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 103,
-      "lines": 36,
+      "line": 111,
+      "lines": 35,
       "guards": [
        "authenticate"
       ],
@@ -24423,7 +24493,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 138,
+      "line": 145,
       "lines": 95,
       "guards": [
        "authenticate",
@@ -24452,8 +24522,8 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 232,
-      "lines": 134,
+      "line": 239,
+      "lines": 136,
       "guards": [
        "authenticate",
        "requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MANAGER')"
@@ -24484,7 +24554,7 @@
       "router": "router",
       "method": "DELETE",
       "path": "/:id",
-      "line": 365,
+      "line": 374,
       "lines": 47,
       "guards": [
        "authenticate",
@@ -24513,8 +24583,8 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/reset-password",
-      "line": 411,
-      "lines": 49,
+      "line": 420,
+      "lines": 50,
       "guards": [
        "authenticate",
        "requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN')"
@@ -24542,7 +24612,7 @@
       "router": "router",
       "method": "GET",
       "path": "/roles/list",
-      "line": 459,
+      "line": 469,
       "lines": 14,
       "guards": [
        "authenticate"
@@ -24569,7 +24639,7 @@
       "router": "router",
       "method": "GET",
       "path": "/roles/:id",
-      "line": 472,
+      "line": 482,
       "lines": 27,
       "guards": [
        "authenticate"
@@ -24596,7 +24666,7 @@
       "router": "router",
       "method": "POST",
       "path": "/roles",
-      "line": 498,
+      "line": 508,
       "lines": 26,
       "guards": [
        "authenticate",
@@ -24624,7 +24694,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/roles/:id",
-      "line": 523,
+      "line": 533,
       "lines": 33,
       "guards": [
        "authenticate",
@@ -24652,7 +24722,7 @@
       "router": "router",
       "method": "GET",
       "path": "/enums/roles",
-      "line": 555,
+      "line": 565,
       "lines": 60,
       "guards": [],
       "models": [],
@@ -24675,7 +24745,7 @@
       "router": "router",
       "method": "GET",
       "path": "/locations",
-      "line": 614,
+      "line": 624,
       "lines": 18,
       "guards": [
        "authenticate"
@@ -24702,7 +24772,7 @@
       "router": "router",
       "method": "GET",
       "path": "/divisions",
-      "line": 631,
+      "line": 641,
       "lines": 16,
       "guards": [
        "authenticate"
@@ -25132,33 +25202,34 @@
     "router": "router",
     "method": "POST",
     "path": "/login",
-    "line": 23,
-    "lines": 55,
+    "line": 39,
+    "lines": 97,
     "guards": [],
     "models": [
-     "User"
+     "User",
+     "AuditLog"
     ],
-    "writes": 1,
-    "transaction": false,
+    "writes": 6,
+    "transaction": true,
     "findMany": 0,
     "bounded": 0,
     "listsNoTake": 0,
     "validates": true,
     "tryCatch": true,
     "raw": false,
-    "usesUser": false,
+    "usesUser": true,
     "scopesOrg": false,
     "scopesLocation": false,
     "scopesCustomer": false,
-    "audit": false,
+    "audit": true,
     "inMemory": false,
     "full": "/api/auth/login",
     "key": "POST /api/auth/login",
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 344,
-     "refused": 4,
+     "ok": 484,
+     "refused": 101,
      "error": 0
     }
    },
@@ -25166,7 +25237,7 @@
     "router": "router",
     "method": "POST",
     "path": "/register",
-    "line": 77,
+    "line": 135,
     "lines": 15,
     "guards": [],
     "models": [
@@ -25190,22 +25261,27 @@
     "key": "POST /api/auth/register",
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
-    "exercised": null
+    "exercised": {
+     "ok": 1,
+     "refused": 7,
+     "error": 0
+    }
    },
    {
     "router": "router",
     "method": "PUT",
     "path": "/password",
-    "line": 91,
+    "line": 149,
     "lines": 27,
     "guards": [
      "authenticate"
     ],
     "models": [
-     "User"
+     "User",
+     "AuditLog"
     ],
-    "writes": 1,
-    "transaction": false,
+    "writes": 2,
+    "transaction": true,
     "findMany": 0,
     "bounded": 0,
     "listsNoTake": 0,
@@ -25216,14 +25292,51 @@
     "scopesOrg": false,
     "scopesLocation": false,
     "scopesCustomer": false,
-    "audit": false,
+    "audit": true,
     "inMemory": false,
     "full": "/api/auth/password",
     "key": "PUT /api/auth/password",
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 0,
+     "ok": 1,
+     "refused": 4,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "POST",
+    "path": "/logout-all",
+    "line": 175,
+    "lines": 14,
+    "guards": [
+     "authenticate"
+    ],
+    "models": [
+     "User",
+     "AuditLog"
+    ],
+    "writes": 2,
+    "transaction": true,
+    "findMany": 0,
+    "bounded": 0,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": true,
+    "scopesOrg": true,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": true,
+    "inMemory": false,
+    "full": "/api/auth/logout-all",
+    "key": "POST /api/auth/logout-all",
+    "file": "src/backend/src/routes/auth.js",
+    "mount": "/api/auth",
+    "exercised": {
+     "ok": 1,
      "refused": 1,
      "error": 0
     }
@@ -25232,7 +25345,7 @@
     "router": "router",
     "method": "GET",
     "path": "/me",
-    "line": 117,
+    "line": 188,
     "lines": 7,
     "guards": [
      "authenticate"
@@ -25257,8 +25370,8 @@
     "file": "src/backend/src/routes/auth.js",
     "mount": "/api/auth",
     "exercised": {
-     "ok": 2194,
-     "refused": 4,
+     "ok": 2198,
+     "refused": 22,
      "error": 0
     }
    },
@@ -25266,7 +25379,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 21,
+    "line": 29,
     "lines": 83,
     "guards": [
      "authenticate"
@@ -25293,8 +25406,8 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 24,
-     "refused": 4,
+     "ok": 33,
+     "refused": 6,
      "error": 0
     }
    },
@@ -25302,8 +25415,8 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 103,
-    "lines": 36,
+    "line": 111,
+    "lines": 35,
     "guards": [
      "authenticate"
     ],
@@ -25329,7 +25442,7 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 10,
+     "ok": 13,
      "refused": 11,
      "error": 0
     }
@@ -25338,7 +25451,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 138,
+    "line": 145,
     "lines": 95,
     "guards": [
      "authenticate",
@@ -25368,7 +25481,7 @@
     "mount": "/api/users",
     "exercised": {
      "ok": 1,
-     "refused": 11,
+     "refused": 14,
      "error": 0
     }
    },
@@ -25376,8 +25489,8 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 232,
-    "lines": 134,
+    "line": 239,
+    "lines": 136,
     "guards": [
      "authenticate",
      "requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MANAGER')"
@@ -25408,8 +25521,8 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 1,
-     "refused": 7,
+     "ok": 6,
+     "refused": 10,
      "error": 0
     }
    },
@@ -25417,7 +25530,7 @@
     "router": "router",
     "method": "DELETE",
     "path": "/:id",
-    "line": 365,
+    "line": 374,
     "lines": 47,
     "guards": [
      "authenticate",
@@ -25446,7 +25559,7 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 1,
+     "ok": 2,
      "refused": 3,
      "error": 0
     }
@@ -25455,8 +25568,8 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/reset-password",
-    "line": 411,
-    "lines": 49,
+    "line": 420,
+    "lines": 50,
     "guards": [
      "authenticate",
      "requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN')"
@@ -25484,7 +25597,7 @@
     "file": "src/backend/src/routes/users.js",
     "mount": "/api/users",
     "exercised": {
-     "ok": 0,
+     "ok": 2,
      "refused": 2,
      "error": 0
     }
@@ -25493,7 +25606,7 @@
     "router": "router",
     "method": "GET",
     "path": "/roles/list",
-    "line": 459,
+    "line": 469,
     "lines": 14,
     "guards": [
      "authenticate"
@@ -25529,7 +25642,7 @@
     "router": "router",
     "method": "GET",
     "path": "/roles/:id",
-    "line": 472,
+    "line": 482,
     "lines": 27,
     "guards": [
      "authenticate"
@@ -25565,7 +25678,7 @@
     "router": "router",
     "method": "POST",
     "path": "/roles",
-    "line": 498,
+    "line": 508,
     "lines": 26,
     "guards": [
      "authenticate",
@@ -25602,7 +25715,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/roles/:id",
-    "line": 523,
+    "line": 533,
     "lines": 33,
     "guards": [
      "authenticate",
@@ -25639,7 +25752,7 @@
     "router": "router",
     "method": "GET",
     "path": "/enums/roles",
-    "line": 555,
+    "line": 565,
     "lines": 60,
     "guards": [],
     "models": [],
@@ -25671,7 +25784,7 @@
     "router": "router",
     "method": "GET",
     "path": "/locations",
-    "line": 614,
+    "line": 624,
     "lines": 18,
     "guards": [
      "authenticate"
@@ -25703,7 +25816,7 @@
     "router": "router",
     "method": "GET",
     "path": "/divisions",
-    "line": 631,
+    "line": 641,
     "lines": 16,
     "guards": [
      "authenticate"
@@ -26303,7 +26416,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 80,
+     "ok": 79,
      "refused": 6,
      "error": 0
     }
@@ -26484,7 +26597,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 16,
+     "ok": 18,
      "refused": 7,
      "error": 0
     }
@@ -26518,8 +26631,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 47,
-     "refused": 23,
+     "ok": 46,
+     "refused": 24,
      "error": 0
     }
    },
@@ -26552,8 +26665,8 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 34,
-     "refused": 15,
+     "ok": 33,
+     "refused": 16,
      "error": 0
     }
    },
@@ -26586,8 +26699,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 23,
-     "refused": 4,
+     "ok": 30,
+     "refused": 5,
      "error": 0
     }
    },
@@ -26824,7 +26937,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 141,
+     "ok": 63,
      "refused": 12,
      "error": 1
     }
@@ -26858,8 +26971,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 130,
-     "refused": 16,
+     "ok": 54,
+     "refused": 17,
      "error": 1
     }
    },
@@ -26924,8 +27037,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 29,
-     "refused": 6,
+     "ok": 28,
+     "refused": 7,
      "error": 0
     }
    },
@@ -26958,7 +27071,7 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 142,
+     "ok": 64,
      "refused": 59,
      "error": 0
     }
@@ -27024,8 +27137,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 887,
-     "refused": 72,
+     "ok": 857,
+     "refused": 73,
      "error": 0
     }
    },
@@ -27857,7 +27970,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/ecom/my-orders",
     "exercised": {
-     "ok": 16,
+     "ok": 17,
      "refused": 2,
      "error": 0
     }
@@ -27890,7 +28003,7 @@
     "mount": "/api/ecom/my-orders",
     "exercised": {
      "ok": 0,
-     "refused": 25,
+     "refused": 26,
      "error": 0
     }
    },
@@ -27921,7 +28034,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/ecom/my-orders",
     "exercised": {
-     "ok": 13,
+     "ok": 14,
      "refused": 2,
      "error": 0
     }
@@ -28273,7 +28386,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 37,
+     "ok": 38,
      "refused": 4,
      "error": 0
     }
@@ -28305,7 +28418,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 34,
+     "ok": 35,
      "refused": 4,
      "error": 0
     }
@@ -28337,7 +28450,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 17,
+     "ok": 21,
      "refused": 4,
      "error": 0
     }
@@ -28369,7 +28482,7 @@
     "file": "src/backend/src/routes/portal.js",
     "mount": "/api/enterprise",
     "exercised": {
-     "ok": 0,
+     "ok": 2,
      "refused": 4,
      "error": 0
     }
@@ -28402,7 +28515,7 @@
     "mount": "/api/enterprise",
     "exercised": {
      "ok": 0,
-     "refused": 6,
+     "refused": 8,
      "error": 0
     }
    },
@@ -28498,7 +28611,7 @@
     "mount": "/api/enterprise",
     "exercised": {
      "ok": 0,
-     "refused": 4,
+     "refused": 5,
      "error": 0
     }
    },
@@ -28530,7 +28643,7 @@
     "mount": "/api/enterprise",
     "exercised": {
      "ok": 0,
-     "refused": 1,
+     "refused": 2,
      "error": 0
     }
    },
@@ -29254,7 +29367,7 @@
     "file": "src/backend/src/routes/intakePricing.js",
     "mount": "/api/pricing",
     "exercised": {
-     "ok": 49,
+     "ok": 50,
      "refused": 3,
      "error": 0
     }
@@ -29530,8 +29643,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 30,
-     "refused": 13,
+     "ok": 40,
+     "refused": 15,
      "error": 0
     }
    },
@@ -29726,8 +29839,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 18,
-     "refused": 11,
+     "ok": 20,
+     "refused": 15,
      "error": 0
     }
    },
@@ -29763,8 +29876,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 1197,
-     "refused": 53,
+     "ok": 994,
+     "refused": 63,
      "error": 0
     }
    },
@@ -29800,7 +29913,7 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 1087,
+     "ok": 879,
      "refused": 31,
      "error": 0
     }
@@ -29839,8 +29952,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 804,
-     "refused": 62,
+     "ok": 593,
+     "refused": 64,
      "error": 0
     }
    },
@@ -29977,7 +30090,7 @@
     "file": "src/backend/src/routes/purchaseOrders.js",
     "mount": "/api/purchase-orders",
     "exercised": {
-     "ok": 308,
+     "ok": 253,
      "refused": 6,
      "error": 0
     }
@@ -30085,7 +30198,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 94,
+     "ok": 95,
      "refused": 29,
      "error": 0
     }
@@ -30117,7 +30230,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 82,
+     "ok": 83,
      "refused": 3,
      "error": 0
     }
@@ -30149,7 +30262,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 89,
+     "ok": 90,
      "refused": 8,
      "error": 0
     }
@@ -30184,7 +30297,7 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 69,
+     "ok": 70,
      "refused": 48,
      "error": 0
     }
@@ -30316,7 +30429,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 131,
+     "ok": 132,
      "refused": 6,
      "error": 0
     }
@@ -30386,8 +30499,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 119,
-     "refused": 18,
+     "ok": 121,
+     "refused": 21,
      "error": 0
     }
    },
@@ -30421,7 +30534,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 752,
+     "ok": 541,
      "refused": 118,
      "error": 0
     }
@@ -30601,8 +30714,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 662,
-     "refused": 69,
+     "ok": 430,
+     "refused": 71,
      "error": 0
     }
    },
@@ -30729,7 +30842,7 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 100,
+     "ok": 101,
      "refused": 9,
      "error": 0
     }
@@ -30738,7 +30851,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 20,
+    "line": 25,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30761,8 +30874,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 122,
-     "refused": 21,
+     "ok": 124,
+     "refused": 22,
      "error": 0
     }
    },
@@ -30770,7 +30883,7 @@
     "router": "router",
     "method": "GET",
     "path": "/aging",
-    "line": 24,
+    "line": 29,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30802,7 +30915,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 28,
+    "line": 33,
     "lines": 7,
     "guards": [],
     "models": [],
@@ -30825,8 +30938,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 23,
-     "refused": 11,
+     "ok": 24,
+     "refused": 13,
      "error": 0
     }
    },
@@ -30834,7 +30947,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 34,
+    "line": 39,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -30866,7 +30979,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/payments",
-    "line": 41,
+    "line": 46,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30889,8 +31002,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 396,
-     "refused": 169,
+     "ok": 167,
+     "refused": 191,
      "error": 0
     }
    },
@@ -30898,7 +31011,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/credit",
-    "line": 45,
+    "line": 50,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30921,8 +31034,8 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 26,
-     "refused": 27,
+     "ok": 31,
+     "refused": 30,
      "error": 0
     }
    },
@@ -30930,7 +31043,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/refund",
-    "line": 49,
+    "line": 54,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30953,7 +31066,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 12,
+     "ok": 13,
      "refused": 14,
      "error": 0
     }
@@ -30962,7 +31075,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/cancel",
-    "line": 53,
+    "line": 58,
     "lines": 6,
     "guards": [],
     "models": [],
@@ -31018,7 +31131,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 47,
-     "refused": 13,
+     "refused": 14,
      "error": 0
     }
    },
@@ -31049,7 +31162,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 15,
+     "ok": 12,
      "refused": 12,
      "error": 0
     }
@@ -31081,7 +31194,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 4,
+     "ok": 2,
      "refused": 12,
      "error": 0
     }
@@ -31145,8 +31258,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 10,
-     "refused": 18,
+     "ok": 8,
+     "refused": 16,
      "error": 0
     }
    },
@@ -31177,8 +31290,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 11,
-     "refused": 16,
+     "ok": 8,
+     "refused": 15,
      "error": 0
     }
    },
@@ -31209,8 +31322,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 368,
-     "refused": 53,
+     "ok": 314,
+     "refused": 55,
      "error": 0
     }
    },
@@ -31219,7 +31332,7 @@
     "method": "GET",
     "path": "/entries",
     "line": 92,
-    "lines": 7,
+    "lines": 10,
     "guards": [],
     "models": [],
     "writes": 0,
@@ -31241,8 +31354,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 27,
-     "refused": 14,
+     "ok": 33,
+     "refused": 19,
      "error": 0
     }
    },
@@ -31250,8 +31363,8 @@
     "router": "router",
     "method": "GET",
     "path": "/entries/:id",
-    "line": 98,
-    "lines": 6,
+    "line": 101,
+    "lines": 8,
     "guards": [],
     "models": [],
     "writes": 0,
@@ -31273,8 +31386,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 14,
-     "refused": 9,
+     "ok": 17,
+     "refused": 11,
      "error": 0
     }
    },
@@ -31282,7 +31395,7 @@
     "router": "router",
     "method": "POST",
     "path": "/entries",
-    "line": 103,
+    "line": 108,
     "lines": 9,
     "guards": [],
     "models": [],
@@ -31305,8 +31418,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 2018,
-     "refused": 38,
+     "ok": 29,
+     "refused": 52,
      "error": 0
     }
    },
@@ -31314,7 +31427,7 @@
     "router": "router",
     "method": "POST",
     "path": "/entries/:id/post",
-    "line": 111,
+    "line": 116,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31337,8 +31450,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 2010,
-     "refused": 20,
+     "ok": 19,
+     "refused": 23,
      "error": 0
     }
    },
@@ -31346,7 +31459,7 @@
     "router": "router",
     "method": "POST",
     "path": "/entries/:id/reverse",
-    "line": 112,
+    "line": 117,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31369,8 +31482,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 5,
-     "refused": 22,
+     "ok": 6,
+     "refused": 29,
      "error": 0
     }
    },
@@ -31378,7 +31491,7 @@
     "router": "router",
     "method": "DELETE",
     "path": "/entries/:id",
-    "line": 113,
+    "line": 118,
     "lines": 3,
     "guards": [],
     "models": [],
@@ -31401,8 +31514,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 8,
-     "refused": 14,
+     "ok": 10,
+     "refused": 15,
      "error": 0
     }
    },
@@ -31410,7 +31523,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/entries/:id",
-    "line": 115,
+    "line": 120,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31434,7 +31547,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 0,
-     "refused": 13,
+     "refused": 14,
      "error": 0
     }
    },
@@ -31442,7 +31555,7 @@
     "router": "router",
     "method": "PATCH",
     "path": "/entries/:id",
-    "line": 116,
+    "line": 121,
     "lines": 3,
     "guards": [],
     "models": [],
@@ -31466,7 +31579,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 0,
-     "refused": 13,
+     "refused": 14,
      "error": 0
     }
    },
@@ -31474,7 +31587,7 @@
     "router": "router",
     "method": "GET",
     "path": "/periods",
-    "line": 118,
+    "line": 123,
     "lines": 8,
     "guards": [],
     "models": [
@@ -31509,7 +31622,7 @@
     "router": "router",
     "method": "POST",
     "path": "/periods/:year/:month/close",
-    "line": 125,
+    "line": 130,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31533,7 +31646,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 3,
-     "refused": 19,
+     "refused": 23,
      "error": 0
     }
    },
@@ -31541,7 +31654,7 @@
     "router": "router",
     "method": "POST",
     "path": "/periods/:year/:month/reopen",
-    "line": 126,
+    "line": 131,
     "lines": 3,
     "guards": [],
     "models": [],
@@ -31573,7 +31686,7 @@
     "router": "router",
     "method": "POST",
     "path": "/events/record-missing",
-    "line": 128,
+    "line": 133,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31596,7 +31709,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 7,
+     "ok": 9,
      "refused": 13,
      "error": 0
     }
@@ -31605,7 +31718,7 @@
     "router": "router",
     "method": "POST",
     "path": "/events/:id/retry",
-    "line": 129,
+    "line": 134,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31628,8 +31741,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 24,
-     "refused": 20,
+     "ok": 25,
+     "refused": 21,
      "error": 0
     }
    },
@@ -31637,7 +31750,7 @@
     "router": "router",
     "method": "POST",
     "path": "/events/:id/resolve",
-    "line": 130,
+    "line": 135,
     "lines": 3,
     "guards": [],
     "models": [],
@@ -31669,7 +31782,7 @@
     "router": "router",
     "method": "POST",
     "path": "/reconciliations",
-    "line": 132,
+    "line": 137,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31692,8 +31805,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 24,
-     "refused": 13,
+     "ok": 48,
+     "refused": 14,
      "error": 0
     }
    },
@@ -31701,7 +31814,7 @@
     "router": "router",
     "method": "GET",
     "path": "/reconciliations",
-    "line": 133,
+    "line": 138,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31733,7 +31846,7 @@
     "router": "router",
     "method": "GET",
     "path": "/reconciliations/:id",
-    "line": 134,
+    "line": 139,
     "lines": 3,
     "guards": [],
     "models": [],
@@ -31765,7 +31878,7 @@
     "router": "router",
     "method": "POST",
     "path": "/cutover/dry-run",
-    "line": 136,
+    "line": 141,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31788,8 +31901,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 9,
-     "refused": 14,
+     "ok": 5,
+     "refused": 13,
      "error": 0
     }
    },
@@ -31797,7 +31910,7 @@
     "router": "router",
     "method": "POST",
     "path": "/activate",
-    "line": 137,
+    "line": 142,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31820,8 +31933,8 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 2,
-     "refused": 42,
+     "ok": 1,
+     "refused": 28,
      "error": 0
     }
    },
@@ -31829,7 +31942,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/settings",
-    "line": 138,
+    "line": 143,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31853,7 +31966,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 2,
-     "refused": 15,
+     "refused": 16,
      "error": 0
     }
    },
@@ -31861,7 +31974,7 @@
     "router": "router",
     "method": "POST",
     "path": "/deactivate",
-    "line": 139,
+    "line": 144,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31885,7 +31998,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 1,
-     "refused": 14,
+     "refused": 18,
      "error": 0
     }
    },
@@ -31893,7 +32006,7 @@
     "router": "router",
     "method": "POST",
     "path": "/resume",
-    "line": 140,
+    "line": 145,
     "lines": 3,
     "guards": [],
     "models": [],
@@ -31925,7 +32038,7 @@
     "router": "router",
     "method": "GET",
     "path": "/external-accounts/:provider",
-    "line": 142,
+    "line": 147,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31957,7 +32070,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/external-accounts/:provider/:code",
-    "line": 143,
+    "line": 148,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -31989,7 +32102,7 @@
     "router": "router",
     "method": "GET",
     "path": "/exports",
-    "line": 144,
+    "line": 149,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -32013,7 +32126,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 9,
-     "refused": 12,
+     "refused": 15,
      "error": 0
     }
    },
@@ -32021,7 +32134,7 @@
     "router": "router",
     "method": "POST",
     "path": "/exports",
-    "line": 145,
+    "line": 150,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -32045,7 +32158,7 @@
     "mount": "/api/ledger",
     "exercised": {
      "ok": 4,
-     "refused": 21,
+     "refused": 22,
      "error": 0
     }
    },
@@ -32053,7 +32166,7 @@
     "router": "router",
     "method": "GET",
     "path": "/exports/:id/file",
-    "line": 146,
+    "line": 151,
     "lines": 6,
     "guards": [],
     "models": [],
@@ -32085,7 +32198,7 @@
     "router": "router",
     "method": "POST",
     "path": "/exports/:id/settle",
-    "line": 151,
+    "line": 156,
     "lines": 4,
     "guards": [],
     "models": [],
@@ -32470,7 +32583,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 47,
+    "line": 61,
     "lines": 27,
     "guards": [],
     "models": [
@@ -32504,7 +32617,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 73,
+    "line": 87,
     "lines": 12,
     "guards": [],
     "models": [],
@@ -32536,7 +32649,7 @@
     "router": "router",
     "method": "GET",
     "path": "/count",
-    "line": 84,
+    "line": 98,
     "lines": 16,
     "guards": [],
     "models": [],
@@ -32568,7 +32681,7 @@
     "router": "router",
     "method": "GET",
     "path": "/audit",
-    "line": 99,
+    "line": 113,
     "lines": 22,
     "guards": [],
     "models": [],
@@ -32600,7 +32713,7 @@
     "router": "router",
     "method": "GET",
     "path": "/stats",
-    "line": 120,
+    "line": 134,
     "lines": 20,
     "guards": [],
     "models": [],
@@ -32632,14 +32745,14 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/revoke",
-    "line": 139,
-    "lines": 25,
+    "line": 153,
+    "lines": 18,
     "guards": [],
     "models": [
      "AuditLog"
     ],
-    "writes": 2,
-    "transaction": true,
+    "writes": 1,
+    "transaction": false,
     "findMany": 0,
     "bounded": 0,
     "listsNoTake": 0,
@@ -32800,7 +32913,7 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 119,
+     "ok": 126,
      "refused": 5,
      "error": 0
     }
@@ -32869,7 +32982,7 @@
     "mount": "/api/customers",
     "exercised": {
      "ok": 0,
-     "refused": 5,
+     "refused": 6,
      "error": 0
     }
    },
@@ -33622,7 +33735,7 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 162,
+     "ok": 163,
      "refused": 7,
      "error": 0
     }
@@ -33727,8 +33840,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 410,
-     "refused": 15,
+     "ok": 411,
+     "refused": 14,
      "error": 0
     }
    },
@@ -33902,8 +34015,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 530,
-     "refused": 199,
+     "ok": 531,
+     "refused": 198,
      "error": 0
     }
    },
@@ -33968,8 +34081,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 2,
-     "refused": 14,
+     "ok": 1,
+     "refused": 15,
      "error": 0
     }
    },
@@ -34214,8 +34327,8 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 130,
-    "lines": 26,
+    "line": 196,
+    "lines": 27,
     "guards": [],
     "models": [
      "Document"
@@ -34248,8 +34361,8 @@
     "router": "router",
     "method": "GET",
     "path": "/entity/:entityType/:entityId",
-    "line": 155,
-    "lines": 12,
+    "line": 222,
+    "lines": 13,
     "guards": [],
     "models": [
      "DocumentLink"
@@ -34273,7 +34386,7 @@
     "file": "src/backend/src/routes/documents.js",
     "mount": "/api/documents",
     "exercised": {
-     "ok": 3,
+     "ok": 5,
      "refused": 3,
      "error": 0
     }
@@ -34282,7 +34395,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 166,
+    "line": 234,
     "lines": 15,
     "guards": [],
     "models": [
@@ -34316,7 +34429,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/download",
-    "line": 180,
+    "line": 248,
     "lines": 21,
     "guards": [],
     "models": [
@@ -34342,8 +34455,8 @@
     "file": "src/backend/src/routes/documents.js",
     "mount": "/api/documents",
     "exercised": {
-     "ok": 1,
-     "refused": 7,
+     "ok": 5,
+     "refused": 9,
      "error": 0
     }
    },
@@ -34351,8 +34464,8 @@
     "router": "router",
     "method": "POST",
     "path": "/upload",
-    "line": 200,
-    "lines": 15,
+    "line": 268,
+    "lines": 18,
     "guards": [
      "upload.single('file')"
     ],
@@ -34376,8 +34489,8 @@
     "file": "src/backend/src/routes/documents.js",
     "mount": "/api/documents",
     "exercised": {
-     "ok": 1,
-     "refused": 3,
+     "ok": 6,
+     "refused": 14,
      "error": 0
     }
    },
@@ -34385,8 +34498,8 @@
     "router": "router",
     "method": "POST",
     "path": "/upload-multiple",
-    "line": 214,
-    "lines": 16,
+    "line": 285,
+    "lines": 21,
     "guards": [
      "upload.array('files',10)"
     ],
@@ -34419,7 +34532,7 @@
     "router": "router",
     "method": "DELETE",
     "path": "/:id",
-    "line": 229,
+    "line": 305,
     "lines": 20,
     "guards": [],
     "models": [
@@ -34586,7 +34699,7 @@
     "method": "POST",
     "path": "/process-payment",
     "line": 208,
-    "lines": 105,
+    "lines": 106,
     "guards": [],
     "models": [
      "Order",
@@ -34623,7 +34736,7 @@
     "router": "router",
     "method": "GET",
     "path": "/daily-stats",
-    "line": 312,
+    "line": 313,
     "lines": 20,
     "guards": [],
     "models": [
@@ -34657,7 +34770,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:saleId/receipt",
-    "line": 331,
+    "line": 332,
     "lines": 7,
     "guards": [],
     "models": [],
@@ -34689,7 +34802,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:saleId/void",
-    "line": 337,
+    "line": 338,
     "lines": 33,
     "guards": [],
     "models": [
@@ -34724,7 +34837,7 @@
     "router": "router",
     "method": "POST",
     "path": "/email-receipt",
-    "line": 369,
+    "line": 370,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -34756,7 +34869,7 @@
     "router": "router",
     "method": "POST",
     "path": "/sms-receipt",
-    "line": 370,
+    "line": 371,
     "lines": 4,
     "guards": [],
     "models": [],
@@ -37021,9 +37134,9 @@
     "file": "src/backend/src/routes/aiAssistant.js",
     "mount": "/api/ai/assistant",
     "exercised": {
-     "ok": 5,
+     "ok": 12,
      "refused": 2,
-     "error": 3
+     "error": 5
     }
    },
    {
@@ -40034,8 +40147,8 @@
     "file": "src/backend/src/routes/operationsRoutes.js",
     "mount": "/api/v1/operations",
     "exercised": {
-     "ok": 4,
-     "refused": 8,
+     "ok": 5,
+     "refused": 7,
      "error": 0
     }
    },
@@ -42716,7 +42829,7 @@
     "method": "GET",
     "path": "/",
     "line": 18,
-    "lines": 6,
+    "lines": 7,
     "guards": [],
     "models": [],
     "writes": 0,
@@ -42738,8 +42851,40 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 25,
-     "refused": 11,
+     "ok": 26,
+     "refused": 13,
+     "error": 0
+    }
+   },
+   {
+    "router": "router",
+    "method": "GET",
+    "path": "/checks",
+    "line": 24,
+    "lines": 9,
+    "guards": [],
+    "models": [],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 0,
+    "bounded": 1,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": true,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/admin/integrations/checks",
+    "key": "GET /api/admin/integrations/checks",
+    "file": "src/backend/src/routes/integrations.js",
+    "mount": "/api/admin/integrations",
+    "exercised": {
+     "ok": 4,
+     "refused": 4,
      "error": 0
     }
    },
@@ -42747,7 +42892,7 @@
     "router": "router",
     "method": "GET",
     "path": "/deliveries",
-    "line": 23,
+    "line": 32,
     "lines": 20,
     "guards": [],
     "models": [
@@ -42781,7 +42926,7 @@
     "router": "router",
     "method": "POST",
     "path": "/deliveries/:id/replay",
-    "line": 42,
+    "line": 51,
     "lines": 9,
     "guards": [],
     "models": [],
@@ -42804,8 +42949,8 @@
     "file": "src/backend/src/routes/integrations.js",
     "mount": "/api/admin/integrations",
     "exercised": {
-     "ok": 2,
-     "refused": 2,
+     "ok": 3,
+     "refused": 3,
      "error": 0
     }
    },
@@ -42813,7 +42958,7 @@
     "router": "router",
     "method": "POST",
     "path": "/run",
-    "line": 50,
+    "line": 59,
     "lines": 17,
     "guards": [],
     "models": [],
@@ -44761,8 +44906,8 @@
     "file": "src/backend/src/routes/qcRoutes.js",
     "mount": "/api/qc",
     "exercised": {
-     "ok": 176,
-     "refused": 18,
+     "ok": 175,
+     "refused": 19,
      "error": 0
     }
    },
@@ -44793,8 +44938,8 @@
     "file": "src/backend/src/routes/qcRoutes.js",
     "mount": "/api/qc",
     "exercised": {
-     "ok": 10,
-     "refused": 7,
+     "ok": 11,
+     "refused": 6,
      "error": 0
     }
    },
@@ -46359,8 +46504,8 @@
     "file": "src/backend/src/routes/partner/partnerAuthRoutes.js",
     "mount": "/api/v1/partner/auth",
     "exercised": {
-     "ok": 14,
-     "refused": 5,
+     "ok": 22,
+     "refused": 7,
      "error": 0
     }
    },
@@ -46425,7 +46570,7 @@
     "file": "src/backend/src/routes/partner/customerRoutes.js",
     "mount": "/api/v1/partner/customer",
     "exercised": {
-     "ok": 2,
+     "ok": 3,
      "refused": 2,
      "error": 0
     }
@@ -46595,8 +46740,8 @@
     "file": "src/backend/src/routes/partner/customerRoutes.js",
     "mount": "/api/v1/partner/customer",
     "exercised": {
-     "ok": 13,
-     "refused": 18,
+     "ok": 15,
+     "refused": 34,
      "error": 0
     }
    },
@@ -46628,7 +46773,7 @@
     "mount": "/api/v1/partner/customer",
     "exercised": {
      "ok": 2,
-     "refused": 4,
+     "refused": 5,
      "error": 0
     }
    },
@@ -46663,7 +46808,7 @@
     "mount": "/api/v1/partner/customer",
     "exercised": {
      "ok": 1,
-     "refused": 3,
+     "refused": 4,
      "error": 0
     }
    },
@@ -47421,7 +47566,7 @@
     "file": "src/backend/src/routes/partner/webhookRoutes.js",
     "mount": "/api/v1/partner/webhooks",
     "exercised": {
-     "ok": 22,
+     "ok": 26,
      "refused": 3,
      "error": 0
     }
@@ -47489,7 +47634,7 @@
     "file": "src/backend/src/routes/partner/webhookRoutes.js",
     "mount": "/api/v1/partner/webhooks",
     "exercised": {
-     "ok": 6,
+     "ok": 9,
      "refused": 1,
      "error": 0
     }
@@ -47602,7 +47747,7 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 12,
+    "line": 16,
     "lines": 50,
     "guards": [],
     "models": [
@@ -47627,8 +47772,8 @@
     "file": "src/backend/src/routes/partner/adminRoutes.js",
     "mount": "/api/v1/admin/partners",
     "exercised": {
-     "ok": 9,
-     "refused": 5,
+     "ok": 10,
+     "refused": 6,
      "error": 0
     }
    },
@@ -47636,7 +47781,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 61,
+    "line": 65,
     "lines": 49,
     "guards": [],
     "models": [
@@ -47663,7 +47808,7 @@
     "mount": "/api/v1/admin/partners",
     "exercised": {
      "ok": 9,
-     "refused": 7,
+     "refused": 15,
      "error": 0
     }
    },
@@ -47671,7 +47816,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 109,
+    "line": 113,
     "lines": 40,
     "guards": [],
     "models": [
@@ -47705,7 +47850,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 148,
+    "line": 152,
     "lines": 37,
     "guards": [],
     "models": [
@@ -47739,7 +47884,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/keys",
-    "line": 184,
+    "line": 188,
     "lines": 60,
     "guards": [],
     "models": [
@@ -47765,7 +47910,7 @@
     "file": "src/backend/src/routes/partner/adminRoutes.js",
     "mount": "/api/v1/admin/partners",
     "exercised": {
-     "ok": 14,
+     "ok": 22,
      "refused": 3,
      "error": 0
     }
@@ -47774,7 +47919,7 @@
     "router": "router",
     "method": "DELETE",
     "path": "/:id/keys/:keyId",
-    "line": 243,
+    "line": 247,
     "lines": 31,
     "guards": [],
     "models": [
@@ -47788,7 +47933,7 @@
     "validates": false,
     "tryCatch": true,
     "raw": false,
-    "usesUser": false,
+    "usesUser": true,
     "scopesOrg": false,
     "scopesLocation": false,
     "scopesCustomer": false,
@@ -47799,7 +47944,7 @@
     "file": "src/backend/src/routes/partner/adminRoutes.js",
     "mount": "/api/v1/admin/partners",
     "exercised": {
-     "ok": 1,
+     "ok": 2,
      "refused": 2,
      "error": 0
     }
@@ -47808,7 +47953,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/usage",
-    "line": 273,
+    "line": 277,
     "lines": 61,
     "guards": [],
     "models": [
@@ -47843,7 +47988,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/logs",
-    "line": 333,
+    "line": 337,
     "lines": 43,
     "guards": [],
     "models": [
@@ -47877,7 +48022,7 @@
     "router": "router",
     "method": "GET",
     "path": "/dashboard/summary",
-    "line": 375,
+    "line": 379,
     "lines": 33,
     "guards": [],
     "models": [
@@ -47942,6 +48087,7 @@
    "envVars": [
     "AI_DEFAULT_PROVIDER",
     "AI_TIMEOUT_MS",
+    "ALERT_WEBHOOK_URL",
     "CORS_ORIGIN",
     "CRON_SECRET",
     "DATABASE_PROVIDER",
@@ -47959,6 +48105,8 @@
     "PORT",
     "RATE_LIMIT_MAX",
     "RATE_LIMIT_WINDOW_MS",
+    "READY_CACHE_MS",
+    "SCHEDULE_LATE_MINUTES",
     "SEED_ON_START",
     "SLOW_REQUEST_MS",
     "SPEECH_TIMEOUT_MS",
@@ -48023,6 +48171,7 @@
    "User": {
     "read": [
      "src/backend/src/lib/jobHistory.js",
+     "src/backend/src/lib/opsChecks.js",
      "src/backend/src/lib/orderTax.js",
      "src/backend/src/lib/receiving.js",
      "src/backend/src/middleware/auth.js",
@@ -48090,6 +48239,7 @@
    },
    "AuditLog": {
     "read": [
+     "src/backend/src/lib/alerts.js",
      "src/backend/src/lib/creditControl.js",
      "src/backend/src/lib/integrationReport.js",
      "src/backend/src/lib/jobGates.js",
@@ -48106,10 +48256,12 @@
      "src/backend/src/services/ledgerCutover.js"
     ],
     "write": [
+     "src/backend/src/lib/alerts.js",
      "src/backend/src/lib/creditControl.js",
      "src/backend/src/lib/jobHistory.js",
      "src/backend/src/lib/stockChanges.js",
      "src/backend/src/lib/transfers.js",
+     "src/backend/src/routes/auth.js",
      "src/backend/src/routes/coils.js",
      "src/backend/src/routes/customers.js",
      "src/backend/src/routes/intakePricing.js",
@@ -48201,6 +48353,7 @@
      "src/backend/src/routes/aiAssistant.js",
      "src/backend/src/routes/coils.js",
      "src/backend/src/routes/dashboard.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/inventory.js",
      "src/backend/src/routes/materialTrackingRoutes.js",
      "src/backend/src/routes/opsCockpit.js",
@@ -48218,6 +48371,7 @@
      "src/backend/src/lib/stockChanges.js",
      "src/backend/src/lib/transfers.js",
      "src/backend/src/routes/coils.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/returns.js",
@@ -48330,6 +48484,7 @@
     "read": [
      "src/backend/src/routes/aiAssistant.js",
      "src/backend/src/routes/analyticsV1.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/partner/customerRoutes.js",
      "src/backend/src/routes/quotes.js",
      "src/backend/src/routes/rfqs.js",
@@ -48337,6 +48492,7 @@
      "src/backend/src/routes/salesRoutes.js"
     ],
     "write": [
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/quotes.js",
      "src/backend/src/routes/rfqs.js",
      "src/backend/src/seeds/demo/index.js"
@@ -48374,6 +48530,7 @@
     "read": [
      "src/backend/src/routes/aiAssistant.js",
      "src/backend/src/routes/analyticsV1.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/partner/customerRoutes.js",
      "src/backend/src/routes/quotes.js",
@@ -48382,6 +48539,7 @@
      "src/backend/src/workflows/pos/DivisionService.js"
     ],
     "write": [
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/quotes.js",
      "src/backend/src/routes/rfqs.js",
      "src/backend/src/seeds/demo/index.js"
@@ -48531,6 +48689,7 @@
      "src/backend/src/lib/orderCloseout.js",
      "src/backend/src/routes/aiAssistant.js",
      "src/backend/src/routes/analyticsV1.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/materialTrackingRoutes.js",
@@ -48549,6 +48708,7 @@
     "write": [
      "src/backend/src/lib/jobGates.js",
      "src/backend/src/lib/jobHistory.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/opsCockpit.js",
@@ -48566,6 +48726,7 @@
      "src/backend/src/routes/compressionMetrics.js",
      "src/backend/src/routes/dashboard.js",
      "src/backend/src/routes/demandShaping.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/opsCockpit.js",
@@ -48586,6 +48747,7 @@
     ],
     "write": [
      "src/backend/src/lib/creditControl.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/intakeOrders.js",
      "src/backend/src/routes/onlineOrders.js",
      "src/backend/src/routes/orders.js",
@@ -48640,11 +48802,13 @@
    "WorkOrder": {
     "read": [
      "src/backend/src/lib/costing.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/workOrders.js",
      "src/backend/src/services/ledger.js",
      "src/backend/src/services/printAutomationService.js"
     ],
     "write": [
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/workOrders.js"
     ]
    },
@@ -48662,6 +48826,7 @@
      "src/backend/src/lib/shippingDocuments.js",
      "src/backend/src/routes/aiAssistant.js",
      "src/backend/src/routes/dashboard.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/opsCockpit.js",
      "src/backend/src/routes/orders.js",
@@ -48675,6 +48840,7 @@
      "src/backend/src/services/printAutomationService.js"
     ],
     "write": [
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/orders.js",
      "src/backend/src/routes/shipments.js",
      "src/backend/src/seeds/demo/index.js"
@@ -48703,6 +48869,7 @@
     "read": [
      "src/backend/src/lib/creditControl.js",
      "src/backend/src/lib/orderCloseout.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/partner/customerRoutes.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/routes/returns.js",
@@ -48712,6 +48879,7 @@
      "src/backend/src/services/portalService.js"
     ],
     "write": [
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/quickSale.js",
      "src/backend/src/seeds/demo/index.js",
      "src/backend/src/services/billing.js"
@@ -49010,6 +49178,7 @@
    "WebhookDelivery": {
     "read": [
      "src/backend/src/lib/integrationReport.js",
+     "src/backend/src/lib/opsChecks.js",
      "src/backend/src/routes/integrations.js",
      "src/backend/src/routes/partner/webhookRoutes.js",
      "src/backend/src/services/webhookService.js"
@@ -49502,10 +49671,12 @@
    "StockTransfer": {
     "read": [
      "src/backend/src/lib/transfers.js",
+     "src/backend/src/routes/documents.js",
      "src/backend/src/routes/inventory.js"
     ],
     "write": [
-     "src/backend/src/lib/transfers.js"
+     "src/backend/src/lib/transfers.js",
+     "src/backend/src/routes/documents.js"
     ]
    },
    "StockTransferLine": {
@@ -49595,6 +49766,7 @@
    },
    "LedgerReconciliation": {
     "read": [
+     "src/backend/src/lib/opsChecks.js",
      "src/backend/src/services/ledgerReports.js"
     ],
     "write": [
@@ -51785,7 +51957,7 @@
    },
    {
     "file": "components/layout/ChangePasswordDialog.jsx",
-    "lines": 99,
+    "lines": 100,
     "reachable": true,
     "useState": 4,
     "useEffect": 0,
@@ -53261,7 +53433,7 @@
    },
    {
     "file": "hooks/useAuth.jsx",
-    "lines": 196,
+    "lines": 211,
     "reachable": true,
     "useState": 4,
     "useEffect": 1,
@@ -57230,6 +57402,12 @@
     "mocks": 0
    },
    {
+    "file": "src/backend/test/securityRules.test.js",
+    "tests": 8,
+    "importsDb": false,
+    "mocks": 0
+   },
+   {
     "file": "src/backend/test/stockChanges.test.js",
     "tests": 8,
     "importsDb": false,
@@ -57276,8 +57454,68 @@
     "checks": 0
    },
    {
+    "file": "qa/sim/p10-probe.mjs",
+    "lines": 65,
+    "checks": 0
+   },
+   {
     "file": "qa/sim/p8-probe.mjs",
     "lines": 186,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/ctx.mjs",
+    "lines": 112,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g1-auth.mjs",
+    "lines": 261,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g2-isolation.mjs",
+    "lines": 187,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g3-api.mjs",
+    "lines": 186,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g4-ledger.mjs",
+    "lines": 215,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g5-recon.mjs",
+    "lines": 219,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g6-integrations.mjs",
+    "lines": 227,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g7-concurrency.mjs",
+    "lines": 326,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g8-recovery.mjs",
+    "lines": 208,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10/g9-observability.mjs",
+    "lines": 174,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase10-security.mjs",
+    "lines": 50,
     "checks": 0
    },
    {
@@ -57407,7 +57645,7 @@
    },
    {
     "file": "qa/sim/phase95/g6-books.mjs",
-    "lines": 295,
+    "lines": 300,
     "checks": 8
    },
    {
@@ -57504,7 +57742,7 @@
   "feTests": []
  },
  "contract": {
-  "total": 304,
+  "total": 305,
   "missing": [
    {
     "call": "GET /api/admin/integrations",
@@ -58805,17 +59043,17 @@
   ]
  },
  "exercised": {
-  "at": "2026-11-16T20:14:21.454Z",
+  "at": "2026-11-18T05:58:34.476Z",
   "sources": [
    {
     "file": "server-3011.log",
-    "requests": 20239
+    "requests": 15132
    },
    {
     "file": "server-3001.log",
-    "requests": 8337
+    "requests": 8338
    }
   ],
-  "distinct": 2791
+  "distinct": 2812
  }
 }

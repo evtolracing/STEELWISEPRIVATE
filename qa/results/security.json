@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-16T19:35:51.011Z",
- "endpointsInInventory": 661,
- "endpointsSwept": 661,
+ "at": "2026-11-18T06:20:00.480Z",
+ "endpointsInInventory": 662,
+ "endpointsSwept": 662,
  "sections": {
   "No access without signing in": {
    "pass": true,
-   "summary": "621 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
-   "tested": 621,
+   "summary": "622 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped)",
+   "tested": 622,
    "findings": []
   },
   "Partner API needs a partner token": {

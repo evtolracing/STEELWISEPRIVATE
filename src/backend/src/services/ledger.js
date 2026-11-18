@@ -11,6 +11,7 @@
  *  - A posted entry is never changed. A correction is a reversal, which is a new entry.
  *  - No account is ever substituted. A purpose with no mapped account fails the event.
  */
+import { raiseAlertLater } from '../lib/alerts.js';
 import { randomUUID } from 'node:crypto';
 import prisma from '../lib/db.js';
 import { acrossBranches } from '../lib/branchScope.js';
@@ -152,7 +153,7 @@ async function nextEntryNumber(tx) {
  */
 export async function writeEntry(tx, { kind, eventKind = null, sourceType = null, sourceId = null, date, lines, memo, locationId = null, legalEntityId = null, userId = null, service = null, reversesEntryId = null, post = true }) {
   const t = totals(lines);
-  if (!t.ok) throw new LedgerRuleError(`The entry does not balance: ${t.why}`);
+  if (!t.ok) { raiseAlertLater('LEDGER_UNBALANCED_ATTEMPT', { kind, eventKind, sourceType, sourceId, why: t.why }, { key: `${kind}:${sourceId || 'manual'}` }); throw new LedgerRuleError(`The entry does not balance: ${t.why}`); }
   const period = await periodFor(tx, date);
   if (post && period.status !== 'OPEN') throw new LedgerRuleError(`The period ${period.year}-${String(period.month).padStart(2, '0')} is closed. The entry was not moved to another period.`, { hold: true });
   const entry = await tx.journalEntry.create({
@@ -381,6 +382,7 @@ async function recordWithin(tx, eventKind, sourceType, sourceId, opts) {
     const reason = rule ? error.message : /LEDGER_PERIOD_CLOSED/.test(String(error?.message)) ? 'The period is closed. The entry was not moved to another period.' : `The entry could not be written: ${String(error?.message || error).split('\n').pop().slice(0, 300)}`;
     const held = (rule && error.hold) || /LEDGER_PERIOD_CLOSED/.test(String(error?.message));
     if (!rule && !held) console.error(`Ledger: ${eventKind} ${sourceType} ${key.sourceId} failed:`, error);
+    if (!held) raiseAlertLater('LEDGER_POSTING_FAILED', { eventKind, sourceType, sourceId: key.sourceId, reason: short(reason) }, { key: `${eventKind}:${key.sourceId}` });
     return setEvent(tx, key, { status: held ? 'RECONCILIATION_REQUIRED' : 'FAILED', reason: short(reason), locationId: existing?.locationId ?? null, occurredAt: existing?.occurredAt ?? new Date(), journalEntryId: null });
   }
 }
@@ -528,7 +530,7 @@ export async function postDraft(entryId, userId) {
     try { posted = await tx.journalEntry.update({ where: { id: entryId }, data: { status: 'POSTED', postedById: userId, postedAt: new Date() } }); } catch (error) {
       const m = String(error?.message || '');
       if (/LEDGER_PERIOD_CLOSED/.test(m)) refuse(409, 'The period is closed', 'PERIOD_CLOSED');
-      if (/LEDGER_UNBALANCED|LEDGER_TOO_FEW_LINES/.test(m)) refuse(409, 'The entry does not balance', 'UNBALANCED');
+      if (/LEDGER_UNBALANCED|LEDGER_TOO_FEW_LINES/.test(m)) { raiseAlertLater('LEDGER_UNBALANCED_ATTEMPT', { entryId, by: userId, refusedBy: 'database' }, { key: entryId }); refuse(409, 'The entry does not balance', 'UNBALANCED'); }
       throw error;
     }
     await audit(tx, { eventType: 'LEDGER_ENTRY_POSTED', userId, resourceType: 'JournalEntry', resourceId: entryId, details: { entryNumber: entry.entryNumber, total: String(posted.totalDebit) } });

@@ -131,6 +131,15 @@ export function AuthProvider({ children }) {
     setError(null)
   }, [])
 
+  // Ends every sign-in of this login on every device, this one included, then shows the sign-in page.
+  const logoutEverywhere = useCallback(async () => {
+    if (!DEMO_MODE) {
+      const { apiClient } = await import('../api/client')
+      await apiClient.post('/auth/logout-all').catch(() => {})
+    }
+    logout()
+  }, [logout])
+
   const updateProfile = useCallback(async (profileData) => {
     if (DEMO_MODE) {
       setUser({ ...DEMO_USER, ...profileData })
@@ -155,7 +164,12 @@ export function AuthProvider({ children }) {
     
     try {
       const { apiClient } = await import('../api/client')
-      await apiClient.put('/auth/password', { currentPassword, newPassword })
+      const response = await apiClient.put('/auth/password', { currentPassword, newPassword })
+      // A password change ends every other sign-in of this login; this one carries on with the new token.
+      if (response.data?.token) {
+        localStorage.setItem('token', response.data.token)
+        setToken(response.data.token)
+      }
       return { success: true }
     } catch (err) {
       const message = err.response?.data?.error || err.response?.data?.message || 'Password change failed'
@@ -172,6 +186,7 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
+    logoutEverywhere,
     updateProfile,
     changePassword,
     refreshUser: fetchCurrentUser,

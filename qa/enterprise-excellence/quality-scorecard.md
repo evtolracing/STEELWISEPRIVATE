@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 31cea3e. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 60ce6d2. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -29,7 +29,7 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 | Inventory and purchasing | 77 | 100% | 3 | 47 of 62 | No |
 | Manufacturing and processing | 82 | 100% | 1 | 63 of 95 | No |
 | Logistics and financial operations | 86 | 100% | 2 | 58 of 66 | No |
-| Enterprise experience | 60 | 92% | 5 | 10 of 50 | No |
+| Enterprise experience | 60 | 92% | 5 | 14 of 51 | No |
 
 No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.
 
@@ -39,8 +39,8 @@ The groups hide large differences. Classification and test reach per module:
 
 | Module | Classification | Changing routes with a success-path test | Open findings |
 |---|---|---|---|
-| Sign-in and sessions | IMPLEMENTED AND VERIFIED | 1 of 3 |  |
-| Users, roles and branches | IMPLEMENTED BUT NOT VERIFIED | 3 of 6 |  |
+| Sign-in and sessions | IMPLEMENTED AND VERIFIED | 4 of 4 |  |
+| Users, roles and branches | IMPLEMENTED BUT NOT VERIFIED | 4 of 6 |  |
 | Access control | IMPLEMENTED AND VERIFIED | n/a |  |
 | Staff and operators | PARTIALLY IMPLEMENTED | 4 of 9 | B-012, B-014 |
 | Settings, tax rates and online settings | PARTIALLY IMPLEMENTED | 0 of 6 | X-007, D-035 |
@@ -217,5 +217,5 @@ Modules: Sign-in and sessions; Users, roles and branches; Access control; Staff 
 | Accessibility | 3% | 60 | Phase 9, measured by tool: 0 controls with no name and 0 fields with no label on the sample screens too. Held at 60: the hard-to-read texts that remain are on these screens (V-011); they are to be rebuilt (owner decision 4); no assistive technology user. Was null (No evidence gathered) |
 | **Weighted over the 92% that has evidence** | | **60** | Target 95 |
 
-Changing routes with a success-path test: 10 of 50. Open findings against these modules: 9, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
+Changing routes with a success-path test: 14 of 51. Open findings against these modules: 9, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
 

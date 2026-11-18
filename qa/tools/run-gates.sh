@@ -16,6 +16,12 @@ fuser -k 3011/tcp 3001/tcp >/dev/null 2>&1 || true
 pg_isready -q || { echo "PostgreSQL is not running"; exit 1; }
 
 echo "== rebuild"; qa/tools/rebuild-qa-db.sh > "$LOGS/rebuild.log" 2>&1 && echo "rebuilt" || { echo "rebuild FAILED, see $LOGS/rebuild.log"; exit 1; }
+# Phase 10 (W-014): the QA servers connect as the least-privilege role steelwise_runtime, as the live server should.
+# The role is made by migration 20261118090000 without a login; only here, on the QA database, is it given one.
+# The password below is a QA fixture, not a secret. Set QA_SERVER_AS_OWNER=1 to run the servers as the owner instead.
+if [ -z "${QA_SERVER_AS_OWNER:-}" ]; then
+  psql "$DATABASE_URL" -qc "ALTER ROLE steelwise_runtime LOGIN PASSWORD 'qa-runtime-not-a-secret'" && export SERVER_DATABASE_URL="${DATABASE_URL/postgres:password@/steelwise_runtime:qa-runtime-not-a-secret@}" && echo "servers connect as steelwise_runtime"
+fi
 (nohup qa/tools/start-qa-server.sh > "$LOGS/server-3011.log" 2>&1 &); wait_for http://localhost:3011/api/health || exit 1
 echo "== simulation"
 for seed in 8001 8002 8003; do node qa/sim/run.mjs --base http://localhost:3011 --seed $seed --out qa/results/final-$seed.json 2>&1 | tail -3; done
@@ -41,6 +47,7 @@ echo "== every screen measured at three sizes"; node qa/sim/ui-audit.cjs --out q
 # Phase 9.5 runs last of the scenarios: it starts the QA ledger, and everything above is checked with the ledger never started, as it is on the live system until the accountant approves.
 echo "== phase 9.5 ledger scenarios"; node qa/sim/phase95-ledger.mjs --base http://localhost:3011 2>&1 | grep -v "^\s*at " | tail -12
 echo "== phase 9.5 UI scenarios"; node qa/sim/phase95-ui.cjs 2>&1 | grep "✗\|Phase 9.5 UI"
+echo "== phase 10 security scenarios"; [ -f qa/sim/phase10-security.mjs ] && node qa/sim/phase10-security.mjs --base http://localhost:3011 --server-log "$LOGS/server-3011.log" 2>&1 | grep -v "^\s*at " | tail -14
 echo "== phase 9.5 load, 80 branches"; node qa/sim/phase95-load.mjs --base http://localhost:3011 2>&1 | grep "✗\|stage 1\|Phase 9.5 load"
 echo "== calls the tests made"; node qa/tools/exercised.mjs "$LOGS/server-3011.log" "$LOGS/server-3001.log" | sed -n '/"distinct"/,$p'
 echo "== baseline probe"; node qa/tools/discover.mjs > /dev/null; node qa/sim/baseline-probe.mjs --base http://localhost:3011 --max-crash 0 2>&1 | tail -12

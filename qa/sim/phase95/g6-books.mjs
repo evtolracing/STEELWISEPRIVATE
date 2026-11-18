@@ -175,7 +175,12 @@ export default async function books(ctx, state) {
   await S('Receivables in the books against the invoices: a record changed outside the product shows as a difference by customer, and nothing is "fixed"', async (ok) => {
     const rep = (await cfo.get('/api/ledger/reports/receivables')).body;
     ok('they agree, customer by customer', rep.differences === 0 && near(rep.totals.difference, 0), JSON.stringify(rep.totals));
-    ok('credit owed back is shown apart', Number(rep.totals.creditOwedBack) >= 120 && near(Number(rep.totals.owed) - Number(rep.totals.creditOwedBack), rep.totals.records));
+    // Its own credit owed back (Phase 10, Y-012): earlier groups may refund or apply every credit they make.
+    const paidUp = await ctx.shipped(100, { price: 0.5 });
+    await ctx.pay(paidUp.invoice.id, 50);
+    const owedBack = await ctx.creditMemo(paidUp.invoice.id, { reason: 'QA credit owed back', amount: 25 });
+    const rep2 = (await cfo.get('/api/ledger/reports/receivables')).body;
+    ok('credit owed back is shown apart', owedBack.status === 201 && near(Number(rep2.totals.creditOwedBack) - Number(rep.totals.creditOwedBack), 25) && near(Number(rep2.totals.owed) - Number(rep2.totals.creditOwedBack), rep2.totals.records) && rep2.differences === 0, `${owedBack.status} ${JSON.stringify(rep.totals)} -> ${JSON.stringify(rep2.totals)}`);
     const inv = (await ctx.shipped(100, { price: 0.5 })).invoice; // 50.00, unpaid
     const entriesBefore = await prisma.journalEntry.count();
     await prisma.invoice.update({ where: { id: inv.id }, data: { paidAmount: { increment: 11.11 } } });

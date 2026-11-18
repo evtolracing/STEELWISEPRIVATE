@@ -108,7 +108,13 @@ export async function runTasks({ by = 'schedule' } = {}) {
   // At most 100 events and about 20 seconds per call, so the call fits inside a host's time limit.
   const webhooks = await deliverDue({ limit: 100, budgetMs: 20_000 });
   const oldKeys = await prisma.requestKey.deleteMany({ where: { createdAt: { lt: new Date(Date.now() - 24 * 60 * 60_000) } } });
-  const result = { at: new Date().toISOString(), by, ms: Date.now() - started, webhooks, requestKeysCleared: oldKeys.count };
+  // Each failing system check raises its alert (Y-010). An alert already raised in the last 15 minutes is not repeated.
+  const { systemChecks } = await import('./opsChecks.js');
+  const { raiseAlert } = await import('./alerts.js');
+  const health = await systemChecks();
+  const alerts = [];
+  for (const c of health.checks.filter((x) => !x.ok && x.key !== 'scheduled run on time')) alerts.push(await raiseAlert(c.alert, { check: c.key, count: c.count, detail: c.detail }, { key: c.key }));
+  const result = { at: new Date().toISOString(), by, ms: Date.now() - started, webhooks, requestKeysCleared: oldKeys.count, checksFailing: health.checks.filter((x) => !x.ok).map((x) => x.key), alertsRaised: alerts.filter((a) => a.stored).length };
   await putSetting('tasks.lastRun', result).catch(() => {});
   return result;
 }

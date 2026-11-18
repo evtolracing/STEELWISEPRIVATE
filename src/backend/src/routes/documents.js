@@ -5,6 +5,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import prisma from '../lib/db.js';
+import { currentScope } from '../lib/branchScope.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,20 +20,94 @@ if (!isVercel && !fs.existsSync(uploadsDir)) {
 // Configure multer storage
 const storage = isVercel ? multer.memoryStorage() : multer.diskStorage({
   destination: (req, file, cb) => {
-    // Organize by entity type subdirectory
-    const entityType = req.body.entityType || 'general';
-    const dir = path.join(uploadsDir, entityType.toLowerCase());
+    // One folder per kind of record. The name comes from the request, so only plain letters are used:
+    // anything else (dots, slashes) would let a sender write outside the uploads folder (Y-004).
+    const dir = path.join(uploadsDir, uploadFolder(req.body?.entityType));
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
     cb(null, dir);
   },
   filename: (req, file, cb) => {
+    // The stored name never takes the sender's extension (Y-005): it follows the accepted type.
     const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;
-    const ext = path.extname(file.originalname);
-    cb(null, `${uniqueSuffix}${ext}`);
+    cb(null, storedName(file.mimetype, uniqueSuffix));
   },
 });
+
+/** The folder for a kind of record: plain letters and underscores only, otherwise "general" (Y-004). */
+export function uploadFolder(entityType) {
+  const kind = String(entityType || '').toLowerCase();
+  return /^[a-z_]{1,40}$/.test(kind) ? kind : 'general';
+}
+
+/**
+ * Documents follow the record they are attached to (Y-016). A document on an order, invoice, shipment,
+ * stock item, work order, job, quote, request for quote or transfer is visible only to someone who can
+ * see that record: the record is looked up through the branch-scoped client, so a person of another
+ * branch does not find it. A document on a record that belongs to no branch (a heat, a product), or on
+ * none, stays visible to every staff member, as before.
+ */
+const BRANCH_RECORD = {
+  ORDER: 'order', SALES_ORDER: 'order', PURCHASE_ORDER: 'order', PO: 'order', INVOICE: 'invoice', SHIPMENT: 'shipment',
+  COIL: 'coil', STOCK_ITEM: 'coil', INVENTORY: 'coil', WORK_ORDER: 'workOrder', JOB: 'job', QUOTE: 'quote', RFQ: 'rFQ',
+  TRANSFER: 'stockTransfer', STOCK_TRANSFER: 'stockTransfer',
+};
+export const branchModelOf = (entityType) => BRANCH_RECORD[String(entityType || '').toUpperCase()] || null;
+async function recordVisible(entityType, entityId) {
+  const model = branchModelOf(entityType);
+  if (!model || !currentScope()?.branches) return true;
+  return Boolean(await prisma[model].findFirst({ where: { id: String(entityId) }, select: { id: true } }).catch(() => null));
+}
+async function documentVisible(documentId) {
+  if (!currentScope()?.branches) return true;
+  const links = await prisma.documentLink.findMany({ where: { documentId }, select: { entityType: true, entityId: true } });
+  if (!links.length || links.some((l) => !branchModelOf(l.entityType))) return true;
+  for (const l of links) if (await recordVisible(l.entityType, l.entityId)) return true;
+  return false;
+}
+const NOT_FOUND = { error: 'Document not found' };
+
+/** The stored file name: a unique stem and the extension of the accepted type, never the sender's (Y-005). */
+export function storedName(mimetype, stem) {
+  return `${stem}${EXTENSION[mimetype] || '.bin'}`;
+}
+
+const EXTENSION = {
+  'application/pdf': '.pdf', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/gif': '.gif', 'image/webp': '.webp', 'image/svg+xml': '.svg',
+  'application/msword': '.doc', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+  'application/vnd.ms-excel': '.xls', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+  'text/csv': '.csv', 'text/plain': '.txt',
+};
+
+/**
+ * The type a file says it is comes from the sender's browser and can be anything. The first bytes of
+ * the file must agree with it (Y-006): a "PDF" must start like a PDF, a picture like that picture, an
+ * Office file like an Office file. Text must be text. Returns null when they agree, else the reason.
+ */
+export function contentMismatch(mimetype, bytes) {
+  const b = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || []);
+  const starts = (...sig) => sig.every((v, i) => b[i] === v);
+  const ascii = (str, at = 0) => b.subarray(at, at + str.length).toString('latin1') === str;
+  const head = b.subarray(0, 1024).toString('utf8').replace(/^\uFEFF/, '').trimStart().toLowerCase();
+  const ok = {
+    'application/pdf': () => ascii('%PDF-'),
+    'image/png': () => starts(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a),
+    'image/jpeg': () => starts(0xff, 0xd8, 0xff),
+    'image/gif': () => ascii('GIF87a') || ascii('GIF89a'),
+    'image/webp': () => ascii('RIFF') && ascii('WEBP', 8),
+    'image/svg+xml': () => (head.startsWith('<svg') || head.startsWith('<?xml')) && !/<script|\son[a-z]+\s*=|javascript:/i.test(b.toString('utf8')),
+    'application/msword': () => starts(0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1),
+    'application/vnd.ms-excel': () => starts(0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1),
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': () => starts(0x50, 0x4b, 0x03, 0x04),
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': () => starts(0x50, 0x4b, 0x03, 0x04),
+    'text/csv': () => !b.includes(0) && !/^<(!doctype|html|script|svg)/.test(head),
+    'text/plain': () => !b.includes(0) && !/^<(!doctype|html|script|svg)/.test(head),
+  }[mimetype];
+  if (!ok) return `File type ${mimetype} is not allowed`;
+  if (!b.length) return 'The file is empty';
+  return ok() ? null : `The file's content is not a ${EXTENSION[mimetype].slice(1).toUpperCase()} file, although it was sent as one`;
+}
 
 // File filter – allow common document types
 const fileFilter = (req, file, cb) => {
@@ -101,6 +176,7 @@ const removeFile = (file) => { if (file?.path && fs.existsSync(file.path)) fs.un
 
 async function saveUpload(file, body) {
   const { entityType, entityId, type, organizationId } = body;
+  if (entityType && entityId && !(await recordVisible(entityType, entityId))) throw Object.assign(new Error('NOT_FOUND'), { outside: true });
   const document = await prisma.document.create({
     data: {
       documentType: documentTypeFor(type || entityType),
@@ -151,7 +227,8 @@ router.get('/', async (req, res) => {
       prisma.document.findMany({ where, take, skip, orderBy: { createdAt: 'desc' }, include: { owner: { select: { id: true, name: true, code: true } } } }),
       prisma.document.count({ where }),
     ]);
-    res.json({ data: documents.map(toApi), meta: { total, limit: take, offset: skip } });
+    const shown = currentScope()?.branches ? (await Promise.all(documents.map(async (d) => ((await documentVisible(d.id)) ? d : null)))).filter(Boolean) : documents;
+    res.json({ data: shown.map(toApi), meta: { total: total - (documents.length - shown.length), limit: take, offset: skip } });
   } catch (error) {
     console.error('Error fetching documents:', error);
     res.status(500).json({ error: 'Failed to fetch documents' });
@@ -162,6 +239,7 @@ router.get('/', async (req, res) => {
 router.get('/entity/:entityType/:entityId', async (req, res) => {
   try {
     const { entityType, entityId } = req.params;
+    if (!(await recordVisible(entityType, entityId))) return res.json({ data: [] });
     const links = await prisma.documentLink.findMany({ where: { entityType, entityId }, include: { document: true }, orderBy: { createdAt: 'desc' } });
     res.json({ data: links.map((l) => ({ ...toApi(l.document), linkId: l.id })) });
   } catch (error) {
@@ -177,7 +255,7 @@ router.get('/:id', async (req, res) => {
       where: { id: req.params.id },
       include: { owner: { select: { id: true, name: true, code: true } }, links: true },
     });
-    if (!document) return res.status(404).json({ error: 'Document not found' });
+    if (!document || !(await documentVisible(document.id))) return res.status(404).json(NOT_FOUND);
     res.json(toApi(document));
   } catch (error) {
     console.error('Error fetching document:', error);
@@ -189,7 +267,7 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/download', async (req, res) => {
   try {
     const document = await prisma.document.findUnique({ where: { id: req.params.id } });
-    if (!document) return res.status(404).json({ error: 'Document not found' });
+    if (!document || !(await documentVisible(document.id))) return res.status(404).json(NOT_FOUND);
     const onDisk = document.storagePath && document.storagePath !== IN_DATABASE && fs.existsSync(document.storagePath);
     const stored = onDisk ? null : await prisma.documentBlob.findUnique({ where: { documentId: document.id } }).catch(() => null);
     if (!onDisk && !stored) {
@@ -210,9 +288,12 @@ router.get('/:id/download', async (req, res) => {
 router.post('/upload', accept(upload.single('file')), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file provided' });
+    const mismatch = contentMismatch(req.file.mimetype, bytesOf(req.file));
+    if (mismatch) { removeFile(req.file); return res.status(400).json({ error: mismatch }); }
     res.status(201).json(toApi(await saveUpload(req.file, req.body || {})));
   } catch (error) {
     removeFile(req.file);
+    if (error?.outside) return res.status(404).json({ error: 'The record to attach this to was not found' });
     if (error?.notLinkable) return res.status(409).json({ error: NOT_LINKABLE });
     if (error?.code === 'P2021') return res.status(409).json({ error: NO_STORAGE });
     if (error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The upload has a field that is not valid' });
@@ -225,11 +306,16 @@ router.post('/upload', accept(upload.single('file')), async (req, res) => {
 router.post('/upload-multiple', accept(upload.array('files', 10)), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No files provided' });
+    for (const file of req.files) {
+      const mismatch = contentMismatch(file.mimetype, bytesOf(file));
+      if (mismatch) { for (const f of req.files) removeFile(f); return res.status(400).json({ error: `${file.originalname}: ${mismatch}` }); }
+    }
     const documents = [];
     for (const file of req.files) documents.push(toApi(await saveUpload(file, req.body || {})));
     res.status(201).json({ data: documents, count: documents.length });
   } catch (error) {
     for (const file of req.files || []) removeFile(file);
+    if (error?.outside) return res.status(404).json({ error: 'The record to attach this to was not found' });
     if (error?.notLinkable) return res.status(409).json({ error: NOT_LINKABLE });
     if (error?.code === 'P2021') return res.status(409).json({ error: NO_STORAGE });
     console.error('Error uploading documents:', error);
@@ -241,7 +327,7 @@ router.post('/upload-multiple', accept(upload.array('files', 10)), async (req, r
 router.delete('/:id', async (req, res) => {
   try {
     const document = await prisma.document.findUnique({ where: { id: req.params.id } });
-    if (!document) return res.status(404).json({ error: 'Document not found' });
+    if (!document || !(await documentVisible(document.id))) return res.status(404).json(NOT_FOUND);
     await prisma.$transaction([
       prisma.heat.updateMany({ where: { mtrDocumentId: document.id }, data: { mtrDocumentId: null } }),
       prisma.documentLink.deleteMany({ where: { documentId: document.id } }),

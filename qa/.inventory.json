@@ -13,6 +13,10 @@
    "file": "src/backend/src/routes/auth.js"
   },
   {
+   "ep": "POST /api/auth/logout-all",
+   "file": "src/backend/src/routes/auth.js"
+  },
+  {
    "ep": "GET /api/auth/me",
    "file": "src/backend/src/routes/auth.js"
   },
@@ -2660,7 +2664,7 @@
   },
   {
    "name": "User",
-   "fields": 39,
+   "fields": 42,
    "fks": 3,
    "status": null
   },

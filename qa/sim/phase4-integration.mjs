@@ -939,7 +939,10 @@ if (want(4)) {
       const r = await P.call(m, path, m === 'POST' ? {} : undefined);
       ok(`${m} ${path} answers 501 with a reason`, r.status === 501 && r.body.error.code === 'NOT_AVAILABLE', `${r.status} ${JSON.stringify(r.body).slice(0, 120)}`);
     }
-    ok('nothing left the server for any of these', stub.hits.filter((h) => !h.name.startsWith('hook:') && !['speech', 'ai'].includes(h.name)).length === 0);
+    // Partner hooks, the AI and speech stand-ins, and (since Phase 10) the alert channel are set up on the QA
+    // server and may be called by other scenarios; nothing else may be.
+    const strays = stub.hits.filter((h) => !h.name.startsWith('hook:') && !['speech', 'ai', 'alerts'].includes(h.name));
+    ok('nothing left the server for any of these', strays.length === 0, strays.map((h) => h.path).slice(0, 5).join(', '));
   });
 
   await scenario(G4, 'with the database unreachable the server says so and gives nothing away', async (ok) => {

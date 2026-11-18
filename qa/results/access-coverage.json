@@ -1,8 +1,8 @@
 {
- "at": "2026-11-16T20:14:27.195Z",
- "changingRoutes": 362,
+ "at": "2026-11-18T05:58:40.831Z",
+ "changingRoutes": 363,
  "withRule": 278,
- "guardedInRoute": 12,
+ "guardedInRoute": 13,
  "otherwiseCovered": 72,
  "noRule": 0,
  "noRuleByArea": {}

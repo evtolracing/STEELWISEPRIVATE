@@ -1,8 +1,8 @@
 {
- "at": "2026-11-16T19:38:57.160Z",
+ "at": "2026-11-18T06:23:09.597Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 172,
- "totalRows": 18010,
+ "totalRows": 17973,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -120,7 +120,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 4636
+   "rows": 4633
   },
   {
    "table": "BomOperation",
@@ -132,7 +132,7 @@
   },
   {
    "table": "Coil",
-   "rows": 939
+   "rows": 934
   },
   {
    "table": "CommodityPrice",
@@ -244,7 +244,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 939
+   "rows": 934
   },
   {
    "table": "InventoryAdjustment",
@@ -268,11 +268,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 409
+   "rows": 408
   },
   {
    "table": "InvoiceLine",
-   "rows": 421
+   "rows": 420
   },
   {
    "table": "Job",
@@ -356,7 +356,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 1213
+   "rows": 1198
   },
   {
    "table": "MeterReading",
@@ -384,7 +384,7 @@
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 112
+   "rows": 111
   },
   {
    "table": "Organization",
@@ -472,7 +472,7 @@
   },
   {
    "table": "QCHold",
-   "rows": 59
+   "rows": 61
   },
   {
    "table": "Quote",
@@ -756,7 +756,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 1198
+   "rows": 1190
   },
   {
    "table": "WorkCenter",
@@ -772,11 +772,11 @@
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 56
+   "rows": 55
   },
   {
    "table": "_prisma_migrations",
-   "rows": 34
+   "rows": 35
   }
  ],
  "indexes": 632,

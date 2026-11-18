@@ -15,7 +15,12 @@
  * both run, whichever server instance each one reaches.
  */
 import crypto from 'node:crypto';
-import prisma from '../lib/db.js';
+import db from '../lib/db.js';
+import { BUSY_DATABASE } from './safeErrors.js';
+
+let prisma = db;
+/** For tests: the keys are kept in the given store instead of the database (null puts the database back). */
+export const useKeyStore = (store) => { prisma = store || db; };
 
 const CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const STALE_MS = 60_000; // a claim older than this with no answer was abandoned (the instance died)
@@ -40,7 +45,16 @@ export async function requestKeys(req, res, next) {
   try {
     row = await prisma.requestKey.create({ data: { scope, key, bodyHash } });
   } catch (error) {
-    if (error?.code !== 'P2002') { console.error(`[requestKeys] ${req.id || '-'} could not claim a key: ${error?.message}`); return next(); }
+    if (error?.code !== 'P2002') {
+      // The key could not be claimed (no database connection, most likely). The request is NOT run
+      // without its protection: the caller asked for "once only", and a request that ran unclaimed and
+      // lost its answer would run a second time on the retry (Phase 11, Z-013: one payment was taken
+      // twice this way, right after every server connection had been cut). Nothing has been done yet,
+      // so the honest answer is "try again".
+      console.error(`[requestKeys] ${req.id || '-'} could not claim a key, request not run: ${String(error?.message || error).trim().split('\n').pop()}`);
+      res.set('Retry-After', String(BUSY_DATABASE.retryAfterSeconds));
+      return res.status(BUSY_DATABASE.status).json({ error: 'The system could not reach its database just now. Nothing was done; send the request again in a moment.', code: BUSY_DATABASE.code, ...(req.id && { requestId: req.id }) });
+    }
     const first = await prisma.requestKey.findUnique({ where: { scope_key: { scope, key } } });
     if (!first) return res.status(409).json({ error: 'The same request was just sent. Try again in a moment.' });
     if (first.bodyHash !== bodyHash) return res.status(422).json({ error: 'This request key was already used for a different request.' });

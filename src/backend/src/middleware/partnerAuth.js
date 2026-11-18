@@ -6,6 +6,7 @@
 
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { checkPassword } from '../lib/passwords.js';
 import prisma from '../lib/db.js';
 import config from '../config/index.js';
 
@@ -57,7 +58,7 @@ export async function generatePartnerToken(clientId, clientSecret) {
 
   // The secret is checked first, and a wrong id costs the same work as a wrong secret, so an
   // answer never tells a caller without the secret whether a key exists or what state it is in.
-  const valid = await bcrypt.compare(String(clientSecret), apiKey?.clientSecret || NO_KEY_HASH);
+  const valid = await checkPassword(String(clientSecret), apiKey?.clientSecret || NO_KEY_HASH);
   if (!apiKey || !valid) {
     throw new Error('Invalid client credentials');
   }

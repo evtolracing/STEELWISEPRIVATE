@@ -43,7 +43,7 @@ const handle = (label, fn) => async (req, res) => {
     await fn(req, res);
   } catch (error) {
     if (error instanceof Refuse || error instanceof BillingError || error?.refuse) {
-      return res.status(error.status).json({ error: error.message });
+      return res.status(error.status).json({ error: error.message, ...(error.busy && { code: 'BUSY' }) });
     }
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The return has a field that is not valid' });
     console.error(`Returns: ${label} failed:`, error);
@@ -313,7 +313,7 @@ router.post('/:id/receive', handle('receive return', async (req, res) => {
       });
     }
     return tx.order.findUnique({ where: { id: found.id }, include: INCLUDE });
-  }, SERIALIZABLE));
+  }, SERIALIZABLE), 12);
 
   let creditError = null;
   try {

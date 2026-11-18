@@ -9,6 +9,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { SharedRateStore } from './lib/rateWindow.js';
 import dotenv from 'dotenv';
 
 // Routes
@@ -90,8 +91,13 @@ import printQueueRoutes from './routes/printQueue.js';
 import prisma from './lib/db.js';
 import config from './config/index.js';
 import { clientErrorAnswer } from './lib/errorAnswer.js';
+import { useSeriesCounter } from './lib/numbering.js';
+import { dbSeriesCounter } from './lib/seriesCounter.js';
 
 dotenv.config();
+
+// Document numbers come from the database counter, not from counting rows (Phase 11, Z-003).
+useSeriesCounter(dbSeriesCounter);
 
 const app = express();
 export { prisma };
@@ -119,8 +125,10 @@ app.use(express.json({ limit: config.jsonBodyLimit }));
 app.use(express.urlencoded({ extended: true, limit: config.jsonBodyLimit }));
 
 // Rate limits. The general limit is per IP and generous because many staff at
-// one location can share an IP. Note: on Vercel each function instance keeps
-// its own counters; a shared store is planned for later phases.
+// one location can share an IP; each server copy keeps its own count of it, because a
+// database write on every request would cost more than the limit protects. The limits that
+// guard sign-in and the partner API are counted in the database, once for all copies
+// (src/lib/rateWindow.js, E-014, Z-007).
 app.use('/api', rateLimit({
   windowMs: config.rateLimit.windowMs,
   limit: config.rateLimit.max,
@@ -135,6 +143,8 @@ app.use('/api/auth/login', rateLimit({
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   keyGenerator: (req) => `${req.ip}:${String(req.body?.email || '').toLowerCase()}`,
+  // Counted in the database, so the limit is one limit for all server copies (E-014).
+  store: new SharedRateStore('login'),
   message: { error: 'Too many login attempts, please try again later' },
 }));
 

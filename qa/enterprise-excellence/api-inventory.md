@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 8460e84. Do not edit by hand: change the source and rerun.
 
 686 routes in 76 route files, served at 77 mount points. 363 change data.
 
@@ -53,8 +53,8 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
 | `GET /api/processing/operations` | intakeProcessing.js:20 |
 | `GET /api/processing/templates` | intakeProcessing.js:43 |
-| `GET /api/shipments/shippable` | shipments.js:154 |
-| `GET /api/shipments/:id/items` | shipments.js:257 |
+| `GET /api/shipments/shippable` | shipments.js:155 |
+| `GET /api/shipments/:id/items` | shipments.js:258 |
 | `GET /api/tax-rates` | taxRates.js:8 |
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:8 |
@@ -98,7 +98,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 ## Every route, by route file
 
-### auth.js (5 routes, 203 lines)
+### auth.js (5 routes, 204 lines)
 
 Mounted at /api/auth. Tables: User, AuditLog.
 
@@ -395,7 +395,7 @@ Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, Job, OrderLine, 
 | `PUT /api/work-orders/:id/release-hold` | yes |  |  |  |  |  |
 | `PUT /api/work-orders/:id/cancel` | yes |  |  |  |  |  |
 
-### shipments.js (13 routes, 617 lines)
+### shipments.js (13 routes, 618 lines)
 
 Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter.
 
@@ -553,7 +553,7 @@ Mounted at /api/rfqs. Tables: RFQ, Organization, Quote.
 | `PATCH /api/rfqs/:id` | yes | 2 | yes |  |  |  |
 | `POST /api/rfqs/:id/quotes` | yes |  |  |  |  |  |
 
-### quotes.js (6 routes, 251 lines)
+### quotes.js (6 routes, 252 lines)
 
 Mounted at /api/quotes. Tables: Quote, RFQ, Order.
 

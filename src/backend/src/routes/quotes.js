@@ -43,6 +43,7 @@ export const handle = (label, fn) => async (req, res) => {
     await fn(req, res);
   } catch (error) {
     if (error instanceof Refuse) return res.status(error.status).json({ error: error.message });
+    if (error?.busy) return res.status(409).json({ error: error.message, code: 'BUSY' });
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The request has a field that is not valid' });
     console.error(`Quotes: ${label} failed:`, error);
     res.status(500).json({ error: `Failed to ${label}` });

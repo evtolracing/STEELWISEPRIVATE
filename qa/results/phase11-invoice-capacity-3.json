@@ -1,0 +1,65 @@
+{
+ "at": "2026-11-18T17:06:28.582Z",
+ "base": "http://localhost:3110",
+ "serverCopies": 3,
+ "levels": [
+  {
+   "inFlight": 1,
+   "dispatches": 60,
+   "failed": 0,
+   "seconds": 5.56,
+   "perSecond": 10.8,
+   "rolledBack": 0,
+   "requests": 60,
+   "p50": 90.4,
+   "p95": 110.2,
+   "p99": 146,
+   "max": 146,
+   "mean": 92.6
+  },
+  {
+   "inFlight": 4,
+   "dispatches": 60,
+   "failed": 0,
+   "seconds": 2.14,
+   "perSecond": 28,
+   "rolledBack": 11,
+   "requests": 60,
+   "p50": 135.3,
+   "p95": 172.7,
+   "p99": 205.8,
+   "max": 205.8,
+   "mean": 140
+  },
+  {
+   "inFlight": 16,
+   "dispatches": 60,
+   "failed": 0,
+   "seconds": 2.45,
+   "perSecond": 24.5,
+   "rolledBack": 1,
+   "requests": 60,
+   "p50": 498.9,
+   "p95": 1257.8,
+   "p99": 1491,
+   "max": 1491,
+   "mean": 579.9
+  },
+  {
+   "inFlight": 48,
+   "dispatches": 60,
+   "failed": 0,
+   "seconds": 2.86,
+   "perSecond": 21,
+   "rolledBack": 0,
+   "requests": 60,
+   "p50": 1721.5,
+   "p95": 2621.8,
+   "p99": 2860.6,
+   "max": 2860.6,
+   "mean": 1706.1
+  }
+ ],
+ "invoiceNumbersUsedTwice": 0,
+ "invoiceNumbersSkipped": 0
+}

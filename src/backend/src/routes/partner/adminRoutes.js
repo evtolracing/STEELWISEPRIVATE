@@ -8,7 +8,7 @@
 
 import { Router } from 'express';
 import prisma from '../../lib/db.js';
-import bcrypt from 'bcryptjs';
+import { hashPassword } from '../../lib/passwords.js';
 import crypto from 'crypto';
 import { PARTNER_SCOPES } from '../../middleware/partnerAuth.js';
 import { requireRole } from '../../middleware/auth.js';
@@ -231,7 +231,7 @@ router.post('/:id/keys', async (req, res) => {
 
     // Generate client secret
     const rawSecret = `sk_${env === 'production' ? 'live' : 'test'}_${crypto.randomBytes(32).toString('hex')}`;
-    const hashedSecret = await bcrypt.hash(rawSecret, 10);
+    const hashedSecret = await hashPassword(rawSecret, 10);
 
     const apiKey = await prisma.partnerApiKey.create({
       data: {

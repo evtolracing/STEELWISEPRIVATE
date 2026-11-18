@@ -1,0 +1,2046 @@
+{
+ "phase": 11,
+ "cycle": "capacity-1",
+ "label": "Capacity, 1 server copies",
+ "at": "2026-11-18T18:34:16.888Z",
+ "base": "http://localhost:3110",
+ "seed": 11,
+ "machine": {
+  "cpus": 4,
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "memoryGb": 15.7,
+  "node": "v22.23.4"
+ },
+ "model": {
+  "branches": 80,
+  "byTier": {
+   "LARGE": 8,
+   "MEDIUM": 20,
+   "SMALL": 24,
+   "WAREHOUSE": 12,
+   "SALES": 10,
+   "OUTLET": 6
+  },
+  "byKind": {
+   "METALS": 36,
+   "PLASTICS": 11,
+   "MIXED": 22,
+   "OUTLET": 11
+  },
+  "states": 16,
+  "employees": 750,
+  "employeesByRole": {
+   "SALES_REP": 80,
+   "CSR": 94,
+   "ESTIMATOR": 38,
+   "BUYER": 74,
+   "RECEIVING_CLERK": 86,
+   "INVENTORY_MANAGER": 74,
+   "SCHEDULER": 28,
+   "OPERATOR_SAW": 64,
+   "QC_INSPECTOR": 28,
+   "SHIPPING_COORDINATOR": 94,
+   "BRANCH_MANAGER": 80,
+   "CUSTOMER_BUYER": 68,
+   "CFO": 2,
+   "EXECUTIVE": 2,
+   "COO": 1,
+   "CREDIT_MANAGER": 2,
+   "AUDITOR": 1,
+   "DATA_ANALYST": 1,
+   "SALES_DIRECTOR": 1
+  },
+  "customers": 284,
+  "customerLogins": 68,
+  "suppliers": 12,
+  "machines": 64,
+  "operators": 72,
+  "plannedLots": 320,
+  "productsInCatalog": 12,
+  "grades": [
+   "1018",
+   "A36",
+   "304SS",
+   "6061-T6",
+   "HDPE",
+   "UHMW"
+  ]
+ },
+ "serverCopies": 1,
+ "database": {
+  "name": "steelwise_qa_p11",
+  "version": "16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)",
+  "maxConnections": 100
+ },
+ "signIn": {
+  "people": 818,
+  "failed": 0,
+  "seconds": 70.4,
+  "atATime": 24,
+  "requests": 818,
+  "p50": 2059.5,
+  "p95": 2153.7,
+  "p99": 2617,
+  "max": 4615,
+  "mean": 2041.8
+ },
+ "openingReceipts": {
+  "lots": 320,
+  "received": 320,
+  "seconds": 5.8,
+  "atATime": 16
+ },
+ "seconds": 143.9,
+ "levels": [
+  {
+   "dispatchMs": {
+    "requests": 123,
+    "p50": 306.9,
+    "p95": 656.1,
+    "p99": 809.3,
+    "max": 920.8,
+    "mean": 347
+   },
+   "jobsInFlight": 8,
+   "workItems": 222,
+   "completed": 222,
+   "seconds": 15.3,
+   "requests": 1814,
+   "requestsPerSecond": 118.3,
+   "peakRequestsInFlight": 11,
+   "latencyMs": {
+    "requests": 1814,
+    "p50": 37.8,
+    "p95": 263,
+    "p99": 493.6,
+    "max": 2178,
+    "mean": 68.1
+   }
+  },
+  {
+   "dispatchMs": {
+    "requests": 117,
+    "p50": 1071.4,
+    "p95": 1341.7,
+    "p99": 1385.1,
+    "max": 1389.4,
+    "mean": 1067.5
+   },
+   "jobsInFlight": 16,
+   "workItems": 222,
+   "completed": 222,
+   "seconds": 13.6,
+   "requests": 1751,
+   "requestsPerSecond": 128.8,
+   "peakRequestsInFlight": 18,
+   "latencyMs": {
+    "requests": 1750,
+    "p50": 44.5,
+    "p95": 944,
+    "p99": 1259.3,
+    "max": 1389.4,
+    "mean": 121.5
+   }
+  },
+  {
+   "dispatchMs": {
+    "requests": 118,
+    "p50": 2592.8,
+    "p95": 3471.9,
+    "p99": 3726.1,
+    "max": 3728.5,
+    "mean": 2351.6
+   },
+   "jobsInFlight": 32,
+   "workItems": 222,
+   "completed": 222,
+   "seconds": 14.3,
+   "requests": 1809,
+   "requestsPerSecond": 126.6,
+   "peakRequestsInFlight": 35,
+   "latencyMs": {
+    "requests": 1809,
+    "p50": 73.8,
+    "p95": 1864.3,
+    "p99": 2950.9,
+    "max": 3728.5,
+    "mean": 239.1
+   }
+  },
+  {
+   "dispatchMs": {
+    "requests": 122,
+    "p50": 3878,
+    "p95": 4791.3,
+    "p99": 4908.7,
+    "max": 5066.3,
+    "mean": 3579.3
+   },
+   "jobsInFlight": 48,
+   "workItems": 221,
+   "completed": 221,
+   "seconds": 14.3,
+   "requests": 1722,
+   "requestsPerSecond": 120.8,
+   "peakRequestsInFlight": 51,
+   "latencyMs": {
+    "requests": 1721,
+    "p50": 69.5,
+    "p95": 3204.7,
+    "p99": 4604.6,
+    "max": 5066.3,
+    "mean": 360.9
+   }
+  }
+ ],
+ "ledgerAtStart": "started for this run",
+ "heldReceiptsSettledBefore": {
+  "held": 0,
+  "posted": 0,
+  "noCost": 0,
+  "nothingToPost": [],
+  "refused": []
+ },
+ "transactions": {
+  "attempted": 5191,
+  "completed": 5191,
+  "failed": 0,
+  "retried": 0,
+  "recovered": 0,
+  "reconciled": 5191,
+  "byCategory": {
+   "sales": {
+    "name": "Sales, quotes and orders",
+    "minimum": 300,
+    "attempted": 650,
+    "completed": 650,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 650,
+    "kinds": {
+     "request for quote entered": {
+      "attempted": 115,
+      "completed": 115,
+      "failed": 0
+     },
+     "order confirmed": {
+      "attempted": 305,
+      "completed": 305,
+      "failed": 0
+     },
+     "quote priced": {
+      "attempted": 115,
+      "completed": 115,
+      "failed": 0
+     },
+     "quote accepted into an order": {
+      "attempted": 115,
+      "completed": 115,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "purchasing": {
+    "name": "Purchasing and receiving",
+    "minimum": 250,
+    "attempted": 834,
+    "completed": 834,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 834,
+    "kinds": {
+     "purchase order placed": {
+      "attempted": 417,
+      "completed": 417,
+      "failed": 0
+     },
+     "goods received": {
+      "attempted": 417,
+      "completed": 417,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "inventory": {
+    "name": "Inventory reservations and movements",
+    "minimum": 300,
+    "attempted": 460,
+    "completed": 460,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 460,
+    "kinds": {
+     "stock reserved": {
+      "attempted": 420,
+      "completed": 420,
+      "failed": 0
+     },
+     "material issued to a work order": {
+      "attempted": 40,
+      "completed": 40,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "shop": {
+    "name": "Manufacturing and processing",
+    "minimum": 300,
+    "attempted": 615,
+    "completed": 615,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 615,
+    "kinds": {
+     "job routed and scheduled": {
+      "attempted": 115,
+      "completed": 115,
+      "failed": 0
+     },
+     "work order completed": {
+      "attempted": 40,
+      "completed": 40,
+      "failed": 0
+     },
+     "step finished": {
+      "attempted": 230,
+      "completed": 230,
+      "failed": 0
+     },
+     "inspection passed": {
+      "attempted": 115,
+      "completed": 115,
+      "failed": 0
+     },
+     "job packed and staged for shipping": {
+      "attempted": 115,
+      "completed": 115,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "shipping": {
+    "name": "Shipping and logistics",
+    "minimum": 250,
+    "attempted": 960,
+    "completed": 960,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 960,
+    "kinds": {
+     "shipment dispatched": {
+      "attempted": 480,
+      "completed": 480,
+      "failed": 0
+     },
+     "shipment delivered": {
+      "attempted": 480,
+      "completed": 480,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "money": {
+    "name": "Invoicing, payments and credits",
+    "minimum": 200,
+    "attempted": 1080,
+    "completed": 1080,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 1080,
+    "kinds": {
+     "invoice raised": {
+      "attempted": 480,
+      "completed": 480,
+      "failed": 0
+     },
+     "payment taken": {
+      "attempted": 480,
+      "completed": 480,
+      "failed": 0
+     },
+     "credit memo issued": {
+      "attempted": 60,
+      "completed": 60,
+      "failed": 0
+     },
+     "refund paid": {
+      "attempted": 60,
+      "completed": 60,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "ledger": {
+    "name": "Ledger postings and reconciliation operations",
+    "minimum": 200,
+    "attempted": 212,
+    "completed": 212,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 212,
+    "kinds": {
+     "journal entry posted by a second person": {
+      "attempted": 200,
+      "completed": 200,
+      "failed": 0
+     },
+     "reconciliation run": {
+      "attempted": 12,
+      "completed": 12,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "moves": {
+    "name": "Transfers, returns and adjustments",
+    "minimum": 150,
+    "attempted": 200,
+    "completed": 200,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 200,
+    "kinds": {
+     "stock count adjusted": {
+      "attempted": 40,
+      "completed": 40,
+      "failed": 0
+     },
+     "transfer sent": {
+      "attempted": 50,
+      "completed": 50,
+      "failed": 0
+     },
+     "transfer received": {
+      "attempted": 50,
+      "completed": 50,
+      "failed": 0
+     },
+     "return received and credited": {
+      "attempted": 60,
+      "completed": 60,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   },
+   "channels": {
+    "name": "Ecommerce, POS and customer portal",
+    "minimum": 50,
+    "attempted": 180,
+    "completed": 180,
+    "failed": 0,
+    "retried": 0,
+    "recovered": 0,
+    "reconciled": 180,
+    "kinds": {
+     "counter sale paid": {
+      "attempted": 70,
+      "completed": 70,
+      "failed": 0
+     },
+     "web order placed": {
+      "attempted": 55,
+      "completed": 55,
+      "failed": 0
+     },
+     "web order accepted into an order": {
+      "attempted": 55,
+      "completed": 55,
+      "failed": 0
+     }
+    },
+    "meetsMinimum": true
+   }
+  },
+  "notFoundInDatabase": {},
+  "kindsWithNoCheck": {}
+ },
+ "jobs": {
+  "planned": 545,
+  "completed": 545,
+  "tracedEndToEnd": 545,
+  "failed": 0,
+  "recoveredByBillingAgain": 0,
+  "byType": {
+   "A": {
+    "kind": "Stock sale",
+    "planned": 185,
+    "completed": 185,
+    "traced": 185,
+    "failed": 0,
+    "msP50": 2274,
+    "msP95": 5198
+   },
+   "B": {
+    "kind": "Processed-material sale",
+    "planned": 115,
+    "completed": 115,
+    "traced": 115,
+    "failed": 0,
+    "msP50": 2362,
+    "msP95": 8117
+   },
+   "C": {
+    "kind": "Ecommerce order",
+    "planned": 55,
+    "completed": 55,
+    "traced": 55,
+    "failed": 0,
+    "msP50": 185,
+    "msP95": 1326
+   },
+   "D": {
+    "kind": "Counter (POS) sale",
+    "planned": 70,
+    "completed": 70,
+    "traced": 70,
+    "failed": 0,
+    "msP50": 238,
+    "msP95": 718
+   },
+   "E": {
+    "kind": "Partial shipment",
+    "planned": 60,
+    "completed": 60,
+    "traced": 60,
+    "failed": 0,
+    "msP50": 2634,
+    "msP95": 8847
+   },
+   "F": {
+    "kind": "Return and credit",
+    "planned": 60,
+    "completed": 60,
+    "traced": 60,
+    "failed": 0,
+    "msP50": 3566,
+    "msP95": 5779
+   }
+  },
+  "byTier": {
+   "LARGE": 149,
+   "MEDIUM": 189,
+   "SMALL": 121,
+   "WAREHOUSE": 12,
+   "SALES": 67,
+   "OUTLET": 7
+  },
+  "branchesWithATracedJob": 74,
+  "traceProblems": []
+ },
+ "otherWork": {
+  "TRANSFER": {
+   "planned": 50,
+   "completed": 50
+  },
+  "COUNT": {
+   "planned": 40,
+   "completed": 40
+  },
+  "WORKORDER": {
+   "planned": 40,
+   "completed": 40
+  },
+  "ENTRY": {
+   "planned": 200,
+   "completed": 200
+  },
+  "RECON": {
+   "planned": 12,
+   "completed": 12
+  }
+ },
+ "requests": {
+  "sent": 8063,
+  "peakInFlight": 51,
+  "perSecondOverall": 56,
+  "byStatus": {
+   "200": 4437,
+   "201": 3626
+  },
+  "byServerCopy": {
+   "1": 8063
+  },
+  "failed": 0,
+  "failures": [],
+  "failuresByKind": {}
+ },
+ "latencyMs": {
+  "buyer sees the order in the portal": {
+   "requests": 55,
+   "p50": 41.9,
+   "p95": 251.5,
+   "p99": 262.3,
+   "max": 262.3,
+   "mean": 73.8
+  },
+  "counter sale paid": {
+   "requests": 70,
+   "p50": 237.6,
+   "p95": 717.8,
+   "p99": 892,
+   "max": 892,
+   "mean": 310.4
+  },
+  "goods received": {
+   "requests": 417,
+   "p50": 132,
+   "p95": 215.6,
+   "p99": 256.6,
+   "max": 329.8,
+   "mean": 138.4
+  },
+  "inspection opened": {
+   "requests": 115,
+   "p50": 45.4,
+   "p95": 122.9,
+   "p99": 136.9,
+   "max": 161.2,
+   "mean": 57.6
+  },
+  "inspection passed": {
+   "requests": 115,
+   "p50": 70.8,
+   "p95": 148.9,
+   "p99": 156.8,
+   "max": 182.9,
+   "mean": 80.4
+  },
+  "invoice opened": {
+   "requests": 480,
+   "p50": 20.4,
+   "p95": 65.4,
+   "p99": 124.7,
+   "max": 150.7,
+   "mean": 25.7
+  },
+  "job cost read": {
+   "requests": 115,
+   "p50": 26.8,
+   "p95": 44.1,
+   "p99": 54.8,
+   "max": 55.3,
+   "mean": 28.1
+  },
+  "job opened": {
+   "requests": 115,
+   "p50": 37.4,
+   "p95": 329.5,
+   "p99": 377.9,
+   "max": 412.5,
+   "mean": 79.9
+  },
+  "job packed and staged for shipping": {
+   "requests": 115,
+   "p50": 49.4,
+   "p95": 130.1,
+   "p99": 140.4,
+   "max": 144.1,
+   "mean": 59
+  },
+  "job routed and scheduled": {
+   "requests": 115,
+   "p50": 89.6,
+   "p95": 312.7,
+   "p99": 330.8,
+   "max": 345.4,
+   "mean": 122.7
+  },
+  "journal entry posted by a second person": {
+   "requests": 200,
+   "p50": 35.8,
+   "p95": 159.3,
+   "p99": 246.4,
+   "max": 264.5,
+   "mean": 54.4
+  },
+  "journal entry written": {
+   "requests": 200,
+   "p50": 43.6,
+   "p95": 121.4,
+   "p99": 214,
+   "max": 258.2,
+   "mean": 59.8
+  },
+  "material issued to a work order": {
+   "requests": 40,
+   "p50": 26.6,
+   "p95": 238.5,
+   "p99": 261.9,
+   "max": 261.9,
+   "mean": 59.3
+  },
+  "order confirmed": {
+   "requests": 305,
+   "p50": 50.8,
+   "p95": 339.1,
+   "p99": 399.6,
+   "max": 454.5,
+   "mean": 98.2
+  },
+  "order written": {
+   "requests": 305,
+   "p50": 34.3,
+   "p95": 247.5,
+   "p99": 396.8,
+   "max": 405.8,
+   "mean": 74.9
+  },
+  "payment taken": {
+   "requests": 480,
+   "p50": 65.9,
+   "p95": 147.9,
+   "p99": 235.5,
+   "max": 339.5,
+   "mean": 76.2
+  },
+  "purchase order placed": {
+   "requests": 417,
+   "p50": 69.7,
+   "p95": 139.1,
+   "p99": 213,
+   "max": 379.2,
+   "mean": 77
+  },
+  "purchase order written": {
+   "requests": 417,
+   "p50": 59.5,
+   "p95": 118.8,
+   "p99": 148,
+   "max": 237.5,
+   "mean": 64.4
+  },
+  "quote accepted into an order": {
+   "requests": 115,
+   "p50": 70,
+   "p95": 356.7,
+   "p99": 390.4,
+   "max": 412.2,
+   "mean": 112.3
+  },
+  "quote priced": {
+   "requests": 115,
+   "p50": 50.8,
+   "p95": 341.1,
+   "p99": 467.7,
+   "max": 495.7,
+   "mean": 102.8
+  },
+  "quote sent": {
+   "requests": 115,
+   "p50": 34,
+   "p95": 230.2,
+   "p99": 288.2,
+   "max": 288.8,
+   "mean": 66.5
+  },
+  "reconciliation run": {
+   "requests": 12,
+   "p50": 130.4,
+   "p95": 798,
+   "p99": 798,
+   "max": 798,
+   "mean": 261.3
+  },
+  "refund paid": {
+   "requests": 60,
+   "p50": 73.6,
+   "p95": 162.6,
+   "p99": 183.7,
+   "max": 183.7,
+   "mean": 84.3
+  },
+  "request for quote entered": {
+   "requests": 115,
+   "p50": 28.8,
+   "p95": 151.7,
+   "p99": 296.5,
+   "max": 311.4,
+   "mean": 51.8
+  },
+  "return opened": {
+   "requests": 60,
+   "p50": 38.7,
+   "p95": 126.1,
+   "p99": 215.9,
+   "max": 215.9,
+   "mean": 53.7
+  },
+  "return received and credited": {
+   "requests": 60,
+   "p50": 239.7,
+   "p95": 484.7,
+   "p99": 2178,
+   "max": 2178,
+   "mean": 307.4
+  },
+  "shipment delivered": {
+   "requests": 480,
+   "p50": 30.3,
+   "p95": 87.4,
+   "p99": 156.4,
+   "max": 202.3,
+   "mean": 37.3
+  },
+  "shipment dispatched": {
+   "requests": 480,
+   "p50": 1255.2,
+   "p95": 4441.6,
+   "p99": 4848.5,
+   "max": 5066.3,
+   "mean": 1837
+  },
+  "shipment put together": {
+   "requests": 480,
+   "p50": 43,
+   "p95": 258.5,
+   "p99": 402.5,
+   "max": 653.3,
+   "mean": 74
+  },
+  "step finished": {
+   "requests": 230,
+   "p50": 74.2,
+   "p95": 239.6,
+   "p99": 284.2,
+   "max": 296.4,
+   "mean": 97.2
+  },
+  "step started": {
+   "requests": 230,
+   "p50": 88.6,
+   "p95": 278.4,
+   "p99": 346.1,
+   "max": 364.8,
+   "mean": 118.9
+  },
+  "stock count adjusted": {
+   "requests": 40,
+   "p50": 107,
+   "p95": 229.8,
+   "p99": 346.3,
+   "max": 346.3,
+   "mean": 134
+  },
+  "stock reserved": {
+   "requests": 420,
+   "p50": 57.1,
+   "p95": 279.7,
+   "p99": 367.2,
+   "max": 382.7,
+   "mean": 95.8
+  },
+  "transfer received": {
+   "requests": 50,
+   "p50": 101.2,
+   "p95": 275.4,
+   "p99": 304.8,
+   "max": 304.8,
+   "mean": 138
+  },
+  "transfer sent": {
+   "requests": 50,
+   "p50": 100,
+   "p95": 274.9,
+   "p99": 380.5,
+   "max": 380.5,
+   "mean": 129.3
+  },
+  "web order accepted into an order": {
+   "requests": 55,
+   "p50": 73.7,
+   "p95": 677.5,
+   "p99": 731.9,
+   "max": 731.9,
+   "mean": 180.5
+  },
+  "web order placed": {
+   "requests": 55,
+   "p50": 75.7,
+   "p95": 464.8,
+   "p99": 759.9,
+   "max": 759.9,
+   "mean": 154.2
+  },
+  "work order completed": {
+   "requests": 40,
+   "p50": 146.4,
+   "p95": 330.3,
+   "p99": 414.9,
+   "max": 414.9,
+   "mean": 173.1
+  },
+  "work order released": {
+   "requests": 40,
+   "p50": 25.4,
+   "p95": 189.7,
+   "p99": 259.5,
+   "max": 259.5,
+   "mean": 54.7
+  },
+  "work order written": {
+   "requests": 40,
+   "p50": 33,
+   "p95": 177.2,
+   "p99": 276.4,
+   "max": 276.4,
+   "mean": 59.2
+  }
+ },
+ "readsWhileWorking": {
+  "branch manager: invoices list": {
+   "requests": 71,
+   "p50": 20.9,
+   "p95": 79.9,
+   "p99": 138.8,
+   "max": 138.8,
+   "mean": 29.2
+  },
+  "branch manager: orders list": {
+   "requests": 71,
+   "p50": 23.6,
+   "p95": 102.2,
+   "p99": 166.7,
+   "max": 166.7,
+   "mean": 30.9
+  },
+  "branch manager: shipments list": {
+   "requests": 71,
+   "p50": 21,
+   "p95": 64.7,
+   "p99": 151.6,
+   "max": 151.6,
+   "mean": 27.4
+  },
+  "branch manager: stock list": {
+   "requests": 71,
+   "p50": 24.2,
+   "p95": 85.4,
+   "p99": 143.3,
+   "max": 143.3,
+   "mean": 31.7
+  },
+  "executive: KPIs": {
+   "requests": 34,
+   "p50": 13.2,
+   "p95": 86.7,
+   "p99": 113.8,
+   "max": 113.8,
+   "mean": 21.1
+  },
+  "executive: cockpit": {
+   "requests": 34,
+   "p50": 12.1,
+   "p95": 76.7,
+   "p99": 116.3,
+   "max": 116.3,
+   "mean": 21.4
+  },
+  "executive: company dashboard": {
+   "requests": 34,
+   "p50": 17.9,
+   "p95": 94,
+   "p99": 119.3,
+   "max": 119.3,
+   "mean": 28
+  },
+  "executive: inventory value": {
+   "requests": 34,
+   "p50": 41.9,
+   "p95": 163.9,
+   "p99": 276,
+   "max": 276,
+   "mean": 56.6
+  },
+  "finance: receivables": {
+   "requests": 52,
+   "p50": 27.9,
+   "p95": 185.9,
+   "p99": 225.4,
+   "max": 225.4,
+   "mean": 45.4
+  },
+  "finance: revenue by branch": {
+   "requests": 52,
+   "p50": 22.8,
+   "p95": 87.8,
+   "p99": 164.8,
+   "max": 164.8,
+   "mean": 30.7
+  },
+  "finance: trial balance (end of day)": {
+   "requests": 1,
+   "p50": 17.5,
+   "p95": 17.5,
+   "p99": 17.5,
+   "max": 17.5,
+   "mean": 17.5
+  },
+  "finance: trial balance": {
+   "requests": 52,
+   "p50": 21.3,
+   "p95": 124.6,
+   "p99": 209.8,
+   "max": 209.8,
+   "mean": 33.4
+  },
+  "operations: cockpit": {
+   "requests": 34,
+   "p50": 39.2,
+   "p95": 163.6,
+   "p99": 171.4,
+   "max": 171.4,
+   "mean": 50.2
+  },
+  "sales: dashboard": {
+   "requests": 34,
+   "p50": 28.2,
+   "p95": 122.8,
+   "p99": 246.9,
+   "max": 246.9,
+   "mean": 41.1
+  }
+ },
+ "backgroundTasks": {
+  "runs": 12,
+  "failed": 0,
+  "lastStatus": 200
+ },
+ "databaseDuringRun": {
+  "deadlocks": 0,
+  "rolledBack": 249,
+  "committed": 99966,
+  "cacheHitRatio": 0.9998,
+  "tempFiles": 0,
+  "sessionsWaitingForALock": {
+   "samples": 556,
+   "max": 3,
+   "mean": 0.1,
+   "samplesWithAWaiter": 49
+  },
+  "activeSessions": {
+   "max": 8,
+   "mean": 1.4
+  },
+  "sessionsOpen": {
+   "max": 13
+  },
+  "largestTables": [
+   {
+    "table": "AuditLog",
+    "rows": 5651,
+    "bytes": 3522560,
+    "seqScans": 9,
+    "indexScans": 897
+   },
+   {
+    "table": "JournalLine",
+    "rows": 5473,
+    "bytes": 2973696,
+    "seqScans": 105,
+    "indexScans": 38596
+   },
+   {
+    "table": "JournalEntry",
+    "rows": 2673,
+    "bytes": 2719744,
+    "seqScans": 55,
+    "indexScans": 156629
+   },
+   {
+    "table": "LedgerEvent",
+    "rows": 2474,
+    "bytes": 1548288,
+    "seqScans": 131,
+    "indexScans": 6680
+   },
+   {
+    "table": "MaterialMovement",
+    "rows": 1349,
+    "bytes": 1097728,
+    "seqScans": 167,
+    "indexScans": 5001
+   },
+   {
+    "table": "DemandSuggestionEvent",
+    "rows": 1242,
+    "bytes": 425984,
+    "seqScans": 5,
+    "indexScans": 0
+   },
+   {
+    "table": "Order",
+    "rows": 1084,
+    "bytes": 770048,
+    "seqScans": 532,
+    "indexScans": 42167
+   },
+   {
+    "table": "OrderLine",
+    "rows": 1084,
+    "bytes": 638976,
+    "seqScans": 234,
+    "indexScans": 20750
+   },
+   {
+    "table": "Coil",
+    "rows": 872,
+    "bytes": 770048,
+    "seqScans": 419,
+    "indexScans": 10097
+   },
+   {
+    "table": "Inventory",
+    "rows": 872,
+    "bytes": 491520,
+    "seqScans": 216,
+    "indexScans": 7978
+   },
+   {
+    "table": "User",
+    "rows": 848,
+    "bytes": 565248,
+    "seqScans": 56,
+    "indexScans": 24235
+   },
+   {
+    "table": "RateWindow",
+    "rows": 842,
+    "bytes": 294912,
+    "seqScans": 3,
+    "indexScans": 855
+   },
+   {
+    "table": "Invoice",
+    "rows": 609,
+    "bytes": 483328,
+    "seqScans": 334,
+    "indexScans": 18077
+   },
+   {
+    "table": "InvoiceLine",
+    "rows": 606,
+    "bytes": 409600,
+    "seqScans": 43,
+    "indexScans": 4946
+   }
+  ]
+ },
+ "growth": {
+  "postedEntries": 2687,
+  "ledgerEvents": 2487,
+  "orders": 1022,
+  "auditRows": 5639,
+  "stockMovements": 1337
+ },
+ "invariants": {
+  "stock items with a negative quantity on hand": 0,
+  "stock items with a negative available quantity": 0,
+  "stock items with a negative reserved quantity": 0,
+  "stock items reserved beyond what is on hand": 0,
+  "order lines shipped beyond what was ordered": 0,
+  "invoice numbers used twice": 0,
+  "order numbers used twice": 0,
+  "journal entry numbers used twice": 0,
+  "shipments billed twice": 0,
+  "business records with two ledger events of one kind": 0,
+  "posted entries that do not balance": 0,
+  "invoices paid beyond their total": 0,
+  "dispatched shipments of this run with no invoice": 0,
+  "ledger events of this run failed or waiting": 0
+ },
+ "ledgerEventsHeldOrFailed": [],
+ "books": {
+  "trialBalanceBalanced": true,
+  "totals": {
+   "debit": "12041356.67",
+   "credit": "12041356.67"
+  },
+  "reconciliation": {
+   "status": 201,
+   "ms": 79.1,
+   "clean": true,
+   "checks": [
+    {
+     "key": "BOOKS_BALANCE",
+     "books": "12041356.67",
+     "records": "12041356.67",
+     "difference": "0.00",
+     "items": null
+    },
+    {
+     "key": "RECEIVABLES",
+     "books": "86695.01",
+     "records": "86695.01",
+     "difference": "0.00",
+     "items": null
+    },
+    {
+     "key": "INVENTORY",
+     "books": "8654261.95",
+     "records": "8654261.95",
+     "difference": "0.00",
+     "items": null
+    },
+    {
+     "key": "IN_TRANSIT",
+     "books": "0.00",
+     "records": "0.00",
+     "difference": "0.00",
+     "items": null
+    },
+    {
+     "key": "REVENUE",
+     "books": "967665.59",
+     "records": "967665.59",
+     "difference": "0.00",
+     "items": null
+    },
+    {
+     "key": "SALES_TAX",
+     "books": "2848.22",
+     "records": "2848.22",
+     "difference": "0.00",
+     "items": null
+    },
+    {
+     "key": "PAYMENTS",
+     "books": "884563.03",
+     "records": "884563.03",
+     "difference": "0.00",
+     "items": null
+    },
+    {
+     "key": "EVENTS",
+     "books": null,
+     "records": null,
+     "difference": null,
+     "items": null
+    },
+    {
+     "key": "COMPLETENESS",
+     "books": null,
+     "records": null,
+     "difference": null,
+     "items": null
+    },
+    {
+     "key": "SHIPPED_NOT_BILLED",
+     "books": null,
+     "records": null,
+     "difference": null,
+     "items": null
+    }
+   ]
+  }
+ },
+ "databaseChecks": {
+  "stock balance: on hand = available + allocated + on hold + in transit": 0,
+  "stock: any quantity below zero": 0,
+  "stock reserved differs from the reservations on file for the item": 0,
+  "reservations on stock items that have no stock row": 0,
+  "order line reserved more than is left to ship": 0,
+  "reservations left on cancelled or completed orders": 0,
+  "items whose on-hand differs from what their movements add up to (receipts and pieces made in; shipments, cuts and scrap out; corrections either way)": 0,
+  "completed work orders whose output and scrap are not matched by movements on the source item": 0,
+  "completed work orders whose pieces do not weigh what the work order says came out": 0,
+  "pieces whose heat, grade or owner differs from the item they were cut from": 0,
+  "invoice series whose counter is not the highest number on file": 12,
+  "package, tag or listing series whose counter is not the highest number on file": 0,
+  "invoice numbers repeated": 0,
+  "stock corrections with no note or no person": 0,
+  "stock row and its item disagree about the branch": 0,
+  "transfers whose two branches are the same, or missing": 0,
+  "stock in transit that is not on an open transfer, or an open transfer whose stock is not in transit": 0,
+  "stock on an open transfer that is not at the sending branch": 0,
+  "an item on more than one open transfer": 0,
+  "received transfers with no TRANSFER movement for an item on them": 0,
+  "transfer lines received more than shipped, or a good line not received whole": 0,
+  "purchase order lines (by weight) whose received quantity differs from the receipts booked against them": 0,
+  "receipts booked against a line that is not on a purchase order": 0,
+  "last transfer of an item did not end where the item now is": 0,
+  "time entries that end before they start": 0,
+  "time entries still running on a step that is finished": 0,
+  "time entries still running on a job that is cancelled, shipped or completed": 0,
+  "steps with more than one clock running": 0,
+  "time entries with no operator or no work center": 0,
+  "finished steps with no start or no end time": 0,
+  "steps running on a work center of another kind, or at another branch, than the step calls for": 0,
+  "jobs with more than one open inspection": 0,
+  "inspections decided with no result or no completion time, or still open with a result": 0,
+  "jobs past inspection (packaging, ready to ship, shipped, completed) whose latest decided inspection failed, outside rows written directly as fixtures": 0,
+  "jobs past production with a planned step unfinished, outside rows written directly as fixtures": 0,
+  "jobs whose plan is at a branch other than their work center": 0,
+  "rework steps not tied to a rework inspection of the same job, or two rework steps for one inspection (owner decision 9)": 0,
+  "coil work orders raised for a job but for a different order line than the job (owner decision 9)": 0,
+  "stock items with a cost below zero": 0,
+  "operators clocked on while recorded as inactive": 0,
+  "work orders on quality hold or cancelled that moved stock": 0,
+  "shipped stock movements with no shipment": 0,
+  "dispatched shipment items whose quantity is not fully covered by stock movements: every shipment must come off reserved stock (G-019, refused since the owner decision of 2026-11-13)": 0,
+  "stock items cut from a parent that lost the parent heat": 0,
+  "amounts kept with digits beyond what was entered (floating-point residue)": 0,
+  "invoice subtotal differs from its lines": 2,
+  "order subtotal differs from its lines (orders that are not draft)": 0,
+  "order lines invoiced more than shipped": 0,
+  "tax invoiced on an order is more than the order tax": 0,
+  "credit memos larger than the invoice they credit": 0,
+  "two live invoices for the same shipment": 0,
+  "quotes or requests whose branch does not exist": 0,
+  "orders with no branch": 59,
+  "order lines shipped more than ordered": 0,
+  "order line shipped quantity differs from its dispatched shipment items": 47,
+  "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 0,
+  "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
+  "invoices paid more than their total": 0,
+  "invoice total differs from subtotal + tax + freight": 0,
+  "invoice paid amount differs from its payments": 1,
+  "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
+  "jobs with no order and no order line": 1,
+  "stock items (coils) with no heat": 0,
+  "stock items with no location": 0,
+  "shipments delivered with no proof of delivery name": 47,
+  "users with no home branch": 12,
+  "invoices and credit memos with no record of who raised them, outside the demo seed": 0,
+  "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 47,
+  "dispatched shipments whose stock movements add up to more than the shipment carries": 0,
+  "shipments still on the dock for a cancelled order": 0,
+  "shipments on the road or delivered with no invoice (each is listed for billing in the integration report)": 4,
+  "packages with more than one live tag": 0,
+  "returns whose missing credit was settled more than once": 0,
+  "stock movements for a shipment with a cost that is negative": 0
+ },
+ "thresholds": {
+  "status": "PROPOSED, PENDING OWNER APPROVAL",
+  "limits": {
+   "latency": {
+    "sign-in": {
+     "p95": 1500,
+     "p99": 2500,
+     "why": "a password check is deliberately slow (bcrypt); a morning of sign-ins must still feel immediate"
+    },
+    "screen read (lists, dashboards, reports)": {
+     "p95": 800,
+     "p99": 1500,
+     "why": "a list or a report opens in under a second"
+    },
+    "simple change (order, reservation, receipt, shipment, payment, shop step)": {
+     "p95": 800,
+     "p99": 1500,
+     "why": "a save answers in under a second"
+    },
+    "dispatch with its invoice": {
+     "p95": 2000,
+     "p99": 4000,
+     "why": "invoice numbers are never skipped or repeated (owner decision of 2026-11-13), so invoices are written one at a time company-wide; a dispatch may wait its turn"
+    },
+    "reconciliation of the books": {
+     "p95": 5000,
+     "p99": 10000,
+     "why": "run by finance on demand and by the scheduled task, not on every screen"
+    }
+   },
+   "reliability": {
+    "serverErrors": {
+     "max": 0,
+     "why": "no request may end in a 5xx answer that was not a deliberate failure injection"
+    },
+    "failedTransactionsPercent": {
+     "max": 0.5,
+     "why": "of attempted business transactions, after the product's own \"busy, try again\" resends"
+    },
+    "deadlocks": {
+     "max": 0,
+     "why": "the database must never have to break a deadlock"
+    }
+   },
+   "integrity": {
+    "invariantViolations": {
+     "max": 0,
+     "why": "negative stock, double invoices, duplicate numbers, unbalanced entries, overpaid invoices"
+    },
+    "transactionsNotFoundInDatabase": {
+     "max": 0,
+     "why": "everything counted as completed must be found in the database and, where it posts, in the books"
+    },
+    "reconciliationDifference": {
+     "max": 0,
+     "why": "the books equal the records, to the cent; a difference is recorded, never adjusted away"
+    }
+   },
+   "volume": {
+    "customerJobsTraced": 500,
+    "transactionsReconciled": 2000,
+    "scenarios": 300
+   },
+   "capacity": {
+    "requestsPerSecond": {
+     "min": 40,
+     "why": "the day modelled here needs about 40 requests a second at its peak level on this machine"
+    }
+   }
+  },
+  "latency": [
+   {
+    "kind": "sign-in",
+    "class": "sign-in",
+    "requests": 818,
+    "p50": 2059.5,
+    "p95": 2153.7,
+    "p99": 2617,
+    "limitP95": 1500,
+    "limitP99": 2500,
+    "pass": false
+   },
+   {
+    "kind": "buyer sees the order in the portal",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 55,
+    "p50": 41.9,
+    "p95": 251.5,
+    "p99": 262.3,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "counter sale paid",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 70,
+    "p50": 237.6,
+    "p95": 717.8,
+    "p99": 892,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "goods received",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 417,
+    "p50": 132,
+    "p95": 215.6,
+    "p99": 256.6,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "inspection opened",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 115,
+    "p50": 45.4,
+    "p95": 122.9,
+    "p99": 136.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "inspection passed",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 115,
+    "p50": 70.8,
+    "p95": 148.9,
+    "p99": 156.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "invoice opened",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 480,
+    "p50": 20.4,
+    "p95": 65.4,
+    "p99": 124.7,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "job cost read",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 115,
+    "p50": 26.8,
+    "p95": 44.1,
+    "p99": 54.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "job opened",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 115,
+    "p50": 37.4,
+    "p95": 329.5,
+    "p99": 377.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "job packed and staged for shipping",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 115,
+    "p50": 49.4,
+    "p95": 130.1,
+    "p99": 140.4,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "job routed and scheduled",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 115,
+    "p50": 89.6,
+    "p95": 312.7,
+    "p99": 330.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "journal entry posted by a second person",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 200,
+    "p50": 35.8,
+    "p95": 159.3,
+    "p99": 246.4,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "journal entry written",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 200,
+    "p50": 43.6,
+    "p95": 121.4,
+    "p99": 214,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "material issued to a work order",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 40,
+    "p50": 26.6,
+    "p95": 238.5,
+    "p99": 261.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "order confirmed",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 305,
+    "p50": 50.8,
+    "p95": 339.1,
+    "p99": 399.6,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "order written",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 305,
+    "p50": 34.3,
+    "p95": 247.5,
+    "p99": 396.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "payment taken",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 480,
+    "p50": 65.9,
+    "p95": 147.9,
+    "p99": 235.5,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "purchase order placed",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 417,
+    "p50": 69.7,
+    "p95": 139.1,
+    "p99": 213,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "purchase order written",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 417,
+    "p50": 59.5,
+    "p95": 118.8,
+    "p99": 148,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "quote accepted into an order",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 115,
+    "p50": 70,
+    "p95": 356.7,
+    "p99": 390.4,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "quote priced",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 115,
+    "p50": 50.8,
+    "p95": 341.1,
+    "p99": 467.7,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "quote sent",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 115,
+    "p50": 34,
+    "p95": 230.2,
+    "p99": 288.2,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "reconciliation run",
+    "class": "reconciliation of the books",
+    "requests": 12,
+    "p50": 130.4,
+    "p95": 798,
+    "p99": 798,
+    "limitP95": 5000,
+    "limitP99": 10000,
+    "pass": true
+   },
+   {
+    "kind": "refund paid",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 60,
+    "p50": 73.6,
+    "p95": 162.6,
+    "p99": 183.7,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "request for quote entered",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 115,
+    "p50": 28.8,
+    "p95": 151.7,
+    "p99": 296.5,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "return opened",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 60,
+    "p50": 38.7,
+    "p95": 126.1,
+    "p99": 215.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "return received and credited",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 60,
+    "p50": 239.7,
+    "p95": 484.7,
+    "p99": 2178,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "shipment delivered",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 480,
+    "p50": 30.3,
+    "p95": 87.4,
+    "p99": 156.4,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "shipment dispatched",
+    "class": "dispatch with its invoice",
+    "requests": 480,
+    "p50": 1255.2,
+    "p95": 4441.6,
+    "p99": 4848.5,
+    "limitP95": 2000,
+    "limitP99": 4000,
+    "pass": false
+   },
+   {
+    "kind": "shipment put together",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 480,
+    "p50": 43,
+    "p95": 258.5,
+    "p99": 402.5,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "step finished",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 230,
+    "p50": 74.2,
+    "p95": 239.6,
+    "p99": 284.2,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "step started",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 230,
+    "p50": 88.6,
+    "p95": 278.4,
+    "p99": 346.1,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "stock count adjusted",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 40,
+    "p50": 107,
+    "p95": 229.8,
+    "p99": 346.3,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "stock reserved",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 420,
+    "p50": 57.1,
+    "p95": 279.7,
+    "p99": 367.2,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "transfer received",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 50,
+    "p50": 101.2,
+    "p95": 275.4,
+    "p99": 304.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "transfer sent",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 50,
+    "p50": 100,
+    "p95": 274.9,
+    "p99": 380.5,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "web order accepted into an order",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 55,
+    "p50": 73.7,
+    "p95": 677.5,
+    "p99": 731.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "web order placed",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 55,
+    "p50": 75.7,
+    "p95": 464.8,
+    "p99": 759.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "work order completed",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 40,
+    "p50": 146.4,
+    "p95": 330.3,
+    "p99": 414.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "work order released",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 40,
+    "p50": 25.4,
+    "p95": 189.7,
+    "p99": 259.5,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "work order written",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 40,
+    "p50": 33,
+    "p95": 177.2,
+    "p99": 276.4,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "branch manager: invoices list",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 71,
+    "p50": 20.9,
+    "p95": 79.9,
+    "p99": 138.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "branch manager: orders list",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 71,
+    "p50": 23.6,
+    "p95": 102.2,
+    "p99": 166.7,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "branch manager: shipments list",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 71,
+    "p50": 21,
+    "p95": 64.7,
+    "p99": 151.6,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "branch manager: stock list",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 71,
+    "p50": 24.2,
+    "p95": 85.4,
+    "p99": 143.3,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "executive: KPIs",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 34,
+    "p50": 13.2,
+    "p95": 86.7,
+    "p99": 113.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "executive: cockpit",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 34,
+    "p50": 12.1,
+    "p95": 76.7,
+    "p99": 116.3,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "executive: company dashboard",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 34,
+    "p50": 17.9,
+    "p95": 94,
+    "p99": 119.3,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "executive: inventory value",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 34,
+    "p50": 41.9,
+    "p95": 163.9,
+    "p99": 276,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "finance: receivables",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 52,
+    "p50": 27.9,
+    "p95": 185.9,
+    "p99": 225.4,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "finance: revenue by branch",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 52,
+    "p50": 22.8,
+    "p95": 87.8,
+    "p99": 164.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "finance: trial balance (end of day)",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 1,
+    "p50": 17.5,
+    "p95": 17.5,
+    "p99": 17.5,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "finance: trial balance",
+    "class": "screen read (lists, dashboards, reports)",
+    "requests": 52,
+    "p50": 21.3,
+    "p95": 124.6,
+    "p99": 209.8,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "operations: cockpit",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 34,
+    "p50": 39.2,
+    "p95": 163.6,
+    "p99": 171.4,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   },
+   {
+    "kind": "sales: dashboard",
+    "class": "simple change (order, reservation, receipt, shipment, payment, shop step)",
+    "requests": 34,
+    "p50": 28.2,
+    "p95": 122.8,
+    "p99": 246.9,
+    "limitP95": 800,
+    "limitP99": 1500,
+    "pass": true
+   }
+  ],
+  "latencyMisses": [
+   {
+    "kind": "sign-in",
+    "class": "sign-in",
+    "requests": 818,
+    "p50": 2059.5,
+    "p95": 2153.7,
+    "p99": 2617,
+    "limitP95": 1500,
+    "limitP99": 2500,
+    "pass": false
+   },
+   {
+    "kind": "shipment dispatched",
+    "class": "dispatch with its invoice",
+    "requests": 480,
+    "p50": 1255.2,
+    "p95": 4441.6,
+    "p99": 4848.5,
+    "limitP95": 2000,
+    "limitP99": 4000,
+    "pass": false
+   }
+  ],
+  "serverErrors": 0,
+  "failedTransactionsPercent": 0,
+  "peakLevelRequestsPerSecond": 128.8
+ },
+ "verdict": {
+  "jobs500": true,
+  "transactions2000": true,
+  "everyCategoryMinimum": true,
+  "invariantsHold": true,
+  "booksAgree": true,
+  "nothingCountedIsMissing": true,
+  "noServerError": true,
+  "noDeadlock": true,
+  "failedTransactionsWithinLimit": true,
+  "responseTimesWithinProposedLimits": false
+ }
+}

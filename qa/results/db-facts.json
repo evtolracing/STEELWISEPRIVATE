@@ -1,42 +1,56 @@
 {
- "at": "2026-11-18T08:42:04.545Z",
- "database": "postgresql://localhost:5432/steelwise_qa",
- "tables": 172,
- "totalRows": 17993,
+ "at": "2026-11-18T20:04:20.083Z",
+ "database": "postgresql://localhost:5432/steelwise_qa_p11",
+ "tables": 173,
+ "totalRows": 30557,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
+  "Asset",
   "AssetComponent",
+  "AssetType",
+  "BomOperation",
+  "BomRecipe",
   "CommodityPrice",
+  "CustomerPreference",
   "CustomerTagRequirement",
+  "DispatchDivision",
   "Division",
+  "Document",
+  "DocumentBlob",
   "DocumentLink",
   "DowntimeRecord",
+  "DropTag",
+  "DropTagListing",
   "ForecastSnapshot",
   "InventoryAdjustment",
-  "JournalEntry",
-  "JournalLine",
   "LabelTemplate",
-  "LedgerAccount",
-  "LedgerEvent",
   "LedgerExportBatch",
   "LedgerExportItem",
   "LedgerExternalAccount",
-  "LedgerMapping",
-  "LedgerPeriod",
-  "LedgerReconciliation",
   "MaintenanceAttachment",
   "MaintenanceAuditLog",
+  "MaintenanceOrder",
   "MaintenanceOrderLabor",
   "MaintenanceOrderPart",
   "MaintenanceTask",
   "MeterReading",
+  "OrderLineAllocation",
   "PMSchedule",
   "PMTemplate",
+  "Package",
+  "PackageItem",
+  "Partner",
+  "PartnerApiKey",
+  "PartnerApiLog",
+  "PartnerWebhook",
   "PipelineRun",
+  "PosSession",
   "PricingAnalytics",
   "PricingOverride",
   "PricingRecommendation",
+  "PrintQueueJob",
+  "QCHold",
   "QuoteAcceptance",
   "RFQSource",
   "SafetyAttachment",
@@ -86,8 +100,10 @@
   "StopWorkStep",
   "TagIdentifier",
   "TestResult",
+  "TraceEvent",
   "UserDivision",
-  "UserRoleAssignment"
+  "UserRoleAssignment",
+  "WebhookDelivery"
  ],
  "rows": [
   {
@@ -96,7 +112,7 @@
   },
   {
    "table": "AppSetting",
-   "rows": 1
+   "rows": 2
   },
   {
    "table": "ApprovalDecision",
@@ -108,7 +124,7 @@
   },
   {
    "table": "Asset",
-   "rows": 289
+   "rows": 0
   },
   {
    "table": "AssetComponent",
@@ -116,23 +132,23 @@
   },
   {
    "table": "AssetType",
-   "rows": 2
+   "rows": 0
   },
   {
    "table": "AuditLog",
-   "rows": 4638
+   "rows": 5643
   },
   {
    "table": "BomOperation",
-   "rows": 22
+   "rows": 0
   },
   {
    "table": "BomRecipe",
-   "rows": 14
+   "rows": 0
   },
   {
    "table": "Coil",
-   "rows": 937
+   "rows": 870
   },
   {
    "table": "CommodityPrice",
@@ -140,11 +156,11 @@
   },
   {
    "table": "CustomerPreference",
-   "rows": 1
+   "rows": 0
   },
   {
    "table": "CustomerPricingTier",
-   "rows": 11
+   "rows": 59
   },
   {
    "table": "CustomerTagRequirement",
@@ -156,19 +172,19 @@
   },
   {
    "table": "DispatchDivision",
-   "rows": 2
+   "rows": 0
   },
   {
    "table": "DispatchJob",
-   "rows": 181
+   "rows": 115
   },
   {
    "table": "DispatchOperation",
-   "rows": 221
+   "rows": 230
   },
   {
    "table": "DispatchTimeLog",
-   "rows": 151
+   "rows": 230
   },
   {
    "table": "Division",
@@ -176,15 +192,15 @@
   },
   {
    "table": "Document",
-   "rows": 1
+   "rows": 0
   },
   {
    "table": "DocumentBlob",
-   "rows": 1
+   "rows": 0
   },
   {
    "table": "DocumentCounter",
-   "rows": 5
+   "rows": 14
   },
   {
    "table": "DocumentLink",
@@ -196,11 +212,11 @@
   },
   {
    "table": "DropTag",
-   "rows": 10
+   "rows": 0
   },
   {
    "table": "DropTagListing",
-   "rows": 1
+   "rows": 0
   },
   {
    "table": "ExceptionEvent",
@@ -216,11 +232,11 @@
   },
   {
    "table": "Grade",
-   "rows": 9
+   "rows": 8
   },
   {
    "table": "Heat",
-   "rows": 18
+   "rows": 15
   },
   {
    "table": "IntakeContact",
@@ -244,7 +260,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 937
+   "rows": 870
   },
   {
    "table": "InventoryAdjustment",
@@ -268,27 +284,27 @@
   },
   {
    "table": "Invoice",
-   "rows": 408
+   "rows": 612
   },
   {
    "table": "InvoiceLine",
-   "rows": 420
+   "rows": 610
   },
   {
    "table": "Job",
-   "rows": 468
+   "rows": 173
   },
   {
    "table": "JobInspection",
-   "rows": 214
+   "rows": 115
   },
   {
    "table": "JournalEntry",
-   "rows": 0
+   "rows": 2689
   },
   {
    "table": "JournalLine",
-   "rows": 0
+   "rows": 5504
   },
   {
    "table": "LabelTemplate",
@@ -296,11 +312,11 @@
   },
   {
    "table": "LedgerAccount",
-   "rows": 0
+   "rows": 22
   },
   {
    "table": "LedgerEvent",
-   "rows": 0
+   "rows": 2487
   },
   {
    "table": "LedgerExportBatch",
@@ -316,15 +332,15 @@
   },
   {
    "table": "LedgerMapping",
-   "rows": 0
+   "rows": 17
   },
   {
    "table": "LedgerPeriod",
-   "rows": 0
+   "rows": 1
   },
   {
    "table": "LedgerReconciliation",
-   "rows": 0
+   "rows": 14
   },
   {
    "table": "Location",
@@ -340,7 +356,7 @@
   },
   {
    "table": "MaintenanceOrder",
-   "rows": 2
+   "rows": 0
   },
   {
    "table": "MaintenanceOrderLabor",
@@ -356,7 +372,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 1210
+   "rows": 1337
   },
   {
    "table": "MeterReading",
@@ -364,31 +380,31 @@
   },
   {
    "table": "OnlineOrder",
-   "rows": 49
+   "rows": 81
   },
   {
    "table": "Operator",
-   "rows": 55
+   "rows": 72
   },
   {
    "table": "OperatorSkill",
-   "rows": 58
+   "rows": 72
   },
   {
    "table": "Order",
-   "rows": 1037
+   "rows": 1081
   },
   {
    "table": "OrderLine",
-   "rows": 1061
+   "rows": 1081
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 111
+   "rows": 0
   },
   {
    "table": "Organization",
-   "rows": 102
+   "rows": 327
   },
   {
    "table": "PMSchedule",
@@ -400,31 +416,31 @@
   },
   {
    "table": "Package",
-   "rows": 16
+   "rows": 0
   },
   {
    "table": "PackageItem",
-   "rows": 12
+   "rows": 0
   },
   {
    "table": "Partner",
-   "rows": 9
+   "rows": 0
   },
   {
    "table": "PartnerApiKey",
-   "rows": 14
+   "rows": 0
   },
   {
    "table": "PartnerApiLog",
-   "rows": 153
+   "rows": 0
   },
   {
    "table": "PartnerWebhook",
-   "rows": 16
+   "rows": 0
   },
   {
    "table": "Payment",
-   "rows": 216
+   "rows": 610
   },
   {
    "table": "PipelineRun",
@@ -432,7 +448,7 @@
   },
   {
    "table": "PosSession",
-   "rows": 10
+   "rows": 0
   },
   {
    "table": "PriceLevel",
@@ -452,7 +468,7 @@
   },
   {
    "table": "PrintQueueJob",
-   "rows": 14
+   "rows": 0
   },
   {
    "table": "ProcessingOperation",
@@ -468,15 +484,15 @@
   },
   {
    "table": "Product",
-   "rows": 17
+   "rows": 12
   },
   {
    "table": "QCHold",
-   "rows": 59
+   "rows": 0
   },
   {
    "table": "Quote",
-   "rows": 57
+   "rows": 134
   },
   {
    "table": "QuoteAcceptance",
@@ -484,19 +500,23 @@
   },
   {
    "table": "QuoteLine",
-   "rows": 41
+   "rows": 115
   },
   {
    "table": "RFQ",
-   "rows": 61
+   "rows": 134
   },
   {
    "table": "RFQLine",
-   "rows": 46
+   "rows": 115
   },
   {
    "table": "RFQSource",
    "rows": 0
+  },
+  {
+   "table": "RateWindow",
+   "rows": 842
   },
   {
    "table": "RecipeRoutingTemplate",
@@ -508,7 +528,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 24
+   "rows": 55
   },
   {
    "table": "RfidScanEvent",
@@ -676,11 +696,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 454
+   "rows": 532
   },
   {
    "table": "ShipmentItem",
-   "rows": 423
+   "rows": 488
   },
   {
    "table": "ShipmentStop",
@@ -700,11 +720,11 @@
   },
   {
    "table": "StockTransfer",
-   "rows": 63
+   "rows": 50
   },
   {
    "table": "StockTransferLine",
-   "rows": 67
+   "rows": 50
   },
   {
    "table": "StopWorkAudit",
@@ -736,11 +756,11 @@
   },
   {
    "table": "TraceEvent",
-   "rows": 83
+   "rows": 0
   },
   {
    "table": "User",
-   "rows": 43
+   "rows": 848
   },
   {
    "table": "UserDivision",
@@ -756,30 +776,30 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 1190
+   "rows": 0
   },
   {
    "table": "WorkCenter",
-   "rows": 339
+   "rows": 348
   },
   {
    "table": "WorkCenterType",
-   "rows": 44
+   "rows": 1
   },
   {
    "table": "WorkOrder",
-   "rows": 70
+   "rows": 40
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 54
+   "rows": 80
   },
   {
    "table": "_prisma_migrations",
-   "rows": 35
+   "rows": 36
   }
  ],
- "indexes": 632,
+ "indexes": 634,
  "views": [],
  "triggers": [
   "\"JournalEntry\".JournalEntry_guard",
@@ -955,7 +975,7 @@
  "fkNoIndex": [],
  "constraintCounts": {
   "foreign key": 201,
-  "primary key": 172,
+  "primary key": 173,
   "check": 42
  },
  "checkConstraints": [
@@ -1223,7 +1243,7 @@
   "completed work orders whose output and scrap are not matched by movements on the source item": 0,
   "completed work orders whose pieces do not weigh what the work order says came out": 0,
   "pieces whose heat, grade or owner differs from the item they were cut from": 0,
-  "invoice series whose counter is not the highest number on file": 0,
+  "invoice series whose counter is not the highest number on file": 12,
   "package, tag or listing series whose counter is not the highest number on file": 0,
   "invoice numbers repeated": 0,
   "stock corrections with no note or no person": 0,
@@ -1265,26 +1285,26 @@
   "credit memos larger than the invoice they credit": 0,
   "two live invoices for the same shipment": 0,
   "quotes or requests whose branch does not exist": 0,
-  "orders with no branch": 62,
+  "orders with no branch": 59,
   "order lines shipped more than ordered": 0,
   "order line shipped quantity differs from its dispatched shipment items": 47,
   "order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders": 0,
-  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 6,
+  "counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025)": 0,
   "invoice paid amount differs from its payments, outside the demo seed invoices": 0,
   "invoices paid more than their total": 0,
   "invoice total differs from subtotal + tax + freight": 0,
   "invoice paid amount differs from its payments": 1,
   "orders with no lines (not draft or cancelled), outside seed and fixture orders": 0,
-  "jobs with no order and no order line": 60,
-  "stock items (coils) with no heat": 2,
+  "jobs with no order and no order line": 1,
+  "stock items (coils) with no heat": 0,
   "stock items with no location": 0,
-  "shipments delivered with no proof of delivery name": 51,
-  "users with no home branch": 2,
+  "shipments delivered with no proof of delivery name": 47,
+  "users with no home branch": 12,
   "invoices and credit memos with no record of who raised them, outside the demo seed": 0,
-  "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 48,
+  "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 47,
   "dispatched shipments whose stock movements add up to more than the shipment carries": 0,
   "shipments still on the dock for a cancelled order": 0,
-  "shipments on the road or delivered with no invoice (each is listed for billing in the integration report)": 9,
+  "shipments on the road or delivered with no invoice (each is listed for billing in the integration report)": 4,
   "packages with more than one live tag": 0,
   "returns whose missing credit was settled more than once": 0,
   "stock movements for a shipment with a cost that is negative": 0

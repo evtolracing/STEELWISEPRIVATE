@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-18T17:33:36.518Z",
+  "base": "http://localhost:3110",
+  "serverCopies": 3,
+  "limitPerWindow": 10,
+  "requests": 60,
+  "reachedThePasswordCheck": 30,
+  "refusedByTheLimit": 30,
+  "otherAnswers": 0,
+  "copiesThatAnswered": 3,
+  "oneLimitForAllCopies": false,
+  "perCopyWouldAllow": 30
+}

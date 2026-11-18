@@ -1,0 +1,19 @@
+  Sales, inventory and purchasing concurrency: 48 scenarios in 21s
+  Manufacturing, scheduling and quality: 40 scenarios in 17s
+  Shipping, logistics and invoicing: 35 scenarios in 32s
+  Ledger posting and reconciliation: 63 scenarios in 33s
+  Tenant, branch, RBAC and AI security: 41 scenarios in 13s
+  Integrations, events and background jobs: 39 scenarios in 75s
+  Failure injection and recovery: 36 scenarios in 134s
+  Reporting, frontend and deployment: 18 scenarios in 33s
+✗ [Integrations, events and background jobs] A partner's request limit is one limit across all server copies
+    - the shared count holds all thirty — [{"count":30},{"count":30}]
+✗ Phase 11 scenarios: 319 of 320 pass, 1384 checks; Sales, inventory and purchasing concurrency 48/48; Manufacturing, scheduling and quality 40/40; Shipping, logistics and invoicing 35/35; Ledger posting and reconciliation 63/63; Tenant, branch, RBAC and AI security 41/41; Integrations, events and background jobs 38/39; Failure injection and recovery 36/36; Reporting, frontend and deployment 18/18
+✓ Sales, inventory and purchasing concurrency: 48 passed of 48 (minimum 45)
+✓ Manufacturing, scheduling and quality: 40 passed of 40 (minimum 40)
+✓ Shipping, logistics and invoicing: 35 passed of 35 (minimum 35)
+✓ Ledger posting and reconciliation: 63 passed of 63 (minimum 60)
+✓ Tenant, branch, RBAC and AI security: 41 passed of 41 (minimum 35)
+✓ Integrations, events and background jobs: 38 passed of 39 (minimum 35)
+✓ Failure injection and recovery: 36 passed of 36 (minimum 35)
+✓ Reporting, frontend and deployment: 18 passed of 18 (minimum 15)

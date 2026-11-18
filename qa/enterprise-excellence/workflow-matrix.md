@@ -147,6 +147,24 @@ Phase 10 changed no workflow step. It hardened what surrounds the steps: who may
 | Partners | Partner administration reads need an administrator (Y-019); a revoked key stops at once | groups 1 and 6 |
 | Operations (new) | Ten system checks and eleven alert kinds; scheduled run failures raise an alert (Y-010) | group 9 |
 
+### Phase 11 update (2026-11-18)
+
+Phase 11 changed no workflow step. It ran every workflow below as part of 545 customer jobs a day at 80 branches on three server copies, and changed what happens when many people take the same step at the same moment or a server fails in the middle of one.
+
+| Workflow | What changed around it | Verified by |
+|---|---|---|
+| 1. Customer to cash | Invoice and order numbers come from a counter and invoices take turns in the database, on any number of server copies (Z-001 to Z-003). A save that cannot get its turn answers "busy, try again", never an error (Z-005). A dispatch waits its turn at peak (Z-006) | `qa/sim/phase11-enterprise.mjs` job kinds A, C, D, E; `qa/sim/phase11-scenarios.mjs` groups 1 and 3 |
+| 2. Procure to stock | No change to the step. 414 purchase orders and receipts a day; opening stock received through the same route | group 1; the day's purchasing category |
+| 3. Make to order | No change. 115 processed-material jobs a day from quote to shipment, with routing, material issue, inspection and packing | job kind B; group 2 |
+| 4. Branch transfer | No change. Sent and received at once, twice, and with a server copy killed: stock moves once | group 1 and group 7 |
+| 5. Return and credit | Receiving a return retries longer under load (Z-005) | job kind F; group 4 |
+| Counter sale and web order | No change. A web order sent four times with one key is one order | job kinds C and D; group 6 |
+| Sign in and work | Password checks take turns so a burst of sign-ins does not stall everyone else (Z-004). The sign-in limit per address is one limit for all server copies (E-014) | group 5 and group 7 |
+| Partners | A partner's request limits are one limit for all server copies (Z-007) | group 6 |
+| Any save with a request key | Never run unless its key is claimed (Z-013). When the database cannot be reached the answer is "try again" (Z-009, Z-011) | group 7 |
+| Deployment | A copy told to stop finishes its work and leaves in under three seconds (Z-008) | group 7 |
+
+
 ## Job types found
 
 Order types in the schema: RFQ, QUOTE, SO (sales order), PO, RETURN. PO is never used. Sales channels that create a sales order: order entry, quote acceptance, web store, counter quick sale, counter session flow, partner API. The order hub creates its own orders that are not sales orders (B-009).

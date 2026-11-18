@@ -145,14 +145,24 @@ async function buildInvoice(tx, order, wanted, { shipmentId, notes, next }) {
  */
 const SERIES_WIDTH = 6;
 export async function takeNumber(tx, series = 'INV') {
-  const rows = await tx.$queryRaw`
-    INSERT INTO "DocumentCounter" ("series", "lastNumber", "updatedAt")
-    VALUES (${series},
-            COALESCE((SELECT MAX(substring(i."invoiceNumber" from '[0-9]+$')::bigint) FROM "Invoice" i
-                       WHERE i."invoiceNumber" ~ ('^' || ${series} || '-[0-9]{1,9}$')), 0) + 1,
-            CURRENT_TIMESTAMP)
-    ON CONFLICT ("series") DO UPDATE SET "lastNumber" = "DocumentCounter"."lastNumber" + 1, "updatedAt" = CURRENT_TIMESTAMP
-    RETURNING "lastNumber"`;
+  // The counter row is advanced on its own. Only when the series has no row yet (its very first
+  // document) is the invoice table read for the highest number already written. Before Phase 11
+  // that read ran for every number: a scan of every invoice, inside the serializable save, so each
+  // invoice cost more as the table grew and every other invoice written meanwhile counted as an
+  // overlap and was run again (Z-001).
+  let rows = await tx.$queryRaw`
+    UPDATE "DocumentCounter" SET "lastNumber" = "lastNumber" + 1, "updatedAt" = CURRENT_TIMESTAMP
+     WHERE "series" = ${series} RETURNING "lastNumber"`;
+  if (!rows.length) {
+    rows = await tx.$queryRaw`
+      INSERT INTO "DocumentCounter" ("series", "lastNumber", "updatedAt")
+      VALUES (${series},
+              COALESCE((SELECT MAX(substring(i."invoiceNumber" from '[0-9]+$')::bigint) FROM "Invoice" i
+                         WHERE i."invoiceNumber" ~ ('^' || ${series} || '-[0-9]{1,9}$')), 0) + 1,
+              CURRENT_TIMESTAMP)
+      ON CONFLICT ("series") DO UPDATE SET "lastNumber" = "DocumentCounter"."lastNumber" + 1, "updatedAt" = CURRENT_TIMESTAMP
+      RETURNING "lastNumber"`;
+  }
   return `${series}-${String(rows[0].lastNumber).padStart(SERIES_WIDTH, '0')}`;
 }
 
@@ -193,11 +203,37 @@ function inTurn(series, run) {
 const MONEY_ATTEMPTS = 12;
 export function moneyTurn(invoiceId, run) { return inTurn(`money:${invoiceId}`, run); }
 
+/**
+ * Server processes take turns too (Phase 11, Z-002). The turn above is kept inside one process;
+ * the host runs several. Two processes writing a numbered document at the same moment both read
+ * the counter, the database refused the second ("could not serialize access due to concurrent
+ * update") and it was run again from the start: measured on three processes with 48 jobs in
+ * flight, 3,269 saves were rolled back and a dispatch took 7.2 seconds at the 95th percentile.
+ *
+ * A serializable transaction sees the data as it was at its first query, so the wait has to
+ * happen BEFORE that query: LOCK TABLE is not a query and takes no snapshot. The transaction
+ * waits here for the one in front to finish, then reads the counter fresh, so it is not refused.
+ * The lock is on the counter table only, is released at commit or rollback (also if the process
+ * dies), and changes nothing about what is written. The serializable rule and the unique rule
+ * on the number stay exactly as they were and still decide if anything gets past this.
+ */
+const NUMBERED = { ...SERIALIZABLE, maxWait: 15000, timeout: 20000 };
+async function waitForSeries(tx) {
+  await tx.$executeRawUnsafe('LOCK TABLE "DocumentCounter" IN SHARE UPDATE EXCLUSIVE MODE');
+}
+
+/** What one numbered save does inside its transaction: wait for its turn, then write, taking the number when asked. */
+async function inSeries(tx, series, create) {
+  await waitForSeries(tx);
+  return create(tx, () => takeNumber(tx, series));
+}
+export const numberedForTest = inSeries;
+
 /** Runs `create(tx, next)` in one serializable transaction. `next()` gives the document its number. */
 async function numbered(series, create) {
   for (let i = 0; ; i++) {
     try {
-      return await inTurn(series, () => retryOverlap(() => prisma.$transaction((tx) => create(tx, () => takeNumber(tx, series)), SERIALIZABLE), 25));
+      return await inTurn(series, () => retryOverlap(() => prisma.$transaction((tx) => inSeries(tx, series, create), NUMBERED), 25));
     } catch (error) {
       const taken = error?.code === 'P2002' && String(error?.meta?.target || '').includes('invoiceNumber');
       if (!taken || i >= 2) throw error;

@@ -3605,6 +3605,12 @@
    "status": "String"
   },
   {
+   "name": "RateWindow",
+   "fields": 3,
+   "fks": 0,
+   "status": null
+  },
+  {
    "name": "StockTransfer",
    "fields": 22,
    "fks": 3,

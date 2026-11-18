@@ -8,7 +8,7 @@ set -euo pipefail
 export DATABASE_URL="${SERVER_DATABASE_URL:-${QA_DATABASE_URL:-postgresql://postgres:password@localhost:5432/steelwise_qa}}"
 export DIRECT_URL="$DATABASE_URL"
 case "$DATABASE_URL" in *localhost*qa*|*127.0.0.1*qa*) ;; *) echo "Refusing: not a local QA database"; exit 1;; esac
-export LOG_REQUESTS="${LOG_REQUESTS:-off}" RATE_LIMIT_MAX=1000000 LOGIN_RATE_LIMIT_MAX=100000 PORT="${PORT:-3011}"
+export LOG_REQUESTS="${LOG_REQUESTS:-off}" RATE_LIMIT_MAX="${QA_RATE_LIMIT_MAX:-1000000}" LOGIN_RATE_LIMIT_MAX="${QA_LOGIN_RATE_LIMIT_MAX:-100000}" PORT="${PORT:-3011}"
 # Outside services. A simulation must never reach a real provider, so every provider address
 # points at the local stand-in that the Phase 4 scenarios start (qa/sim/phase4-integration.mjs),
 # with keys that are not real. Short time limits keep the failure scenarios quick.

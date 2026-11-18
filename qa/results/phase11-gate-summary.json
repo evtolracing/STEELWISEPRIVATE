@@ -1,0 +1,24 @@
+{
+ "file": "`qa/results/phase11-gate-run-1.txt`",
+ "pass": true,
+ "summary": "Every earlier phase passes on the Phase 11 code on a rebuilt database (Phases 2 to 9.5 in full, unit tests 268 of 268, lint 0 errors, build). Phase 10 passed 276 of 277 once its restore server was started, and the one miss passes alone. Phase 11 in gate order passed 320 of 320 on its third run, after eight checks that made wrong assumptions about what earlier phases leave behind were corrected in the tests",
+ "unit": "268 of 268 (23 Phase 11 tests in `enterpriseScale.test.js` and others)",
+ "phase95Load": "16 of 16 checks; 1,120 entries from business events in 21.1 s, 2,000 manual entries in 12.9 s",
+ "browser": "Ten earlier browser suites 0 failed; Phase 9 browser scenarios 232 of 232; Phase 9.5 browser 13 of 13; every screen ceiling held",
+ "heldBack": "One machine. Phase 10's restore group failed in the gate itself because its second database server was not running; Phase 11 needed three runs in gate order, each miss traced to the test and not the product",
+ "detail": [
+  "Rebuild from migrations; servers connect as `steelwise_runtime`.",
+  "Simulation on three seeds, the sweep, branch boundary (39 checks) and Phase 2 integrity (82 checks): 0 problems.",
+  "Phase 3 to Phase 8: 74 of 74; 66 of 66; 76 of 76; 106 of 106; 141 of 141; 155 of 155.",
+  "Backend unit tests: 268 of 268.",
+  "Ten earlier browser suites: 0 failed. Phase 9 browser scenarios: 232 of 232. Every screen opened and measured: every ceiling held.",
+  "Phase 9.5 ledger 158 of 158; Phase 9.5 browser 13 of 13; Phase 9.5 load on 80 branches 16 of 16 (1,120 entries from business events in 21.1 s, 2,000 manual entries in 12.9 s).",
+  "Phase 10 in the gate: 257 of 277. Cause: the 26 scenarios of its backup and restore group need a second PostgreSQL server on port 5433, which was not running on this machine after a restart. Not a product fault. With that server started the group passed 26 of 26 and the whole suite 276 of 277. The one miss (\"Stock changed outside the product...\") expected a fresh alert inside the product's 15-minute quiet window for the same alert; run alone it passes 1 of 1.",
+  "Phase 11 enterprise day in the gate, after every earlier phase's data: 545 of 545 jobs traced, books balance and reconcile (`qa/results/phase11-gate-enterprise.json`).",
+  "Phase 11 scenarios in the gate: 312 of 320 on the first run. All eight misses were assumptions in the tests: two ledger events held by name by earlier phases were counted as new, a stock-value check added goods in transit twice, and one request through the test's own front door met a reused connection that a restarted copy had closed (502 from the front door, not from the product). Corrected in the tests. Second run 319 of 320 (a partner request-limit window from the first run was counted); corrected. Third run 320 of 320, 1,384 checks (`qa/results/phase11-gate-scenarios.json`).",
+  "After the front door stopped reusing connections, the check for the polite stop (Z-008) no longer depended on the fix. The scenario now holds its own kept-alive connections to the copy being stopped, with reads in flight; with the fix removed it fails again (13 of 13 removals caught).",
+  "Server errors seen by the run: the same list as Phase 10's gate (deliberate outside-service failures and injected faults). No new 500.",
+  "Baseline probe, rule coverage and screen audit pass; lint 0 errors (1,572 warnings, unchanged ceiling); build ok.",
+  "Response times are not part of the gate. The final cycle's times are in `phase-11-performance-baseline.md`."
+ ]
+}

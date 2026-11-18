@@ -1,0 +1,33 @@
+{
+ "note": "Phase 11 notes on findings raised in earlier phases. Applied to findings.json by qa/tools/phase11-findings.mjs. A status is changed only where one is given.",
+ "dispositions": {
+  "E-014": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 11: the sign-in limit per address and the partner limits are now counted in the database, one limit for all server copies (database update 18 (src/backend/prisma/upgrades/sql-editor/20261118150000_shared_rate_limits.sql)). Measured on three copies with a limit of ten: before, 30 of 60 wrong sign-ins from one address reached the password check; after, 10 of 60. The general ceiling per address still counts per copy by decision (Z-010). Live only after the owner applies update 18; until then the server counts per copy as before and says so in its log.",
+   "verification": "src/backend/test/enterpriseScale.test.js \"E-014\" (two tests); qa/sim/phase11/rate-limit-copies.mjs with qa/results/phase11-rate-limit-before.json and -after.json; qa/tools/phase11-mutations.mjs E-014 holds."
+  },
+  "W-022": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 11: invoices now take turns in the database, across server copies (Z-002). Five enterprise days on three copies and one on four: every dispatch raised its invoice or was closed by billing after an injected crash; invoice numbers unbroken and never repeated.",
+   "verification": "qa/sim/phase11-enterprise.mjs cycles 1 to 5; qa/sim/phase11-scenarios.mjs groups 1, 3 and 7."
+  },
+  "W-023": {
+   "statusNote": "Phase 11: measured at the volume of the enterprise day (about 2,700 journal entries, 5,500 lines, 80 branches): reconciliation run p95 under 0.4 s, trial balance and branch reports within the proposed limit of 800 ms while the day's work ran. A year's volume (hundreds of thousands of entries) and the live host are still not measured: Phase 12."
+  },
+  "E-019": {
+   "statusNote": "Phase 11: 41 isolation scenarios under load pass (branches of four sizes, customer accounts, partners, the assistant, with other branches working at the same moment). A table-by-table audit of every tenant id column is still not made: Phase 12."
+  },
+  "V-027": {
+   "statusNote": "Phase 11: the lists were read at the volume of the enterprise day while it ran and stayed within the proposed limit; GET /api/jobs is still unbounded and grows with the data. Unchanged: Phase 12."
+  },
+  "V-037": {
+   "statusNote": "Phase 11: revenue by branch against revenue by customer, the stock value report against the books, and the receivables report read by twelve people at once were compared under load (group 8). The five dashboards named are still not compared figure by figure: Phase 12."
+  },
+  "Y-021": {
+   "statusNote": "Phase 11: seen again across server copies. A copy killed during dispatches left 2 to 4 of 480 shipments without an invoice in the failure-and-recovery day; each was listed and closed by billing the shipment (Z-012 proposes that a repeated dispatch bills)."
+  },
+  "B-019": {
+   "statusNote": "Phase 11: the scheduled run was exercised on several server copies at once and while a copy was killed; six runs started at the same moment on different copies sent each waiting event once, and the run now also removes old request-limit windows. It still needs a scheduler on the host (owner)."
+  }
+ }
+}

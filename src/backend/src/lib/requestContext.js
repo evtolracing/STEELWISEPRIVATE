@@ -32,3 +32,15 @@ export function ruleRefusal(error) {
   if (error.code === 'P2004' || /violates check constraint|code: "23514"|SqlState\(E?23514\)/.test(String(error.message || ''))) return 'CHECK';
   return null;
 }
+
+/**
+ * True when a query failed because the database could not be reached or had no connection to give:
+ * every connection in use, the pool's wait ran out, the connection was cut, or the server is not
+ * answering. Nothing about the request was wrong and the same request can succeed a moment later,
+ * so the reply should say "try again", not "server error" (Phase 11, Z-009).
+ */
+export function isNoConnection(error) {
+  if (!error) return false;
+  if (['P1001', 'P1002', 'P1008', 'P1017', 'P2024', 'P2037'].includes(error.code)) return true;
+  return /Too many database connections|remaining connection slots|too many clients already|Can't reach database server|terminating connection due to administrator command|Server has closed the connection|Timed out fetching a new connection/i.test(String(error.message || ''));
+}

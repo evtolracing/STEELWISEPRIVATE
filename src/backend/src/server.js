@@ -52,6 +52,11 @@ function shutdown(code = 0) {
   console.log('Shutdown signal received, closing server gracefully');
   const hardStop = setTimeout(() => process.exit(code || 1), 10000);
   hardStop.unref();
+  // A connection that is kept open between requests is idle only once its answer has gone out, so
+  // closing idle connections once is not enough: keep closing them until none is left. Without this
+  // a polite stop under load waited out the keep-alive time, about five seconds (Phase 11, Z-008).
+  const closeIdle = setInterval(() => server.closeIdleConnections?.(), 50);
+  closeIdle.unref();
   server.close(async () => {
     try { await prisma?.$disconnect(); } catch (e) { console.error('Error closing the database pool:', e.message); }
     console.log('Server closed');

@@ -199,3 +199,34 @@ test('E-014: the sign-in limit per address counts in the shared table', async ()
     assert.equal((await copyB.increment('10.0.0.2:someone@example.test')).totalHits, 1, 'another address has its own count');
   } finally { useRateCounter(null); }
 });
+
+// ── Z-009: no database connection is "try again", not "server error" ───────────────────────────
+import { isNoConnection } from '../src/lib/requestContext.js';
+import { busyDatabase, safeErrors } from '../src/middleware/safeErrors.js';
+
+test('Z-009: a query that found no free database connection is recognised, and nothing else is', () => {
+  for (const code of ['P2037', 'P2024', 'P1001', 'P1017']) assert.equal(isNoConnection({ code }), true, code);
+  assert.equal(isNoConnection(new Error('Too many database connections opened: FATAL: remaining connection slots are reserved for roles with the SUPERUSER attribute')), true);
+  assert.equal(isNoConnection(new Error('terminating connection due to administrator command')), true);
+  for (const code of ['P2002', 'P2025', 'P2034', 'P2003']) assert.equal(isNoConnection({ code }), false, code);
+  assert.equal(isNoConnection(new Error('Order not found')), false);
+  assert.equal(isNoConnection(null), false);
+});
+
+test('Z-009: a route that answered 500 for want of a connection is answered 503 with a time to retry', async () => {
+  assert.equal(busyDatabase(500, { noConnection: true }).status, 503);
+  assert.equal(busyDatabase(500, {}), null, 'another server error stays a server error');
+  assert.equal(busyDatabase(409, { noConnection: true }), null, 'a refusal the route decided on is left alone');
+  assert.equal(busyDatabase(200, { noConnection: true }), null, 'a request that succeeded after a retry is left alone');
+  // Through the middleware, the way a route's own catch block answers.
+  const { requestContext } = await import('../src/lib/requestContext.js');
+  const sent = { headers: {} };
+  const res = { statusCode: 200, status(c) { this.statusCode = c; return this; }, set(k, v) { sent.headers[k] = v; return this; }, json(b) { sent.body = b; sent.status = this.statusCode; return this; } };
+  const req = { id: 'req-1', method: 'PUT', originalUrl: '/api/shipments/x/dispatch', query: {}, params: {} };
+  await new Promise((done) => safeErrors(req, res, () => { requestContext.getStore().noConnection = true; res.status(500).json({ error: 'Internal server error' }); done(); }));
+  assert.equal(sent.status, 503);
+  assert.equal(sent.body.code, 'DATABASE_BUSY');
+  assert.equal(sent.body.requestId, 'req-1');
+  assert.equal(sent.headers['Retry-After'], '2');
+  assert.ok(!/prisma|connection slots|FATAL/i.test(JSON.stringify(sent.body)), 'no internals');
+});

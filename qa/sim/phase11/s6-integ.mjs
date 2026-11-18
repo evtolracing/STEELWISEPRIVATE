@@ -72,14 +72,15 @@ export default async function run(c) {
         ok('one web order was saved', (await prisma.onlineOrder.count()) === before + 1);
       });
     } else {
-      await S(G, `${at}: one receipt is entered four times at the same moment with one request key`, { expect: 'one stock item, received once', db: 'one Coil, one RECEIVE movement', fin: 'inventory rises once' }, async (ok) => {
-        const key = tag('P11RCKEY'); const number = tag('P11RC'); const heat = E.heats[b.grades[0]];
-        const body = { coilNumber: number, form: 'PLATE', heatNumber: heat.heatNumber, gradeCode: b.grades[0], thicknessIn: 0.5, widthIn: 48, lengthIn: 96, weightLb: 1000, locationId: b.id };
-        const rs = await all(4, () => (P.receiver(b) || P.stock(b)).post('/api/inventory/receipts', body, { 'Idempotency-Key': key }));
+      await S(G, `${at}: one transfer is sent four times at the same moment with one request key`, { expect: 'one transfer; the item leaves the branch once', db: 'one StockTransfer for the item', fin: 'in transit rises once' }, async (ok) => {
+        const key = tag('P11TRKEY'); const l = await lot(b, 1500); l.gone = true; l.free = 0; const to = await branch('MEDIUM', k + 5);
+        const rs = await all(4, () => P.stock(b).post('/api/inventory/transfers', { toLocationId: to.id, coilIds: [l.coilId], carrier: 'Own truck' }, { 'Idempotency-Key': key }));
         ok('none is a server error', rs.every((r) => r.status < 500), statuses(rs));
-        ok('one stock item with that number', (await prisma.coil.count({ where: { coilNumber: number } })) === 1);
-        const coil = await prisma.coil.findFirst({ where: { coilNumber: number } });
-        ok('received once', (await prisma.materialMovement.count({ where: { coilId: coil.id, movementType: 'RECEIVE' } })) === 1);
+        const lines = await prisma.stockTransferLine.findMany({ where: { coilId: l.coilId } });
+        ok('one transfer carries the item', lines.length === 1, `${lines.length}; ${statuses(rs)}`);
+        ok('posted once as in transit', (await prisma.ledgerEvent.count({ where: { eventKind: 'TRANSFER_SHIPPED', sourceId: lines[0]?.id, status: 'POSTED' } })) === 1);
+        const rc = await (P.receiver(to) || P.stock(to)).post(`/api/inventory/transfers/${lines[0].transferId}/receive`, {});
+        ok('and received at the other branch', rc.status < 300, `${rc.status} ${err(rc)}`);
       });
     }
 

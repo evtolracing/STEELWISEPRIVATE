@@ -49,6 +49,16 @@ export function callerMistake(statusCode, req, store) {
   return null;
 }
 
+/**
+ * A request that failed only because the database had no connection to give, or could not be reached
+ * (Z-009). The route answered 500; the caller is told to try again instead, with how long to wait.
+ * A caller's own mistake (4xx) and a success are left alone.
+ */
+export const BUSY_DATABASE = { status: 503, code: 'DATABASE_BUSY', retryAfterSeconds: 2, error: 'The system could not reach its database just now. Wait a moment and try again; if you were saving something, check first whether it was saved.' };
+export function busyDatabase(statusCode, store) {
+  return statusCode === 500 && store?.noConnection ? BUSY_DATABASE : null;
+}
+
 export function safeErrors(req, res, next) {
   const json = res.json.bind(res);
   const store = {};
@@ -57,6 +67,12 @@ export function safeErrors(req, res, next) {
     if (res.statusCode === 500 && READS.has(req.method) && blamesCaller(store.badFilterValue, req)) {
       res.status(400);
       return json({ error: 'One of the filter values in this request is not valid.' });
+    }
+    const busy = busyDatabase(res.statusCode, store);
+    if (busy) {
+      console.error(`[safeErrors] ${req.id || '-'} ${req.method} ${req.originalUrl.split('?')[0]} → 503 (no database connection)`);
+      res.status(busy.status).set('Retry-After', String(busy.retryAfterSeconds));
+      return json({ error: busy.error, code: busy.code, ...(req.id && { requestId: req.id }) });
     }
     const verdict = callerMistake(res.statusCode, req, store);
     if (verdict) {

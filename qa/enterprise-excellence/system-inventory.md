@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 31cea3e. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -10,14 +10,14 @@ Every figure here is counted from the code or measured in a test run. The module
 |---|---:|
 | Modules | 51 |
 | Server route files | 76 |
-| API routes (each address counted; two route files are mounted twice) | 684 |
-| API routes that change data | 362 |
+| API routes (each address counted; two route files are mounted twice) | 686 |
+| API routes that change data | 363 |
 | Database tables in the schema | 171 |
 | Enumerations | 96 |
-| Migrations | 34 |
+| Migrations | 35 |
 | Screens (routes in the browser) | 146 |
-| Frontend source files | 409 (121,085 lines) |
-| Server route code | 25,407 lines |
+| Frontend source files | 409 (121,101 lines) |
+| Server route code | 25,629 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -44,8 +44,8 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Staff and customer sign-in, the signed token, first-user registration
 - **Screens:** 1 (1 static): /login
 - **Server:** `src/backend/src/routes/auth.js`; served at /api/auth
-- **Routes:** 4, of which 3 change data. Returned a success in a test this session: 2 of 4; of the changing routes, 1 of 3
-- **Tables:** User
+- **Routes:** 5, of which 4 change data. Returned a success in a test this session: 5 of 5; of the changing routes, 4 of 4
+- **Tables:** User, AuditLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Users
 - **Feeds:** Every module
@@ -59,7 +59,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Create and edit users, assign role, home branch, divisions
 - **Screens:** 1 (1 real): /admin/users
 - **Server:** `src/backend/src/routes/users.js`; served at /api/users
-- **Routes:** 13, of which 6 change data. Returned a success in a test this session: 7 of 13; of the changing routes, 3 of 6
+- **Routes:** 13, of which 6 change data. Returned a success in a test this session: 8 of 13; of the changing routes, 4 of 6
 - **Tables:** User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Role, Location, Division
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
@@ -253,7 +253,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** A customer login sees its own orders, documents and invoices
 - **Screens:** 4 (1 static, 3 real): /account/dashboard, /account/orders, /account/shipments, /account/documents
 - **Server:** `src/backend/src/routes/portal.js`; served at /api/ecom/my-orders, /api/enterprise
-- **Routes:** 12, of which 1 change data. Returned a success in a test this session: 7 of 12; of the changing routes, 0 of 1
+- **Routes:** 12, of which 1 change data. Returned a success in a test this session: 8 of 12; of the changing routes, 0 of 1
 - **Tables:** none directly in the route files (through a service, or none)
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in, sales orders, documents
@@ -594,7 +594,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Heats, shipments
 - **Feeds:** Customer account pages, partner API
-- **Findings:** B-021
+- **Findings:** none open
 - **Production concern:** Any staff login can delete a document
 
 ### Partner API
@@ -619,7 +619,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** The integration report (what is connected, calls to outside services, events waiting or failed, orders shipped but not invoiced), replay of a failed event, and the address the host calls on a schedule
 - **Screens:** 1 (1 real): /admin/integrations
 - **Server:** `src/backend/src/routes/integrations.js`; served at /api/admin/integrations
-- **Routes:** 4, of which 2 change data. Returned a success in a test this session: 4 of 4; of the changing routes, 2 of 2
+- **Routes:** 5, of which 2 change data. Returned a success in a test this session: 5 of 5; of the changing routes, 2 of 2
 - **Tables:** WebhookDelivery
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Partner API, shipments, invoices, request keys
@@ -941,7 +941,7 @@ Finding B-014.
 | src/backend/src/routes/opsCockpit.js | 873 | |
 | src/backend/src/routes/staff.js | 788 | |
 | src/backend/src/routes/bomV1.js | 734 | |
-| src/backend/src/routes/users.js | 692 | |
+| src/backend/src/routes/users.js | 706 | |
 | src/backend/src/routes/operationsRoutes.js | 672 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
 | src/backend/src/routes/intakeOrders.js | 651 | |

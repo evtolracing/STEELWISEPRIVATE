@@ -11,8 +11,12 @@ import prisma from '../../lib/db.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { PARTNER_SCOPES } from '../../middleware/partnerAuth.js';
+import { requireRole } from '../../middleware/auth.js';
 
 const router = Router();
+// Partner accounts and their keys are managed by administrators; reading them is no different (Y-019).
+// The API gate already lets only administrators change them.
+router.use(requireRole());
 
 // ─── Partners CRUD ─────────────────────────────────────────────────────────────
 
@@ -275,7 +279,7 @@ router.delete('/:id/keys/:keyId', async (req, res) => {
       data: {
         status: 'REVOKED',
         revokedAt: new Date(),
-        revokedBy: req.headers['x-user-id'] || 'admin',
+        revokedBy: req.user?.id || 'admin', // the signed-in person, never a header the caller writes (Y-017)
         revokeReason: reason || 'Revoked by admin',
       },
     });

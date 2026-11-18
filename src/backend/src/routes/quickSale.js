@@ -324,8 +324,9 @@ router.post('/process-payment', handle('take payment', async (req, res) => {
       for (const p of await tx.payment.findMany({ where: { invoiceId: { in: dropped } }, select: { id: true } })) await reverseLedger(tx, 'PAYMENT_RECORDED', 'Payment', p.id, { reason: 'Second copy of the same counter sale, dropped', userId: req.user.id });
       for (const id of dropped) await reverseLedger(tx, 'INVOICE_ISSUED', 'Invoice', id, { reason: 'Second copy of the same counter sale, dropped', userId: req.user.id });
     });
+    // The history of the dropped copy is kept (Y-011): one more line says it was a duplicate and was dropped.
     await prisma.$transaction([
-      prisma.auditLog.deleteMany({ where: { resourceType: 'Invoice', resourceId: { in: dropped }, category: 'FINANCIAL' } }),
+      prisma.auditLog.create({ data: { category: 'FINANCIAL', eventType: 'DUPLICATE_SALE_DROPPED', severity: 'WARNING', action: 'DELETE', userId: req.user.id, resourceType: 'Order', resourceId: order.id, details: { saleId, keptOrderId: all[0].id, droppedInvoiceIds: dropped, reason: 'Second copy of the same counter sale, sent at the same moment' } } }),
       prisma.payment.deleteMany({ where: { invoice: { orderId: order.id } } }),
       prisma.invoice.deleteMany({ where: { orderId: order.id } }),
       prisma.order.delete({ where: { id: order.id } }),

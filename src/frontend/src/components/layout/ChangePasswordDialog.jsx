@@ -14,7 +14,7 @@ import { useAuth } from '../../hooks/useAuth'
 const EMPTY = { current: '', next: '', confirm: '' }
 
 export default function ChangePasswordDialog({ open, onClose }) {
-  const { changePassword } = useAuth()
+  const { changePassword, logoutEverywhere } = useAuth()
   const [form, setForm] = useState(EMPTY)
   const [error, setError] = useState(null)
   const [done, setDone] = useState(false)
@@ -53,7 +53,7 @@ export default function ChangePasswordDialog({ open, onClose }) {
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             {error && <Alert severity="error">{error}</Alert>}
-            {done && <Alert severity="success">Your password has been changed.</Alert>}
+            {done && <Alert severity="success">Your password has been changed. You stay signed in here; every other device has been signed out.</Alert>}
             <TextField
               label="Current password"
               type="password"
@@ -85,6 +85,7 @@ export default function ChangePasswordDialog({ open, onClose }) {
           </Stack>
         </DialogContent>
         <DialogActions>
+          <Button color="inherit" onClick={logoutEverywhere} sx={{ mr: 'auto' }}>Sign out on every device</Button>
           <Button onClick={close}>{done ? 'Close' : 'Cancel'}</Button>
           {!done && (
             <Button type="submit" variant="contained" disabled={saving}>

@@ -123,12 +123,17 @@ router.get('/entries', handle('list the entries', async (req, res) => {
   const scope = readScope(req, res);
   if (!scope) return;
   const { from, to, status, kind, eventKind, sourceId, q, limit, offset } = req.query;
-  res.json(await reports.listEntries({ from, to, status, kind, eventKind, sourceId, q, limit, offset, ...scope }));
+  const list = await reports.listEntries({ from, to, status, kind, eventKind, sourceId, q, limit, offset, ...scope });
+  // Who read the journal, and with what filter, is recorded like a report read (W-019).
+  await logRead(req, 'journal', { from, to, status, kind, eventKind, sourceId, q: q ? String(q).slice(0, 80) : undefined, scope: scope.branches == null ? 'all' : 'own branches' });
+  res.json(list);
 }));
 router.get('/entries/:id', handle('read the entry', async (req, res) => {
   const scope = readScope(req, res);
   if (!scope) return;
-  res.json(await reports.getEntry(req.params.id, scope));
+  const entry = await reports.getEntry(req.params.id, scope);
+  await logRead(req, 'journal-entry', { entryId: req.params.id, entryNumber: entry?.entryNumber, scope: scope.branches == null ? 'all' : 'own branches' });
+  res.json(entry);
 }));
 router.post('/entries', finance, handle('save the draft entry', async (req, res) => {
   const b = req.body || {};

@@ -23,6 +23,9 @@ jobs:
       # that loads a file which imports the client fails to load.
       - run: npx prisma generate
       - run: npm test
+      # Phase 10: a dependency with a known critical problem stops the merge (high and below are
+      # reviewed by hand, qa/enterprise-excellence/phase-10-dependency-security.md).
+      - run: npm audit --omit=dev --audit-level=critical
 
   frontend:
     runs-on: ubuntu-latest
@@ -35,8 +38,12 @@ jobs:
           cache-dependency-path: src/frontend/package-lock.json
       # No screen may show made-up data without the "sample screen" notice.
       - run: node qa/tools/screen-audit.mjs
+      # Phase 10: no secret in the repository.
+      - run: node qa/tools/secret-scan.mjs
       - run: npm ci --ignore-scripts
         working-directory: src/frontend
       # A name that is used and never defined passes the build and breaks the screen.
       - run: npm run lint
+        working-directory: src/frontend
+      - run: npm audit --omit=dev --audit-level=critical
         working-directory: src/frontend

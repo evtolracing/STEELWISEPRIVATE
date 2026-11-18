@@ -1,0 +1,307 @@
+{
+  "ranAt": "2026-11-18T09:36:02.224Z",
+  "held": 30,
+  "total": 30,
+  "results": [
+    {
+      "id": "Y-001",
+      "what": "a token stops working once its login is cut off",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-001",
+      "failed": [
+        "not ok 1 - Y-001: a token stops working once the login is cut off (password change, reset, sign out everywhere, switched off)"
+      ]
+    },
+    {
+      "id": "Y-001s",
+      "what": "changing a password ends the other sign-ins",
+      "kind": "sim",
+      "held": true,
+      "check": "Changing your password ends every other sign-in",
+      "failed": [
+        "✗ [Authentication, sessions and roles] Changing your password ends every other sign-in of that login and keeps this one going with a new token"
+      ]
+    },
+    {
+      "id": "Y-002",
+      "what": "ten wrong passwords pause the login",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-002",
+      "failed": [
+        "not ok 3 - Y-002: a login is paused after 10 wrong passwords in a row, for 15 minutes"
+      ]
+    },
+    {
+      "id": "Y-002s",
+      "what": "a burst of wrong passwords records one pause",
+      "kind": "sim",
+      "held": true,
+      "check": "Twenty wrong passwords at once",
+      "failed": [
+        "✗ [Authentication, sessions and roles] Twenty wrong passwords at once pause the login and none gets through"
+      ]
+    },
+    {
+      "id": "Y-003",
+      "what": "an address with no login takes as long to refuse as one with a login",
+      "kind": "sim",
+      "held": true,
+      "check": "takes about as long as for one with a login",
+      "failed": [
+        "✗ [Authentication, sessions and roles] A wrong password for an address with no login takes about as long as for one with a login"
+      ]
+    },
+    {
+      "id": "Y-004",
+      "what": "an upload cannot name a folder outside the uploads folder",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-004",
+      "failed": [
+        "not ok 4 - Y-004: the upload folder is plain letters only; anything that could leave the uploads folder becomes \"general\""
+      ]
+    },
+    {
+      "id": "Y-005",
+      "what": "a stored file takes the extension of its accepted type",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-005",
+      "failed": [
+        "not ok 5 - Y-005: the stored name takes the extension of the accepted type, never the sender's"
+      ]
+    },
+    {
+      "id": "Y-006",
+      "what": "a file whose bytes do not match its type is refused",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-006",
+      "failed": [
+        "not ok 6 - Y-006: a file whose bytes are not what it claims to be is refused"
+      ]
+    },
+    {
+      "id": "Y-007",
+      "what": "only HS256 tokens are accepted",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-007",
+      "failed": [
+        "not ok 2 - Y-007: only HS256 tokens are accepted; an unsigned or differently signed token is refused"
+      ]
+    },
+    {
+      "id": "Y-008",
+      "what": "the application role cannot rewrite the record of applied updates",
+      "kind": "sql",
+      "held": true,
+      "check": "rewrite the record of applied updates",
+      "failed": [
+        "✗ [API, database and document security] The application's database role cannot rewrite the record of applied updates"
+      ]
+    },
+    {
+      "id": "Y-009",
+      "what": "the application role cannot make tables",
+      "kind": "sql",
+      "held": true,
+      "check": "database role cannot make a table",
+      "failed": [
+        "✗ [API, database and document security] The application's database role cannot make a table"
+      ]
+    },
+    {
+      "id": "Y-010",
+      "what": "the same alert is stored once in fifteen minutes",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-010",
+      "failed": [
+        "not ok 7 - Y-010: an alert is logged every time but stored once per kind and key within the dedupe window, and never throws"
+      ]
+    },
+    {
+      "id": "Y-010b",
+      "what": "a scheduled run that fails raises an alert",
+      "kind": "unit",
+      "held": true,
+      "check": "scheduled run that fails raises SCHEDULED_RUN_FAILED",
+      "failed": [
+        "not ok 10 - Y-010: a scheduled run that fails raises SCHEDULED_RUN_FAILED and answers without internals"
+      ]
+    },
+    {
+      "id": "Y-011",
+      "what": "the application role cannot change or delete history",
+      "kind": "sql",
+      "held": true,
+      "check": "database role cannot change a history row",
+      "failed": [
+        "✗ [API, database and document security] The application's database role cannot change a history row"
+      ]
+    },
+    {
+      "id": "Y-013",
+      "what": "register cannot place a login in another organization",
+      "kind": "sim",
+      "held": true,
+      "check": "cannot place it in another organization",
+      "failed": [
+        "✗ [Authentication, sessions and roles] The owner registering a login cannot place it in another organization or make a customer login without its account"
+      ]
+    },
+    {
+      "id": "Y-013b",
+      "what": "register applies the Users rules to the role",
+      "kind": "sim",
+      "held": true,
+      "check": "an administrator cannot register a super administrator",
+      "failed": [
+        "✗ [Authentication, sessions and roles] Registering a login is closed once the first login exists; an administrator cannot register a super administrator; a sale"
+      ]
+    },
+    {
+      "id": "Y-014",
+      "what": "the public readiness answer is kept for a while",
+      "kind": "sim",
+      "held": true,
+      "check": "public readiness answer is kept for 30 seconds",
+      "failed": [
+        "✗ [Observability, alerting and infrastructure] The public readiness answer is kept for 30 seconds so a flood of calls is not a flood of database work"
+      ]
+    },
+    {
+      "id": "Y-015",
+      "what": "guard fields are hidden from colleagues",
+      "kind": "sim",
+      "held": true,
+      "check": "A colleague looking up logins",
+      "failed": [
+        "✗ [Authentication, sessions and roles] A colleague looking up logins sees names and roles, not who is being guessed at"
+      ]
+    },
+    {
+      "id": "Y-016",
+      "what": "documents obey the branch boundary",
+      "kind": "sim",
+      "held": true,
+      "check": "cannot open the document download of branch QA-L01",
+      "failed": [
+        "✗ [Tenant, division and branch isolation] A branch manager of another branch cannot open the document download of branch QA-L01; the manager of QA-L01 can"
+      ]
+    },
+    {
+      "id": "Y-016b",
+      "what": "an upload cannot be attached to another branch's record",
+      "kind": "sim",
+      "held": true,
+      "check": "cannot attach a document to a QA-L01 order",
+      "failed": [
+        "✗ [Tenant, division and branch isolation] A QA-L02 manager cannot attach a document to a QA-L01 order (Y-016)"
+      ]
+    },
+    {
+      "id": "Y-017",
+      "what": "a revoked key records the signed-in person",
+      "kind": "sim",
+      "held": true,
+      "check": "A revoked partner key stops working at once",
+      "failed": [
+        "✗ [Integrations, events and background jobs] A revoked partner key stops working at once, not when its token runs out"
+      ]
+    },
+    {
+      "id": "Y-018",
+      "what": "a token without a user id is refused, not a server error",
+      "kind": "sim",
+      "held": true,
+      "check": "The server refuses a token with no user in it",
+      "failed": [
+        "✗ [Authentication, sessions and roles] The server refuses a token with no user in it"
+      ]
+    },
+    {
+      "id": "Y-019",
+      "what": "partner administration reads are for administrators",
+      "kind": "sim",
+      "held": true,
+      "check": "A sales rep is refused the administration",
+      "failed": [
+        "✗ [Authentication, sessions and roles] A sales rep is refused the administration, the books and the system checks"
+      ]
+    },
+    {
+      "id": "Y-020",
+      "what": "money on one invoice takes turns",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-020",
+      "failed": [
+        "not ok 8 - Y-020: money recorded on one invoice takes turns, and different invoices do not wait for each other"
+      ]
+    },
+    {
+      "id": "Y-020b",
+      "what": "an overlap that survives every retry answers 409, not 500",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-020b",
+      "failed": [
+        "not ok 9 - Y-020b: an overlap that survives every retry answers 409 BUSY, never a server error"
+      ]
+    },
+    {
+      "id": "Y-020s",
+      "what": "twenty payments at once on one invoice are all recorded",
+      "kind": "sim",
+      "held": true,
+      "check": "Twenty payments of 5.00 at once",
+      "failed": [
+        "✗ [Concurrency and failure recovery] Twenty payments of 5.00 at once on one invoice are all recorded and none answers with a server error"
+      ]
+    },
+    {
+      "id": "Y-021",
+      "what": "goods shipped long ago with no invoice fail the checks",
+      "kind": "sim",
+      "held": true,
+      "check": "fifteen minutes fail the checks",
+      "failed": [
+        "✗ [Observability, alerting and infrastructure] Goods shipped and left without an invoice for more than fifteen minutes fail the checks and raise an alert (Y-021"
+      ]
+    },
+    {
+      "id": "Y-022",
+      "what": "sign-in on a database without update 17 names the update",
+      "kind": "sim",
+      "held": true,
+      "check": "without update 17 says which update is missing",
+      "failed": [
+        "✗ [Backup, restore, deployment and rollback] The finished code on a database without update 17 says which update is missing instead of failing sign-in with a se"
+      ]
+    },
+    {
+      "id": "Y-023",
+      "what": "an address that cannot be decoded is the caller's error",
+      "kind": "unit",
+      "held": true,
+      "check": "Y-023",
+      "failed": [
+        "not ok 12 - Y-023: an address whose % signs do not decode is the caller's error (400 with the request id), not a server error"
+      ]
+    },
+    {
+      "id": "Y-023s",
+      "what": "the server answers an undecodable address 400, not 500",
+      "kind": "sim",
+      "held": true,
+      "check": "cannot be decoded",
+      "failed": [
+        "✗ [Observability, alerting and infrastructure] An address that cannot be decoded is the caller's error: 400 with a plain sentence and the request id, never a se"
+      ]
+    }
+  ]
+}

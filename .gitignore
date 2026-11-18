@@ -49,3 +49,6 @@ templates/
 tmpclaude-*
 nul
 qa/results/gate-logs/
+
+# Files uploaded while the server runs locally or in QA (never committed)
+src/backend/uploads/

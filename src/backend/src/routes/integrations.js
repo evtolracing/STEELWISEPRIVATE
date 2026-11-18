@@ -5,6 +5,7 @@
  *   GET  /api/admin/integrations/deliveries?status=      partner events and how each delivery went
  *   POST /api/admin/integrations/deliveries/:id/replay   send a failed event again
  *   POST /api/admin/integrations/run                     run the periodic work now
+ *   GET  /api/admin/integrations/checks                  the system checks and the latest alerts
  *
  *   GET|POST /api/internal/tasks/run                     the same periodic work, for a scheduler.
  *        Needs `Authorization: Bearer <CRON_SECRET or TASKS_SECRET>`. Refused when no secret is set.
@@ -30,6 +31,15 @@ router.get('/', only(...COMPANY_WIDE), async (req, res) => {
 });
 
 const DELIVERY_STATUSES = ['PENDING', 'RETRYING', 'DELIVERED', 'FAILED'];
+// The system checks and the latest alerts (Y-010).
+router.get('/checks', only(...COMPANY_WIDE), async (req, res) => {
+  try {
+    const { systemChecks } = await import('../lib/opsChecks.js');
+    const { recentAlerts } = await import('../lib/alerts.js');
+    res.json({ ...(await systemChecks()), alerts: await recentAlerts({ take: req.query.take }), alertChannel: process.env.ALERT_WEBHOOK_URL ? 'SET UP' : 'NOT SET UP: alerts are written to the log and listed here only' });
+  } catch (error) { fail(res, 'run the system checks', error, req); }
+});
+
 router.get('/deliveries', only(...COMPANY_WIDE), async (req, res) => {
   try {
     const status = req.query.status ? String(req.query.status).toUpperCase() : null;
@@ -62,14 +72,19 @@ router.post('/run', only('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN'), async (req, re
 });
 
 /** For a scheduler. It carries no user, so it proves itself with the shared secret. */
-export async function scheduledRun(req, res) {
+export async function scheduledRun(req, res, run = runTasks) {
   const secret = process.env.CRON_SECRET || process.env.TASKS_SECRET;
   if (!secret) return res.status(503).json({ error: 'The scheduled run is not set up on this server.' });
   const given = String(req.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const a = crypto.createHash('sha256').update(given).digest();
   const b = crypto.createHash('sha256').update(secret).digest();
   if (!given || !crypto.timingSafeEqual(a, b)) return res.status(401).json({ error: 'Not authorised' });
-  try { res.json(await runTasks({ by: 'schedule' })); } catch (error) { fail(res, 'run the periodic work', error, req); }
+  try { res.json(await run({ by: 'schedule' })); } catch (error) {
+    // A run that fails says so on the alert channel too (Y-010): otherwise it fails as quietly as no run.
+    const { raiseAlertLater } = await import('../lib/alerts.js');
+    raiseAlertLater('SCHEDULED_RUN_FAILED', { reason: String(error?.message || error).split('\n').pop().slice(0, 200) }, { key: 'schedule', requestId: req.id });
+    fail(res, 'run the periodic work', error, req);
+  }
 }
 
 export default router;

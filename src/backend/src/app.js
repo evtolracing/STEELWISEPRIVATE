@@ -9,8 +9,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
 // Routes
@@ -91,6 +89,7 @@ import opsCockpitRoutes from './routes/opsCockpit.js';
 import printQueueRoutes from './routes/printQueue.js';
 import prisma from './lib/db.js';
 import config from './config/index.js';
+import { clientErrorAnswer } from './lib/errorAnswer.js';
 
 dotenv.config();
 
@@ -139,18 +138,8 @@ app.use('/api/auth/login', rateLimit({
   message: { error: 'Too many login attempts, please try again later' },
 }));
 
-// Serve uploaded files statically (skip on Vercel's read-only filesystem)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-try {
-  const fs = await import('fs');
-  if (fs.existsSync(uploadsDir)) {
-    app.use('/uploads', express.static(uploadsDir));
-  }
-} catch (e) {
-  // Vercel: uploads directory doesn't exist, skip static serving
-}
+// Uploaded files are never served by their address (Y-005, B-021). Every file is read through
+// GET /api/documents/:id/download, which needs a signed-in user and sends it as an attachment.
 
 // Health check
 // Health check, including whether the database answers. Returns 503 when the
@@ -172,6 +161,35 @@ app.get('/api/health', async (req, res) => {
   } catch (error) {
     console.error('Health check database error:', error.message);
     res.status(503).json({ status: 'degraded', database: 'unreachable', timestamp });
+  }
+});
+
+// Liveness: the process answers. No database call, so a host restarts only a process that is truly stuck.
+app.get('/api/health/live', (req, res) => res.json({ status: 'ok' }));
+
+// Readiness (Y-010): can this server do its work? The database answers and the checks that guard stock
+// and money pass. It says which checks fail, by name only: counts and details are for administrators
+// (GET /api/admin/integrations/checks). 503 when the database does not answer; 200 with
+// "attention" when the server can work but something needs a person.
+// The answer is kept for READY_CACHE_MS (default 30 s): the route needs no sign-in, and each run reads
+// whole tables, so a flood of calls must not become a flood of database work (Y-014).
+const READY_CACHE_MS = Number(process.env.READY_CACHE_MS ?? 30000);
+let readyCache = null;
+async function readiness() {
+  if (readyCache && Date.now() - readyCache.at < READY_CACHE_MS) return readyCache.value;
+  const value = (async () => { const { systemChecks } = await import('./lib/opsChecks.js'); return systemChecks(); })();
+  readyCache = { at: Date.now(), value };
+  value.catch(() => { readyCache = null; });
+  return value;
+}
+app.get('/api/health/ready', async (req, res) => {
+  try {
+    const r = await readiness();
+    const db = r.checks.find((c) => c.key === 'database');
+    const failing = r.checks.filter((c) => !c.ok).map((c) => c.key);
+    res.status(db?.ok ? 200 : 503).json({ status: !db?.ok ? 'not ready' : failing.length ? 'attention' : 'ready', failing, timestamp: r.at });
+  } catch {
+    res.status(503).json({ status: 'not ready', failing: ['checks could not run'], timestamp: new Date().toISOString() });
   }
 });
 
@@ -301,12 +319,8 @@ app.use('/api/v1/admin/partners', partnerAdminRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
-  if (err.type === 'entity.too.large') {
-    return res.status(413).json({ error: 'Request body too large' });
-  }
-  if (err.type === 'entity.parse.failed') {
-    return res.status(400).json({ error: 'Invalid JSON body' });
-  }
+  const known = clientErrorAnswer(err, req.id);
+  if (known) return res.status(known.status).json(known.body);
   console.error(JSON.stringify({ t: new Date().toISOString(), level: 'error', msg: 'unhandled', id: req.id, method: req.method, path: (req.originalUrl || '').split('?')[0] }), err.stack || err);
   if (res.headersSent) return next(err);
   res.status(500).json({ error: 'Internal server error', requestId: req.id });

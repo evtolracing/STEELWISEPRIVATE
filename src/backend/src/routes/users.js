@@ -21,6 +21,18 @@ async function resolveLoginCustomer(role, customerId) {
 
 const router = Router();
 
+/**
+ * A login as another person may see it (Y-015). The password hash never leaves. The sign-in guards
+ * (wrong-password count, pause, session cut-off) are for the people who manage logins only: a colleague
+ * looking up a name does not learn whose login is being guessed at.
+ */
+const LOGIN_MANAGERS = new Set(['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER']);
+export function forViewer(user, viewer) {
+  // eslint-disable-next-line no-unused-vars
+  const { passwordHash, failedLoginCount, lockedUntil, tokensValidAfter, ...rest } = user;
+  return LOGIN_MANAGERS.has(viewer?.role) || viewer?.id === user.id ? { ...rest, failedLoginCount, lockedUntil, tokensValidAfter } : rest;
+}
+
 // ==================== USER CRUD ====================
 
 // GET /api/users - List all users (with filtering)
@@ -90,7 +102,7 @@ router.get('/', authenticate, async (req, res) => {
     ]);
 
     // Remove password hash from response
-    const sanitizedUsers = users.map(({ passwordHash, ...user }) => user);
+    const sanitizedUsers = users.map((u) => forViewer(u, req.user));
 
     res.json({
       users: sanitizedUsers,
@@ -137,8 +149,7 @@ router.get('/:id', authenticate, async (req, res, next) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const { passwordHash, ...sanitizedUser } = user;
-    res.json(sanitizedUser);
+    res.json(forViewer(user, req.user));
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({ error: 'Failed to fetch user' });
@@ -283,6 +294,8 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
     if (phone !== undefined) updateData.phone = phone;
     if (homeLocationId !== undefined) updateData.homeLocationId = homeLocationId;
     if (isActive !== undefined) updateData.isActive = isActive;
+    // Switching a login off ends its sign-ins, so switching it back on later does not revive an old token (Y-001).
+    if (isActive === false && existingUser.isActive !== false) updateData.tokensValidAfter = new Date();
     if (role !== undefined || customerId !== undefined) {
       const link = await resolveLoginCustomer(role ?? existingUser.role, customerId !== undefined ? customerId : existingUser.customerId);
       if (link.error) return res.status(400).json({ error: link.error });
@@ -412,7 +425,7 @@ router.delete('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', '
     await prisma.$transaction([
       prisma.user.update({
       where: { id },
-      data: { isActive: false }
+      data: { isActive: false, tokensValidAfter: new Date() }
     }),
       prisma.auditLog.create({
       data: {
@@ -458,9 +471,10 @@ router.post('/:id/reset-password', authenticate, requireRole('SUPER_ADMIN', 'TEN
     const passwordHash = await bcrypt.hash(newPassword, 10);
     // The change and its audit record are one step (B-010).
     await prisma.$transaction([
+      // Every sign-in of this login ends: whoever held it must sign in with the new password (Y-001).
       prisma.user.update({
       where: { id },
-      data: { passwordHash }
+      data: { passwordHash, tokensValidAfter: new Date(), failedLoginCount: 0, lockedUntil: null }
     }),
       prisma.auditLog.create({
       data: {

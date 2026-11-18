@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 31cea3e. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit d44825d. Do not edit by hand: change the source and rerun.
 
-684 routes in 76 route files, served at 77 mount points. 362 change data.
+686 routes in 76 route files, served at 77 mount points. 363 change data.
 
 ## What the columns mean
 
@@ -15,8 +15,8 @@ Generated 2026-11-16 by `qa/tools/excellence-docs.mjs` at commit 31cea3e. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 454 of 684 |
-| Changing routes that returned a success in a test | 199 of 362 |
+| Routes that returned a success in a test | 460 of 686 |
+| Changing routes that returned a success in a test | 203 of 363 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
 | Handlers with no try/catch of their own | 231 (many use a shared wrapper) |
@@ -40,9 +40,9 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 | Route | File |
 |---|---|
-| `GET /api/users/roles/list` | users.js:459 |
-| `GET /api/users/locations` | users.js:614 |
-| `GET /api/users/divisions` | users.js:631 |
+| `GET /api/users/roles/list` | users.js:469 |
+| `GET /api/users/locations` | users.js:624 |
+| `GET /api/users/divisions` | users.js:641 |
 | `GET /api/grades` | grades.js:25 |
 | `GET /api/products` | products.js:40 |
 | `GET /api/heats/:heatNumber/trace` | heats.js:131 |
@@ -60,8 +60,8 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/work-centers` | workCenters.js:8 |
 | `GET /api/work-centers/:id/schedule` | workCenters.js:128 |
 | `GET /api/jobs/sla-risk` | jobs.js:218 |
-| `GET /api/documents/entity/:entityType/:entityId` | documents.js:155 |
-| `GET /api/pos/quick-sale/daily-stats` | quickSale.js:312 |
+| `GET /api/documents/entity/:entityType/:entityId` | documents.js:222 |
+| `GET /api/pos/quick-sale/daily-stats` | quickSale.js:313 |
 | `GET /api/v1/bom/recipes` | bomV1.js:126 |
 | `GET /api/v1/analytics/ops-forecast` | analyticsV1.js:12 |
 | `GET /api/v1/analytics/rfq-funnel` | analyticsV1.js:126 |
@@ -94,22 +94,23 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/v1/partner/customer/orders/:id/milestones` | partner/customerRoutes.js:161 |
 | `GET /api/v1/partner/carrier/performance` | partner/carrierRoutes.js:145 |
 | `GET /api/v1/partner/webhooks` | partner/webhookRoutes.js:36 |
-| `GET /api/v1/admin/partners/:id/usage` | partner/adminRoutes.js:273 |
+| `GET /api/v1/admin/partners/:id/usage` | partner/adminRoutes.js:277 |
 
 ## Every route, by route file
 
-### auth.js (4 routes, 127 lines)
+### auth.js (5 routes, 203 lines)
 
-Mounted at /api/auth. Tables: User.
+Mounted at /api/auth. Tables: User, AuditLog.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `POST /api/auth/login` | yes | 1 |  |  |  |  |
-| `POST /api/auth/register` |  |  |  |  |  |  |
-| `PUT /api/auth/password` |  | 1 |  |  |  |  |
+| `POST /api/auth/login` | yes | 6 | yes |  | yes |  |
+| `POST /api/auth/register` | yes |  |  |  |  |  |
+| `PUT /api/auth/password` | yes | 2 | yes |  | yes |  |
+| `POST /api/auth/logout-all` | yes | 2 | yes |  | yes |  |
 | `GET /api/auth/me` | yes |  |  |  |  |  |
 
-### users.js (13 routes, 692 lines)
+### users.js (13 routes, 706 lines)
 
 Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Role, Location, Division.
 
@@ -120,7 +121,7 @@ Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserR
 | `POST /api/users` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 | `PUT /api/users/:id` | yes | 8 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 | `DELETE /api/users/:id` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
-| `POST /api/users/:id/reset-password` |  | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
+| `POST /api/users/:id/reset-password` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `GET /api/users/roles/list` | yes |  |  | yes |  |  |
 | `GET /api/users/roles/:id` |  |  |  |  |  |  |
 | `POST /api/users/roles` |  | 1 |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
@@ -259,7 +260,7 @@ Mounted at /api/ecom/my-orders, /api/enterprise. Tables: through a service or no
 | `GET /api/enterprise/accounts/:accountId` | yes |  |  |  |  |  |
 | `GET /api/enterprise/accounts/:accountId/kpis` | yes |  |  |  |  |  |
 | `GET /api/enterprise/orders` | yes |  |  |  |  |  |
-| `GET /api/enterprise/orders/export` |  |  |  |  |  |  |
+| `GET /api/enterprise/orders/export` | yes |  |  |  |  |  |
 | `GET /api/enterprise/orders/:orderId` |  |  |  |  |  |  |
 | `GET /api/enterprise/shipments` | yes |  |  |  |  |  |
 | `GET /api/enterprise/documents` | yes |  |  |  |  |  |
@@ -414,7 +415,7 @@ Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, S
 | `PATCH /api/shipments/:id/status` | yes |  |  |  |  |  |
 | `GET /api/shipments/:id/documents` | yes |  |  |  |  |  |
 
-### invoices.js (8 routes, 69 lines)
+### invoices.js (8 routes, 82 lines)
 
 Mounted at /api/invoices. Tables: through a service or none.
 
@@ -429,7 +430,7 @@ Mounted at /api/invoices. Tables: through a service or none.
 | `POST /api/invoices/:id/refund` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/cancel` | yes |  |  |  |  |  |
 
-### ledger.js (35 routes, 189 lines)
+### ledger.js (35 routes, 194 lines)
 
 Mounted at /api/ledger. Tables: LedgerPeriod, JournalEntry.
 
@@ -495,7 +496,7 @@ Mounted at /api/tax-rates. Tables: SalesTaxRate, Location.
 | `PUT /api/tax-rates/:state` |  | 1 |  |  |  |  |
 | `DELETE /api/tax-rates/:state` |  | 1 |  |  |  |  |
 
-### overrides.js (6 routes, 175 lines)
+### overrides.js (6 routes, 183 lines)
 
 Mounted at /api/overrides. Tables: AuditLog.
 
@@ -506,7 +507,7 @@ Mounted at /api/overrides. Tables: AuditLog.
 | `GET /api/overrides/count` | yes |  |  |  |  |  |
 | `GET /api/overrides/audit` | yes |  |  |  |  |  |
 | `GET /api/overrides/stats` | yes |  |  |  |  |  |
-| `POST /api/overrides/:id/revoke` | yes | 2 | yes |  | yes |  |
+| `POST /api/overrides/:id/revoke` | yes | 1 |  |  | yes |  |
 
 ### salesDashboard.js (1 routes, 121 lines)
 
@@ -625,7 +626,7 @@ Mounted at /api/jobs, /api/v1/jobs. Tables: Job, OrderLine, Order, WorkCenter, D
 | `GET /api/v1/jobs/:id/history` |  |  |  |  |  |  |
 | `GET /api/v1/jobs/stats/summary` | yes |  |  |  |  |  |
 
-### documents.js (7 routes, 260 lines)
+### documents.js (7 routes, 346 lines)
 
 Mounted at /api/documents. Tables: Document, DocumentLink, DocumentBlob, Heat.
 
@@ -639,7 +640,7 @@ Mounted at /api/documents. Tables: Document, DocumentLink, DocumentBlob, Heat.
 | `POST /api/documents/upload-multiple` |  |  |  |  |  |  |
 | `DELETE /api/documents/:id` | yes | 3 | yes |  |  |  |
 
-### quickSale.js (10 routes, 400 lines)
+### quickSale.js (10 routes, 401 lines)
 
 Mounted at /api/pos/quick-sale. Tables: Product, Order, Invoice, Payment, MaterialMovement, AuditLog, InvoiceLine.
 
@@ -1012,13 +1013,14 @@ Mounted at /api/admin/online-settings. Tables: through a service or none.
 | `GET /api/admin/online-settings/processes` | yes |  |  |  |  |  |
 | `PUT /api/admin/online-settings/processes` |  |  |  |  |  |  |
 
-### integrations.js (4 routes, 76 lines)
+### integrations.js (5 routes, 91 lines)
 
 Mounted at /api/admin/integrations. Tables: WebhookDelivery.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/admin/integrations` | yes |  |  |  |  |  |
+| `GET /api/admin/integrations/checks` | yes |  |  |  |  |  |
 | `GET /api/admin/integrations/deliveries` | yes |  |  |  |  |  |
 | `POST /api/admin/integrations/deliveries/:id/replay` | yes |  |  |  |  |  |
 | `POST /api/admin/integrations/run` | yes |  |  |  |  |  |
@@ -1270,7 +1272,7 @@ Mounted at /api/v1/partner/webhooks. Tables: PartnerWebhook, WebhookDelivery.
 | `POST /api/v1/partner/webhooks/:id/test` | yes |  |  | yes |  |  |
 | `POST /api/v1/partner/webhooks/:id/deliveries/:deliveryId/replay` | yes |  |  |  |  |  |
 
-### partner/adminRoutes.js (9 routes, 433 lines)
+### partner/adminRoutes.js (9 routes, 437 lines)
 
 Mounted at /api/v1/admin/partners. Tables: Partner, Organization, PartnerApiKey, PartnerApiLog.
 

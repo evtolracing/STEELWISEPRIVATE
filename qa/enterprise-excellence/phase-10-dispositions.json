@@ -1,0 +1,52 @@
+{
+ "note": "Phase 10 notes on findings raised in earlier phases. Applied to findings.json by qa/tools/phase10-findings.mjs. A status is changed only where one is given.",
+ "dispositions": {
+  "W-014": {
+   "status": "FIXED — NOT VERIFIED",
+   "statusNote": "Phase 10: the application now runs as steelwise_runtime in every QA suite; that role cannot switch off or drop the journal guards, set session_replication_role, or change history (Y-008). Live: after the owner applies file 17 and points DATABASE_URL at the role."
+  },
+  "W-015": {
+   "statusNote": "Phase 10: reviewed, unchanged. Reopening a month still yields when only one finance user exists; manual entries never yield. Whether a second person is always required is the accountant's decision with W-001."
+  },
+  "W-019": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 10: reading the journal list and opening an entry are now logged with the reader, the filter and the scope.",
+   "verification": "qa/sim/phase10-security.mjs \"Journal reads by an auditor are in the audit trail with the reader and what was read\"."
+  },
+  "W-020": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 10: an actual backup and restore into a separate PostgreSQL server: the journal balances, keeps its four guards and its numbering, and the restored application signs in and reconciles with no difference. Live backups (the host's) are not exercised: E-015.",
+   "verification": "qa/sim/phase10-security.mjs group 8 (25 scenarios); qa/results/phase10-restore.json."
+  },
+  "B-021": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 10 (Y-005): the static /uploads route is removed; files are read through the signed-in download only.",
+   "verification": "qa/sim/phase10-security.mjs \"An uploaded file cannot be fetched by its address, only through the signed-in download\"."
+  },
+  "E-011": {
+   "statusNote": "Phase 10: no critical vulnerability in production dependencies (npm audit --omit=dev --audit-level=critical exits 0 for backend and frontend), and CI now fails on a critical one. Production dependencies have no high either: 1 moderate in the backend (uuid) and 2 in the frontend (react-router). With build tools counted the frontend adds 1 high and 1 moderate (vite, used only to build). Each needs a major upgrade, which was not made: the owner decides when."
+  },
+  "E-014": {
+   "statusNote": "Phase 10: the per-address limit still counts per server instance. Password guessing is now stopped per login in the database (Y-002), which holds across instances. Several instances are measured in Phase 11."
+  },
+  "E-015": {
+   "status": "FIXED — NOT VERIFIED",
+   "statusNote": "Phase 10: a backup of the QA database was restored into a separate server and verified (W-020). The live host's backups have still never been restored; the procedure is in phase-10-restore-test.md and phase-10-disaster-recovery.md for the owner."
+  },
+  "E-017": {
+   "statusNote": "Phase 10: alerts now exist (Y-010) and are sent to ALERT_WEBHOOK_URL when set. Which service receives them (email, chat, paging) is the owner's choice; none is set on the host."
+  },
+  "E-019": {
+   "statusNote": "Phase 10: 31 isolation scenarios (customer accounts, divisions, branches, partners, the assistant) pass. A table-by-table audit of every tenant id column was not made: Phase 11."
+  },
+  "C-009": {
+   "statusNote": "Phase 10: documents now follow the branch of the record they belong to (Y-016)."
+  },
+  "V-028": {
+   "statusNote": "Phase 10: unchanged. The dispatch board lists are not in the Phase 10 isolation scenarios."
+  },
+  "B-019": {
+   "statusNote": "Phase 10: the scheduled run now also runs the system checks and raises their alerts, and a late run is itself a failing check. It still needs a scheduler on the host (owner)."
+  }
+ }
+}

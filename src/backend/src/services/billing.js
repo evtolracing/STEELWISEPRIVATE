@@ -183,6 +183,16 @@ function inTurn(series, run) {
   return mine;
 }
 
+/**
+ * Money recorded against one invoice takes turns inside this process (Phase 10, Y-020). Twenty
+ * payments on one invoice at the same moment overlapped in the database; each was run again, and
+ * some used up every attempt and answered 500. Taking turns removes those collisions here; the
+ * serializable transaction still settles two server processes, and if it still cannot settle the
+ * caller is told to try again (409) rather than shown a server error.
+ */
+const MONEY_ATTEMPTS = 12;
+export function moneyTurn(invoiceId, run) { return inTurn(`money:${invoiceId}`, run); }
+
 /** Runs `create(tx, next)` in one serializable transaction. `next()` gives the document its number. */
 async function numbered(series, create) {
   for (let i = 0; ; i++) {
@@ -255,7 +265,7 @@ export async function recordPayment(invoiceId, body = {}, userId = null) {
     if (paymentDate.getTime() > Date.now() + 24 * 60 * 60_000) refuse(400, 'paymentDate cannot be in the future');
   }
   if (method === 'CREDIT') refuse(400, 'Credits are applied by issuing a credit memo, not by recording a payment');
-  const updated = await retryOverlap(() => prisma.$transaction(async (tx) => {
+  const updated = await moneyTurn(invoiceId, () => retryOverlap(() => prisma.$transaction(async (tx) => {
     const invoice = await tx.invoice.findUnique({ where: { id: invoiceId } });
     if (!invoice) refuse(404, 'Invoice not found');
     const why = paymentError(invoice, amount, method);
@@ -266,7 +276,7 @@ export async function recordPayment(invoiceId, body = {}, userId = null) {
       paymentMethod: method, referenceNumber: reference,
       notes: body.notes ? String(body.notes) : null, ...(paymentDate && { paymentDate }),
     }, userId);
-  }, SERIALIZABLE));
+  }, SERIALIZABLE), MONEY_ATTEMPTS));
   return toApi(updated);
 }
 
@@ -364,12 +374,12 @@ export async function creditInvoice(invoiceId, body = {}, userId = null, steps =
     if (steps.after) return (await steps.after(tx, credit)) || credit;
     return credit;
   };
-  return toApi(await numbered('CM', run));
+  return toApi(await moneyTurn(invoiceId, () => numbered('CM', run)));
 }
 
 /** Money handed back to the customer for the part of a credit memo that was not used against the invoice. */
 export async function recordRefund(creditId, body = {}, userId = null) {
-  const updated = await retryOverlap(() => prisma.$transaction((tx) => refundWithin(tx, creditId, body, userId), SERIALIZABLE));
+  const updated = await moneyTurn(creditId, () => retryOverlap(() => prisma.$transaction((tx) => refundWithin(tx, creditId, body, userId), SERIALIZABLE), MONEY_ATTEMPTS));
   return toApi(updated);
 }
 
@@ -394,7 +404,7 @@ export async function refundWithin(tx, creditId, body = {}, userId = null) {
 }
 
 export async function cancelInvoice(invoiceId, body = {}, userId = null) {
-  const updated = await retryOverlap(() => prisma.$transaction(async (tx) => {
+  const updated = await moneyTurn(invoiceId, () => retryOverlap(() => prisma.$transaction(async (tx) => {
     const invoice = await tx.invoice.findUnique({ where: { id: invoiceId }, include: { payments: true } });
     if (!invoice) refuse(404, 'Invoice not found');
     if (invoice.status === 'CANCELLED') refuse(409, 'This invoice is already cancelled');
@@ -408,7 +418,7 @@ export async function cancelInvoice(invoiceId, body = {}, userId = null) {
       data: { status: 'CANCELLED', notes: [invoice.notes, note].filter(Boolean).join(' · ') },
       include: INCLUDE,
     });
-  }, SERIALIZABLE));
+  }, SERIALIZABLE), MONEY_ATTEMPTS));
   return toApi(updated);
 }
 

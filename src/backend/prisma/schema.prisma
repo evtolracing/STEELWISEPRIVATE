@@ -142,6 +142,12 @@ model User {
   lastLoginAt      DateTime?
   mfaEnabled       Boolean              @default(false)
   isActive         Boolean              @default(true)
+  /// A sign-in token issued before this moment is refused (password changed or reset, login switched off, signed out everywhere).
+  tokensValidAfter DateTime?
+  /// Wrong passwords in a row; back to 0 after a correct one.
+  failedLoginCount Int                  @default(0)
+  /// No sign-in until then, after too many wrong passwords in a row.
+  lockedUntil      DateTime?
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
   createdCoils     Coil[]               @relation("CoilCreator")

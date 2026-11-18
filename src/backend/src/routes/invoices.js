@@ -15,6 +15,17 @@ import {
   BillingError, listInvoices, getInvoice, invoiceOrder, invoiceShipment, recordPayment, creditInvoice, recordRefund, cancelInvoice, agingReport,
 } from '../services/billing.js';
 
+import { isOverlap } from '../lib/numbering.js';
+
+/**
+ * Another change to the same invoice was being saved at that moment and every attempt overlapped it
+ * (Y-020). Nothing was saved; the caller is told to send it again instead of being shown a server error.
+ */
+export function busyAnswer(error) {
+  if (isOverlap(error)) return { status: 409, body: { error: 'Another change to this invoice was being saved at the same moment. Nothing was saved; please try again.', code: 'BUSY' } };
+  return null;
+}
+
 const router = Router();
 
 const handle = (label, fn) => async (req, res) => {
@@ -23,6 +34,8 @@ const handle = (label, fn) => async (req, res) => {
   } catch (error) {
     if (error instanceof BillingError) return res.status(error.status).json({ error: error.message });
     if (error?.code === 'P2003' || error?.name === 'PrismaClientValidationError') return res.status(400).json({ error: 'The request has a field that is not valid' });
+    const busy = busyAnswer(error);
+    if (busy) return res.status(busy.status).json(busy.body);
     console.error(`Invoices: ${label} failed:`, error);
     res.status(500).json({ error: `Failed to ${label}` });
   }

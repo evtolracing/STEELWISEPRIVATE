@@ -74,7 +74,8 @@ const server = http.createServer(async (req, res) => {
       // A copy that died before answering. A read is safe to hand to another copy; a change is not
       // repeated by the front door (the caller decides), so it answers 502 and says so.
       w.up = false; counters.upstreamErrors += 1;
-      if (req.method === 'GET' && attempt < workers.length) return send(attempt + 1);
+      // A copy that refused the connection never received the request, so any request can go to another copy.
+      if ((req.method === 'GET' || e.code === 'ECONNREFUSED') && attempt < workers.length) return send(attempt + 1);
       if (!res.headersSent) json(res, 502, { error: 'The application stopped before it answered. The change may or may not have been saved.', code: 'INSTANCE_LOST', detail: e.code });
     });
     up.end(body);

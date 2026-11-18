@@ -45,8 +45,8 @@ export default async function run(c) {
   await S(G, 'The stock value report equals the stock value the reconciliation reads from the books', { expect: 'the report\'s branches add up to the reconciliation\'s figure for the records', fin: 'one stock value' }, async (ok) => {
     const rep = await cfo.get('/api/ledger/reports/inventory'); const r = await reconcile(cfo);
     ok('answered', rep.status === 200, rep.status);
-    const sum = rep.body.rows.reduce((a, x) => a + Number(x.total ?? (Number(x.rawMaterial || 0) + Number(x.finished || 0) + Number(x.wip || 0))), 0);
-    ok('the branches add up to the reconciliation\'s record figure', near(sum, r.of('INVENTORY').records, 0.011) || near(Number(rep.body.totals?.total ?? rep.body.total ?? NaN), r.of('INVENTORY').records, 0.011), `${sum} / ${JSON.stringify(rep.body.totals || rep.body.total || Object.keys(rep.body))} vs ${r.of('INVENTORY').records}`);
+    const sum = rep.body.rows.reduce((a, x) => a + Number(x.rawMaterial || 0) + Number(x.finishedGoods || 0) + Number(x.inTransit || 0), 0);
+    ok('the branches add up to the reconciliation\'s record figure', near(sum, Number(rep.body.totals.records) + Number(rep.body.totals.inTransit || 0), 0.011) && near(rep.body.totals.records, r.of('INVENTORY').records, 0.011), `${sum} / ${JSON.stringify(rep.body.totals || rep.body.total || Object.keys(rep.body))} vs ${r.of('INVENTORY').records}`);
     ok('and the books agree with the records', r.of('INVENTORY').status === 'MATCH', r.of('INVENTORY').difference);
   });
 

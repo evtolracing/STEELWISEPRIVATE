@@ -1,0 +1,120 @@
+{
+  "ranAt": "2026-11-18T17:57:04.629Z",
+  "held": 11,
+  "total": 11,
+  "results": [
+    {
+      "id": "E-014",
+      "what": "the sign-in limit per address is counted in the shared table",
+      "kind": "unit",
+      "held": true,
+      "check": "E-014: the sign-in limiter in the application",
+      "failed": [
+        "not ok 19 - E-014: the sign-in limiter in the application is given the shared store"
+      ]
+    },
+    {
+      "id": "Z-001",
+      "what": "an invoice number comes from the counter, not from a read of every invoice",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-001: taking an invoice number does not read",
+      "failed": [
+        "not ok 7 - Z-001: taking an invoice number does not read the invoice table once the series has its counter",
+        "not ok 9 - Z-002: a numbered document waits for its turn in the database before it reads anything"
+      ]
+    },
+    {
+      "id": "Z-002",
+      "what": "a numbered document waits for its turn in the database first",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-002",
+      "failed": [
+        "not ok 9 - Z-002: a numbered document waits for its turn in the database before it reads anything"
+      ]
+    },
+    {
+      "id": "Z-003",
+      "what": "a document number is handed out by the counter",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-003: a document number is handed out by the counter",
+      "failed": [
+        "not ok 1 - Z-003: a document number is handed out by the counter, and the table is counted only the first time",
+        "not ok 2 - Z-003: eighty saves at the same moment each get their own number with no save refused"
+      ]
+    },
+    {
+      "id": "Z-004",
+      "what": "password checks take turns",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-004: the password check the routes call waits in the turn",
+      "failed": [
+        "not ok 13 - Z-004: the password check the routes call waits in the turn"
+      ]
+    },
+    {
+      "id": "Z-005",
+      "what": "an overlap that survives every retry answers 409, not 500",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-005",
+      "failed": [
+        "not ok 13 - Z-005: a save that overlapped others on every try is \"busy, try again\" (409), never a server error"
+      ]
+    },
+    {
+      "id": "Z-007",
+      "what": "a partner limit is counted in the shared table",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-007: requests that other server copies already counted",
+      "failed": [
+        "not ok 14 - Z-007: a partner limit is counted in the shared table, in one statement for the second, the minute and the hour",
+        "not ok 15 - Z-007: requests that other server copies already counted use up the same limit"
+      ]
+    },
+    {
+      "id": "Z-007s",
+      "what": "a partner cannot multiply its limit by the number of server copies",
+      "kind": "sim",
+      "held": true,
+      "check": "request limit is one limit across all server copies",
+      "failed": [
+        "✗ [Integrations, events and background jobs] A partner's request limit is one limit across all server copies"
+      ]
+    },
+    {
+      "id": "Z-008",
+      "what": "a politely stopped copy closes idle connections and leaves quickly",
+      "kind": "sim",
+      "held": true,
+      "check": "stopped politely (SIGTERM) while thirty payments arrive",
+      "failed": [
+        "✗ [Failure injection and recovery] A server copy is stopped politely (SIGTERM) while thirty payments arrive"
+      ]
+    },
+    {
+      "id": "Z-009",
+      "what": "a 500 for want of a database connection is answered 503 with a time to retry",
+      "kind": "unit",
+      "held": true,
+      "check": "Z-009: a route that answered 500",
+      "failed": [
+        "not ok 19 - Z-009: a route that answered 500 for want of a connection is answered 503 with a time to retry"
+      ]
+    },
+    {
+      "id": "Z-009s",
+      "what": "with the database connections used up a change is told to try again, never 500",
+      "kind": "sim",
+      "held": true,
+      "check": "Almost every database connection is taken",
+      "failed": [
+        "✗ [Failure injection and recovery] Almost every database connection is taken by something else"
+      ]
+    }
+  ]
+}

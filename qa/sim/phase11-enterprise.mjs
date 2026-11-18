@@ -18,6 +18,7 @@ import { makeEngine, pool, summary, CATEGORIES, MINIMUMS, JOB_TYPES, StepFailed 
 const { prisma, arg, near, ok2, err, sleep } = ctx;
 const CYCLE = arg('cycle', '0'); const LABEL = arg('label', 'Run');
 const PROBE = process.argv.includes('--probe');
+const CHAOS = process.argv.includes('--chaos'); // failures are injected while the work runs (cycle 4)
 const SEED = Number(arg('seed', '11'));
 const LEVELS = arg('levels', '8,16,32,48').split(',').map(Number);
 const SCALE = Number(arg('scale', '1'));
@@ -27,6 +28,7 @@ const say = (s) => console.log(`${new Date().toISOString().slice(11, 19)} ${s}`)
 const sql = (q) => prisma.$queryRawUnsafe(q);
 const dbStat = async () => (await sql(`SELECT deadlocks::int AS deadlocks, xact_rollback::int AS rollbacks, xact_commit::int AS commits, (blks_hit::float / NULLIF(blks_hit + blks_read, 0))::float AS "cacheHit", temp_files::int AS "tempFiles" FROM pg_stat_database WHERE datname = current_database()`))[0];
 
+await ctx.startStub().catch(() => {}); // the stand-in for outside services (alerts, AI, partner addresses); already running is fine
 const started = new Date(); const t00 = performance.now();
 const ledger = await ctx.ensureLedger();
 const settledBefore = await ctx.settleHeldReceipts();
@@ -101,6 +103,36 @@ const readers = PROBE ? [] : [
   (async () => { while (reading) { const [m, b] = someManager(); if (m) { await X.read('branch manager: orders list', m, '/api/orders?limit=50'); await X.read('branch manager: stock list', m, `/api/inventory?locationId=${b.id}&limit=50`); await X.read('branch manager: shipments list', m, '/api/shipments?limit=50'); await X.read('branch manager: invoices list', m, '/api/invoices?limit=50'); } await sleep(700); } })(),
   (async () => { while (reading) { const r = await ctx.runTasks().catch(() => ({ status: 0 })); tasks.runs += 1; if (!ok2(r)) tasks.failed += 1; await sleep(5000); } })(),
 ];
+
+// ── 4b. with --chaos: failures injected while the work runs ─────────────────────────────────
+// One fault about every ten seconds, in turn: a copy restarted politely (as a deployment does), the
+// invoice numbers held by another session, answers delayed at the front door, the outside services
+// down; and, once each, a copy killed outright and every database connection of the servers cut.
+const chaos = { events: [] };
+if (CHAOS && cluster) {
+  const control = (pathPart, body) => fetch(`${ctx.BASE}/__cluster/${pathPart}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) }).then((r) => r.json()).catch(() => null);
+  const state = () => fetch(`${ctx.BASE}/__cluster/state`).then((r) => r.json()).catch(() => null);
+  const back = async (n) => { for (let i = 0; i < 160; i++) { const st = await state(); const w = st?.workers.find((x) => x.n === n); if (w && !w.pid) await control(`start/${n}`); if (w?.pid && w.up) return true; await sleep(250); } return false; };
+  const copies = cluster.workers.length; let turn = 0; let killed = false; let cut = false;
+  const faults = [
+    async () => { const n = 1 + (turn % copies); await control(`term/${n}`); return { what: `copy ${n} restarted politely`, backUp: await back(n) }; },
+    async () => { const cl = new ctx.pg.Client({ connectionString: ctx.OWNER_URL }); await cl.connect(); await cl.query('BEGIN'); await cl.query('LOCK TABLE "DocumentCounter" IN SHARE UPDATE EXCLUSIVE MODE'); await sleep(2000); await cl.query('COMMIT'); await cl.end(); return { what: 'invoice numbers held by another session for 2 s' }; },
+    async () => { await control('mode', { delayMs: 400 }); await sleep(4000); await control('mode', {}); return { what: 'every answer delayed 400 ms for 4 s' }; },
+    async () => { ctx.setMode('ai', { status: 503 }); ctx.setMode('alerts', { status: 503 }); await sleep(8000); ctx.setMode('ai', { status: 200 }); ctx.setMode('alerts', { status: 200 }); return { what: 'AI service and alert channel down for 8 s' }; },
+    async () => { if (killed) return null; killed = true; const n = 1 + ((turn + 1) % copies); await control(`kill/${n}`); return { what: `copy ${n} killed (kill -9)`, backUp: await back(n) }; },
+    async () => { if (cut) return null; cut = true; await prisma.$executeRawUnsafe('SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND usename = \'steelwise_runtime\'').catch(() => {}); return { what: 'every database connection of the servers cut' }; },
+  ];
+  readers.push((async () => {
+    await sleep(6000);
+    while (reading) {
+      const t = performance.now(); const at = new Date().toISOString().slice(11, 19); const level = X.gauge.level;
+      const e = await faults[turn % faults.length]().catch((err) => ({ what: 'a fault could not be injected', error: String(err?.message || err).slice(0, 120) }));
+      turn += 1;
+      if (e) { chaos.events.push({ at, duringLevel: level, ...e, ms: Math.round(performance.now() - t) }); say(`  fault: ${e.what}${e.backUp === false ? ' (DID NOT COME BACK)' : ''}`); }
+      for (let i = 0; i < 40 && reading; i++) await sleep(250);
+    }
+  })());
+}
 
 // ── 5. run it, at rising numbers of jobs in flight ──────────────────────────────────────────
 const levels = []; const perLevel = Math.ceil(work.length / LEVELS.length);
@@ -213,6 +245,7 @@ const invBad = Object.entries(invariants).filter(([, v]) => v !== 0);
 const judged = judge({ 'sign-in': report.signIn, ...report.latencyMs, ...report.readsWhileWorking });
 const serverErrors = Object.entries(X.statuses).filter(([s]) => Number(s) >= 500 || Number(s) === 0).reduce((n, [, v]) => n + v, 0);
 report.thresholds = { status: THRESHOLD_STATUS, limits: THRESHOLDS, latency: judged, latencyMisses: judged.filter((j) => !j.pass), serverErrors, failedTransactionsPercent: +((100 * txTotals.failed) / Math.max(1, txTotals.attempted)).toFixed(3), peakLevelRequestsPerSecond: Math.max(0, ...levels.map((l) => l.requestsPerSecond)) };
+if (CHAOS) report.chaos = { faultsInjected: chaos.events.length, events: chaos.events, everyCopyBackUp: chaos.events.every((e) => e.backUp !== false), copiesUpAtTheEnd: (await fetch(`${ctx.BASE}/__cluster/state`).then((r) => r.json()).catch(() => null))?.workers.filter((w) => w.up).length ?? null };
 report.verdict = {
   jobs500: PROBE || report.jobs.tracedEndToEnd >= 500, transactions2000: PROBE || txTotals.reconciled >= 2000,
   everyCategoryMinimum: PROBE || Object.values(report.transactions.byCategory).every((c) => c.meetsMinimum),
@@ -238,7 +271,11 @@ console.log(`  books: trial balance ${report.books.trialBalanceBalanced ? 'balan
 const slow = Object.entries(report.latencyMs).sort((a, b) => b[1].p95 - a[1].p95).slice(0, 8);
 for (const [k, v] of slow) console.log(`   ${k.padEnd(44)} n=${String(v.requests).padStart(4)} p50=${v.p50} p95=${v.p95} p99=${v.p99} max=${v.max}`);
 for (const m of report.thresholds.latencyMisses) console.log(`  ✗ slower than the proposed limit: ${m.kind} p95 ${m.p95} (limit ${m.limitP95}), p99 ${m.p99} (limit ${m.limitP99})`);
-const good = Object.values(report.verdict).every(Boolean);
+// With failures injected, lost requests and slow answers are the point: the run is judged on what must
+// hold whatever fails (nothing half-saved, nothing counted that is not there, the books agree, every copy back).
+const JUDGED = CHAOS ? ['invariantsHold', 'booksAgree', 'nothingCountedIsMissing', 'noDeadlock', 'everyCopyBackUp', 'faultsWereInjected'] : Object.keys(report.verdict);
+if (CHAOS) { report.verdict.everyCopyBackUp = report.chaos.everyCopyBackUp && report.chaos.copiesUpAtTheEnd === report.serverCopies; report.verdict.faultsWereInjected = report.chaos.faultsInjected >= 6; report.verdictJudgedOn = JUDGED; fs.writeFileSync(OUT, `${JSON.stringify(report, null, 1)}\n`); }
+const good = JUDGED.every((k) => report.verdict[k]);
 console.log(`${good ? '✓' : '✗'} Phase 11 enterprise cycle ${CYCLE}: ${Object.entries(report.verdict).map(([k, v]) => `${k} ${v ? 'yes' : 'NO'}`).join(', ')}`);
 await ctx.closeDb(); await prisma.$disconnect();
 process.exit(good ? 0 : 1);

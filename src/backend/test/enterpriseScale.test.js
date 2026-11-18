@@ -121,6 +121,16 @@ test('Z-004: sign-in and key checks go through the turn, not straight to the lib
   }
 });
 
+test('Z-004: the password check the routes call waits in the turn', async () => {
+  const { checkPassword, hashPassword, passwordQueue } = await import('../src/lib/passwords.js');
+  const hash = await hashPassword('right-horse', 4);
+  const checks = Array.from({ length: 6 }, (_, i) => checkPassword(i === 3 ? 'right-horse' : 'wrong', hash));
+  const q = passwordQueue();
+  assert.ok(q.running <= 2 && q.running + q.waiting === 6, `six asked at once: ${q.running} running, ${q.waiting} waiting`);
+  assert.deepEqual(await Promise.all(checks), [false, false, false, true, false, false]);
+  assert.deepEqual(passwordQueue(), { running: 0, waiting: 0 });
+});
+
 test('Z-005: a save that overlapped others on every try is "busy, try again" (409), never a server error', async () => {
   const { retryOverlap, isOverlap, Busy, BUSY_MESSAGE } = await import('../src/lib/numbering.js');
   let tries = 0;
@@ -198,6 +208,13 @@ test('E-014: the sign-in limit per address counts in the shared table', async ()
     assert.ok(b.resetTime instanceof Date && b.resetTime > new Date());
     assert.equal((await copyB.increment('10.0.0.2:someone@example.test')).totalHits, 1, 'another address has its own count');
   } finally { useRateCounter(null); }
+});
+
+test('E-014: the sign-in limiter in the application is given the shared store', async () => {
+  const fs = await import('node:fs');
+  const src = fs.readFileSync(new URL('../src/app.js', import.meta.url), 'utf8');
+  const login = src.slice(src.indexOf('limit: config.rateLimit.loginMax'), src.indexOf('Too many login attempts'));
+  assert.ok(login.length > 0 && /store: new SharedRateStore\('login'\)/.test(login), 'the sign-in limit would be counted per server copy');
 });
 
 // ── Z-009: no database connection is "try again", not "server error" ───────────────────────────

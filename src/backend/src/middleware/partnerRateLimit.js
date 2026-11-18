@@ -1,10 +1,12 @@
 /**
  * Partner Rate Limiter Middleware
- * In-memory sliding window rate limiting with per-partner tier configuration.
+ * Fixed-window rate limiting with per-partner tier configuration, counted in the database so the
+ * limit is one limit however many copies of the server run (src/lib/rateWindow.js).
  * Adds standard rate limit headers to all responses.
  */
 
 import prisma from '../lib/db.js';
+import { hit } from '../lib/rateWindow.js';
 
 // ─── Rate Limit Configuration by Tier ──────────────────────────────────────────
 const TIER_LIMITS = {
@@ -13,28 +15,11 @@ const TIER_LIMITS = {
   INTERNAL:  { perMin: 1000, perHour: 50000, burst: 100 },
 };
 
-// In-memory stores (keyed by partnerId)
-const minuteWindows = new Map();  // partnerId -> { count, resetAt }
-const hourWindows = new Map();    // partnerId -> { count, resetAt }
-const burstWindows = new Map();   // partnerId -> { count, resetAt }
-
-// Cleanup interval (every 5 minutes)
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, val] of minuteWindows) {
-    if (val.resetAt < now) minuteWindows.delete(key);
-  }
-  for (const [key, val] of hourWindows) {
-    if (val.resetAt < now) hourWindows.delete(key);
-  }
-  for (const [key, val] of burstWindows) {
-    if (val.resetAt < now) burstWindows.delete(key);
-  }
-}, 5 * 60 * 1000);
-
 // ─── Rate Limiter Middleware ───────────────────────────────────────────────────
+// The counts are kept in the database so every server copy adds to the same number (Z-007). With
+// counts in each copy's memory a partner got its limit once per running copy.
 export function partnerRateLimit() {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     if (!req.partner) {
       return next(); // Skip if no partner context (shouldn't happen after partnerAuth)
     }
@@ -52,50 +37,22 @@ export function partnerRateLimit() {
       burst: req.partner.burstLimit || defaults.burst,
     };
 
-    // ── Burst check (per second) ─────────────────────────────────────────────
-    const burstWindow = burstWindows.get(partnerId);
-    if (burstWindow && burstWindow.resetAt > now) {
-      burstWindow.count++;
-      if (burstWindow.count > limits.burst) {
-        return rateLimitResponse(res, limits.perMin, 0, Math.ceil((burstWindow.resetAt - now) / 1000));
-      }
-    } else {
-      burstWindows.set(partnerId, { count: 1, resetAt: now + 1000 });
-    }
+    // One statement counts the second, the minute and the hour. `hit` never throws: without the
+    // shared table it counts in this copy's memory.
+    const [burst, minute, hour] = await hit([
+      { key: `partner:${partnerId}:burst`, windowMs: 1000 },
+      { key: `partner:${partnerId}:minute`, windowMs: 60_000 },
+      { key: `partner:${partnerId}:hour`, windowMs: 3_600_000 },
+    ], now);
 
-    // ── Minute check ─────────────────────────────────────────────────────────
-    const minWindow = minuteWindows.get(partnerId);
-    if (minWindow && minWindow.resetAt > now) {
-      minWindow.count++;
-      if (minWindow.count > limits.perMin) {
-        const retryAfter = Math.ceil((minWindow.resetAt - now) / 1000);
-        return rateLimitResponse(res, limits.perMin, 0, retryAfter);
-      }
-    } else {
-      minuteWindows.set(partnerId, { count: 1, resetAt: now + 60000 });
-    }
-
-    // ── Hour check ───────────────────────────────────────────────────────────
-    const hourWindow = hourWindows.get(partnerId);
-    if (hourWindow && hourWindow.resetAt > now) {
-      hourWindow.count++;
-      if (hourWindow.count > limits.perHour) {
-        const retryAfter = Math.ceil((hourWindow.resetAt - now) / 1000);
-        return rateLimitResponse(res, limits.perHour, 0, retryAfter);
-      }
-    } else {
-      hourWindows.set(partnerId, { count: 1, resetAt: now + 3600000 });
-    }
-
-    // ── Set response headers ─────────────────────────────────────────────────
-    const currentMin = minuteWindows.get(partnerId);
-    const remaining = Math.max(0, limits.perMin - (currentMin?.count || 0));
-    const resetAt = currentMin?.resetAt || now + 60000;
+    if (burst.count > limits.burst) return rateLimitResponse(res, limits.perMin, 0, Math.max(1, Math.ceil((burst.resetAt - now) / 1000)));
+    if (minute.count > limits.perMin) return rateLimitResponse(res, limits.perMin, 0, Math.max(1, Math.ceil((minute.resetAt - now) / 1000)));
+    if (hour.count > limits.perHour) return rateLimitResponse(res, limits.perHour, 0, Math.max(1, Math.ceil((hour.resetAt - now) / 1000)));
 
     res.set({
       'X-RateLimit-Limit': String(limits.perMin),
-      'X-RateLimit-Remaining': String(remaining),
-      'X-RateLimit-Reset': String(Math.ceil(resetAt / 1000)),
+      'X-RateLimit-Remaining': String(Math.max(0, limits.perMin - minute.count)),
+      'X-RateLimit-Reset': String(Math.ceil(minute.resetAt / 1000)),
     });
 
     next();

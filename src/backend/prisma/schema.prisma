@@ -5346,6 +5346,17 @@ model RequestKey {
   @@index([createdAt])
 }
 
+/// The count of one request limit in one window of time, shared by every server copy (Phase 11, E-014, Z-007).
+/// Removed by the scheduled run two hours after the window began.
+model RateWindow {
+  key         String
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@id([key, windowStart])
+  @@index([windowStart])
+}
+
 /// Material sent from one branch to another (Phase 6, G-007). SHIPPED: on the road, off the sender's shelf and not
 /// yet on the receiver's. RECEIVED: on the receiver's books, with what arrived per line. CANCELLED: called back.
 model StockTransfer {

@@ -135,3 +135,67 @@ test('Z-005: a save that overlapped others on every try is "busy, try again" (40
   assert.equal(other.code, 'P2025');
   assert.ok(!(other instanceof Busy));
 });
+
+// ── Z-007 and E-014: request limits are one limit for all server copies ────────────────────────
+import { hit, useRateCounter, countInDatabase, windowStartOf, SharedRateStore } from '../src/lib/rateWindow.js';
+import { partnerRateLimit } from '../src/middleware/partnerRateLimit.js';
+
+/** Stands in for the "RateWindow" table: one map that every "server copy" in the test adds to. */
+function sharedTable() {
+  const rows = new Map(); const statements = [];
+  const db = { $queryRawUnsafe: async (sql, ...params) => { statements.push(sql); const out = []; for (let i = 0; i < params.length; i += 2) { const id = `${params[i]} ${params[i + 1].getTime()}`; rows.set(id, (rows.get(id) || 0) + 1); out.push({ key: params[i], count: rows.get(id) }); } return out; } };
+  return { rows, statements, counter: (windows, now) => countInDatabase(windows, now, db) };
+}
+const answer = () => { const res = { code: 200, headers: {}, set(h) { Object.assign(this.headers, h); return this; }, status(c) { this.code = c; return this; }, json(b) { this.body = b; return this; } }; return res; };
+
+test('Z-007: a partner limit is counted in the shared table, in one statement for the second, the minute and the hour', async () => {
+  const t = sharedTable(); useRateCounter(t.counter);
+  try {
+    const limit = partnerRateLimit(); const partner = { id: 'p-1', rateLimitPerMin: 3, rateLimitPerHour: 1000, burstLimit: 1000 };
+    const codes = [];
+    for (let i = 0; i < 5; i += 1) { const res = answer(); let passed = false; await limit({ partner }, res, () => { passed = true; }); codes.push(passed ? 200 : res.code); }
+    assert.deepEqual(codes, [200, 200, 200, 429, 429]);
+    assert.equal(t.statements.length, 5, 'one statement per request');
+    assert.match(t.statements[0], /ON CONFLICT \("key", "windowStart"\) DO UPDATE SET "count" = "RateWindow"\."count" \+ 1/);
+    assert.equal([...t.rows.keys()].filter((k) => k.startsWith('partner:p-1:')).length >= 3, true);
+  } finally { useRateCounter(null); }
+});
+
+test('Z-007: requests that other server copies already counted use up the same limit', async () => {
+  const t = sharedTable(); useRateCounter(t.counter);
+  try {
+    const partner = { id: 'p-2', rateLimitPerMin: 4, rateLimitPerHour: 1000, burstLimit: 1000 };
+    // Two other copies each counted two requests of this partner in this minute.
+    const now = Date.now(); const id = `partner:p-2:minute ${windowStartOf(now, 60_000)}`; t.rows.set(id, 4);
+    const res = answer(); let passed = false;
+    await partnerRateLimit()({ partner }, res, () => { passed = true; });
+    assert.equal(passed, false, 'the fifth request of the minute is refused although this copy has seen none');
+    assert.equal(res.code, 429);
+    assert.equal(res.body.error.code, 'RATE_LIMIT_EXCEEDED');
+    assert.ok(Number(res.headers['Retry-After']) >= 1);
+  } finally { useRateCounter(null); }
+});
+
+test('Z-007: when the shared table cannot be reached the limit still holds on this copy and no request fails', async () => {
+  useRateCounter(async () => { throw Object.assign(new Error('relation "RateWindow" does not exist'), { code: 'P2010' }); });
+  try {
+    const out = [];
+    for (let i = 0; i < 3; i += 1) out.push((await hit([{ key: 'fallback-test', windowMs: 60_000 }]))[0]);
+    assert.deepEqual(out.map((r) => r.count), [1, 2, 3]);
+    assert.ok(out.every((r) => r.shared === false));
+  } finally { useRateCounter(null); }
+});
+
+test('E-014: the sign-in limit per address counts in the shared table', async () => {
+  const t = sharedTable(); useRateCounter(t.counter);
+  try {
+    const copyA = new SharedRateStore('login'); const copyB = new SharedRateStore('login');
+    copyA.init({ windowMs: 900_000 }); copyB.init({ windowMs: 900_000 });
+    assert.equal(copyA.localKeys, false, 'tells the limiter its counts are not local to this copy');
+    const a = await copyA.increment('10.0.0.1:someone@example.test'); const b = await copyB.increment('10.0.0.1:someone@example.test');
+    assert.equal(a.totalHits, 1);
+    assert.equal(b.totalHits, 2, 'a second server copy continues the first copy\'s count');
+    assert.ok(b.resetTime instanceof Date && b.resetTime > new Date());
+    assert.equal((await copyB.increment('10.0.0.2:someone@example.test')).totalHits, 1, 'another address has its own count');
+  } finally { useRateCounter(null); }
+});

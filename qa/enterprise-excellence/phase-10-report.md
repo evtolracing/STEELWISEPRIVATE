@@ -216,6 +216,6 @@ Phase 11 (80-location stress, cross-module concurrency, ledger load, failure inj
 
 ## Continuation point
 
-- Branch `claude/project-thread-25z3jd`; pull request @@PR@@. Not merged; the owner says when.
+- Branch `claude/project-thread-25z3jd`; pull request 34. Not merged; the owner says when.
 - Database: file 17 is not applied to live. The owner applies it before the merge.
 - Phase 11 has not been started.

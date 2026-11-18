@@ -460,11 +460,12 @@
       "evidence": "Phase 10: tokens end at once on password change, reset, switch-off and sign-out (Y-001); per-login pause after ten wrong passwords (Y-002); upload path escape, files served by address and mismatched content closed (Y-004 to Y-006); register follows the Users rules (Y-013); partner administration reads need an administrator (Y-019); every QA suite runs the server as a role that cannot change history or the books; 277 scenarios and removal checks (phase-10-quality-scorecard.md). Held at 84: the live server still connects as the database owner until file 17 and the DATABASE_URL switch (Y-008); the per-address limit counts per instance (E-014); no second factor"
     }
   ],
-  "pullRequest": 33,
+  "pullRequest": 34,
   "previousPullRequests": [
     30,
     31,
-    32
+    32,
+    33
   ],
   "phase3BaselineCommit": "181a874",
   "phase4BaselineCommit": "dffa7d2",

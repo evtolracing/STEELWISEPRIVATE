@@ -513,12 +513,13 @@
       "evidence": "Phase 11: five days of 545 customer jobs on three server copies, every invariant and every reconciliation check at zero, also after a day of injected failures; no difference adjusted away. Held at 92: test books; one day of volume"
     }
   ],
-  "pullRequest": 34,
+  "pullRequest": 35,
   "previousPullRequests": [
     30,
     31,
     32,
-    33
+    33,
+    34
   ],
   "phase3BaselineCommit": "181a874",
   "phase4BaselineCommit": "dffa7d2",

@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 3953a52. Do not edit by hand: change the source and rerun.
+Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 8460e84. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
